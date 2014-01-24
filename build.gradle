@@ -1,0 +1,64 @@
+apply plugin: 'java'
+apply plugin: 'jacoco'
+apply plugin: 'java-library-distribution'
+
+sourceCompatibility = 1.7
+version = '1.0'
+
+//jar {
+//    manifest {
+//        attributes 'Implementation-Title': 'Gradle Quickstart', 'Implementation-Version': version
+//    }
+//}
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+  lexer
+}
+
+dependencies {
+    compile 'xerces:xercesImpl:2.11.0'
+    compile 'org.apache.bcel:bcel:5.2'
+    compile 'edu.princeton.cup:java-cup:10k'
+    testCompile 'junit:junit:4.+'
+    testCompile 'xmlunit:xmlunit:1.5'
+    lexer files('tools/JLex.jar')
+}
+
+test {
+  //  systemProperties 'javax.xml.transform.TransformerFactory': 'com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl'
+}
+
+task(createXPathParser, type: JavaExec) {
+    inputs.file "$projectDir/src/main/java/org/apache/xalan/xsltc/compiler/xpath.cup"
+    outputs.files "$projectDir/src/main/java/org/apache/xalan/xsltc/compiler/XPathParser.java",
+                  "$projectDir/src/main/java/org/apache/xalan/xsltc/compiler/sym.java"
+    main = 'java_cup.Main'
+    args = ['-parser', 'XPathParser', '-package', 'org.apache.xalan.xsltc.compiler', 'xpath.cup'].toList()
+    classpath project.configurations.compile
+    workingDir file("$projectDir/src/main/java/org/apache/xalan/xsltc/compiler/")
+} 
+
+task(createXPathLexer, dependsOn:createXPathParser, type: JavaExec) {
+    inputs.file "$projectDir/src/main/java/org/apache/xalan/xsltc/compiler/xpath.lex"
+    outputs.file "$projectDir/src/main/java/org/apache/xalan/xsltc/compiler/XPathLexer.java"
+    main = 'JLex.Main'
+    args = ['-static', 'xpath.lex'].toList()
+    classpath project.configurations.lexer project.configurations.compile
+    workingDir file("$projectDir/src/main/java/org/apache/xalan/xsltc/compiler/")
+    doLast{
+      ant.move(file:"$projectDir/src/main/java/org/apache/xalan/xsltc/compiler/xpath.lex.java",
+        toFile:"$projectDir/src/main/java/org/apache/xalan/xsltc/compiler/XPathLexer.java")
+    }
+} 
+
+
+jacocoTestReport {
+    reports {
+        xml.enabled false
+        csv.enabled false
+    }
+}
