@@ -25,11 +25,11 @@ This file contains a minimal implementation of an XSL transformation
 servlet.  When you deploy your servlet, make sure that the XSLTC
 TransformerFactory will be used by either setting the system property
 "javax.xml.transform.TransformerFactory" with the value
-"org.apache.xalan.xsltc.trax.TransformerFactoryImpl", or by making a
+"de.lyca.xalan.xsltc.trax.TransformerFactoryImpl", or by making a
 file with the name "META-INF/services/javax.xml.transform.TransformerFactory"
 containing the single line
 
-  org.apache.xalan.xsltc.trax.TransformerFactoryImpl
+  de.lyca.xalan.xsltc.trax.TransformerFactoryImpl
 
 available on your CLASSPATH.
 
@@ -46,7 +46,7 @@ o Create a JAR file containing your translet classes and a file
    named META-INF/services/javax.xml.transform.TransformerFactory in
    your JAR file that contains the following line:
 
-       org.apache.xalan.xsltc.trax.TransformerFactoryImpl
+       de.lyca.xalan.xsltc.trax.TransformerFactoryImpl
 
 o Copy the JAR file, xalan.jar, xercesImpl.jar and xml-apis.jar to your
   Web_application_context/WEB-INF/lib 

@@ -7,7 +7,7 @@ SYNOPSIS
 
 DESCRIPTION
 	This command-line tool is a wrapper for the Java class
-	org.apache.xalan.xsltc.cmdline.Compile. (See CODE below)
+	de.lyca.xalan.xsltc.cmdline.Compile. (See CODE below)
 
 	The Sun XSLT Compiler is a Java-based tool for compiling XSLT
 	stylesheets into lightweight and portable Java byte codes 
@@ -84,7 +84,7 @@ CODE
 	REGEXP=${INSTALLDIR}/java/lib/regexp.jar
 
         CLASSPATH=.:${JAR}:${XER}:${XML}:${JCPR}:${BCEL}:${JCP}:${JLEX}:${REGEXP}
-        java -cp ${CLASSPATH} org.apache.xalan.xsltc.cmdline.Compile "$@"
+        java -cp ${CLASSPATH} de.lyca.xalan.xsltc.cmdline.Compile "$@"
 	
 
 EXAMPLES

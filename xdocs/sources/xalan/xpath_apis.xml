@@ -62,7 +62,7 @@
   DEFAULT_OBJECT_MODEL_URI</jump>.</p>
 
   <p>The default service provider for the javax.xml.xpath.XPathFactory service is 
-  <jump href="apidocs/org/apache/xpath/jaxp/XPathFactoryImpl.html">org.apache.xpath.jaxp.XPathFactoryImpl</jump>.
+  <jump href="apidocs/org/apache/xpath/jaxp/XPathFactoryImpl.html">de.lyca.xpath.jaxp.XPathFactoryImpl</jump>.
   </p>
   </s2>
   
@@ -114,7 +114,7 @@
   which wraps the underlying implementation. The newInstance() method uses system property settings to determine 
   which implementation to instantiate.</p>
   <p>&xslt4j2; is distributed with a pre-configured setting for the provider of the XPathFactory service. This setting is in 
-  xalan.jar in META-INF/services/javax.xml.xpath.XPathFactory, with a value of org.apache.xpath.jaxp.XPathFactoryImpl.</p>
+  xalan.jar in META-INF/services/javax.xml.xpath.XPathFactory, with a value of de.lyca.xpath.jaxp.XPathFactoryImpl.</p>
   <p>You can plug in a new XPathFactory as follows (in order of precedence):
   <ol>
   <li>Set the system property "javax.xml.xpath.XPathFactory" + ":uri" from the command line when you 
@@ -334,11 +334,11 @@
   <s2 title="Using the sample XPathFunctionResolver">
   <p>Normally you need to provide your own implementation of XPathFunctionResolver in order to use
   extension functions in XPath expressions. In &xslt4j2;, we provide a sample implementation 
-  of XPathFunctionResolver in the class org.apache.xalan.extensions.XPathFunctionResolverImpl, with supports
+  of XPathFunctionResolver in the class de.lyca.xalan.extensions.XPathFunctionResolverImpl, with supports
   for Java and EXSLT extensions. If you set the XPathFunctionResolver to an object of this class, then
   you can use Java and EXSLT extension functions in the XPath expression. You also need to use a
   NamespaceContext along with the sample XPathFunctionResolver. &xslt4j2; also includes a sample 
-  implementation of NamespaceContext in org.apache.xalan.extensions.ExtensionNamespaceContext, which 
+  implementation of NamespaceContext in de.lyca.xalan.extensions.ExtensionNamespaceContext, which 
   provides the following namespace prefix to URI mappings:</p>
   
   <table>
@@ -385,12 +385,12 @@
         XPath xpath = factory.newXPath();
         
         // set the NamespaceContext to 
-        // org.apache.xalan.extensions.ExtensionNamespaceContext
-        xpath.setNamespaceContext(new org.apache.xalan.extensions.ExtensionNamespaceContext());
+        // de.lyca.xalan.extensions.ExtensionNamespaceContext
+        xpath.setNamespaceContext(new de.lyca.xalan.extensions.ExtensionNamespaceContext());
         
         // set the XPathFunctionResolver to 
-        // org.apache.xalan.extensions.XPathFunctionResolverImpl
-        xpath.setXPathFunctionResolver(new org.apache.xalan.extensions.XPathFunctionResolverImpl());
+        // de.lyca.xalan.extensions.XPathFunctionResolverImpl
+        xpath.setXPathFunctionResolver(new de.lyca.xalan.extensions.XPathFunctionResolverImpl());
         
         // Evaluate the XPath expression "math:max(/doc/num)" against 
         // the input document numlist.xml

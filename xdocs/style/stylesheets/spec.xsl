@@ -26,7 +26,7 @@
 <!-- XSL Style sheet, DTD omitted -->
 
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-                xmlns:redirect="org.apache.xalan.lib.Redirect"
+                xmlns:redirect="de.lyca.xalan.lib.Redirect"
                 extension-element-prefixes="redirect">
   <xsl:output method="html" doctype-public="-//W3C//DTD HTML 4.0 Transitional//EN"/>
   

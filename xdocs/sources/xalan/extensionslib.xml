@@ -69,9 +69,9 @@ email us at the <human-resource-ref idref="xalandev"/>.</p>
 </s2>
 <anchor name="xalanns"/>
 <s2 title="&xslt; namespace">
-<p>The &xslt; extensions are implemented in one of the classes under org.apache.xalan.lib. The main 
+<p>The &xslt; extensions are implemented in one of the classes under de.lyca.xalan.lib. The main 
 extension class is <jump href="apidocs/org/apache/xalan/lib/Extensions.html">
-org.apache.xalan.lib.Extensions</jump>. Some extension
+de.lyca.xalan.lib.Extensions</jump>. Some extension
 functions (e.g. intersection, difference, etc.) used to be in this class are now moved to the 
 corresponding <link anchor="exslt">EXSLT</link> modules. All &xslt; extensions use namespace URIs 
 starting with:</p>
@@ -173,7 +173,7 @@ the <link idref="samples" anchor="ext1">SimpleRedirect</link> sample and see the
 </s3></s2><anchor name="nodeset"/>
 <s2 title= "nodeset">
 <p>Implemented in <jump href="apidocs/org/apache/xalan/lib/Extensions.html">
-org.apache.xalan.lib.Extensions</jump>,<br/>
+de.lyca.xalan.lib.Extensions</jump>,<br/>
 <code>nodeset (result-tree-fragment)</code>  casts a result tree fragment into a node-set.</p>
 <p>To use the nodeset extension, you can either use the <code>nodeset</code> function in the 
 namespace <code>xmlns:xalan="http://xml.apache.org"</code> or the <link anchor="exslt">EXSLT</link> 
@@ -225,7 +225,7 @@ to the variable named rtf.</note>
 
 <anchor name="nodeinfo"/>
 <s2 title="NodeInfo">
-<p><jump href="apidocs/org/apache/xalan/lib/NodeInfo.html">org.apache.xalan.lib.NodeInfo</jump> provides 
+<p><jump href="apidocs/org/apache/xalan/lib/NodeInfo.html">de.lyca.xalan.lib.NodeInfo</jump> provides 
 extension elements that you can use to get information about the location of nodes in the source 
 document:</p>
 <ul>
@@ -242,7 +242,7 @@ You can use the <link idref="commandline">command-line utility</link> -L flag or
 <anchor name="systemid"/>
 <s3 title="systemId">
 <p>Implemented in <jump href="apidocs/org/apache/xalan/lib/NodeInfo.html">
-org.apache.xalan.lib.NodeInfo</jump>,
+de.lyca.xalan.lib.NodeInfo</jump>,
 <code>systemId()</code> returns the system ID for the current node, and
 <code>systemId(node-set)</code> returns the system ID of the first node in the node-set.</p>
 </s3>
@@ -250,7 +250,7 @@ org.apache.xalan.lib.NodeInfo</jump>,
 <anchor name="publicid"/>
 <s3 title="publicId">
 <p><em>To be done.</em> Implemented in <jump href="apidocs/org/apache/xalan/lib/NodeInfo.html">
-org.apache.xalan.lib.NodeInfo</jump>,
+de.lyca.xalan.lib.NodeInfo</jump>,
 <code>publicId()</code> will return the public ID for the current node, and
 <code>publicId(node-set)</code> will return the public ID of the first node in the node-set.</p>
 </s3>
@@ -258,7 +258,7 @@ org.apache.xalan.lib.NodeInfo</jump>,
 <anchor name="linenumber"/>
 <s3 title="lineNumber">
 <p>Implemented in <jump href="apidocs/org/apache/xalan/lib/NodeInfo.html">
-org.apache.xalan.lib.NodeInfo</jump>,
+de.lyca.xalan.lib.NodeInfo</jump>,
 <code>lineNumber()</code> returns the line number in the source document for the current node, and
 <code>lineNumber(node-set)</code> returns the line number in the source document for the first node 
 in the node-set.</p>
@@ -269,7 +269,7 @@ DOM Document).</note>
 <anchor name="columnnumber"/>
 <s3 title="columnNumber">
 <p>Implemented in <jump href="apidocs/org/apache/xalan/lib/NodeInfo.html">
-org.apache.xalan.lib.NodeInfo</jump>, <code>columnNumber()</code> returns the column number in the 
+de.lyca.xalan.lib.NodeInfo</jump>, <code>columnNumber()</code> returns the column number in the 
 source document for the current node, and <code>columnNumber(node-set)</code> returns the column 
 number in the source document for the first node in the node-set.</p>
 <note>This function returns -1 if the column number is not known (for example, the source is a DOM 
@@ -302,7 +302,7 @@ Document).</note>
  from XML source documents exist thanks to John Gentilin (johnglinux@eyecatching.com), who has 
  also added a number of <link idref="samples" anchor="sql">SQL library samples</link>.
 </note>
-<p><jump href="apidocs/org/apache/xalan/lib/sql/XConnection.html">org.apache.xalan.lib.sql.XConnection</jump> 
+<p><jump href="apidocs/org/apache/xalan/lib/sql/XConnection.html">de.lyca.xalan.lib.sql.XConnection</jump> 
  provides a number of extension functions that you can use in your stylesheet.</p>
 <ol>
 <li>new() -- Use one of the XConnection constructors to connect to a data source, and return an 
@@ -394,8 +394,8 @@ transformation. Suppose you have the following DBINFO nodeset in an XML document
 samples.</p>
 <p>You can also create a named connection pool that is maintained external to &xslt4j;.</p>
 <source>
-        import org.apache.xalan.lib.sql.DefaultConnectionPool;
-        import org.apache.xalan.lib.sql.XConnectionPoolManager;
+        import de.lyca.xalan.lib.sql.DefaultConnectionPool;
+        import de.lyca.xalan.lib.sql.XConnectionPoolManager;
         ...
         DefaultConnectionPool cp = new DefaultConnectionPool();
         cp.setDriver("org.apache.derby.jdbc.EmbeddedDriver");
@@ -505,7 +505,7 @@ available as a sample application; see <link idref="samples" anchor="sql">SQl Ex
 <anchor name="pipedocument"/>
 <s2 title="pipeDocument">
 <p>Implemented in <jump href="apidocs/org/apache/xalan/lib/PipeDocument.html">
-org.apache.xalan.lib.PipeDocument</jump>,<br/>
+de.lyca.xalan.lib.PipeDocument</jump>,<br/>
 the pipeDocument extension element pipes an XML document through a series of one or more 
 transformations. The output of each transformation is piped to the next transformation. The 
 final transformation creates a target file.</p>
@@ -567,7 +567,7 @@ stylesheet.</p>
 <p>The following stylesheet is used to merge the &xslt; documents into a book (the first transformation), 
 and transform the book into a tree of formatting objects, which can then be used to generate a PDF file. 
 This transformation is invoked as follows:</p>
-<p><code>java org.apache.xalan.xslt.Process -in printbook.xml</code><br/>
+<p><code>java de.lyca.xalan.xslt.Process -in printbook.xml</code><br/>
 <code> -param source printbook.xml</code><br/>
 <code> -param target xalanbook.fo</code></p>
 <p>There is no XML input document or output document for the primary transformation, which does no more 
@@ -601,7 +601,7 @@ than invoke the extension element.</p>
 <anchor name="evaluate"/>
 <s2 title= "evaluate">
 <p>Implemented in <jump href="apidocs/org/apache/xalan/lib/Extensions.html">
-org.apache.xalan.lib.Extensions</jump>,<br/>
+de.lyca.xalan.lib.Extensions</jump>,<br/>
 <code>evaluate (xpath-expression)</code> function returns the result of evaluating the xpath-expression 
 in the current XPath expression context (automatically passed in by the extension mechanism).</p>
 <p>Use the evaluation extension function when the value of the expression is not known until run time.</p>
@@ -613,7 +613,7 @@ stylesheet more portable across XSLT processors that support EXSLT extensions.</
 <anchor name="tokenize"/>
 <s2 title="tokenize">
 <p>Implemented in <jump href="apidocs/org/apache/xalan/lib/Extensions.html">
-org.apache.xalan.lib.Extensions</jump>,<br/> 
+de.lyca.xalan.lib.Extensions</jump>,<br/> 
 <code>tokenize (tokenize-string, delimiters)</code><br/>
 or<br/>
 <code>tokenize (tokenize-string)</code> function returns a node-set containing one text node for each 

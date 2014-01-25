@@ -28,7 +28,7 @@
    <s2 title="Using the Command-Line Utility">
       <p>To perform a transformation, you can call &xslt4j; from the command line (or script), 
       an applet, an application, or a servlet (see <link idref="usagepatterns">Usage Patterns</link>).</p>
-     <p>The org.apache.xalan.xslt.Process main() method provides a command-line interface
+     <p>The de.lyca.xalan.xslt.Process main() method provides a command-line interface
     for performing XSL transformation. To perform a transformation from the command line or a script,
     do the following:</p>
  		<ol>
@@ -40,7 +40,7 @@
     arguments (described below). The following command line, for example, includes the -IN, -XSL,
     and -OUT flags with their accompanying arguments -- the XML source document, the XSL
     stylesheet, and the output file:<br/><br/>
-    <code>java org.apache.xalan.xslt.Process -IN foo.xml -XSL foo.xsl -OUT foo.out</code>
+    <code>java de.lyca.xalan.xslt.Process -IN foo.xml -XSL foo.xsl -OUT foo.out</code>
     </li></ol>
     <p>The command line utility can take the following flags and arguments (the flags are case insensitive):</p> 
       <source>
@@ -99,7 +99,7 @@
       <p>Use <code>-HTML</code> to write 4.0 transitional HTML (some elements, such as &lt;br&gt;, are
       not well formed XML).</p>
       <p>To set stylesheet parameters from the command line, use <br/>
-      <code>java org.apache.xalan.xslt.Process -PARAM <ref>name value</ref></code></p>
+      <code>java de.lyca.xalan.xslt.Process -PARAM <ref>name value</ref></code></p>
       <p>The value is passed to the transformer as a String.</p>
       <p>For information about incremental and optimized stylesheet processing, see <link idref="dtm" anchor="settings">DTM settings</link>.</p>
       <p>Use <code>-L</code> to obtain access to a SourceLocator that a stylesheet extension can use to get information about the location

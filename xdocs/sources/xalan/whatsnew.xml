@@ -28,13 +28,13 @@
       (<jump href="http://www.w3.org/TR/2004/REC-DOM-Level-3-LS-20040407/load-save.html#LS-LSSerializer">LSSerializer</jump>)
       for an XML parser. These changes are seen in the new class
       <jump href="apidocs/org/apache/xml/serializer/DOM3Serializer.html">
-      <code>org.apache.xml.serializer.DOM3Serializer</code></jump> 
+      <code>de.lyca.xml.serializer.DOM3Serializer</code></jump> 
       and the new package
-      <code>org.apache.xml.serializer.dom3</code>
+      <code>de.lyca.xml.serializer.dom3</code>
       as well as a new method,       
       <code>asDOM3Serializer()</code> on the older 
       <jump href="apidocs/org/apache/xml/serializer/Serializer.html">
-      <code>org.apache.xml.serializer.Serializer</code></jump> interface.
+      <code>de.lyca.xml.serializer.Serializer</code></jump> interface.
       </p>
       <p>
       More details are in the javadoc of those classes and interfaces

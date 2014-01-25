@@ -18,7 +18,7 @@
    * limitations under the License.
   -->
 
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0" xmlns:sql="org.apache.xalan.lib.sql.XConnection" extension-element-prefixes="sql">
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0" xmlns:sql="de.lyca.xalan.lib.sql.XConnection" extension-element-prefixes="sql">
   <xsl:output method="html" indent="yes"/>
   <!-- ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR
          We are specifying a database that does not exist, 

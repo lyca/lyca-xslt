@@ -24,7 +24,7 @@ public class MyCounter {
   static Hashtable counters = new Hashtable ();
 
 
-  public void init(org.apache.xalan.extensions.XSLProcessorContext context, 
+  public void init(de.lyca.xalan.extensions.XSLProcessorContext context, 
                    org.w3c.dom.Element elem) 
   {
     String name = elem.getAttribute("name");
@@ -48,7 +48,7 @@ public class MyCounter {
     return (cval == null) ? 0 : cval.intValue();
   }
 
-  public void incr(org.apache.xalan.extensions.XSLProcessorContext context,  
+  public void incr(de.lyca.xalan.extensions.XSLProcessorContext context,  
                    org.w3c.dom.Element elem) {
     String name = elem.getAttribute("name");
     Integer cval = (Integer) counters.get(name);

@@ -22,7 +22,7 @@ package servlet;
 
 import java.io.*;
 import org.xml.sax.*;
-import org.apache.xml.utils.DefaultErrorHandler;
+import de.lyca.xml.utils.DefaultErrorHandler;
 
 /*****************************************************************************************************
  * ApplyXSLTListener provides a buffered listener essential for capturing, and then subsequently

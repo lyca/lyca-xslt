@@ -34,7 +34,7 @@
 
     <p>The main component of the XSLTC compiler is the class</p>   
     <ul>
-      <li><code>org.apache.xalan.xsltc.compiler.XSLTC</code></li>
+      <li><code>de.lyca.xalan.xsltc.compiler.XSLTC</code></li>
     </ul>
 
     <p>This class uses three parsers to consume the input stylesheet(s):</p>
@@ -101,10 +101,10 @@
     <s3 title="Mapping stylesheets elements to AST nodes">
 
     <p>Every element that is defined in the XSLT 1.0 spec is represented by a
-    a class in the <code>org.apache.xalan.xsltc.compiler</code> package. The
+    a class in the <code>de.lyca.xalan.xsltc.compiler</code> package. The
     main parser class contains a <code>Hashtable</code> that that maps XSL
     elements into Java classes that make up the nodes in the AST. These Java
-    classes all reside in the <code>org.apache.xalan.xsltc.compiler</code>
+    classes all reside in the <code>de.lyca.xalan.xsltc.compiler</code>
     package and extend either the <code>TopLevelElement</code> or the
     <code>Instruction</code> classes. (Both these classes extend the
     <code>SyntaxTreeNode</code> class.)</p>
@@ -230,7 +230,7 @@
     will return the native type returned by the expression. The AST node will
     insert an additional type-conversion node if the return-type does not match
     the expected data-type. Each possible return type is represented by a class
-    in the <code>org.apache.xalan.xsltc.compiler.util</code> package. These
+    in the <code>de.lyca.xalan.xsltc.compiler.util</code> package. These
     classes all contain methods that will generate bytecodes needed to perform
     the actual type conversions (at runtime). The type-cast nodes in the AST
     mainly consist of calls to these methods.</p>

@@ -92,23 +92,23 @@
 	 <p>The internal architecture of Xalan 2.0 is divided into four major modules, and various smaller
 		modules. The main modules are:</p> 
 	 <gloss> 
-		<label><jump href="../apidocs/org/apache/xalan/processor/package-summary.html">org.apache.xalan.processor</jump></label> 
+		<label><jump href="../apidocs/org/apache/xalan/processor/package-summary.html">de.lyca.xalan.processor</jump></label> 
 		<item>The module that processes the stylesheet, and provides the main
 		  entry point into Xalan.</item> 
 	 </gloss> 
 	 <gloss> 
-		<label><jump href="../apidocs/org/apache/xalan/templates/package-summary.html">org.apache.xalan.templates</jump></label> 
+		<label><jump href="../apidocs/org/apache/xalan/templates/package-summary.html">de.lyca.xalan.templates</jump></label> 
 		<item>The module that defines the stylesheet structures, including the
 		  Stylesheet object, template element instructions, and Attribute Value
 		  Templates. </item> 
 	 </gloss> 
 	 <gloss> 
-		<label><jump href="../apidocs/org/apache/xalan/transformer/package-summary.html">org.apache.xalan.transformer</jump></label> 
+		<label><jump href="../apidocs/org/apache/xalan/transformer/package-summary.html">de.lyca.xalan.transformer</jump></label> 
 		<item>The module that applies the source tree to the Templates, and
 		  produces a result tree.</item> 
 	 </gloss> 
 	 <gloss> 
-		<label><jump href="../apidocs/org/apache/xpath/package-summary.html">org.apache.xpath</jump></label> 
+		<label><jump href="../apidocs/org/apache/xpath/package-summary.html">de.lyca.xpath</jump></label> 
 		<item>The module that processes both XPath expressions, and XSLT Match
 		  patterns.</item> 
 	 </gloss> 
@@ -124,41 +124,41 @@
 	 <p>In addition to the above packages, there are the following additional
 		packages:</p> 
 	 <gloss> 
-		<label><jump href="../apidocs/org/apache/xalan/client/package-summary.html">org.apache.xalan.client</jump></label> 
+		<label><jump href="../apidocs/org/apache/xalan/client/package-summary.html">de.lyca.xalan.client</jump></label> 
 		<item>This package has a client applet. I suspect this should be moved
 		  into the samples directory.</item> 
 	 </gloss> 
 	 <gloss> 
-		<label><jump href="../apidocs/org/apache/xalan/extensions/package-summary.html">org.apache.xalan.extensions</jump></label> 
+		<label><jump href="../apidocs/org/apache/xalan/extensions/package-summary.html">de.lyca.xalan.extensions</jump></label> 
 		<item>This holds classes belonging to the Xalan extensions mechanism,
 		  which allows Java code and script to be called from within a stylesheet.</item>
 		
 	 </gloss> 
 	 <gloss> 
-		<label><jump href="../apidocs/org/apache/xalan/lib/package-summary.html">org.apache.xalan.lib</jump></label> 
+		<label><jump href="../apidocs/org/apache/xalan/lib/package-summary.html">de.lyca.xalan.lib</jump></label> 
 		<item>This is the built-in Xalan extensions library, which holds
 		  extensions such as Redirect (which allows a stylesheet to produce multiple
 		  output files).</item> 
 	 </gloss> 
 	 <gloss> 
-		<label><jump href="../apidocs/org/apache/xalan/res/package-summary.html">org.apache.xalan.res</jump></label> 
+		<label><jump href="../apidocs/org/apache/xalan/res/package-summary.html">de.lyca.xalan.res</jump></label> 
 		<item>This holds resource files needed by Xalan, such as error message
 		  resources.</item> 
 	 </gloss> 
 	  
 	 <gloss> 
-		<label><jump href="../apidocs/org/apache/xalan/trace/package-summary.html">org.apache.xalan.trace</jump></label> 
+		<label><jump href="../apidocs/org/apache/xalan/trace/package-summary.html">de.lyca.xalan.trace</jump></label> 
 		<item>This package contains classes and interfaces that allow a caller to
 		  add trace listeners to the transformation, allowing an interface to XSLT
 		  debuggers and similar tools.</item> 
 	 </gloss> 
 	 <gloss> 
-		<label><jump href="../apidocs/org/apache/xalan/xslt/package-summary.html">org.apache.xalan.xslt</jump></label> 
+		<label><jump href="../apidocs/org/apache/xalan/xslt/package-summary.html">de.lyca.xalan.xslt</jump></label> 
 		<item>This package holds the Xalan2 command line processor.</item> 
 	 </gloss> 
   <p>A more conceptual view of this architecture is as follows:</p><p><img src="conceptual.gif" alt="Picture of conceptual architecture."/></p></s2><anchor name="process"/> 
   <s2 title="Process Module"> 
-	 <p>The <jump href="../apidocs/org/apache/xalan/processor/package-summary.html">org.apache.xalan.processor</jump> module implements the
+	 <p>The <jump href="../apidocs/org/apache/xalan/processor/package-summary.html">de.lyca.xalan.processor</jump> module implements the
 		<jump href="../apidocs/javax/xml/transform/TransformerFactory.html">javax.xml.transform.TransformerFactory</jump> interface, which provides a
 		factory method for creating a concrete Processor instance, and provides methods
 		for creating a <jump href="../apidocs/javax/xml/transform/Templates.html">javax.xml.transform.Templates</jump> instance, which, in
@@ -172,21 +172,21 @@
 		module that can be created in a generalized fashion. This makes the validation
 		object-to-class associations centralized and declarative.</p> 
 	 <p>The schema's root class is
-		<jump href="../apidocs/org/apache/xalan/processor/XSLTSchema.html">org.apache.xalan.processor.XSLTSchema</jump>, and it is here that the
+		<jump href="../apidocs/org/apache/xalan/processor/XSLTSchema.html">de.lyca.xalan.processor.XSLTSchema</jump>, and it is here that the
 		XSLT schema structure is defined. XSLTSchema uses
-		<jump href="../apidocs/org/apache/xalan/processor/XSLTElementDef.html">org.apache.xalan.processor.XSLTElementDef</jump> to define elements, and
-		<jump href="../apidocs/org/apache/xalan/processor/XSLTAttributeDef.html">org.apache.xalan.processor.XSLTAttributeDef</jump> to define attributes.
+		<jump href="../apidocs/org/apache/xalan/processor/XSLTElementDef.html">de.lyca.xalan.processor.XSLTElementDef</jump> to define elements, and
+		<jump href="../apidocs/org/apache/xalan/processor/XSLTAttributeDef.html">de.lyca.xalan.processor.XSLTAttributeDef</jump> to define attributes.
 		Both classes hold the allowed namespace, local name, and type of element or
 		attribute. The XSLTElementDef also holds a reference to a
-		<jump href="../apidocs/org/apache/xalan/processor/XSLTElementProcessor.html">org.apache.xalan.processor.XSLTElementProcessor</jump>, and a sometimes a
+		<jump href="../apidocs/org/apache/xalan/processor/XSLTElementProcessor.html">de.lyca.xalan.processor.XSLTElementProcessor</jump>, and a sometimes a
 		<code>Class</code> object, with which it can create objects that derive from
-		<jump href="../apidocs/org/apache/xalan/templates/ElemTemplateElement.html">org.apache.xalan.templates.ElemTemplateElement</jump>. In addition, the
+		<jump href="../apidocs/org/apache/xalan/templates/ElemTemplateElement.html">de.lyca.xalan.templates.ElemTemplateElement</jump>. In addition, the
 		XSLTElementDef instance holds a list of XSLTElementDef instances that define
 		legal elements or character events that are allowed as children of the given
 		element.</p> 
 	 <p>The implementation of the <jump href="../apidocs/javax/xml/transform/TransformerFactory.html">javax.xml.transform.TransformerFactory</jump>
-		interface is in <jump href="../apidocs/org/apache/xalan/processor/TransformerFactoryImpl.html">org.apache.xalan.processor.TransformerFactoryImpl</jump>,
-		which creates a <jump href="../apidocs/org/apache/xalan/processor/StylesheetHandler.html">org.apache.xalan.processor.StylesheetHandler</jump>
+		interface is in <jump href="../apidocs/org/apache/xalan/processor/TransformerFactoryImpl.html">de.lyca.xalan.processor.TransformerFactoryImpl</jump>,
+		which creates a <jump href="../apidocs/org/apache/xalan/processor/StylesheetHandler.html">de.lyca.xalan.processor.StylesheetHandler</jump>
 		instance. This instance acts as the ContentHandler for the parse events, and is
 		handed to the <jump href="../apidocs/org/xml/sax/XMLReader.html">org.xml.sax.XMLReader</jump>, which the StylesheetProcessor
 		uses to parse the XSLT document. The <code>StylesheetHandler</code> then receives the parse
@@ -195,13 +195,13 @@
 		<code>XSLTElementDef</code> that is associated with the given event.</p> 
 	 </s2><anchor name="templates"/> 
   <s2 title="Templates Module"> 
-	 <p>The <jump href="../apidocs/org/apache/xalan/templates/package-summary.html">org.apache.xalan.templates</jump> module implements the
+	 <p>The <jump href="../apidocs/org/apache/xalan/templates/package-summary.html">de.lyca.xalan.templates</jump> module implements the
 		<jump href="../apidocs/javax/xml/transform/Templates.html">javax.xml.transform.Templates</jump> interface, and defines a set of
 		classes that represent a Stylesheet. The primary purpose of this module is to
 		hold stylesheet data, not to perform procedural tasks associated with the
 		construction of the data, nor tasks associated with the transformation itself.
 		</p> 
-	 <p>The base class of all templates objects that are associated with an XSLT element is the <jump href="../apidocs/org/apache/xalan/templates/ElemTemplateElement.html">ElemTemplateElement</jump> object, which in turn implements <jump href="../apidocs/org/apache/xml/utils/UnImplNode.html">UnImplNode</jump>.  A <code>ElemTemplateElement</code> object must be immutable once it's constructed, so that it may be shared among multiple threads concurrently.  Ideally, a <code>ElemTemplateElement</code> should be a data object only, and be used via a visitor pattern.  However, in practice this is impractical, because it would cause too much data exposure and would have a significant impact on performance.  Therefore, each <code>ElemTemplateElement</code> class has an <jump href="../apidocs/org/apache/xalan/templates/ElemTemplateElement.html#execute(org.apache.xalan.transformer.TransformerImpl, org.w3c.dom.Node, org.apache.xml.utils.QName)">execute</jump> method where it performs it's transformation duties.  A <code>ElemTemplateElement</code> also knows it's position in the source stylesheet, and can answer questions about current namespace nodes.</p><p>A <jump href="../apidocs/org/apache/xalan/templates/StylesheetRoot.html">StylesheetRoot</jump>, which implements the
+	 <p>The base class of all templates objects that are associated with an XSLT element is the <jump href="../apidocs/org/apache/xalan/templates/ElemTemplateElement.html">ElemTemplateElement</jump> object, which in turn implements <jump href="../apidocs/org/apache/xml/utils/UnImplNode.html">UnImplNode</jump>.  A <code>ElemTemplateElement</code> object must be immutable once it's constructed, so that it may be shared among multiple threads concurrently.  Ideally, a <code>ElemTemplateElement</code> should be a data object only, and be used via a visitor pattern.  However, in practice this is impractical, because it would cause too much data exposure and would have a significant impact on performance.  Therefore, each <code>ElemTemplateElement</code> class has an <jump href="../apidocs/org/apache/xalan/templates/ElemTemplateElement.html#execute(de.lyca.xalan.transformer.TransformerImpl, org.w3c.dom.Node, de.lyca.xml.utils.QName)">execute</jump> method where it performs it's transformation duties.  A <code>ElemTemplateElement</code> also knows it's position in the source stylesheet, and can answer questions about current namespace nodes.</p><p>A <jump href="../apidocs/org/apache/xalan/templates/StylesheetRoot.html">StylesheetRoot</jump>, which implements the
 		<code>Templates</code> interface, is a type of <jump href="../apidocs/org/apache/xalan/templates/StylesheetComposed.html">StylesheetComposed</jump>,
 		which is a <jump href="../apidocs/org/apache/xalan/templates/Stylesheet.html">Stylesheet</jump> composed of itself and all included
 		<code>Stylesheet</code> objects. A <code>StylesheetRoot</code> has a global
@@ -224,7 +224,7 @@
 	  
   </s2><anchor name="transformer"/> 
   <s2 title="Transformer Module"> 
-	 <p>The <jump href="../apidocs/org/apache/xalan/transformer/package-summary.html">Transformer</jump> module is in charge of run-time transformations.  The <jump href="../apidocs/org/apache/xalan/transformer/TransformerImpl.html">TransformerImpl</jump> object, which implements the TrAX <jump href="../apidocs/javax/xml/transform/Transformer.html">Transformer</jump> interface, and has an association with a <jump href="../apidocs/org/apache/xalan/templates/StylesheetRoot.html">StylesheetRoot</jump> object, begins the processing of the source tree (or provides a <jump href="http://www.megginson.com/SAX/Java/javadoc/org/xml/sax/ContentHandler.html">ContentHandler</jump> reference via the <jump href="../apidocs/org/apache/xalan/stree/SourceTreeHandler.html">SourceTreeHandler</jump>), and performs the transformation.  The Transformer package does as much of the transformation as it can, but element level operations are generally performed in the <jump href="../apidocs/org/apache/xalan/templates/ElemTemplateElement.html#execute(org.apache.xalan.transformer.TransformerImpl, org.w3c.dom.Node, org.apache.xalan.utils.QName)">ElemTemplateElement.execute(...)</jump> methods.</p><p>Result Tree events are fed into a <jump href="../apidocs/org/apache/xalan/transformer/ResultTreeHandler.html">ResultTreeHandler</jump> object, which acts as a layer between the direct calls to the result 
+	 <p>The <jump href="../apidocs/org/apache/xalan/transformer/package-summary.html">Transformer</jump> module is in charge of run-time transformations.  The <jump href="../apidocs/org/apache/xalan/transformer/TransformerImpl.html">TransformerImpl</jump> object, which implements the TrAX <jump href="../apidocs/javax/xml/transform/Transformer.html">Transformer</jump> interface, and has an association with a <jump href="../apidocs/org/apache/xalan/templates/StylesheetRoot.html">StylesheetRoot</jump> object, begins the processing of the source tree (or provides a <jump href="http://www.megginson.com/SAX/Java/javadoc/org/xml/sax/ContentHandler.html">ContentHandler</jump> reference via the <jump href="../apidocs/org/apache/xalan/stree/SourceTreeHandler.html">SourceTreeHandler</jump>), and performs the transformation.  The Transformer package does as much of the transformation as it can, but element level operations are generally performed in the <jump href="../apidocs/org/apache/xalan/templates/ElemTemplateElement.html#execute(de.lyca.xalan.transformer.TransformerImpl, org.w3c.dom.Node, de.lyca.xalan.utils.QName)">ElemTemplateElement.execute(...)</jump> methods.</p><p>Result Tree events are fed into a <jump href="../apidocs/org/apache/xalan/transformer/ResultTreeHandler.html">ResultTreeHandler</jump> object, which acts as a layer between the direct calls to the result 
 tree content handler (often a <jump href="../apidocs/org/apache/xalan/serialize/package-summary.html">Serializer</jump>), and the <code>Transformer</code>.  For one thing, 
  we have to delay the call to
  startElement(name, atts) because of the
@@ -236,7 +236,7 @@ tree content handler (often a <jump href="../apidocs/org/apache/xalan/serialize/
  the node count is based on its position in the cache list.  The <jump href="../apidocs/org/apache/xalan/transformer/CountersTable.html">CountersTable</jump> class is a table of counters, keyed by <jump href="../apidocs/org/apache/xalan/templates/ElemNumber.html">ElemNumber</jump> objects, each 
  of which has a list of <code>Counter</code> objects.</item></gloss><gloss><label>KeyIterator, KeyManager, and KeyTable</label><item>These classes handle mapping of keys declared with the xsl:key element.  They attempt to work incrementally, locating nodes on request but indexing all as they traverse the tree, and stopping when the requested node is found.  If a requested node is not found, then the entire tree will be traversed.  Such is the nature of xsl:key.</item></gloss><gloss><label>TransformState</label><item>This interface is meant to be used by a consumer of SAX2 events produced by Xalan, and enables the consumer 
  to get information about the state of the transform.  It 
- is primarily intended as a tooling interface.</item></gloss><p>Even though the following modules are defined in the <code>org.apache.xalan</code> package, instead of the transformer package, they are defined in this section as they are mostly related to runtime transformation.</p><anchor name="stree"/>
+ is primarily intended as a tooling interface.</item></gloss><p>Even though the following modules are defined in the <code>de.lyca.xalan</code> package, instead of the transformer package, they are defined in this section as they are mostly related to runtime transformation.</p><anchor name="stree"/>
   <s3 title="Stree Module [and discussions about streaming]">
   <p>The Stree module implements the default <jump href="http://www.w3.org/TR/xpath#data-model">Source Tree </jump> for Xalan, that is to be transformed.  It implements read-only <jump href="http://www.w3.org/TR/DOM-Level-2/">DOM2</jump> interfaces, and provides some information needed for fast transforms, such as document order indexes.  It also attempts to allow an incremental transform by launching the transform on a secondary thread as soon as the SAX2 <jump href="http://www.megginson.com/SAX/Java/javadoc/org/xml/sax/ContentHandler.html#startDocument()">StartDocument</jump> event has occurred.  When the transform requests a node, and the node is not present, the getFirstChild and GetNextSibling methods will wait until the child node has arrived, or an <jump href="http://www.megginson.com/SAX/Java/javadoc/org/xml/sax/ContentHandler.html#endElement(java.lang.String,%20java.lang.String,%20java.lang.String)">endElement</jump> event has occurred.</p><p>Note that the secondary thread is an issue.  It would be better to do the same thing as described above on a single thread, but using the parser in 'pull' mode, or simply with a parseNext method so the parse would occur in blocks.  However, this model would only be possible</p><p>This kind of incrementality is not perfect because it still requires an entire source tree to be concretely built.  There have been a lot of good discussions on the xalan-dev list about how to do static analysis of a stylesheet, and be able to allocate only the nodes needed by the transform, while they are needed (or not allocate source objects at all).</p></s3>
 <anchor name="serializer"/>

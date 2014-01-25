@@ -30,7 +30,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.apache.xpath.domapi.XPathEvaluatorImpl;
+import de.lyca.xpath.domapi.XPathEvaluatorImpl;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.xpath.XPathEvaluator;

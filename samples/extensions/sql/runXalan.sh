@@ -86,7 +86,7 @@ _ENDORSED_DIR=${_XALAN_DIR}${CLPATHSEP}${_JAR_DIR}
 echo "Running Xalan: $@"
 echo "...with classpath: $_CLASSPATH"
 
-"$_JAVACMD" $JAVA_OPTS -Djava.endorsed.dirs=$_ENDORSED_DIR -classpath "$_CLASSPATH" -Dij.protocol=jdbc:derby: org.apache.xalan.xslt.Process $@
+"$_JAVACMD" $JAVA_OPTS -Djava.endorsed.dirs=$_ENDORSED_DIR -classpath "$_CLASSPATH" -Dij.protocol=jdbc:derby: de.lyca.xalan.xslt.Process $@
 
 
 

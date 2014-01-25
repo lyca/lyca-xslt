@@ -43,7 +43,7 @@ public class SimpleTransform
   // Use the static TransformerFactory.newInstance() method to instantiate 
   // a TransformerFactory. The javax.xml.transform.TransformerFactory 
   // system property setting determines the actual class to instantiate --
-  // org.apache.xalan.transformer.TransformerImpl.
+  // de.lyca.xalan.transformer.TransformerImpl.
 	TransformerFactory tFactory = TransformerFactory.newInstance();
 	
 	// Use the TransformerFactory to instantiate a Transformer that will work with  

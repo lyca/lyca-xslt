@@ -32,9 +32,9 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 
-import org.apache.xml.serializer.Serializer;
-import org.apache.xml.serializer.SerializerFactory;
-import org.apache.xml.serializer.OutputPropertiesFactory;
+import de.lyca.xml.serializer.Serializer;
+import de.lyca.xml.serializer.SerializerFactory;
+import de.lyca.xml.serializer.OutputPropertiesFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException; 
 

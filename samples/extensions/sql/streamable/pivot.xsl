@@ -22,7 +22,7 @@
 
                 version="1.0"
 
-                xmlns:sql="org.apache.xalan.lib.sql.XConnection"
+                xmlns:sql="de.lyca.xalan.lib.sql.XConnection"
 
                 extension-element-prefixes="sql">
 

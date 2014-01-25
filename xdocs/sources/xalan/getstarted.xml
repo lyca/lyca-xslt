@@ -74,10 +74,10 @@ the &xslt4j; Interpretive processor. See <link idref="xsltc_usage">Getting Start
 
 <anchor name="commandline"/>
 <s2 title="Performing your own transformations from the command line">
-  <p>org.apache.xalan.xslt.Process provides a basic utility for performing transformations from 
+  <p>de.lyca.xalan.xslt.Process provides a basic utility for performing transformations from 
      the command line. You can use this utility, for example, to run several of the extensions samples. 
      The command line for most standard transformations is as follows:</p>
-  <p><code>java org.apache.xalan.xslt.Process -in <ref>xmlSource</ref></code><br/>
+  <p><code>java de.lyca.xalan.xslt.Process -in <ref>xmlSource</ref></code><br/>
      <code>&nbsp;&nbsp;&nbsp;&nbsp;-xsl <ref>stylesheet</ref> -out <ref>outputfile</ref></code></p>
   <p>where <ref>xmlSource</ref> is the XML source file name, <ref>stylesheet</ref> is the XSL 
      stylesheet file name, and <ref>outputfile</ref> is the output file name.</p>

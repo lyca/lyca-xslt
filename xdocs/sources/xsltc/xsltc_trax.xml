@@ -257,7 +257,7 @@
   from the XSLTC native code. This prevents users of XSLTC's native API from
   having to include the TrAX code in an application. All the code that makes
   up our TrAX implementation resides in this package:</p><source>
-    org.apache.xalan.xsltc.trax</source>
+    de.lyca.xalan.xsltc.trax</source>
 
   <p>Message to all XSLTC developers: Keep it this way! Do not mix TrAX
   and Native code!</p>
@@ -520,7 +520,7 @@
       to create a cache or pool of XSLTC's native input data structures
       containing the input XML document. The <code>XSLTCSource</code> class
       is located in:</p><source>
-    org.apache.xalan.xsltc.trax.XSLTCSource</source>
+    de.lyca.xalan.xsltc.trax.XSLTCSource</source>
     </s4>
 
     <s4 title="Transformer parameter settings">

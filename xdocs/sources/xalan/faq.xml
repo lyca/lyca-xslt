@@ -78,7 +78,7 @@
         </p>
         <p>You can run this utility from the command line as follows:</p>
         <p>
-          <code>java org.apache.xalan.xslt.EnvironmentCheck [-out outFile]</code>
+          <code>java de.lyca.xalan.xslt.EnvironmentCheck [-out outFile]</code>
         </p>
         <p>You can also call this utility from within your application. For example,</p>
         <p>
@@ -114,7 +114,7 @@
           or in the JRE itself. You can run the serializer's <em>Version</em> utility from the command line as follows:
         </p>
         <p>
-          <code>java org.apache.xml.serializer.Version</code>
+          <code>java de.lyca.xml.serializer.Version</code>
         </p>
         The output should indicate which serializer you are using.
       </a>
@@ -212,9 +212,9 @@
         when your applet attempts to use the &xslt4jc-short; implementation.</p>
         <p>To work around this problem, you can change the contents of the 
         META-INF/services/javax.xml.transform.TransformerFactory file in xalan.jar so that it refers to the
-        transformer factory class implementation for &xslt4jc-short;, org.apache.xalan.xsltc.trax.TransformerFactoryImpl. </p>
+        transformer factory class implementation for &xslt4jc-short;, de.lyca.xalan.xsltc.trax.TransformerFactoryImpl. </p>
         <p>Another solution is to create a jar that contains a META-INF/services/javax.xml.transform.TransformerFactory file 
-        containing the value org.apache.xalan.xsltc.trax.TransformerFactoryImpl.  Place the jar in the 
+        containing the value de.lyca.xalan.xsltc.trax.TransformerFactoryImpl.  Place the jar in the 
          &lt;jre-home&gt;\lib\endorsed directory. When you name your jar file, the ASCII code of the first 
         character should be smaller than the ASCII code of "X" to ensure that your jar will be loaded before 
         xalan.jar</p>
@@ -536,12 +536,12 @@ file:///
     return "file:///" + tmp;
   }
         </source>
-        <p>For a slightly more detailed example, see org.apache.xml.utils.SystemIDResolver.</p>
+        <p>For a slightly more detailed example, see de.lyca.xml.utils.SystemIDResolver.</p>
       </a>
     </faq>
     <faq title="No more DTM IDs are available">
        <q>What does: "XSLT Error (javax.xml.transform.TransformerException): 
-          org.apache.xml.dtm.DTMException: No more DTM IDs are available" mean?</q>
+          de.lyca.xml.dtm.DTMException: No more DTM IDs are available" mean?</q>
        <a>
          <p>It means you are probably using a very old version of Xalan or &xslt4j;, 
             likely the version 2.2D11 which was packaged in JDK1.4.  Architectural changes made in 
@@ -573,7 +573,7 @@ file:///
         <p>Because the classes may be from different versions of &xslt4j;, the
         results may be unpredictable.  In particular, a
         <code>java.lang.IllegalAccessError</code> may be thrown, or an
-        <code>org.apache.xml.utils.WrappedRuntimeException</code> containing
+        <code>de.lyca.xml.utils.WrappedRuntimeException</code> containing
         the message:  <code>"Could not load the property file
         'output_xml.properties' for output method 'xml' (check
         CLASSPATH)"</code> may be thrown.</p>
@@ -642,11 +642,11 @@ file:///
          transformation?</q>
       <a>
         <p>Use or mimic the command-line processor (<jump 
-                       href='apidocs/org/apache/xalan/xslt/Process.html'>org.apache.xalan.xslt.Process</jump>).
+                       href='apidocs/org/apache/xalan/xslt/Process.html'>de.lyca.xalan.xslt.Process</jump>).
         </p>
         <p>A
           <jump href='apidocs/javax/xml/transform/TransformerException.html'>TransformerException</jump> generally wraps another exception, often a SAXParseException. The command-line processor uses the static
-          <jump href='apidocs/org/apache/xml/utils/DefaultErrorHandler.html'>org.apache.xml.utils.DefaultErrorHandler</jump> printLocation() method to chase down the exception cause and get a
+          <jump href='apidocs/org/apache/xml/utils/DefaultErrorHandler.html'>de.lyca.xml.utils.DefaultErrorHandler</jump> printLocation() method to chase down the exception cause and get a
           <jump href='apidocs/javax/xml/transform/SourceLocator.html'>SourceLocator</jump> that can usually report line and column number.
         </p>
         <p>Suppose you wanted to modify the ValidateXMLInput sample in the samples/Validate 
@@ -663,7 +663,7 @@ file:///
   throws SAXException
 {
   PrintWriter pw = new PrintWriter(System.out, true);
-  org.apache.xml.utils.DefaultErrorHandler.printLocation(pw, spe);
+  de.lyca.xml.utils.DefaultErrorHandler.printLocation(pw, spe);
   pw.println("SAXParseException error: " + spe.getMessage());
 }</source>
         <p>You can also replicate code from the printLocation() method to obtain a SourceLocator, and 
@@ -674,8 +674,8 @@ import javax.xml.transform.SourceLocator;
 import javax.xml.transform.TransformerException;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
-import org.apache.xml.utils.SAXSourceLocator;
-import org.apache.xml.utils.WrappedRuntimeException;
+import de.lyca.xml.utils.SAXSourceLocator;
+import de.lyca.xml.utils.WrappedRuntimeException;
 ....
 public static SourceLocator getRootSourceLocator(Throwable exception)
 {

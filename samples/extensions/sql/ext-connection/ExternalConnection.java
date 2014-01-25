@@ -26,8 +26,8 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerConfigurationException;
 
-import org.apache.xalan.lib.sql.DefaultConnectionPool;
-import org.apache.xalan.lib.sql.ConnectionPoolManager;
+import de.lyca.xalan.lib.sql.DefaultConnectionPool;
+import de.lyca.xalan.lib.sql.ConnectionPoolManager;
 
 
 // Imported java classes
@@ -66,7 +66,7 @@ public class ExternalConnection
   // Use the static TransformerFactory.newInstance() method to instantiate
   // a TransformerFactory. The javax.xml.transform.TransformerFactory
   // system property setting determines the actual class to instantiate --
-  // org.apache.xalan.transformer.TransformerImpl.
+  // de.lyca.xalan.transformer.TransformerImpl.
 	TransformerFactory tFactory = TransformerFactory.newInstance();
 
   // Grab the Name of the Stylesheet from the commad line
@@ -87,7 +87,7 @@ public class ExternalConnection
 
 	// For this transformation, all the required information is in the stylesheet, so generate 
   // a minimal XML source document for the input.
-  // Note: the command-line processor (org.apache.xalan.xslt.Process) uses this strategy when 
+  // Note: the command-line processor (de.lyca.xalan.xslt.Process) uses this strategy when 
   // the user does not provide an -IN parameter.
   StringReader reader =
               new StringReader("<?xml version=\"1.0\"?> <doc/>");

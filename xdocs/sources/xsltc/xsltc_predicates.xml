@@ -194,12 +194,12 @@
 
     <p>The basic behaviour for a predicate is to compile a <em>filter</em>. This
     filter is an auxiliary class that implements the
-    <code>org.apache.xalan.xsltc.dom.CurrentNodeListFilter</code> interface. The
+    <code>de.lyca.xalan.xsltc.dom.CurrentNodeListFilter</code> interface. The
     <code>Step</code> or <code>StepPattern</code> that uses the predicate will
-    create a <code>org.apache.xalan.xsltc.dom.CurrentNodeListFilter</code>. This
+    create a <code>de.lyca.xalan.xsltc.dom.CurrentNodeListFilter</code>. This
     iterator contains the nodes that pass through the predicate. The compiled
     filter is used by the iterator to determine which nodes that should be
-    included. The <code>org.apache.xalan.xsltc.dom.CurrentNodeListFilter</code>
+    included. The <code>de.lyca.xalan.xsltc.dom.CurrentNodeListFilter</code>
     interface contains only a single method:</p><source>
     public interface CurrentNodeListFilter {
     public abstract boolean test(int node, int position, int last, int current,

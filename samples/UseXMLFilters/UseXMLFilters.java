@@ -29,9 +29,9 @@ import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.stream.StreamSource;
 
-import org.apache.xml.serializer.Serializer;
-import org.apache.xml.serializer.SerializerFactory;
-import org.apache.xml.serializer.OutputPropertiesFactory;
+import de.lyca.xml.serializer.Serializer;
+import de.lyca.xml.serializer.SerializerFactory;
+import de.lyca.xml.serializer.OutputPropertiesFactory;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLFilter;

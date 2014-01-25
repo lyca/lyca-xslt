@@ -85,11 +85,11 @@ more information.</note><br></br>
 <anchor name="BSFManager"/>
 <p>By default Xalan-Java assumes BSF support is provided by the Jakarta BSF implementation. There are three 
    ways of specifying the class that provides the BSF Manager service:.</p>
-<ul><li>Set the system property org.apache.xalan.extensions.bsf.BSFManager;</li>
+<ul><li>Set the system property de.lyca.xalan.extensions.bsf.BSFManager;</li>
     <li>In the property file "/lib/xalan.properties" in the JRE directory, add the key 
-    org.apache.xalan.extensions.bsf.BSFManager with the value that is the fully qualified BSF 
+    de.lyca.xalan.extensions.bsf.BSFManager with the value that is the fully qualified BSF 
     implementation class name;</li>
-    <li>Include a META-INF/services/org.apache.xalan.extensions.bsf.BSFManager 
+    <li>Include a META-INF/services/de.lyca.xalan.extensions.bsf.BSFManager 
     file in your classpath;</li>
 </ul>
 </s2><anchor name="basic-pattern"/>
@@ -265,11 +265,11 @@ explained in <link anchor="java-namespace-declare">Declare the namespace</link>.
 <p>Extension elements pass the extension two objects:</p>
 <ul>
 <li><jump href="apidocs/org/apache/xalan/extensions/XSLProcessorContext.html">
-org.apache.xalan.extensions.XSLProcessorContext</jump>, which provides access to the XSL processor, 
+de.lyca.xalan.extensions.XSLProcessorContext</jump>, which provides access to the XSL processor, 
 the XML source tree, the stylesheet tree, the current context node, and the current mode (if any).
 <br/><br/></li>
 <li><jump href="apidocs/org/apache/xalan/templates/ElemExtensionCall.html">
-org.apache.xalan.templates.ElemExtensionCall</jump>, which provides the API for interacting with 
+de.lyca.xalan.templates.ElemExtensionCall</jump>, which provides the API for interacting with 
 the extension element.</li>
 </ul>
 <p>You can use the ElemExtensionCall getAttribute(String name) method, for example, to read element 
@@ -281,8 +281,8 @@ ElemExtensionCall class.</p>
 <s3 title="Implementing an extension element">
 <p>For each extension element in a namespace, the implementation must be a Java method with the 
 following signature, or the scripting language equivalent:</p>
-<p><code><ref>Type element</ref>(org.apache.xalan.extensions.XSLProcessorContext, </code><br/>
-<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;org.apache.xalan.templates.ElemExtensionCall extensionElement)</code></p>
+<p><code><ref>Type element</ref>(de.lyca.xalan.extensions.XSLProcessorContext, </code><br/>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;de.lyca.xalan.templates.ElemExtensionCall extensionElement)</code></p>
 <p>where <ref>Type</ref> designates the return type and <ref>element</ref> is the local part of the 
 extension element name (the element name without the namespace prefix). In the method signature, you 
 may also use superclasses of the indicated types.</p>
@@ -292,8 +292,8 @@ the arguments and return value are untyped.</p>
 If you are not interested in a return value, use a public void Java method or return null from a 
 scripting language function.</p>
 <p>Java example: <code>public void myElement</code><br/>
-<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(org.apache.xalan.extensions.XSLProcessorContext, </code><br/>
-<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;org.apache.xalan.templates.ElemExtensionCall extensionElement)</code></p>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(de.lyca.xalan.extensions.XSLProcessorContext, </code><br/>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;de.lyca.xalan.templates.ElemExtensionCall extensionElement)</code></p>
 <p>JavaScript example: <code>function myElement(xslProcContext, element)</code></p>
 <p>The <link idref="extensionslib" anchor="redirect">Redirect extension</link> in the extensions 
 library contains three extension elements.</p>
@@ -392,7 +392,7 @@ any of the indicated Java types, as explained below:</p>
       type. If more than one method has the highest score, an exception is thrown.</li>
 </ol>
 <p>Any extension function written in Java can have a first parameter of 
-type <code>org.apache.xalan.extensions.ExpressionContext</code>. Any method with an 
+type <code>de.lyca.xalan.extensions.ExpressionContext</code>. Any method with an 
 ExpressionContext as the first parameter will score higher than any method which does not have an 
 ExpressionContext as a first parameter.</p>
 </s3>
@@ -407,7 +407,7 @@ ExpressionContext as a first parameter.</p>
       <th>XSLT Type</th>
     </tr>
     <tr>
-       <td>org.w3c.dom.traversal.NodeIterator<br/>org.apache.xml.dtm.DTM<br/>org.apache.xml.dtm.DTMAxisIterator<br/>org.apache.xml.dtm.DTMIterator<br/>org.w3c.dom.Node</td>
+       <td>org.w3c.dom.traversal.NodeIterator<br/>de.lyca.xml.dtm.DTM<br/>de.lyca.xml.dtm.DTMAxisIterator<br/>de.lyca.xml.dtm.DTMIterator<br/>org.w3c.dom.Node</td>
        <td>Node-Set</td>
     </tr>
     <tr>
@@ -427,7 +427,7 @@ ExpressionContext as a first parameter.</p>
        <td>Result Tree Fragment</td>
     </tr>
     <tr>
-       <td>org.apache.xpath.objects.XObject</td>
+       <td>de.lyca.xpath.objects.XObject</td>
        <td>Specified XSLT Type</td>
     </tr>
     <tr>
@@ -573,7 +573,7 @@ expression only returns a single attribute or a text node (node-sets with one me
 the XSLT string() function (as in the syntax examples above) to convert a node-set value to string, 
 and the number() function to convert a node-set value to number (a double).</p>
 <p>If you want to pass a node-set to an extension function, set up a Java method to accept an 
-org.w3c.dom.NodeList (or an org.apache.xpath.NodeSet, which implements NodeList, if you want to modify 
+org.w3c.dom.NodeList (or an de.lyca.xpath.NodeSet, which implements NodeList, if you want to modify 
 the nodes).</p>
 <p>Suppose, for example, you have a myExtensions.ProcessNodes class with the following doSomething 
 method:</p>
@@ -604,7 +604,7 @@ function name (the function name without the namespace prefix), and <ref>args</r
 arguments in the function call.</p>
 <p>In addition, for extension functions implemented in Java, the implementation may include either a 
 Java method with the signature shown above or one with the following signature:</p>
-<p><code>public <ref> object function</ref>(org.apache.xalan.extensions.ExpressionContext, 
+<p><code>public <ref> object function</ref>(de.lyca.xalan.extensions.ExpressionContext, 
 <ref>args</ref>)</code></p>
 </s3>
 </s2><anchor name="java-namespace"/>
@@ -737,8 +737,8 @@ public class MyCounter {
   {}
 
   public void init
-             ( org.apache.xalan.extensions.XSLProcessorContext context,
-               org.apache.xalan.templates.ElemExtensionCall extElem ) 
+             ( de.lyca.xalan.extensions.XSLProcessorContext context,
+               de.lyca.xalan.templates.ElemExtensionCall extElem ) 
   {
     String name = extElem.getAttribute("name");
     String value = extElem.getAttribute("value");
@@ -762,8 +762,8 @@ public class MyCounter {
   }
 
   public void incr
-             ( org.apache.xalan.extensions.XSLProcessorContext context,
-               org.apache.xalan.templates.ElemExtensionCall extElem) 
+             ( de.lyca.xalan.extensions.XSLProcessorContext context,
+               de.lyca.xalan.templates.ElemExtensionCall extElem) 
   {
     String name = extElem.getAttribute("name");
     Integer cval = (Integer) counters.get(name);

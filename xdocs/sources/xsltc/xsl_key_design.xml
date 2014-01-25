@@ -102,7 +102,7 @@
     DTD. This means that the code for generating this index cannot be generated
     at compile-time, which again means that the code has to be generic enough
     to handle all DTDs. The class that handles this is the
-    <code>org.apache.xalan.xsltc.dom.DTDMonitor</code> class. This class
+    <code>de.lyca.xalan.xsltc.dom.DTDMonitor</code> class. This class
     implements the <code>org.xml.sax.XMLReader</code> and
     <code>org.xml.sax.DTDHandler</code> interfaces. A client application using
     the native API must instanciate a <code>DTDMonitor</code> and pass it to the
@@ -114,11 +114,11 @@
     "##id". We assume that no stylesheets will contain a key with this name.</p>
 
     <p>The index itself is implemented in the
-    <code>org.apache.xalan.xsltc.dom.KeyIndex</code> class. The index has an
+    <code>de.lyca.xalan.xsltc.dom.KeyIndex</code> class. The index has an
     hashtable with all the values from the matching nodes (the part of the node
     used to generate this value is the one specified in the <code>"use"</code>
     attribute). For every matching value there is a bit-array (implemented in
-    the <code>org.apache.xalan.xsltc.BitArray</code> class), holding a list of
+    the <code>de.lyca.xalan.xsltc.BitArray</code> class), holding a list of
     all node indexes for which this value gives a match:</p>
     <p><img src="key_relations.gif" alt="key_relations.gif"/></p>
     <p><ref>Figure 1: Indexing tables</ref></p>
@@ -234,7 +234,7 @@
     <p>As already mentioned, the challenge with the <code>id()</code> and
     <code>key()</code> patterns is that they have no specific node type. 
     Patterns are normally grouped based on their pattern's "kernel" node type.
-    This is done in the <code>org.apache.xalan.xsltc.compiler.Mode</code> class.
+    This is done in the <code>de.lyca.xalan.xsltc.compiler.Mode</code> class.
     The <code>Mode</code> class has a method, <code>flatternAlaternative</code>,
     that does this grouping, and all templates with a common kernel node type
     will be inserted into a "test sequence". A test sequence is a set templates

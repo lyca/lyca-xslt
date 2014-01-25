@@ -292,7 +292,7 @@ status of existing issues.<br/><br/></li>
 <ref>Modified: </ref> xml-xalan/java/src/org/apache/xalan/xsltc/compiler Text.java<br/>
 <ref>Committer's log entry: </ref>
 This is a fix for XALANJ-2081.
-In class org.apache.xalan.xsltc.compiler.Text, a check was being done to find out if a given text string is all whitespaces.
+In class de.lyca.xalan.xsltc.compiler.Text, a check was being done to find out if a given text string is all whitespaces.
 In case, a given text string is all whitespace, a call to serializer is not made.
 The code was using trim() method from java.lang.String.  trim() method trimmed characters as whitespaces 
 that are not considered as whitespace in XML.
@@ -577,7 +577,7 @@ references to a new interface - DOMEnhancedForDTM.  This part of the change was
 supplied by Joseph Kesselman (keshlam@us.ibm.com).<br/><br/>
 
 The other part of the change was to use ObjectFactory to look up a new XSLTC
-DTM Manager service provider (org.apache.xalan.xsltc.dom.XSLTCDTMManager).  The
+DTM Manager service provider (de.lyca.xalan.xsltc.dom.XSLTCDTMManager).  The
 provider is looked up once when a TransformerFactory is created, and used by
 any Transformer objects created by that TransformerFactory.
 <br/><br/></li>
@@ -588,12 +588,12 @@ any Transformer objects created by that TransformerFactory.
 Changes to permit different DTM implementations to be supplied to XSLTC.<br/><br/>
 
 XSLTC will now use ObjectFactory to look up a new XSLTC DTM Manager service
-provider (org.apache.xalan.xsltc.dom.XSLTCDTMManager).  The provider is looked
+provider (de.lyca.xalan.xsltc.dom.XSLTCDTMManager).  The provider is looked
 up once when a TransformerFactory is created, and used by any Transformer
 objects created by that TransformerFactory.<br/><br/>
 
 Also, moved code for caching XMLReader objects from XSLTC's
-TransformerFactoryImpl to a new org.apache.xml.utils.XMLReaderManager class.<br/><br/>
+TransformerFactoryImpl to a new de.lyca.xml.utils.XMLReaderManager class.<br/><br/>
 
 It is now the responsibility of the DTMManagerDefault class to request one of
 these cached XMLReader objects, so the benefit of reusing an XMLReader is now
@@ -1572,36 +1572,36 @@ Remove XSLTC's compile time dependency on Xalan.
  when reusing TemplatesHandler instances.
 <br/><br/></li><li><ref>Committed by </ref>mkwan@apache.org<ref> on </ref>2003/04/01<br/><ref>Modified: </ref> xml-xalan/java/src/org/apache/xalan/xsltc/cmdline Transform.java<br/><ref>Committer's log entry: </ref>
 Merging XSLTC_DTM and common serializer to the head
-Changes in org.apache.xalan.xsltc.cmdline.
+Changes in de.lyca.xalan.xsltc.cmdline.
 <br/><br/></li><li><ref>Committed by </ref>mkwan@apache.org<ref> on </ref>2003/04/01<br/><ref>Modified: </ref> xml-xalan/java/src/org/apache/xalan/xsltc DOM.java DOMCache.java NodeIterator.java Translet.java TransletOutputHandler.java<br/><ref>Committer's log entry: </ref>
 Merging XSLTC_DTM and common serializer to the head
-Changes in org.apache.xalan.xsltc.
+Changes in de.lyca.xalan.xsltc.
 
 1. Remove TransletOutputHandler.java
 2. Adapt the XSLTC interfaces to the DTM model.
 <br/><br/></li><li><ref>Committed by </ref>mkwan@apache.org<ref> on </ref>2003/04/01<br/><ref>Modified: </ref> xml-xalan/java/src/org/apache/xalan/xsltc/util IntegerArray.java<br/><ref>Committer's log entry: </ref>
 Merging XSLTC_DTM and common serializer to the head
-Changes in org.apache.xalan.xsltc.util.
+Changes in de.lyca.xalan.xsltc.util.
 <br/><br/></li><li><ref>Committed by </ref>mkwan@apache.org<ref> on </ref>2003/04/01<br/><ref>Modified: </ref> xml-xalan/java/src/org/apache/xalan/xsltc/compiler AbsolutePathPattern.java AncestorPattern.java CastExpr.java Constants.java CopyOf.java DocumentCall.java ForEach.java GenerateIdCall.java IdKeyPattern.java Key.java KeyCall.java Message.java Mode.java NameBase.java NodeTest.java Output.java ParentLocationPath.java Predicate.java ProcessingInstructionPattern.java Step.java StepPattern.java Stylesheet.java SyntaxTreeNode.java UnionPathExpr.java UnparsedEntityUriCall.java ValueOf.java xpath.cup XSLTC.java<br/><ref>Committer's log entry: </ref>
 Merging XSLTC_DTM and common serializer to the head
-Changes in org.apache.xalan.xsltc.compiler.
+Changes in de.lyca.xalan.xsltc.compiler.
 <br/><br/></li><li><ref>Committed by </ref>mkwan@apache.org<ref> on </ref>2003/04/01<br/><ref>Modified: </ref> xml-xalan/java/src/org/apache/xalan/xsltc/compiler/util MethodGenerator.java NodeSetType.java ObjectType.java ReferenceType.java ResultTreeType.java TypeCheckError.java<br/><ref>Committer's log entry: </ref>
 Merging XSLTC_DTM and common serializer to the head
-Changes in org.apache.xalan.xsltc.compiler.util.
+Changes in de.lyca.xalan.xsltc.compiler.util.
 <br/><br/></li><li><ref>Committed by </ref>mkwan@apache.org<ref> on </ref>2003/04/01<br/><ref>Modified: </ref> xml-xalan/java/src/org/apache/xalan/xsltc/trax DOM2SAX.java DOM2TO.java SAX2TO.java TemplatesHandlerImpl.java TransformerHandlerImpl.java TransformerImpl.java XSLTCSource.java<br/><ref>Committer's log entry: </ref>
 Merging XSLTC_DTM and common serializer to the head
-Changes in org.apache.xalan.xsltc.trax.
+Changes in de.lyca.xalan.xsltc.trax.
 <br/><br/></li><li><ref>Committed by </ref>mkwan@apache.org<ref> on </ref>2003/04/01<br/><ref>Modified: </ref> xml-xalan/java/src/org/apache/xalan/xsltc/runtime/output OutputBase.java SAXHTMLOutput.java SAXOutput.java SAXTextOutput.java SAXXMLOutput.java StreamHTMLOutput.java StreamOutput.java StreamTextOutput.java StreamUnknownOutput.java StreamXMLOutput.java TransletOutputHandlerFactory.java<br/><ref>Committer's log entry: </ref>
 Merging XSLTC_DTM and common serializer to the head
-Changes in org.apache.xalan.xsltc.runtime.output
+Changes in de.lyca.xalan.xsltc.runtime.output
 Remove the output classes in XSLTC. XSLTC now uses the
 output classes in the common serializer.
 <br/><br/></li><li><ref>Committed by </ref>mkwan@apache.org<ref> on </ref>2003/04/01<br/><ref>Modified: </ref> xml-xalan/java/src/org/apache/xalan/xsltc/runtime AbstractTranslet.java AttributeList.java BasisLibrary.java Constants.java DefaultSAXOutputHandler.java SAXAdapter.java StringValueHandler.java TextOutput.java TransletOutputBase.java<br/><ref>Committer's log entry: </ref>
 Merging XSLTC_DTM and common serializer to the head
-Changes in org.apache.xalan.xsltc.runtime.
+Changes in de.lyca.xalan.xsltc.runtime.
 <br/><br/></li><li><ref>Committed by </ref>mkwan@apache.org<ref> on </ref>2003/04/01<br/><ref>Modified: </ref> xml-xalan/java/src/org/apache/xalan/xsltc/dom AbsoluteIterator.java AdaptiveResultTreeImpl.java AnyNodeCounter.java Axis.java BitArray.java CollatorFactoryBase.java CurrentNodeListFilter.java CurrentNodeListIterator.java DocumentCache.java DOMAdapter.java DOMBuilder.java DOMImpl.java DOMWSFilter.java DTDMonitor.java DupFilterIterator.java EmptyFilter.java ExtendedSAX.java Filter.java FilteredStepIterator.java FilterIterator.java ForwardPositionIterator.java KeyIndex.java LoadDocument.java MatchingIterator.java MultiDOM.java MultipleNodeCounter.java NodeCounter.java NodeIteratorBase.java NodeSortRecord.java NodeSortRecordFactory.java NthIterator.java SAXImpl.java SimpleResultTreeImpl.java SingleNodeCounter.java SingletonIterator.java SortingIterator.java StepIterator.java StripWhitespaceFilter.java UnionIterator.java XSLTCDTMManager.java<br/><ref>Committer's log entry: </ref>
 Merging XSLTC_DTM and common serializer to the head
-Adapt all dom classes in org.apache.xalan.xsltc.dom to
+Adapt all dom classes in de.lyca.xalan.xsltc.dom to
 the DTM model.
 
 Removed DOMImpl, DTDMonitor.
@@ -1654,7 +1654,7 @@ Fix for Bugzilla 12125.
 bug 12148 fixed, xpath pred and relational expr
 <br/><br/></li><li><ref>Committed by </ref>zongaro@apache.org<ref> on </ref>2002/09/09<br/><ref>Modified: </ref> xml-xalan/java/src/org/apache/xalan/xsltc/cmdline Transform.java<br/><ref>Committer's log entry: </ref>
 Change committed on behalf of Igor Hersht: added -DIAG option similar to that
-supported by org.apache.xalan.xslt.Process class (for bug 12261).
+supported by de.lyca.xalan.xslt.Process class (for bug 12261).
 
 Also (on my own behalf) changed calculation of average transform time and
 throughput rate for -n option to use floating-point division, rather than
@@ -4300,7 +4300,7 @@ any).
  as well as the compile Constants class. Runtime code needs to be
  kept separate from the compile time code.<br/><br/></li><li><ref>Committed by </ref>amiro@apache.org<ref> on </ref>07/20/2001<br/><ref>Modified: </ref>java/src/org/apache/xalan/xsltc/runtime DefaultRun.java
  java/src/org/apache/xalan/xsltc/cmdline Transform.java
- java/src/org/apache/xalan/xsltc/dom DocumentCache.java<br/><ref>Committer's log entry: </ref>Added import for org.apache.xalan.xsltc.runtime.Constants;
+ java/src/org/apache/xalan/xsltc/dom DocumentCache.java<br/><ref>Committer's log entry: </ref>Added import for de.lyca.xalan.xsltc.runtime.Constants;
  to the runtime classes that need to use the NAMESPACE_FEATURE constant
  and had them reference it rather than define it themselves.<br/><br/></li><li><ref>Committed by </ref>tmiller@apache.org<ref> on </ref>07/20/2001<br/><ref>Modified: </ref>java/src/org/apache/xalan/xsltc/compiler XSLTC.java<br/><ref>Committer's log entry: </ref>minor changes for DOMSource impl support<br/><br/></li><li><ref>Committed by </ref>tmiller@apache.org<ref> on </ref>07/20/2001<br/><ref>Modified: </ref>java/src/org/apache/xalan/xsltc/trax
  TransformerFactoryImpl.java<br/><ref>Committer's log entry: </ref>Added DOMSource support for stylesheet<br/><br/></li><li><ref>Committed by </ref>tmiller@apache.org<ref> on </ref>07/20/2001<br/><ref>Modified: </ref>java/src/org/apache/xalan/xsltc/trax DOM2SAX.java<br/><ref>Committer's log entry: </ref>updated convertor which supports DOMSource impl<br/><br/></li><li><ref>Committed by </ref>morten@apache.org<ref> on </ref>07/23/2001<br/><ref>Modified: </ref>java/src/org/apache/xalan/xsltc/compiler XSLTC.java<br/><ref>Committer's log entry: </ref>Added a small fix to the compiler (XSLTC.java) to make sure that the SAX
@@ -4408,9 +4408,9 @@ any).
  java/src/org/apache/xalan/xsltc/trax TemplatesImpl.java
  TransformerImpl.java<br/><ref>Removed: </ref>java/src/org/apache/xalan/xsltc/util/getopt GetOpt.java
  GetOptsException.java IllegalArgumentException.java
- MissingOptArgException.java<br/><ref>Committer's log entry: </ref>Moved the org.apache.xalan.xsltc.util.getopt package to
- org.apache.xalan.xsltc.cmdline.getopt. Also added some skeleton
- code in a new org.apache.xalan.xsltc.trax directory.
+ MissingOptArgException.java<br/><ref>Committer's log entry: </ref>Moved the de.lyca.xalan.xsltc.util.getopt package to
+ de.lyca.xalan.xsltc.cmdline.getopt. Also added some skeleton
+ code in a new de.lyca.xalan.xsltc.trax directory.
  PR: n/a
  Obtained from: n/a
  Submitted by: morten@xml.apache.org
@@ -4497,7 +4497,7 @@ any).
  TrAX error listener when applicable<br/><br/></li><li><ref>Committed by </ref>tmiller@apache.org<ref> on </ref>06/05/2001<br/><ref>Modified: </ref>java/src/org/apache/xalan/xsltc/runtime
  AbstractTranslet.java<br/><ref>Committer's log entry: </ref>translet transformation errors now forwarded to
  TrAX error listener when applicable<br/><br/></li><li><ref>Committed by </ref>morten@apache.org<ref> on </ref>06/06/2001<br/><ref>Modified: </ref>java/src/org/apache/xalan/xsltc/runtime AttributeList.java<br/><ref>Committer's log entry: </ref>Added a constructor for copying an org.xml.sax.Attributes to our
- org.apache.xalan.xsltc.runtime.AttributeList.
+ de.lyca.xalan.xsltc.runtime.AttributeList.
  PR: n/a
  Obtained from: n/a
  Submitted by: morten@xml.apache.org
@@ -4689,7 +4689,7 @@ any).
  java/src/org/apache/xalan/xsltc/dom UnionIterator.java
  java/src/org/apache/xalan/xsltc/runtime BasisLibrary.java<br/><ref>Committer's log entry: </ref>OK, I'm going to make a wild guess and assume that sboag's recent commit
  of /NodeSet/NodeSetDTM/ got a little out of control and shouldn't have
- gone down into org.apache.xalan.xsltc - undone to fix compile error<br/><br/></li><li><ref>Committed by </ref>morten@apache.org<ref> on </ref>06/18/2001<br/><ref>Removed: </ref>java/src/org/apache/xalan/xsltc/compiler/util
+ gone down into de.lyca.xalan.xsltc - undone to fix compile error<br/><br/></li><li><ref>Committed by </ref>morten@apache.org<ref> on </ref>06/18/2001<br/><ref>Removed: </ref>java/src/org/apache/xalan/xsltc/compiler/util
  NodeSetType.java<br/><ref>Committer's log entry: </ref>Removing NodeSetType (renamed to NodeSetDTMType).
  PR: n/a
  Obtained from: n/a
@@ -4778,7 +4778,7 @@ transformations with the Xalan transformer and with translets. Over time, we pla
 relative to Preview 5 of XSLTC posted on www.sun.com/xml/developers.</p>
 <ul>
   <li>Simplified stylesheets are now implemented.</li>
-  <li>Base package name has changed from <code>com.sun.xslt</code> to <code>org.apache.xalan.xsltc</code></li>
+  <li>Base package name has changed from <code>com.sun.xslt</code> to <code>de.lyca.xalan.xsltc</code></li>
   <li>You no longer have to get the BCEL.jar file; it is included in the distribution.</li>
   <li>The Project X parser components and APIs have all been replaced with JAXP equivalents. 
   Consequently, you may deploy XSLTC with JAXP-conformant parsers, such as Xerces or Crimson.</li>

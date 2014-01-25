@@ -35,7 +35,7 @@
   used to handle input and output documents. These classes can be extended to
   encapsulate additional input types. XSLTC's TrAX implementation contains an
   extension to the <code>Source</code> class:</p><source>
-    org.apache.xalan.xsltc.trax.XSLTCSource</source>
+    de.lyca.xalan.xsltc.trax.XSLTCSource</source>
 
   <p>This extension class can be used to build XSLTC's internal
   DOM and cache it for later usage. The following sample shows how to

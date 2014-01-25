@@ -56,9 +56,9 @@ public class JAXPTransletMultipleTransformations
   { 
     // Set the TransformerFactory system property to generate and use translets.
     // Note: To make this sample more flexible, load properties from a properties file.
-    // The setting for the Xalan Transformer is "org.apache.xalan.processor.TransformerFactoryImpl"
+    // The setting for the Xalan Transformer is "de.lyca.xalan.processor.TransformerFactoryImpl"
     String key = "javax.xml.transform.TransformerFactory";
-    String value = "org.apache.xalan.xsltc.trax.TransformerFactoryImpl";
+    String value = "de.lyca.xalan.xsltc.trax.TransformerFactoryImpl";
     Properties props = System.getProperties();
     props.put(key, value);
     

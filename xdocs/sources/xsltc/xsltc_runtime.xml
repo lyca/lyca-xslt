@@ -391,7 +391,7 @@
     library is contained in a single class file:</p>
 
 <source>
-    org.apache.xalan.xsltc.runtime.BasisLibrary
+    de.lyca.xalan.xsltc.runtime.BasisLibrary
 </source>
 
     <p>This class contains a large set of static methods that are invoked by
@@ -427,13 +427,13 @@
     This interface is described in this file:</p>
 
 <source>
-    org.apache.xalan.xsltc.TransletOutputHandler
+    de.lyca.xalan.xsltc.TransletOutputHandler
 </source>
 
     <p>This interface is implemented by:</p>
 
 <source>
-    org.apache.xalan.xsltc.runtime.TextOutput
+    de.lyca.xalan.xsltc.runtime.TextOutput
 </source>
 
     <p>This class, despite its name, handles all types of output (XML, HTML and
@@ -459,7 +459,7 @@
     </ul>
 
     <p>There is a very clear link between the output handler and the
-    <code>org.apache.xalan.xsltc.compiler.Output</code> class that handles
+    <code>de.lyca.xalan.xsltc.compiler.Output</code> class that handles
     the <code>&lt;xsl:output&gt;</code> element. The <code>Output</code> class
     stores many output settings and parameters in the translet class file and
     the translet passes these on to the output handler.</p>

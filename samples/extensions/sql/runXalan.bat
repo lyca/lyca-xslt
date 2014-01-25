@@ -107,7 +107,7 @@ echo .
 
 
 @echo on
-"%_JAVACMD%" -mx64m %JAVA_OPTS% -Djava.endorsed.dirs=%_ENDORSED_DIR% -classpath "%_CLASSPATH%" org.apache.xalan.xslt.Process %1 %2 %3 %4 %5 %6 %7 %8
+"%_JAVACMD%" -mx64m %JAVA_OPTS% -Djava.endorsed.dirs=%_ENDORSED_DIR% -classpath "%_CLASSPATH%" de.lyca.xalan.xslt.Process %1 %2 %3 %4 %5 %6 %7 %8
 @echo off
 
 goto end

@@ -4,7 +4,7 @@
     <ol> 
       <li>
         <p>Include
-        org.apache.xalan.xslt.client.XSLTProcessorApplet
+        de.lyca.xalan.xslt.client.XSLTProcessorApplet
         in an HTML client.</p>
       </li>
       <li>

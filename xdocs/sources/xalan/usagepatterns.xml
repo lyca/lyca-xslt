@@ -68,7 +68,7 @@ transformer.transform
   </s2><anchor name="transformerfactory"/>
   <s2 title="1. Instantiate a TransformerFactory">
   <p><jump href="apidocs/javax/xml/transform/TransformerFactory.html">TransformerFactory</jump> is an abstract class with a static newInstance() method that instantiates the concrete subclass designated by the javax.xml.transform.TransformerFactory system property.</p>
-  <p>The default setting for this system property is <jump href="apidocs/org/apache/xalan/processor/TransformerFactoryImpl.html">org.apache.xalan.processor.TransformerFactoryImpl</jump>.</p>
+  <p>The default setting for this system property is <jump href="apidocs/org/apache/xalan/processor/TransformerFactoryImpl.html">de.lyca.xalan.processor.TransformerFactoryImpl</jump>.</p>
 </s2><anchor name="transformer"/>
   <s2 title="2. Use the TransformerFactory to process the stylesheet Source and produce a Transformer">
 <p>The TransformerFactory <jump href="apidocs/javax/xml/transform/TransformerFactory.html#newTransformer(javax.xml.transform.Source)">newTransformer(Source xslSource)</jump> method processes the stylesheet Source into a Templates object and returns a Transformer that you can use to perform a transformation (apply the Templates object to an XML Source).</p>
@@ -87,7 +87,7 @@ transformer.transform
   <label>System property</label>
     <item>Setting</item>
   <label><code>javax.xml.transform.TransformerFactory</code></label>
-   <item><code>org.apache.xalan.processor.TransformerFactoryImpl</code></item>
+   <item><code>de.lyca.xalan.processor.TransformerFactoryImpl</code></item>
 </gloss>
 <p>If you are using Xerces, the XML parser factory settings are as follows:</p>
 <gloss>
@@ -110,7 +110,7 @@ transformer.transform
 <jump href="http://java.sun.com/aboutJava/communityprocess/review/jsr063/index.html">JSR-000063 1.1</jump>.</p> 
 </s2><anchor name="outputprops"/>
 <s2 title="Configuring serialization output properties">
-<p>Output properties for XML, HTML, and text transformation output are defined in property files in the org.apache.xml.serializer package.</p>
+<p>Output properties for XML, HTML, and text transformation output are defined in property files in the de.lyca.xml.serializer package.</p>
 <p>You can override the default value of these properties in your stylesheet by using the attributes of an xsl:output element. 
 You can override the Xalan specific default settings as follows:</p>
 <ol>
@@ -169,7 +169,7 @@ You can override the Xalan specific default settings as follows:</p>
   </tr>
   <tr>
     <td>xalan:content-handler</td>
-    <td>org.apache.xml.serializer.ToXMLStream</td>
+    <td>de.lyca.xml.serializer.ToXMLStream</td>
   </tr>
   <tr>
     <td>xalan:entities</td>
@@ -207,7 +207,7 @@ rebuild <code>serializer.jar</code>.</note>
   </tr>
   <tr>
     <td>xalan:content-handler</td>
-    <td>org.apache.xml.serializer.ToHTMLStream</td>
+    <td>de.lyca.xml.serializer.ToHTMLStream</td>
   </tr>
   <tr>
     <td>xalan:entities</td>
@@ -240,7 +240,7 @@ or edit src/org/apache/xml/serializer/HTMLEntities.properties and rebuild <code>
   </tr>    
   <tr>
     <td>xalan:content-handler</td>
-    <td>org.apache.xml.serializer.ToTextStream</td>
+    <td>de.lyca.xml.serializer.ToTextStream</td>
   </tr>
 </table>
 <note>The xalan:content-handler property specifies the default name of the Java class that implements the 
@@ -303,7 +303,7 @@ Examples.exampleSerializeNode(), and Examples.exampleAsSerializer() in the <link
 <p>An XSLT stylesheet may include parameters that are set at run time each time a transformation is performed. To set a stylesheet parameter, use the Transformer 
 <jump href="apidocs/javax/xml/transform/Transformer.html#setParameter(java.lang.String,java.lang.Object)">setParameter(String name, Object value)</jump> method. For a working example, see UseStylesheetParam.java in the samples/UseStylesheetParam subdirectory.</p>
 <p>You can also set a parameter with the command-line utility by including the <code>-param</code> flag. For example:</p>
-<p><code>java org.apache.xalan.xslt.Process -in foo.xml -xsl foo.xsl -param param1 foobar</code></p>
+<p><code>java de.lyca.xalan.xslt.Process -in foo.xml -xsl foo.xsl -param param1 foobar</code></p>
 <p>where <code>param</code> is the parameter name and <code>foobar</code> is the parameter value. The parameter namespace is null.</p>
 <note>&xslt4j2; processes string parameters. You are no longer required (as you were with &xslt4j; version 1) to enclose strings in single 
 quotes (') as string expressions.</note>
@@ -354,9 +354,9 @@ if (tFactory.getFeature(javax.xml.transform.sax.SAXSource.FEATURE) &amp;&amp;
                         transformerHandler);
 
     // Set up a Serializer to serialize the Result to a file.
-    org.apache.xml.serializer.Serializer serializer = 
-    org.apache.xml.serializer.SerializerFactory.getSerializer
-    (org.apache.xml.serializer.OutputPropertiesFactory.getDefaultMethodProperties
+    de.lyca.xml.serializer.Serializer serializer = 
+    de.lyca.xml.serializer.SerializerFactory.getSerializer
+    (de.lyca.xml.serializer.OutputPropertiesFactory.getDefaultMethodProperties
                                                                    ("xml"));
     serializer.setOutputStream(new java.io.FileOutputStream("foo.out"));
     // The Serializer functions as a SAX ContentHandler.
@@ -408,7 +408,7 @@ and place the output in a DOMResult object.</note>
 </s2><anchor name="xpath"/>
 <s2 title="Working with XPath expressions">
 <p>XSLT stylesheets use XPath expressions to select nodes, specify conditions, and generate text for the result tree. XPath provides an API that you can call directly. For example, you may want to evaluate an XPath expression programmatically and do your own processing without a stylesheet.</p>
-<p>XPath is an independent entity, with clients other than XSLT processors (such as XPointer). Accordingly, &xslt4j2; has packaged XPath as a separate module (org.apache.xpath and its subpackages). The org.apache.xpath.XPathAPI class contains convenience methods that you can use to return single DOM Nodes, NodeIterators, and XObjects. Apart from their own functionality, these methods also provide a path into the lower-level XPath API that you may find useful.</p>
+<p>XPath is an independent entity, with clients other than XSLT processors (such as XPointer). Accordingly, &xslt4j2; has packaged XPath as a separate module (de.lyca.xpath and its subpackages). The de.lyca.xpath.XPathAPI class contains convenience methods that you can use to return single DOM Nodes, NodeIterators, and XObjects. Apart from their own functionality, these methods also provide a path into the lower-level XPath API that you may find useful.</p>
 <p>&jaxp13-short; also provides an API for xpath expression evaluation in the javax.xml.xpath package. Users are 
  recommended to use the new JAXP 1.3 XPath API rather than the old &xslt4j2; specific XPath API.</p>
 <p>For an example that uses the &xslt4j2; specific XPathAPI to execute XPath expressions against XML source files, 
@@ -426,7 +426,7 @@ You can use the DocumentURL and StyleURL PARAM tags or the <jump href="apidocs/o
 <p>For an example, see the <link idref="samples" anchor="appletxmltohtml">AppletXMLtoHTML</link> sample applet. The &lt;applet&gt; tag is in samples/AppletXMLtoHTML/client.html:</p>
 <source>&lt;applet  
     name="xslControl"
-    code="org.apache.xalan.client.XSLTProcessorApplet.class"
+    code="de.lyca.xalan.client.XSLTProcessorApplet.class"
     archive="../../xalan.jar,../../build/xalan.jar,../../serializer.jar,../../build/serializer.jar,../../lib/xml-apis.jar,../../lib/xercesImpl.jar"
     height="0"
     width"0">
@@ -441,7 +441,7 @@ You can use the DocumentURL and StyleURL PARAM tags or the <jump href="apidocs/o
     <p>Stuart Connell 
     &lt;Stuart.Connell@compuware.com&gt; reports that the &xslt4j; applet wrapper does work in Netscape Communicator 6, 
     provided that you avoid calls to the AppletContext showStatus() method. In other words, you can remove the showStatus() calls
-    from org.apache.xalan.client.XSLTProcessorApplet, and run &xslt4j; applets from Netscape Communicator 6. This appears to be a
+    from de.lyca.xalan.client.XSLTProcessorApplet, and run &xslt4j; applets from Netscape Communicator 6. This appears to be a
     Netscape bug, which hopefully will be fixed soon. For more information, see 
     <jump href="http://issues.apache.org/bugzilla/show_bug.cgi?id=3231">Bugzilla bug 3231</jump>.</p>
 </s3>    
@@ -511,7 +511,7 @@ anchor="usestylesheetparamservlet">UseStylesheetParamServlet</link> and <link id
 <p>For an example, see Examples.exampleUseTemplatesObj() in the <link idref="samples" anchor="trax">trax sample</link>.</p>
 </s2><anchor name="debugging"/>
 <s2 title="Debugger Interface">
-		<p>&xslt4j; contains a debugger interface in the org.apache.xalan.xslt.trace package:</p> 
+		<p>&xslt4j; contains a debugger interface in the de.lyca.xalan.xslt.trace package:</p> 
 		<ul>
 		  <li><jump href="apidocs/org/apache/xalan/trace/TraceListener.html">TraceListener</jump> is an interface that debuggers 
 		  can implement. Or, like the <link idref="commandline">command-line utility</link>, you can use the <jump
@@ -533,9 +533,9 @@ anchor="usestylesheetparamservlet">UseStylesheetParamServlet</link> and <link id
     <p>The <link idref="commandline">command-line utility</link> uses the debugger interface when you include one or more of the
      following switches: <code>-TT</code>, <code>-TG</code>, <code>-TS</code>, <code>-TTC</code>.</p>
     <p>Example:</p>
-<source>import org.apache.xalan.transformer.TransformerImpl;
-import org.apache.xalan.trace.TraceManager;
-import org.apache.xalan.trace.PrintTraceListener;
+<source>import de.lyca.xalan.transformer.TransformerImpl;
+import de.lyca.xalan.trace.TraceManager;
+import de.lyca.xalan.trace.PrintTraceListener;
 ...
 // Set up a PrintTraceListener object to print to a file.
 java.io.FileWriter fw = new java.io.FileWriter("events.log");

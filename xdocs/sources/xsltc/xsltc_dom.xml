@@ -43,25 +43,25 @@
 
   <p>This DOM interface is implemented by three classes:</p>
   <ul>
-    <li><em>org.apache.xalan.xsltc.dom.DOMImpl</em><br/><br/>
+    <li><em>de.lyca.xalan.xsltc.dom.DOMImpl</em><br/><br/>
       This is the main DOM class. An instance of this class contains the nodes
       of a <em>single</em> XML document.<br/><br/>
     </li>
-    <li><em>org.apache.xalan.xsltc.dom.MultiDOM</em><br/><br/>
+    <li><em>de.lyca.xalan.xsltc.dom.MultiDOM</em><br/><br/>
       This class is best described as a DOM multiplexer. XSLTC was initially
       designed to operate on a single XML document, and the initial DOM and
       the DOM interface were designed and implemented without the
       <code>document()</code> function in mind. This class will allow a translet
       to access multiple DOMs through the original DOM interface.<br/><br/>
     </li>
-    <li><em>org.apache.xalan.xsltc.dom.DOMAdapter</em><br/><br/>
+    <li><em>de.lyca.xalan.xsltc.dom.DOMAdapter</em><br/><br/>
       The DOM adapter is a mediator between a DOMImpl or a MultiDOM object and
       a single translet. A DOMAdapter object contains mappings and reverse
       mappings between node  types in the DOM(s) and node types in the translet.
       This mediator is needed to allow several translets access to a single DOM.
       <br/><br/>
     </li>
-    <li><em>org.apache.xalan.xsltc.dom.DocumentCache</em><br/><br/>
+    <li><em>de.lyca.xalan.xsltc.dom.DocumentCache</em><br/><br/>
       A sample DOM cache (implementing DOMCache) that is used with our sample
       transformation applications.
     </li>

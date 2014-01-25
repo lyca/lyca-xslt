@@ -19,8 +19,8 @@
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
-import org.apache.xalan.extensions.XPathFunctionResolverImpl;
-import org.apache.xalan.extensions.ExtensionNamespaceContext;
+import de.lyca.xalan.extensions.XPathFunctionResolverImpl;
+import de.lyca.xalan.extensions.ExtensionNamespaceContext;
 import org.xml.sax.InputSource;
 
 /**
@@ -32,12 +32,12 @@ import org.xml.sax.InputSource;
  * To support extension functions in XPath expressions, you have to set an 
  * XPathFunctionResolver on the XPath object. You can provide your implementation
  * of XPathFunctionResolver or use sample XPathFunctionResolver in
- * org.apache.xalan.extensions.XPathFunctionResolverImpl, which supports
+ * de.lyca.xalan.extensions.XPathFunctionResolverImpl, which supports
  * the usage of Java and EXSLT extension functions.
  * 
  * You also need to provide a NamespaceContext for the XPath evaluation. You 
  * can provide your own implementation of NamespaceContext, or use the sample
- * implementation in org.apache.xalan.extensions.ExtensionNamespaceContext, 
+ * implementation in de.lyca.xalan.extensions.ExtensionNamespaceContext, 
  * which supports the following namespace prefix to URI mappings:
  * 
  * 	java  --> http://xml.apache.org/xalan/java
@@ -67,11 +67,11 @@ public class ExtensionFunctionResolver
         XPath xpath = factory.newXPath();
         
         // set the NamespaceContext to 
-        // org.apache.xalan.extensions.ExtensionNamespaceContext
+        // de.lyca.xalan.extensions.ExtensionNamespaceContext
         xpath.setNamespaceContext(new ExtensionNamespaceContext());
         
         // set the XPathFunctionResolver to 
-        // org.apache.xalan.extensions.XPathFunctionResolverImpl
+        // de.lyca.xalan.extensions.XPathFunctionResolverImpl
         xpath.setXPathFunctionResolver(new XPathFunctionResolverImpl());
         
         Object result = null;

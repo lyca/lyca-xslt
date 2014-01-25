@@ -37,7 +37,7 @@ task(createXPathParser, type: JavaExec) {
     outputs.files "$projectDir/src/main/java/org/apache/xalan/xsltc/compiler/XPathParser.java",
                   "$projectDir/src/main/java/org/apache/xalan/xsltc/compiler/sym.java"
     main = 'java_cup.Main'
-    args = ['-parser', 'XPathParser', '-package', 'org.apache.xalan.xsltc.compiler', 'xpath.cup'].toList()
+    args = ['-parser', 'XPathParser', '-package', 'de.lyca.xalan.xsltc.compiler', 'xpath.cup'].toList()
     classpath project.configurations.compile
     workingDir file("$projectDir/src/main/java/org/apache/xalan/xsltc/compiler/")
 } 

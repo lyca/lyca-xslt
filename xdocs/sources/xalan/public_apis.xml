@@ -54,13 +54,13 @@
     <li>The &xslt4j2; specific XPath API, defined by the classes
       <ul>
         <li><jump href="apidocs/org/apache/xpath/XPathAPI.html">
-          <code>org.apache.xpath.XPathAPI</code></jump></li>
+          <code>de.lyca.xpath.XPathAPI</code></jump></li>
         <li><jump href="apidocs/org/apache/xpath/CachedXPathAPI.html">
-          <code>org.apache.xpath.CachedXPathAPI</code></jump></li>
+          <code>de.lyca.xpath.CachedXPathAPI</code></jump></li>
       </ul>
     </li>
     <li>API's for using, configuring or defining a serializer, from the
-        <code>org.apache.xml.serializer</code> package:
+        <code>de.lyca.xml.serializer</code> package:
       <ul>
         <li><jump href="apidocs/org/apache/xml/serializer/OutputPropertiesFactory.html">
                 <code>OutputPropertiesFactory</code></jump></li>
@@ -113,7 +113,7 @@
         <jump href="http://www.w3.org/TR/2004/NOTE-DOM-Level-3-XPath-20040226">
            DOM Level 3 XPath API</jump> found in the
         <jump href="apidocs/org/apache/xpath/domapi/package-summary.html">
-           <code>org.apache.xpath.domapi</code></jump> package.</li>
+           <code>de.lyca.xpath.domapi</code></jump> package.</li>
   </ul>
   </s2><anchor name="internal"/>
   <s2 title="Internal interfaces">

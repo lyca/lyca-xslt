@@ -319,7 +319,7 @@
     <p>What it does: Uses the Redirect extension elements shipped with &xslt4j; to direct output to two output
      files.</p>
     <p>Run this sample from the extensions subdirectory with</p> 
-    <p><code>java org.apache.xalan.xslt.Process -in 1-redir.xml</code><br/>
+    <p><code>java de.lyca.xalan.xslt.Process -in 1-redir.xml</code><br/>
      &nbsp;&nbsp;<code>-xsl 1-redir.xsl</code></p>
     <p>The standard (non-redirected) output is written to the screen. The redirected output is written to 1-redir-out, or
      whatever filename you assign to the doc/foo @file attribute in 1-redir.xml. The stylesheet gets the file name for
@@ -332,7 +332,7 @@
       deadline for responding to a customer inquiry.</p>
      <note><code>js.jar</code> must be on the classpath.</note>
     <p>Run this sample from the extensions subdirectory with</p>
-    <p><code>java org.apache.xalan.xslt.Process -in 2-basicJscript.xml</code>
+    <p><code>java de.lyca.xalan.xslt.Process -in 2-basicJscript.xml</code>
      <br/>&nbsp;&nbsp;<code>-xsl 2-basicJscript.xsl</code></p>     
     </s3>
     
@@ -341,7 +341,7 @@
     <p>What it does: Uses extension functions to format dates. This sample illustrates use of the predefined java
      extension namespace to provide ready access to extensions implemented in Java.</p>
     <p>Run this sample from the extensions subdirectory with</p> 
-    <p><code>java org.apache.xalan.xslt.Process -in 3-java-namespace.xml</code>
+    <p><code>java de.lyca.xalan.xslt.Process -in 3-java-namespace.xml</code>
      <br/>&nbsp;&nbsp;<code>-xsl 3-java-namespace.xsl</code></p>    
     </s3>
     
@@ -350,7 +350,7 @@
     <p>What it does: Uses a Java extension to transform a set of name elements into a numbered and alphabetized
      list.</p>
     <p>Run this sample from the extensions subdirectory with</p> 
-    <p><code>java org.apache.xalan.xslt.Process -in numlist.xml</code> 
+    <p><code>java de.lyca.xalan.xslt.Process -in numlist.xml</code> 
      <br/>&nbsp;&nbsp;<code>-xsl 4-numlistJava.xsl</code></p>    
     </s3>
     
@@ -360,7 +360,7 @@
      alphabetized list. This sample performs the same operations as the preceding Java extension.</p>
      <note><code>js.jar</code> must be on the classpath.</note>
     <p>Run this sample from the extensions subdirectory with</p>
-    <p><code> java org.apache.xalan.xslt.Process -in numlist.xml</code>
+    <p><code> java de.lyca.xalan.xslt.Process -in numlist.xml</code>
      <br/>&nbsp;&nbsp;<code>-xsl 5-numlistJscript.xsl</code></p>
     </s3>
     </s2>

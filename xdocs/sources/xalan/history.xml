@@ -439,7 +439,7 @@ Reviewed by:	Brian Minchau<br/><br/></li>
 <li><ref>Committed by </ref>zongaro@apache.org<ref> on </ref>2004/10/13<br/>
 <ref>Modified: </ref> xml-xalan/java build.xml<br/>
 <ref>Committer's log entry: </ref>
-At the suggestion of Joseph Kesselman, dropped contents of the org.apache.xml.utils.synthetic package, as they have never been used.
+At the suggestion of Joseph Kesselman, dropped contents of the de.lyca.xml.utils.synthetic package, as they have never been used.
 Patch reviewed by Christine Li (jycli@ca.ibm.com).<br/><br/></li>
 
 <li><ref>Committed by </ref>jycli@apache.org<ref> on </ref>2004/10/13<br/>
@@ -558,7 +558,7 @@ after deserialization, they no longer reference the same string, although the va
 The latest Rhino1_5R5 checks for the script language line/column no.&gt;=0. Fixed for bug XALANJ-1887.<br/><br/></li>
 
 <li><ref>Committed by </ref>jycli@apache.org<ref> on </ref>2004/11/03<br/>
-<ref>Modified: </ref> xml-xalan/java/src/META-INF/services org.apache.xalan.extensions.bsf.BSFManager<br/>
+<ref>Modified: </ref> xml-xalan/java/src/META-INF/services de.lyca.xalan.extensions.bsf.BSFManager<br/>
 <ref>Committer's log entry: </ref>
 Added a service provider configuration file to set the Apache BSF as the default implementation for scripting language support.
 <br/><br/></li>
@@ -629,8 +629,8 @@ Based on Sun's Security Code Guidelines, modified the code to improve the securi
 3. Changed some static variable to instance variables;<br/>
 4. Changed some interfaces to final classes, if those interfaces are used only to define constants<br/>
 5. Removed the usage of System.exit;<br/>
-6. For various org.apache.xml.utils.res.XResourceBundle, the getObject() methods return immutable array wrappers instead of arrays<br/>
-7. Changed static methods of org.apache.xpath.compiler.FunctionTable to instance methods and the reference of a function table is passed 
+6. For various de.lyca.xml.utils.res.XResourceBundle, the getObject() methods return immutable array wrappers instead of arrays<br/>
+7. Changed static methods of de.lyca.xpath.compiler.FunctionTable to instance methods and the reference of a function table is passed 
 around the processing to create an XPath object;<br/>
 8. Changed the flags of FEATURE_INCREMENTAL, FEATURE_OPTIMIZE and FEATURE_SOURCE_LOCATION to instance variables in TransformerFactorImpl. 
 So they will not be changed during a processing once a new Templates is created;<br/><br/></li>
@@ -690,7 +690,7 @@ keys during translation. Related to XALANJ-2021.<br/><br/></li>
 <ref>Modified: </ref> xml-xalan/java/src/org/apache/xml/res XMLErrorResources.java<br/>
 <ref>Committer's log entry: </ref>
 Serializer messages were copied into a message file in the
-org.apache.xml.serializer.utils package.
+de.lyca.xml.serializer.utils package.
 The serializer messages in this file are now "dead", so they are being deleted.
 This is part of the cleanup with XALANJ-2021.<br/><br/></li>
 
@@ -957,10 +957,10 @@ WriterToUTF8Buffered.java xml-xalan/java/src/org/apache/xml/utils QName.java XML
 <ref>Committer's log entry: </ref>
 This is resolve UTF-8 Charcater support and QName character support for XML 1.1 support in XALANJ-2070.
 Henry Zongaro and Brian Minchau helped in fixing this part of the JIRA issue.
-A new class org.apache.xml.utils.XML11Char has been included to support XML 1.1 characters.
-Also a reference to org.apache.xml.utils.XMLChar has been replaced with a reference to
-org.apache.xml.utils.XML11Char in almost all the places in Xalan.
-org.apache.xml.serializer.WriterToUTF8Buffered has been update to support UTF-8 characters that can be represented in four bytes.
+A new class de.lyca.xml.utils.XML11Char has been included to support XML 1.1 characters.
+Also a reference to de.lyca.xml.utils.XMLChar has been replaced with a reference to
+de.lyca.xml.utils.XML11Char in almost all the places in Xalan.
+de.lyca.xml.serializer.WriterToUTF8Buffered has been update to support UTF-8 characters that can be represented in four bytes.
 <br/><br/></li>
 
 <li><ref>Committed by </ref>ytalwar@apache.org<ref> on </ref>2005/03/30<br/>
@@ -975,7 +975,7 @@ This is a fix for XALANJ-2089.
 Christine Li has created this patch.
 Brian Minchau helped in creating this patch.
 Brian Minchau also reviewed this patch.
-org.apache.xalan.templates.ElemNumber.java has raised some performance issue as 
+de.lyca.xalan.templates.ElemNumber.java has raised some performance issue as 
 a static array to hold resources was removed earlier.  However, the removal of static array is necessary
 to fix a potential bug multithread environment, where a given thread can request different locale than another thread.
 
@@ -1033,7 +1033,7 @@ JAXP 1.3 integration. Integrate the Sun donated JAXP 1.3 implementation into the
 <ref>Modified: </ref> xml-xalan/java/src/org/apache/xpath/jaxp JAXPExtensionsProvider.java JAXPPrefixResolver.java JAXPVariableStack.java 
 XPathExpressionImpl.java XPathFactoryImpl.java XPathImpl.java<br/>
 <ref>Committer's log entry: </ref>
-JAXP 1.3 integration. Commit the XPath API implementation under org.apache.xpath.jaxp.<br/><br/></li>
+JAXP 1.3 integration. Commit the XPath API implementation under de.lyca.xpath.jaxp.<br/><br/></li>
 
 <li><ref>Committed by </ref>mkwan@apache.org<ref> on </ref>2005/05/17<br/>
 <ref>Modified: </ref> xml-xalan/java/bin xml-apis.jar<br/>
@@ -1491,7 +1491,7 @@ xml-xalan/java/src/org/apache/xalan/xsltc/trax TrAXFilter.java xml-xalan/java/sr
 DTMManagerDefault.java xml-xalan/java/src/org/apache/xml/utils XMLReaderManager.java<br/><br/>
 <ref>Committer's log entry: </ref>
 Moved code for caching XMLReader objects from XSLTC's TransformerFactoryImpl to
-a new org.apache.xml.utils.XMLReaderManager class.<br/><br/>
+a new de.lyca.xml.utils.XMLReaderManager class.<br/><br/>
 
 It is now the responsibility of the DTMManagerDefault class to request one of
 these cached XMLReader objects, so the benefit of reusing an XMLReader is now
@@ -1898,7 +1898,7 @@ Reviewed by Morris Kwan (mkwan@ca.ibm.com).<br/><br/></li>
 <ref>Committer's log entry: </ref>
 Generate values for Version information from constants in the build script.
 (Adapted from xml-commons build script for the resolver.)
-New file Version.src (in org.apache.xalan) is copied into Version.java
+New file Version.src (in de.lyca.xalan) is copied into Version.java
 with version constants from build script plugged in.
 Deprecated XSLProcessorVersion class can be removed.
 <br/><br/></li>
@@ -1906,7 +1906,7 @@ Deprecated XSLProcessorVersion class can be removed.
 <ref>Modified: </ref> xml-xalan/java build.xml<br/><ref>Committer's log entry: </ref>
 Generate values for Version information from constants in the build script.
 (Adapted from xml-commons build script for the resolver.)
-New file Version.src (in org.apache.xalan) is copied into Version.java
+New file Version.src (in de.lyca.xalan) is copied into Version.java
 with version constants from build script plugged in.
 Deprecated XSLProcessorVersion class can be removed.
 Also, updated build clean target to delete Version.java, so it will
@@ -3092,7 +3092,7 @@ PR: bugzilla 19471
 Submitted by: Brian Minchau
 Reviewed by: Ilene Seelemann
 <br/><br/></li><li><ref>Committed by </ref>zongaro@apache.org<ref> on </ref>2003/05/07<br/><ref>Modified: </ref> xml-xalan/java/xdocs/sources/xalan usagepatterns.xml<br/><ref>Committer's log entry: </ref>
-Serializer properties files have moved to the new org.apache.xml.serializer
+Serializer properties files have moved to the new de.lyca.xml.serializer
 package.  Corrected part of documentation that didn't yet reflect that.
 <br/><br/></li>
 <li><ref>Committed by </ref>minchau@apache.org<ref> on </ref>2003/05/09<br/><ref>Modified: </ref> xml-xalan/java/src/org/apache/xml/serializer SerializerBase.java ToHTMLSAXHandler.java ToHTMLStream.java ToSAXHandler.java ToStream.java ToTextSAXHandler.java ToTextStream.java ToXMLSAXHandler.java ToXMLStream.java<br/><ref>Committer's log entry: </ref>
@@ -3138,7 +3138,7 @@ Contributed by Christine Li (jycli@ca.ibm.com) with some editorial input from
 myself.
 <br/><br/></li><li><ref>Committed by </ref>mkwan@apache.org<ref> on </ref>2003/05/26<br/><ref>Modified: </ref> xml-xalan/java/src/org/apache/xalan/extensions ExtensionNamespacesManager.java<br/><ref>Committer's log entry: </ref>
 Fix a compatibility problem when using the old "http://xml.apache.org/xslt"
-namespace with extension functions in org.apache.xalan.xslt.Extensions.
+namespace with extension functions in de.lyca.xalan.xslt.Extensions.
 <br/><br/></li><li><ref>Committed by </ref>ilene@apache.org<ref> on </ref>2003/05/26<br/><ref>Modified: </ref> xml-xalan/java build.xml xml-xalan/java/xdocs/sources/xalan builds.xml downloads.xml resources.xml xml-xalan/java/src/org/apache/xalan/xslt EnvironmentCheck.java<br/><ref>Committer's log entry: </ref>
 Patch from Sarah McNamara (mcnamara@ca.ibm.com) which improves documentation
 about packaging and adds support for building and testing an alternate 
@@ -3268,7 +3268,7 @@ Translet. Now the id index table is only built when the stylesheet makes
 use of the id function.
 
 Also fix a bug in the NameBase class for using an incorrect class name
-(org.apache.xml.dtm.ref.DTMAxisIterator should be org.apache.xml.dtm.DTMAxisIterator).
+(de.lyca.xml.dtm.ref.DTMAxisIterator should be de.lyca.xml.dtm.DTMAxisIterator).
 <br/><br/></li><li><ref>Committed by </ref>mkwan@apache.org<ref> on </ref>2003/03/06<br/><ref>Modified: </ref> xml-xalan/java/src/org/apache/xalan/xsltc/dom AnyNodeCounter.java DOMAdapter.java xml-xalan/java/src/org/apache/xml/dtm/ref/sax2dtm SAX2DTM2.java<br/><ref>Committer's log entry: </ref>
 XSLTC_DTM performance work
 Improvement for xsl:number. Introduce an optimized version of
@@ -3333,17 +3333,17 @@ used in document traversal.
 Committing Christine Li's (jycli@ca.ibm.com) patch for bugzilla #18210.
 <br/><br/></li><li><ref>Committed by </ref>mkwan@apache.org<ref> on </ref>2003/04/01<br/><ref>Modified: </ref> xml-xalan/java/src/org/apache/xml/dtm/ref/sax2dtm SAX2DTM.java SAX2DTM2.java<br/><ref>Committer's log entry: </ref>
 Merging XSLTC_DTM and common serializer to the head
-Changes in org.apache.xml.dtm.ref.sax2dtm.
+Changes in de.lyca.xml.dtm.ref.sax2dtm.
 Add new file SAX2DTM2.
 <br/><br/></li><li><ref>Committed by </ref>mkwan@apache.org<ref> on </ref>2003/04/01<br/><ref>Modified: </ref> xml-xalan/java/src/org/apache/xml/dtm/ref/dom2dtm DOM2DTM.java<br/><ref>Committer's log entry: </ref>
 Merging XSLTC_DTM and common serializer to the head
-Changes in org.apache.xml.dtm.ref.dom2dtm.
+Changes in de.lyca.xml.dtm.ref.dom2dtm.
 <br/><br/></li><li><ref>Committed by </ref>mkwan@apache.org<ref> on </ref>2003/04/01<br/><ref>Modified: </ref> xml-xalan/java/src/org/apache/xml/dtm DTM.java DTMAxisIterator.java DTMManager.java<br/><ref>Committer's log entry: </ref>
 Merging XSLTC_DTM and common serializer to the head
-Changes in org.apache.xml.dtm.
+Changes in de.lyca.xml.dtm.
 <br/><br/></li><li><ref>Committed by </ref>mkwan@apache.org<ref> on </ref>2003/04/01<br/><ref>Modified: </ref> xml-xalan/java/src/org/apache/xml/dtm/ref DTMAxisIteratorBase.java DTMAxisIterNodeList.java DTMChildIterNodeList.java DTMDefaultBase.java DTMDefaultBaseIterators.java DTMDefaultBaseTraversers.java DTMDocumentImpl.java DTMManagerDefault.java DTMNamedNodeMap.java DTMNodeList.java DTMNodeListBase.java DTMNodeProxy.java DTMStringPool.java ExpandedNameTable.java ExtendedType.java IncrementalSAXSource_Xerces.java<br/><ref>Committer's log entry: </ref>
 Merging XSLTC_DTM and common serializer to the head
-Changes in org.apache.xml.dtm.ref.
+Changes in de.lyca.xml.dtm.ref.
 Add new files:
 DTMAxisIterNodeList.java
 DTMChildIterNodeList.java
@@ -3351,18 +3351,18 @@ DTMNodeListBase.java
 ExtendedType.java
 <br/><br/></li><li><ref>Committed by </ref>mkwan@apache.org<ref> on </ref>2003/04/01<br/><ref>Modified: </ref> xml-xalan/java/src/org/apache/xml/res XMLErrorResources.java<br/><ref>Committer's log entry: </ref>
 Merging XSLTC_DTM and common serializer to the head
-Changes in org.apache.xml.res.
+Changes in de.lyca.xml.res.
 Add new messages for common serializer.
 <br/><br/></li><li><ref>Committed by </ref>mkwan@apache.org<ref> on </ref>2003/04/01<br/><ref>Modified: </ref> xml-xalan/java/src/org/apache/xml/serializer AttributesImplSerializer.java CharInfo.java DOMSerializer.java ElemDesc.java EmptySerializer.java EncodingInfo.java Encodings.java Encodings.properties ExtendedContentHandler.java ExtendedLexicalHandler.java HTMLEntities.res Method.java NamespaceMappings.java output_html.properties output_text.properties output_unknown.properties output_xml.properties OutputPropertiesFactory.java OutputPropertyUtils.java package.html SerializationHandler.java Serializer.java SerializerBase.java SerializerConstants.java SerializerFactory.java SerializerTrace.java SerializerTraceWriter.java ToHTMLSAXHandler.java ToHTMLStream.java ToSAXHandler.java ToStream.java ToTextSAXHandler.java ToTextStream.java ToUnknownStream.java ToXMLSAXHandler.java ToXMLStream.java TransformStateSetter.java WriterToASCI.java WriterToUTF8.java WriterToUTF8Buffered.java XMLEntities.res XSLOutputAttributes.java<br/><ref>Committer's log entry: </ref>
 Merging XSLTC_DTM and common serializer to the head
-Add new serializer classes under package org.apache.xml.serializer.
+Add new serializer classes under package de.lyca.xml.serializer.
 Log from Brian Minchau (minchau@ca.ibm.com):
 
 In the past Xalan-J interpretive (Xalan) and XSLTC both implemented their own
 serialization stages.  Much of the code provides the same functionality.
 In order to improve the maintainability of the code, and to eliminate any
 functional differences, these two serializers are now merged in the
-org.apache.xml.serializer package.
+de.lyca.xml.serializer package.
 
 The best performing features of both have been used.  The class hierarchy
 of serializers used by XSLTC is re-used for this reason. At the highest
@@ -3377,13 +3377,13 @@ interface, SerializationHandler, accepts SAX and SAX-like calls, but
 it also absorbs other interfaces from the old Xalan serializer.
 <br/><br/></li><li><ref>Committed by </ref>mkwan@apache.org<ref> on </ref>2003/04/01<br/><ref>Modified: </ref> xml-xalan/java/src/org/apache/xml/utils DOMHelper.java FastStringBuffer.java IntStack.java SuballocatedIntVector.java XMLStringDefault.java XMLStringFactoryDefault.java<br/><ref>Committer's log entry: </ref>
 Merging XSLTC_DTM and common serializer to the head
-Changes in org.apache.xml.utils.
+Changes in de.lyca.xml.utils.
 <br/><br/></li><li><ref>Committed by </ref>mkwan@apache.org<ref> on </ref>2003/04/01<br/><ref>Modified: </ref> xml-xalan/java/src/org/apache/xalan/extensions XSLProcessorContext.java<br/><ref>Committer's log entry: </ref>
 Merging XSLTC_DTM and common serializer to the head
-Changes in org.apache.xalan.extensions.
+Changes in de.lyca.xalan.extensions.
 <br/><br/></li><li><ref>Committed by </ref>mkwan@apache.org<ref> on </ref>2003/04/01<br/><ref>Modified: </ref> xml-xalan/java/src/org/apache/xalan/lib ExsltDatetime.java PipeDocument.java Redirect.java xml-xalan/java/src/org/apache/xalan/lib/sql DTMDocument.java<br/><ref>Committer's log entry: </ref>
 Merging XSLTC_DTM and common serializer to the head
-Changes in org.apache.xalan.lib.
+Changes in de.lyca.xalan.lib.
 
 1. Change the return types of some date-time extension functions
 for support in XSLTC.
@@ -3391,22 +3391,22 @@ for support in XSLTC.
 2. Changes for the new serializer.
 <br/><br/></li><li><ref>Committed by </ref>mkwan@apache.org<ref> on </ref>2003/04/01<br/><ref>Modified: </ref> xml-xalan/java/src/org/apache/xalan/processor ProcessorOutputElem.java TransformerFactoryImpl.java<br/><ref>Committer's log entry: </ref>
 Merging XSLTC_DTM and common serializer to the head
-Changes in org.apache.xalan.processor.
+Changes in de.lyca.xalan.processor.
 <br/><br/></li><li><ref>Committed by </ref>mkwan@apache.org<ref> on </ref>2003/04/01<br/><ref>Modified: </ref> xml-xalan/java/src/org/apache/xalan/serialize CharInfo.java DOMSerializer.java ElemDesc.java EncodingInfo.java Encodings.java Encodings.properties HTMLEntities.res Method.java package.html Serializer.java serializer.properties SerializerFactory.java SerializerToHTML.java SerializerToText.java SerializerToXML.java SerializerUtils.java WriterToASCI.java WriterToUTF8.java WriterToUTF8Buffered.java XMLEntities.res<br/><ref>Committer's log entry: </ref>
 Merging XSLTC_DTM and common serializer to the head
-Remove old serializer classes under org.apache.xalan.serialize.
-The new serializer files are now in org.apache.xml.serializer.
+Remove old serializer classes under de.lyca.xalan.serialize.
+The new serializer files are now in de.lyca.xml.serializer.
 Add new file SerializerUtils.java.
 <br/><br/></li><li><ref>Committed by </ref>mkwan@apache.org<ref> on </ref>2003/04/01<br/><ref>Modified: </ref> xml-xalan/java/src/org/apache/xalan/templates ElemApplyTemplates.java ElemAttribute.java ElemCopy.java ElemCopyOf.java ElemElement.java ElemExtensionCall.java ElemForEach.java ElemLiteralResult.java ElemTemplateElement.java ElemTextLiteral.java ElemValueOf.java output_html.properties output_text.properties output_xml.properties OutputProperties.java StylesheetRoot.java<br/><ref>Committer's log entry: </ref>
 Merging XSLTC_DTM and common serializer to the head
-Changes in org.apache.xalan.templates.
+Changes in de.lyca.xalan.templates.
 Replace ResultTreeHandler with SerializationHandler.
 <br/><br/></li><li><ref>Committed by </ref>mkwan@apache.org<ref> on </ref>2003/04/01<br/><ref>Modified: </ref> xml-xalan/java/src/org/apache/xalan/trace GenerateEvent.java PrintTraceListener.java<br/><ref>Committer's log entry: </ref>
 Merging XSLTC_DTM and common serializer to the head
-Changes in org.apache.xalan.trace.
+Changes in de.lyca.xalan.trace.
 <br/><br/></li><li><ref>Committed by </ref>mkwan@apache.org<ref> on </ref>2003/04/01<br/><ref>Modified: </ref> xml-xalan/java/src/org/apache/xalan/transformer ClonerToResultTree.java QueuedEvents.java ResultTreeHandler.java SerializerSwitcher.java TransformerHandlerImpl.java TransformerIdentityImpl.java TransformerImpl.java TransformSnapshot.java TransformSnapshotImpl.java TransformState.java TreeWalker2Result.java XalanTransformState.java<br/><ref>Committer's log entry: </ref>
 Merging XSLTC_DTM and common serializer to the head
-Changes in org.apache.xalan.transformer for the new serializer.
+Changes in de.lyca.xalan.transformer for the new serializer.
 <br/><br/></li><li><ref>Committed by </ref>mkwan@apache.org<ref> on </ref>2003/04/01<br/><ref>Modified: </ref> xml-xalan/java build.xml xsltc_todo.xml<br/><ref>Committer's log entry: </ref>
 Merging XSLTC_DTM and common serializer to the head
 Update build.xml and xsltc_todo.xml.
@@ -3661,7 +3661,7 @@ Since Xerces has decided not to build the org.w3c.dom.xpath interfaces into
 XercesImpl I have created a temporary home for these interfaces, until
 the specification becomes a recommendation.
 <br/><br/></li><li><ref>Committed by </ref>ilene@apache.org<ref> on </ref>2002/09/23<br/><ref>Modified: </ref> xml-xalan/java/src/org/apache/xpath/domapi XPathEvaluatorImpl.java XPathExpressionImpl.java XPathNSResolverImpl.java XPathResultImpl.java<br/><ref>Committer's log entry: </ref>
-Updating import statements to use the interfaces in the temporary org.apache.xalan.dom3.xpath package.
+Updating import statements to use the interfaces in the temporary de.lyca.xalan.dom3.xpath package.
 <br/><br/></li><li><ref>Committed by </ref>ilene@apache.org<ref> on </ref>2002/09/24<br/><ref>Modified: </ref> xml-xalan/java/src/org/apache/xalan/res XSLTErrorResources.java XSLTErrorResources.properties<br/><ref>Committer's log entry: </ref>
 Added some new error message strings.
 <br/><br/></li><li><ref>Committed by </ref>ilene@apache.org<ref> on </ref>2002/09/25<br/><ref>Modified: </ref> xml-xalan/java/src/org/apache/xalan/transformer ResultTreeHandler.java<br/><ref>Committer's log entry: </ref>
@@ -3742,8 +3742,8 @@ The token queue and operations map can now grow to accomodate really
 large XPath expressions.   Starting sizes of the data structures remain set
 at the size in the current code.
 
-I created new classes org.apache.xml.utils.ObjectVector (based on org.apache.xml.utils.IntVector)
-and org.apache.xpath.compiler.OpMapVector to store the token queue
+I created new classes de.lyca.xml.utils.ObjectVector (based on de.lyca.xml.utils.IntVector)
+and de.lyca.xpath.compiler.OpMapVector to store the token queue
 and operations map.
 
 This patch is essentially a stop gap until the new parser (xslt20 branch) is integrated.
@@ -3795,7 +3795,7 @@ been commented out.  Some initialization now done in static initializer.
 Committing Gordon Chiu's (grchiu@ca.ibm.com) patch for bugzilla #13754.
 <br/><br/></li><li><ref>Committed by </ref>ilene@apache.org<ref> on </ref>2002/10/21<br/><ref>Modified: </ref> xml-xalan/java/src/org/apache/xalan/dom3/xpath COPYRIGHT.html<br/><ref>Committer's log entry: </ref>
 Copying the copyright statement for the DOM L3 XPath API interfaces into
-the temporary package (org.apache.xalan.dom3.xpath) which contains
+the temporary package (de.lyca.xalan.dom3.xpath) which contains
 the interfaces until they become a recommendation.
 <br/><br/></li><li><ref>Committed by </ref>mkwan@apache.org<ref> on </ref>2002/10/22<br/><ref>Modified: </ref> xml-xalan/java/src/org/apache/xalan/processor ProcessorExsltFunction.java<br/><ref>Committer's log entry: </ref>
 For bugzilla 13711
@@ -3832,12 +3832,12 @@ status. Modify setup instructions for SQL samples.
 For Bugzilla 14022
 Commit Gordon Chiu's update to the FAQ.
 <br/><br/></li><li><ref>Committed by </ref>ilene@apache.org<ref> on </ref>2002/10/28<br/><ref>Modified: </ref> xml-xalan/java/src/org/apache/xalan/dom3/xpath COPYRIGHT.html XPathEvaluator.java XPathException.java XPathExpression.java XPathNamespace.java XPathNSResolver.java XPathResult.java xml-xalan/java/src/org/apache/xpath/domapi XPathEvaluatorImpl.java XPathExpressionImpl.java XPathNSResolverImpl.java XPathResultImpl.java<br/><ref>Committer's log entry: </ref>
-Removed the temporary org.apache.xalan.dom3.xpath package.
+Removed the temporary de.lyca.xalan.dom3.xpath package.
 
 Updated the org.w3c.dom.xpath interfaces.
 
 Changed dependencies to org.w3c.dom.xpath interfaces in the implementation
-classes in org.apache.xalan.xpath.domapi.
+classes in de.lyca.xalan.xpath.domapi.
 <br/><br/></li><li><ref>Committed by </ref>ilene@apache.org<ref> on </ref>2002/10/28<br/><ref>Modified: </ref> xml-xalan/java build.xml<br/><ref>Committer's log entry: </ref>
 Build org.w3c.xpath.dom interfaces into xalan.jar.
 <br/><br/></li><li><ref>Committed by </ref>ilene@apache.org<ref> on </ref>2002/10/28<br/><ref>Modified: </ref> xml-xalan/java/src/org/apache/xpath XPathContext.java<br/><ref>Committer's log entry: </ref>
@@ -3914,7 +3914,7 @@ use the name parameter.
 Bugzilla6284: New function added to position() and last() that will help us determine whether we are executing a top-level expression and therefore, not inside a predicate
 <br/><br/></li><li><ref>Committed by </ref>mmidy@apache.org<ref> on </ref>2002/05/13<br/><ref>Modified: </ref> xml-xalan/java/src/org/apache/xalan/res XSLMessages.java XSLTErrorResources.java xml-xalan/java/src/org/apache/xalan/templates ElemTemplateElement.java xml-xalan/java/src/org/apache/xpath/res XPATHErrorResources.java<br/><ref>Committer's log entry: </ref>
 Add a null constructor for resource files and fix XSLMessages to use the correct error resource file
-<br/><br/></li><li><ref>Committed by </ref>mmidy@apache.org<ref> on </ref>2002/05/13<br/><ref>Modified: </ref> xml-xalan/java/src/META-INF/services org.apache.xml.dtm.DTMManager xml-xalan/java/src/org/apache/xml/dtm DTMManager.java<br/><ref>Committer's log entry: </ref>
+<br/><br/></li><li><ref>Committed by </ref>mmidy@apache.org<ref> on </ref>2002/05/13<br/><ref>Modified: </ref> xml-xalan/java/src/META-INF/services de.lyca.xml.dtm.DTMManager xml-xalan/java/src/org/apache/xml/dtm DTMManager.java<br/><ref>Committer's log entry: </ref>
 Add meta file for DTMManager factory and make sure it is read as UTF-8
 <br/><br/></li><li><ref>Committed by </ref>jkesselm@apache.org<ref> on </ref>2002/05/14<br/><ref>Modified: </ref> xml-xalan/java/src/org/apache/xpath/objects XNodeSetForDOM.java<br/><ref>Committer's log entry: </ref>
 m_last was not being set correctly. See comments.
@@ -4026,7 +4026,7 @@ Final composition of an extension component for which no component exsits -- Ele
 Final composition of an exslt:function element -- ElemFunction.compose().
 During StylesheetRoot.recompose(), any extension namespaces that are not predefined and for which no component or function element exists, are defined as java class (if a java class is found) or java package. In the current implementation, this last stab is made during the transformation, repeatedly if the element or function cannot be processed and is called more than once.
 At the beginning of each transformation -- transformNode() --  if any extensions exist, TransformerImpl instantiates an ExtensionsTable with a hashtable containing an ExtensionHandler for each of the ExtensionNamespaceSupport objects defined during stylesheet assembly. XPathContext  no longer creates or has any direct knowledge of the ExtensionsTable. The ExtensionsTable does not contain handlers for predefined namespaces that are not being used.
-TransformerImpl implements the org.apache.xpath.ExtensionsProvider interface. The relevant XPath functions (FuncExtFunction, FuncExtElememntAvailable, and FuncExtFunctionAvailable) call this interface, via XPathContext.getOwnerObject(). The implementation contains 3 methods that call through to the ExtensionsTable, which passes the call on to the appropriate ExtensionHandler..
+TransformerImpl implements the de.lyca.xpath.ExtensionsProvider interface. The relevant XPath functions (FuncExtFunction, FuncExtElememntAvailable, and FuncExtFunctionAvailable) call this interface, via XPathContext.getOwnerObject(). The implementation contains 3 methods that call through to the ExtensionsTable, which passes the call on to the appropriate ExtensionHandler..
 <br/><br/></li><li><ref>Committed by </ref>mmidy@apache.org<ref> on </ref>2002/06/10<br/><ref>Modified: </ref> xml-xalan/java/src/org/apache/xalan/serialize Encodings.java<br/><ref>Committer's log entry: </ref>
 Use ContextClassLoader - Use full Encoding file package name - Merge new patch from Sergey Ushakov
 <br/><br/></li><li><ref>Committed by </ref>sboag@apache.org<ref> on </ref>2002/06/10<br/><ref>Modified: </ref> xml-xalan/java/src/org/apache/xalan/templates FuncDocument.java FuncFormatNumb.java xml-xalan/java/src/org/apache/xpath/functions FuncConcat.java FuncExtFunction.java FuncSubstring.java Function.java Function2Args.java Function3Args.java FunctionDef1Arg.java FunctionMultiArgs.java FunctionOneArg.java xml-xalan/java/src/org/apache/xpath/res XPATHErrorResources.properties<br/><ref>Committer's log entry: </ref>
@@ -4528,7 +4528,7 @@ a namespace and a nodetype to represent the node extended type. We no longer
 need to do the shifting left and right that we did for the previous extended 
 types.<br/><br/></li><li><ref>Committed by </ref>jkesselm@apache.org<ref> on </ref>04/12/2002<br/><ref>Added: </ref>java/src/org/apache/xml/dtm XSequence.java<br/><ref>Committer's log entry: </ref>Creating a new branch, Xalan3, for experimentation with XPath2 support.
 
- Currently the changes are limited to org.apache.xml.dtm -- enabling
+ Currently the changes are limited to de.lyca.xml.dtm -- enabling
  datatype support by tying into Xerces' low-level XNI layer, which
  includes experimental support for post-schema-validation Infoset
  (PSVI) information. Eventually we'll be patching other portions of
@@ -4561,7 +4561,7 @@ types.<br/><br/></li><li><ref>Committed by </ref>jkesselm@apache.org<ref> on </r
  fully functional.<br/><br/></li><li><ref>Committed by </ref>jkesselm@apache.org<ref> on </ref>04/12/2002<br/><ref>Added: </ref>java/src/org/apache/xml/dtm/ref/xni2dtm DTM_XSequence.java
  XNI2DTM.java<br/><ref>Committer's log entry: </ref>Creating a new branch, Xalan3, for experimentation with XPath2 support.
 
- Currently the changes are limited to org.apache.xml.dtm -- enabling
+ Currently the changes are limited to de.lyca.xml.dtm -- enabling
  datatype support by tying into Xerces' low-level XNI layer, which
  includes experimental support for post-schema-validation Infoset
  (PSVI) information. Eventually we'll be patching other portions of
@@ -4599,7 +4599,7 @@ types.<br/><br/></li><li><ref>Committed by </ref>jkesselm@apache.org<ref> on </r
  java/src/org/apache/xml/dtm/ref/sax2dtm Tag: Xalan3
  SAX2DTM.java<br/><ref>Committer's log entry: </ref>Creating a new branch, Xalan3, for experimentation with XPath2 support.
 
- Currently the changes are limited to org.apache.xml.dtm -- enabling
+ Currently the changes are limited to de.lyca.xml.dtm -- enabling
  datatype support by tying into Xerces' low-level XNI layer, which
  includes experimental support for post-schema-validation Infoset
  (PSVI) information. Eventually we'll be patching other portions of
@@ -5099,8 +5099,8 @@ comments
  scientific notation. If folks want to accept those notations, an
  extension function specifically for that purpose seems the
  simplest/safest/most-portable solution.<br/><br/></li><li><ref>Committed by </ref>jkesselm@apache.org<ref> on </ref>10/17/2001<br/><ref>Modified: </ref>java/src/org/apache/xpath/objects XStringForFSB.java<br/><ref>Committer's log entry: </ref>Gaaah. Typo.<br/><br/></li><li><ref>Committed by </ref>curcuru@apache.org<ref> on </ref>10/17/2001<br/><ref>Modified: </ref>java/src/org/apache/xalan/processor XSLProcessorVersion.java
- java/src/org/apache/xalan/xslt EnvironmentCheck.java<br/><ref>Added: </ref>java/src/org/apache/xalan Version.java<br/><ref>Committer's log entry: </ref>Added new org.apache.xalan.Version class for better versioning info;
- Deprecated org.apache.xalan.processor.XSLProcessorVersion;
+ java/src/org/apache/xalan/xslt EnvironmentCheck.java<br/><ref>Added: </ref>java/src/org/apache/xalan Version.java<br/><ref>Committer's log entry: </ref>Added new de.lyca.xalan.Version class for better versioning info;
+ Deprecated de.lyca.xalan.processor.XSLProcessorVersion;
  Updated EnvironmentCheck with this info<br/><br/></li><li><ref>Committed by </ref>jkesselm@apache.org<ref> on </ref>10/18/2001<br/><ref>Modified: </ref>java/src/org/apache/xalan Version.java<br/><ref>Committer's log entry: </ref>Be careful with parentheses when using ?: operator.<br/><br/></li><li><ref>Committed by </ref>jkesselm@apache.org<ref> on </ref>10/18/2001<br/><ref>Modified: </ref>java/src/org/apache/xml/dtm/ref DTMManagerDefault.java
  IncrementalSAXSource_Xerces.java<br/><ref>Removed: </ref>java/src/org/apache/xml/dtm/ref CoroutineSAXParser.java
  CoroutineSAXParser_Xerces.java<br/><ref>Committer's log entry: </ref>CoroutineParser API was replaced by IncrementalSAXSource; dropping obsolete 
@@ -5876,7 +5876,7 @@ deprecated but uses ExpressionContext.toString().<br/><br/></li><li><ref>Committ
 
  TransformerImpl impl = ((TransformerImpl) transformer);
  
-impl.setProperty(org.apache.xalan.transformer.XalanProperties.SOURCE_LOCATION,
+impl.setProperty(de.lyca.xalan.transformer.XalanProperties.SOURCE_LOCATION,
  Boolean.TRUE);
 
  A Transformer "property" is different from a "feature": while a
@@ -5899,7 +5899,7 @@ impl.setProperty(org.apache.xalan.transformer.XalanProperties.SOURCE_LOCATION,
 
  &lt;xsl:stylesheet
  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
- xmlns:nodeinfo="xalan://org.apache.xalan.lib.NodeInfo"
+ xmlns:nodeinfo="xalan://de.lyca.xalan.lib.NodeInfo"
  version="1.0"&gt;
 
  &lt;xsl:template match="*"&gt;
@@ -6298,7 +6298,7 @@ xsl:when to be ignored.<br/><br/></li><li><ref>Committed by </ref>costin@apache.
  java/src/org/apache/xalan/serialize SerializerFactory.java<br/><ref>Committer's log entry: </ref>2 more instances where Class.forName was used.
 
  Use the method in ExtensionHandler for consistency ( we could move it in
- org.apache.xml.utils, but for now it's easier to just use it as it is )<br/><br/></li><li><ref>Committed by </ref>costin@apache.org<ref> on </ref>05/15/2001<br/><ref>Modified: </ref>java/src/org/apache/xalan/stree SourceTreeHandler.java
+ de.lyca.xml.utils, but for now it's easier to just use it as it is )<br/><br/></li><li><ref>Committed by </ref>costin@apache.org<ref> on </ref>05/15/2001<br/><ref>Modified: </ref>java/src/org/apache/xalan/stree SourceTreeHandler.java
  java/src/org/apache/xalan/transformer TransformerImpl.java<br/><ref>Committer's log entry: </ref>This is the "thread pooling hook".
 
  It slightly changes the API used to create and wait for the transform thread.
@@ -6682,7 +6682,7 @@ systemId
    stylesheet element.<br/><br/></li>
    <li>Fixed checking of number of arguments in document() function.<br/><br/></li>
    <li>Fixed problem with mutation of templates at run time. Templates resolution now takes place during the compose() method.<br/><br/></li>
-   <li>Fixed some minor threading issues in org.apache.xalan.stree (Child, Parent, ElementImpl, SourceTreeHandler).<br/><br/></li>
+   <li>Fixed some minor threading issues in de.lyca.xalan.stree (Child, Parent, ElementImpl, SourceTreeHandler).<br/><br/></li>
    <li>Synchronized TrAX API functions subject to mutation to prevent mutation during a transformation.<br/><br/></li>
    <li>Fixed bug reported by Jano Elovirta: substring() was returning an error if the start index is larger than the string.<br/><br/></li>   
    <li>Set StringKey.toString() to return the underlying String (m_str), thus avoiding a potential symmetry problem with the equals() method
@@ -6741,7 +6741,7 @@ Note: To support incremental output, &xslt4j; performs the transformation in a s
 <li>We now conform to the SAX convention of representing null namespaces with empty strings.<br/><br/></li>
 <li>Fixed a bug encountered evaluating a variable in a predicate expression applied to child nodes.<br/><br/></li>
 <li>Changed names of serializers from FormatterTo<ref>Xxx</ref> to SerializerTo<ref>Xxx</ref>. See 
-<jump href="apidocs/org/apache/xalan/serialize/package-summary.html">Package org.apache.xalan.serialize</jump>.<br/><br/></li>
+<jump href="apidocs/org/apache/xalan/serialize/package-summary.html">Package de.lyca.xalan.serialize</jump>.<br/><br/></li>
 <li>Improved debugging support in a number of areas.</li>
 </ul>
 </s2>
@@ -6750,13 +6750,13 @@ Note: To support incremental output, &xslt4j; performs the transformation in a s
 <p><em>TrAX</em></p>
 <p>The Transformation API for XML (TrAX) that &xslt4j2; implements has undergone substantial revisions since the release of &xslt4j; 2.0.D01. TrAX has joined the Java API for XML Parsing (JAXP) as part of the Sun&reg; <resource-ref idref="jsr063"/>. Accordingly, the TrAX package names have changed. The conceptual organization has also changed somewhat: The primary transformation interfaces are defined in javax.xml.transform, with concrete classes for managing stream input/output, SAX parsers and ContentHandler, and DOM parsers and DOM trees in javax.xml.transform.stream, javax.xml.transform.sax, and javax.xml.transform.dom. For more information, see <link idref="trax">TrAX (Transformation API for XML)</link>, and review <link idref="usagepatterns">Usage Patterns</link>.</p>
 <anchor name="outputprops"/><p><em>Output properties</em></p>
-<p>The handling of xsl:output properties has changed: org.apache.xalan.serialize.OutputFormat and apache.xalan.templates.OutputFormatExtended were removed and replaced with org.apache.xalan.templates.OutputProperties. The SerializerFactory getSerializer() method now takes Properties rather than a String indicating the output method. You can replace <code>getSerializer("xml")</code>, for example, with <code>getSerializer(OutputProperties.getDefaultMethodProperties("xml"))</code>.</p>
-<p>HTML, XML, and text xsl:output properties are specified in property files in org.apache.xalan.templates: output_html.properties, output_xml.properties, and output_text.properties.</p>
+<p>The handling of xsl:output properties has changed: de.lyca.xalan.serialize.OutputFormat and apache.xalan.templates.OutputFormatExtended were removed and replaced with de.lyca.xalan.templates.OutputProperties. The SerializerFactory getSerializer() method now takes Properties rather than a String indicating the output method. You can replace <code>getSerializer("xml")</code>, for example, with <code>getSerializer(OutputProperties.getDefaultMethodProperties("xml"))</code>.</p>
+<p>HTML, XML, and text xsl:output properties are specified in property files in de.lyca.xalan.templates: output_html.properties, output_xml.properties, and output_text.properties.</p>
 <p>You can start using the output properties defined in these files in your stylesheets. For example, you can turn URL escaping off in HTML output with<br/><code>{http\u003a//xml.apache.org/xslt}use-url-escaping=no</code><br/>
 and you can control indenting with<br/>
 <code>{http\u003a//xml.apache.org/xslt}indent-amount=<ref>n</ref></code></p>
 <note>The colon after the "http" protocol must be escaped.</note>
-<p>Character-to-entity mapping is specified in org.apache.xalan.serialize: HTMLEntities.res and XMLEntities.res. You can override entity ref 
+<p>Character-to-entity mapping is specified in de.lyca.xalan.serialize: HTMLEntities.res and XMLEntities.res. You can override entity ref 
 mapping from a stylesheet. For example:</p>
 <source>&lt;?xml version="1.0"?&gt;
 &lt;xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"

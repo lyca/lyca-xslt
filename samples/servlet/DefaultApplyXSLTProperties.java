@@ -252,7 +252,7 @@ public class DefaultApplyXSLTProperties extends ApplyXSLTProperties {
 	{
 	  Properties props = new Properties();
     props.put("javax.xml.transform.TransformerFactory", 
-              "org.apache.xalan.processor.TransformerFactoryImpl");
+              "de.lyca.xalan.processor.TransformerFactoryImpl");
     props.put("javax.xml.parsers.DocumentBuilderFactory", 
               "org.apache.xerces.jaxp.DocumentBuilderFactoryImpl");
     props.put("javax.xml.parsers.SAXParserFactory", 

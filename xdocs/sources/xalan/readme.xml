@@ -42,13 +42,13 @@
       (<jump href="http://www.w3.org/TR/2004/REC-DOM-Level-3-LS-20040407/load-save.html#LS-LSSerializer">LSSerializer</jump>)
       for an XML parser. These changes are seen in the new class
       <jump href="apidocs/org/apache/xml/serializer/DOM3Serializer.html">
-      <code>org.apache.xml.serializer.DOM3Serializer</code></jump> 
+      <code>de.lyca.xml.serializer.DOM3Serializer</code></jump> 
       and the new package
-      <code>org.apache.xml.serializer.dom3</code>
+      <code>de.lyca.xml.serializer.dom3</code>
       as well as a new method,       
       <code>asDOM3Serializer()</code> on the older 
       <jump href="apidocs/org/apache/xml/serializer/Serializer.html">
-      <code>org.apache.xml.serializer.Serializer</code></jump> interface.
+      <code>de.lyca.xml.serializer.Serializer</code></jump> interface.
       </p>
       <p>
       More details are in the javadoc of those classes and interfaces.
@@ -190,7 +190,7 @@
   The default ErrorListener of the old &xslt4ji; processor throws exceptions on errors and fatal errors. If your
   code expects exceptions to be thrown on errors and fatal errors, you have to set a customized ErrorListener on
   TransformerFactory and/or Transformer. You can use 
-  <jump href="apidocs/org/apache/xml/utils/DefaultErrorHandler.html">org.apache.xml.utils.DefaultErrorHandler</jump>
+  <jump href="apidocs/org/apache/xml/utils/DefaultErrorHandler.html">de.lyca.xml.utils.DefaultErrorHandler</jump>
   as a sample ErrorListener implementation.
   </s4>
   <s4 title="Support for XML 1.1">
@@ -802,7 +802,7 @@
      <jump href="http://issues.apache.org/bugzilla/show_bug.cgi?id=11828">11828</jump>,
      <jump href="http://issues.apache.org/bugzilla/show_bug.cgi?id=12075">12075</jump></li>. 
      <li>&xslt4j; now uses a list of supported encodings in a properties file 
-     (org.apache.xml.serializer.Encodings.properties). Fixes Bugzilla 6356. Patch from Sergey Ushakov. </li>     
+     (de.lyca.xml.serializer.Encodings.properties). Fixes Bugzilla 6356. Patch from Sergey Ushakov. </li>     
      <li>Support for the <jump href="http://www.exslt.org/">EXSLT</jump> function and result elements, and EXSLT 
      date-and-time functions.</li>
      <li>Improvements to the extensions mechanism to more efficiently handle the detection and analysis of extensions 

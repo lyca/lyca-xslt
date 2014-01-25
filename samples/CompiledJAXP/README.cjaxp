@@ -6,7 +6,7 @@ This Compiled JAXP Demo shows you one way to compile and use compiled
 translets with JAXP.
 
 Use the two classes provided, Compile and Transform, just like the 
-org.apache.xalan.xsltc.cmdline Compile and Transform classes.
+de.lyca.xalan.xsltc.cmdline Compile and Transform classes.
 
 Compile.java
      Compiles an XSL stylesheet into a translet, which is written to

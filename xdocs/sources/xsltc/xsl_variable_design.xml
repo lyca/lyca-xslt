@@ -79,7 +79,7 @@
     (the Hashtable maps the parameter name to the parameter value). The
     "boxing" of the parameter's value is done by the class that handles the
     parameters type. This class is a subclass of
-    <code>org.apache.xalan.xsltc.compiler.util.Type</code>.</p>
+    <code>de.lyca.xalan.xsltc.compiler.util.Type</code>.</p>
 
     <p>Note that all top-level parameters and variables from all imported and
     included stylesheets will be placed as direct children of the top-level

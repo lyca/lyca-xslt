@@ -54,7 +54,7 @@
   <s2 title="Node Iterator Interface">
 
     <p>The node iterator interface is defined in
-    <code>org.apache.xalan.xsltc.NodeIterator</code>.</p>
+    <code>de.lyca.xalan.xsltc.NodeIterator</code>.</p>
 
     <p>The most basic operations in the <code>NodeIterator</code> interface are
     for setting the iterators start-node. The &quot;start-node&quot; is
@@ -214,7 +214,7 @@
     <s3 title="Axis iterators">
 
     <p>All axis iterators are implemented as inner classes of the internal
-    DOM implementation <code>org.apache.xalan.xsltc.dom.DOMImpl</code>. In this
+    DOM implementation <code>de.lyca.xalan.xsltc.dom.DOMImpl</code>. In this
     way all axis iterator classes have direct access to the internal node
     type- and navigation arrays of the DOM:</p><source>
     private short[]   _type;          // Node types
@@ -284,7 +284,7 @@
 
     <s3 title="Iterators for Filtering/Predicates">
 
-    <p>The <code>org.apache.xalan.xsltc.dom</code> package contains a few
+    <p>The <code>de.lyca.xalan.xsltc.dom</code> package contains a few
     iterators that are used to implement predicates and filters. Such iterators
     are normally placed on top of another iterator, and return only those nodes
     that match a specific node value, position, etc.

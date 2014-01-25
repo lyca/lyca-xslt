@@ -39,9 +39,9 @@ import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TemplatesHandler;
 import javax.xml.transform.sax.TransformerHandler;
 
-import org.apache.xml.serializer.Serializer;
-import org.apache.xml.serializer.SerializerFactory;
-import org.apache.xml.serializer.OutputPropertiesFactory;
+import de.lyca.xml.serializer.Serializer;
+import de.lyca.xml.serializer.SerializerFactory;
+import de.lyca.xml.serializer.OutputPropertiesFactory;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;

@@ -212,7 +212,7 @@
 
       <li>The <jump href="xsltc_native_api.html#document-locator">native API
       documentation</jump> contains a section on using the internal
-      <code>org.apache.xalan.xsltc.compiler.SourceLoader</code> interface.</li>
+      <code>de.lyca.xalan.xsltc.compiler.SourceLoader</code> interface.</li>
     </ul>
   </s2>
 

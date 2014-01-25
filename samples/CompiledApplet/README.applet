@@ -50,7 +50,7 @@ HOW TO SET UP THE DEMO ON YOUR SITE
    named META-INF/services/javax.xml.transform.TransformerFactory in
    your JAR file that contains the following line:
 
-       org.apache.xalan.xsltc.trax.TransformerFactoryImpl
+       de.lyca.xalan.xsltc.trax.TransformerFactoryImpl
 
    Be sure to make the JAR file world readable!
 

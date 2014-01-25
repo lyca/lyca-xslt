@@ -161,7 +161,7 @@ $Id$
   <property name="xdocs.style"                  value="${xdocs.dir}/style"/>
   <property name="xalanonly-styledocs"
             value="dtd/xsl-html40s.dtd,dtd/spec.dtd,stylesheets/patterns.xsl,stylesheets/notice.xsl,stylesheets/spec.xsl,stylesheets/done.xsl,loaderdesign.xml,stylesheets/design2project.xsl,stylesheets/designdoc2html.xsl,stylesheets/xml2fo.xsl"/>
-  <property name="xalan.cmdline.class"          value="org.apache.xalan.xslt.Process"/>
+  <property name="xalan.cmdline.class"          value="de.lyca.xalan.xslt.Process"/>
   <property name="doc.generator"                value="org.apache.stylebook.StyleBook"/>
   <property name="doc.generator.styletargz"     value="${xdocs.dir}/xml-site-style.tar.gz"/>
   <property name="doc.generator.styletar"       value="${xdocs.dir}/xml-site-style.tar"/>
@@ -433,7 +433,7 @@ $Id$
     <pathelement location="${java_cup.jar}" />
     <pathelement location="${runtime.jar}" />
     <!-- build.classes needed for 
-         org.apache.xalan.xsltc.util.JavaCupRedirect -->
+         de.lyca.xalan.xsltc.util.JavaCupRedirect -->
     <pathelement location="${build.classes}" />
     <pathelement path="${java.class.path}" />
   </path>
@@ -475,7 +475,7 @@ $Id$
     <!-- The second step generates sym.java and XPathParser.java. -->
     <echo message="java_cup preparsing"/>
     <java fork="yes" failonerror="true" 
-       classname="org.apache.xalan.xsltc.util.JavaCupRedirect" >
+       classname="de.lyca.xalan.xsltc.util.JavaCupRedirect" >
       <classpath refid="xsltc.class.path" />
       <!-- need to bootclasspath java_cup for JDKs that include JavaCupRedirect -->
       <jvmarg value="-Xbootclasspath/p:${java_cup.jar}${path.separator}${runtime.jar}"/>
@@ -1044,17 +1044,17 @@ $Id$
           <group title="Transformations API for XML (TrAX)" packages="javax.xml.transform*"/>
           <group title="Java API for XML Parsing" packages="javax.xml.parsers"/>
           <group title="Xalan Core"
-                 packages="org.apache.xalan.processor:org.apache.xalan.templates:org.apache.xalan.transformer"/>
-          <group title="XPath" packages="org.apache.xpath*"/>
-          <group title="Document Table Model (DTM)" packages="org.apache.xml.dtm*"/>          
-          <group title="Utilities" packages="org.apache.xml.utils*"/>
-          <group title="Xalan Other" packages="org.apache.xalan.client:org:org.apache.xalan.extensions:org.apache.xalan.res:org.apache.xalan.stree:org.apache.xalan.trace:org.apache.xalan.xslt"/>
-          <group title="Xalan Extensions" packages="org.apache.xalan.lib*"/>
-          <group title="Serializers" packages="org.apache.xml.serialize*, org.apache.xalan.serialize"/>
+                 packages="de.lyca.xalan.processor:de.lyca.xalan.templates:de.lyca.xalan.transformer"/>
+          <group title="XPath" packages="de.lyca.xpath*"/>
+          <group title="Document Table Model (DTM)" packages="de.lyca.xml.dtm*"/>          
+          <group title="Utilities" packages="de.lyca.xml.utils*"/>
+          <group title="Xalan Other" packages="de.lyca.xalan.client:org:de.lyca.xalan.extensions:de.lyca.xalan.res:de.lyca.xalan.stree:de.lyca.xalan.trace:de.lyca.xalan.xslt"/>
+          <group title="Xalan Extensions" packages="de.lyca.xalan.lib*"/>
+          <group title="Serializers" packages="de.lyca.xml.serialize*, de.lyca.xalan.serialize"/>
           <group title="SAX 2" packages="org.xml.sax*"/>
           <group title="DOM 2" packages="org.w3c.dom*"/>
           <group title="XSLTC Core"
-                 packages="org.apache.xalan.xsltc*"/>
+                 packages="de.lyca.xalan.xsltc*"/>
     </javadoc>
   </target>
 
@@ -1079,17 +1079,17 @@ $Id$
           <group title="Transformations API for XML (TrAX)" packages="javax.xml.transform*"/>
           <group title="Java API for XML Parsing" packages="javax.xml.parsers"/>
           <group title="Xalan Core"
-                 packages="org.apache.xalan.processor:org.apache.xalan.templates:org.apache.xalan.transformer"/>
-          <group title="XPath" packages="org.apache.xpath*"/>
-          <group title="Document Table Model (DTM)" packages="org.apache.xml.dtm*"/>          
-          <group title="Utilities" packages="org.apache.xml.utils*"/>
-          <group title="Xalan Other" packages="org.apache.xalan.client:org:org.apache.xalan.extensions:org.apache.xalan.res:org.apache.xalan.stree:org.apache.xalan.trace:org.apache.xalan.xslt"/>
-          <group title="Xalan Extensions" packages="org.apache.xalan.lib*"/>
-          <group title="Serializers" packages="org.apache.xml.serialize*, org.apache.xalan.serialize"/>
+                 packages="de.lyca.xalan.processor:de.lyca.xalan.templates:de.lyca.xalan.transformer"/>
+          <group title="XPath" packages="de.lyca.xpath*"/>
+          <group title="Document Table Model (DTM)" packages="de.lyca.xml.dtm*"/>          
+          <group title="Utilities" packages="de.lyca.xml.utils*"/>
+          <group title="Xalan Other" packages="de.lyca.xalan.client:org:de.lyca.xalan.extensions:de.lyca.xalan.res:de.lyca.xalan.stree:de.lyca.xalan.trace:de.lyca.xalan.xslt"/>
+          <group title="Xalan Extensions" packages="de.lyca.xalan.lib*"/>
+          <group title="Serializers" packages="de.lyca.xml.serialize*, de.lyca.xalan.serialize"/>
           <group title="SAX 2" packages="org.xml.sax*"/>
           <group title="DOM 2" packages="org.w3c.dom*"/>
           <group title="XSLTC Core"
-                 packages="org.apache.xalan.xsltc*"/>
+                 packages="de.lyca.xalan.xsltc*"/>
     </javadoc>
   </target>
 
@@ -1699,7 +1699,7 @@ $Id$
          bottom="Copyright &#169; ${year} Apache XML Project. All Rights Reserved.">
           <classpath refid="docs.class.path" />
           <taglet name="xalan2jtaglet.XSLUsageTag" path="${taglet.jar}"/>
-          <group title="Serializer" packages="org.apache.xml.serialize*"/>
+          <group title="Serializer" packages="de.lyca.xml.serialize*"/>
     </javadoc>
   </target>
 
@@ -1719,7 +1719,7 @@ $Id$
           <doclet name="xalanjdoc.Standard" path="${doclet.jar}">
             <param name="-d" value="${build.apidocs}"/>
           </doclet>
-          <group title="Serializer" packages="org.apache.xml.serialize*"/>
+          <group title="Serializer" packages="de.lyca.xml.serialize*"/>
     </javadoc>
   </target>
 

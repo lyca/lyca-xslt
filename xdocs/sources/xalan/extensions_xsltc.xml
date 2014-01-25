@@ -121,7 +121,7 @@
   <p>The <code>nodeset</code> and <code>objectType</code> extension functions in the <jump href="apidocs/org/apache/xalan/lib/ExsltCommon.html">common</jump> 
   module are implemented natively in &xslt4jc-short;. For all other EXSLT extension functions,
   &xslt4jc-short; uses the same implementation as the &xslt4j; Interpretive processor. The implementation classes 
-  are under <code>org.apache.xalan.lib</code>.
+  are under <code>de.lyca.xalan.lib</code>.
   Depending on the packaging, these classes can be in a separate jar file (e.g. xalan.jar) from
   the &xslt4jc-short; classes. In this case you need to add the jar file containing the EXSLT classes to your
   classpath in order to use EXSLT extensions in &xslt4jc-short;.</p>

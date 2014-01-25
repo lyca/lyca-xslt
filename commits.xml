@@ -861,7 +861,7 @@ Reviewed by:	Brian Minchau
 <DateCommitted>2004/10/13</DateCommitted>
 <Modified> xml-xalan/java build.xml</Modified>
 <Log>
-At the suggestion of Joseph Kesselman, dropped contents of the org.apache.xml.utils.synthetic package, as they have never been used.
+At the suggestion of Joseph Kesselman, dropped contents of the de.lyca.xml.utils.synthetic package, as they have never been used.
 Patch reviewed by Christine Li (jycli@ca.ibm.com).
 </Log>
 </Commit>
@@ -1044,7 +1044,7 @@ Fixed for bug XALANJ-1887.
 <Commit category="core">
 <Who>jycli@apache.org</Who>
 <DateCommitted>2004/11/03</DateCommitted>
-<Modified> xml-xalan/java/src/META-INF/services org.apache.xalan.extensions.bsf.BSFManager</Modified>
+<Modified> xml-xalan/java/src/META-INF/services de.lyca.xalan.extensions.bsf.BSFManager</Modified>
 <Log>
 Added a service provider configuration file to set the Apache BSF as the default implementation for scripting language support
 </Log>
@@ -1244,8 +1244,8 @@ Based on Sun's Security Code Guidelines, modified the code to improve the securi
 3. Changed some static variable to instance variables;<br/>
 4. Changed some interfaces to final classes, if those interfaces are used only to define constants<br/>
 5. Removed the usage of System.exit;<br/>
-6. For various org.apache.xml.utils.res.XResourceBundle, the getObject() methods return immutable array wrappers instead of arrays<br/>
-7. Changed static methods of org.apache.xpath.compiler.FunctionTable to instance methods and the reference of a function table is passed 
+6. For various de.lyca.xml.utils.res.XResourceBundle, the getObject() methods return immutable array wrappers instead of arrays<br/>
+7. Changed static methods of de.lyca.xpath.compiler.FunctionTable to instance methods and the reference of a function table is passed 
 around the processing to create an XPath object;<br/>
 8. Changed the flags of FEATURE_INCREMENTAL, FEATURE_OPTIMIZE and FEATURE_SOURCE_LOCATION to instance variables in TransformerFactorImpl. 
 So they will not be changed during a processing once a new Templates is created;<br/>
@@ -1330,7 +1330,7 @@ keys during translation. Related to XALANJ-2021.
 <Modified> xml-xalan/java/src/org/apache/xml/res XMLErrorResources.java</Modified>
 <Log>
 Serializer messages were copied into a message file in the
-org.apache.xml.serializer.utils package.
+de.lyca.xml.serializer.utils package.
 The serializer messages in this file are now "dead", so they are being deleted.
 This is part of the cleanup with XALANJ-2021.
 </Log>
@@ -1727,7 +1727,7 @@ Reviewed by Brian Minchau.
 <Modified> xml-xalan/java/src/org/apache/xalan/xsltc/compiler Text.java</Modified>
 <Log>
 This is a fix for XALANJ-2081.
-In class org.apache.xalan.xsltc.compiler.Text, a check was being done to find out if a given text string is all whitespaces.
+In class de.lyca.xalan.xsltc.compiler.Text, a check was being done to find out if a given text string is all whitespaces.
 In case, a given text string is all whitespace, a call to serializer is not made.
 The code was using trim() method from java.lang.String.  trim() method trimmed characters as whitespaces 
 that are not considered as whitespace in XML.
@@ -1747,10 +1747,10 @@ WriterToUTF8Buffered.java xml-xalan/java/src/org/apache/xml/utils QName.java XML
 <Log>
 This is resolve UTF-8 Charcater support and QName character support for XML 1.1 support in XALANJ-2070.
 Henry Zongaro and Brian Minchau helped in fixing this part of the JIRA issue.
-A new class org.apache.xml.utils.XML11Char has been included to support XML 1.1 characters.
-Also a reference to org.apache.xml.utils.XMLChar has been replaced with a reference to
-org.apache.xml.utils.XML11Char in almost all the places in Xalan.
-org.apache.xml.serializer.WriterToUTF8Buffered has been update to support UTF-8 characters that can be represented in four bytes.
+A new class de.lyca.xml.utils.XML11Char has been included to support XML 1.1 characters.
+Also a reference to de.lyca.xml.utils.XMLChar has been replaced with a reference to
+de.lyca.xml.utils.XML11Char in almost all the places in Xalan.
+de.lyca.xml.serializer.WriterToUTF8Buffered has been update to support UTF-8 characters that can be represented in four bytes.
 </Log>
 </Commit>
 <Commit category="core">
@@ -1771,7 +1771,7 @@ This is a fix for XALANJ-2089.
 Christine Li has created this patch.
 Brian Minchau helped in creating this patch.
 Brian Minchau also reviewed this patch.
-org.apache.xalan.templates.ElemNumber.java has raised some performance issue as 
+de.lyca.xalan.templates.ElemNumber.java has raised some performance issue as 
 a static array to hold resources was removed earlier.  However, the removal of static array is necessary
 to fix a potential bug multithread environment, where a given thread can request different locale than another thread.
 
@@ -1862,7 +1862,7 @@ JAXP 1.3 integration. Integrate the Sun donated JAXP 1.3 implementation into the
 <Modified> xml-xalan/java/src/org/apache/xpath/jaxp JAXPExtensionsProvider.java JAXPPrefixResolver.java JAXPVariableStack.java 
 XPathExpressionImpl.java XPathFactoryImpl.java XPathImpl.java</Modified>
 <Log>
-JAXP 1.3 integration. Commit the XPath API implementation under org.apache.xpath.jaxp.
+JAXP 1.3 integration. Commit the XPath API implementation under de.lyca.xpath.jaxp.
 </Log>
 </Commit>
 <Commit category="core">

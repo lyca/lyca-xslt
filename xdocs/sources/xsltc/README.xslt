@@ -9,7 +9,7 @@ SYNOPSIS
 
 DESCRIPTION
 	This command-line tool is a wrapper for the Java class
-	org.apache.xalan.xsltc.cmdline.Transform. See CODE section
+	de.lyca.xalan.xsltc.cmdline.Transform. See CODE section
 	below.
 
 	The Sun XSLT runtime processor is a Java-based tool for 
@@ -82,7 +82,7 @@ CODE
 	XML=${INSTALLDIR}/java/lib/xml-apis.jar
 	CLASSPATH=.:${XSLTC}:${XERCES}:${XML}:$jarfile
 
-	java -cp ${CLASSPATH} org.apache.xalan.xsltc.cmdline.Transform "$@"
+	java -cp ${CLASSPATH} de.lyca.xalan.xsltc.cmdline.Transform "$@"
 
 	
 EXAMPLES

@@ -198,7 +198,7 @@ For more information, see <link idref="dtm" anchor="optimize">DTM optimize</link
 <p>To turn optimization off, you can use the TransformerFactoryImpl.FEATURE_OPTIMIZE static variable (equivalent to the URI String above) 
 as follows:</p>
 <source>import javax.xml.transform.TransformerFactory;
-import org.apache.xalan.processor.TransformerFactoryImpl;
+import de.lyca.xalan.processor.TransformerFactoryImpl;
 ..
 TransformerFactory tFact = TransformerFactory.newInstance();
 if (tFact instanceof TransformerFactoryImpl) {
@@ -213,7 +213,7 @@ to false. You can turn this attribute on to transform large documents where the 
 without having to parse the entire document. For more information, see <link idref="dtm" anchor="incremental">DTM incremental</link>.</p>
 <p>To turn incremental transformations on, you can use the TransformerFactoryImpl.FEATURE_INCREMENTAL static variable (equivalent to the URI String above) as follows:</p>
 <source>import javax.xml.transform.TransformerFactory;
-import org.apache.xalan.processor.TransformerFactoryImpl;
+import de.lyca.xalan.processor.TransformerFactoryImpl;
 ..
 TransformerFactory tFact = TransformerFactory.newInstance();
 if (tFact instanceof TransformerFactoryImpl) {
@@ -235,8 +235,8 @@ stylesheet.</p>
 programmatically, you can use the TransformerFactoryImpl.FEATURE_SOURCE_LOCATION static variable (equivalent to the URI String above) 
 as follows:</p>
 <source>import javax.xml.transform.TransformerFactory;
-import org.apache.xalan.transformer.TransformerImpl;
-import org.apache.xalan.transformer.XalanProperties;
+import de.lyca.xalan.transformer.TransformerImpl;
+import de.lyca.xalan.transformer.XalanProperties;
 ..
 TransformerFactory tFact = TransformerFactory.newInstance();
 if (tFact instanceof TransformerFactoryImpl) {
