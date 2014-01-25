@@ -113,7 +113,7 @@ final class DOMConstants {
     public static final String S_XML_VERSION = "xml-version";
 
     //     
-    public static final String S_XSL_VALUE_ENTITIES = "org/apache/xml/serializer/XMLEntities";
+    public static final String S_XSL_VALUE_ENTITIES = "de/lyca/xml/serializer/XMLEntities";
     
     // Parameter values
     public static final String DOM3_EXPLICIT_TRUE = "explicit:yes";

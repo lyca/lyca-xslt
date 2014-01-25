@@ -70,11 +70,11 @@ public class ClassGenerator extends ClassGen {
 	
 	if (stylesheet.isMultiDocument()) {
 	    _domClass = "de.lyca.xalan.xsltc.dom.MultiDOM";
-	    _domClassSig = "Lorg/apache/xalan/xsltc/dom/MultiDOM;";
+	    _domClassSig = "Lde/lyca/xalan/xsltc/dom/MultiDOM;";
 	}
 	else {
 	    _domClass = "de.lyca.xalan.xsltc.dom.DOMAdapter";
-	    _domClassSig = "Lorg/apache/xalan/xsltc/dom/DOMAdapter;";
+	    _domClassSig = "Lde/lyca/xalan/xsltc/dom/DOMAdapter;";
 	}
 	_applyTemplatesSig = "(" 
 	    + Constants.DOM_INTF_SIG

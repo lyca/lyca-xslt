@@ -62,7 +62,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
  * could be used.
  * 
  * Xalan Developers: please see 
- * xml-xalan/test/java/src/org/apache/qetest/trax/ExamplesTest.java
+ * xml-xalan/test/java/src/de/lyca/qetest/trax/ExamplesTest.java
  * when updating this file, and update that test file as well.
  *
  * @author <a href="mailto:scott_boag@lotus.com">Scott Boag</a>

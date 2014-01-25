@@ -57,7 +57,7 @@ more information.</note><br></br>
      can interact with directly (node-set, result tree fragment, string, boolean, and number) as well 
      as values (of any type) that you pass in turn to other extension functions. Extension functions 
      written in Java can also access certain items in the XSLT execution environment through an 
-     <jump href="apidocs/org/apache/xalan/extensions/ExpressionContext.html">ExpressionContext</jump> 
+     <jump href="apidocs/de/lyca/xalan/extensions/ExpressionContext.html">ExpressionContext</jump> 
      interface.</p>
   <p>XSLT extensions are specified in the <jump href="http://www.w3.org/TR/xslt#extension">XSLT 
      Recommendation</jump>.  This document focuses on the &xslt4j; implementation of those 
@@ -264,11 +264,11 @@ explained in <link anchor="java-namespace-declare">Declare the namespace</link>.
 <s2 title="Using an extension element">
 <p>Extension elements pass the extension two objects:</p>
 <ul>
-<li><jump href="apidocs/org/apache/xalan/extensions/XSLProcessorContext.html">
+<li><jump href="apidocs/de/lyca/xalan/extensions/XSLProcessorContext.html">
 de.lyca.xalan.extensions.XSLProcessorContext</jump>, which provides access to the XSL processor, 
 the XML source tree, the stylesheet tree, the current context node, and the current mode (if any).
 <br/><br/></li>
-<li><jump href="apidocs/org/apache/xalan/templates/ElemExtensionCall.html">
+<li><jump href="apidocs/de/lyca/xalan/templates/ElemExtensionCall.html">
 de.lyca.xalan.templates.ElemExtensionCall</jump>, which provides the API for interacting with 
 the extension element.</li>
 </ul>
@@ -276,7 +276,7 @@ the extension element.</li>
 attributes in their raw form.  Use the getAttribute(String name, Node sourceNode, XSLTEngineImpl 
 processor) method to evaluate the attribute as an attribute value template.  Note that the method 
 names are the same but the method signatures are different.  For full details, see the 
-<jump href="apidocs/org/apache/xalan/templates/ElemExtensionCall.html">Javadoc</jump> for the 
+<jump href="apidocs/de/lyca/xalan/templates/ElemExtensionCall.html">Javadoc</jump> for the 
 ElemExtensionCall class.</p>
 <s3 title="Implementing an extension element">
 <p>For each extension element in a namespace, the implementation must be a Java method with the 

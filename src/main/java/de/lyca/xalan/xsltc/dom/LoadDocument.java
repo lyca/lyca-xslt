@@ -47,7 +47,7 @@ public final class LoadDocument {
 
     /**
      * Interprets the arguments passed from the document() function (see
-     * org/apache/xalan/xsltc/compiler/DocumentCall.java) and returns an
+     * de/lyca/xalan/xsltc/compiler/DocumentCall.java) and returns an
      * iterator containing the requested nodes. Builds a union-iterator if
      * several documents are requested.
      * 2 arguments arg1 and arg2.  document(Obj, node-set) call 
@@ -88,7 +88,7 @@ public final class LoadDocument {
     }
     /**
      * Interprets the arguments passed from the document() function (see
-     * org/apache/xalan/xsltc/compiler/DocumentCall.java) and returns an
+     * de/lyca/xalan/xsltc/compiler/DocumentCall.java) and returns an
      * iterator containing the requested nodes. Builds a union-iterator if
      * several documents are requested.
      * 1 arguments arg.  document(Obj) call

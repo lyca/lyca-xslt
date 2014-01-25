@@ -33,25 +33,25 @@ test {
 }
 
 task(createXPathParser, type: JavaExec) {
-    inputs.file "$projectDir/src/main/java/org/apache/xalan/xsltc/compiler/xpath.cup"
-    outputs.files "$projectDir/src/main/java/org/apache/xalan/xsltc/compiler/XPathParser.java",
-                  "$projectDir/src/main/java/org/apache/xalan/xsltc/compiler/sym.java"
+    inputs.file "$projectDir/src/main/java/de/lyca/xalan/xsltc/compiler/xpath.cup"
+    outputs.files "$projectDir/src/main/java/de/lyca/xalan/xsltc/compiler/XPathParser.java",
+                  "$projectDir/src/main/java/de/lyca/xalan/xsltc/compiler/sym.java"
     main = 'java_cup.Main'
     args = ['-parser', 'XPathParser', '-package', 'de.lyca.xalan.xsltc.compiler', 'xpath.cup'].toList()
     classpath project.configurations.compile
-    workingDir file("$projectDir/src/main/java/org/apache/xalan/xsltc/compiler/")
+    workingDir file("$projectDir/src/main/java/de/lyca/xalan/xsltc/compiler/")
 } 
 
 task(createXPathLexer, dependsOn:createXPathParser, type: JavaExec) {
-    inputs.file "$projectDir/src/main/java/org/apache/xalan/xsltc/compiler/xpath.lex"
-    outputs.file "$projectDir/src/main/java/org/apache/xalan/xsltc/compiler/XPathLexer.java"
+    inputs.file "$projectDir/src/main/java/de/lyca/xalan/xsltc/compiler/xpath.lex"
+    outputs.file "$projectDir/src/main/java/de/lyca/xalan/xsltc/compiler/XPathLexer.java"
     main = 'JLex.Main'
     args = ['-static', 'xpath.lex'].toList()
     classpath project.configurations.lexer project.configurations.compile
-    workingDir file("$projectDir/src/main/java/org/apache/xalan/xsltc/compiler/")
+    workingDir file("$projectDir/src/main/java/de/lyca/xalan/xsltc/compiler/")
     doLast{
-      ant.move(file:"$projectDir/src/main/java/org/apache/xalan/xsltc/compiler/xpath.lex.java",
-        toFile:"$projectDir/src/main/java/org/apache/xalan/xsltc/compiler/XPathLexer.java")
+      ant.move(file:"$projectDir/src/main/java/de/lyca/xalan/xsltc/compiler/xpath.lex.java",
+        toFile:"$projectDir/src/main/java/de/lyca/xalan/xsltc/compiler/XPathLexer.java")
     }
 } 
 

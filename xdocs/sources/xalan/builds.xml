@@ -199,7 +199,7 @@ Update the following lines for each version field:<br/>
 <br/></li>
 <li>xml-xalan/java/xdocs/sources/xalan-jsite (document id="index" label="Xalan-Java x.x")<br/><br/></li>
 <li>If you updated <code>xercesImpl.jar</code> or <code>xml-apis.jar</code>, add a new entry in
-xml-xalan/java/src/org/apache/xalan/xslt/EnvironmentCheck.java</li>
+xml-xalan/java/src/de/lyca/xalan/xslt/EnvironmentCheck.java</li>
 </ul>
 <p>I did remind you to check in all your work, didn't I?</p>
 </s3>

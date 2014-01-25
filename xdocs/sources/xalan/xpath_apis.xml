@@ -62,7 +62,7 @@
   DEFAULT_OBJECT_MODEL_URI</jump>.</p>
 
   <p>The default service provider for the javax.xml.xpath.XPathFactory service is 
-  <jump href="apidocs/org/apache/xpath/jaxp/XPathFactoryImpl.html">de.lyca.xpath.jaxp.XPathFactoryImpl</jump>.
+  <jump href="apidocs/de/lyca/xpath/jaxp/XPathFactoryImpl.html">de.lyca.xpath.jaxp.XPathFactoryImpl</jump>.
   </p>
   </s2>
   

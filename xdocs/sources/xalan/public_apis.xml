@@ -53,20 +53,20 @@
            <code>javax.xml.xpath</code></jump> packages. </li>
     <li>The &xslt4j2; specific XPath API, defined by the classes
       <ul>
-        <li><jump href="apidocs/org/apache/xpath/XPathAPI.html">
+        <li><jump href="apidocs/de/lyca/xpath/XPathAPI.html">
           <code>de.lyca.xpath.XPathAPI</code></jump></li>
-        <li><jump href="apidocs/org/apache/xpath/CachedXPathAPI.html">
+        <li><jump href="apidocs/de/lyca/xpath/CachedXPathAPI.html">
           <code>de.lyca.xpath.CachedXPathAPI</code></jump></li>
       </ul>
     </li>
     <li>API's for using, configuring or defining a serializer, from the
         <code>de.lyca.xml.serializer</code> package:
       <ul>
-        <li><jump href="apidocs/org/apache/xml/serializer/OutputPropertiesFactory.html">
+        <li><jump href="apidocs/de/lyca/xml/serializer/OutputPropertiesFactory.html">
                 <code>OutputPropertiesFactory</code></jump></li>
-        <li><jump href="apidocs/org/apache/xml/serializer/SerializerFactory.html">
+        <li><jump href="apidocs/de/lyca/xml/serializer/SerializerFactory.html">
                 <code>SerializerFactory</code></jump></li>
-        <li><jump href="apidocs/org/apache/xml/serializer/Serializer.html">
+        <li><jump href="apidocs/de/lyca/xml/serializer/Serializer.html">
                 <code>Serializer</code></jump></li>
       </ul>
     </li>
@@ -74,9 +74,9 @@
         <link idref="usagepatterns" anchor="outputprops">Setting output
         properties in your stylesheets</link> for more information.)
       <ul>
-        <li><code>org/apache/xml/serializer/output_xml.properties</code></li>
-        <li><code>org/apache/xml/serializer/output_html.properties</code></li>
-        <li><code>org/apache/xml/serializer/output_text.properties</code></li>
+        <li><code>de/lyca/xml/serializer/output_xml.properties</code></li>
+        <li><code>de/lyca/xml/serializer/output_html.properties</code></li>
+        <li><code>de/lyca/xml/serializer/output_text.properties</code></li>
       </ul>
     </li>
     <li>Command-line interfaces for performing transformations:
@@ -112,7 +112,7 @@
     <li>The
         <jump href="http://www.w3.org/TR/2004/NOTE-DOM-Level-3-XPath-20040226">
            DOM Level 3 XPath API</jump> found in the
-        <jump href="apidocs/org/apache/xpath/domapi/package-summary.html">
+        <jump href="apidocs/de/lyca/xpath/domapi/package-summary.html">
            <code>de.lyca.xpath.domapi</code></jump> package.</li>
   </ul>
   </s2><anchor name="internal"/>

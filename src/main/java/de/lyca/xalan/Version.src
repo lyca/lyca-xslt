@@ -27,7 +27,7 @@ package de.lyca.xalan;
  * org.apache.project-name.Version.getVersion() be a standard way 
  * to get version information.  This class will replace the older 
  * de.lyca.xalan.processor.Version class.</P>
- * <P>See also: org/apache/xalan/res/XSLTInfo.properties for 
+ * <P>See also: de/lyca/xalan/res/XSLTInfo.properties for 
  * information about the version of the XSLT spec we support.</P>
  * @xsl.usage general
  */

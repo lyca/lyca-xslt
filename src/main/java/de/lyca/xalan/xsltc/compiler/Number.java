@@ -348,7 +348,7 @@ final class Number extends Instruction implements Closure {
 				  Util.getJCRefType(TRANSLET_SIG),
 				  null, null);
 	field = cpg.addFieldref(NODE_COUNTER, "_translet",
-				"Lorg/apache/xalan/xsltc/Translet;");
+				"Lde/lyca/xalan/xsltc/Translet;");
 	il.append(ALOAD_0); // 'this' pointer on stack
 	il.append(new GETFIELD(field));
 	il.append(new CHECKCAST(cpg.addClass(TRANSLET_CLASS)));

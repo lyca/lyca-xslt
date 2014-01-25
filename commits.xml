@@ -20,7 +20,7 @@
 <Commit category="xsltc">
 <Who>zongaro@apache.org</Who>
 <DateCommitted>2004/02/27</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/xsltc/dom NodeSortRecord.java NodeSortRecordFactory.java SortSettings.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan/xsltc/dom NodeSortRecord.java NodeSortRecordFactory.java SortSettings.java</Modified>
 <Log>
 Restored old constructor of NodeSortRecordFactory and _collator field of
 NodeSortRecord for binary compatibility.  These changes allow translets
@@ -38,8 +38,8 @@ Reviewed by Igor Hersht (igorh@ca.ibm.com)
 <Commit category="xsltc">
 <Who>zongaro@apache.org</Who>
 <DateCommitted>2004/02/27</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/xsltc/dom ForwardPositionIterator.java 
-xml-xalan/java/src/org/apache/xalan/xsltc/runtime BasisLibrary.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan/xsltc/dom ForwardPositionIterator.java 
+xml-xalan/java/src/de/lyca/xalan/xsltc/runtime BasisLibrary.java</Modified>
 <Log>
 Revived ForwardPositionIterator class and BasisLibrary.positionF purely to
 support backwards compatibility with translets compiled with earlier versions
@@ -52,8 +52,8 @@ Reviewed by Christine Li (jycli@ca.ibm.com).
 <Commit category="core">
 <Who>minchau@apache.org</Who>
 <DateCommitted>2004/03/04</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/processor ProcessorImport.java ProcessorInclude.java ProcessorLRE.java 
-ProcessorStylesheetElement.java StylesheetHandler.java XSLTElementDef.java xml-xalan/java/src/org/apache/xalan/templates 
+<Modified> xml-xalan/java/src/de/lyca/xalan/processor ProcessorImport.java ProcessorInclude.java ProcessorLRE.java 
+ProcessorStylesheetElement.java StylesheetHandler.java XSLTElementDef.java xml-xalan/java/src/de/lyca/xalan/templates 
 ElemExsltFunction.java</Modified>
 <Log>
 Submitted by:	Brian Minchau<br/>
@@ -64,7 +64,7 @@ Modified code for potential extension of classes with callbacks to the extension
 <Commit category="core">
 <Who>bhakti@apache.org</Who>
 <DateCommitted>2004/03/08</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xml/serializer Encodings.properties</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xml/serializer Encodings.properties</Modified>
 <Log>
 Added a newline at the end of Encodings.properties to fix bug 27516
 </Log>
@@ -72,7 +72,7 @@ Added a newline at the end of Encodings.properties to fix bug 27516
 <Commit category="xsltc">
 <Who>igorh@apache.org</Who>
 <DateCommitted>2004/03/09</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/xsltc/dom NodeCounter.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan/xsltc/dom NodeCounter.java</Modified>
 <Log>
 xsl:number, minor code cleaning and optimization
 </Log>
@@ -80,7 +80,7 @@ xsl:number, minor code cleaning and optimization
 <Commit category="xsltc">
 <Who>bhakti@apache.org</Who>
 <DateCommitted>2004/03/10</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/xsltc/dom LoadDocument.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan/xsltc/dom LoadDocument.java</Modified>
 <Log>
 Check if the systemId for the stylesheet is null to avoid getting an NPE.
 </Log>
@@ -88,15 +88,15 @@ Check if the systemId for the stylesheet is null to avoid getting an NPE.
 <Commit category="core">
 <Who>jycli@apache.org</Who>
 <DateCommitted>2004/03/11</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/extensions ObjectFactory.java xml-xalan/java/src/org/apache/xalan/lib 
-ObjectFactory.java xml-xalan/java/src/org/apache/xalan/lib/sql ObjectFactory.java xml-xalan/java/src/org/apache/xalan/xslt 
-ObjectFactory.java xml-xalan/java/src/org/apache/xalan/xsltc/cmdline ObjectFactory.java 
-xml-xalan/java/src/org/apache/xalan/xsltc/compiler ObjectFactory.java xml-xalan/java/src/org/apache/xalan/xsltc/compiler/util 
-ObjectFactory.java xml-xalan/java/src/org/apache/xalan/xsltc/dom ObjectFactory.java xml-xalan/java/src/org/apache/xalan/xsltc/runtime 
-ObjectFactory.java xml-xalan/java/src/org/apache/xalan/xsltc/trax ObjectFactory.java xml-xalan/java/src/org/apache/xml/dtm 
-ObjectFactory.java xml-xalan/java/src/org/apache/xml/dtm/ref ObjectFactory.java xml-xalan/java/src/org/apache/xml/serializer 
-ObjectFactory.java xml-xalan/java/src/org/apache/xml/utils ObjectFactory.java xml-xalan/java/src/org/apache/xpath/compiler 
-ObjectFactory.java xml-xalan/java/src/org/apache/xpath/functions ObjectFactory.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan/extensions ObjectFactory.java xml-xalan/java/src/de/lyca/xalan/lib 
+ObjectFactory.java xml-xalan/java/src/de/lyca/xalan/lib/sql ObjectFactory.java xml-xalan/java/src/de/lyca/xalan/xslt 
+ObjectFactory.java xml-xalan/java/src/de/lyca/xalan/xsltc/cmdline ObjectFactory.java 
+xml-xalan/java/src/de/lyca/xalan/xsltc/compiler ObjectFactory.java xml-xalan/java/src/de/lyca/xalan/xsltc/compiler/util 
+ObjectFactory.java xml-xalan/java/src/de/lyca/xalan/xsltc/dom ObjectFactory.java xml-xalan/java/src/de/lyca/xalan/xsltc/runtime 
+ObjectFactory.java xml-xalan/java/src/de/lyca/xalan/xsltc/trax ObjectFactory.java xml-xalan/java/src/de/lyca/xml/dtm 
+ObjectFactory.java xml-xalan/java/src/de/lyca/xml/dtm/ref ObjectFactory.java xml-xalan/java/src/de/lyca/xml/serializer 
+ObjectFactory.java xml-xalan/java/src/de/lyca/xml/utils ObjectFactory.java xml-xalan/java/src/de/lyca/xpath/compiler 
+ObjectFactory.java xml-xalan/java/src/de/lyca/xpath/functions ObjectFactory.java</Modified>
 <Log>
 Fix a bug in the findProviderClass method of ObjectFactory
 classes. The argument of SecurityManager.checkPackageAccess should be a string
@@ -106,7 +106,7 @@ value of a package name, instead of a class name
 <Commit category="xsltc">
 <Who>santiagopg@apache.org</Who>
 <DateCommitted>2004/03/16</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/xsltc/compiler FunctionCall.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan/xsltc/compiler FunctionCall.java</Modified>
 <Log>
 Reverting latest patch by Arun. There are some problems with the new code to invoke functions dynamically (e.g. docbook 
 reports a compile-time type check error). The approach taken to determine when to invoke methods dynamically needs to be revisted.
@@ -115,7 +115,7 @@ reports a compile-time type check error). The approach taken to determine when t
 <Commit category="core">
 <Who>santiagopg@apache.org</Who>
 <DateCommitted>2004/03/23</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xpath/compiler Compiler.java FunctionTable.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xpath/compiler Compiler.java FunctionTable.java</Modified>
 <Log>
 Patch to hide static function table in FunctionTable class. We do not want to expose this table to others.
 </Log>
@@ -123,7 +123,7 @@ Patch to hide static function table in FunctionTable class. We do not want to ex
 <Commit category="core">
 <Who>santiagopg@apache.org</Who>
 <DateCommitted>2004/03/23</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xml/utils DOMBuilder.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xml/utils DOMBuilder.java</Modified>
 <Log>
 The xmlns URI should also be used to add NS decls as attributes to a DOM. However, this was only done for attributes that started 
 with 'xmlns:' and not for 'xmlns' (i.e. not for decls of the default NS).
@@ -132,7 +132,7 @@ with 'xmlns:' and not for 'xmlns' (i.e. not for decls of the default NS).
 <Commit category="xsltc">
 <Who>mkwan@apache.org</Who>
 <DateCommitted>2004/03/24</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/xsltc/trax TransformerImpl.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan/xsltc/trax TransformerImpl.java</Modified>
 <Log>
 Patch for bug 27417.<br/>
 
@@ -143,7 +143,7 @@ it after the transformation.
 <Commit category="xsltc">
 <Who>zongaro@apache.org</Who>
 <DateCommitted>2004/04/10</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/xsltc/compiler ApplyImports.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan/xsltc/compiler ApplyImports.java</Modified>
 <Log>
 Applying patch for bugs 27932 and 15333.<br/>
 
@@ -166,7 +166,7 @@ Reviewed by Joanne Tong (joannet@ca.ibm.com)
 <Commit category="xsltc">
 <Who>zongaro@apache.org</Who>
 <DateCommitted>2004/04/10</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/xsltc/compiler Stylesheet.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan/xsltc/compiler Stylesheet.java</Modified>
 <Log>
 Applying patch for bug 27932.<br/>
 
@@ -184,7 +184,7 @@ Reviewed by Joanne Tong (joannet@ca.ibm.com)
 <Commit category="core">
 <Who>igorh@apache.org</Who>
 <DateCommitted>2004/04/26</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xpath XPathContext.java xml-xalan/java/src/org/apache/xpath/objects 
+<Modified> xml-xalan/java/src/de/lyca/xpath XPathContext.java xml-xalan/java/src/de/lyca/xpath/objects 
 DTMXRTreeFrag.java XRTreeFrag.java</Modified>
 <Log>
 The problem is that about 1800 * Thread_num  XRTreeFrag  objects were created. 
@@ -201,7 +201,7 @@ b. release the references to  DTM and XPathContext from XPathContext.reset()
 <Commit category="core">
 <Who>minchau@apache.org</Who>
 <DateCommitted>2004/04/27</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xml/serializer ToHTMLStream.java xml-xalan/java/src/org/apache/xml/utils Trie.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xml/serializer ToHTMLStream.java xml-xalan/java/src/de/lyca/xml/utils Trie.java</Modified>
 <Log>
 PR: bugzilla 28435<br/>
 Submitted by:	Brian Minchau<br/>
@@ -211,9 +211,9 @@ Reviewed by:	Henry Zongaro<br/>
 <Commit category="core">
 <Who>igorh@apache.org</Who>
 <DateCommitted>2004/04/28</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/templates AVT.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan/templates AVT.java</Modified>
 <Log>
-Scaling Problem in org/apache/xalan/templates/AVT.evaluate
+Scaling Problem in de/lyca/xalan/templates/AVT.evaluate
 The problem is that synchronized calls 
 StringBufferPool.get() and StringBufferPool.free(buf)  
 are redundant if (null != m_simpleString).
@@ -260,7 +260,7 @@ Reviewed by:	Sarah McNamara
 <Commit category="core">
 <Who>igorh@apache.org</Who>
 <DateCommitted>2004/05/06</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/templates AVT.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan/templates AVT.java</Modified>
 <Log>
 The problem is that we use an object pool (shared between different threads)
 to allocate  FastStringBuffer objects. The problem results in a serious performance
@@ -283,7 +283,7 @@ to use caching whenever possible.
 <Commit category="core">
 <Who>minchau@apache.org</Who>
 <DateCommitted>2004/05/13</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/client XSLTProcessorApplet.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan/client XSLTProcessorApplet.java</Modified>
 <Log>
 Submitted by:	Brian Minchau<br/>
 Reviewed by:	Christine Li<br/>
@@ -293,7 +293,7 @@ Fixing binary compatibility (serialization/de-serialization) of XSLTProcessorApp
 <Commit category="xsltc">
 <Who>bhakti@apache.org</Who>
 <DateCommitted>2004/05/13</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/xsltc/runtime AbstractTranslet.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan/xsltc/runtime AbstractTranslet.java</Modified>
 <Log>
 In xsltc currently with the extension redirect the output file is created only if the parent dir exists. 
 Making the behaviour similar to that of xalan wherein the parent directory is also created.
@@ -302,7 +302,7 @@ Making the behaviour similar to that of xalan wherein the parent directory is al
 <Commit category="xsltc">
 <Who>santiagopg@apache.org</Who>
 <DateCommitted>2004/05/20</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/xsltc/runtime AbstractTranslet.java BasisLibrary.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan/xsltc/runtime AbstractTranslet.java BasisLibrary.java</Modified>
 <Log>
 Fix for Bugzilla 29120. The translet now stores a reference to the DocumentBuilderFactory which is used by 
 nodeList2Iterator() in the basis library. Note that to reuse that reference you need to use the same transformer 
@@ -312,7 +312,7 @@ nodeList2Iterator() in the basis library. Note that to reuse that reference you 
 <Commit category="xsltc">
 <Who>santiagopg@apache.org</Who>
 <DateCommitted>2004/05/21</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/xsltc/compiler AttributeValueTemplate.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan/xsltc/compiler AttributeValueTemplate.java</Modified>
 <Log>
 Implemented a new parser for ATVs. The old was buggy: did not handle escaped curly braces in all cases and did 
 not handled quotes at all. The old parser assumed that braces came in pairs, but it is possible to have an odd 
@@ -322,7 +322,7 @@ number as in "{{{$foo}}}". The new parser seems to handle all cases correctly.
 <Commit category="xsltc">
 <Who>santiagopg@apache.org</Who>
 <DateCommitted>2004/05/21</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/xsltc/compiler LiteralAttribute.java LiteralElement.java Parser.java 
+<Modified> xml-xalan/java/src/de/lyca/xalan/xsltc/compiler LiteralAttribute.java LiteralElement.java Parser.java 
 SyntaxTreeNode.java</Modified>
 <Log>
 Modified code to ensure line number information is propagated from parent to children to ensure we get informative 
@@ -332,7 +332,7 @@ error messages. This was particularly bad for errors in ATVs.
 <Commit category="xsltc">
 <Who>santiagopg@apache.org</Who>
 <DateCommitted>2004/05/25</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/xsltc/runtime AbstractTranslet.java BasisLibrary.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan/xsltc/runtime AbstractTranslet.java BasisLibrary.java</Modified>
 <Log>
 Improved patch for Bugzilla 29120 based on Matthias' suggestion. A DOMImplementation is now cached for even better performance.
 </Log>
@@ -340,7 +340,7 @@ Improved patch for Bugzilla 29120 based on Matthias' suggestion. A DOMImplementa
 <Commit category="xsltc">
 <Who>jycli@apache.org</Who>
 <DateCommitted>2004/05/26</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/xsltc/compiler Mode.java Stylesheet.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan/xsltc/compiler Mode.java Stylesheet.java</Modified>
 <Log>
 If the local is set to Turkish, but the codepage is MS-DOS (US) 437. The BCEL
 InstructionFinder.search(String) method can not find any instructions contain
@@ -351,7 +351,7 @@ insensitive, change the pattern string to use lower case.
 <Commit category="core">
 <Who>minchau@apache.org</Who>
 <DateCommitted>2004/06/01</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xml/serializer ToStream.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xml/serializer ToStream.java</Modified>
 <Log>
 PR: bugzilla 29234<br/>
 Submitted by:	Brian Minchau<br/>
@@ -364,7 +364,7 @@ set method for the stream serializers.
 <Commit category="core">
 <Who>minchau@apache.org</Who>
 <DateCommitted>2004/06/07</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xml/serializer WriterToUTF8Buffered.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xml/serializer WriterToUTF8Buffered.java</Modified>
 <Log>
 PR: bugzilla 29372<br/>
 Submitted by:	J Desrochers (john@ASCnet.COM)<br/>
@@ -379,7 +379,7 @@ could cause an overflow.
 <Commit category="xsltc">
 <Who>santiagopg@apache.org</Who>
 <DateCommitted>2004/06/10</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/xsltc/compiler LiteralElement.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan/xsltc/compiler LiteralElement.java</Modified>
 <Log>
 Patch for Bugzilla 29411. New algorithm shoudl optimize the way NS decls are reported for nested literal 
 elements. Note that the algorithm will not work accross non-literal elements. E.g., if there is an 
@@ -391,7 +391,7 @@ in the inner literal (see namespace39 in the conf tests).
 <Commit category="xsltc">
 <Who>santiagopg@apache.org</Who>
 <DateCommitted>2004/06/11</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/xsltc/compiler Mode.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan/xsltc/compiler Mode.java</Modified>
 <Log>
 Fixed a problem with peephole optimization patterns. I don't know if something changed in BCEL since the 
 code was written, but the pattern syntax was not correct. I've also added a new common peephole pattern 
@@ -401,7 +401,7 @@ which should reduce then inner loop's length in some Translets.
 <Commit category="core">
 <Who>zongaro@apache.org</Who>
 <DateCommitted>2004/06/17</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xpath/axes ChildIterator.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xpath/axes ChildIterator.java</Modified>
 <Log>
 Fix for Bugzilla bug 28879.  Classes derived from NodeTest need to ensure
 that initNodeTest is called to set the filter for the kinds of nodes accepted.
@@ -413,7 +413,7 @@ Patch reviewed by Christine Li (jycli@ca.ibm.com).
 <Commit category="xsltc">
 <Who>igorh@apache.org</Who>
 <DateCommitted>2004/06/21</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/xsltc/dom KeyIndex.java xml-xalan/java/src/org/apache/xalan/xsltc/util 
+<Modified> xml-xalan/java/src/de/lyca/xalan/xsltc/dom KeyIndex.java xml-xalan/java/src/de/lyca/xalan/xsltc/util 
 IntegerArray.java</Modified>
 <Log>
 Fix for Bugzilla Bugs 28622.
@@ -422,8 +422,8 @@ Fix for Bugzilla Bugs 28622.
 <Commit category="xsltc">
 <Who>santiagopg@apache.org</Who>
 <DateCommitted>2004/06/24</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/xsltc/compiler CastExpr.java 
-xml-xalan/java/src/org/apache/xalan/xsltc/compiler/util ObjectType.java StringType.java Type.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan/xsltc/compiler CastExpr.java 
+xml-xalan/java/src/de/lyca/xalan/xsltc/compiler/util ObjectType.java StringType.java Type.java</Modified>
 <Log>
 Patch for Bugzilla 27539 and related problems. The main problem was that hashCode() was not implemented 
 correctly in ObjectType. To eleminate further problems I also removed Type.ObjectString as this type is the 
@@ -433,7 +433,7 @@ same as Type.String and the latter can be used in place of the former.
 <Commit category="xsltc">
 <Who>aruny@apache.org</Who>
 <DateCommitted>2004/07/15</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/xsltc/trax TransformerHandlerImpl.java TransformerImpl.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan/xsltc/trax TransformerHandlerImpl.java TransformerImpl.java</Modified>
 <Log>
 Description: getNode should return the result DOM tree once TransformerHandler completes the transformation.
 </Log>
@@ -441,7 +441,7 @@ Description: getNode should return the result DOM tree once TransformerHandler c
 <Commit category="xsltc">
 <Who>aruny@apache.org</Who>
 <DateCommitted>2004/07/15</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/xsltc/compiler Output.java xml-xalan/java/src/org/apache/xalan/xsltc/runtime 
+<Modified> xml-xalan/java/src/de/lyca/xalan/xsltc/compiler Output.java xml-xalan/java/src/de/lyca/xalan/xsltc/runtime 
 AbstractTranslet.java</Modified>
 <Log>
 Description: Patch for the support of extension attribute "intent-amount" for xsl:output. Supports the old URI 
@@ -451,7 +451,7 @@ Description: Patch for the support of extension attribute "intent-amount" for xs
 <Commit category="xsltc">
 <Who>aruny@apache.org</Who>
 <DateCommitted>2004/07/15</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/xsltc/trax SAX2DOM.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan/xsltc/trax SAX2DOM.java</Modified>
 <Log>
 Description: Patch for concatenating adjacent text nodes.
 </Log>
@@ -459,7 +459,7 @@ Description: Patch for concatenating adjacent text nodes.
 <Commit category="core">
 <Who>aruny@apache.org</Who>
 <DateCommitted>2004/07/15</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xml/serializer ToStream.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xml/serializer ToStream.java</Modified>
 <Log>
 Description: Improper Serialization of document type declaration in xml document.
 </Log>
@@ -467,7 +467,7 @@ Description: Improper Serialization of document type declaration in xml document
 <Commit category="core">
 <Who>mkwan@apache.org</Who>
 <DateCommitted>2004/07/21</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan Version.java xml-xalan/java/src/org/apache/xml/dtm/ref/sax2dtm SAX2DTM2.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan Version.java xml-xalan/java/src/de/lyca/xml/dtm/ref/sax2dtm SAX2DTM2.java</Modified>
 <Log>
 Patch for bug 30056.  Recover the performance degradation for xsl:copy and xsl:copy-of.<br/>
 Reviewed by Henry Zongaro (zongaro@ca.ibm.com).
@@ -476,7 +476,7 @@ Reviewed by Henry Zongaro (zongaro@ca.ibm.com).
 <Commit category="core">
 <Who>minchau@apache.org</Who>
 <DateCommitted>2004/07/21</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xml/serializer SerializerBase.java ToTextStream.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xml/serializer SerializerBase.java ToTextStream.java</Modified>
 <Log>
 PR: bugzilla 29706<br/>
 Submitted by:	Brian Minchau<br/>
@@ -496,7 +496,7 @@ later on, and that one will be in permanent output state.
 <Commit category="core">
 <Who>minchau@apache.org</Who>
 <DateCommitted>2004/07/21</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xml/serializer ToHTMLStream.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xml/serializer ToHTMLStream.java</Modified>
 <Log>
 PR: bugzilla 30142<br/>
 Submitted by:	Bruno Dumon (bruno@outerthought.org)<br/>
@@ -510,7 +510,7 @@ in serialized HTML output.
 <Commit category="core">
 <Who>minchau@apache.org</Who>
 <DateCommitted>2004/07/22</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xml/serializer ToStream.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xml/serializer ToStream.java</Modified>
 <Log>
 Submitted by:	Brian Minchau<br/>
 Reviewed by:	Henry Zongaro<br/>
@@ -525,7 +525,7 @@ and DOCTYPE.  Future changes may be made.
 <Commit category="xsltc">
 <Who>minchau@apache.org</Who>
 <DateCommitted>2004/07/22</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/xsltc/dom DOMAdapter.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan/xsltc/dom DOMAdapter.java</Modified>
 <Log>
 Submitted by:	Yash Talwar<br/>
 Reviewed by:	Brian Minchau<br/>
@@ -535,7 +535,7 @@ Fix for bugzilla 28796.
 <Commit category="core">
 <Who>minchau@apache.org</Who>
 <DateCommitted>2004/07/22</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xpath/objects XString.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xpath/objects XString.java</Modified>
 <Log>
 Submitted by:	Yash Talwar<br/>
 Reviewed by:	Brian Minchau<br/>
@@ -545,7 +545,7 @@ Fix for bugzilla 29655.
 <Commit category="core">
 <Who>minchau@apache.org</Who>
 <DateCommitted>2004/08/13</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/lib Redirect.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan/lib Redirect.java</Modified>
 <Log>
 PR: 30658<br/>
 Submitted by:	Brian Minchau<br/>
@@ -555,7 +555,7 @@ Reviewed by:	Morris Kwan
 <Commit category="core">
 <Who>minchau@apache.org</Who>
 <DateCommitted>2004/08/13</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/trace TraceManager.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan/trace TraceManager.java</Modified>
 <Log>
 PR: 30301<br/>
 Submitted by:	Brian Minchau<br/>
@@ -565,7 +565,7 @@ Reviewed by:	Morris Kwan
 <Commit category="core">
 <Who>minchau@apache.org</Who>
 <DateCommitted>2004/08/13</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xpath/objects XRTreeFragSelectWrapper.java xml-xalan/java/src/org/apache/xpath/res 
+<Modified> xml-xalan/java/src/de/lyca/xpath/objects XRTreeFragSelectWrapper.java xml-xalan/java/src/de/lyca/xpath/res 
 XPATHErrorResources.java</Modified>
 <Log>
 PR: 30262<br/>
@@ -576,7 +576,7 @@ Reviewed by:	Henry Zongaro
 <Commit category="core">
 <Who>mcnamara@apache.org</Who>
 <DateCommitted>2004/08/17</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xml/dtm DTMException.java xml-xalan/java/src/org/apache/xpath XPathException.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xml/dtm DTMException.java xml-xalan/java/src/de/lyca/xpath XPathException.java</Modified>
 <Log>
 Fix for printStackTrace when using JDK 1.4.
 </Log>
@@ -584,14 +584,14 @@ Fix for printStackTrace when using JDK 1.4.
 <Commit category="core">
 <Who>mcnamara@apache.org</Who>
 <DateCommitted>2004/08/17</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/extensions ObjectFactory.java xml-xalan/java/src/org/apache/xalan/lib 
-ObjectFactory.java xml-xalan/java/src/org/apache/xalan/lib/sql ObjectFactory.java xml-xalan/java/src/org/apache/xalan/xslt 
-ObjectFactory.java xml-xalan/java/src/org/apache/xalan/xsltc/cmdline ObjectFactory.java xml-xalan/java/src/org/apache/xalan/xsltc/compiler 
-ObjectFactory.java xml-xalan/java/src/org/apache/xalan/xsltc/compiler/util ObjectFactory.java xml-xalan/java/src/org/apache/xalan/xsltc/dom 
-ObjectFactory.java xml-xalan/java/src/org/apache/xalan/xsltc/runtime ObjectFactory.java xml-xalan/java/src/org/apache/xalan/xsltc/trax 
-ObjectFactory.java xml-xalan/java/src/org/apache/xml/dtm ObjectFactory.java xml-xalan/java/src/org/apache/xml/dtm/ref ObjectFactory.java 
-xml-xalan/java/src/org/apache/xml/serializer ObjectFactory.java xml-xalan/java/src/org/apache/xml/utils ObjectFactory.java 
-xml-xalan/java/src/org/apache/xpath/compiler ObjectFactory.java xml-xalan/java/src/org/apache/xpath/functions ObjectFactory.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan/extensions ObjectFactory.java xml-xalan/java/src/de/lyca/xalan/lib 
+ObjectFactory.java xml-xalan/java/src/de/lyca/xalan/lib/sql ObjectFactory.java xml-xalan/java/src/de/lyca/xalan/xslt 
+ObjectFactory.java xml-xalan/java/src/de/lyca/xalan/xsltc/cmdline ObjectFactory.java xml-xalan/java/src/de/lyca/xalan/xsltc/compiler 
+ObjectFactory.java xml-xalan/java/src/de/lyca/xalan/xsltc/compiler/util ObjectFactory.java xml-xalan/java/src/de/lyca/xalan/xsltc/dom 
+ObjectFactory.java xml-xalan/java/src/de/lyca/xalan/xsltc/runtime ObjectFactory.java xml-xalan/java/src/de/lyca/xalan/xsltc/trax 
+ObjectFactory.java xml-xalan/java/src/de/lyca/xml/dtm ObjectFactory.java xml-xalan/java/src/de/lyca/xml/dtm/ref ObjectFactory.java 
+xml-xalan/java/src/de/lyca/xml/serializer ObjectFactory.java xml-xalan/java/src/de/lyca/xml/utils ObjectFactory.java 
+xml-xalan/java/src/de/lyca/xpath/compiler ObjectFactory.java xml-xalan/java/src/de/lyca/xpath/functions ObjectFactory.java</Modified>
 <Log>
 Fixing a potential memory leak.  The reader used to read the service provider is never closed if an IOException is thrown while 
 reading from it.  Adding a finally block so that the reader will always be closed.  Patch reviewed by Christine Li.
@@ -600,7 +600,7 @@ reading from it.  Adding a finally block so that the reader will always be close
 <Commit category="core">
 <Who>jycli@apache.org</Who>
 <DateCommitted>2004/08/17</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/extensions ObjectFactory.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan/extensions ObjectFactory.java</Modified>
 <Log>
 Added serialVersionUID for classes which implement Serializable interface
 </Log>
@@ -608,7 +608,7 @@ Added serialVersionUID for classes which implement Serializable interface
 <Commit category="core">
 <Who>jycli@apache.org</Who>
 <DateCommitted>2004/08/17</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/lib ObjectFactory.java xml-xalan/java/src/org/apache/xalan/lib/sql ObjectFactory.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan/lib ObjectFactory.java xml-xalan/java/src/de/lyca/xalan/lib/sql ObjectFactory.java</Modified>
 <Log>
 Added serialVersionUID for classes which implement Serializable interface. Was reviewed by Henry Zongaro (zongaro@ca.ibm.com)
 </Log>
@@ -616,7 +616,7 @@ Added serialVersionUID for classes which implement Serializable interface. Was r
 <Commit category="core">
 <Who>jycli@apache.org</Who>
 <DateCommitted>2004/08/17</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/processor ProcessorAttributeSet.java ProcessorCharacters.java ProcessorDecimalFormat.java 
+<Modified> xml-xalan/java/src/de/lyca/xalan/processor ProcessorAttributeSet.java ProcessorCharacters.java ProcessorDecimalFormat.java 
 ProcessorExsltFuncResult.java ProcessorExsltFunction.java ProcessorGlobalParamDecl.java ProcessorGlobalVariableDecl.java 
 ProcessorImport.java ProcessorInclude.java ProcessorKey.java ProcessorLRE.java ProcessorNamespaceAlias.java ProcessorOutputElem.java 
 ProcessorPreserveSpace.java ProcessorStripSpace.java ProcessorStylesheetDoc.java ProcessorStylesheetElement.java ProcessorTemplate.java 
@@ -629,7 +629,7 @@ and was reviewed by Henry Zongaro (zongaro@ca.ibm.com)
 <Commit category="core">
 <Who>jycli@apache.org</Who>
 <DateCommitted>2004/08/17</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/templates AVT.java AVTPart.java AVTPartSimple.java AVTPartXPath.java 
+<Modified> xml-xalan/java/src/de/lyca/xalan/templates AVT.java AVTPart.java AVTPartSimple.java AVTPartXPath.java 
 DecimalFormatProperties.java ElemApplyImport.java ElemApplyTemplates.java ElemAttribute.java ElemAttributeSet.java 
 ElemCallTemplate.java ElemChoose.java ElemComment.java ElemCopy.java ElemCopyOf.java ElemElement.java ElemEmpty.java 
 ElemExsltFuncResult.java ElemExsltFunction.java ElemExtensionCall.java ElemExtensionDecl.java ElemExtensionScript.java 
@@ -638,8 +638,8 @@ ElemParam.java ElemPI.java ElemSort.java ElemTemplate.java ElemTemplateElement.j
 ElemUnknown.java ElemUse.java ElemValueOf.java ElemVariable.java ElemVariablePsuedo.java ElemWhen.java ElemWithParam.java 
 FuncDocument.java FuncFormatNumb.java FuncKey.java KeyDeclaration.java NamespaceAlias.java OutputProperties.java Stylesheet.java 
 StylesheetComposed.java StylesheetRoot.java TemplateList.java TemplateSubPatternAssociation.java WhiteSpaceInfo.java 
-XMLNSDecl.java XUnresolvedVariable.java XUnresolvedVariableSimple.java xml-xalan/java/src/org/apache/xalan/transformer 
-CountersTable.java KeyIterator.java KeyRefIterator.java xml-xalan/java/src/org/apache/xalan/xslt ObjectFactory.java</Modified>
+XMLNSDecl.java XUnresolvedVariable.java XUnresolvedVariableSimple.java xml-xalan/java/src/de/lyca/xalan/transformer 
+CountersTable.java KeyIterator.java KeyRefIterator.java xml-xalan/java/src/de/lyca/xalan/xslt ObjectFactory.java</Modified>
 <Log>
 Added serialVersionUID for classes which implement Serializable interface. Patch created by Christine Li (jycli@ca.ibm.com) 
 and was reviewed by Henry Zongaro (zongaro@ca.ibm.com)
@@ -648,12 +648,12 @@ and was reviewed by Henry Zongaro (zongaro@ca.ibm.com)
 <Commit category="xsltc">
 <Who>jycli@apache.org</Who>
 <DateCommitted>2004/08/17</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/xsltc TransletException.java xml-xalan/java/src/org/apache/xalan/xsltc/cmdline 
-ObjectFactory.java xml-xalan/java/src/org/apache/xalan/xsltc/cmdline/getopt GetOptsException.java IllegalArgumentException.java 
-MissingOptArgException.java xml-xalan/java/src/org/apache/xalan/xsltc/compiler CompilerException.java IllegalCharException.java 
-ObjectFactory.java xml-xalan/java/src/org/apache/xalan/xsltc/compiler/util MultiHashtable.java ObjectFactory.java StringStack.java 
-TypeCheckError.java xml-xalan/java/src/org/apache/xalan/xsltc/dom BitArray.java ObjectFactory.java 
-xml-xalan/java/src/org/apache/xalan/xsltc/runtime ObjectFactory.java xml-xalan/java/src/org/apache/xalan/xsltc/trax 
+<Modified> xml-xalan/java/src/de/lyca/xalan/xsltc TransletException.java xml-xalan/java/src/de/lyca/xalan/xsltc/cmdline 
+ObjectFactory.java xml-xalan/java/src/de/lyca/xalan/xsltc/cmdline/getopt GetOptsException.java IllegalArgumentException.java 
+MissingOptArgException.java xml-xalan/java/src/de/lyca/xalan/xsltc/compiler CompilerException.java IllegalCharException.java 
+ObjectFactory.java xml-xalan/java/src/de/lyca/xalan/xsltc/compiler/util MultiHashtable.java ObjectFactory.java StringStack.java 
+TypeCheckError.java xml-xalan/java/src/de/lyca/xalan/xsltc/dom BitArray.java ObjectFactory.java 
+xml-xalan/java/src/de/lyca/xalan/xsltc/runtime ObjectFactory.java xml-xalan/java/src/de/lyca/xalan/xsltc/trax 
 ObjectFactory.java TemplatesImpl.java</Modified>
 <Log>
 Added serialVersionUID for classes which implement Serializable interface. Patch created by Christine Li (jycli@ca.ibm.com) 
@@ -663,9 +663,9 @@ and was reviewed by Henry Zongaro (zongaro@ca.ibm.com)
 <Commit category="core">
 <Who>jycli@apache.org</Who>
 <DateCommitted>2004/08/17</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xml/dtm DTMConfigurationException.java DTMDOMException.java ObjectFactory.java 
-xml-xalan/java/src/org/apache/xml/dtm/ref DTMNamedNodeMap.java IncrementalSAXSource_Filter.java ObjectFactory.java 
-xml-xalan/java/src/org/apache/xml/serializer ObjectFactory.java xml-xalan/java/src/org/apache/xml/utils MutableAttrListImpl.java 
+<Modified> xml-xalan/java/src/de/lyca/xml/dtm DTMConfigurationException.java DTMDOMException.java ObjectFactory.java 
+xml-xalan/java/src/de/lyca/xml/dtm/ref DTMNamedNodeMap.java IncrementalSAXSource_Filter.java ObjectFactory.java 
+xml-xalan/java/src/de/lyca/xml/serializer ObjectFactory.java xml-xalan/java/src/de/lyca/xml/utils MutableAttrListImpl.java 
 NameSpace.java NodeVector.java ObjectFactory.java ObjectPool.java QName.java SAXSourceLocator.java SerializableLocatorImpl.java 
 StopParseException.java StringVector.java URI.java WrappedRuntimeException.java WrongParserException.java</Modified>
 <Log>
@@ -676,14 +676,14 @@ and was reviewed by Henry Zongaro (zongaro@ca.ibm.com)
 <Commit category="core">
 <Who>jycli@apache.org</Who>
 <DateCommitted>2004/08/17</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xpath Expression.java FoundIndex.java NodeSetDTM.java XPath.java 
-XPathProcessorException.java xml-xalan/java/src/org/apache/xpath/axes AttributeIterator.java AxesWalker.java 
+<Modified> xml-xalan/java/src/de/lyca/xpath Expression.java FoundIndex.java NodeSetDTM.java XPath.java 
+XPathProcessorException.java xml-xalan/java/src/de/lyca/xpath/axes AttributeIterator.java AxesWalker.java 
 BasicTestIterator.java ChildIterator.java ChildTestIterator.java DescendantIterator.java FilterExprIterator.java 
 FilterExprIteratorSimple.java FilterExprWalker.java IteratorPool.java LocPathIterator.java MatchPatternIterator.java 
 NodeSequence.java OneStepIterator.java OneStepIteratorForward.java PredicatedNodeTest.java ReverseAxesWalker.java 
 RTFIterator.java SelfIteratorNoPredicate.java UnionChildIterator.java UnionPathIterator.java WalkingIterator.java 
-WalkingIteratorSorted.java xml-xalan/java/src/org/apache/xpath/compiler ObjectFactory.java 
-xml-xalan/java/src/org/apache/xpath/functions FuncBoolean.java FuncCeiling.java FuncConcat.java FuncContains.java 
+WalkingIteratorSorted.java xml-xalan/java/src/de/lyca/xpath/compiler ObjectFactory.java 
+xml-xalan/java/src/de/lyca/xpath/functions FuncBoolean.java FuncCeiling.java FuncConcat.java FuncContains.java 
 FuncCount.java FuncCurrent.java FuncDoclocation.java FuncExtElementAvailable.java FuncExtFunction.java 
 FuncExtFunctionAvailable.java FuncFalse.java FuncFloor.java FuncGenerateId.java FuncId.java FuncLang.java 
 FuncLast.java FuncLocalPart.java FuncNamespace.java FuncNormalizeSpace.java FuncNot.java FuncNumber.java 
@@ -691,12 +691,12 @@ FuncPosition.java FuncQname.java FuncRound.java FuncStartsWith.java FuncString.j
 FuncSubstring.java FuncSubstringAfter.java FuncSubstringBefore.java FuncSum.java FuncSystemProperty.java 
 Function.java Function2Args.java Function3Args.java FunctionDef1Arg.java FunctionMultiArgs.java FunctionOneArg.java 
 FuncTranslate.java FuncTrue.java FuncUnparsedEntityURI.java ObjectFactory.java WrongNumberArgsException.java 
-xml-xalan/java/src/org/apache/xpath/objects XBoolean.java XBooleanStatic.java XNodeSet.java XNodeSetForDOM.java 
+xml-xalan/java/src/de/lyca/xpath/objects XBoolean.java XBooleanStatic.java XNodeSet.java XNodeSetForDOM.java 
 XNull.java XNumber.java XObject.java XRTreeFrag.java XRTreeFragSelectWrapper.java XString.java XStringForChars.java 
-XStringForFSB.java xml-xalan/java/src/org/apache/xpath/operations And.java Bool.java Div.java Equals.java Gt.java 
+XStringForFSB.java xml-xalan/java/src/de/lyca/xpath/operations And.java Bool.java Div.java Equals.java Gt.java 
 Gte.java Lt.java Lte.java Minus.java Mod.java Mult.java Neg.java NotEquals.java Number.java Operation.java Or.java 
 Plus.java Quo.java String.java UnaryOperation.java Variable.java VariableSafeAbsRef.java 
-xml-xalan/java/src/org/apache/xpath/patterns ContextMatchStepPattern.java FunctionPattern.java NodeTest.java 
+xml-xalan/java/src/de/lyca/xpath/patterns ContextMatchStepPattern.java FunctionPattern.java NodeTest.java 
 StepPattern.java UnionPattern.java</Modified>
 <Log>
 Added serialVersionUID for classes which implement Serializable interface. Patch created by Christine Li (jycli@ca.ibm.com) 
@@ -706,7 +706,7 @@ and was reviewed by Henry Zongaro (zongaro@ca.ibm.com)
 <Commit category="core">
 <Who>minchau@apache.org</Who>
 <DateCommitted>2004/08/26</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xml/utils Trie.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xml/utils Trie.java</Modified>
 <Log>
 Submitted by:	Brian Minchau<br/>
 No external changes to Trie, but some additional APIs to make for a lower case
@@ -717,7 +717,7 @@ names are lower-case only).
 <Commit category="core">
 <Who>minchau@apache.org</Who>
 <DateCommitted>2004/08/27</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xml/serializer CharInfo.java ToHTMLStream.java ToStream.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xml/serializer CharInfo.java ToHTMLStream.java ToStream.java</Modified>
 <Log>
 Minor changes to CharInfo to map charaters to decorated entities (e.g. "&amp;lt;" ) 
 rather than just entity names (e.g. "lt"), which is a minor performance improvement.
@@ -726,7 +726,7 @@ rather than just entity names (e.g. "lt"), which is a minor performance improvem
 <Commit category="core">
 <Who>mkwan@apache.org</Who>
 <DateCommitted>2004/08/30</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xml/utils XMLReaderManager.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xml/utils XMLReaderManager.java</Modified>
 <Log>
 Fix a memory leak problem described in bugzilla 28082.
 </Log>
@@ -734,7 +734,7 @@ Fix a memory leak problem described in bugzilla 28082.
 <Commit category="core">
 <Who>minchau@apache.org</Who>
 <DateCommitted>2004/09/01</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xml/serializer SerializerTraceWriter.java ToStream.java 
+<Modified> xml-xalan/java/src/de/lyca/xml/serializer SerializerTraceWriter.java ToStream.java 
 WriterChain.java WriterToASCI.java WriterToUTF8Buffered.java</Modified>
 <Log>
 Submitted by:	Brian Minchau<br/>
@@ -745,7 +745,7 @@ e.g. WriterToUTF8Buffered.
 <Commit category="core">
 <Who>minchau@apache.org</Who>
 <DateCommitted>2004/09/01</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xml/serializer ToXMLStream.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xml/serializer ToXMLStream.java</Modified>
 <Log>
 Submitted by:	Brian Minchau<br/>
 Javadoc changes, and added a call in ToXMLStream.processingInstruction() 
@@ -756,7 +756,7 @@ if none was yet seen.
 <Commit category="core">
 <Who>minchau@apache.org</Who>
 <DateCommitted>2004/09/07</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xml/serializer ToSAXHandler.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xml/serializer ToSAXHandler.java</Modified>
 <Log>
 PR: bugzilla 27522<br/>
 Submitted by:	Brian Minchau<br/>
@@ -766,7 +766,7 @@ committing patch from bugzilla 27522<br/>
 <Commit category="core">
 <Who>johng@apache.org</Who>
 <DateCommitted>2004/09/16</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/lib/sql SQLDocument.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan/lib/sql SQLDocument.java</Modified>
 <Log>
 Fixed bug where JDBC execute was being called instead ofg executeQuery.
 executeQuery will always retrurn a result set even if the query does not return any  rows
@@ -779,7 +779,7 @@ Submitted by:	John Gentilin
 <Commit category="core">
 <Who>johng@apache.org</Who>
 <DateCommitted>2004/09/16</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/lib/sql XConnection.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan/lib/sql XConnection.java</Modified>
 <Log>
 Fixed bug where the close document method could not locxate the SQL Document.
 see http://nagoya.apache.org/jira/browse/XALANJ-1925<br/>
@@ -802,7 +802,7 @@ Reviewed by Christine Li.
 <Commit category="xsltc">
 <Who>zongaro@apache.org</Who>
 <DateCommitted>2004/09/24</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/xsltc/compiler Variable.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan/xsltc/compiler Variable.java</Modified>
 <Log>
 Skip translation for any unreferenced variables.
 Patch reviewed by Christine Li (jycli@ca.ibm.com).
@@ -811,7 +811,7 @@ Patch reviewed by Christine Li (jycli@ca.ibm.com).
 <Commit category="core">
 <Who>zongaro@apache.org</Who>
 <DateCommitted>2004/10/01</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xpath/compiler XPathParser.java xml-xalan/java/src/org/apache/xpath/patterns NodeTest.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xpath/compiler XPathParser.java xml-xalan/java/src/de/lyca/xpath/patterns NodeTest.java</Modified>
 <Log>
 Patch from Yash Talwar (ytalwar@ca.ibm.com) for XALANJ-1186.<br/>
 The existing code in the interpretive processor was handling namespace::pre by
@@ -825,7 +825,7 @@ The patch was reviewed by myself (zongaro@ca.ibm.com).
 <Commit category="core">
 <Who>minchau@apache.org</Who>
 <DateCommitted>2004/10/06</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xml/serializer ToHTMLSAXHandler.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xml/serializer ToHTMLSAXHandler.java</Modified>
 <Log>
 XSL Transformation drops content inside xsl:comment tags.<br/>
 PR: XALANJ-1966<br/>
@@ -836,7 +836,7 @@ Reviewed by:	 Brian Minchau<br/>
 <Commit category="core">
 <Who>minchau@apache.org</Who>
 <DateCommitted>2004/10/06</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xpath/operations Variable.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xpath/operations Variable.java</Modified>
 <Log>
 Null Pointer Exception on sorting using a variable.<br/>
 PR: XALANJ-1942<br/>
@@ -847,7 +847,7 @@ Reviewed by:	Brian Minchau
 <Commit category="core">
 <Who>minchau@apache.org</Who>
 <DateCommitted>2004/10/06</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/processor ProcessorNamespaceAlias.java xml-xalan/java/src/org/apache/xalan/res 
+<Modified> xml-xalan/java/src/de/lyca/xalan/processor ProcessorNamespaceAlias.java xml-xalan/java/src/de/lyca/xalan/res 
 XSLTErrorResources.java</Modified>
 <Log>
 Null Pointer Exception when namespace-alias element says to use "#default" namespace but there is no default namespace.<br/>
@@ -868,7 +868,7 @@ Patch reviewed by Christine Li (jycli@ca.ibm.com).
 <Commit category="core">
 <Who>jycli@apache.org</Who>
 <DateCommitted>2004/10/13</DateCommitted>
-<Modified> xml-xalan/java build.xml xml-xalan/java/src/org/apache/xalan/extensions ExtensionHandlerGeneral.java 
+<Modified> xml-xalan/java build.xml xml-xalan/java/src/de/lyca/xalan/extensions ExtensionHandlerGeneral.java 
 xml-xalan/java/xdocs/sources/xalan extensions.xml resources.xml</Modified>
 <Log>
 Fixed of Bug report XalanJ-1822. Added alternative BSF implementation support for extension functions in languages other than Java
@@ -878,7 +878,7 @@ Patch reviewed by Henry Zongaro (zongaro@ca.ibm.com)
 <Commit category="core">
 <Who>minchau@apache.org</Who>
 <DateCommitted>2004/10/14</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xml/serializer/utils AttList.java BoolStack.java DOM2Helper.java Messages.java 
+<Modified> xml-xalan/java/src/de/lyca/xml/serializer/utils AttList.java BoolStack.java DOM2Helper.java Messages.java 
 SerializerMessages_en.java SerializerMessages.java StringToIntTable.java SystemIDResolver.java URI.java Utils.java 
 WrappedRuntimeException.java</Modified>
 <Log>
@@ -890,7 +890,7 @@ Reviewed by:	Yash Talwar
 <Commit category="core">
 <Who>minchau@apache.org</Who>
 <DateCommitted>2004/10/14</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xml/serializer/utils Messages.java SerializerMessages.java Utils.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xml/serializer/utils Messages.java SerializerMessages.java Utils.java</Modified>
 <Log>
 Submitted by:	Brian Minchau<br/>
 Made some fields final or private to make the objects immutable, especially the messages.
@@ -899,7 +899,7 @@ Made some fields final or private to make the objects immutable, especially the 
 <Commit category="core">
 <Who>minchau@apache.org</Who>
 <DateCommitted>2004/10/14</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xml/serializer AttributesImplSerializer.java CharInfo.java DOMSerializer.java ElemDesc.java 
+<Modified> xml-xalan/java/src/de/lyca/xml/serializer AttributesImplSerializer.java CharInfo.java DOMSerializer.java ElemDesc.java 
 EmptySerializer.java EncodingInfo.java Encodings.java ExtendedContentHandler.java ExtendedLexicalHandler.java Method.java 
 NamespaceMappings.java ObjectFactory.java OutputPropertiesFactory.java OutputPropertyUtils.java SerializationHandler.java 
 Serializer.java SerializerBase.java SerializerConstants.java SerializerFactory.java SerializerTrace.java SerializerTraceWriter.java 
@@ -916,7 +916,7 @@ However multiple classes had their visibility reduced to less than "public".
 <Commit category="core">
 <Who>minchau@apache.org</Who>
 <DateCommitted>2004/10/14</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xml/utils CharKey.java Trie.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xml/utils CharKey.java Trie.java</Modified>
 <Log>
 PR: XALANJ-1891<br/>
 Submitted by:	Brian Minchau<br/>
@@ -967,7 +967,7 @@ too often.
 <Commit category="core">
 <Who>johng@apache.org</Who>
 <DateCommitted>2004/10/19</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/lib/sql DefaultConnectionPool.java XConnection.java SQLDocument.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan/lib/sql DefaultConnectionPool.java XConnection.java SQLDocument.java</Modified>
 <Log>
 This patch makes the close() function behave better but still has a 
 problem when certain iterators are used.  This code is at least safe 
@@ -980,7 +980,7 @@ Submitted by:	John Gentilin
 <Commit category="core">
 <Who>jycli@apache.org</Who>
 <DateCommitted>2004/10/21</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xpath/objects XStringForFSB.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xpath/objects XStringForFSB.java</Modified>
 <Log>
 A patch to fix Bug XALANJ-1708.<br/>
 Reviewed by Morris Kwan (mkwan@ca.ibm.com)
@@ -989,7 +989,7 @@ Reviewed by Morris Kwan (mkwan@ca.ibm.com)
 <Commit category="core">
 <Who>jycli@apache.org</Who>
 <DateCommitted>2004/10/21</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xpath/axes NodeSequence.java UnionPathIterator.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xpath/axes NodeSequence.java UnionPathIterator.java</Modified>
 <Log>
 a fix for bug XALANJ-1810.<br/>
 Reviewed by Morris Kwan (mkwan@ca.ibm.com)
@@ -1006,7 +1006,7 @@ Fix the samples build. The samples.class.path needs to include the serializer.ja
 <Commit category="core">
 <Who>minchau@apache.org</Who>
 <DateCommitted>2004/10/26</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xml/serializer SerializerBase.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xml/serializer SerializerBase.java</Modified>
 <Log>
 Submitted by:	Brian Minchau<br/>
 Restoring the SerializerBase class "public" (what it used to be).
@@ -1025,7 +1025,7 @@ xslt.boot.class.path.
 <Commit category="core">
 <Who>jycli@apache.org</Who>
 <DateCommitted>2004/11/02</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xpath/axes DescendantIterator.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xpath/axes DescendantIterator.java</Modified>
 <Log>
 String comparison should use String.equals(), instead of ==.
 Even == works fine for most of the cases, for a serializable object, two variable originally reference to the same string
@@ -1035,7 +1035,7 @@ after deserialization, they no longer reference the same string, although the va
 <Commit category="core">
 <Who>jycli@apache.org</Who>
 <DateCommitted>2004/11/02</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/extensions ExtensionHandlerGeneral.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan/extensions ExtensionHandlerGeneral.java</Modified>
 <Log>
 The latest Rhino1_5R5 checks for the script language line/column no.&gt;=0
 Fixed for bug XALANJ-1887.
@@ -1061,9 +1061,9 @@ IBM bsf, they can download it from Attic
 <Commit category="core">
 <Who>minchau@apache.org</Who>
 <DateCommitted>2004/11/12</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xpath/compiler Lexer.java XPathParser.java xml-xalan/java/src/org/apache/xpath/domapi 
+<Modified> xml-xalan/java/src/de/lyca/xpath/compiler Lexer.java XPathParser.java xml-xalan/java/src/de/lyca/xpath/domapi 
 XPathEvaluatorImpl.java XPathExpressionImpl.java XPathNamespaceImpl.java XPathNSResolverImpl.java XPathResultImpl.java 
-XPathStylesheetDOM3Exception.java xml-xalan/java/src/org/apache/xpath/res XPATHErrorResources.java</Modified>
+XPathStylesheetDOM3Exception.java xml-xalan/java/src/de/lyca/xpath/res XPATHErrorResources.java</Modified>
 <Log>
 PR: bug XALANJ-1985<br/>
 Submitted by:	Yash Talwar<br/>
@@ -1074,7 +1074,7 @@ Support for DOM 3 API, for use by an XML Parser.
 <Commit category="xsltc">
 <Who>zongaro@apache.org</Who>
 <DateCommitted>2004/11/16</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/xsltc/compiler CallTemplate.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan/xsltc/compiler CallTemplate.java</Modified>
 <Log>
 Patch for bug report XALANJ-1994.<br/>
 
@@ -1090,7 +1090,7 @@ Patch was reviewed by Christine Li (jycli@ca.ibm.com)
 <Commit category="core">
 <Who>zongaro@apache.org</Who>
 <DateCommitted>2004/11/19</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xpath/objects XStringForFSB.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xpath/objects XStringForFSB.java</Modified>
 <Log>
 Patch for XALANJ-1955.  The equals(Object) method contains a list of
 instanceof checks, and then casts the Object argument to the tested type in
@@ -1104,7 +1104,7 @@ Reviewd by Joanne Tong (joannet () ca ! ibm ! com).
 <Commit category="core">
 <Who>zongaro@apache.org</Who>
 <DateCommitted>2004/11/19</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/transformer KeyTable.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan/transformer KeyTable.java</Modified>
 <Log>
 Patch for XALANJ-1368.<br/>
 
@@ -1121,7 +1121,7 @@ Reviewed by Joanne Tong (joannet@ca.ibm.com).
 <Commit category="core">
 <Who>mkwan@apache.org</Who>
 <DateCommitted>2004/11/22</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xml/dtm/ref DTMManagerDefault.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xml/dtm/ref DTMManagerDefault.java</Modified>
 <Log>
 Fix a memory leak problem in DTMManager (XALANJ-1999).
 </Log>
@@ -1129,7 +1129,7 @@ Fix a memory leak problem in DTMManager (XALANJ-1999).
 <Commit category="xsltc">
 <Who>santiagopg@apache.org</Who>
 <DateCommitted>2004/12/06</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/xsltc/runtime BasisLibrary.java Operators.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan/xsltc/runtime BasisLibrary.java Operators.java</Modified>
 <Log>
 Patch for XALANJ-2003. Problem was unrelated to recursion, but simply a bug in the basis library. Swapping 
 operands requires swapping operators and the latter was not done. A workaround for this bug would be to 
@@ -1139,7 +1139,7 @@ swap the operands (and operator) in the stylesheet (as that would not cause any 
 <Commit category="xsltc">
 <Who>santiagopg@apache.org</Who>
 <DateCommitted>2004/12/10</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/xsltc/trax DOM2TO.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan/xsltc/trax DOM2TO.java</Modified>
 <Log>
 Patch for XALANJ-2015. Namespace declarations are now reported on a first pass to avoid the problem described in the bug report.
 </Log>
@@ -1147,7 +1147,7 @@ Patch for XALANJ-2015. Namespace declarations are now reported on a first pass t
 <Commit category="xsltc">
 <Who>santiagopg@apache.org</Who>
 <DateCommitted>2004/12/10</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/xsltc/compiler Output.java Parser.java SyntaxTreeNode.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan/xsltc/compiler Output.java Parser.java SyntaxTreeNode.java</Modified>
 <Log>
 Patch for XALANJ-1761. Output properties from multiple xsl:output instructions are now correctly merged (previously, 
 only cdata-section-elements were handled correctly).
@@ -1156,7 +1156,7 @@ only cdata-section-elements were handled correctly).
 <Commit category="xsltc">
 <Who>santiagopg@apache.org</Who>
 <DateCommitted>2004/12/10</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/xsltc/runtime Operators.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan/xsltc/runtime Operators.java</Modified>
 <Log>
 Replaced meaningless numbers by predefined constants in swapArray[] vector.
 </Log>
@@ -1164,7 +1164,7 @@ Replaced meaningless numbers by predefined constants in swapArray[] vector.
 <Commit category="core">
 <Who>joannet@apache.org</Who>
 <DateCommitted>2004/12/13</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/templates ElemApplyImport.java xml-xalan/java/src/org/apache/xalan/transformer 
+<Modified> xml-xalan/java/src/de/lyca/xalan/templates ElemApplyImport.java xml-xalan/java/src/de/lyca/xalan/transformer 
 TransformerImpl.java</Modified>
 <Log>
 Fixed XALANJ-1824. Changed current template rule when named template executes an xsl:apply-imports
@@ -1173,7 +1173,7 @@ Fixed XALANJ-1824. Changed current template rule when named template executes an
 <Commit category="core">
 <Who>joannet@apache.org</Who>
 <DateCommitted>2004/12/13</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/lib PipeDocument.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan/lib PipeDocument.java</Modified>
 <Log>
 Fixed XALANJ-1662. Allow pipeDocument to throw exceptions
 </Log>
@@ -1181,7 +1181,7 @@ Fixed XALANJ-1662. Allow pipeDocument to throw exceptions
 <Commit category="xsltc">
 <Who>joannet@apache.org</Who>
 <DateCommitted>2004/12/13</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/xsltc/compiler Import.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan/xsltc/compiler Import.java</Modified>
 <Log>
 Fixed XALANJ-1812. Template inlining setting propagated to imported stylesheets
 </Log>
@@ -1189,50 +1189,50 @@ Fixed XALANJ-1812. Template inlining setting propagated to imported stylesheets
 <Commit category="core">
 <Who>jycli@apache.org</Who>
 <DateCommitted>2004/12/15</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/client XSLTProcessorApplet.java xml-xalan/java/src/org/apache/xalan/extensions 
-ExtensionHandlerJavaClass.java ExtensionHandlerJavaPackage.java MethodResolver.java xml-xalan/java/src/org/apache/xalan/lib/sql 
-ConnectionPoolManager.java DTMDocument.java xml-xalan/java/src/org/apache/xalan/processor StylesheetHandler.java 
-TransformerFactoryImpl.java XSLTAttributeDef.java xml-xalan/java/src/org/apache/xalan/res XSLTErrorResources_ca.java 
+<Modified> xml-xalan/java/src/de/lyca/xalan/client XSLTProcessorApplet.java xml-xalan/java/src/de/lyca/xalan/extensions 
+ExtensionHandlerJavaClass.java ExtensionHandlerJavaPackage.java MethodResolver.java xml-xalan/java/src/de/lyca/xalan/lib/sql 
+ConnectionPoolManager.java DTMDocument.java xml-xalan/java/src/de/lyca/xalan/processor StylesheetHandler.java 
+TransformerFactoryImpl.java XSLTAttributeDef.java xml-xalan/java/src/de/lyca/xalan/res XSLTErrorResources_ca.java 
 XSLTErrorResources_cs.java XSLTErrorResources_de.java XSLTErrorResources_es.java XSLTErrorResources.java XSLTErrorResources_fr.java 
 XSLTErrorResources_hu.java XSLTErrorResources_it.java XSLTErrorResources_ja.java XSLTErrorResources_ko.java XSLTErrorResources_pl.java 
 XSLTErrorResources_pt_BR.java XSLTErrorResources_ru.java XSLTErrorResources_sk.java XSLTErrorResources_sv.java XSLTErrorResources_tr.java 
-XSLTErrorResources_zh_CN.java XSLTErrorResources_zh_TW.java xml-xalan/java/src/org/apache/xalan/templates ElemApplyImport.java 
+XSLTErrorResources_zh_CN.java XSLTErrorResources_zh_TW.java xml-xalan/java/src/de/lyca/xalan/templates ElemApplyImport.java 
 ElemApplyTemplates.java ElemAttributeSet.java ElemCallTemplate.java ElemChoose.java ElemComment.java ElemCopy.java ElemCopyOf.java 
 ElemElement.java ElemExsltFuncResult.java ElemExsltFunction.java ElemExtensionCall.java ElemFallback.java ElemForEach.java ElemIf.java 
 ElemLiteralResult.java ElemMessage.java ElemNumber.java ElemParam.java ElemPI.java ElemTemplate.java ElemTextLiteral.java ElemUnknown.java 
 ElemValueOf.java ElemVariable.java ElemWithParam.java RedundentExprEliminator.java StylesheetRoot.java TemplateList.java 
-xml-xalan/java/src/org/apache/xalan/trace TraceManager.java xml-xalan/java/src/org/apache/xalan/transformer StackGuard.java 
-TransformerHandlerImpl.java TransformerImpl.java xml-xalan/java/src/org/apache/xalan/xslt EnvironmentCheck.java Process.java 
-xml-xalan/java/src/org/apache/xalan/xsltc/cmdline Compile.java Transform.java xml-xalan/java/src/org/apache/xalan/xsltc/compiler 
+xml-xalan/java/src/de/lyca/xalan/trace TraceManager.java xml-xalan/java/src/de/lyca/xalan/transformer StackGuard.java 
+TransformerHandlerImpl.java TransformerImpl.java xml-xalan/java/src/de/lyca/xalan/xslt EnvironmentCheck.java Process.java 
+xml-xalan/java/src/de/lyca/xalan/xsltc/cmdline Compile.java Transform.java xml-xalan/java/src/de/lyca/xalan/xsltc/compiler 
 CastExpr.java EqualityExpr.java Key.java LocationPathPattern.java Mode.java ParentLocationPath.java Predicate.java 
 ProcessingInstructionPattern.java RelationalExpr.java Sort.java Step.java StepPattern.java SyntaxTreeNode.java UnionPathExpr.java 
-xpath.cup xml-xalan/java/src/org/apache/xalan/xsltc/compiler/util ClassGenerator.java ErrorMessages.java ErrorMessages_ca.java 
+xpath.cup xml-xalan/java/src/de/lyca/xalan/xsltc/compiler/util ClassGenerator.java ErrorMessages.java ErrorMessages_ca.java 
 ErrorMessages_cs.java ErrorMessages_de.java ErrorMessages_es.java ErrorMessages_fr.java ErrorMessages_hu.java ErrorMessages_it.java 
 ErrorMessages_ja.java ErrorMessages_ko.java ErrorMessages_no.java ErrorMessages_pl.java ErrorMessages_pt_BR.java ErrorMessages_ru.java 
 ErrorMessages_sk.java ErrorMessages_tr.java ErrorMessages_zh_CN.java ErrorMessages_zh_TW.java NamedMethodGenerator.java 
-xml-xalan/java/src/org/apache/xalan/xsltc/dom Axis.java DocumentCache.java MultiDOM.java MultipleNodeCounter.java NodeCounter.java 
-SAXImpl.java SimpleResultTreeImpl.java SingleNodeCounter.java xml-xalan/java/src/org/apache/xalan/xsltc/runtime BasisLibrary.java 
+xml-xalan/java/src/de/lyca/xalan/xsltc/dom Axis.java DocumentCache.java MultiDOM.java MultipleNodeCounter.java NodeCounter.java 
+SAXImpl.java SimpleResultTreeImpl.java SingleNodeCounter.java xml-xalan/java/src/de/lyca/xalan/xsltc/runtime BasisLibrary.java 
 ErrorMessages_ca.java ErrorMessages_cs.java ErrorMessages_de.java ErrorMessages_es.java ErrorMessages_fr.java ErrorMessages_hu.java 
 ErrorMessages_it.java ErrorMessages_ja.java ErrorMessages_ko.java ErrorMessages_no.java ErrorMessages.java ErrorMessages_pl.java 
 ErrorMessages_pt_BR.java ErrorMessages_ru.java ErrorMessages_sk.java ErrorMessages_tr.java ErrorMessages_zh_CN.java ErrorMessages_zh_TW.java 
-Operators.java xml-xalan/java/src/org/apache/xalan/xsltc/trax TransformerFactoryImpl.java xml-xalan/java/src/org/apache/xalan/xsltc/util 
-avaCupRedirect.java xml-xalan/java/src/org/apache/xml/dtm Axis.java DTMManager.java xml-xalan/java/src/org/apache/xml/dtm/ref 
+Operators.java xml-xalan/java/src/de/lyca/xalan/xsltc/trax TransformerFactoryImpl.java xml-xalan/java/src/de/lyca/xalan/xsltc/util 
+avaCupRedirect.java xml-xalan/java/src/de/lyca/xml/dtm Axis.java DTMManager.java xml-xalan/java/src/de/lyca/xml/dtm/ref 
 DTMDefaultBase.java DTMDefaultBaseIterators.java DTMDefaultBaseTraversers.java DTMDocumentImpl.java IncrementalSAXSource_Xerces.java 
-xml-xalan/java/src/org/apache/xml/dtm/ref/sax2dtm SAX2DTM.java SAX2DTM2.java xml-xalan/java/src/org/apache/xml/res XMLErrorResources_ca.java 
+xml-xalan/java/src/de/lyca/xml/dtm/ref/sax2dtm SAX2DTM.java SAX2DTM2.java xml-xalan/java/src/de/lyca/xml/res XMLErrorResources_ca.java 
 XMLErrorResources_cs.java XMLErrorResources_de.java XMLErrorResources_es.java XMLErrorResources_fr.java XMLErrorResources_hu.java 
 XMLErrorResources_it.java XMLErrorResources_ja.java XMLErrorResources.java XMLErrorResources_ko.java XMLErrorResources_pl.java 
 XMLErrorResources_pt_BR.java XMLErrorResources_ru.java XMLErrorResources_sk.java XMLErrorResources_sv.java XMLErrorResources_tr.java 
-XMLErrorResources_zh_CN.java XMLErrorResources_zh_TW.java XMLMessages.java xml-xalan/java/src/org/apache/xml/serializer CharInfo.java 
-SerializerConstants.java ToHTMLStream.java ToXMLStream.java xml-xalan/java/src/org/apache/xml/utils FastStringBuffer.java 
-ThreadControllerWrapper.java XMLChar.java xml-xalan/java/src/org/apache/xml/utils/res CharArrayWrapper.java IntArrayWrapper.java 
+XMLErrorResources_zh_CN.java XMLErrorResources_zh_TW.java XMLMessages.java xml-xalan/java/src/de/lyca/xml/serializer CharInfo.java 
+SerializerConstants.java ToHTMLStream.java ToXMLStream.java xml-xalan/java/src/de/lyca/xml/utils FastStringBuffer.java 
+ThreadControllerWrapper.java XMLChar.java xml-xalan/java/src/de/lyca/xml/utils/res CharArrayWrapper.java IntArrayWrapper.java 
 LongArrayWrapper.java StringArrayWrapper.java XResourceBundle.java XResources_cy.java XResources_de.java XResources_el.java 
 XResources_en.java XResources_es.java XResources_fr.java XResources_he.java XResources_hy.java XResources_it.java XResources_ja_JP_A.java 
 XResources_ja_JP_HA.java XResources_ja_JP_HI.java XResources_ja_JP_I.java XResources_ka.java XResources_ko.java XResources_sv.java 
-XResources_zh_CN.java XResources_zh_TW.java xml-xalan/java/src/org/apache/xpath XPath.java xml-xalan/java/src/org/apache/xpath/axes 
-MatchPatternIterator.java WalkerFactory.java xml-xalan/java/src/org/apache/xpath/compiler Compiler.java FunctionTable.java Keywords.java 
-Lexer.java XPathParser.java xml-xalan/java/src/org/apache/xpath/functions FuncSystemProperty.java xml-xalan/java/src/org/apache/xpath/objects 
-XBoolean.java XBooleanStatic.java XNodeSet.java XString.java xml-xalan/java/src/org/apache/xpath/patterns StepPattern.java 
-xml-xalan/java/src/org/apache/xpath/res XPATHErrorResources.java XPATHErrorResources_ca.java XPATHErrorResources_cs.java 
+XResources_zh_CN.java XResources_zh_TW.java xml-xalan/java/src/de/lyca/xpath XPath.java xml-xalan/java/src/de/lyca/xpath/axes 
+MatchPatternIterator.java WalkerFactory.java xml-xalan/java/src/de/lyca/xpath/compiler Compiler.java FunctionTable.java Keywords.java 
+Lexer.java XPathParser.java xml-xalan/java/src/de/lyca/xpath/functions FuncSystemProperty.java xml-xalan/java/src/de/lyca/xpath/objects 
+XBoolean.java XBooleanStatic.java XNodeSet.java XString.java xml-xalan/java/src/de/lyca/xpath/patterns StepPattern.java 
+xml-xalan/java/src/de/lyca/xpath/res XPATHErrorResources.java XPATHErrorResources_ca.java XPATHErrorResources_cs.java 
 XPATHErrorResources_de.java XPATHErrorResources_es.java XPATHErrorResources_fr.java XPATHErrorResources_hu.java XPATHErrorResources_it.java 
 XPATHErrorResources_ja.java XPATHErrorResources_ko.java XPATHErrorResources_pl.java XPATHErrorResources_pt_BR.java XPATHErrorResources_ru.java 
 XPATHErrorResources_sk.java XPATHErrorResources_sv.java XPATHErrorResources_tr.java XPATHErrorResources_zh_CN.java XPATHErrorResources_zh_TW.java</Modified>
@@ -1254,7 +1254,7 @@ So they will not be changed during a processing once a new Templates is created;
 <Commit category="core">
 <Who>mkwan@apache.org</Who>
 <DateCommitted>2004/12/15</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan Version.java xml-xalan/java/src/org/apache/xpath/functions FuncExtFunction.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan Version.java xml-xalan/java/src/de/lyca/xpath/functions FuncExtFunction.java</Modified>
 <Log>
 Patch for bug XALANJ-1592. Submitted by Catya Alone (catyaa@hotmail.com).
 Set the parent node for the arguments in extension functions.
@@ -1263,7 +1263,7 @@ Set the parent node for the arguments in extension functions.
 <Commit category="core">
 <Who>minchau@apache.org</Who>
 <DateCommitted>2004/12/16</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xml/serializer/utils Messages.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xml/serializer/utils Messages.java</Modified>
 <Log>
 Partial fix for bug XALANJ-2021.
 </Log>
@@ -1271,7 +1271,7 @@ Partial fix for bug XALANJ-2021.
 <Commit category="core">
 <Who>minchau@apache.org</Who>
 <DateCommitted>2004/12/16</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xml/serializer/utils SerializerMessages.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xml/serializer/utils SerializerMessages.java</Modified>
 <Log>
 Partial fix for bug XALANJ-2021.
 just to make key/keyvalue consistent
@@ -1280,7 +1280,7 @@ just to make key/keyvalue consistent
 <Commit category="core">
 <Who>minchau@apache.org</Who>
 <DateCommitted>2004/12/16</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xml/serializer/utils SerializerMessages_ca.java SerializerMessages_cs.java 
+<Modified> xml-xalan/java/src/de/lyca/xml/serializer/utils SerializerMessages_ca.java SerializerMessages_cs.java 
 SerializerMessages_de.java SerializerMessages_es.java SerializerMessages_fr.java SerializerMessages_hu.java 
 SerializerMessages_it.java SerializerMessages_ja.java SerializerMessages_ko.java SerializerMessages_pl.java 
 SerializerMessages_pt_BR.java SerializerMessages_ru.java SerializerMessages_sv.java SerializerMessages_tr.java 
@@ -1292,7 +1292,7 @@ Other languages, for XALANJ-2021.
 <Commit category="core">
 <Who>minchau@apache.org</Who>
 <DateCommitted>2004/12/16</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xml/serializer/utils MsgKey.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xml/serializer/utils MsgKey.java</Modified>
 <Log>
 A class containing only message keys, to be shared by all language
 translations (including English).  This is to prevent replication of these
@@ -1302,7 +1302,7 @@ keys during translation. Related to XALANJ-2021
 <Commit category="core">
 <Who>minchau@apache.org</Who>
 <DateCommitted>2004/12/16</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xml/serializer/utils SerializerMessages_ca.java SerializerMessages_cs.java SerializerMessages_de.java 
+<Modified> xml-xalan/java/src/de/lyca/xml/serializer/utils SerializerMessages_ca.java SerializerMessages_cs.java SerializerMessages_de.java 
 SerializerMessages_es.java SerializerMessages_fr.java SerializerMessages_hu.java SerializerMessages_it.java SerializerMessages_ja.java 
 SerializerMessages_ko.java SerializerMessages_pl.java SerializerMessages_pt_BR.java SerializerMessages_ru.java SerializerMessages_sv.java 
 SerializerMessages_tr.java SerializerMessages_zh_CN.java SerializerMessages_zh_TW.java</Modified>
@@ -1315,8 +1315,8 @@ keys during translation. Related to XALANJ-2021
 <Commit category="core">
 <Who>minchau@apache.org</Who>
 <DateCommitted>2004/12/16</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xml/serializer/utils Messages.java SerializerMessages.java URI.java 
-xml-xalan/java/src/org/apache/xml/serializer CharInfo.java OutputPropertiesFactory.java SerializerBase.java 
+<Modified> xml-xalan/java/src/de/lyca/xml/serializer/utils Messages.java SerializerMessages.java URI.java 
+xml-xalan/java/src/de/lyca/xml/serializer CharInfo.java OutputPropertiesFactory.java SerializerBase.java 
 SerializerFactory.java ToHTMLStream.java ToStream.java ToTextStream.java ToXMLStream.java</Modified>
 <Log>
 Changes for moving the message keys, to be shared by all language
@@ -1327,7 +1327,7 @@ keys during translation. Related to XALANJ-2021.
 <Commit category="core">
 <Who>minchau@apache.org</Who>
 <DateCommitted>2004/12/16</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xml/res XMLErrorResources.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xml/res XMLErrorResources.java</Modified>
 <Log>
 Serializer messages were copied into a message file in the
 de.lyca.xml.serializer.utils package.
@@ -1338,7 +1338,7 @@ This is part of the cleanup with XALANJ-2021.
 <Commit category="core">
 <Who>zongaro@apache.org</Who>
 <DateCommitted>2004/12/22</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xml/dtm/ref DTMNamedNodeMap.java DTMNodeProxy.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xml/dtm/ref DTMNamedNodeMap.java DTMNodeProxy.java</Modified>
 <Log>
 Applying patch for Jira bug report XALANJ-1427 on behalf of Yash Talwar (ytalwar@ca.ibm.com).<br/>
 
@@ -1367,7 +1367,7 @@ modified by Sarah McNamara
 <Commit category="core">
 <Who>ilene@apache.org</Who>
 <DateCommitted>2005/01/10</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/lib ExsltDatetime.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan/lib ExsltDatetime.java</Modified>
 <Log>
 Fix for XALANJ-2013.  Duplicate time zone string returned from EXSLT time() function.
 </Log>
@@ -1400,7 +1400,7 @@ Fix for Jira bug report XALANJ-1852.
 <Commit category="core">
 <Who>zongaro@apache.org</Who>
 <DateCommitted>2005/01/20</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/serialize SerializerUtils.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan/serialize SerializerUtils.java</Modified>
 <Log>
 Applying patch for Jira bug report XALANJ-1640.<br/>
 
@@ -1424,7 +1424,7 @@ This patch was reviewed by Brian Minchau (minchau@ca.ibm.com).
 <Commit category="core">
 <Who>zongaro@apache.org</Who>
 <DateCommitted>2005/01/24</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xpath CachedXPathAPI.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xpath CachedXPathAPI.java</Modified>
 <Log>
 Fix for Jira bug report XALANJ-1811.<br/>
 
@@ -1437,7 +1437,7 @@ Reviewed by Christine Li (jycli@ca.ibm.com)
 <Commit category="core">
 <Who>zongaro@apache.org</Who>
 <DateCommitted>2005/01/27</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xml/dtm/ref/sax2dtm SAX2DTM.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xml/dtm/ref/sax2dtm SAX2DTM.java</Modified>
 <Log>
 Fix for Jira bug report XALANJ-1888.<br/>
 
@@ -1451,7 +1451,7 @@ Reviewed by Morris Kwan (mkwan@ca.ibm.com)
 <Commit category="core">
 <Who>zongaro@apache.org</Who>
 <DateCommitted>2005/01/27</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xml/dtm/ref/sax2dtm SAX2DTM2.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xml/dtm/ref/sax2dtm SAX2DTM2.java</Modified>
 <Log>
 Two part fix for Jira bug report XALANJ-1888.<br/>
 
@@ -1475,7 +1475,7 @@ Reviewed by Morris Kwan (mkwan@ca.ibm.com)
 <Commit category="core">
 <Who>jycli@apache.org</Who>
 <DateCommitted>2005/02/04</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/templates ElemNumber.java
+<Modified> xml-xalan/java/src/de/lyca/xalan/templates ElemNumber.java
 </Modified>
 <Log>
 Implement Errata E24, when the value attribute of xsl:number is NaN, infinite or less than 0.5. 
@@ -1485,7 +1485,7 @@ More details please refer to bug report XALANJ-1979. Patch is reviewed by Morris
 <Commit category="xsltc">
 <Who>jycli@apache.org</Who>
 <DateCommitted>2005/02/04</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/xsltc/compiler Number.java xml-xalan/java/src/org/apache/xalan/xsltc/dom 
+<Modified> xml-xalan/java/src/de/lyca/xalan/xsltc/compiler Number.java xml-xalan/java/src/de/lyca/xalan/xsltc/dom 
 AnyNodeCounter.java MultipleNodeCounter.java NodeCounter.java SingleNodeCounter.java</Modified>
 <Log>
 Implement Errata E24 for XSLTC, when the value attribute of xsl:number is NaN, infinite or less than 0.5. 
@@ -1495,7 +1495,7 @@ More details please refer to bug report XALANJ-1979. Patch is reviewed by Morris
 <Commit category="core">
 <Who>zongaro@apache.org</Who>
 <DateCommitted>2005/02/09</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xpath/compiler XPathParser.java xml-xalan/java/src/org/apache/xpath/res 
+<Modified> xml-xalan/java/src/de/lyca/xpath/compiler XPathParser.java xml-xalan/java/src/de/lyca/xpath/res 
 XPATHErrorResources.java</Modified>
 <Log>
 Fix for Jira bug report XALANJ-1478.<br/>
@@ -1526,8 +1526,8 @@ Reviewed by Brian Minchau (minchau@ca.ibm.com)
 <Commit category="xsltc">
 <Who>ytalwar@apache.org</Who>
 <DateCommitted>2005/02/09</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/xsltc/compiler ApplyImports.java 
-Mode.java xml-xalan/java/src/org/apache/xalan/xsltc/compiler/util ClassGenerator.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan/xsltc/compiler ApplyImports.java 
+Mode.java xml-xalan/java/src/de/lyca/xalan/xsltc/compiler/util ClassGenerator.java</Modified>
 <Log>
 Fix for XALANJ-1417.<br/>
 </Log>
@@ -1535,10 +1535,10 @@ Fix for XALANJ-1417.<br/>
 <Commit category="core">
 <Who>minchau@apache.org</Who>
 <DateCommitted>2005/02/11</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xml/serializer AttributesImplSerializer.java EmptySerializer.java 
+<Modified> xml-xalan/java/src/de/lyca/xml/serializer AttributesImplSerializer.java EmptySerializer.java 
 ExtendedContentHandler.java NamespaceMappings.java SerializerBase.java ToStream.java ToTextSAXHandler.java 
-ToTextStream.java ToUnknownStream.java ToXMLSAXHandler.java ToXMLStream.java xml-xalan/java/src/org/apache/xalan/serialize 
-SerializerUtils.java xml-xalan/java/src/org/apache/xalan/templates ElemAttribute.java ElemLiteralResult.java</Modified>
+ToTextStream.java ToUnknownStream.java ToXMLSAXHandler.java ToXMLStream.java xml-xalan/java/src/de/lyca/xalan/serialize 
+SerializerUtils.java xml-xalan/java/src/de/lyca/xalan/templates ElemAttribute.java ElemLiteralResult.java</Modified>
 <Log>
 Fix for XALANJ-1886. Multiple problems fixed related to collecting xsl:attributes 
 with over-ridden values and prefix/URI maps.  With this fix, internally the
@@ -1549,7 +1549,7 @@ includes the URI rather than the prefix.
 <Commit category="core">
 <Who>minchau@apache.org</Who>
 <DateCommitted>2005/02/11</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/transformer TransformerIdentityImpl.java xml-xalan/java/src/org/apache/xml/serializer 
+<Modified> xml-xalan/java/src/de/lyca/xalan/transformer TransformerIdentityImpl.java xml-xalan/java/src/de/lyca/xml/serializer 
 TreeWalker.java</Modified>
 <Log>
 Fix for XALANJ-1985, reviewed by Henry Zongaro.
@@ -1559,7 +1559,7 @@ The problem was that a serialized DOM failed to declare a prefix/URI mapping.
 <Commit category="core">
 <Who>minchau@apache.org</Who>
 <DateCommitted>2005/02/11</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/processor ProcessorLRE.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan/processor ProcessorLRE.java</Modified>
 <Log>
 Fix for XALANJ-2037.  The trace information doesn't have the right location information in this case.
 </Log>
@@ -1567,7 +1567,7 @@ Fix for XALANJ-2037.  The trace information doesn't have the right location info
 <Commit category="xsltc">
 <Who>ytalwar@apache.org</Who>
 <DateCommitted>2005/02/17</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/xsltc/compiler Mode.java TestSeq.java xml-xalan/java/src/org/apache/xalan/xsltc/compiler/util 
+<Modified> xml-xalan/java/src/de/lyca/xalan/xsltc/compiler Mode.java TestSeq.java xml-xalan/java/src/de/lyca/xalan/xsltc/compiler/util 
 MethodGenerator.java</Modified>
 <Log>
 Fix for XALANJ-2058.
@@ -1583,7 +1583,7 @@ Thanks Henry for his valuable input.
 <Commit category="core">
 <Who>minchau@apache.org</Who>
 <DateCommitted>2005/02/18</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xml/serializer EmptySerializer.java ExtendedContentHandler.java SerializerBase.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xml/serializer EmptySerializer.java ExtendedContentHandler.java SerializerBase.java</Modified>
 <Log>
 Committing serializer.patch5.txt in JIRA issue XALANJ-1886,
 that puts back an old attAttribute() method that takes 5 String arguments.
@@ -1595,7 +1595,7 @@ Patch reviewed by Henry Zongaro.
 <Commit category="core">
 <Who>minchau@apache.org</Who>
 <DateCommitted>2005/02/21</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xml/serializer EmptySerializer.java SerializationHandler.java SerializerBase.java 
+<Modified> xml-xalan/java/src/de/lyca/xml/serializer EmptySerializer.java SerializationHandler.java SerializerBase.java 
 ToStream.java</Modified>
 <Log>
 Fix for XALANJ-2033 and XALANJ-2051 so that the serializer will serialize DTD
@@ -1605,7 +1605,7 @@ tags if desired.  The patch was reviewed by Ilene Seeleman.
 <Commit category="core">
 <Who>ytalwar@apache.org</Who>
 <DateCommitted>2005/02/22</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xml/utils URI.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xml/utils URI.java</Modified>
 <Log>
 The fix is for XALANJ-2059.<br/>
 
@@ -1624,8 +1624,8 @@ Henry Zongaro has helped creating this patch.
 <Commit category="core">
 <Who>ytalwar@apache.org</Who>
 <DateCommitted>2005/03/02</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xml/serializer SerializerConstants.java ToStream.java ToXMLStream.java 
-xml-xalan/java/src/org/apache/xml/serializer/utils MsgKey.java SerializerMessages.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xml/serializer SerializerConstants.java ToStream.java ToXMLStream.java 
+xml-xalan/java/src/de/lyca/xml/serializer/utils MsgKey.java SerializerMessages.java</Modified>
 <Log>
 This patch fix XALANJ-2070.<br/>
 This patch add XML 1.1 support in term of following:<br/>
@@ -1641,7 +1641,7 @@ Thanks to Brian Minchau for reviewing the patch.  Brian Minchau and Henry Zongar
 <Commit category="core">
 <Who>jycli@apache.org</Who>
 <DateCommitted>2005/03/03</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/res XSLTErrorResources.java xml-xalan/java/src/org/apache/xalan/templates 
+<Modified> xml-xalan/java/src/de/lyca/xalan/res XSLTErrorResources.java xml-xalan/java/src/de/lyca/xalan/templates 
 ElemExtensionCall.java ElemLiteralResult.java</Modified>
 <Log>
 Added implementation for getAttribute, getAttributeNS and
@@ -1677,7 +1677,7 @@ status of existing issues.
 <Commit category="core">
 <Who>minchau@apache.org</Who>
 <DateCommitted>2005/03/07</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xml/serializer SerializerFactory.java xml-xalan/java/src/org/apache/xml/serializer/utils 
+<Modified> xml-xalan/java/src/de/lyca/xml/serializer SerializerFactory.java xml-xalan/java/src/de/lyca/xml/serializer/utils 
 MsgKey.java SerializerMessages.java</Modified>
 <Log>
 Fix for XALANJ-2074, committing patch2 in that issue, which removes two
@@ -1688,7 +1688,7 @@ in SerializerMessages.
 <Commit category="core">
 <Who>jycli@apache.org</Who>
 <DateCommitted>2005/03/10</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xml/serializer CharInfo.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xml/serializer CharInfo.java</Modified>
 <Log>
 Marked the code to be privileged, which allows users to load
 customized entity files in sandbox. Fixed bug report XALANJ-2068.
@@ -1698,7 +1698,7 @@ Patch was reviewed by Brian Minchau (minchau@ca.ibm.com)
 <Commit category="core">
 <Who>ytalwar@apache.org</Who>
 <DateCommitted>2005/03/10</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xml/serializer ToStream.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xml/serializer ToStream.java</Modified>
 <Log>
 This patch fixes XALANJ-1431. The patch has been reviewed by Brian.
 The problem is that that when an empty attribute value is encountered, a text node is being created 
@@ -1724,7 +1724,7 @@ Reviewed by Brian Minchau.
 <Commit category="xsltc">
 <Who>ytalwar@apache.org</Who>
 <DateCommitted>2005/03/16</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/xsltc/compiler Text.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan/xsltc/compiler Text.java</Modified>
 <Log>
 This is a fix for XALANJ-2081.
 In class de.lyca.xalan.xsltc.compiler.Text, a check was being done to find out if a given text string is all whitespaces.
@@ -1738,12 +1738,12 @@ I would like to thank Michael Glavassevich and Brian Minchau for their input to 
 <Commit category="core">
 <Who>ytalwar@apache.org</Who>
 <DateCommitted>2005/03/23</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/processor XSLTAttributeDef.java xml-xalan/java/src/org/apache/xalan/templates 
-ElemAttribute.java ElemElement.java ElemPI.java xml-xalan/java/src/org/apache/xalan/xsltc/compiler ApplyTemplates.java 
+<Modified> xml-xalan/java/src/de/lyca/xalan/processor XSLTAttributeDef.java xml-xalan/java/src/de/lyca/xalan/templates 
+ElemAttribute.java ElemElement.java ElemPI.java xml-xalan/java/src/de/lyca/xalan/xsltc/compiler ApplyTemplates.java 
 AttributeSet.java CallTemplate.java DecimalFormatting.java Key.java Output.java ProcessingInstruction.java Template.java 
-VariableBase.java WithParam.java xpath.lex XslAttribute.java XslElement.java xml-xalan/java/src/org/apache/xalan/xsltc/compiler/util 
-Util.java xml-xalan/java/src/org/apache/xalan/xsltc/runtime BasisLibrary.java xml-xalan/java/src/org/apache/xml/serializer 
-WriterToUTF8Buffered.java xml-xalan/java/src/org/apache/xml/utils QName.java XML11Char.java</Modified>
+VariableBase.java WithParam.java xpath.lex XslAttribute.java XslElement.java xml-xalan/java/src/de/lyca/xalan/xsltc/compiler/util 
+Util.java xml-xalan/java/src/de/lyca/xalan/xsltc/runtime BasisLibrary.java xml-xalan/java/src/de/lyca/xml/serializer 
+WriterToUTF8Buffered.java xml-xalan/java/src/de/lyca/xml/utils QName.java XML11Char.java</Modified>
 <Log>
 This is resolve UTF-8 Charcater support and QName character support for XML 1.1 support in XALANJ-2070.
 Henry Zongaro and Brian Minchau helped in fixing this part of the JIRA issue.
@@ -1756,7 +1756,7 @@ de.lyca.xml.serializer.WriterToUTF8Buffered has been update to support UTF-8 cha
 <Commit category="core">
 <Who>ytalwar@apache.org</Who>
 <DateCommitted>2005/03/30</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xpath/domapi package.html</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xpath/domapi package.html</Modified>
 <Log>
 This resolves XALANJ-2085.
 Sarah McNamara has reviewed this change.
@@ -1765,7 +1765,7 @@ Sarah McNamara has reviewed this change.
 <Commit category="core">
 <Who>ytalwar@apache.org</Who>
 <DateCommitted>2005/04/01</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/templates ElemNumber.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan/templates ElemNumber.java</Modified>
 <Log>
 This is a fix for XALANJ-2089.
 Christine Li has created this patch.
@@ -1781,7 +1781,7 @@ This patch resolves the performance glicth that was found in internal testing.
 <Commit category="core">
 <Who>minchau@apache.org</Who>
 <DateCommitted>2005/04/07</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xml/serializer CharInfo.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xml/serializer CharInfo.java</Modified>
 <Log>
 Commiting patch for XALANJ-2095, that tabs in text nodes in XML documents
 are serialized to &amp;#9; but should stay as a tab character.
@@ -1799,7 +1799,7 @@ by the current one, but multiple typos in other examples are corrected.
 <Commit category="core">
 <Who>minchau@apache.org</Who>
 <DateCommitted>2005/04/07</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xml/serializer Encodings.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xml/serializer Encodings.java</Modified>
 <Log>
 Committing patch for XALANJ-2077.  This performance modification is
 estimated to shave 3% of the serialization stage of small documents.
@@ -1809,7 +1809,7 @@ Every little bit counts.
 <Commit category="core">
 <Who>minchau@apache.org</Who>
 <DateCommitted>2005/04/07</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xml/serializer Encodings.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xml/serializer Encodings.java</Modified>
 <Log>
 Appling fix for XALANJ-2086, which pointed out that findCharToByteConverterMethod() 
 always returned null.  This bug was introduced some time ago during some security
@@ -1819,7 +1819,7 @@ fixes.
 <Commit category="xsltc">
 <Who>santiagopg@apache.org</Who>
 <DateCommitted>2005/04/08</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/xsltc/trax Util.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan/xsltc/trax Util.java</Modified>
 <Log>
 Clear XML reader for the case in which them main stylesheet is passed using a DOMSource. This fixes the problem 
 of trying to use a DOM2SAX reader for included/imported stylesheets that are resolved by user-defined URI resovers.
@@ -1828,7 +1828,7 @@ of trying to use a DOM2SAX reader for included/imported stylesheets that are res
 <Commit category="core">
 <Who>minchau@apache.org</Who>
 <DateCommitted>2005/04/25</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xml/serializer ToHTMLStream.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xml/serializer ToHTMLStream.java</Modified>
 <Log>
 Fix for XALANJ-2109 applied (we won't \n to \r\n in an HTML attribute value on
 Windows OS anymore, it will be left as is during serialization).
@@ -1837,7 +1837,7 @@ Windows OS anymore, it will be left as is during serialization).
 <Commit category="core">
 <Who>minchau@apache.org</Who>
 <DateCommitted>2005/04/26</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xml/utils XMLReaderManager.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xml/utils XMLReaderManager.java</Modified>
 <Log>
 Applying patch in XALANJ-2105.
 </Log>
@@ -1845,13 +1845,13 @@ Applying patch in XALANJ-2105.
 <Commit category="core">
 <Who>mkwan@apache.org</Who>
 <DateCommitted>2005/05/17</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan Version.java xml-xalan/java/src/org/apache/xalan/processor 
-TransformerFactoryImpl.java xml-xalan/java/src/org/apache/xalan/templates ElemLiteralResult.java 
-xml-xalan/java/src/org/apache/xalan/transformer TransformerImpl.java xml-xalan/java/src/org/apache/xalan/xsltc/trax 
-SmartTransformerFactoryImpl.java TransformerFactoryImpl.java xml-xalan/java/src/org/apache/xml/dtm/ref DTMNodeProxy.java 
-xml-xalan/java/src/org/apache/xml/dtm/ref/dom2dtm DOM2DTMdefaultNamespaceDeclarationNode.java xml-xalan/java/src/org/apache/xml/utils 
-UnImplNode.java xml-xalan/java/src/org/apache/xpath/domapi XPathNamespaceImpl.java xml-xalan/java/src/org/apache/xpath/operations 
-Variable.java xml-xalan/java/src/org/apache/xpath/res XPATHErrorResources.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan Version.java xml-xalan/java/src/de/lyca/xalan/processor 
+TransformerFactoryImpl.java xml-xalan/java/src/de/lyca/xalan/templates ElemLiteralResult.java 
+xml-xalan/java/src/de/lyca/xalan/transformer TransformerImpl.java xml-xalan/java/src/de/lyca/xalan/xsltc/trax 
+SmartTransformerFactoryImpl.java TransformerFactoryImpl.java xml-xalan/java/src/de/lyca/xml/dtm/ref DTMNodeProxy.java 
+xml-xalan/java/src/de/lyca/xml/dtm/ref/dom2dtm DOM2DTMdefaultNamespaceDeclarationNode.java xml-xalan/java/src/de/lyca/xml/utils 
+UnImplNode.java xml-xalan/java/src/de/lyca/xpath/domapi XPathNamespaceImpl.java xml-xalan/java/src/de/lyca/xpath/operations 
+Variable.java xml-xalan/java/src/de/lyca/xpath/res XPATHErrorResources.java</Modified>
 <Log>
 JAXP 1.3 integration. Integrate the Sun donated JAXP 1.3 implementation into the head branch.
 </Log>
@@ -1859,7 +1859,7 @@ JAXP 1.3 integration. Integrate the Sun donated JAXP 1.3 implementation into the
 <Commit category="core">
 <Who>mkwan@apache.org</Who>
 <DateCommitted>2005/05/17</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xpath/jaxp JAXPExtensionsProvider.java JAXPPrefixResolver.java JAXPVariableStack.java 
+<Modified> xml-xalan/java/src/de/lyca/xpath/jaxp JAXPExtensionsProvider.java JAXPPrefixResolver.java JAXPVariableStack.java 
 XPathExpressionImpl.java XPathFactoryImpl.java XPathImpl.java</Modified>
 <Log>
 JAXP 1.3 integration. Commit the XPath API implementation under de.lyca.xpath.jaxp.
@@ -1876,9 +1876,9 @@ New xml-apis.jar containing JAXP 1.3 APIs.
 <Commit category="core">
 <Who>jycli@apache.org</Who>
 <DateCommitted>2005/05/17</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xpath/compiler Compiler.java FuncLoader.java FunctionTable.java Keywords.java 
-ObjectFactory.java SecuritySupport.java SecuritySupport12.java XPathParser.java xml-xalan/java/src/org/apache/xpath/functions 
-FuncExtFunctionAvailable.java xml-xalan/java/src/org/apache/xalan/processor StylesheetHandler.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xpath/compiler Compiler.java FuncLoader.java FunctionTable.java Keywords.java 
+ObjectFactory.java SecuritySupport.java SecuritySupport12.java XPathParser.java xml-xalan/java/src/de/lyca/xpath/functions 
+FuncExtFunctionAvailable.java xml-xalan/java/src/de/lyca/xalan/processor StylesheetHandler.java</Modified>
 <Log>
 Modified FunctionTable. Although it is not recommanded, but it is doable for users to add a customized function or overwrite 
 the default implementation of a build-in function. Fixed bug report XALANJ-2116.
@@ -1888,7 +1888,7 @@ Patch is reviewed by Henry Zongaro
 <Commit category="xsltc">
 <Who>mkwan@apache.org</Who>
 <DateCommitted>2005/05/19</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/xsltc/trax TransformerImpl.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan/xsltc/trax TransformerImpl.java</Modified>
 <Log>
 Put in the missing Transformer.reset() implementation when doing the JAXP 1.3 integration.
 </Log>
@@ -1896,8 +1896,8 @@ Put in the missing Transformer.reset() implementation when doing the JAXP 1.3 in
 <Commit category="core">
 <Who>mkwan@apache.org</Who>
 <DateCommitted>2005/05/20</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/transformer TransformerIdentityImpl.java TransformerImpl.java 
-xml-xalan/java/src/org/apache/xml/utils DOMBuilder.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan/transformer TransformerIdentityImpl.java TransformerImpl.java 
+xml-xalan/java/src/de/lyca/xml/utils DOMBuilder.java</Modified>
 <Log>
 Support DOMResult.nextSibling in XalanJ Interpretive. If nextSibling is not null, then result nodes are inserted
 before it.
@@ -1906,8 +1906,8 @@ before it.
 <Commit category="xsltc">
 <Who>mkwan@apache.org</Who>
 <DateCommitted>2005/05/20</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/xsltc/runtime/output TransletOutputHandlerFactory.java 
-xml-xalan/java/src/org/apache/xalan/xsltc/trax SAX2DOM.java TransformerImpl.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan/xsltc/runtime/output TransletOutputHandlerFactory.java 
+xml-xalan/java/src/de/lyca/xalan/xsltc/trax SAX2DOM.java TransformerImpl.java</Modified>
 <Log>
 Support DOMResult.nextSibling in XSLTC.
 The nextSibling information is passed from TransformerImpl to TransletOutputHandlerFactory,
@@ -1928,7 +1928,7 @@ Add two samples to demonstrate how to use the XPath API in JAXP 1.3.<br/>
 <Commit category="core">
 <Who>mkwan@apache.org</Who>
 <DateCommitted>2005/05/30</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/extensions ExtensionHandlerJavaClass.java ExtensionHandlerJavaPackage.java 
+<Modified> xml-xalan/java/src/de/lyca/xalan/extensions ExtensionHandlerJavaClass.java ExtensionHandlerJavaPackage.java 
 ExtensionNamespaceContext.java XPathFunctionImpl.java XPathFunctionResolverImpl.java</Modified>
 <Log>
 Patch for XALANJ-2126. This is a sample implementation of XPathFunctionResolver, with support for
@@ -1938,7 +1938,7 @@ Java and EXSLT extension functions.
 <Commit category="core">
 <Who>mkwan@apache.org</Who>
 <DateCommitted>2005/05/30</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/res XSLTErrorResources.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan/res XSLTErrorResources.java</Modified>
 <Log>
 New messages for XALANJ-2126.
 Messages for the sample XPathFunctionResolver implementation.
@@ -1957,7 +1957,7 @@ Java and EXSLT extension functions.
 <Commit category="core">
 <Who>minchau@apache.org</Who>
 <DateCommitted>2005/05/31</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xml/serializer ToHTMLStream.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xml/serializer ToHTMLStream.java</Modified>
 <Log>
 Committing patch for issue XALANJ-2121, which is that some empty attributes
 of some HTML elements are note serialized as empty.
@@ -1966,7 +1966,7 @@ of some HTML elements are note serialized as empty.
 <Commit category="core">
 <Who>minchau@apache.org</Who>
 <DateCommitted>2005/05/31</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xml/serializer ToHTMLStream.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xml/serializer ToHTMLStream.java</Modified>
 <Log>
 Putting static iniitialization of HTML element/attribute information in a static method,
 which is invoked from a static { ...} block.
@@ -1978,10 +1978,10 @@ ToHTMLStream.
 <Commit category="xsltc">
 <Who>mkwan@apache.org</Who>
 <DateCommitted>2005/05/31</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan Version.java xml-xalan/java/src/org/apache/xalan/processor 
-TransformerFactoryImpl.java xml-xalan/java/src/org/apache/xalan/res XSLTErrorResources.java 
-xml-xalan/java/src/org/apache/xalan/xsltc/compiler/util ErrorMessages.java ErrorMsg.java 
-xml-xalan/java/src/org/apache/xalan/xsltc/trax SmartTransformerFactoryImpl.java TransformerFactoryImpl.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan Version.java xml-xalan/java/src/de/lyca/xalan/processor 
+TransformerFactoryImpl.java xml-xalan/java/src/de/lyca/xalan/res XSLTErrorResources.java 
+xml-xalan/java/src/de/lyca/xalan/xsltc/compiler/util ErrorMessages.java ErrorMsg.java 
+xml-xalan/java/src/de/lyca/xalan/xsltc/trax SmartTransformerFactoryImpl.java TransformerFactoryImpl.java</Modified>
 <Log>
 Patch for XALANJ-2123.
 Move hard-coded messages for JAXP 1.3 into resource bundles.
@@ -1990,7 +1990,7 @@ Move hard-coded messages for JAXP 1.3 into resource bundles.
 <Commit category="core">
 <Who>minchau@apache.org</Who>
 <DateCommitted>2005/05/31</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xml/serializer ToHTMLStream.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xml/serializer ToHTMLStream.java</Modified>
 <Log>
 Added "nowrap" as an empty attribute for elements &lt;div&gt; &lt;src&gt; and &lt;tr&gt;
 as these are either Netscape or Internet-Explorer extensions.
@@ -2000,7 +2000,7 @@ This is patch3 from XALANJ-2121.
 <Commit category="core">
 <Who>minchau@apache.org</Who>
 <DateCommitted>2005/06/01</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xml/serializer OutputPropertiesFactory.java ToStream.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xml/serializer OutputPropertiesFactory.java ToStream.java</Modified>
 <Log>
 Applying patcth for JIRA XALANJ-2093.
 Adding a xalan:line-separator extension output attribute.
@@ -2009,11 +2009,11 @@ Adding a xalan:line-separator extension output attribute.
 <Commit category="core">
 <Who>mkwan@apache.org</Who>
 <DateCommitted>2005/06/03</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan Version.java xml-xalan/java/src/org/apache/xalan/processor 
-TransformerFactoryImpl.java xml-xalan/java/src/org/apache/xalan/transformer TransformerIdentityImpl.java 
-TransformerImpl.java xml-xalan/java/src/org/apache/xalan/xsltc/compiler Parser.java 
-xml-xalan/java/src/org/apache/xalan/xsltc/compiler/util ErrorMsg.java xml-xalan/java/src/org/apache/xalan/xsltc/trax 
-TransformerFactoryImpl.java xml-xalan/java/src/org/apache/xml/utils DefaultErrorHandler.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan Version.java xml-xalan/java/src/de/lyca/xalan/processor 
+TransformerFactoryImpl.java xml-xalan/java/src/de/lyca/xalan/transformer TransformerIdentityImpl.java 
+TransformerImpl.java xml-xalan/java/src/de/lyca/xalan/xsltc/compiler Parser.java 
+xml-xalan/java/src/de/lyca/xalan/xsltc/compiler/util ErrorMsg.java xml-xalan/java/src/de/lyca/xalan/xsltc/trax 
+TransformerFactoryImpl.java xml-xalan/java/src/de/lyca/xml/utils DefaultErrorHandler.java</Modified>
 <Log>
 Patch for XALANJ-2134.
 Change the error handling behavior to be conformant with the requirement
@@ -2024,13 +2024,13 @@ to System.err and does not throw any Exceptions.
 <Commit category="core">
 <Who>mkwan@apache.org</Who>
 <DateCommitted>2005/06/07</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan Version.java xml-xalan/java/src/org/apache/xalan/processor 
+<Modified> xml-xalan/java/src/de/lyca/xalan Version.java xml-xalan/java/src/de/lyca/xalan/processor 
 ProcessorInclude.java ProcessorLRE.java ProcessorStylesheetElement.java TransformerFactoryImpl.java 
-xml-xalan/java/src/org/apache/xalan/res XSLTErrorResources.java xml-xalan/java/src/org/apache/xalan/templates 
-ElemExtensionCall.java StylesheetRoot.java xml-xalan/java/src/org/apache/xalan/transformer TransformerIdentityImpl.java 
-TransformerImpl.java TrAXFilter.java xml-xalan/java/src/org/apache/xalan/xslt Process.java xml-xalan/java/src/org/apache/xml/utils 
-DOMHelper.java xml-xalan/java/src/org/apache/xpath XPathContext.java xml-xalan/java/src/org/apache/xpath/functions 
-FuncExtFunction.java xml-xalan/java/src/org/apache/xpath/res XPATHErrorResources.java</Modified>
+xml-xalan/java/src/de/lyca/xalan/res XSLTErrorResources.java xml-xalan/java/src/de/lyca/xalan/templates 
+ElemExtensionCall.java StylesheetRoot.java xml-xalan/java/src/de/lyca/xalan/transformer TransformerIdentityImpl.java 
+TransformerImpl.java TrAXFilter.java xml-xalan/java/src/de/lyca/xalan/xslt Process.java xml-xalan/java/src/de/lyca/xml/utils 
+DOMHelper.java xml-xalan/java/src/de/lyca/xpath XPathContext.java xml-xalan/java/src/de/lyca/xpath/functions 
+FuncExtFunction.java xml-xalan/java/src/de/lyca/xpath/res XPATHErrorResources.java</Modified>
 <Log>
 Patch for XALANJ-2136.<br/>
 Support the secure processing feature in Xalan interpretive. When this feature
@@ -2046,9 +2046,9 @@ processing feature.
 <Commit category="xsltc">
 <Who>mkwan@apache.org</Who>
 <DateCommitted>2005/06/08</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/xsltc/compiler FunctionCall.java Parser.java TransletOutput.java XSLTC.java 
-xml-xalan/java/src/org/apache/xalan/xsltc/runtime BasisLibrary.java ErrorMessages.java 
-xml-xalan/java/src/org/apache/xalan/xsltc/trax TemplatesHandlerImpl.java TemplatesImpl.java TransformerFactoryImpl.java 
+<Modified> xml-xalan/java/src/de/lyca/xalan/xsltc/compiler FunctionCall.java Parser.java TransletOutput.java XSLTC.java 
+xml-xalan/java/src/de/lyca/xalan/xsltc/runtime BasisLibrary.java ErrorMessages.java 
+xml-xalan/java/src/de/lyca/xalan/xsltc/trax TemplatesHandlerImpl.java TemplatesImpl.java TransformerFactoryImpl.java 
 TransformerImpl.java TrAXFilter.java Util.java</Modified>
 <Log>
 Patch for XALANJ-2136.
@@ -2059,7 +2059,7 @@ and extension elements are disabled when this feature is set to true.
 <Commit category="xsltc">
 <Who>zongaro@apache.org</Who>
 <DateCommitted>2005/06/08</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/xsltc/dom KeyIndex.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan/xsltc/dom KeyIndex.java</Modified>
 <Log>
 Fix for XALANJ-1938.<br/>
 
@@ -2114,7 +2114,7 @@ how to use NamespaceContext, XPathVariableResolver and XPathFunctionResolver.<br
 <Commit category="xsltc">
 <Who>zongaro@apache.org</Who>
 <DateCommitted>2005/06/15</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/xsltc/compiler Step.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan/xsltc/compiler Step.java</Modified>
 <Log>
 Patch for bug XALANJ-2097 from Nick Van den Bleeken.
 (Nick.VandenBleeken@pandora.be), reviewed by Henry Zongaro.<br/>
@@ -2169,7 +2169,7 @@ Update the source and binary of xml-apis.jar.
 <Commit category="core">
 <Who>mkwan@apache.org</Who>
 <DateCommitted>2005/06/22</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xml/dtm/ref DTMNodeProxy.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xml/dtm/ref DTMNodeProxy.java</Modified>
 <Log>
 Java docs cleanup.
 Remove the word "Experimental" for DOM Level 3 spec and update the URI link.
@@ -2179,8 +2179,8 @@ Also remove the obsolete methods that are replaced by new ones.
 <Commit category="core">
 <Who>mkwan@apache.org</Who>
 <DateCommitted>2005/06/22</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan Version.java xml-xalan/java/src/org/apache/xalan/processor 
-StylesheetHandler.java xml-xalan/java/src/org/apache/xml/utils UnImplNode.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan Version.java xml-xalan/java/src/de/lyca/xalan/processor 
+StylesheetHandler.java xml-xalan/java/src/de/lyca/xml/utils UnImplNode.java</Modified>
 <Log>
 Cleanup javadocs on DOM Level 3 spec. Update the uri and remove
 obsolete methods. The getVersion() method in org.w3c.dom.Node is replaced by
@@ -2207,7 +2207,7 @@ with JDK 1.4.
 <Commit category="core">
 <Who>mkwan@apache.org</Who>
 <DateCommitted>2005/06/28</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/lib ExsltDatetime.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan/lib ExsltDatetime.java</Modified>
 <Log>
 Patch for XALANJ-2076. Fix a bug in date:month-in-year.
 </Log>
@@ -2223,8 +2223,8 @@ New xercesImpl.jar from the official Xerces-J 2.7.0 release.
 <Commit category="core">
 <Who>jycli@apache.org</Who>
 <DateCommitted>2005/06/29</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/res XSLTErrorResources.java
-xml-xalan/java/src/org/apache/xml/res XMLErrorResources.java xml-xalan/java/src/org/apache/xpath/res XPATHErrorResources.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan/res XSLTErrorResources.java
+xml-xalan/java/src/de/lyca/xml/res XMLErrorResources.java xml-xalan/java/src/de/lyca/xpath/res XPATHErrorResources.java</Modified>
 <Log>
 Cleanup resource files. Remove unused constants and commented out message keys. Fix for bug XALANJ-2161
 Patch is reviewed by Sarah McNamara (mcnamara@ca.ibm.com)
@@ -2233,7 +2233,7 @@ Patch is reviewed by Sarah McNamara (mcnamara@ca.ibm.com)
 <Commit category="xsltc">
 <Who>zongaro@apache.org</Who>
 <DateCommitted>2005/06/30</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/xsltc/compiler AbsoluteLocationPath.java FilteredAbsoluteLocationPath.java 
+<Modified> xml-xalan/java/src/de/lyca/xalan/xsltc/compiler AbsoluteLocationPath.java FilteredAbsoluteLocationPath.java 
 FilterExpr.java FilterParentPath.java FunctionCall.java KeyCall.java ParentLocationPath.java Sort.java Step.java StepPattern.java</Modified>
 <Log>
 Patch for XALANJ-2146.  Reviewed by Christine Li (jycli@ca.ibm.com).<br/>
@@ -2249,7 +2249,7 @@ backwards branch.
 <Commit category="core">
 <Who>zongaro@apache.org</Who>
 <DateCommitted>2005/07/05</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/transformer TransformerIdentityImpl.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan/transformer TransformerIdentityImpl.java</Modified>
 <Log>
 Patch for Jira issue XALANJ-1978.  Reviewed by Christine Li
 (jycli@ca.ibm.com).<br/>
@@ -2263,7 +2263,7 @@ behaviour.
 <Commit category="xsltc">
 <Who>jycli@apache.org</Who>
 <DateCommitted>2005/07/08</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/res XSLTErrorResources.java xml-xalan/java/src/org/apache/xalan/xsltc/compiler/util 
+<Modified> xml-xalan/java/src/de/lyca/xalan/res XSLTErrorResources.java xml-xalan/java/src/de/lyca/xalan/xsltc/compiler/util 
 ErrorMessages.java</Modified>
 <Log>
 Added missing apostrophe for error messages. Fixed bug report XALANJ-2167. Patch is reviewed by Sarah McNamara (mcnamara@ca.ibm.com)
@@ -2272,7 +2272,7 @@ Added missing apostrophe for error messages. Fixed bug report XALANJ-2167. Patch
 <Commit category="xsltc">
 <Who>zongaro@apache.org</Who>
 <DateCommitted>2005/07/11</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/xsltc/runtime AbstractTranslet.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan/xsltc/runtime AbstractTranslet.java</Modified>
 <Log>
 Fix for bug report XALANJ-2140.<br/>
 
@@ -2289,7 +2289,7 @@ Reviewed by Brian Minchau (minchau@ca.ibm.com).
 <Commit category="xsltc">
 <Who>minchau@apache.org</Who>
 <DateCommitted>2005/07/13</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/xsltc/runtime BasisLibrary.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan/xsltc/runtime BasisLibrary.java</Modified>
 <Log>
 Minor change in the error message,
 fix was found by Brian Vargas, patch produced and
@@ -2299,7 +2299,7 @@ reviewed by Brian Minchau.
 <Commit category="core">
 <Who>minchau@apache.org</Who>
 <DateCommitted>2005/07/15</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xml/serializer ToHTMLSAXHandler.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xml/serializer ToHTMLSAXHandler.java</Modified>
 <Log>
 Applying patch2 from XALANJ-2023
 Submitted by Ken Weiner,
@@ -2309,7 +2309,7 @@ reviewed, approved, applied by Brian Minchau
 <Commit category="core">
 <Who>minchau@apache.org</Who>
 <DateCommitted>2005/07/15</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xml/serializer ToHTMLStream.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xml/serializer ToHTMLStream.java</Modified>
 <Log>
 Changing "&lt;!DOCTYPE HTML" to "&lt;!DOCTYPE html" to be more xhtml friendly.
 Applying the patch in XALANJ-2103 that was created by Brian Minchau
@@ -2319,7 +2319,7 @@ and reviewed/approved by Joanne Tong.
 <Commit category="xsltc">
 <Who>minchau@apache.org</Who>
 <DateCommitted>2005/07/15</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/xsltc/compiler Parser.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan/xsltc/compiler Parser.java</Modified>
 <Log>
 Fixing a NPE for when _locator is null in the XSLTC Parser.
 Applyin the patch in XALANJ-2154 from Brian Minchau, reiwed and approved by Santiago P.G.
@@ -2328,7 +2328,7 @@ Applyin the patch in XALANJ-2154 from Brian Minchau, reiwed and approved by Sant
 <Commit category="core">
 <Who>mcnamara@apache.org</Who>
 <DateCommitted>2005/07/15</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/lib ExsltDatetime.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan/lib ExsltDatetime.java</Modified>
 <Log>
 Patch for XALANJ-2099 provided by Morris Kwan and reviewed by me.<br/>
 
@@ -2341,7 +2341,7 @@ output a three-letter English day abbreviation: one of 'Sun', 'Mon', 'Tue',
 <Commit category="core">
 <Who>mcnamara@apache.org</Who>
 <DateCommitted>2005/07/15</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/transformer TransformerImpl.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan/transformer TransformerImpl.java</Modified>
 <Log>
 Patch for XALANJ-2143.   Javadoc improvement for TransformerImpl.setOutputProperty(name,value).
 </Log>
@@ -2437,9 +2437,9 @@ This change was reviewed and approved in XALANJ-2170 by Christine Li.
 <Commit category="core">
 <Who>mcnamara@apache.org</Who>
 <DateCommitted>2005/07/19</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/processor XSLProcessorVersion.java xml-xalan/java/src/org/apache/xalan/xslt 
-EnvironmentCheck.java xml-xalan/java/src/org/apache/xpath/domapi XPathEvaluatorImpl.java XPathExpressionImpl.java 
-XPathNSResolverImpl.java XPathResultImpl.java xml-xalan/java/src/org/apache/xml/serializer Version.src xml-xalan/java/xdocs/sources 
+<Modified> xml-xalan/java/src/de/lyca/xalan/processor XSLProcessorVersion.java xml-xalan/java/src/de/lyca/xalan/xslt 
+EnvironmentCheck.java xml-xalan/java/src/de/lyca/xpath/domapi XPathEvaluatorImpl.java XPathExpressionImpl.java 
+XPathNSResolverImpl.java XPathResultImpl.java xml-xalan/java/src/de/lyca/xml/serializer Version.src xml-xalan/java/xdocs/sources 
 entities.src xalan-jlocal.xml xalan-jsite.xml xml-xalan/java/xdocs/sources/xalan commandline_xsltc.xml commandline.xml downloads.xml 
 extensions.xml extensionslib.xml faq.xml features.xml getstarted.xml index.xml overview.xml public_apis.xml resources.xml samples.xml 
 trax.xml usagepatterns.xml whatsnew.xml xpath_apis.xml xsltc_usage.xml xml-xalan/java/xdocs/sources/xsltc README.xslt README.xsltc</Modified>
@@ -2451,9 +2451,9 @@ This change was reviewed and approved in XALANJ-2170 by Christine Li.
 <Commit category="xsltc">
 <Who>mcnamara@apache.org</Who>
 <DateCommitted>2005/07/19</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/processor XSLProcessorVersion.java xml-xalan/java/src/org/apache/xalan/xslt 
-EnvironmentCheck.java xml-xalan/java/src/org/apache/xpath/domapi XPathEvaluatorImpl.java XPathExpressionImpl.java 
-XPathNSResolverImpl.java XPathResultImpl.java xml-xalan/java/src/org/apache/xml/serializer Version.src xml-xalan/java/xdocs/sources 
+<Modified> xml-xalan/java/src/de/lyca/xalan/processor XSLProcessorVersion.java xml-xalan/java/src/de/lyca/xalan/xslt 
+EnvironmentCheck.java xml-xalan/java/src/de/lyca/xpath/domapi XPathEvaluatorImpl.java XPathExpressionImpl.java 
+XPathNSResolverImpl.java XPathResultImpl.java xml-xalan/java/src/de/lyca/xml/serializer Version.src xml-xalan/java/xdocs/sources 
 entities.src xalan-jlocal.xml xalan-jsite.xml xml-xalan/java/xdocs/sources/xalan commandline_xsltc.xml commandline.xml downloads.xml 
 extensions.xml extensionslib.xml faq.xml features.xml getstarted.xml index.xml overview.xml public_apis.xml resources.xml samples.xml 
 trax.xml usagepatterns.xml whatsnew.xml xpath_apis.xml xsltc_usage.xml xml-xalan/java/xdocs/sources/xsltc README.xslt README.xsltc</Modified>
@@ -2465,7 +2465,7 @@ This change was reviewed and approved in XALANJ-2170 by Christine Li.
 <Commit category="core">
 <Who>mcnamara@apache.org</Who>
 <DateCommitted>2005/07/19</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/processor XSLProcessorVersion.src xml-xalan/java build.xml</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan/processor XSLProcessorVersion.src xml-xalan/java build.xml</Modified>
 <Log>
 Doc changes for Xalan Java 2.7.0 release.
 This change was reviewed and approved in XALANJ-2170 by Christine Li.
@@ -2474,7 +2474,7 @@ This change was reviewed and approved in XALANJ-2170 by Christine Li.
 <Commit category="core">
 <Who>zongaro@apache.org</Who>
 <DateCommitted>2005/07/21</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xml/utils XMLString.java XMLStringDefault.java xml-xalan/java/src/org/apache/xpath/objects 
+<Modified> xml-xalan/java/src/de/lyca/xml/utils XMLString.java XMLStringDefault.java xml-xalan/java/src/de/lyca/xpath/objects 
 XString.java</Modified>
 <Log>
 Patch for XALANJ-2176 reviewed by Christine Li (jycli@ca.ibm.com).<br/>
@@ -2487,7 +2487,7 @@ or versions of javac that make faulty assumptions about source encodings.
 <Commit category="core">
 <Who>johng@apache.org</Who>
 <DateCommitted>2005/07/24</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xalan/processor TransformerFactoryImpl.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xalan/processor TransformerFactoryImpl.java</Modified>
 <Log>
 PR: XALANJ-2113
 Submitted by:		 John Gentilin
@@ -2497,8 +2497,8 @@ Reviewed by:		 Henry Zongaro
 <Commit category="core">
 <Who>johng@apache.org</Who>
 <DateCommitted>2005/07/25</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xpath/objects XString.java
-xml-xalan/java/src/org/apache/xml/dtm/ref DTMDefaultBase.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xpath/objects XString.java
+xml-xalan/java/src/de/lyca/xml/dtm/ref DTMDefaultBase.java</Modified>
 <Log>
 PR: XALANJ-2114
 Submitted by:		 John Gentilin
@@ -2508,7 +2508,7 @@ Reviewed by:		 Henry Zongaro
 <Commit category="core">
 <Who>mcnamara@ca.ibm.com</Who>
 <DateCommitted>2005/07/25</DateCommitted>
-<Modified> xml-xalan/java/src/org/apache/xpath/functions FuncSystemProperty.java</Modified>
+<Modified> xml-xalan/java/src/de/lyca/xpath/functions FuncSystemProperty.java</Modified>
 <Log>
 Patch for XALANJ-936. Reviewed by Yash Talwar.
 </Log>

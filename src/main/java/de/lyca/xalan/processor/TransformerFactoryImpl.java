@@ -70,7 +70,7 @@ public class TransformerFactoryImpl extends SAXTransformerFactory
    * <code>de.lyca.xpath.functions.FuncSystemProperty.XSLT_PROPERTIES</code>
    */
   public static final String XSLT_PROPERTIES =
-    "org/apache/xalan/res/XSLTInfo.properties";
+    "de/lyca/xalan/res/XSLTInfo.properties";
 
   /**
    * <p>State of secure processing feature.</p>

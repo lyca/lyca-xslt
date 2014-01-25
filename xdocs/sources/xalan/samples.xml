@@ -636,7 +636,7 @@
      
      <anchor name="applyxpath"/>
      <s2 title="ApplyXPath">
-     <p>What it does: ApplyXPath uses the convenience methods in the &xslt4j2; specific <jump href="apidocs/org/apache/xpath/XPathAPI.html">XPathAPI</jump> to
+     <p>What it does: ApplyXPath uses the convenience methods in the &xslt4j2; specific <jump href="apidocs/de/lyca/xpath/XPathAPI.html">XPathAPI</jump> to
      execute an XPath expression against an XML document and return the nodes (if any) it finds.</p>
      <note>You can use this sample as an aid when you want to find out what a given XPath expression returns from a
      given XML file. Keep in mind that the context node (base point of evaluation) for the XPath expression is the document

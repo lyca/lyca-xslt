@@ -42,7 +42,7 @@ public class FuncSystemProperty extends FunctionOneArg
    * de.lyca.xalan.processor.TransformerFactoryImpl.XSLT_PROPERTIES
    */
   static final String XSLT_PROPERTIES = 
-            "org/apache/xalan/res/XSLTInfo.properties";
+            "de/lyca/xalan/res/XSLTInfo.properties";
 
   /**
    * Execute the function.  The function must return

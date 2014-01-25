@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Created-By: @java.version@ (@java.vendor@)
 Class-Path: xercesImpl.jar xml-apis.jar serializer.jar
 
-Name: org/apache/xalan/xsltc/
+Name: de/lyca/xalan/xsltc/
 Comment: Main XSLTC engine implementing TrAX/JAXP
 Specification-Title: Java API for XML Processing
 Specification-Vendor: Sun Microsystems Inc.
@@ -12,7 +12,7 @@ Implementation-Version: @impl.version@
 Implementation-Vendor: Apache Software Foundation
 Implementation-URL: http://xml.apache.org/xalan-j/dist/
 
-Name: org/apache/xml/
+Name: de/lyca/xml/
 Comment: DTM implementation and utilities
 Implementation-Title: de.lyca.xml
 Implementation-Version: @impl.version@

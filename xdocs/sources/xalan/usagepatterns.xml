@@ -68,7 +68,7 @@ transformer.transform
   </s2><anchor name="transformerfactory"/>
   <s2 title="1. Instantiate a TransformerFactory">
   <p><jump href="apidocs/javax/xml/transform/TransformerFactory.html">TransformerFactory</jump> is an abstract class with a static newInstance() method that instantiates the concrete subclass designated by the javax.xml.transform.TransformerFactory system property.</p>
-  <p>The default setting for this system property is <jump href="apidocs/org/apache/xalan/processor/TransformerFactoryImpl.html">de.lyca.xalan.processor.TransformerFactoryImpl</jump>.</p>
+  <p>The default setting for this system property is <jump href="apidocs/de/lyca/xalan/processor/TransformerFactoryImpl.html">de.lyca.xalan.processor.TransformerFactoryImpl</jump>.</p>
 </s2><anchor name="transformer"/>
   <s2 title="2. Use the TransformerFactory to process the stylesheet Source and produce a Transformer">
 <p>The TransformerFactory <jump href="apidocs/javax/xml/transform/TransformerFactory.html#newTransformer(javax.xml.transform.Source)">newTransformer(Source xslSource)</jump> method processes the stylesheet Source into a Templates object and returns a Transformer that you can use to perform a transformation (apply the Templates object to an XML Source).</p>
@@ -128,7 +128,7 @@ You can override the Xalan specific default settings as follows:</p>
               encoding="UTF-8"
               indent="yes" 
               xalan:indent-amount="2"/&gt;</source>
-  <p>If you want to change the property settings globally, edit the values in the property files in src/org/apache/xml/serializer, 
+  <p>If you want to change the property settings globally, edit the values in the property files in src/de/lyca/xml/serializer, 
   and use Ant to <link idref="readme" anchor="jar">rebuild <code>serializer.jar</code></link>. Be aware that if you change the default value
   of a standard property, such as the default encoding value, this may be in conflict with the default value specified by the XSLT 1.0 
   recommendation.</p>
@@ -173,7 +173,7 @@ You can override the Xalan specific default settings as follows:</p>
   </tr>
   <tr>
     <td>xalan:entities</td>
-    <td>org/apache/xml/serializer/XMLEntities</td>
+    <td>de/lyca/xml/serializer/XMLEntities</td>
   </tr>
 </table>
 <note>The xalan:content-handler property specifies the default name of the Java class that implements the 
@@ -181,7 +181,7 @@ You can override the Xalan specific default settings as follows:</p>
 interface and recieves calls during result tree serialization. If you specify an 
 alternate Java class it must implement the ContentHandler interface.</note>
 <note>You can also create your own XML entity file (mapping characters to
-entities) or edit src/org/apache/xml/serializer/XMLEntities.properties and
+entities) or edit src/de/lyca/xml/serializer/XMLEntities.properties and
 rebuild <code>serializer.jar</code>.</note>
 <p><ref>output_html.properties</ref>:</p>
 <table>
@@ -211,7 +211,7 @@ rebuild <code>serializer.jar</code>.</note>
   </tr>
   <tr>
     <td>xalan:entities</td>
-    <td>org/apache/xml/serializer/HTMLEntities</td>
+    <td>de/lyca/xml/serializer/HTMLEntities</td>
   </tr>
   <tr>
     <td>xalan:use-url-escaping</td>
@@ -227,7 +227,7 @@ rebuild <code>serializer.jar</code>.</note>
 interface and recieves calls during result tree serialization. If you specify an 
 alternate Java class it must implement the ContentHandler interface.</note>
 <note>You can also create your own HTML entity file (mapping characters to entities) 
-or edit src/org/apache/xml/serializer/HTMLEntities.properties and rebuild <code>serializer.jar</code>.</note>
+or edit src/de/lyca/xml/serializer/HTMLEntities.properties and rebuild <code>serializer.jar</code>.</note>
 <p><ref>output_text.properties</ref>:</p>
 <table>  
   <tr>
@@ -368,7 +368,7 @@ if (tFactory.getFeature(javax.xml.transform.sax.SAXSource.FEATURE) &amp;&amp;
     reader.parse("foo.xml");</source>
     <note>If you want to perform multiple transformations with the same Templates object and a TransformerHandler, you must create a new
     TransformerHandler for each transformation. The &xslt4j; implementation of TransformerHandler 
-    (<jump href="apidocs/org/apache/xalan/transformer/TransformerHandlerImpl.html">TransformerHandlerImpl</jump> fails to respond 
+    (<jump href="apidocs/de/lyca/xalan/transformer/TransformerHandlerImpl.html">TransformerHandlerImpl</jump> fails to respond 
     to events after the first endDocument event occurs.</note>
 </s2><anchor name="outasin"/>
 <s2 title="Using transformation output as input for another transformation">
@@ -418,10 +418,10 @@ API, see <link idref="samples" anchor="applyxpathjaxp">ApplyXPathJAXP</link> and
 </s2><anchor name="applet"/>
 <s2 title="Using the &xslt4j; applet wrapper">
 <ol> 
-<li>Include <jump href="apidocs/org/apache/xalan/client/XSLTProcessorApplet.html">XSLTProcessorApplet</jump> in an HTML client.<br/><br/></li>
+<li>Include <jump href="apidocs/de/lyca/xalan/client/XSLTProcessorApplet.html">XSLTProcessorApplet</jump> in an HTML client.<br/><br/></li>
 <li>Specify the XML source document and XSL stylesheet.<br/><br/>
-You can use the DocumentURL and StyleURL PARAM tags or the <jump href="apidocs/org/apache/xalan/client/XSLTProcessorApplet.html#setDocumentURL(java.lang.String)">setdocumentURL()</jump> and <jump href="apidocs/org/apache/xalan/client/XSLTProcessorApplet.html#setStyleURL(java.lang.String)">setStyleURL()</jump> methods. If the XML document contains a stylesheet Processing Instruction (PI), you do not need to specify an XSL stylesheet.<br/><br/></li>
-<li>Call the <jump href="apidocs/org/apache/xalan/client/XSLTProcessorApplet.html#transformToHtml(java.lang.String,java.lang.String)">transformToHtml()</jump> or <jump href="apidocs/org/apache/xalan/client/XSLTProcessorApplet.html#getHtmlText()">getHtmlText()</jump> method, which performs the transformation and returns the new document as a String.</li></ol>
+You can use the DocumentURL and StyleURL PARAM tags or the <jump href="apidocs/de/lyca/xalan/client/XSLTProcessorApplet.html#setDocumentURL(java.lang.String)">setdocumentURL()</jump> and <jump href="apidocs/de/lyca/xalan/client/XSLTProcessorApplet.html#setStyleURL(java.lang.String)">setStyleURL()</jump> methods. If the XML document contains a stylesheet Processing Instruction (PI), you do not need to specify an XSL stylesheet.<br/><br/></li>
+<li>Call the <jump href="apidocs/de/lyca/xalan/client/XSLTProcessorApplet.html#transformToHtml(java.lang.String,java.lang.String)">transformToHtml()</jump> or <jump href="apidocs/de/lyca/xalan/client/XSLTProcessorApplet.html#getHtmlText()">getHtmlText()</jump> method, which performs the transformation and returns the new document as a String.</li></ol>
 <note>The transformToHTML() method takes arguments for the XML source document and XSL stylesheet. The getHtmlText() method takes no arguments: it uses property or parameter settings, as in the example below.</note>
 <p>For an example, see the <link idref="samples" anchor="appletxmltohtml">AppletXMLtoHTML</link> sample applet. The &lt;applet&gt; tag is in samples/AppletXMLtoHTML/client.html:</p>
 <source>&lt;applet  
@@ -513,21 +513,21 @@ anchor="usestylesheetparamservlet">UseStylesheetParamServlet</link> and <link id
 <s2 title="Debugger Interface">
 		<p>&xslt4j; contains a debugger interface in the de.lyca.xalan.xslt.trace package:</p> 
 		<ul>
-		  <li><jump href="apidocs/org/apache/xalan/trace/TraceListener.html">TraceListener</jump> is an interface that debuggers 
+		  <li><jump href="apidocs/de/lyca/xalan/trace/TraceListener.html">TraceListener</jump> is an interface that debuggers 
 		  can implement. Or, like the <link idref="commandline">command-line utility</link>, you can use the <jump
-      href="apidocs/org/apache/xalan/trace/PrintTraceListener.html">PrintTraceListener</jump> implementation of that interface.
+      href="apidocs/de/lyca/xalan/trace/PrintTraceListener.html">PrintTraceListener</jump> implementation of that interface.
       <br/><br/></li>
       <li>You can register a TraceListener with the 
-      <jump href="apidocs/org/apache/xalan/trace/TraceManager.html">TraceManager</jump> associated
+      <jump href="apidocs/de/lyca/xalan/trace/TraceManager.html">TraceManager</jump> associated
       with the Transformer that will perform a given transformation.<br/><br/></li>
-		  <li><jump href="apidocs/org/apache/xalan/trace/TracerEvent.html">TracerEvent</jump> is an event that is 
+		  <li><jump href="apidocs/de/lyca/xalan/trace/TracerEvent.html">TracerEvent</jump> is an event that is 
 		  passed to the TraceListener.trace() function. It is called before a node is 'executed' in the stylesheet.<br/><br/></li>
-		  <li><jump href="apidocs/org/apache/xalan/trace/GenerateEvent.html">GenerateEvent</jump> is an event that is 
+		  <li><jump href="apidocs/de/lyca/xalan/trace/GenerateEvent.html">GenerateEvent</jump> is an event that is 
 		  passed to the TraceListener.generated() function. It is called after an event occurs to create something in the result
       tree.<br/><br/></li>
-      <li><jump href="apidocs/org/apache/xalan/trace/SelectionEvent.html">SelectionEvent</jump> is an event triggered by the
+      <li><jump href="apidocs/de/lyca/xalan/trace/SelectionEvent.html">SelectionEvent</jump> is an event triggered by the
        selection of a stylesheet node.</li>
-      <li><jump href="apidocs/org/apache/xalan/trace/ExtensionEvent.html">ExtensionEvent</jump> is an event that is
+      <li><jump href="apidocs/de/lyca/xalan/trace/ExtensionEvent.html">ExtensionEvent</jump> is an event that is
        passed to the TraceListener.extension() function.  It is called before an extension call is made.<br/><br/></li>
 		</ul>
     <p>The <link idref="commandline">command-line utility</link> uses the debugger interface when you include one or more of the

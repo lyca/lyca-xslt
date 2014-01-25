@@ -1165,7 +1165,7 @@ public final class Stylesheet extends SyntaxTreeNode {
 
 	final int setFilter = cpg.addInterfaceMethodref(DOM_INTF,
 			       "setFilter",
-			       "(Lorg/apache/xalan/xsltc/StripFilter;)V");
+			       "(Lde/lyca/xalan/xsltc/StripFilter;)V");
 
 	final int gitr = cpg.addInterfaceMethodref(DOM_INTF,
 							"getIterator",

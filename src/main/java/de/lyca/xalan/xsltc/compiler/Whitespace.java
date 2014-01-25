@@ -351,7 +351,7 @@ final class Whitespace extends TopLevelElement {
 			new String[] { "dom","node","type" },
 			"stripSpace",classGen.getClassName(),il,cpg);
 
-	classGen.addInterface("org/apache/xalan/xsltc/StripFilter");
+	classGen.addInterface("de/lyca/xalan/xsltc/StripFilter");
 
 	final int paramDom = stripSpace.getLocalIndex("dom");
 	final int paramCurrent = stripSpace.getLocalIndex("node");
@@ -449,7 +449,7 @@ final class Whitespace extends TopLevelElement {
 			new String[] { "dom","node","type" },
 			"stripSpace",classGen.getClassName(),il,cpg);
 
-	classGen.addInterface("org/apache/xalan/xsltc/StripFilter");
+	classGen.addInterface("de/lyca/xalan/xsltc/StripFilter");
 
 	if (defaultAction == STRIP_SPACE)
 	    il.append(ICONST_1);

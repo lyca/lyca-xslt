@@ -108,17 +108,17 @@
   <s2 title="EXSLT extensions">
   <p>The following EXSLT extension modules are supported in &xslt4jc-short;:</p>
   <ul>
-  <li><jump href="apidocs/org/apache/xalan/lib/ExsltCommon.html">EXSLT common functions</jump></li>
-  <li><jump href="apidocs/org/apache/xalan/lib/ExsltMath.html">EXSLT math functions</jump></li>
-  <li><jump href="apidocs/org/apache/xalan/lib/ExsltSets.html">EXSLT set functions</jump></li>
-  <li><jump href="apidocs/org/apache/xalan/lib/ExsltDatetime.html">EXSLT date-and-time functions</jump></li>
-  <li><jump href="apidocs/org/apache/xalan/lib/ExsltStrings.html">EXSLT string functions</jump></li>
+  <li><jump href="apidocs/de/lyca/xalan/lib/ExsltCommon.html">EXSLT common functions</jump></li>
+  <li><jump href="apidocs/de/lyca/xalan/lib/ExsltMath.html">EXSLT math functions</jump></li>
+  <li><jump href="apidocs/de/lyca/xalan/lib/ExsltSets.html">EXSLT set functions</jump></li>
+  <li><jump href="apidocs/de/lyca/xalan/lib/ExsltDatetime.html">EXSLT date-and-time functions</jump></li>
+  <li><jump href="apidocs/de/lyca/xalan/lib/ExsltStrings.html">EXSLT string functions</jump></li>
   </ul> 
-  <p>The functions in the <jump href="apidocs/org/apache/xalan/lib/ExsltDynamic.html">dynamic</jump> module 
+  <p>The functions in the <jump href="apidocs/de/lyca/xalan/lib/ExsltDynamic.html">dynamic</jump> module 
   (e.g. evaluate) are not supported because of the &xslt4jc-short; design limitation.
   Work is currently underway on <jump href="http://www.exslt.org/func/elements/function/index.html">user 
   defined EXSLT functions (with the function and result elements)</jump>.</p>
-  <p>The <code>nodeset</code> and <code>objectType</code> extension functions in the <jump href="apidocs/org/apache/xalan/lib/ExsltCommon.html">common</jump> 
+  <p>The <code>nodeset</code> and <code>objectType</code> extension functions in the <jump href="apidocs/de/lyca/xalan/lib/ExsltCommon.html">common</jump> 
   module are implemented natively in &xslt4jc-short;. For all other EXSLT extension functions,
   &xslt4jc-short; uses the same implementation as the &xslt4j; Interpretive processor. The implementation classes 
   are under <code>de.lyca.xalan.lib</code>.

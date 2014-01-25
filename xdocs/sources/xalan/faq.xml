@@ -642,11 +642,11 @@ file:///
          transformation?</q>
       <a>
         <p>Use or mimic the command-line processor (<jump 
-                       href='apidocs/org/apache/xalan/xslt/Process.html'>de.lyca.xalan.xslt.Process</jump>).
+                       href='apidocs/de/lyca/xalan/xslt/Process.html'>de.lyca.xalan.xslt.Process</jump>).
         </p>
         <p>A
           <jump href='apidocs/javax/xml/transform/TransformerException.html'>TransformerException</jump> generally wraps another exception, often a SAXParseException. The command-line processor uses the static
-          <jump href='apidocs/org/apache/xml/utils/DefaultErrorHandler.html'>de.lyca.xml.utils.DefaultErrorHandler</jump> printLocation() method to chase down the exception cause and get a
+          <jump href='apidocs/de/lyca/xml/utils/DefaultErrorHandler.html'>de.lyca.xml.utils.DefaultErrorHandler</jump> printLocation() method to chase down the exception cause and get a
           <jump href='apidocs/javax/xml/transform/SourceLocator.html'>SourceLocator</jump> that can usually report line and column number.
         </p>
         <p>Suppose you wanted to modify the ValidateXMLInput sample in the samples/Validate 

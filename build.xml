@@ -87,10 +87,10 @@ $Id$
   <property name="tools.dir"              value="./tools"/> 
   <property name="xdocs.dir"              value="./xdocs"/>
     
-  <property name="apachexml.reldir"       value="org/apache/xml"/>
-  <property name="serializer.reldir"      value="org/apache/xml/serializer"/>
-  <property name="xpath.reldir"           value="org/apache/xpath"/>
-  <property name="xalan.reldir"           value="org/apache/xalan"/>
+  <property name="apachexml.reldir"       value="de/lyca/xml"/>
+  <property name="serializer.reldir"      value="de/lyca/xml/serializer"/>
+  <property name="xpath.reldir"           value="de/lyca/xpath"/>
+  <property name="xalan.reldir"           value="de/lyca/xalan"/>
   <property name="domxpath.reldir"        value="org/w3c/dom/xpath"/>
   <property name="xsltc.reldir"           value="${xalan.reldir}/xsltc"/>  
 
@@ -123,7 +123,7 @@ $Id$
   <property name="manifest.mf"            value="./src/MANIFEST.MF"/>
   <property name="manifest.xsltc.mf"      value="./src/manifest.xsltc"/>
   <property name="manifest.xalan-interpretive.mf" value="./src/manifest.xalan-interpretive"/>  
-  <property name="XSLTInfo.props"         value="./src/org/apache/xalan/res/XSLTInfo.properties"/>  
+  <property name="XSLTInfo.props"         value="./src/de/lyca/xalan/res/XSLTInfo.properties"/>  
   <property name="generated.xpathparser"  value="${src.dir}/${xsltc.reldir}/compiler/XPathParser.java"/>
   <property name="generated.xpathlexer"   value="${src.dir}/${xsltc.reldir}/compiler/XPathLexer.java"/>
   <property name="generated.xpathsym"     value="${src.dir}/${xsltc.reldir}/compiler/sym.java"/>
@@ -414,7 +414,7 @@ $Id$
       <fileset dir="${src.dir}" includes="**/*.properties,META-INF/services/*" excludes="**/XSLTInfo.properties"/>
     </copy>  
     <filter token="impl.version" value="${impl.version}"/>
-    <copy todir="${build.classes}/org/apache/xalan/res" file="${XSLTInfo.props}" filtering="true"/>
+    <copy todir="${build.classes}/de/lyca/xalan/res" file="${XSLTInfo.props}" filtering="true"/>
   </target>
   
   <!-- Compile all java sources (Xalan interpretive and XSLTC) -->
@@ -538,9 +538,9 @@ $Id$
     <copy todir="${build.dir}" file="${manifest.xsltc.mf}" filtering="true"/>
     <jar jarfile="${build.xsltc.jar}" manifest="${build.dir}/manifest.xsltc" basedir="${build.classes}" >
       <patternset><!-- relative to jar/@basedir -->
-        <include name="org/apache/xml/**" />
+        <include name="de/lyca/xml/**" />
         <include name="${xsltc.reldir}/**/*" />
-        <exclude name="org/apache/xalan/xsltc/util/JavaCupRedirect*" />
+        <exclude name="de/lyca/xalan/xsltc/util/JavaCupRedirect*" />
       </patternset>
     </jar>
   </target>
@@ -623,10 +623,10 @@ $Id$
     <!-- make bundled jar named xsltc.jar -->
     <jar jarfile="${build.dir}/xsltc.jar" manifest="${build.dir}/manifest.xsltc" >
       <fileset dir="${build.classes}">
-        <include name="org/apache/xalan/xsltc/**"/>
-        <exclude name="org/apache/xalan/xsltc/util/JavaCupRedirect*" />
+        <include name="de/lyca/xalan/xsltc/**"/>
+        <exclude name="de/lyca/xalan/xsltc/util/JavaCupRedirect*" />
       </fileset>
-      <fileset dir="${build.classes}" includes="org/apache/xml/**" 
+      <fileset dir="${build.classes}" includes="de/lyca/xml/**" 
                                       excludes="${serializer.reldir}/**" />
       <fileset dir="${build.classes}" includes="org/apache/bcel/**" />
       <fileset dir="${build.classes}" includes="JLex/**" />
@@ -991,7 +991,7 @@ $Id$
     <delete dir="${src.dir}/javax" />
     <delete dir="${src.dir}/org/w3c" />
     <delete dir="${src.dir}/org/xml" />
-    <delete dir="${src.dir}/org/apache/xmlcommons" />
+    <delete dir="${src.dir}/de/lyca/xmlcommons" />
     <delete file="${src.dir}/manifest.commons" />
          
   </target>

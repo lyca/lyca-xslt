@@ -23,7 +23,7 @@ package de.lyca.xalan.processor;
 /**
  * Administrative class to keep track of the version number of
  * the Xalan release.
- * <P>See also: org/apache/xalan/res/XSLTInfo.properties</P>
+ * <P>See also: de/lyca/xalan/res/XSLTInfo.properties</P>
  * @deprecated To be replaced by de.lyca.xalan.Version.getVersion()
  * @xsl.usage general
  */
