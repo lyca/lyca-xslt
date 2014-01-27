@@ -24,21 +24,16 @@
 package de.lyca.xalan.lib.sql;
 
 import java.util.Hashtable;
-import java.sql.PreparedStatement;
-import java.sql.CallableStatement;
-import java.sql.Statement;
 
-public class QueryParameter
-{
-  private int     m_type;
-  private String  m_name;
-  private String  m_value;
+public class QueryParameter {
+  private int m_type;
+  private String m_name;
+  private String m_value;
   private boolean m_output;
-  private String  m_typeName;
-  private static  Hashtable m_Typetable = null;
+  private String m_typeName;
+  private static Hashtable m_Typetable = null;
 
-  public QueryParameter()
-  {
+  public QueryParameter() {
     m_type = -1;
     m_name = null;
     m_value = null;
@@ -47,19 +42,19 @@ public class QueryParameter
   }
 
   /**
-   * @param v The parameter value.
-   * @param t The type of the parameter.
+   * @param v
+   *          The parameter value.
+   * @param t
+   *          The type of the parameter.
    */
-  public QueryParameter( String v, String t )
-  {
+  public QueryParameter(String v, String t) {
     m_name = null;
     m_value = v;
     m_output = false;
     setTypeName(t);
   }
 
-  public QueryParameter( String name, String value, String type, boolean out_flag )
-  {
+  public QueryParameter(String name, String value, String type, boolean out_flag) {
     m_name = name;
     m_value = value;
     m_output = out_flag;
@@ -69,24 +64,27 @@ public class QueryParameter
   /**
    *
    */
-  public String getValue( ) {
+  public String getValue() {
     return m_value;
   }
 
   /**
    * @param newValue
-   *
+   * 
    */
-  public void setValue( String newValue ) {
+  public void setValue(String newValue) {
     m_value = newValue;
   }
 
-  /** Used to set the parameter type when the type information is provided in the query.
-   * @param newType The parameter type.
-   *
+  /**
+   * Used to set the parameter type when the type information is provided in the
+   * query.
+   * 
+   * @param newType
+   *          The parameter type.
+   * 
    */
-  public void setTypeName( String newType )
-  {
+  public void setTypeName(String newType) {
     m_type = map_type(newType);
     m_typeName = newType;
   }
@@ -94,24 +92,21 @@ public class QueryParameter
   /**
    *
    */
-  public String getTypeName( )
-  {
+  public String getTypeName() {
     return m_typeName;
   }
 
   /**
    *
    */
-  public int getType( )
-  {
+  public int getType() {
     return m_type;
   }
 
   /**
    *
    */
-  public String getName()
-  {
+  public String getName() {
     return m_name;
   }
 
@@ -120,16 +115,14 @@ public class QueryParameter
    * QueryParser has a State issue where the name is discoverd after the
    * Parameter object needs to be created
    */
-  public void setName(String n)
-  {
+  public void setName(String n) {
     m_name = n;
   }
 
   /**
   *
   */
-  public boolean isOutput()
-  {
+  public boolean isOutput() {
     return m_output;
   }
 
@@ -138,15 +131,12 @@ public class QueryParameter
    * QueryParser has a State issue where the name is discoverd after the
    * Parameter object needs to be created
    */
-  public void setIsOutput(boolean flag)
-  {
+  public void setIsOutput(boolean flag) {
     m_output = flag;
   }
 
-  private static int map_type(String typename)
-  {
-    if ( m_Typetable == null )
-    {
+  private static int map_type(String typename) {
+    if (m_Typetable == null) {
       // Load up the type mapping table.
       m_Typetable = new Hashtable();
       m_Typetable.put("BIGINT", new Integer(java.sql.Types.BIGINT));
@@ -180,100 +170,71 @@ public class QueryParameter
       m_Typetable.put("SHORT", new Integer(java.sql.Types.SMALLINT));
     }
 
-    Integer type = (Integer) m_Typetable.get(typename.toUpperCase());
+    final Integer type = (Integer) m_Typetable.get(typename.toUpperCase());
     int rtype;
-    if ( type == null )
+    if (type == null) {
       rtype = java.sql.Types.OTHER;
-    else
+    } else {
       rtype = type.intValue();
+    }
 
-    return(rtype);
+    return rtype;
   }
 
   /**
    * This code was in the XConnection, it is included for reference but it
    * should not be used.
-   *
+   * 
    * @TODO Remove this code as soon as it is determined that its Use Case is
-   * resolved elsewhere.
+   *       resolved elsewhere.
    */
   /**
    * Set the parameter for a Prepared Statement
+   * 
    * @param pos
    * @param stmt
    * @param p
-   *
+   * 
    * @throws SQLException
    */
   /*
-  private void setParameter( int pos, PreparedStatement stmt, QueryParameter p )throws SQLException
-  {
-    String type = p.getType();
-    if (type.equalsIgnoreCase("string"))
-    {
-      stmt.setString(pos, p.getValue());
-    }
-
-    if (type.equalsIgnoreCase("bigdecimal"))
-    {
-      stmt.setBigDecimal(pos, new BigDecimal(p.getValue()));
-    }
-
-    if (type.equalsIgnoreCase("boolean"))
-    {
-      Integer i = new Integer( p.getValue() );
-      boolean b = ((i.intValue() != 0) ? false : true);
-      stmt.setBoolean(pos, b);
-    }
-
-    if (type.equalsIgnoreCase("bytes"))
-    {
-      stmt.setBytes(pos, p.getValue().getBytes());
-    }
-
-    if (type.equalsIgnoreCase("date"))
-    {
-      stmt.setDate(pos, Date.valueOf(p.getValue()));
-    }
-
-    if (type.equalsIgnoreCase("double"))
-    {
-      Double d = new Double(p.getValue());
-      stmt.setDouble(pos, d.doubleValue() );
-    }
-
-    if (type.equalsIgnoreCase("float"))
-    {
-      Float f = new Float(p.getValue());
-      stmt.setFloat(pos, f.floatValue());
-    }
-
-    if (type.equalsIgnoreCase("long"))
-    {
-      Long l = new Long(p.getValue());
-      stmt.setLong(pos, l.longValue());
-    }
-
-    if (type.equalsIgnoreCase("short"))
-    {
-      Short s = new Short(p.getValue());
-      stmt.setShort(pos, s.shortValue());
-    }
-
-    if (type.equalsIgnoreCase("time"))
-    {
-      stmt.setTime(pos, Time.valueOf(p.getValue()) );
-    }
-
-    if (type.equalsIgnoreCase("timestamp"))
-    {
-
-      stmt.setTimestamp(pos, Timestamp.valueOf(p.getValue()) );
-    }
-
-  }
-  */
+   * private void setParameter( int pos, PreparedStatement stmt, QueryParameter
+   * p )throws SQLException { String type = p.getType(); if
+   * (type.equalsIgnoreCase("string")) { stmt.setString(pos, p.getValue()); }
+   * 
+   * if (type.equalsIgnoreCase("bigdecimal")) { stmt.setBigDecimal(pos, new
+   * BigDecimal(p.getValue())); }
+   * 
+   * if (type.equalsIgnoreCase("boolean")) { Integer i = new Integer(
+   * p.getValue() ); boolean b = ((i.intValue() != 0) ? false : true);
+   * stmt.setBoolean(pos, b); }
+   * 
+   * if (type.equalsIgnoreCase("bytes")) { stmt.setBytes(pos,
+   * p.getValue().getBytes()); }
+   * 
+   * if (type.equalsIgnoreCase("date")) { stmt.setDate(pos,
+   * Date.valueOf(p.getValue())); }
+   * 
+   * if (type.equalsIgnoreCase("double")) { Double d = new Double(p.getValue());
+   * stmt.setDouble(pos, d.doubleValue() ); }
+   * 
+   * if (type.equalsIgnoreCase("float")) { Float f = new Float(p.getValue());
+   * stmt.setFloat(pos, f.floatValue()); }
+   * 
+   * if (type.equalsIgnoreCase("long")) { Long l = new Long(p.getValue());
+   * stmt.setLong(pos, l.longValue()); }
+   * 
+   * if (type.equalsIgnoreCase("short")) { Short s = new Short(p.getValue());
+   * stmt.setShort(pos, s.shortValue()); }
+   * 
+   * if (type.equalsIgnoreCase("time")) { stmt.setTime(pos,
+   * Time.valueOf(p.getValue()) ); }
+   * 
+   * if (type.equalsIgnoreCase("timestamp")) {
+   * 
+   * stmt.setTimestamp(pos, Timestamp.valueOf(p.getValue()) ); }
+   * 
+   * }
+   */
 
 }
-
-

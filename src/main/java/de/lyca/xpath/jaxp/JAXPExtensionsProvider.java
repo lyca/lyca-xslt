@@ -20,190 +20,176 @@
 
 package de.lyca.xpath.jaxp;
 
-import javax.xml.transform.TransformerException;
-import javax.xml.xpath.XPathFunctionResolver;
+import java.util.ArrayList;
+import java.util.Vector;
+
+import javax.xml.namespace.QName;
 import javax.xml.xpath.XPathFunction;
 import javax.xml.xpath.XPathFunctionException;
+import javax.xml.xpath.XPathFunctionResolver;
 
-import de.lyca.xalan.res.XSLMessages;
 import de.lyca.xpath.ExtensionsProvider;
-import de.lyca.xpath.XPathContext;
 import de.lyca.xpath.functions.FuncExtFunction;
 import de.lyca.xpath.objects.XNodeSet;
 import de.lyca.xpath.objects.XObject;
 import de.lyca.xpath.res.XPATHErrorResources;
-
-import java.util.Vector;
-import java.util.ArrayList;
-
-import javax.xml.namespace.QName;
+import de.lyca.xpath.res.XPATHMessages;
 
 /**
  * 
  * @author Ramesh Mandava ( ramesh.mandava@sun.com )
  */
 public class JAXPExtensionsProvider implements ExtensionsProvider {
-    	
-    private final XPathFunctionResolver resolver;
-    private boolean extensionInvocationDisabled = false;
-	
-    public JAXPExtensionsProvider(XPathFunctionResolver resolver) {
-        this.resolver = resolver;
-        this.extensionInvocationDisabled = false;
-    }
 
-    public JAXPExtensionsProvider(XPathFunctionResolver resolver, 
-        boolean featureSecureProcessing ) {
-        this.resolver = resolver;
-        this.extensionInvocationDisabled = featureSecureProcessing;
-    }
+  private final XPathFunctionResolver resolver;
+  private boolean extensionInvocationDisabled = false;
 
-    /**
-     * Is the extension function available?
-     */
+  public JAXPExtensionsProvider(XPathFunctionResolver resolver) {
+    this.resolver = resolver;
+    extensionInvocationDisabled = false;
+  }
 
-    public boolean functionAvailable(String ns, String funcName)
-          throws javax.xml.transform.TransformerException {
-      try {
-        if ( funcName == null ) {
-            String fmsg = XSLMessages.createXPATHMessage( 
-                XPATHErrorResources.ER_ARG_CANNOT_BE_NULL,
-                new Object[] {"Function Name"} );
-            throw new NullPointerException ( fmsg ); 
-        }
-        //Find the XPathFunction corresponding to namespace and funcName
-        javax.xml.namespace.QName myQName = new QName( ns, funcName );
-        javax.xml.xpath.XPathFunction xpathFunction = 
-            resolver.resolveFunction ( myQName, 0 );
-        if (  xpathFunction == null ) {
-            return false;
-        }
-        return true;
-      } catch ( Exception e ) {
-        return false;
+  public JAXPExtensionsProvider(XPathFunctionResolver resolver, boolean featureSecureProcessing) {
+    this.resolver = resolver;
+    extensionInvocationDisabled = featureSecureProcessing;
+  }
+
+  /**
+   * Is the extension function available?
+   */
+
+  @Override
+  public boolean functionAvailable(String ns, String funcName) throws javax.xml.transform.TransformerException {
+    try {
+      if (funcName == null) {
+        final String fmsg = XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_ARG_CANNOT_BE_NULL,
+                new Object[] { "Function Name" });
+        throw new NullPointerException(fmsg);
       }
-       
-
-    }
-        
-
-    /**
-     * Is the extension element available?
-     */
-    public boolean elementAvailable(String ns, String elemName)
-          throws javax.xml.transform.TransformerException {
+      // Find the XPathFunction corresponding to namespace and funcName
+      final javax.xml.namespace.QName myQName = new QName(ns, funcName);
+      final javax.xml.xpath.XPathFunction xpathFunction = resolver.resolveFunction(myQName, 0);
+      if (xpathFunction == null)
         return false;
+      return true;
+    } catch (final Exception e) {
+      return false;
     }
 
-    /**
-     * Execute the extension function.
-     */
-    public Object extFunction(String ns, String funcName, Vector argVec,
-        Object methodKey) throws javax.xml.transform.TransformerException {
-        try {
+  }
 
-            if ( funcName == null ) {
-                String fmsg = XSLMessages.createXPATHMessage(
-                    XPATHErrorResources.ER_ARG_CANNOT_BE_NULL,
-                    new Object[] {"Function Name"} );
-                throw new NullPointerException ( fmsg ); 
-            }
-            //Find the XPathFunction corresponding to namespace and funcName
-            javax.xml.namespace.QName myQName = new QName( ns, funcName );
+  /**
+   * Is the extension element available?
+   */
+  @Override
+  public boolean elementAvailable(String ns, String elemName) throws javax.xml.transform.TransformerException {
+    return false;
+  }
 
-            // JAXP 1.3 spec says When XMLConstants.FEATURE_SECURE_PROCESSING 
-            // feature is set then invocation of extension functions need to
-            // throw XPathFunctionException
-            if ( extensionInvocationDisabled ) {
-                String fmsg = XSLMessages.createXPATHMessage(
-                    XPATHErrorResources.ER_EXTENSION_FUNCTION_CANNOT_BE_INVOKED,
-                    new Object[] { myQName.toString() } );
-                throw new XPathFunctionException ( fmsg );
-            }
+  /**
+   * Execute the extension function.
+   */
+  @Override
+  public Object extFunction(String ns, String funcName, Vector argVec, Object methodKey)
+          throws javax.xml.transform.TransformerException {
+    try {
 
-            // Assuming user is passing all the needed parameters ( including
-            // default values )
-            int arity = argVec.size();
+      if (funcName == null) {
+        final String fmsg = XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_ARG_CANNOT_BE_NULL,
+                new Object[] { "Function Name" });
+        throw new NullPointerException(fmsg);
+      }
+      // Find the XPathFunction corresponding to namespace and funcName
+      final javax.xml.namespace.QName myQName = new QName(ns, funcName);
 
-            javax.xml.xpath.XPathFunction xpathFunction = 
-                resolver.resolveFunction ( myQName, arity );
+      // JAXP 1.3 spec says When XMLConstants.FEATURE_SECURE_PROCESSING
+      // feature is set then invocation of extension functions need to
+      // throw XPathFunctionException
+      if (extensionInvocationDisabled) {
+        final String fmsg = XPATHMessages.createXPATHMessage(
+                XPATHErrorResources.ER_EXTENSION_FUNCTION_CANNOT_BE_INVOKED, new Object[] { myQName.toString() });
+        throw new XPathFunctionException(fmsg);
+      }
 
-            // not using methodKey
-            ArrayList argList = new ArrayList( arity);
-            for ( int i=0; i<arity; i++ ) {
-                Object argument = argVec.elementAt( i );
-                // XNodeSet object() returns NodeVector and not NodeList
-                // Explicitly getting NodeList by using nodelist()
-                if ( argument instanceof XNodeSet ) {
-                    argList.add ( i, ((XNodeSet)argument).nodelist() );
-                } else if ( argument instanceof XObject ) {
-                    Object passedArgument = ((XObject)argument).object();
-                    argList.add ( i, passedArgument );
-                } else {
-                    argList.add ( i, argument );
-                }
-            }
+      // Assuming user is passing all the needed parameters ( including
+      // default values )
+      final int arity = argVec.size();
 
-            return ( xpathFunction.evaluate ( argList ));
-        } catch ( XPathFunctionException xfe ) {
-            // If we get XPathFunctionException then we want to terminate
-            // further execution by throwing WrappedRuntimeException 
-            throw new de.lyca.xml.utils.WrappedRuntimeException ( xfe );
-        } catch ( Exception e ) {
-            throw new javax.xml.transform.TransformerException ( e );
+      final javax.xml.xpath.XPathFunction xpathFunction = resolver.resolveFunction(myQName, arity);
+
+      // not using methodKey
+      final ArrayList argList = new ArrayList(arity);
+      for (int i = 0; i < arity; i++) {
+        final Object argument = argVec.elementAt(i);
+        // XNodeSet object() returns NodeVector and not NodeList
+        // Explicitly getting NodeList by using nodelist()
+        if (argument instanceof XNodeSet) {
+          argList.add(i, ((XNodeSet) argument).nodelist());
+        } else if (argument instanceof XObject) {
+          final Object passedArgument = ((XObject) argument).object();
+          argList.add(i, passedArgument);
+        } else {
+          argList.add(i, argument);
         }
-    
+      }
+
+      return xpathFunction.evaluate(argList);
+    } catch (final XPathFunctionException xfe) {
+      // If we get XPathFunctionException then we want to terminate
+      // further execution by throwing WrappedRuntimeException
+      throw new de.lyca.xml.utils.WrappedRuntimeException(xfe);
+    } catch (final Exception e) {
+      throw new javax.xml.transform.TransformerException(e);
     }
 
-    /**
-     * Execute the extension function.
-     */
-    public Object extFunction(FuncExtFunction extFunction,
-                              Vector argVec)
-        throws javax.xml.transform.TransformerException {
-        try {
-            String namespace = extFunction.getNamespace();
-            String functionName = extFunction.getFunctionName();
-            int arity = extFunction.getArgCount();
-            javax.xml.namespace.QName myQName = 
-                new javax.xml.namespace.QName( namespace, functionName );
+  }
 
-            // JAXP 1.3 spec says  When XMLConstants.FEATURE_SECURE_PROCESSING
-            // feature is set then invocation of extension functions need to
-            // throw XPathFunctionException
-            if ( extensionInvocationDisabled ) {
-                String fmsg = XSLMessages.createXPATHMessage(
-                    XPATHErrorResources.ER_EXTENSION_FUNCTION_CANNOT_BE_INVOKED,                    new Object[] { myQName.toString() } );
-                throw new XPathFunctionException ( fmsg );
-            }
+  /**
+   * Execute the extension function.
+   */
+  @Override
+  public Object extFunction(FuncExtFunction extFunction, Vector argVec) throws javax.xml.transform.TransformerException {
+    try {
+      final String namespace = extFunction.getNamespace();
+      final String functionName = extFunction.getFunctionName();
+      final int arity = extFunction.getArgCount();
+      final javax.xml.namespace.QName myQName = new javax.xml.namespace.QName(namespace, functionName);
 
-            XPathFunction xpathFunction = 
-                resolver.resolveFunction( myQName, arity );
+      // JAXP 1.3 spec says When XMLConstants.FEATURE_SECURE_PROCESSING
+      // feature is set then invocation of extension functions need to
+      // throw XPathFunctionException
+      if (extensionInvocationDisabled) {
+        final String fmsg = XPATHMessages.createXPATHMessage(
+                XPATHErrorResources.ER_EXTENSION_FUNCTION_CANNOT_BE_INVOKED, new Object[] { myQName.toString() });
+        throw new XPathFunctionException(fmsg);
+      }
 
-            ArrayList argList = new ArrayList( arity);
-            for ( int i=0; i<arity; i++ ) {
-                Object argument = argVec.elementAt( i );
-                // XNodeSet object() returns NodeVector and not NodeList
-                // Explicitly getting NodeList by using nodelist()
-                if ( argument instanceof XNodeSet ) {
-                    argList.add ( i, ((XNodeSet)argument).nodelist() );
-                } else if ( argument instanceof XObject ) {
-                    Object passedArgument = ((XObject)argument).object();
-                    argList.add ( i, passedArgument );
-                } else {
-                    argList.add ( i, argument );
-                }
-            }
-       
-            return ( xpathFunction.evaluate ( argList ));
+      final XPathFunction xpathFunction = resolver.resolveFunction(myQName, arity);
 
-        } catch ( XPathFunctionException xfe ) {
-            // If we get XPathFunctionException then we want to terminate 
-            // further execution by throwing WrappedRuntimeException
-            throw new de.lyca.xml.utils.WrappedRuntimeException ( xfe );
-        } catch ( Exception e ) {
-            throw new javax.xml.transform.TransformerException ( e );
+      final ArrayList argList = new ArrayList(arity);
+      for (int i = 0; i < arity; i++) {
+        final Object argument = argVec.elementAt(i);
+        // XNodeSet object() returns NodeVector and not NodeList
+        // Explicitly getting NodeList by using nodelist()
+        if (argument instanceof XNodeSet) {
+          argList.add(i, ((XNodeSet) argument).nodelist());
+        } else if (argument instanceof XObject) {
+          final Object passedArgument = ((XObject) argument).object();
+          argList.add(i, passedArgument);
+        } else {
+          argList.add(i, argument);
         }
+      }
+
+      return xpathFunction.evaluate(argList);
+
+    } catch (final XPathFunctionException xfe) {
+      // If we get XPathFunctionException then we want to terminate
+      // further execution by throwing WrappedRuntimeException
+      throw new de.lyca.xml.utils.WrappedRuntimeException(xfe);
+    } catch (final Exception e) {
+      throw new javax.xml.transform.TransformerException(e);
     }
+  }
 
 }

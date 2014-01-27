@@ -28,90 +28,89 @@ import de.lyca.xml.dtm.DTM;
 
 /**
  * Implement xsl:apply-imports.
+ * 
  * <pre>
  * <!ELEMENT xsl:apply-imports EMPTY>
  * </pre>
- * @see <a href="http://www.w3.org/TR/xslt#apply-imports">apply-imports in XSLT Specification</a>
+ * 
+ * @see <a href="http://www.w3.org/TR/xslt#apply-imports">apply-imports in XSLT
+ *      Specification</a>
  * @xsl.usage advanced
  */
-public class ElemApplyImport extends ElemTemplateElement
-{
-    static final long serialVersionUID = 3764728663373024038L;
+public class ElemApplyImport extends ElemTemplateElement {
+  static final long serialVersionUID = 3764728663373024038L;
 
   /**
    * Get an int constant identifying the type of element.
+   * 
    * @see de.lyca.xalan.templates.Constants
-   *
+   * 
    * @return Token ID for xsl:apply-imports element types
    */
-  public int getXSLToken()
-  {
+  @Override
+  public int getXSLToken() {
     return Constants.ELEMNAME_APPLY_IMPORTS;
   }
 
   /**
    * Return the node name.
-   *
+   * 
    * @return Element name
    */
-  public String getNodeName()
-  {
+  @Override
+  public String getNodeName() {
     return Constants.ELEMNAME_APPLY_IMPORTS_STRING;
   }
 
   /**
    * Execute the xsl:apply-imports transformation.
-   *
-   * @param transformer non-null reference to the the current transform-time state.
-   *
+   * 
+   * @param transformer
+   *          non-null reference to the the current transform-time state.
+   * 
    * @throws TransformerException
    */
-  public void execute(
-          TransformerImpl transformer)
-            throws TransformerException
-  {
+  @Override
+  public void execute(TransformerImpl transformer) throws TransformerException {
 
-    if (transformer.currentTemplateRuleIsNull())
-    {
-      transformer.getMsgMgr().error(this,
-        XSLTErrorResources.ER_NO_APPLY_IMPORT_IN_FOR_EACH);  //"xsl:apply-imports not allowed in a xsl:for-each");
+    if (transformer.currentTemplateRuleIsNull()) {
+      transformer.getMsgMgr().error(this, XSLTErrorResources.ER_NO_APPLY_IMPORT_IN_FOR_EACH); // "xsl:apply-imports not allowed in a xsl:for-each");
     }
 
-    if (transformer.getDebug())
+    if (transformer.getDebug()) {
       transformer.getTraceManager().fireTraceEvent(this);
+    }
 
-    int sourceNode = transformer.getXPathContext().getCurrentNode();
-    if (DTM.NULL != sourceNode)
-    {
-      // supply the current templated (matched, not named)        
-      ElemTemplate matchTemplate = transformer.getMatchedTemplate();
+    final int sourceNode = transformer.getXPathContext().getCurrentNode();
+    if (DTM.NULL != sourceNode) {
+      // supply the current templated (matched, not named)
+      final ElemTemplate matchTemplate = transformer.getMatchedTemplate();
       transformer.applyTemplateToNode(this, matchTemplate, sourceNode);
-    }
-    else  // if(null == sourceNode)
+    } else // if(null == sourceNode)
     {
-      transformer.getMsgMgr().error(this,
-        XSLTErrorResources.ER_NULL_SOURCENODE_APPLYIMPORTS);  //"sourceNode is null in xsl:apply-imports!");
+      transformer.getMsgMgr().error(this, XSLTErrorResources.ER_NULL_SOURCENODE_APPLYIMPORTS); // "sourceNode is null in xsl:apply-imports!");
     }
-    if (transformer.getDebug())
+    if (transformer.getDebug()) {
       transformer.getTraceManager().fireTraceEndEvent(this);
+    }
   }
 
   /**
-   * Add a child to the child list.
-   * <!ELEMENT xsl:apply-imports EMPTY>
-   *
-   * @param newChild New element to append to this element's children list
-   *
-   * @return null, xsl:apply-Imports cannot have children 
+   * Add a child to the child list. <!ELEMENT xsl:apply-imports EMPTY>
+   * 
+   * @param newChild
+   *          New element to append to this element's children list
+   * 
+   * @return null, xsl:apply-Imports cannot have children
    */
-  public ElemTemplateElement appendChild(ElemTemplateElement newChild)
-  {
+  @Override
+  public ElemTemplateElement appendChild(ElemTemplateElement newChild) {
 
-    error(XSLTErrorResources.ER_CANNOT_ADD,
-          new Object[]{ newChild.getNodeName(),
-                        this.getNodeName() });  //"Can not add " +((ElemTemplateElement)newChild).m_elemName +
+    error(XSLTErrorResources.ER_CANNOT_ADD, new Object[] { newChild.getNodeName(), this.getNodeName() }); // "Can not add "
+                                                                                                          // +((ElemTemplateElement)newChild).m_elemName
+                                                                                                          // +
 
-    //" to " + this.m_elemName);
+    // " to " + this.m_elemName);
     return null;
   }
 }

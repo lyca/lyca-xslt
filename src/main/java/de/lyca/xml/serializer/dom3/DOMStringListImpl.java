@@ -31,69 +31,72 @@ import org.w3c.dom.DOMStringList;
  * @xsl.usage internal
  */
 final class DOMStringListImpl implements DOMStringList {
-    
-    //A collection of DOMString values
-    private Vector fStrings;
-    
-    /** 
-     * Construct an empty list of DOMStringListImpl
-     */ 
-    DOMStringListImpl() {
-        fStrings = new Vector();    
+
+  // A collection of DOMString values
+  private final Vector fStrings;
+
+  /**
+   * Construct an empty list of DOMStringListImpl
+   */
+  DOMStringListImpl() {
+    fStrings = new Vector();
+  }
+
+  /**
+   * Construct an empty list of DOMStringListImpl
+   */
+  DOMStringListImpl(Vector params) {
+    fStrings = params;
+  }
+
+  /**
+   * Construct an empty list of DOMStringListImpl
+   */
+  DOMStringListImpl(String[] params) {
+    fStrings = new Vector();
+    if (params != null) {
+      for (int i = 0; i < params.length; i++) {
+        fStrings.add(params[i]);
+      }
     }
-    
-    /** 
-     * Construct an empty list of DOMStringListImpl
-     */ 
-    DOMStringListImpl(Vector params) {
-        fStrings = params;    
+  }
+
+  /**
+   * @see org.apache.xerces.dom3.DOMStringList#item(int)
+   */
+  @Override
+  public String item(int index) {
+    try {
+      return (String) fStrings.elementAt(index);
+    } catch (final ArrayIndexOutOfBoundsException e) {
+      return null;
     }
-    
-    /** 
-     * Construct an empty list of DOMStringListImpl
-     */ 
-    DOMStringListImpl(String[] params ) {
-        fStrings = new Vector();
-        if (params != null) {
-            for (int i=0; i < params.length; i++) {
-                fStrings.add(params[i]);    
-            }
-        }
-    }
-    
-    /**
-     * @see org.apache.xerces.dom3.DOMStringList#item(int)
-     */
-    public String item(int index) {
-        try {
-            return (String) fStrings.elementAt(index);
-        } catch (ArrayIndexOutOfBoundsException e) {
-            return null;
-        }
-    }
-    
-    /**
-     * @see org.apache.xerces.dom3.DOMStringList#getLength()
-     */
-    public int getLength() {
-        return fStrings.size();
-    }
-    
-    /**
-     * @see org.apache.xerces.dom3.DOMStringList#contains(String)
-     */
-    public boolean contains(String param) {
-        return fStrings.contains(param) ;
-    }
-    
-    /**
-     * DOM Internal:
-     * Add a <code>DOMString</code> to the list.
-     * 
-     * @param domString A string to add to the list
-     */
-    public void add(String param) {
-        fStrings.add(param);
-    }
-    
+  }
+
+  /**
+   * @see org.apache.xerces.dom3.DOMStringList#getLength()
+   */
+  @Override
+  public int getLength() {
+    return fStrings.size();
+  }
+
+  /**
+   * @see org.apache.xerces.dom3.DOMStringList#contains(String)
+   */
+  @Override
+  public boolean contains(String param) {
+    return fStrings.contains(param);
+  }
+
+  /**
+   * DOM Internal: Add a <code>DOMString</code> to the list.
+   * 
+   * @param domString
+   *          A string to add to the list
+   */
+  public void add(String param) {
+    fStrings.add(param);
+  }
+
 }

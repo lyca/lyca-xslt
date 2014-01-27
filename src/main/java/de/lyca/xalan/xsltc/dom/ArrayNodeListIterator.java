@@ -23,67 +23,81 @@ package de.lyca.xalan.xsltc.dom;
 
 import de.lyca.xml.dtm.DTMAxisIterator;
 
-public class ArrayNodeListIterator implements DTMAxisIterator  {
+public class ArrayNodeListIterator implements DTMAxisIterator {
 
-    private int _pos = 0;
+  private int _pos = 0;
 
-    private int _mark = 0;
+  private int _mark = 0;
 
-    private int _nodes[];
+  private int _nodes[];
 
-    private static final int[] EMPTY = { };
+  private static final int[] EMPTY = {};
 
-    public ArrayNodeListIterator(int[] nodes) {
-	_nodes = nodes;
+  public ArrayNodeListIterator(int[] nodes) {
+    _nodes = nodes;
+  }
+
+  @Override
+  public int next() {
+    return _pos < _nodes.length ? _nodes[_pos++] : END;
+  }
+
+  @Override
+  public DTMAxisIterator reset() {
+    _pos = 0;
+    return this;
+  }
+
+  @Override
+  public int getLast() {
+    return _nodes.length;
+  }
+
+  @Override
+  public int getPosition() {
+    return _pos;
+  }
+
+  @Override
+  public void setMark() {
+    _mark = _pos;
+  }
+
+  @Override
+  public void gotoMark() {
+    _pos = _mark;
+  }
+
+  @Override
+  public DTMAxisIterator setStartNode(int node) {
+    if (node == END) {
+      _nodes = EMPTY;
     }
+    return this;
+  }
 
-    public int next() {
-	return _pos < _nodes.length ? _nodes[_pos++] : END;
-    }
+  @Override
+  public int getStartNode() {
+    return END;
+  }
 
-    public DTMAxisIterator reset() {
-	_pos = 0;
-	return this;
-    }
+  @Override
+  public boolean isReverse() {
+    return false;
+  }
 
-    public int getLast() {
-	return _nodes.length;
-    }
+  @Override
+  public DTMAxisIterator cloneIterator() {
+    return new ArrayNodeListIterator(_nodes);
+  }
 
-    public int getPosition() {
-	return _pos;
-    }
+  @Override
+  public void setRestartable(boolean isRestartable) {
+  }
 
-    public void setMark() {
-	_mark = _pos;
-    }
-
-    public void gotoMark() {
-	_pos = _mark;
-    }
-
-    public DTMAxisIterator setStartNode(int node) {
-	if (node == END) _nodes = EMPTY;
-	return this;
-    }
-
-    public int getStartNode() {
-	return END;
-    }
-
-    public boolean isReverse() {
-	return false;
-    }
-
-    public DTMAxisIterator cloneIterator() {
-	return new ArrayNodeListIterator(_nodes);
-    }
-
-    public void setRestartable(boolean isRestartable) {
-    }
-
-    public int getNodeByPosition(int position) {
-	return _nodes[position - 1];
-    }
+  @Override
+  public int getNodeByPosition(int position) {
+    return _nodes[position - 1];
+  }
 
 }

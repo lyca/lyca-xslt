@@ -19,7 +19,6 @@
  * $Id$
  */
 
-
 package de.lyca.xalan.xsltc.trax;
 
 import java.io.IOException;
@@ -45,100 +44,96 @@ import org.xml.sax.helpers.XMLReaderFactory;
 import de.lyca.xml.utils.XMLReaderManager;
 
 /**
- * skeleton extension of XMLFilterImpl for now.  
+ * skeleton extension of XMLFilterImpl for now.
+ * 
  * @author Santiago Pericas-Geertsen
- * @author G. Todd Miller 
+ * @author G. Todd Miller
  */
 public class TrAXFilter extends XMLFilterImpl {
-    private Templates              _templates;
-    private TransformerImpl	   _transformer;
-    private TransformerHandlerImpl _transformerHandler;
+  private final Templates _templates;
+  private final TransformerImpl _transformer;
+  private final TransformerHandlerImpl _transformerHandler;
 
-    public TrAXFilter(Templates templates)  throws 
-	TransformerConfigurationException
-    {
-	_templates = templates;
-	_transformer = (TransformerImpl) templates.newTransformer();
-        _transformerHandler = new TransformerHandlerImpl(_transformer);
-    }
-    
-    public Transformer getTransformer() {
-        return _transformer;
-    }
+  public TrAXFilter(Templates templates) throws TransformerConfigurationException {
+    _templates = templates;
+    _transformer = (TransformerImpl) templates.newTransformer();
+    _transformerHandler = new TransformerHandlerImpl(_transformer);
+  }
 
-    private void createParent() throws SAXException {
-	XMLReader parent = null;
+  public Transformer getTransformer() {
+    return _transformer;
+  }
+
+  private void createParent() throws SAXException {
+    XMLReader parent = null;
+    try {
+      final SAXParserFactory pfactory = SAXParserFactory.newInstance();
+      pfactory.setNamespaceAware(true);
+
+      if (_transformer.isSecureProcessing()) {
         try {
-            SAXParserFactory pfactory = SAXParserFactory.newInstance();
-            pfactory.setNamespaceAware(true);
-            
-            if (_transformer.isSecureProcessing()) {
-                try {
-                    pfactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-                }
-                catch (SAXException e) {}
-            }
-            
-            SAXParser saxparser = pfactory.newSAXParser();
-            parent = saxparser.getXMLReader();
+          pfactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+        } catch (final SAXException e) {
         }
-        catch (ParserConfigurationException e) {
-            throw new SAXException(e);
-        }
-        catch (FactoryConfigurationError e) {
-            throw new SAXException(e.toString());
-        }
+      }
 
-        if (parent == null) {
-            parent = XMLReaderFactory.createXMLReader();
-        }
-
-        // make this XMLReader the parent of this filter
-        setParent(parent);
+      final SAXParser saxparser = pfactory.newSAXParser();
+      parent = saxparser.getXMLReader();
+    } catch (final ParserConfigurationException e) {
+      throw new SAXException(e);
+    } catch (final FactoryConfigurationError e) {
+      throw new SAXException(e.toString());
     }
 
-    public void parse (InputSource input) throws SAXException, IOException
-    {
-        XMLReader managedReader = null;
+    if (parent == null) {
+      parent = XMLReaderFactory.createXMLReader();
+    }
 
+    // make this XMLReader the parent of this filter
+    setParent(parent);
+  }
+
+  @Override
+  public void parse(InputSource input) throws SAXException, IOException {
+    XMLReader managedReader = null;
+
+    try {
+      if (getParent() == null) {
         try {
-            if (getParent() == null) {
-                try {
-                    managedReader = XMLReaderManager.getInstance()
-                                                    .getXMLReader();
-                    setParent(managedReader);
-                } catch (SAXException  e) {
-                    throw new SAXException(e.toString());
-                }
-            }
-
-            // call parse on the parent
-            getParent().parse(input);
-        } finally {
-            if (managedReader != null) {
-                XMLReaderManager.getInstance().releaseXMLReader(managedReader);
-            }
+          managedReader = XMLReaderManager.getInstance().getXMLReader();
+          setParent(managedReader);
+        } catch (final SAXException e) {
+          throw new SAXException(e.toString());
         }
-    }
+      }
 
-    public void parse (String systemId) throws SAXException, IOException 
-    {
-        parse(new InputSource(systemId));
+      // call parse on the parent
+      getParent().parse(input);
+    } finally {
+      if (managedReader != null) {
+        XMLReaderManager.getInstance().releaseXMLReader(managedReader);
+      }
     }
+  }
 
-    public void setContentHandler (ContentHandler handler) 
-    {
-	_transformerHandler.setResult(new SAXResult(handler));
-	if (getParent() == null) {
-                try {
-                    createParent();
-                }
-                catch (SAXException  e) {
-                   return; 
-                }
-	}
-	getParent().setContentHandler(_transformerHandler);
+  @Override
+  public void parse(String systemId) throws SAXException, IOException {
+    parse(new InputSource(systemId));
+  }
+
+  @Override
+  public void setContentHandler(ContentHandler handler) {
+    _transformerHandler.setResult(new SAXResult(handler));
+    if (getParent() == null) {
+      try {
+        createParent();
+      } catch (final SAXException e) {
+        return;
+      }
     }
+    getParent().setContentHandler(_transformerHandler);
+  }
 
-    public void setErrorListener (ErrorListener handler) { }
+  public void setErrorListener(ErrorListener handler) {
+  }
 }

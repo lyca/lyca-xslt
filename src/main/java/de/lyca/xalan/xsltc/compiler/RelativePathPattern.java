@@ -25,4 +25,5 @@ package de.lyca.xalan.xsltc.compiler;
  * @author Jacek Ambroziak
  * @author Santiago Pericas-Geertsen
  */
-abstract class RelativePathPattern extends LocationPathPattern {}
+abstract class RelativePathPattern extends LocationPathPattern {
+}

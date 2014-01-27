@@ -35,22 +35,21 @@ import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
  * @author Santiago Pericas-Geertsen
  */
 final class GenerateIdCall extends FunctionCall {
-    public GenerateIdCall(QName fname, Vector arguments) {
-	super(fname, arguments);
-    }
+  public GenerateIdCall(QName fname, Vector arguments) {
+    super(fname, arguments);
+  }
 
-    public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
-	final InstructionList il = methodGen.getInstructionList();
-	if (argumentCount() == 0) {
-	   il.append(methodGen.loadContextNode());
-	}
-	else {			// one argument
-	    argument().translate(classGen, methodGen);
-	}
-	final ConstantPoolGen cpg = classGen.getConstantPool();
-	il.append(new INVOKESTATIC(cpg.addMethodref(BASIS_LIBRARY_CLASS,
-						    "generate_idF",
-						    // reuse signature
-						    GET_NODE_NAME_SIG)));
+  @Override
+  public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
+    final InstructionList il = methodGen.getInstructionList();
+    if (argumentCount() == 0) {
+      il.append(methodGen.loadContextNode());
+    } else { // one argument
+      argument().translate(classGen, methodGen);
     }
+    final ConstantPoolGen cpg = classGen.getConstantPool();
+    il.append(new INVOKESTATIC(cpg.addMethodref(BASIS_LIBRARY_CLASS, "generate_idF",
+    // reuse signature
+            GET_NODE_NAME_SIG)));
+  }
 }

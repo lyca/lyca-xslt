@@ -19,7 +19,6 @@
  * $Id$
  */
 
-
 package de.lyca.xalan.xsltc.trax;
 
 import java.util.Stack;
@@ -32,8 +31,8 @@ import org.w3c.dom.Comment;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.w3c.dom.Text;
 import org.w3c.dom.ProcessingInstruction;
+import org.w3c.dom.Text;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
@@ -43,206 +42,219 @@ import org.xml.sax.ext.LexicalHandler;
 import de.lyca.xalan.xsltc.runtime.Constants;
 
 /**
- * @author G. Todd Miller 
+ * @author G. Todd Miller
  */
 public class SAX2DOM implements ContentHandler, LexicalHandler, Constants {
 
-    private Node _root = null;
-    private Document _document = null;
-    private Node _nextSibling = null;
-    private Stack _nodeStk = new Stack();
-    private Vector _namespaceDecls = null;
-    private Node _lastSibling = null;
+  private Node _root = null;
+  private Document _document = null;
+  private Node _nextSibling = null;
+  private final Stack _nodeStk = new Stack();
+  private Vector _namespaceDecls = null;
+  private Node _lastSibling = null;
 
-    public SAX2DOM() throws ParserConfigurationException {
-	final DocumentBuilderFactory factory = 
-		DocumentBuilderFactory.newInstance();
-	_document = factory.newDocumentBuilder().newDocument();
-	_root = _document;
+  public SAX2DOM() throws ParserConfigurationException {
+    final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+    _document = factory.newDocumentBuilder().newDocument();
+    _root = _document;
+  }
+
+  public SAX2DOM(Node root, Node nextSibling) throws ParserConfigurationException {
+    _root = root;
+    if (root instanceof Document) {
+      _document = (Document) root;
+    } else if (root != null) {
+      _document = root.getOwnerDocument();
+    } else {
+      final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+      _document = factory.newDocumentBuilder().newDocument();
+      _root = _document;
     }
 
-    public SAX2DOM(Node root, Node nextSibling) throws ParserConfigurationException {
-	_root = root;
-	if (root instanceof Document) {
-	  _document = (Document)root;
-	}
-	else if (root != null) {
-	  _document = root.getOwnerDocument();
-	}
-	else {
-	  final DocumentBuilderFactory factory = 
-		DocumentBuilderFactory.newInstance();
-	  _document = factory.newDocumentBuilder().newDocument();
-	  _root = _document;
-	}
-	
-	_nextSibling = nextSibling;
-    }
-    
-    public SAX2DOM(Node root) throws ParserConfigurationException {
-        this(root, null);
-    }
+    _nextSibling = nextSibling;
+  }
 
-    public Node getDOM() {
-	return _root;
+  public SAX2DOM(Node root) throws ParserConfigurationException {
+    this(root, null);
+  }
+
+  public Node getDOM() {
+    return _root;
+  }
+
+  @Override
+  public void characters(char[] ch, int start, int length) {
+    final Node last = (Node) _nodeStk.peek();
+
+    // No text nodes can be children of root (DOM006 exception)
+    if (last != _document) {
+      final String text = new String(ch, start, length);
+      if (_lastSibling != null && _lastSibling.getNodeType() == Node.TEXT_NODE) {
+        ((Text) _lastSibling).appendData(text);
+      } else if (last == _root && _nextSibling != null) {
+        _lastSibling = last.insertBefore(_document.createTextNode(text), _nextSibling);
+      } else {
+        _lastSibling = last.appendChild(_document.createTextNode(text));
+      }
+
     }
+  }
 
-    public void characters(char[] ch, int start, int length) {
-	final Node last = (Node)_nodeStk.peek();
+  @Override
+  public void startDocument() {
+    _nodeStk.push(_root);
+  }
 
-	// No text nodes can be children of root (DOM006 exception)
-        if (last != _document) {
-            final String text = new String(ch, start, length);
-            if( _lastSibling != null && _lastSibling.getNodeType() == Node.TEXT_NODE ){
-                  ((Text)_lastSibling).appendData(text);
-            }
-            else if (last == _root && _nextSibling != null) {
-                _lastSibling = last.insertBefore(_document.createTextNode(text), _nextSibling);
-            }
-            else {
-                _lastSibling = last.appendChild(_document.createTextNode(text));
-            }
-            
+  @Override
+  public void endDocument() {
+    _nodeStk.pop();
+  }
+
+  @Override
+  public void startElement(String namespace, String localName, String qName, Attributes attrs) {
+    final Element tmp = _document.createElementNS(namespace, qName);
+
+    // Add namespace declarations first
+    if (_namespaceDecls != null) {
+      final int nDecls = _namespaceDecls.size();
+      for (int i = 0; i < nDecls; i++) {
+        final String prefix = (String) _namespaceDecls.elementAt(i++);
+
+        if (prefix == null || prefix.equals(EMPTYSTRING)) {
+          tmp.setAttributeNS(XMLNS_URI, XMLNS_PREFIX, (String) _namespaceDecls.elementAt(i));
+        } else {
+          tmp.setAttributeNS(XMLNS_URI, XMLNS_STRING + prefix, (String) _namespaceDecls.elementAt(i));
         }
+      }
+      _namespaceDecls.clear();
     }
 
-    public void startDocument() {
-	_nodeStk.push(_root);
+    // Add attributes to element
+    final int nattrs = attrs.getLength();
+    for (int i = 0; i < nattrs; i++) {
+      if (attrs.getLocalName(i) == null) {
+        tmp.setAttribute(attrs.getQName(i), attrs.getValue(i));
+      } else {
+        tmp.setAttributeNS(attrs.getURI(i), attrs.getQName(i), attrs.getValue(i));
+      }
     }
 
-    public void endDocument() {
-        _nodeStk.pop();
+    // Append this new node onto current stack node
+    final Node last = (Node) _nodeStk.peek();
+
+    // If the SAX2DOM is created with a non-null next sibling node,
+    // insert the result nodes before the next sibling under the root.
+    if (last == _root && _nextSibling != null) {
+      last.insertBefore(tmp, _nextSibling);
+    } else {
+      last.appendChild(tmp);
     }
 
-    public void startElement(String namespace, String localName, String qName,
-	Attributes attrs) 
-    {
-	final Element tmp = (Element)_document.createElementNS(namespace, qName);
+    // Push this node onto stack
+    _nodeStk.push(tmp);
+    _lastSibling = null;
+  }
 
-	// Add namespace declarations first
-	if (_namespaceDecls != null) {
-	    final int nDecls = _namespaceDecls.size();
-	    for (int i = 0; i < nDecls; i++) {
-		final String prefix = (String) _namespaceDecls.elementAt(i++);
+  @Override
+  public void endElement(String namespace, String localName, String qName) {
+    _nodeStk.pop();
+    _lastSibling = null;
+  }
 
-		if (prefix == null || prefix.equals(EMPTYSTRING)) {
-		    tmp.setAttributeNS(XMLNS_URI, XMLNS_PREFIX,
-			(String) _namespaceDecls.elementAt(i));
-		}
-		else {
-		    tmp.setAttributeNS(XMLNS_URI, XMLNS_STRING + prefix, 
-			(String) _namespaceDecls.elementAt(i));
-		}
-	    }
-	    _namespaceDecls.clear();
-	}
-
-	// Add attributes to element
-	final int nattrs = attrs.getLength();
-	for (int i = 0; i < nattrs; i++) {
-	    if (attrs.getLocalName(i) == null) {
-		tmp.setAttribute(attrs.getQName(i), attrs.getValue(i));
-	    }
-	    else {
-		tmp.setAttributeNS(attrs.getURI(i), attrs.getQName(i), 
-		    attrs.getValue(i));
-	    }
-	}
-
-	// Append this new node onto current stack node
-	Node last = (Node)_nodeStk.peek();
-	
-	// If the SAX2DOM is created with a non-null next sibling node,
-	// insert the result nodes before the next sibling under the root.
-	if (last == _root && _nextSibling != null)
-	    last.insertBefore(tmp, _nextSibling);
-	else
-	    last.appendChild(tmp);
-
-	// Push this node onto stack
-	_nodeStk.push(tmp);
-	_lastSibling = null;
+  @Override
+  public void startPrefixMapping(String prefix, String uri) {
+    if (_namespaceDecls == null) {
+      _namespaceDecls = new Vector(2);
     }
+    _namespaceDecls.addElement(prefix);
+    _namespaceDecls.addElement(uri);
+  }
 
-    public void endElement(String namespace, String localName, String qName) {
-	_nodeStk.pop();  
-	_lastSibling = null;
+  @Override
+  public void endPrefixMapping(String prefix) {
+    // do nothing
+  }
+
+  /**
+   * This class is only used internally so this method should never be called.
+   */
+  @Override
+  public void ignorableWhitespace(char[] ch, int start, int length) {
+  }
+
+  /**
+   * adds processing instruction node to DOM.
+   */
+  @Override
+  public void processingInstruction(String target, String data) {
+    final Node last = (Node) _nodeStk.peek();
+    final ProcessingInstruction pi = _document.createProcessingInstruction(target, data);
+    if (pi != null) {
+      if (last == _root && _nextSibling != null) {
+        last.insertBefore(pi, _nextSibling);
+      } else {
+        last.appendChild(pi);
+      }
+
+      _lastSibling = pi;
     }
+  }
 
-    public void startPrefixMapping(String prefix, String uri) {
-	if (_namespaceDecls == null) {
-	    _namespaceDecls = new Vector(2);
-	}
-	_namespaceDecls.addElement(prefix);
-	_namespaceDecls.addElement(uri);
+  /**
+   * This class is only used internally so this method should never be called.
+   */
+  @Override
+  public void setDocumentLocator(Locator locator) {
+  }
+
+  /**
+   * This class is only used internally so this method should never be called.
+   */
+  @Override
+  public void skippedEntity(String name) {
+  }
+
+  /**
+   * Lexical Handler method to create comment node in DOM tree.
+   */
+  @Override
+  public void comment(char[] ch, int start, int length) {
+    final Node last = (Node) _nodeStk.peek();
+    final Comment comment = _document.createComment(new String(ch, start, length));
+    if (comment != null) {
+      if (last == _root && _nextSibling != null) {
+        last.insertBefore(comment, _nextSibling);
+      } else {
+        last.appendChild(comment);
+      }
+
+      _lastSibling = comment;
     }
+  }
 
-    public void endPrefixMapping(String prefix) {
-	// do nothing
-    }
+  // Lexical Handler methods- not implemented
+  @Override
+  public void startCDATA() {
+  }
 
-    /**
-     * This class is only used internally so this method should never 
-     * be called.
-     */
-    public void ignorableWhitespace(char[] ch, int start, int length) {
-    }
+  @Override
+  public void endCDATA() {
+  }
 
-    /**
-     * adds processing instruction node to DOM.
-     */
-    public void processingInstruction(String target, String data) {
-	final Node last = (Node)_nodeStk.peek();
-	ProcessingInstruction pi = _document.createProcessingInstruction(
-		target, data);
-	if (pi != null){
-          if (last == _root && _nextSibling != null)
-              last.insertBefore(pi, _nextSibling);
-          else
-              last.appendChild(pi);
-          
-          _lastSibling = pi;
-        }
-    }
+  @Override
+  public void startEntity(java.lang.String name) {
+  }
 
-    /**
-     * This class is only used internally so this method should never 
-     * be called.
-     */
-    public void setDocumentLocator(Locator locator) {
-    }
+  @Override
+  public void endDTD() {
+  }
 
-    /**
-     * This class is only used internally so this method should never 
-     * be called.
-     */
-    public void skippedEntity(String name) {
-    }
+  @Override
+  public void endEntity(String name) {
+  }
 
-
-    /**
-     * Lexical Handler method to create comment node in DOM tree.
-     */
-    public void comment(char[] ch, int start, int length) {
-	final Node last = (Node)_nodeStk.peek();
-	Comment comment = _document.createComment(new String(ch,start,length));
-	if (comment != null){
-          if (last == _root && _nextSibling != null)
-              last.insertBefore(comment, _nextSibling);
-          else
-              last.appendChild(comment);
-          
-          _lastSibling = comment;
-        }
-    }
-
-    // Lexical Handler methods- not implemented
-    public void startCDATA() { }
-    public void endCDATA() { }
-    public void startEntity(java.lang.String name) { }
-    public void endDTD() { }
-    public void endEntity(String name) { }
-    public void startDTD(String name, String publicId, String systemId)
-        throws SAXException { }
+  @Override
+  public void startDTD(String name, String publicId, String systemId) throws SAXException {
+  }
 
 }

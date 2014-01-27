@@ -24,59 +24,56 @@ import java.util.EmptyStackException;
 
 /**
  * Implement a stack of simple integers.
- *
- * %OPT%
- * This is currently based on ObjectVector, which permits fast acess but pays a
- * heavy recopying penalty if/when its size is increased. If we expect deep
- * stacks, we should consider a version based on ChunkedObjectVector.
+ * 
+ * %OPT% This is currently based on ObjectVector, which permits fast acess but
+ * pays a heavy recopying penalty if/when its size is increased. If we expect
+ * deep stacks, we should consider a version based on ChunkedObjectVector.
+ * 
  * @xsl.usage internal
  */
-public class ObjectStack extends ObjectVector
-{
+public class ObjectStack extends ObjectVector {
 
   /**
-   * Default constructor.  Note that the default
-   * block size is very small, for small lists.
+   * Default constructor. Note that the default block size is very small, for
+   * small lists.
    */
-  public ObjectStack()
-  {
+  public ObjectStack() {
     super();
   }
 
   /**
    * Construct a ObjectVector, using the given block size.
-   *
-   * @param blocksize Size of block to allocate
+   * 
+   * @param blocksize
+   *          Size of block to allocate
    */
-  public ObjectStack(int blocksize)
-  {
+  public ObjectStack(int blocksize) {
     super(blocksize);
   }
 
   /**
    * Copy constructor for ObjectStack
    * 
-   * @param v ObjectStack to copy
+   * @param v
+   *          ObjectStack to copy
    */
-  public ObjectStack (ObjectStack v)
-  {
-  	super(v);
+  public ObjectStack(ObjectStack v) {
+    super(v);
   }
-  
+
   /**
    * Pushes an item onto the top of this stack.
-   *
-   * @param   i   the int to be pushed onto this stack.
-   * @return  the <code>item</code> argument.
+   * 
+   * @param i
+   *          the int to be pushed onto this stack.
+   * @return the <code>item</code> argument.
    */
-  public Object push(Object i)
-  {
+  public Object push(Object i) {
 
-    if ((m_firstFree + 1) >= m_mapSize)
-    {
+    if (m_firstFree + 1 >= m_mapSize) {
       m_mapSize += m_blocksize;
 
-      Object newMap[] = new Object[m_mapSize];
+      final Object newMap[] = new Object[m_mapSize];
 
       System.arraycopy(m_map, 0, newMap, 0, m_firstFree + 1);
 
@@ -91,16 +88,15 @@ public class ObjectStack extends ObjectVector
   }
 
   /**
-   * Removes the object at the top of this stack and returns that
-   * object as the value of this function.
-   *
-   * @return     The object at the top of this stack.
+   * Removes the object at the top of this stack and returns that object as the
+   * value of this function.
+   * 
+   * @return The object at the top of this stack.
    */
-  public Object pop()
-  {
-    Object val = m_map[--m_firstFree];
+  public Object pop() {
+    final Object val = m_map[--m_firstFree];
     m_map[m_firstFree] = null;
-    
+
     return val;
   }
 
@@ -108,95 +104,87 @@ public class ObjectStack extends ObjectVector
    * Quickly pops a number of items from the stack.
    */
 
-  public void quickPop(int n)
-  {
+  public void quickPop(int n) {
     m_firstFree -= n;
   }
 
   /**
-   * Looks at the object at the top of this stack without removing it
-   * from the stack.
-   *
-   * @return     the object at the top of this stack.
-   * @throws  EmptyStackException  if this stack is empty.
+   * Looks at the object at the top of this stack without removing it from the
+   * stack.
+   * 
+   * @return the object at the top of this stack.
+   * @throws EmptyStackException
+   *           if this stack is empty.
    */
-  public Object peek()
-  {
+  public Object peek() {
     try {
       return m_map[m_firstFree - 1];
-    }
-    catch (ArrayIndexOutOfBoundsException e)
-    {
+    } catch (final ArrayIndexOutOfBoundsException e) {
       throw new EmptyStackException();
     }
   }
 
   /**
    * Looks at the object at the position the stack counting down n items.
-   *
-   * @param n The number of items down, indexed from zero.
-   * @return     the object at n items down.
-   * @throws  EmptyStackException  if this stack is empty.
+   * 
+   * @param n
+   *          The number of items down, indexed from zero.
+   * @return the object at n items down.
+   * @throws EmptyStackException
+   *           if this stack is empty.
    */
-  public Object peek(int n)
-  {
+  public Object peek(int n) {
     try {
-      return m_map[m_firstFree-(1+n)];
-    }
-    catch (ArrayIndexOutOfBoundsException e)
-    {
+      return m_map[m_firstFree - (1 + n)];
+    } catch (final ArrayIndexOutOfBoundsException e) {
       throw new EmptyStackException();
     }
   }
 
   /**
    * Sets an object at a the top of the statck
-   *
-   *
-   * @param val object to set at the top
-   * @throws  EmptyStackException  if this stack is empty.
+   * 
+   * 
+   * @param val
+   *          object to set at the top
+   * @throws EmptyStackException
+   *           if this stack is empty.
    */
-  public void setTop(Object val)
-  {
+  public void setTop(Object val) {
     try {
       m_map[m_firstFree - 1] = val;
-    }
-    catch (ArrayIndexOutOfBoundsException e)
-    {
+    } catch (final ArrayIndexOutOfBoundsException e) {
       throw new EmptyStackException();
     }
   }
 
   /**
    * Tests if this stack is empty.
-   *
-   * @return  <code>true</code> if this stack is empty;
-   *          <code>false</code> otherwise.
-   * @since   JDK1.0
+   * 
+   * @return <code>true</code> if this stack is empty; <code>false</code>
+   *         otherwise.
+   * @since JDK1.0
    */
-  public boolean empty()
-  {
+  public boolean empty() {
     return m_firstFree == 0;
   }
 
   /**
    * Returns where an object is on this stack.
-   *
-   * @param   o   the desired object.
-   * @return  the distance from the top of the stack where the object is]
-   *          located; the return value <code>-1</code> indicates that the
-   *          object is not on the stack.
-   * @since   JDK1.0
+   * 
+   * @param o
+   *          the desired object.
+   * @return the distance from the top of the stack where the object is]
+   *         located; the return value <code>-1</code> indicates that the object
+   *         is not on the stack.
+   * @since JDK1.0
    */
-  public int search(Object o)
-  {
+  public int search(Object o) {
 
-    int i = lastIndexOf(o);
+    final int i = lastIndexOf(o);
 
     if (i >= 0)
-    {
       return size() - i;
-    }
 
     return -1;
   }
@@ -206,10 +194,9 @@ public class ObjectStack extends ObjectVector
    * 
    * @return clone of current ObjectStack
    */
-  public Object clone()
-    throws CloneNotSupportedException
-  {
-  	return (ObjectStack) super.clone();
-  }  
-  
+  @Override
+  public Object clone() throws CloneNotSupportedException {
+    return super.clone();
+  }
+
 }

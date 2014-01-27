@@ -22,6 +22,8 @@ package de.lyca.xalan.templates;
 
 import javax.xml.transform.TransformerException;
 
+import org.w3c.dom.DOMException;
+
 import de.lyca.xalan.res.XSLTErrorResources;
 import de.lyca.xalan.transformer.TransformerImpl;
 import de.lyca.xpath.XPathContext;
@@ -29,170 +31,173 @@ import de.lyca.xpath.objects.XObject;
 
 /**
  * Implement xsl:choose.
+ * 
  * <pre>
  * <!ELEMENT xsl:choose (xsl:when+, xsl:otherwise?)>
  * <!ATTLIST xsl:choose %space-att;>
  * </pre>
- * @see <a href="http://www.w3.org/TR/xslt#section-Conditional-Processing-with-xsl:choose">XXX in XSLT Specification</a>
+ * 
+ * @see <a
+ *      href="http://www.w3.org/TR/xslt#section-Conditional-Processing-with-xsl:choose">XXX
+ *      in XSLT Specification</a>
  * @xsl.usage advanced
  */
-public class ElemChoose extends ElemTemplateElement
-{
-    static final long serialVersionUID = -3070117361903102033L;
+public class ElemChoose extends ElemTemplateElement {
+  static final long serialVersionUID = -3070117361903102033L;
 
   /**
    * Get an int constant identifying the type of element.
+   * 
    * @see de.lyca.xalan.templates.Constants
-   *
+   * 
    * @return The token ID for this element
    */
-  public int getXSLToken()
-  {
+  @Override
+  public int getXSLToken() {
     return Constants.ELEMNAME_CHOOSE;
   }
 
   /**
    * Return the node name.
-   *
+   * 
    * @return The element's name
    */
-  public String getNodeName()
-  {
+  @Override
+  public String getNodeName() {
     return Constants.ELEMNAME_CHOOSE_STRING;
   }
 
   /**
    * Constructor ElemChoose
-   *
+   * 
    */
-  public ElemChoose(){}
+  public ElemChoose() {
+  }
 
   /**
    * Execute the xsl:choose transformation.
-   *
-   *
-   * @param transformer non-null reference to the the current transform-time state.
-   *
+   * 
+   * 
+   * @param transformer
+   *          non-null reference to the the current transform-time state.
+   * 
    * @throws TransformerException
    */
-  public void execute(TransformerImpl transformer) throws TransformerException
-  {
+  @Override
+  public void execute(TransformerImpl transformer) throws TransformerException {
 
-    if (transformer.getDebug())
+    if (transformer.getDebug()) {
       transformer.getTraceManager().fireTraceEvent(this);
+    }
 
     boolean found = false;
 
-    for (ElemTemplateElement childElem = getFirstChildElem();
-            childElem != null; childElem = childElem.getNextSiblingElem())
-    {
-      int type = childElem.getXSLToken();
+    for (ElemTemplateElement childElem = getFirstChildElem(); childElem != null; childElem = childElem
+            .getNextSiblingElem()) {
+      final int type = childElem.getXSLToken();
 
-      if (Constants.ELEMNAME_WHEN == type)
-      {
+      if (Constants.ELEMNAME_WHEN == type) {
         found = true;
 
-        ElemWhen when = (ElemWhen) childElem;
+        final ElemWhen when = (ElemWhen) childElem;
 
         // must be xsl:when
-        XPathContext xctxt = transformer.getXPathContext();
-        int sourceNode = xctxt.getCurrentNode();
-        
+        final XPathContext xctxt = transformer.getXPathContext();
+        final int sourceNode = xctxt.getCurrentNode();
+
         // System.err.println("\""+when.getTest().getPatternString()+"\"");
-        
+
         // if(when.getTest().getPatternString().equals("COLLECTION/icuser/ictimezone/LITERAL='GMT +13:00 Pacific/Tongatapu'"))
-        // 	System.err.println("Found COLLECTION/icuser/ictimezone/LITERAL");
+        // System.err.println("Found COLLECTION/icuser/ictimezone/LITERAL");
 
-        if (transformer.getDebug())
-        {
-          XObject test = when.getTest().execute(xctxt, sourceNode, when);
+        if (transformer.getDebug()) {
+          final XObject test = when.getTest().execute(xctxt, sourceNode, when);
 
-          if (transformer.getDebug())
-            transformer.getTraceManager().fireSelectedEvent(sourceNode, when,
-                    "test", when.getTest(), test);
+          if (transformer.getDebug()) {
+            transformer.getTraceManager().fireSelectedEvent(sourceNode, when, "test", when.getTest(), test);
+          }
 
-          if (test.bool())
-          {
+          if (test.bool()) {
             transformer.getTraceManager().fireTraceEvent(when);
-            
+
             transformer.executeChildTemplates(when, true);
 
-	        transformer.getTraceManager().fireTraceEndEvent(when); 
-	                  
+            transformer.getTraceManager().fireTraceEndEvent(when);
+
             return;
           }
 
-        }
-        else if (when.getTest().bool(xctxt, sourceNode, when))
-        {
+        } else if (when.getTest().bool(xctxt, sourceNode, when)) {
           transformer.executeChildTemplates(when, true);
 
           return;
         }
-      }
-      else if (Constants.ELEMNAME_OTHERWISE == type)
-      {
+      } else if (Constants.ELEMNAME_OTHERWISE == type) {
         found = true;
 
-        if (transformer.getDebug())
+        if (transformer.getDebug()) {
           transformer.getTraceManager().fireTraceEvent(childElem);
+        }
 
-        // xsl:otherwise                
+        // xsl:otherwise
         transformer.executeChildTemplates(childElem, true);
 
-        if (transformer.getDebug())
-	      transformer.getTraceManager().fireTraceEndEvent(childElem); 
+        if (transformer.getDebug()) {
+          transformer.getTraceManager().fireTraceEndEvent(childElem);
+        }
         return;
       }
     }
 
-    if (!found)
-      transformer.getMsgMgr().error(
-        this, XSLTErrorResources.ER_CHOOSE_REQUIRES_WHEN);
-        
-    if (transformer.getDebug())
-	  transformer.getTraceManager().fireTraceEndEvent(this);         
+    if (!found) {
+      transformer.getMsgMgr().error(this, XSLTErrorResources.ER_CHOOSE_REQUIRES_WHEN);
+    }
+
+    if (transformer.getDebug()) {
+      transformer.getTraceManager().fireTraceEndEvent(this);
+    }
   }
 
   /**
    * Add a child to the child list.
-   *
-   * @param newChild Child to add to this node's child list
-   *
+   * 
+   * @param newChild
+   *          Child to add to this node's child list
+   * 
    * @return The child that was just added to the child list
-   *
+   * 
    * @throws DOMException
    */
-  public ElemTemplateElement appendChild(ElemTemplateElement newChild)
-  {
+  @Override
+  public ElemTemplateElement appendChild(ElemTemplateElement newChild) {
 
-    int type = ((ElemTemplateElement) newChild).getXSLToken();
+    final int type = newChild.getXSLToken();
 
-    switch (type)
-    {
-    case Constants.ELEMNAME_WHEN :
-    case Constants.ELEMNAME_OTHERWISE :
+    switch (type) {
+      case Constants.ELEMNAME_WHEN:
+      case Constants.ELEMNAME_OTHERWISE:
 
-      // TODO: Positional checking
-      break;
-    default :
-      error(XSLTErrorResources.ER_CANNOT_ADD,
-            new Object[]{ newChild.getNodeName(),
-                          this.getNodeName() });  //"Can not add " +((ElemTemplateElement)newChild).m_elemName +
+        // TODO: Positional checking
+        break;
+      default:
+        error(XSLTErrorResources.ER_CANNOT_ADD, new Object[] { newChild.getNodeName(), this.getNodeName() }); // "Can not add "
+                                                                                                              // +((ElemTemplateElement)newChild).m_elemName
+                                                                                                              // +
 
-    //" to " + this.m_elemName);
+        // " to " + this.m_elemName);
     }
 
     return super.appendChild(newChild);
   }
-  
+
   /**
    * Tell if this element can accept variable declarations.
+   * 
    * @return true if the element can accept and process variable declarations.
    */
-  public boolean canAcceptVariables()
-  {
-  	return false;
+  @Override
+  public boolean canAcceptVariables() {
+    return false;
   }
 
 }

@@ -38,122 +38,114 @@ import de.lyca.xpath.functions.FuncExtFunction;
 import de.lyca.xpath.objects.XObject;
 
 /**
- * Represents an extension namespace for XPath that handles java classes.
- * It is recommended that the class URI be of the form:
+ * Represents an extension namespace for XPath that handles java classes. It is
+ * recommended that the class URI be of the form:
+ * 
  * <pre>
  *   xalan://fully.qualified.class.name
  * </pre>
- * However, we do not enforce this.  If the class name contains a
- * a /, we only use the part to the right of the rightmost slash.
- * In addition, we ignore any "class:" prefix.
- * Provides functions to test a function's existence and call a function.
- * Also provides functions to test an element's existence and call an
+ * 
+ * However, we do not enforce this. If the class name contains a a /, we only
+ * use the part to the right of the rightmost slash. In addition, we ignore any
+ * "class:" prefix. Provides functions to test a function's existence and call a
+ * function. Also provides functions to test an element's existence and call an
  * element.
- *
+ * 
  * @author <a href="mailto:garyp@firstech.com">Gary L Peskin</a>
  * @xsl.usage internal
  */
 
-public class ExtensionHandlerJavaClass extends ExtensionHandlerJava
-{
+public class ExtensionHandlerJavaClass extends ExtensionHandlerJava {
 
   private Class m_classObj = null;
 
   /**
-   * Provides a default Instance for use by elements that need to call 
-   * an instance method.
+   * Provides a default Instance for use by elements that need to call an
+   * instance method.
    */
 
   private Object m_defaultInstance = null;
 
-
   /**
    * Construct a new extension namespace handler given all the information
-   * needed. 
-   * @param namespaceUri the extension namespace URI that I'm implementing
-   * @param scriptLang   language of code implementing the extension
-   * @param className    the fully qualified class name of the class
+   * needed.
+   * 
+   * @param namespaceUri
+   *          the extension namespace URI that I'm implementing
+   * @param scriptLang
+   *          language of code implementing the extension
+   * @param className
+   *          the fully qualified class name of the class
    */
-  public ExtensionHandlerJavaClass(String namespaceUri,
-                                   String scriptLang,
-                                   String className)
-  {
+  public ExtensionHandlerJavaClass(String namespaceUri, String scriptLang, String className) {
     super(namespaceUri, scriptLang, className);
-    try
-    {
+    try {
       m_classObj = getClassForName(className);
-    }
-    catch (ClassNotFoundException e)
-    {
-      // For now, just let this go.  We'll catch it when we try to invoke a method.
+    } catch (final ClassNotFoundException e) {
+      // For now, just let this go. We'll catch it when we try to invoke a
+      // method.
     }
   }
 
-
   /**
    * Tests whether a certain function name is known within this namespace.
-   * Simply looks for a method with the appropriate name.  There is
-   * no information regarding the arguments to the function call or
-   * whether the method implementing the function is a static method or
-   * an instance method.
-   * @param function name of the function being tested
+   * Simply looks for a method with the appropriate name. There is no
+   * information regarding the arguments to the function call or whether the
+   * method implementing the function is a static method or an instance method.
+   * 
+   * @param function
+   *          name of the function being tested
    * @return true if its known, false if not.
    */
 
-  public boolean isFunctionAvailable(String function) 
-  {
-    Method[] methods = m_classObj.getMethods();
-    int nMethods = methods.length;
-    for (int i = 0; i < nMethods; i++)
-    {
+  @Override
+  public boolean isFunctionAvailable(String function) {
+    final Method[] methods = m_classObj.getMethods();
+    final int nMethods = methods.length;
+    for (int i = 0; i < nMethods; i++) {
       if (methods[i].getName().equals(function))
         return true;
     }
     return false;
   }
 
-
   /**
-   * Tests whether a certain element name is known within this namespace.
-   * Looks for a method with the appropriate name and signature.
-   * This method examines both static and instance methods.
-   * @param element name of the element being tested
+   * Tests whether a certain element name is known within this namespace. Looks
+   * for a method with the appropriate name and signature. This method examines
+   * both static and instance methods.
+   * 
+   * @param element
+   *          name of the element being tested
    * @return true if its known, false if not.
    */
 
-  public boolean isElementAvailable(String element) 
-  {
-    Method[] methods = m_classObj.getMethods();
-    int nMethods = methods.length;
-    for (int i = 0; i < nMethods; i++)
-    {
-      if (methods[i].getName().equals(element))
-      {
-        Class[] paramTypes = methods[i].getParameterTypes();
-        if ( (paramTypes.length == 2)
-          && paramTypes[0].isAssignableFrom(
-                        de.lyca.xalan.extensions.XSLProcessorContext.class)
-          && paramTypes[1].isAssignableFrom(
-                        de.lyca.xalan.templates.ElemExtensionCall.class) )
-        {
+  @Override
+  public boolean isElementAvailable(String element) {
+    final Method[] methods = m_classObj.getMethods();
+    final int nMethods = methods.length;
+    for (int i = 0; i < nMethods; i++) {
+      if (methods[i].getName().equals(element)) {
+        final Class[] paramTypes = methods[i].getParameterTypes();
+        if (paramTypes.length == 2
+                && paramTypes[0].isAssignableFrom(de.lyca.xalan.extensions.XSLProcessorContext.class)
+                && paramTypes[1].isAssignableFrom(de.lyca.xalan.templates.ElemExtensionCall.class))
           return true;
-        }
       }
     }
     return false;
   }
-  
+
   /**
-   * Process a call to a function in the java class represented by
-   * this <code>ExtensionHandlerJavaClass<code>.
+   * Process a call to a function in the java class represented by this
+   * <code>ExtensionHandlerJavaClass<code>.
    * There are three possible types of calls:
    * <pre>
    *   Constructor:
    *     classns:new(arg1, arg2, ...)
-   *
+   * 
    *   Static method:
    *     classns:method(arg1, arg2, ...)
-   *
+   * 
    *   Instance method:
    *     classns:method(obj, arg1, arg2, ...)
    * </pre>
@@ -171,253 +163,218 @@ public class ExtensionHandlerJavaClass extends ExtensionHandlerJava
    *     all of the arguments.  If the best method is an instance method,
    *     call the function using a default object, creating it if needed.</li>
    * </ol>
-   *
-   * @param funcName Function name.
-   * @param args     The arguments of the function call.
-   * @param methodKey A key that uniquely identifies this class and method call.
-   * @param exprContext The context in which this expression is being executed.
+   * 
+   * @param funcName
+   *          Function name.
+   * @param args
+   *          The arguments of the function call.
+   * @param methodKey
+   *          A key that uniquely identifies this class and method call.
+   * @param exprContext
+   *          The context in which this expression is being executed.
    * @return the return value of the function evaluation.
    * @throws TransformerException
    */
 
-  public Object callFunction (String funcName, 
-                              Vector args, 
-                              Object methodKey,
-                              ExpressionContext exprContext)
-    throws TransformerException 
-  {
+  @Override
+  public Object callFunction(String funcName, Vector args, Object methodKey, ExpressionContext exprContext)
+          throws TransformerException {
 
     Object[] methodArgs;
     Object[][] convertedArgs;
     Class[] paramTypes;
 
-    try
-    {
-      TransformerImpl trans = (exprContext != null) ?
-          (TransformerImpl)exprContext.getXPathContext().getOwnerObject() : null;
-      if (funcName.equals("new")) {                   // Handle constructor call
+    try {
+      final TransformerImpl trans = exprContext != null ? (TransformerImpl) exprContext.getXPathContext()
+              .getOwnerObject() : null;
+      if (funcName.equals("new")) { // Handle constructor call
 
         methodArgs = new Object[args.size()];
         convertedArgs = new Object[1][];
-        for (int i = 0; i < methodArgs.length; i++)
-        {
+        for (int i = 0; i < methodArgs.length; i++) {
           methodArgs[i] = args.get(i);
         }
         Constructor c = null;
-        if (methodKey != null)
+        if (methodKey != null) {
           c = (Constructor) getFromCache(methodKey, null, methodArgs);
-        
-        if (c != null && !trans.getDebug())
-        {
-          try
-          {
+        }
+
+        if (c != null && !trans.getDebug()) {
+          try {
             paramTypes = c.getParameterTypes();
-            MethodResolver.convertParams(methodArgs, convertedArgs, 
-                        paramTypes, exprContext);
+            MethodResolver.convertParams(methodArgs, convertedArgs, paramTypes, exprContext);
             return c.newInstance(convertedArgs[0]);
-          }
-          catch (InvocationTargetException ite)
-          {
+          } catch (final InvocationTargetException ite) {
             throw ite;
-          }
-          catch(Exception e)
-          {
+          } catch (final Exception e) {
             // Must not have been the right one
           }
         }
-        c = MethodResolver.getConstructor(m_classObj, 
-                                          methodArgs,
-                                          convertedArgs,
-                                          exprContext);
-        if (methodKey != null)
+        c = MethodResolver.getConstructor(m_classObj, methodArgs, convertedArgs, exprContext);
+        if (methodKey != null) {
           putToCache(methodKey, null, methodArgs, c);
-        
-        if (trans != null && trans.getDebug()) {            
-            trans.getTraceManager().fireExtensionEvent(new 
-                    ExtensionEvent(trans, c, convertedArgs[0]));
-            Object result;
-            try {            
-                result = c.newInstance(convertedArgs[0]);
-            } catch (Exception e) {
-                throw e;
-            } finally {
-                trans.getTraceManager().fireExtensionEndEvent(new 
-                        ExtensionEvent(trans, c, convertedArgs[0]));
-            }
-            return result;
+        }
+
+        if (trans != null && trans.getDebug()) {
+          trans.getTraceManager().fireExtensionEvent(new ExtensionEvent(trans, c, convertedArgs[0]));
+          Object result;
+          try {
+            result = c.newInstance(convertedArgs[0]);
+          } catch (final Exception e) {
+            throw e;
+          } finally {
+            trans.getTraceManager().fireExtensionEndEvent(new ExtensionEvent(trans, c, convertedArgs[0]));
+          }
+          return result;
         } else
-            return c.newInstance(convertedArgs[0]);
+          return c.newInstance(convertedArgs[0]);
       }
 
-      else
-      {
+      else {
 
         int resolveType;
         Object targetObject = null;
         methodArgs = new Object[args.size()];
         convertedArgs = new Object[1][];
-        for (int i = 0; i < methodArgs.length; i++)
-        {
+        for (int i = 0; i < methodArgs.length; i++) {
           methodArgs[i] = args.get(i);
         }
         Method m = null;
-        if (methodKey != null)
+        if (methodKey != null) {
           m = (Method) getFromCache(methodKey, null, methodArgs);
-        
-        if (m != null && !trans.getDebug())
-        {
-          try
-          {
+        }
+
+        if (m != null && !trans.getDebug()) {
+          try {
             paramTypes = m.getParameterTypes();
-            MethodResolver.convertParams(methodArgs, convertedArgs, 
-                        paramTypes, exprContext);
+            MethodResolver.convertParams(methodArgs, convertedArgs, paramTypes, exprContext);
             if (Modifier.isStatic(m.getModifiers()))
               return m.invoke(null, convertedArgs[0]);
-            else
-            {
-              // This is tricky.  We get the actual number of target arguments (excluding any
-              //   ExpressionContext).  If we passed in the same number, we need the implied object.
+            else {
+              // This is tricky. We get the actual number of target arguments
+              // (excluding any
+              // ExpressionContext). If we passed in the same number, we need
+              // the implied object.
               int nTargetArgs = convertedArgs[0].length;
-              if (ExpressionContext.class.isAssignableFrom(paramTypes[0]))
+              if (ExpressionContext.class.isAssignableFrom(paramTypes[0])) {
                 nTargetArgs--;
+              }
               if (methodArgs.length <= nTargetArgs)
                 return m.invoke(m_defaultInstance, convertedArgs[0]);
-              else  
-              {
+              else {
                 targetObject = methodArgs[0];
-                
-                if (targetObject instanceof XObject)
+
+                if (targetObject instanceof XObject) {
                   targetObject = ((XObject) targetObject).object();
-                  
+                }
+
                 return m.invoke(targetObject, convertedArgs[0]);
               }
             }
-          }
-          catch (InvocationTargetException ite)
-          {
+          } catch (final InvocationTargetException ite) {
             throw ite;
-          }
-          catch(Exception e)
-          {
+          } catch (final Exception e) {
             // Must not have been the right one
           }
         }
 
-        if (args.size() > 0)
-        {
+        if (args.size() > 0) {
           targetObject = methodArgs[0];
 
-          if (targetObject instanceof XObject)
+          if (targetObject instanceof XObject) {
             targetObject = ((XObject) targetObject).object();
+          }
 
-          if (m_classObj.isAssignableFrom(targetObject.getClass()))
+          if (m_classObj.isAssignableFrom(targetObject.getClass())) {
             resolveType = MethodResolver.DYNAMIC;
-          else
+          } else {
             resolveType = MethodResolver.STATIC_AND_INSTANCE;
-        }
-        else
-        {
+          }
+        } else {
           targetObject = null;
           resolveType = MethodResolver.STATIC_AND_INSTANCE;
         }
 
-        m = MethodResolver.getMethod(m_classObj,
-                                     funcName,
-                                     methodArgs, 
-                                     convertedArgs,
-                                     exprContext,
-                                     resolveType);
-        if (methodKey != null)
+        m = MethodResolver.getMethod(m_classObj, funcName, methodArgs, convertedArgs, exprContext, resolveType);
+        if (methodKey != null) {
           putToCache(methodKey, null, methodArgs, m);
+        }
 
-        if (MethodResolver.DYNAMIC == resolveType) {         // First argument was object type
+        if (MethodResolver.DYNAMIC == resolveType) { // First argument was
+                                                     // object type
           if (trans != null && trans.getDebug()) {
-            trans.getTraceManager().fireExtensionEvent(m, targetObject, 
-                        convertedArgs[0]);
+            trans.getTraceManager().fireExtensionEvent(m, targetObject, convertedArgs[0]);
             Object result;
             try {
-                result = m.invoke(targetObject, convertedArgs[0]);
-            } catch (Exception e) {
-                throw e;
+              result = m.invoke(targetObject, convertedArgs[0]);
+            } catch (final Exception e) {
+              throw e;
             } finally {
-                trans.getTraceManager().fireExtensionEndEvent(m, targetObject, 
-                        convertedArgs[0]);
+              trans.getTraceManager().fireExtensionEndEvent(m, targetObject, convertedArgs[0]);
             }
             return result;
-          } else                  
+          } else
             return m.invoke(targetObject, convertedArgs[0]);
-        }
-        else                                  // First arg was not object.  See if we need the implied object.
+        } else // First arg was not object. See if we need the implied object.
         {
           if (Modifier.isStatic(m.getModifiers())) {
             if (trans != null && trans.getDebug()) {
-              trans.getTraceManager().fireExtensionEvent(m, null, 
-                        convertedArgs[0]);
+              trans.getTraceManager().fireExtensionEvent(m, null, convertedArgs[0]);
               Object result;
               try {
-                  result = m.invoke(null, convertedArgs[0]);
-              } catch (Exception e) {
+                result = m.invoke(null, convertedArgs[0]);
+              } catch (final Exception e) {
                 throw e;
               } finally {
-                trans.getTraceManager().fireExtensionEndEvent(m, null, 
-                        convertedArgs[0]);
+                trans.getTraceManager().fireExtensionEndEvent(m, null, convertedArgs[0]);
               }
               return result;
-            } else                  
+            } else
               return m.invoke(null, convertedArgs[0]);
-          }
-          else
-          {
-            if (null == m_defaultInstance)
-            {
+          } else {
+            if (null == m_defaultInstance) {
               if (trans != null && trans.getDebug()) {
-                trans.getTraceManager().fireExtensionEvent(new 
-                        ExtensionEvent(trans, m_classObj));
+                trans.getTraceManager().fireExtensionEvent(new ExtensionEvent(trans, m_classObj));
                 try {
-                    m_defaultInstance = m_classObj.newInstance();
-                } catch (Exception e) {
-                    throw e;
-                } finally {
-                    trans.getTraceManager().fireExtensionEndEvent(new 
-                        ExtensionEvent(trans, m_classObj));
-                }
-              }    else
                   m_defaultInstance = m_classObj.newInstance();
+                } catch (final Exception e) {
+                  throw e;
+                } finally {
+                  trans.getTraceManager().fireExtensionEndEvent(new ExtensionEvent(trans, m_classObj));
+                }
+              } else {
+                m_defaultInstance = m_classObj.newInstance();
+              }
             }
             if (trans != null && trans.getDebug()) {
-              trans.getTraceManager().fireExtensionEvent(m, m_defaultInstance, 
-                    convertedArgs[0]);
+              trans.getTraceManager().fireExtensionEvent(m, m_defaultInstance, convertedArgs[0]);
               Object result;
               try {
                 result = m.invoke(m_defaultInstance, convertedArgs[0]);
-              } catch (Exception e) {
+              } catch (final Exception e) {
                 throw e;
               } finally {
-                trans.getTraceManager().fireExtensionEndEvent(m, 
-                        m_defaultInstance, convertedArgs[0]);
+                trans.getTraceManager().fireExtensionEndEvent(m, m_defaultInstance, convertedArgs[0]);
               }
               return result;
-            } else                  
+            } else
               return m.invoke(m_defaultInstance, convertedArgs[0]);
-          }  
+          }
         }
 
       }
-    }
-    catch (InvocationTargetException ite)
-    {
+    } catch (final InvocationTargetException ite) {
       Throwable resultException = ite;
-      Throwable targetException = ite.getTargetException();
- 
+      final Throwable targetException = ite.getTargetException();
+
       if (targetException instanceof TransformerException)
-        throw ((TransformerException)targetException);
-      else if (targetException != null)
+        throw (TransformerException) targetException;
+      else if (targetException != null) {
         resultException = targetException;
-            
+      }
+
       throw new TransformerException(resultException);
-    }
-    catch (Exception e)
-    {
+    } catch (final Exception e) {
       // e.printStackTrace();
       throw new TransformerException(e);
     }
@@ -425,120 +382,108 @@ public class ExtensionHandlerJavaClass extends ExtensionHandlerJava
 
   /**
    * Process a call to an XPath extension function
-   *
-   * @param extFunction The XPath extension function
-   * @param args The arguments of the function call.
-   * @param exprContext The context in which this expression is being executed.
+   * 
+   * @param extFunction
+   *          The XPath extension function
+   * @param args
+   *          The arguments of the function call.
+   * @param exprContext
+   *          The context in which this expression is being executed.
    * @return the return value of the function evaluation.
    * @throws TransformerException
    */
-  public Object callFunction(FuncExtFunction extFunction,
-                             Vector args,
-                             ExpressionContext exprContext)
-      throws TransformerException
-  {
-    return callFunction(extFunction.getFunctionName(), args, 
-                        extFunction.getMethodKey(), exprContext);
+  @Override
+  public Object callFunction(FuncExtFunction extFunction, Vector args, ExpressionContext exprContext)
+          throws TransformerException {
+    return callFunction(extFunction.getFunctionName(), args, extFunction.getMethodKey(), exprContext);
   }
 
   /**
    * Process a call to this extension namespace via an element. As a side
-   * effect, the results are sent to the TransformerImpl's result tree. 
-   * We invoke the static or instance method in the class represented by
-   * by the namespace URI.  If we don't already have an instance of this class,
-   * we create one upon the first call.
-   *
-   * @param localPart      Element name's local part.
-   * @param element        The extension element being processed.
-   * @param transformer      Handle to TransformerImpl.
-   * @param stylesheetTree The compiled stylesheet tree.
-   * @param methodKey      A key that uniquely identifies this element call.
-   * @throws IOException           if loading trouble
-   * @throws TransformerException          if parsing trouble
+   * effect, the results are sent to the TransformerImpl's result tree. We
+   * invoke the static or instance method in the class represented by by the
+   * namespace URI. If we don't already have an instance of this class, we
+   * create one upon the first call.
+   * 
+   * @param localPart
+   *          Element name's local part.
+   * @param element
+   *          The extension element being processed.
+   * @param transformer
+   *          Handle to TransformerImpl.
+   * @param stylesheetTree
+   *          The compiled stylesheet tree.
+   * @param methodKey
+   *          A key that uniquely identifies this element call.
+   * @throws IOException
+   *           if loading trouble
+   * @throws TransformerException
+   *           if parsing trouble
    */
 
-  public void processElement(String localPart,
-                             ElemTemplateElement element,
-                             TransformerImpl transformer,
-                             Stylesheet stylesheetTree,
-                             Object methodKey)
-    throws TransformerException, IOException
-  {
+  @Override
+  public void processElement(String localPart, ElemTemplateElement element, TransformerImpl transformer,
+          Stylesheet stylesheetTree, Object methodKey) throws TransformerException, IOException {
     Object result = null;
 
     Method m = (Method) getFromCache(methodKey, null, null);
-    if (null == m)
-    {
-      try
-      {
+    if (null == m) {
+      try {
         m = MethodResolver.getElementMethod(m_classObj, localPart);
-        if ( (null == m_defaultInstance) && 
-                !Modifier.isStatic(m.getModifiers()) ) {
-          if (transformer.getDebug()) {            
-            transformer.getTraceManager().fireExtensionEvent(
-                    new ExtensionEvent(transformer, m_classObj));
+        if (null == m_defaultInstance && !Modifier.isStatic(m.getModifiers())) {
+          if (transformer.getDebug()) {
+            transformer.getTraceManager().fireExtensionEvent(new ExtensionEvent(transformer, m_classObj));
             try {
               m_defaultInstance = m_classObj.newInstance();
-            } catch (Exception e) {
+            } catch (final Exception e) {
               throw e;
             } finally {
-              transformer.getTraceManager().fireExtensionEndEvent(
-                    new ExtensionEvent(transformer, m_classObj));
+              transformer.getTraceManager().fireExtensionEndEvent(new ExtensionEvent(transformer, m_classObj));
             }
-          } else 
+          } else {
             m_defaultInstance = m_classObj.newInstance();
+          }
         }
-      }
-      catch (Exception e)
-      {
+      } catch (final Exception e) {
         // e.printStackTrace ();
-        throw new TransformerException (e.getMessage (), e);
+        throw new TransformerException(e.getMessage(), e);
       }
       putToCache(methodKey, null, null, m);
     }
 
-    XSLProcessorContext xpc = new XSLProcessorContext(transformer, 
-                                                      stylesheetTree);
+    final XSLProcessorContext xpc = new XSLProcessorContext(transformer, stylesheetTree);
 
-    try
-    {
+    try {
       if (transformer.getDebug()) {
-        transformer.getTraceManager().fireExtensionEvent(m, m_defaultInstance, 
-                new Object[] {xpc, element});
+        transformer.getTraceManager().fireExtensionEvent(m, m_defaultInstance, new Object[] { xpc, element });
         try {
-          result = m.invoke(m_defaultInstance, new Object[] {xpc, element});
-        } catch (Exception e) {
+          result = m.invoke(m_defaultInstance, new Object[] { xpc, element });
+        } catch (final Exception e) {
           throw e;
         } finally {
-          transformer.getTraceManager().fireExtensionEndEvent(m, 
-                m_defaultInstance, new Object[] {xpc, element});
+          transformer.getTraceManager().fireExtensionEndEvent(m, m_defaultInstance, new Object[] { xpc, element });
         }
-      } else                  
-        result = m.invoke(m_defaultInstance, new Object[] {xpc, element});
-    }
-    catch (InvocationTargetException e)
-    {
-      Throwable targetException = e.getTargetException();
-      
+      } else {
+        result = m.invoke(m_defaultInstance, new Object[] { xpc, element });
+      }
+    } catch (final InvocationTargetException e) {
+      final Throwable targetException = e.getTargetException();
+
       if (targetException instanceof TransformerException)
-        throw (TransformerException)targetException;
+        throw (TransformerException) targetException;
       else if (targetException != null)
-        throw new TransformerException (targetException.getMessage (), 
-                targetException);
+        throw new TransformerException(targetException.getMessage(), targetException);
       else
-        throw new TransformerException (e.getMessage (), e);
-    }
-    catch (Exception e)
-    {
+        throw new TransformerException(e.getMessage(), e);
+    } catch (final Exception e) {
       // e.printStackTrace ();
-      throw new TransformerException (e.getMessage (), e);
+      throw new TransformerException(e.getMessage(), e);
     }
 
-    if (result != null)
-    {
-      xpc.outputToResultTree (stylesheetTree, result);
+    if (result != null) {
+      xpc.outputToResultTree(stylesheetTree, result);
     }
- 
+
   }
- 
+
 }

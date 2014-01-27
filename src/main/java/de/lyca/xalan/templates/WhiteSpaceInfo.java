@@ -23,51 +23,51 @@ package de.lyca.xalan.templates;
 import de.lyca.xpath.XPath;
 
 /**
- * This is used as a special "fake" template that can be
- * handled by the TemplateList to do pattern matching
- * on nodes.
+ * This is used as a special "fake" template that can be handled by the
+ * TemplateList to do pattern matching on nodes.
  */
-public class WhiteSpaceInfo extends ElemTemplate
-{
-    static final long serialVersionUID = 6389208261999943836L;
+public class WhiteSpaceInfo extends ElemTemplate {
+  static final long serialVersionUID = 6389208261999943836L;
 
-  /** Flag indicating whether whitespaces should be stripped.
-   *  @serial        */
+  /**
+   * Flag indicating whether whitespaces should be stripped.
+   * 
+   * @serial
+   */
   private boolean m_shouldStripSpace;
 
   /**
-   * Return true if this element specifies that the node that
-   * matches the match pattern should be stripped, otherwise
-   * the space should be preserved.
-   *
+   * Return true if this element specifies that the node that matches the match
+   * pattern should be stripped, otherwise the space should be preserved.
+   * 
    * @return value of m_shouldStripSpace flag
    */
-  public boolean getShouldStripSpace()
-  {
+  public boolean getShouldStripSpace() {
     return m_shouldStripSpace;
   }
-  
+
   /**
    * Constructor WhiteSpaceInfo
-   * @param thisSheet The current stylesheet
+   * 
+   * @param thisSheet
+   *          The current stylesheet
    */
-  public WhiteSpaceInfo(Stylesheet thisSheet)
-  {
-  	setStylesheet(thisSheet);
+  public WhiteSpaceInfo(Stylesheet thisSheet) {
+    setStylesheet(thisSheet);
   }
 
-
   /**
    * Constructor WhiteSpaceInfo
-   *
-   *
-   * @param matchPattern Match pattern
-   * @param shouldStripSpace Flag indicating whether or not
-   * to strip whitespaces
-   * @param thisSheet The current stylesheet
+   * 
+   * 
+   * @param matchPattern
+   *          Match pattern
+   * @param shouldStripSpace
+   *          Flag indicating whether or not to strip whitespaces
+   * @param thisSheet
+   *          The current stylesheet
    */
-  public WhiteSpaceInfo(XPath matchPattern, boolean shouldStripSpace, Stylesheet thisSheet)
-  {
+  public WhiteSpaceInfo(XPath matchPattern, boolean shouldStripSpace, Stylesheet thisSheet) {
 
     m_shouldStripSpace = shouldStripSpace;
 
@@ -79,8 +79,8 @@ public class WhiteSpaceInfo extends ElemTemplate
   /**
    * This function is called to recompose() all of the WhiteSpaceInfo elements.
    */
-  public void recompose(StylesheetRoot root)
-  {
+  @Override
+  public void recompose(StylesheetRoot root) {
     root.recomposeWhiteSpaceInfo(this);
   }
 

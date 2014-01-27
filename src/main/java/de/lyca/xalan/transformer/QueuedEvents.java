@@ -24,46 +24,45 @@ import java.util.Vector;
 
 import de.lyca.xml.utils.MutableAttrListImpl;
 
-
 /**
- * This class acts as a base for ResultTreeHandler, and keeps
- * queud stack events.  In truth, we don't need a stack,
- * so I may change this down the line a bit.
+ * This class acts as a base for ResultTreeHandler, and keeps queud stack
+ * events. In truth, we don't need a stack, so I may change this down the line a
+ * bit.
  */
-public abstract class QueuedEvents
-{
+public abstract class QueuedEvents {
 
-  /** The number of events queued          */
+  /** The number of events queued */
   protected int m_eventCount = 0;
 
-  /** Queued start document          */
+  /** Queued start document */
   // QueuedStartDocument m_startDoc = new QueuedStartDocument();
 
-  /** Queued start element          */
+  /** Queued start element */
   // QueuedStartElement m_startElement = new QueuedStartElement();
-  
+
   public boolean m_docPending = false;
   protected boolean m_docEnded = false;
-  
-  /** Flag indicating that an event is pending.  Public for 
-   *  fast access by ElemForEach.         */
+
+  /**
+   * Flag indicating that an event is pending. Public for fast access by
+   * ElemForEach.
+   */
   public boolean m_elemIsPending = false;
 
-  /** Flag indicating that an event is ended          */
+  /** Flag indicating that an event is ended */
   public boolean m_elemIsEnded = false;
-  
+
   /**
-   * The pending attributes.  We have to delay the call to
-   * m_flistener.startElement(name, atts) because of the
-   * xsl:attribute and xsl:copy calls.  In other words,
-   * the attributes have to be fully collected before you
-   * can call startElement.
+   * The pending attributes. We have to delay the call to
+   * m_flistener.startElement(name, atts) because of the xsl:attribute and
+   * xsl:copy calls. In other words, the attributes have to be fully collected
+   * before you can call startElement.
    */
   protected MutableAttrListImpl m_attributes = new MutableAttrListImpl();
 
   /**
-   * Flag to try and get the xmlns decls to the attribute list
-   * before other attributes are added.
+   * Flag to try and get the xmlns decls to the attribute list before other
+   * attributes are added.
    */
   protected boolean m_nsDeclsHaveBeenAdded = false;
 
@@ -72,49 +71,45 @@ public abstract class QueuedEvents
    */
   protected String m_name;
 
-  /** Namespace URL of the element          */
+  /** Namespace URL of the element */
   protected String m_url;
 
-  /** Local part of qualified name of the element           */
+  /** Local part of qualified name of the element */
   protected String m_localName;
-  
-  
-  /** Vector of namespaces for this element          */
+
+  /** Vector of namespaces for this element */
   protected Vector m_namespaces = null;
 
-//  /**
-//   * Get the queued element.
-//   *
-//   * @return the queued element.
-//   */
-//  QueuedStartElement getQueuedElem()
-//  {
-//    return (m_eventCount > 1) ? m_startElement : null;
-//  }
+  // /**
+  // * Get the queued element.
+  // *
+  // * @return the queued element.
+  // */
+  // QueuedStartElement getQueuedElem()
+  // {
+  // return (m_eventCount > 1) ? m_startElement : null;
+  // }
 
   /**
-   * To re-initialize the document and element events 
-   *
+   * To re-initialize the document and element events
+   * 
    */
-  protected void reInitEvents()
-  {
+  protected void reInitEvents() {
   }
 
   /**
-   * Push document event and re-initialize events  
-   *
+   * Push document event and re-initialize events
+   * 
    */
-  public void reset()
-  {
+  public void reset() {
     pushDocumentEvent();
     reInitEvents();
   }
 
   /**
-   * Push the document event.  This never gets popped.
+   * Push the document event. This never gets popped.
    */
-  void pushDocumentEvent()
-  {
+  void pushDocumentEvent() {
 
     // m_startDoc.setPending(true);
     // initQSE(m_startDoc);
@@ -124,11 +119,10 @@ public abstract class QueuedEvents
   }
 
   /**
-   * Pop element event 
-   *
+   * Pop element event
+   * 
    */
-  void popEvent()
-  {
+  void popEvent() {
     m_elemIsPending = false;
     m_attributes.clear();
 
@@ -141,28 +135,25 @@ public abstract class QueuedEvents
     m_eventCount--;
   }
 
-  /** Instance of a serializer          */
+  /** Instance of a serializer */
   private de.lyca.xml.serializer.Serializer m_serializer;
 
   /**
-   * This is only for use of object pooling, so that
-   * it can be reset.
-   *
-   * @param s non-null instance of a serializer 
+   * This is only for use of object pooling, so that it can be reset.
+   * 
+   * @param s
+   *          non-null instance of a serializer
    */
-  void setSerializer(de.lyca.xml.serializer.Serializer s)
-  {
+  void setSerializer(de.lyca.xml.serializer.Serializer s) {
     m_serializer = s;
   }
 
   /**
-   * This is only for use of object pooling, so the that
-   * it can be reset.
-   *
+   * This is only for use of object pooling, so the that it can be reset.
+   * 
    * @return The serializer
    */
-  de.lyca.xml.serializer.Serializer getSerializer()
-  {
+  de.lyca.xml.serializer.Serializer getSerializer() {
     return m_serializer;
   }
 }

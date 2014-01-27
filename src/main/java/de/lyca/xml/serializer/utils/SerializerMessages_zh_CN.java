@@ -21,8 +21,6 @@
 
 package de.lyca.xml.serializer.utils;
 
-import java.util.ListResourceBundle;
 
-public class SerializerMessages_zh_CN extends SerializerMessages_zh
-{
+public class SerializerMessages_zh_CN extends SerializerMessages_zh {
 }

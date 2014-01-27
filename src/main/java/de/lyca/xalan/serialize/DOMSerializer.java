@@ -20,11 +20,10 @@
  */
 package de.lyca.xalan.serialize;
 
-
 /**
  * @deprecated Use de.lyca.xml.serializer.DOMSerializer
  */
-public interface DOMSerializer extends de.lyca.xml.serializer.DOMSerializer
-{
+@Deprecated
+public interface DOMSerializer extends de.lyca.xml.serializer.DOMSerializer {
 
 }

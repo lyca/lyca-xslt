@@ -22,77 +22,81 @@
 package de.lyca.xalan.xsltc.dom;
 
 import de.lyca.xalan.xsltc.DOM;
-import de.lyca.xalan.xsltc.runtime.BasisLibrary;
 import de.lyca.xml.dtm.DTMAxisIterator;
-import de.lyca.xml.dtm.ref.DTMAxisIteratorBase;
 
 /**
- * UnionIterator takes a set of NodeIterators and produces
- * a merged NodeSet in document order with duplicates removed
- * The individual iterators are supposed to generate nodes
- * in document order
+ * UnionIterator takes a set of NodeIterators and produces a merged NodeSet in
+ * document order with duplicates removed The individual iterators are supposed
+ * to generate nodes in document order
+ * 
  * @author Jacek Ambroziak
  * @author Santiago Pericas-Geertsen
  */
 public final class UnionIterator extends MultiValuedNodeHeapIterator {
-    /** wrapper for NodeIterators to support iterator
-	comparison on the value of their next() method
-    */
-    final private DOM _dom;
+  /**
+   * wrapper for NodeIterators to support iterator comparison on the value of
+   * their next() method
+   */
+  final private DOM _dom;
 
-    private final class LookAheadIterator
-            extends MultiValuedNodeHeapIterator.HeapNode
-    {
-	public DTMAxisIterator iterator;
-		
-	public LookAheadIterator(DTMAxisIterator iterator) {
-            super();
-	    this.iterator = iterator;
-	}
-		
-	public int step() {
-	    _node = iterator.next();
-	    return _node;
-	}
+  private final class LookAheadIterator extends MultiValuedNodeHeapIterator.HeapNode {
+    public DTMAxisIterator iterator;
 
-	public HeapNode cloneHeapNode() {
-            LookAheadIterator clone = (LookAheadIterator) super.cloneHeapNode();
-            clone.iterator = iterator.cloneIterator();
-	    return clone;
-	}
-
-	public void setMark() {
-            super.setMark();
-	    iterator.setMark();
-	}
-
-	public void gotoMark() {
-            super.gotoMark();
-	    iterator.gotoMark();
-	}
-
-        public boolean isLessThan(HeapNode heapNode) {
-            LookAheadIterator comparand = (LookAheadIterator) heapNode;
-            return _dom.lessThan(_node, heapNode._node);
-        }
-
-        public HeapNode setStartNode(int node) {
-            iterator.setStartNode(node);
-            return this;
-        }
-
-        public HeapNode reset() {
-            iterator.reset();
-            return this;
-        }
-    } // end of LookAheadIterator
-
-    public UnionIterator(DOM dom) {
-	_dom = dom;
+    public LookAheadIterator(DTMAxisIterator iterator) {
+      super();
+      this.iterator = iterator;
     }
 
-    public UnionIterator addIterator(DTMAxisIterator iterator) {
-        addHeapNode(new LookAheadIterator(iterator));
-        return this;
+    @Override
+    public int step() {
+      _node = iterator.next();
+      return _node;
     }
+
+    @Override
+    public HeapNode cloneHeapNode() {
+      final LookAheadIterator clone = (LookAheadIterator) super.cloneHeapNode();
+      clone.iterator = iterator.cloneIterator();
+      return clone;
+    }
+
+    @Override
+    public void setMark() {
+      super.setMark();
+      iterator.setMark();
+    }
+
+    @Override
+    public void gotoMark() {
+      super.gotoMark();
+      iterator.gotoMark();
+    }
+
+    @Override
+    public boolean isLessThan(HeapNode heapNode) {
+      final LookAheadIterator comparand = (LookAheadIterator) heapNode;
+      return _dom.lessThan(_node, heapNode._node);
+    }
+
+    @Override
+    public HeapNode setStartNode(int node) {
+      iterator.setStartNode(node);
+      return this;
+    }
+
+    @Override
+    public HeapNode reset() {
+      iterator.reset();
+      return this;
+    }
+  } // end of LookAheadIterator
+
+  public UnionIterator(DOM dom) {
+    _dom = dom;
+  }
+
+  public UnionIterator addIterator(DTMAxisIterator iterator) {
+    addHeapNode(new LookAheadIterator(iterator));
+    return this;
+  }
 }

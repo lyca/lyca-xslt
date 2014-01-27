@@ -26,11 +26,13 @@ package de.lyca.xalan.xsltc.compiler.util;
  * state from which it cannot recover.
  */
 public class InternalError extends Error {
-    /**
-     * Construct an <code>InternalError</code> with the specified error message.
-     * @param msg the error message
-     */
-    public InternalError(String msg) {
-        super(msg);
-    }
+  /**
+   * Construct an <code>InternalError</code> with the specified error message.
+   * 
+   * @param msg
+   *          the error message
+   */
+  public InternalError(String msg) {
+    super(msg);
+  }
 }

@@ -21,10 +21,10 @@
 
 package de.lyca.xalan.xsltc.cmdline.getopt;
 
+class IllegalArgumentException extends GetOptsException {
+  static final long serialVersionUID = 8642122427294793651L;
 
-class IllegalArgumentException extends GetOptsException{
-    static final long serialVersionUID = 8642122427294793651L;
-    public IllegalArgumentException(String msg){
-	super(msg);
-    }
+  public IllegalArgumentException(String msg) {
+    super(msg);
+  }
 }

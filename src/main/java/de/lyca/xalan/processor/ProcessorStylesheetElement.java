@@ -31,67 +31,60 @@ import de.lyca.xalan.templates.StylesheetRoot;
 
 /**
  * TransformerFactory for xsl:stylesheet or xsl:transform markup.
+ * 
  * @see <a href="http://www.w3.org/TR/xslt#dtd">XSLT DTD</a>
- * @see <a href="http://www.w3.org/TR/xslt#stylesheet-element">stylesheet-element in XSLT Specification</a>
+ * @see <a
+ *      href="http://www.w3.org/TR/xslt#stylesheet-element">stylesheet-element
+ *      in XSLT Specification</a>
  * 
  * @xsl.usage internal
  */
-public class ProcessorStylesheetElement extends XSLTElementProcessor
-{
-    static final long serialVersionUID = -877798927447840792L;
+public class ProcessorStylesheetElement extends XSLTElementProcessor {
+  static final long serialVersionUID = -877798927447840792L;
 
   /**
    * Receive notification of the start of an strip-space element.
-   *
-   * @param handler The calling StylesheetHandler/TemplatesBuilder.
-   * @param uri The Namespace URI, or the empty string if the
-   *        element has no Namespace URI or if Namespace
-   *        processing is not being performed.
-   * @param localName The local name (without prefix), or the
-   *        empty string if Namespace processing is not being
-   *        performed.
-   * @param rawName The raw XML 1.0 name (with prefix), or the
-   *        empty string if raw names are not available.
-   * @param attributes The attributes attached to the element.  If
-   *        there are no attributes, it shall be an empty
-   *        Attributes object.
+   * 
+   * @param handler
+   *          The calling StylesheetHandler/TemplatesBuilder.
+   * @param uri
+   *          The Namespace URI, or the empty string if the element has no
+   *          Namespace URI or if Namespace processing is not being performed.
+   * @param localName
+   *          The local name (without prefix), or the empty string if Namespace
+   *          processing is not being performed.
+   * @param rawName
+   *          The raw XML 1.0 name (with prefix), or the empty string if raw
+   *          names are not available.
+   * @param attributes
+   *          The attributes attached to the element. If there are no
+   *          attributes, it shall be an empty Attributes object.
    */
-  public void startElement(
-          StylesheetHandler handler, String uri, String localName, String rawName, Attributes attributes)
-            throws org.xml.sax.SAXException
-  {
+  @Override
+  public void startElement(StylesheetHandler handler, String uri, String localName, String rawName,
+          Attributes attributes) throws org.xml.sax.SAXException {
 
-		super.startElement(handler, uri, localName, rawName, attributes);
-    try
-    {
-      int stylesheetType = handler.getStylesheetType();
+    super.startElement(handler, uri, localName, rawName, attributes);
+    try {
+      final int stylesheetType = handler.getStylesheetType();
       Stylesheet stylesheet;
 
-      if (stylesheetType == StylesheetHandler.STYPE_ROOT)
-      {
-        try
-        {
+      if (stylesheetType == StylesheetHandler.STYPE_ROOT) {
+        try {
           stylesheet = getStylesheetRoot(handler);
-        }
-        catch(TransformerConfigurationException tfe)
-        {
+        } catch (final TransformerConfigurationException tfe) {
           throw new TransformerException(tfe);
         }
-      }
-      else
-      {
-        Stylesheet parent = handler.getStylesheet();
+      } else {
+        final Stylesheet parent = handler.getStylesheet();
 
-        if (stylesheetType == StylesheetHandler.STYPE_IMPORT)
-        {
-          StylesheetComposed sc = new StylesheetComposed(parent);
+        if (stylesheetType == StylesheetHandler.STYPE_IMPORT) {
+          final StylesheetComposed sc = new StylesheetComposed(parent);
 
           parent.setImport(sc);
 
           stylesheet = sc;
-        }
-        else
-        {
+        } else {
           stylesheet = new Stylesheet(parent);
 
           parent.setInclude(stylesheet);
@@ -103,44 +96,48 @@ public class ProcessorStylesheetElement extends XSLTElementProcessor
 
       stylesheet.setPrefixes(handler.getNamespaceSupport());
       handler.pushStylesheet(stylesheet);
-      setPropertiesFromAttributes(handler, rawName, attributes,
-                                  handler.getStylesheet());
+      setPropertiesFromAttributes(handler, rawName, attributes, handler.getStylesheet());
       handler.pushElemTemplateElement(handler.getStylesheet());
-    }
-    catch(TransformerException te)
-    {
+    } catch (final TransformerException te) {
       throw new org.xml.sax.SAXException(te);
     }
   }
 
   /**
    * This method can be over-ridden by a class that extends this one.
-   * @param handler The calling StylesheetHandler/TemplatesBuilder.
+   * 
+   * @param handler
+   *          The calling StylesheetHandler/TemplatesBuilder.
    */
-  protected Stylesheet getStylesheetRoot(StylesheetHandler handler) throws TransformerConfigurationException
-  {
+  protected Stylesheet getStylesheetRoot(StylesheetHandler handler) throws TransformerConfigurationException {
     StylesheetRoot stylesheet;
     stylesheet = new StylesheetRoot(handler.getSchema(), handler.getStylesheetProcessor().getErrorListener());
-    
-    if (handler.getStylesheetProcessor().isSecureProcessing())
+
+    if (handler.getStylesheetProcessor().isSecureProcessing()) {
       stylesheet.setSecureProcessing(true);
-    
+    }
+
     return stylesheet;
   }
 
-/**
+  /**
    * Receive notification of the end of an element.
-   *
-   * @param handler non-null reference to current StylesheetHandler that is constructing the Templates.
-   * @param uri The Namespace URI, or an empty string.
-   * @param localName The local name (without prefix), or empty string if not namespace processing.
-   * @param rawName The qualified name (with prefix).
+   * 
+   * @param handler
+   *          non-null reference to current StylesheetHandler that is
+   *          constructing the Templates.
+   * @param uri
+   *          The Namespace URI, or an empty string.
+   * @param localName
+   *          The local name (without prefix), or empty string if not namespace
+   *          processing.
+   * @param rawName
+   *          The qualified name (with prefix).
    */
-  public void endElement(
-          StylesheetHandler handler, String uri, String localName, String rawName)
-            throws org.xml.sax.SAXException
-  {
-		super.endElement(handler, uri, localName, rawName);
+  @Override
+  public void endElement(StylesheetHandler handler, String uri, String localName, String rawName)
+          throws org.xml.sax.SAXException {
+    super.endElement(handler, uri, localName, rawName);
     handler.popElemTemplateElement();
     handler.popStylesheet();
   }

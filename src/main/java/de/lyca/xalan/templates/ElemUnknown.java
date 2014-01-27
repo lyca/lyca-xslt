@@ -22,108 +22,94 @@ package de.lyca.xalan.templates;
 
 import javax.xml.transform.TransformerException;
 
-import de.lyca.xalan.res.XSLMessages;
-import de.lyca.xalan.res.XSLTErrorResources;
 import de.lyca.xalan.transformer.TransformerImpl;
-import de.lyca.xpath.XPathContext;
-
 
 /**
  * Implement an unknown element
+ * 
  * @xsl.usage advanced
  */
-public class ElemUnknown extends ElemLiteralResult
-{
-    static final long serialVersionUID = -4573981712648730168L;
+public class ElemUnknown extends ElemLiteralResult {
+  static final long serialVersionUID = -4573981712648730168L;
 
   /**
    * Get an int constant identifying the type of element.
+   * 
    * @see de.lyca.xalan.templates.Constants
-   *
-   *@return The token ID for this element
+   * 
+   * @return The token ID for this element
    */
-  public int getXSLToken()
-  {
+  @Override
+  public int getXSLToken() {
     return Constants.ELEMNAME_UNDEFINED;
   }
-  
+
   /**
    * Execute the fallbacks when an extension is not available.
-   *
-   * @param transformer non-null reference to the the current transform-time state.
-   *
+   * 
+   * @param transformer
+   *          non-null reference to the the current transform-time state.
+   * 
    * @throws TransformerException
    */
-  private void executeFallbacks(
-          TransformerImpl transformer)
-            throws TransformerException
-  {
-    for (ElemTemplateElement child = m_firstChild; child != null;
-             child = child.m_nextSibling)
-    {
-      if (child.getXSLToken() == Constants.ELEMNAME_FALLBACK)
-      {
-        try
-        {
+  private void executeFallbacks(TransformerImpl transformer) throws TransformerException {
+    for (ElemTemplateElement child = m_firstChild; child != null; child = child.m_nextSibling) {
+      if (child.getXSLToken() == Constants.ELEMNAME_FALLBACK) {
+        try {
           transformer.pushElemTemplateElement(child);
           ((ElemFallback) child).executeFallback(transformer);
-        }
-        finally
-        {
+        } finally {
           transformer.popElemTemplateElement();
         }
       }
     }
 
   }
-  
+
   /**
    * Return true if this extension element has a <xsl:fallback> child element.
-   *
+   * 
    * @return true if this extension element has a <xsl:fallback> child element.
    */
-  private boolean hasFallbackChildren()
-  {
-    for (ElemTemplateElement child = m_firstChild; child != null;
-             child = child.m_nextSibling)
-    {
+  private boolean hasFallbackChildren() {
+    for (ElemTemplateElement child = m_firstChild; child != null; child = child.m_nextSibling) {
       if (child.getXSLToken() == Constants.ELEMNAME_FALLBACK)
         return true;
     }
-    
+
     return false;
   }
 
-
   /**
-   * Execute an unknown element.
-   * Execute fallback if fallback child exists or do nothing
-   *
-   * @param transformer non-null reference to the the current transform-time state.
-   *
+   * Execute an unknown element. Execute fallback if fallback child exists or do
+   * nothing
+   * 
+   * @param transformer
+   *          non-null reference to the the current transform-time state.
+   * 
    * @throws TransformerException
    */
-  public void execute(TransformerImpl transformer)
-            throws TransformerException
-  {
+  @Override
+  public void execute(TransformerImpl transformer) throws TransformerException {
 
+    if (transformer.getDebug()) {
+      transformer.getTraceManager().fireTraceEvent(this);
+    }
 
-    if (transformer.getDebug())
-		transformer.getTraceManager().fireTraceEvent(this);
+    try {
 
-	try {
+      if (hasFallbackChildren()) {
+        executeFallbacks(transformer);
+      } else {
+        // do nothing
+      }
 
-		if (hasFallbackChildren()) {
-			executeFallbacks(transformer);
-		} else {
-			// do nothing
-		}
-		
-	} catch (TransformerException e) {
-		transformer.getErrorListener().fatalError(e);
-	}
-    if (transformer.getDebug())
-		transformer.getTraceManager().fireTraceEndEvent(this);
+    } catch (final TransformerException e) {
+      transformer.getErrorListener().fatalError(e);
+    }
+    if (transformer.getDebug()) {
+      transformer.getTraceManager().fireTraceEndEvent(this);
+    }
   }
 
 }

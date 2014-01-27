@@ -26,58 +26,50 @@ import org.w3c.dom.NodeList;
 import de.lyca.xml.dtm.ref.DTMNodeProxy;
 
 /**
- * The base class for some EXSLT extension classes.
- * It contains common utility methods to be used by the sub-classes.
+ * The base class for some EXSLT extension classes. It contains common utility
+ * methods to be used by the sub-classes.
  */
-public abstract class ExsltBase
-{
+public abstract class ExsltBase {
   /**
    * Return the string value of a Node
-   *
-   * @param n The Node.
+   * 
+   * @param n
+   *          The Node.
    * @return The string value of the Node
    */
-  protected static String toString(Node n)
-  {
+  protected static String toString(Node n) {
     if (n instanceof DTMNodeProxy)
-  	 return ((DTMNodeProxy)n).getStringValue();
-    else
-    {
-      String value = n.getNodeValue();
-      if (value == null)
-      {
-        NodeList nodelist = n.getChildNodes();
-        StringBuffer buf = new StringBuffer();
-        for (int i = 0; i < nodelist.getLength(); i++)
-        {
-          Node childNode = nodelist.item(i);
+      return ((DTMNodeProxy) n).getStringValue();
+    else {
+      final String value = n.getNodeValue();
+      if (value == null) {
+        final NodeList nodelist = n.getChildNodes();
+        final StringBuffer buf = new StringBuffer();
+        for (int i = 0; i < nodelist.getLength(); i++) {
+          final Node childNode = nodelist.item(i);
           buf.append(toString(childNode));
         }
         return buf.toString();
-      }
-      else
+      } else
         return value;
     }
   }
-  
+
   /**
-   * Convert the string value of a Node to a number.
-   * Return NaN if the string is not a valid number.
-   *
-   * @param n The Node.
+   * Convert the string value of a Node to a number. Return NaN if the string is
+   * not a valid number.
+   * 
+   * @param n
+   *          The Node.
    * @return The number value of the Node
    */
-  protected static double toNumber(Node n)
-  {
+  protected static double toNumber(Node n) {
     double d = 0.0;
-    String str = toString(n);
-    try
-    {
+    final String str = toString(n);
+    try {
       d = Double.valueOf(str).doubleValue();
-    }
-    catch (NumberFormatException e)
-    {
-      d= Double.NaN;  		
+    } catch (final NumberFormatException e) {
+      d = Double.NaN;
     }
     return d;
   }

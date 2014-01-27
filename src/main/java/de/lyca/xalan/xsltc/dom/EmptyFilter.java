@@ -26,7 +26,8 @@ package de.lyca.xalan.xsltc.dom;
  * @author Santiago Pericas-Geertsen
  */
 public final class EmptyFilter implements Filter {
-    public boolean test(int node) {
-	return true;
-    }
+  @Override
+  public boolean test(int node) {
+    return true;
+  }
 }

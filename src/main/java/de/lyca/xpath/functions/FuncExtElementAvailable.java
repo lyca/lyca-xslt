@@ -20,7 +20,6 @@
  */
 package de.lyca.xpath.functions;
 
-import de.lyca.xalan.templates.Constants;
 import de.lyca.xalan.transformer.TransformerImpl;
 import de.lyca.xml.utils.QName;
 import de.lyca.xpath.ExtensionsProvider;
@@ -30,66 +29,56 @@ import de.lyca.xpath.objects.XObject;
 
 /**
  * Execute the ExtElementAvailable() function.
+ * 
  * @xsl.usage advanced
  */
-public class FuncExtElementAvailable extends FunctionOneArg
-{
-    static final long serialVersionUID = -472533699257968546L;
+public class FuncExtElementAvailable extends FunctionOneArg {
+  static final long serialVersionUID = -472533699257968546L;
 
   /**
-   * Execute the function.  The function must return
-   * a valid object.
-   * @param xctxt The current execution context.
+   * Execute the function. The function must return a valid object.
+   * 
+   * @param xctxt
+   *          The current execution context.
    * @return A valid XObject.
-   *
+   * 
    * @throws javax.xml.transform.TransformerException
    */
-  public XObject execute(XPathContext xctxt) throws javax.xml.transform.TransformerException
-  {
+  @Override
+  public XObject execute(XPathContext xctxt) throws javax.xml.transform.TransformerException {
 
     String prefix;
     String namespace;
     String methName;
 
-    String fullName = m_arg0.execute(xctxt).str();
-    int indexOfNSSep = fullName.indexOf(':');
+    final String fullName = m_arg0.execute(xctxt).str();
+    final int indexOfNSSep = fullName.indexOf(':');
 
-    if (indexOfNSSep < 0)
-    {
+    if (indexOfNSSep < 0) {
       prefix = "";
-      namespace = Constants.S_XSLNAMESPACEURL;
+      namespace = de.lyca.xml.utils.Constants.S_XSLNAMESPACEURL;
       methName = fullName;
-    }
-    else
-    {
+    } else {
       prefix = fullName.substring(0, indexOfNSSep);
       namespace = xctxt.getNamespaceContext().getNamespaceForPrefix(prefix);
       if (null == namespace)
         return XBoolean.S_FALSE;
-      methName= fullName.substring(indexOfNSSep + 1);
+      methName = fullName.substring(indexOfNSSep + 1);
     }
 
-    if (namespace.equals(Constants.S_XSLNAMESPACEURL)
-    ||  namespace.equals(Constants.S_BUILTIN_EXTENSIONS_URL))
-    {
-      try
-      {
-        TransformerImpl transformer = (TransformerImpl) xctxt.getOwnerObject();
-        return transformer.getStylesheet().getAvailableElements().containsKey(
-                                                            new QName(namespace, methName))
-               ? XBoolean.S_TRUE : XBoolean.S_FALSE;
-      }
-      catch (Exception e)
-      {
+    if (namespace.equals(de.lyca.xml.utils.Constants.S_XSLNAMESPACEURL)
+            || namespace.equals(de.lyca.xml.utils.Constants.S_BUILTIN_EXTENSIONS_URL)) {
+      try {
+        final TransformerImpl transformer = (TransformerImpl) xctxt.getOwnerObject();
+        return transformer.getStylesheet().getAvailableElements().containsKey(new QName(namespace, methName)) ? XBoolean.S_TRUE
+                : XBoolean.S_FALSE;
+      } catch (final Exception e) {
         return XBoolean.S_FALSE;
       }
-    }
-    else
-    {
-      //dml
-      ExtensionsProvider extProvider = (ExtensionsProvider)xctxt.getOwnerObject();
-      return extProvider.elementAvailable(namespace, methName)
-             ? XBoolean.S_TRUE : XBoolean.S_FALSE;
+    } else {
+      // dml
+      final ExtensionsProvider extProvider = (ExtensionsProvider) xctxt.getOwnerObject();
+      return extProvider.elementAvailable(namespace, methName) ? XBoolean.S_TRUE : XBoolean.S_FALSE;
     }
   }
 }

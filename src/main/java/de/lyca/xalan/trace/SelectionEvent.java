@@ -29,10 +29,10 @@ import de.lyca.xpath.objects.XObject;
 
 /**
  * Event triggered by selection of a node in the style stree.
+ * 
  * @xsl.usage advanced
  */
-public class SelectionEvent implements java.util.EventListener
-{
+public class SelectionEvent implements java.util.EventListener {
 
   /**
    * The node in the style tree where the event occurs.
@@ -67,24 +67,28 @@ public class SelectionEvent implements java.util.EventListener
   /**
    * Create an event originating at the given node of the style tree.
    * 
-   * @param processor The XSLT TransformerFactory.
-   * @param sourceNode The current context node.
-   * @param styleNode node in the style tree reference for the event.
-   * Should not be null.  That is not enforced.
-   * @param attributeName The attribute name from which the selection is made.
-   * @param xpath The XPath that executed the selection.
-   * @param selection The result of the selection.
+   * @param processor
+   *          The XSLT TransformerFactory.
+   * @param sourceNode
+   *          The current context node.
+   * @param styleNode
+   *          node in the style tree reference for the event. Should not be
+   *          null. That is not enforced.
+   * @param attributeName
+   *          The attribute name from which the selection is made.
+   * @param xpath
+   *          The XPath that executed the selection.
+   * @param selection
+   *          The result of the selection.
    */
-  public SelectionEvent(TransformerImpl processor, Node sourceNode,
-                        ElemTemplateElement styleNode, String attributeName,
-                        XPath xpath, XObject selection)
-  {
+  public SelectionEvent(TransformerImpl processor, Node sourceNode, ElemTemplateElement styleNode,
+          String attributeName, XPath xpath, XObject selection) {
 
-    this.m_processor = processor;
-    this.m_sourceNode = sourceNode;
-    this.m_styleNode = styleNode;
-    this.m_attributeName = attributeName;
-    this.m_xpath = xpath;
-    this.m_selection = selection;
+    m_processor = processor;
+    m_sourceNode = sourceNode;
+    m_styleNode = styleNode;
+    m_attributeName = attributeName;
+    m_xpath = xpath;
+    m_selection = selection;
   }
 }

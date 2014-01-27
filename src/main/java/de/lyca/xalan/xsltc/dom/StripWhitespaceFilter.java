@@ -28,5 +28,5 @@ import de.lyca.xalan.xsltc.DOM;
  * @author Santiago Pericas-Geertsen
  */
 public interface StripWhitespaceFilter {
-    public boolean stripSpace(DOM dom, int node, int type);
+  public boolean stripSpace(DOM dom, int node, int type);
 }

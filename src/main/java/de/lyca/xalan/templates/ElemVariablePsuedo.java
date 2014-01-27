@@ -25,44 +25,44 @@ import javax.xml.transform.TransformerException;
 import de.lyca.xalan.transformer.TransformerImpl;
 import de.lyca.xpath.XPath;
 
-public class ElemVariablePsuedo extends ElemVariable
-{
-    static final long serialVersionUID = 692295692732588486L;
+public class ElemVariablePsuedo extends ElemVariable {
+  static final long serialVersionUID = 692295692732588486L;
   XUnresolvedVariableSimple m_lazyVar;
-	
+
   /**
-   * Set the "select" attribute.
-   * If the variable-binding element has a select attribute,
-   * then the value of the attribute must be an expression and
-   * the value of the variable is the object that results from
-   * evaluating the expression. In this case, the content
-   * of the variable must be empty.
-   *
-   * @param v Value to set for the "select" attribute.
+   * Set the "select" attribute. If the variable-binding element has a select
+   * attribute, then the value of the attribute must be an expression and the
+   * value of the variable is the object that results from evaluating the
+   * expression. In this case, the content of the variable must be empty.
+   * 
+   * @param v
+   *          Value to set for the "select" attribute.
    */
-  public void setSelect(XPath v)
-  {
+  @Override
+  public void setSelect(XPath v) {
     super.setSelect(v);
     m_lazyVar = new XUnresolvedVariableSimple(this);
   }
-  
+
   /**
    * Execute a variable declaration and push it onto the variable stack.
-   * @see <a href="http://www.w3.org/TR/xslt#variables">variables in XSLT Specification</a>
-   *
-   * @param transformer non-null reference to the the current transform-time state.
-   *
+   * 
+   * @see <a href="http://www.w3.org/TR/xslt#variables">variables in XSLT
+   *      Specification</a>
+   * 
+   * @param transformer
+   *          non-null reference to the the current transform-time state.
+   * 
    * @throws TransformerException
    */
-  public void execute(TransformerImpl transformer) throws TransformerException
-  {
+  @Override
+  public void execute(TransformerImpl transformer) throws TransformerException {
 
     // if (TransformerImpl.S_DEBUG)
-    //  transformer.getTraceManager().fireTraceEvent(this);
+    // transformer.getTraceManager().fireTraceEvent(this);
 
     // transformer.getXPathContext().getVarStack().pushVariable(m_qname, var);
     transformer.getXPathContext().getVarStack().setLocalVariable(m_index, m_lazyVar);
   }
 
 }
-

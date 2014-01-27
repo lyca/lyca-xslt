@@ -43,47 +43,51 @@ import de.lyca.xpath.objects.XObject;
 /**
  * Implements three extension elements to allow an XSLT transformation to
  * redirect its output to multiple output files.
- *
+ * 
  * It is accessed by specifying a namespace URI as follows:
+ * 
  * <pre>
  *    xmlns:redirect="http://xml.apache.org/xalan/redirect"
  * </pre>
- *
- * <p>You can either just use redirect:write, in which case the file will be
- * opened and immediately closed after the write, or you can bracket the
- * write calls by redirect:open and redirect:close, in which case the
- * file will be kept open for multiple writes until the close call is
- * encountered.  Calls can be nested.  
- *
- * <p>Calls can take a 'file' attribute
- * and/or a 'select' attribute in order to get the filename.  If a select
- * attribute is encountered, it will evaluate that expression for a string
- * that indicates the filename.  If the string evaluates to empty, it will
- * attempt to use the 'file' attribute as a default.  Filenames can be relative
- * or absolute.  If they are relative, the base directory will be the same as
- * the base directory for the output document.  This is obtained by calling
- * getOutputTarget() on the TransformerImpl.  You can set this base directory
- * by calling TransformerImpl.setOutputTarget() or it is automatically set
- * when using the two argument form of transform() or transformNode().
- *
- * <p>Calls to redirect:write and redirect:open also take an optional 
- * attribute append="true|yes", which will attempt to simply append 
- * to an existing file instead of always opening a new file.  The 
- * default behavior of always overwriting the file still happens 
- * if you do not specify append.
- * <p><b>Note:</b> this may give unexpected results when using xml 
- * or html output methods, since this is <b>not</b> coordinated 
- * with the serializers - hence, you may get extra xml decls in 
- * the middle of your file after appending to it.
- *
- * <p>Example:</p>
+ * 
+ * <p>
+ * You can either just use redirect:write, in which case the file will be opened
+ * and immediately closed after the write, or you can bracket the write calls by
+ * redirect:open and redirect:close, in which case the file will be kept open
+ * for multiple writes until the close call is encountered. Calls can be nested.
+ * 
+ * <p>
+ * Calls can take a 'file' attribute and/or a 'select' attribute in order to get
+ * the filename. If a select attribute is encountered, it will evaluate that
+ * expression for a string that indicates the filename. If the string evaluates
+ * to empty, it will attempt to use the 'file' attribute as a default. Filenames
+ * can be relative or absolute. If they are relative, the base directory will be
+ * the same as the base directory for the output document. This is obtained by
+ * calling getOutputTarget() on the TransformerImpl. You can set this base
+ * directory by calling TransformerImpl.setOutputTarget() or it is automatically
+ * set when using the two argument form of transform() or transformNode().
+ * 
+ * <p>
+ * Calls to redirect:write and redirect:open also take an optional attribute
+ * append="true|yes", which will attempt to simply append to an existing file
+ * instead of always opening a new file. The default behavior of always
+ * overwriting the file still happens if you do not specify append.
+ * <p>
+ * <b>Note:</b> this may give unexpected results when using xml or html output
+ * methods, since this is <b>not</b> coordinated with the serializers - hence,
+ * you may get extra xml decls in the middle of your file after appending to it.
+ * 
+ * <p>
+ * Example:
+ * </p>
+ * 
  * <PRE>
  * &lt;?xml version="1.0"?>
  * &lt;xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
  *                 version="1.0"
  *                 xmlns:redirect="http://xml.apache.org/xalan/redirect"
  *                 extension-element-prefixes="redirect">
- *
+ * 
  *   &lt;xsl:template match="/">
  *     &lt;out>
  *       default output.
@@ -114,123 +118,99 @@ import de.lyca.xpath.objects.XObject;
  *     &lt;/redirect:write>
  *     &lt;redirect:close file="doc3.out"/>
  *   &lt;/xsl:template>
- *
+ * 
  * &lt;/xsl:stylesheet>
  * </PRE>
- *
+ * 
  * @author Scott Boag
  * @version 1.0
- * @see <a href="../../../../../../extensions.html#ex-redirect" target="_top">Example with Redirect extension</a>
+ * @see <a href="../../../../../../extensions.html#ex-redirect"
+ *      target="_top">Example with Redirect extension</a>
  */
-public class Redirect
-{
+public class Redirect {
   /**
    * List of formatter listeners indexed by filename.
    */
-  protected Hashtable m_formatterListeners = new Hashtable ();
+  protected Hashtable m_formatterListeners = new Hashtable();
 
   /**
    * List of output streams indexed by filename.
    */
-  protected Hashtable m_outputStreams = new Hashtable ();
+  protected Hashtable m_outputStreams = new Hashtable();
 
-  /** 
-   * Default append mode for bare open calls.  
-   * False for backwards compatibility (I think). 
+  /**
+   * Default append mode for bare open calls. False for backwards compatibility
+   * (I think).
    */
   public static final boolean DEFAULT_APPEND_OPEN = false;
 
-  /** 
-   * Default append mode for bare write calls.  
-   * False for backwards compatibility. 
+  /**
+   * Default append mode for bare write calls. False for backwards
+   * compatibility.
    */
   public static final boolean DEFAULT_APPEND_WRITE = false;
 
   /**
-   * Open the given file and put it in the XML, HTML, or Text formatter listener's table.
+   * Open the given file and put it in the XML, HTML, or Text formatter
+   * listener's table.
    */
-  public void open(XSLProcessorContext context, ElemExtensionCall elem)
-    throws java.net.MalformedURLException,
-           java.io.FileNotFoundException,
-           java.io.IOException,
-           javax.xml.transform.TransformerException
-  {
-    String fileName = getFilename(context, elem);
-    Object flistener = m_formatterListeners.get(fileName);
-    if(null == flistener)
-    {
-      String mkdirsExpr 
-        = elem.getAttribute ("mkdirs", context.getContextNode(), 
-                                                  context.getTransformer());
-      boolean mkdirs = (mkdirsExpr != null)
-                       ? (mkdirsExpr.equals("true") || mkdirsExpr.equals("yes")) : true;
+  public void open(XSLProcessorContext context, ElemExtensionCall elem) throws java.net.MalformedURLException,
+          java.io.FileNotFoundException, java.io.IOException, javax.xml.transform.TransformerException {
+    final String fileName = getFilename(context, elem);
+    final Object flistener = m_formatterListeners.get(fileName);
+    if (null == flistener) {
+      final String mkdirsExpr = elem.getAttribute("mkdirs", context.getContextNode(), context.getTransformer());
+      final boolean mkdirs = mkdirsExpr != null ? mkdirsExpr.equals("true") || mkdirsExpr.equals("yes") : true;
 
       // Whether to append to existing files or not, <jpvdm@iafrica.com>
-      String appendExpr = elem.getAttribute("append", context.getContextNode(), context.getTransformer());
-	  boolean append = (appendExpr != null)
-                       ? (appendExpr.equals("true") || appendExpr.equals("yes")) : DEFAULT_APPEND_OPEN;
+      final String appendExpr = elem.getAttribute("append", context.getContextNode(), context.getTransformer());
+      final boolean append = appendExpr != null ? appendExpr.equals("true") || appendExpr.equals("yes")
+              : DEFAULT_APPEND_OPEN;
 
-      Object ignored = makeFormatterListener(context, elem, fileName, true, mkdirs, append);
+      final Object ignored = makeFormatterListener(context, elem, fileName, true, mkdirs, append);
     }
   }
-  
+
   /**
-   * Write the evalutation of the element children to the given file. Then close the file
-   * unless it was opened with the open extension element and is in the formatter listener's table.
+   * Write the evalutation of the element children to the given file. Then close
+   * the file unless it was opened with the open extension element and is in the
+   * formatter listener's table.
    */
-  public void write(XSLProcessorContext context, ElemExtensionCall elem)
-    throws java.net.MalformedURLException,
-           java.io.FileNotFoundException,
-           java.io.IOException,
-           javax.xml.transform.TransformerException
-  {
-    String fileName = getFilename(context, elem);
-    Object flObject = m_formatterListeners.get(fileName);
+  public void write(XSLProcessorContext context, ElemExtensionCall elem) throws java.net.MalformedURLException,
+          java.io.FileNotFoundException, java.io.IOException, javax.xml.transform.TransformerException {
+    final String fileName = getFilename(context, elem);
+    final Object flObject = m_formatterListeners.get(fileName);
     ContentHandler formatter;
     boolean inTable = false;
-    if(null == flObject)
-    {
-      String mkdirsExpr 
-        = ((ElemExtensionCall)elem).getAttribute ("mkdirs", 
-                                                  context.getContextNode(), 
-                                                  context.getTransformer());
-      boolean mkdirs = (mkdirsExpr != null)
-                       ? (mkdirsExpr.equals("true") || mkdirsExpr.equals("yes")) : true;
+    if (null == flObject) {
+      final String mkdirsExpr = elem.getAttribute("mkdirs", context.getContextNode(), context.getTransformer());
+      final boolean mkdirs = mkdirsExpr != null ? mkdirsExpr.equals("true") || mkdirsExpr.equals("yes") : true;
 
       // Whether to append to existing files or not, <jpvdm@iafrica.com>
-      String appendExpr = elem.getAttribute("append", context.getContextNode(), context.getTransformer());
-	  boolean append = (appendExpr != null)
-                       ? (appendExpr.equals("true") || appendExpr.equals("yes")) : DEFAULT_APPEND_WRITE;
+      final String appendExpr = elem.getAttribute("append", context.getContextNode(), context.getTransformer());
+      final boolean append = appendExpr != null ? appendExpr.equals("true") || appendExpr.equals("yes")
+              : DEFAULT_APPEND_WRITE;
 
       formatter = makeFormatterListener(context, elem, fileName, true, mkdirs, append);
-    }
-    else
-    {
+    } else {
       inTable = true;
-      formatter = (ContentHandler)flObject;
+      formatter = (ContentHandler) flObject;
     }
-    
-    TransformerImpl transf = context.getTransformer();
-    
-    startRedirection(transf, formatter);  // for tracing only
-    
-    transf.executeChildTemplates(elem,
-                                 context.getContextNode(),
-                                 context.getMode(), formatter);
-                                 
+
+    final TransformerImpl transf = context.getTransformer();
+
+    startRedirection(transf, formatter); // for tracing only
+
+    transf.executeChildTemplates(elem, context.getContextNode(), context.getMode(), formatter);
+
     endRedirection(transf); // for tracing only
-    
-    if(!inTable)
-    {
-      OutputStream ostream = (OutputStream)m_outputStreams.get(fileName);
-      if(null != ostream)
-      {
-        try
-        {
+
+    if (!inTable) {
+      final OutputStream ostream = (OutputStream) m_outputStreams.get(fileName);
+      if (null != ostream) {
+        try {
           formatter.endDocument();
-        }
-        catch(org.xml.sax.SAXException se)
-        {
+        } catch (final org.xml.sax.SAXException se) {
           throw new TransformerException(se);
         }
         ostream.close();
@@ -240,32 +220,22 @@ public class Redirect
     }
   }
 
-
   /**
    * Close the given file and remove it from the formatter listener's table.
    */
-  public void close(XSLProcessorContext context, ElemExtensionCall elem)
-    throws java.net.MalformedURLException,
-    java.io.FileNotFoundException,
-    java.io.IOException,
-    javax.xml.transform.TransformerException
-  {
-    String fileName = getFilename(context, elem);
-    Object formatterObj = m_formatterListeners.get(fileName);
-    if(null != formatterObj)
-    {
-      ContentHandler fl = (ContentHandler)formatterObj;
-      try
-      {
+  public void close(XSLProcessorContext context, ElemExtensionCall elem) throws java.net.MalformedURLException,
+          java.io.FileNotFoundException, java.io.IOException, javax.xml.transform.TransformerException {
+    final String fileName = getFilename(context, elem);
+    final Object formatterObj = m_formatterListeners.get(fileName);
+    if (null != formatterObj) {
+      final ContentHandler fl = (ContentHandler) formatterObj;
+      try {
         fl.endDocument();
-      }
-      catch(org.xml.sax.SAXException se)
-      {
+      } catch (final org.xml.sax.SAXException se) {
         throw new TransformerException(se);
       }
-      OutputStream ostream = (OutputStream)m_outputStreams.get(fileName);
-      if(null != ostream)
-      {
+      final OutputStream ostream = (OutputStream) m_outputStreams.get(fileName);
+      if (null != ostream) {
         ostream.close();
         m_outputStreams.remove(fileName);
       }
@@ -277,70 +247,43 @@ public class Redirect
    * Get the filename from the 'select' or the 'file' attribute.
    */
   private String getFilename(XSLProcessorContext context, ElemExtensionCall elem)
-    throws java.net.MalformedURLException,
-    java.io.FileNotFoundException,
-    java.io.IOException,
-    javax.xml.transform.TransformerException
-  {
+          throws java.net.MalformedURLException, java.io.FileNotFoundException, java.io.IOException,
+          javax.xml.transform.TransformerException {
     String fileName;
-    String fileNameExpr 
-      = ((ElemExtensionCall)elem).getAttribute ("select", 
-                                                context.getContextNode(), 
-                                                context.getTransformer());
-    if(null != fileNameExpr)
-    {
-      de.lyca.xpath.XPathContext xctxt 
-        = context.getTransformer().getXPathContext();
-      XPath myxpath = new XPath(fileNameExpr, elem, xctxt.getNamespaceContext(), XPath.SELECT);
-      XObject xobj = myxpath.execute(xctxt, context.getContextNode(), elem);
+    final String fileNameExpr = elem.getAttribute("select", context.getContextNode(), context.getTransformer());
+    if (null != fileNameExpr) {
+      final de.lyca.xpath.XPathContext xctxt = context.getTransformer().getXPathContext();
+      final XPath myxpath = new XPath(fileNameExpr, elem, xctxt.getNamespaceContext(), XPath.SELECT);
+      final XObject xobj = myxpath.execute(xctxt, context.getContextNode(), elem);
       fileName = xobj.str();
-      if((null == fileName) || (fileName.length() == 0))
-      {
-        fileName = elem.getAttribute ("file", 
-                                      context.getContextNode(), 
-                                      context.getTransformer());
+      if (null == fileName || fileName.length() == 0) {
+        fileName = elem.getAttribute("file", context.getContextNode(), context.getTransformer());
       }
+    } else {
+      fileName = elem.getAttribute("file", context.getContextNode(), context.getTransformer());
     }
-    else
-    {
-      fileName = elem.getAttribute ("file", context.getContextNode(), 
-                                                               context.getTransformer());
-    }
-    if(null == fileName)
-    {
-      context.getTransformer().getMsgMgr().error(elem, elem, 
-                                     context.getContextNode(), 
-                                     XSLTErrorResources.ER_REDIRECT_COULDNT_GET_FILENAME);
-                              //"Redirect extension: Could not get filename - file or select attribute must return vald string.");
+    if (null == fileName) {
+      context.getTransformer().getMsgMgr()
+              .error(elem, elem, context.getContextNode(), XSLTErrorResources.ER_REDIRECT_COULDNT_GET_FILENAME);
+      // "Redirect extension: Could not get filename - file or select attribute must return vald string.");
     }
     return fileName;
   }
-  
+
   // yuck.
-  // Note: this is not the best way to do this, and may not even 
-  //    be fully correct! Patches (with test cases) welcomed. -sc
-  private String urlToFileName(String base)
-  {
-    if(null != base)
-    {
-      if(base.startsWith("file:////"))
-      {
+  // Note: this is not the best way to do this, and may not even
+  // be fully correct! Patches (with test cases) welcomed. -sc
+  private String urlToFileName(String base) {
+    if (null != base) {
+      if (base.startsWith("file:////")) {
         base = base.substring(7);
-      }
-      else if(base.startsWith("file:///"))
-      {
+      } else if (base.startsWith("file:///")) {
         base = base.substring(6);
-      }
-      else if(base.startsWith("file://"))
-      {
+      } else if (base.startsWith("file://")) {
         base = base.substring(5); // absolute?
-      }
-      else if(base.startsWith("file:/"))
-      {
+      } else if (base.startsWith("file:/")) {
         base = base.substring(5);
-      }
-      else if(base.startsWith("file:"))
-      {
+      } else if (base.startsWith("file:")) {
         base = base.substring(4);
       }
     }
@@ -348,144 +291,125 @@ public class Redirect
   }
 
   /**
-   * Create a new ContentHandler, based on attributes of the current ContentHandler.
+   * Create a new ContentHandler, based on attributes of the current
+   * ContentHandler.
    */
-  private ContentHandler makeFormatterListener(XSLProcessorContext context,
-                                               ElemExtensionCall elem,
-                                               String fileName,
-                                               boolean shouldPutInTable,
-                                               boolean mkdirs, 
-                                               boolean append)
-    throws java.net.MalformedURLException,
-    java.io.FileNotFoundException,
-    java.io.IOException,
-    javax.xml.transform.TransformerException
-  {
+  private ContentHandler makeFormatterListener(XSLProcessorContext context, ElemExtensionCall elem, String fileName,
+          boolean shouldPutInTable, boolean mkdirs, boolean append) throws java.net.MalformedURLException,
+          java.io.FileNotFoundException, java.io.IOException, javax.xml.transform.TransformerException {
     File file = new File(fileName);
-    TransformerImpl transformer = context.getTransformer();
-    String base;          // Base URI to use for relative paths
+    final TransformerImpl transformer = context.getTransformer();
+    String base; // Base URI to use for relative paths
 
-    if(!file.isAbsolute())
-    {
-      // This code is attributed to Jon Grov <jon@linpro.no>.  A relative file name
-      // is relative to the Result used to kick off the transform.  If no such
+    if (!file.isAbsolute()) {
+      // This code is attributed to Jon Grov <jon@linpro.no>. A relative file
+      // name
+      // is relative to the Result used to kick off the transform. If no such
       // Result was supplied, the filename is relative to the source document.
       // When transforming with a SAXResult or DOMResult, call
       // TransformerImpl.setOutputTarget() to set the desired Result base.
-  //      String base = urlToFileName(elem.getStylesheet().getSystemId());
+      // String base = urlToFileName(elem.getStylesheet().getSystemId());
 
-      Result outputTarget = transformer.getOutputTarget();
-      if ( (null != outputTarget) && ((base = outputTarget.getSystemId()) != null) ) {
+      final Result outputTarget = transformer.getOutputTarget();
+      if (null != outputTarget && (base = outputTarget.getSystemId()) != null) {
         base = urlToFileName(base);
-      }
-      else
-      {
+      } else {
         base = urlToFileName(transformer.getBaseURLOfSource());
       }
 
-      if(null != base)
-      {
-        File baseFile = new File(base);
+      if (null != base) {
+        final File baseFile = new File(base);
         file = new File(baseFile.getParent(), fileName);
       }
       // System.out.println("file is: "+file.toString());
     }
 
-    if(mkdirs)
-    {
-      String dirStr = file.getParent();
-      if((null != dirStr) && (dirStr.length() > 0))
-      {
-        File dir = new File(dirStr);
+    if (mkdirs) {
+      final String dirStr = file.getParent();
+      if (null != dirStr && dirStr.length() > 0) {
+        final File dir = new File(dirStr);
         dir.mkdirs();
       }
     }
 
-    // This should be worked on so that the output format can be 
+    // This should be worked on so that the output format can be
     // defined by a first child of the redirect element.
-    OutputProperties format = transformer.getOutputFormat();
+    final OutputProperties format = transformer.getOutputFormat();
 
     // FileOutputStream ostream = new FileOutputStream(file);
     // Patch from above line to below by <jpvdm@iafrica.com>
-    //  Note that in JDK 1.2.2 at least, FileOutputStream(File)
-    //  is implemented as a call to 
-    //  FileOutputStream(File.getPath, append), thus this should be 
-    //  the equivalent instead of getAbsolutePath()
-    FileOutputStream ostream = new FileOutputStream(file.getPath(), append);
-    
-    try
-    {
-      SerializationHandler flistener = 
-        createSerializationHandler(transformer, ostream, file, format);
-        
-      try
-      {
+    // Note that in JDK 1.2.2 at least, FileOutputStream(File)
+    // is implemented as a call to
+    // FileOutputStream(File.getPath, append), thus this should be
+    // the equivalent instead of getAbsolutePath()
+    final FileOutputStream ostream = new FileOutputStream(file.getPath(), append);
+
+    try {
+      final SerializationHandler flistener = createSerializationHandler(transformer, ostream, file, format);
+
+      try {
         flistener.startDocument();
-      }
-      catch(org.xml.sax.SAXException se)
-      {
+      } catch (final org.xml.sax.SAXException se) {
         throw new TransformerException(se);
       }
-      if(shouldPutInTable)
-      {
+      if (shouldPutInTable) {
         m_outputStreams.put(fileName, ostream);
         m_formatterListeners.put(fileName, flistener);
       }
       return flistener;
-    }
-    catch(TransformerException te)
-    {
+    } catch (final TransformerException te) {
       throw new javax.xml.transform.TransformerException(te);
     }
-    
+
   }
 
   /**
-   * A class that extends this class can over-ride this public method and recieve
-   * a callback that redirection is about to start
-   * @param transf The transformer.
-   * @param formatter The handler that receives the redirected output
+   * A class that extends this class can over-ride this public method and
+   * recieve a callback that redirection is about to start
+   * 
+   * @param transf
+   *          The transformer.
+   * @param formatter
+   *          The handler that receives the redirected output
    */
-  public void startRedirection(TransformerImpl transf, ContentHandler formatter)
-  {
-      // A class that extends this class could provide a method body        
+  public void startRedirection(TransformerImpl transf, ContentHandler formatter) {
+    // A class that extends this class could provide a method body
   }
-    
+
   /**
-   * A class that extends this class can over-ride this public method and receive
-   * a callback that redirection to the ContentHandler specified in the startRedirection()
-   * call has ended
-   * @param transf The transformer.
+   * A class that extends this class can over-ride this public method and
+   * receive a callback that redirection to the ContentHandler specified in the
+   * startRedirection() call has ended
+   * 
+   * @param transf
+   *          The transformer.
    */
-  public void endRedirection(TransformerImpl transf)
-  {
-      // A class that extends this class could provide a method body        
+  public void endRedirection(TransformerImpl transf) {
+    // A class that extends this class could provide a method body
   }
-    
+
   /**
-   * A class that extends this one could over-ride this public method and receive
-   * a callback for the creation of the serializer used in the redirection.
-   * @param transformer The transformer
-   * @param ostream The output stream that the serializer wraps
-   * @param file The file associated with the ostream
-   * @param format The format parameter used to create the serializer
+   * A class that extends this one could over-ride this public method and
+   * receive a callback for the creation of the serializer used in the
+   * redirection.
+   * 
+   * @param transformer
+   *          The transformer
+   * @param ostream
+   *          The output stream that the serializer wraps
+   * @param file
+   *          The file associated with the ostream
+   * @param format
+   *          The format parameter used to create the serializer
    * @return the serializer that the redirection will go to.
    * 
    * @throws java.io.IOException
    * @throws TransformerException
    */
-  public SerializationHandler createSerializationHandler(
-        TransformerImpl transformer,
-        FileOutputStream ostream,
-        File file,
-        OutputProperties format) 
-        throws java.io.IOException, TransformerException
-  {
+  public SerializationHandler createSerializationHandler(TransformerImpl transformer, FileOutputStream ostream,
+          File file, OutputProperties format) throws java.io.IOException, TransformerException {
 
-      SerializationHandler serializer =
-          transformer.createSerializationHandler(
-              new StreamResult(ostream),
-              format);
-      return serializer;
+    final SerializationHandler serializer = transformer.createSerializationHandler(new StreamResult(ostream), format);
+    return serializer;
   }
 }

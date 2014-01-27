@@ -30,6 +30,6 @@ import de.lyca.xml.dtm.DTMAxisIterator;
  * @author Morten Jorgensen
  */
 public interface CurrentNodeListFilter {
-    public abstract boolean test(int node, int position, int last, int current,
-				 AbstractTranslet translet, DTMAxisIterator iter);
+  public abstract boolean test(int node, int position, int last, int current, AbstractTranslet translet,
+          DTMAxisIterator iter);
 }

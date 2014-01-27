@@ -29,37 +29,35 @@ import de.lyca.xpath.NodeSetDTM;
 import de.lyca.xpath.XPathContext;
 
 /**
- * This class overrides the XNodeSet#object() method to provide the original 
+ * This class overrides the XNodeSet#object() method to provide the original
  * Node object, NodeList object, or NodeIterator.
  */
-public class XNodeSetForDOM extends XNodeSet
-{
-    static final long serialVersionUID = -8396190713754624640L;
+public class XNodeSetForDOM extends XNodeSet {
+  static final long serialVersionUID = -8396190713754624640L;
   Object m_origObj;
 
-  public XNodeSetForDOM(Node node, DTMManager dtmMgr)
-  {
+  public XNodeSetForDOM(Node node, DTMManager dtmMgr) {
     m_dtmMgr = dtmMgr;
     m_origObj = node;
-    int dtmHandle = dtmMgr.getDTMHandleFromNode(node);
+    final int dtmHandle = dtmMgr.getDTMHandleFromNode(node);
     setObject(new NodeSetDTM(dtmMgr));
     ((NodeSetDTM) m_obj).addNode(dtmHandle);
   }
-  
+
   /**
    * Construct a XNodeSet object.
-   *
-   * @param val Value of the XNodeSet object
+   * 
+   * @param val
+   *          Value of the XNodeSet object
    */
-  public XNodeSetForDOM(XNodeSet val)
-  {
-  	super(val);
-  	if(val instanceof XNodeSetForDOM)
-    	m_origObj = ((XNodeSetForDOM)val).m_origObj;
+  public XNodeSetForDOM(XNodeSet val) {
+    super(val);
+    if (val instanceof XNodeSetForDOM) {
+      m_origObj = ((XNodeSetForDOM) val).m_origObj;
+    }
   }
-  
-  public XNodeSetForDOM(NodeList nodeList, XPathContext xctxt)
-  {
+
+  public XNodeSetForDOM(NodeList nodeList, XPathContext xctxt) {
     m_dtmMgr = xctxt.getDTMManager();
     m_origObj = nodeList;
 
@@ -67,13 +65,12 @@ public class XNodeSetForDOM extends XNodeSet
     // folks to request length through an accessor, so we can defer this
     // retrieval... but that requires an API change.
     // m_obj=new de.lyca.xpath.NodeSetDTM(nodeList, xctxt);
-    de.lyca.xpath.NodeSetDTM nsdtm=new de.lyca.xpath.NodeSetDTM(nodeList, xctxt);
-    m_last=nsdtm.getLength();
-    setObject(nsdtm);   
+    final de.lyca.xpath.NodeSetDTM nsdtm = new de.lyca.xpath.NodeSetDTM(nodeList, xctxt);
+    m_last = nsdtm.getLength();
+    setObject(nsdtm);
   }
 
-  public XNodeSetForDOM(NodeIterator nodeIter, XPathContext xctxt)
-  {
+  public XNodeSetForDOM(NodeIterator nodeIter, XPathContext xctxt) {
     m_dtmMgr = xctxt.getDTMManager();
     m_origObj = nodeIter;
 
@@ -81,48 +78,44 @@ public class XNodeSetForDOM extends XNodeSet
     // folks to request length through an accessor, so we can defer this
     // retrieval... but that requires an API change.
     // m_obj = new de.lyca.xpath.NodeSetDTM(nodeIter, xctxt);
-    de.lyca.xpath.NodeSetDTM nsdtm=new de.lyca.xpath.NodeSetDTM(nodeIter, xctxt);
-    m_last=nsdtm.getLength();
-    setObject(nsdtm);   
+    final de.lyca.xpath.NodeSetDTM nsdtm = new de.lyca.xpath.NodeSetDTM(nodeIter, xctxt);
+    m_last = nsdtm.getLength();
+    setObject(nsdtm);
   }
-  
+
   /**
-   * Return the original DOM object that the user passed in.  For use primarily
+   * Return the original DOM object that the user passed in. For use primarily
    * by the extension mechanism.
-   *
+   * 
    * @return The object that this class wraps
    */
-  public Object object()
-  {
+  @Override
+  public Object object() {
     return m_origObj;
   }
-  
+
   /**
    * Cast result object to a nodelist. Always issues an error.
-   *
+   * 
    * @return null
-   *
+   * 
    * @throws javax.xml.transform.TransformerException
    */
-  public NodeIterator nodeset() throws javax.xml.transform.TransformerException
-  {
-    return (m_origObj instanceof NodeIterator) 
-                   ? (NodeIterator)m_origObj : super.nodeset();      
+  @Override
+  public NodeIterator nodeset() throws javax.xml.transform.TransformerException {
+    return m_origObj instanceof NodeIterator ? (NodeIterator) m_origObj : super.nodeset();
   }
-  
+
   /**
    * Cast result object to a nodelist. Always issues an error.
-   *
+   * 
    * @return null
-   *
+   * 
    * @throws javax.xml.transform.TransformerException
    */
-  public NodeList nodelist() throws javax.xml.transform.TransformerException
-  {
-    return (m_origObj instanceof NodeList) 
-                   ? (NodeList)m_origObj : super.nodelist();      
+  @Override
+  public NodeList nodelist() throws javax.xml.transform.TransformerException {
+    return m_origObj instanceof NodeList ? (NodeList) m_origObj : super.nodelist();
   }
-
-
 
 }

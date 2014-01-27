@@ -24,61 +24,56 @@ import de.lyca.xpath.Expression;
 import de.lyca.xpath.XPathContext;
 import de.lyca.xpath.objects.XObject;
 
-
 /**
- * This is the same as XUnresolvedVariable, but it assumes that the 
- * context is already set up.  For use with psuedo variables.
- * Also, it holds an Expression object, instead of an ElemVariable.
- * It must only hold static context, since a single copy will be 
- * held in the template.
+ * This is the same as XUnresolvedVariable, but it assumes that the context is
+ * already set up. For use with psuedo variables. Also, it holds an Expression
+ * object, instead of an ElemVariable. It must only hold static context, since a
+ * single copy will be held in the template.
  */
-public class XUnresolvedVariableSimple extends XObject
-{
-    static final long serialVersionUID = -1224413807443958985L;
-  public XUnresolvedVariableSimple(ElemVariable obj)
-  {
+public class XUnresolvedVariableSimple extends XObject {
+  static final long serialVersionUID = -1224413807443958985L;
+
+  public XUnresolvedVariableSimple(ElemVariable obj) {
     super(obj);
   }
-    
-	
+
   /**
    * For support of literal objects in xpaths.
-   *
-   * @param xctxt The XPath execution context.
-   *
+   * 
+   * @param xctxt
+   *          The XPath execution context.
+   * 
    * @return This object.
-   *
+   * 
    * @throws javax.xml.transform.TransformerException
    */
-  public XObject execute(XPathContext xctxt) throws javax.xml.transform.TransformerException
-  {
-  	Expression expr = ((ElemVariable)m_obj).getSelect().getExpression();
-    XObject xobj = expr.execute(xctxt);
+  @Override
+  public XObject execute(XPathContext xctxt) throws javax.xml.transform.TransformerException {
+    final Expression expr = ((ElemVariable) m_obj).getSelect().getExpression();
+    final XObject xobj = expr.execute(xctxt);
     xobj.allowDetachToRelease(false);
     return xobj;
   }
-  
+
   /**
    * Tell what kind of class this is.
-   *
+   * 
    * @return CLASS_UNRESOLVEDVARIABLE
    */
-  public int getType()
-  {
+  @Override
+  public int getType() {
     return CLASS_UNRESOLVEDVARIABLE;
   }
-  
+
   /**
-   * Given a request type, return the equivalent string.
-   * For diagnostic purposes.
-   *
+   * Given a request type, return the equivalent string. For diagnostic
+   * purposes.
+   * 
    * @return An informational string.
    */
-  public String getTypeString()
-  {
+  @Override
+  public String getTypeString() {
     return "XUnresolvedVariableSimple (" + object().getClass().getName() + ")";
   }
 
-
 }
-

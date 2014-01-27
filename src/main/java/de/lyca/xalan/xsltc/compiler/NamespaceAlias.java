@@ -32,24 +32,27 @@ import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
  */
 final class NamespaceAlias extends TopLevelElement {
 
-    private String sPrefix;
-    private String rPrefix;
-	
-    /*
-     * The namespace alias definitions given here have an impact only on
-     * literal elements and literal attributes.
-     */
-    public void parseContents(Parser parser) {
-	sPrefix = getAttribute("stylesheet-prefix");
-	rPrefix = getAttribute("result-prefix");
-	parser.getSymbolTable().addPrefixAlias(sPrefix,rPrefix);
-    }
-	
-    public Type typeCheck(SymbolTable stable) throws TypeCheckError {
-	return Type.Void;
-    }
-	
-    public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
-	// do nada
-    }
+  private String sPrefix;
+  private String rPrefix;
+
+  /*
+   * The namespace alias definitions given here have an impact only on literal
+   * elements and literal attributes.
+   */
+  @Override
+  public void parseContents(Parser parser) {
+    sPrefix = getAttribute("stylesheet-prefix");
+    rPrefix = getAttribute("result-prefix");
+    parser.getSymbolTable().addPrefixAlias(sPrefix, rPrefix);
+  }
+
+  @Override
+  public Type typeCheck(SymbolTable stable) throws TypeCheckError {
+    return Type.Void;
+  }
+
+  @Override
+  public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
+    // do nada
+  }
 }

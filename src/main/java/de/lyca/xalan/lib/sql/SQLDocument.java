@@ -21,29 +21,34 @@
 
 package de.lyca.xalan.lib.sql;
 
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.SQLWarning;
+import java.sql.Statement;
 import java.util.Vector;
-import java.sql.*;
 
 import de.lyca.xalan.extensions.ExpressionContext;
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xml.dtm.DTMManager;
-import de.lyca.xml.dtm.ref.*;
+import de.lyca.xml.dtm.ref.DTMManagerDefault;
 import de.lyca.xpath.XPathContext;
 
 /**
  * The SQL Document is the main controlling class the executesa SQL Query
  */
-public class SQLDocument extends DTMDocument
-{
+public class SQLDocument extends DTMDocument {
 
   /**
    */
-  private boolean DEBUG = false;
+  private final boolean DEBUG = false;
 
   /**
    */
   private static final String S_NAMESPACE = "http://xml.apache.org/xalan/SQLExtension";
-
 
   /**
    */
@@ -199,14 +204,14 @@ public class SQLDocument extends DTMDocument
   private Statement m_Statement = null;
 
   /**
-   * Expression COntext used to creat this document
-   * may be used to grab variables from the XSL processor
+   * Expression COntext used to creat this document may be used to grab
+   * variables from the XSL processor
    */
   private ExpressionContext m_ExpressionContext = null;
 
   /**
-   * The Connection Pool where we has derived all of our connections
-   * for this document
+   * The Connection Pool where we has derived all of our connections for this
+   * document
    */
   private ConnectionPool m_ConnectionPool = null;
 
@@ -216,16 +221,15 @@ public class SQLDocument extends DTMDocument
   private ResultSet m_ResultSet = null;
 
   /**
-   * The parameter definitions if this is a callable
-   * statement with output parameters.
+   * The parameter definitions if this is a callable statement with output
+   * parameters.
    */
   private SQLQueryParser m_QueryParser = null;
 
   /**
-   * As the column header array is built, keep the node index
-   * for each Column.
-   * The primary use of this is to locate the first attribute for
-   * each column in each row as we add records.
+   * As the column header array is built, keep the node index for each Column.
+   * The primary use of this is to locate the first attribute for each column in
+   * each row as we add records.
    */
   private int[] m_ColHeadersIdx;
 
@@ -236,13 +240,13 @@ public class SQLDocument extends DTMDocument
 
   /**
    * The Index of the MetaData Node. Currently the MetaData Node contains the
-   *
+   * 
    */
   private int m_MetaDataIdx = DTM.NULL;
 
   /**
-   * The index of the Row Set node. This is the sibling directly after
-   * the last Column Header.
+   * The index of the Row Set node. This is the sibling directly after the last
+   * Column Header.
    */
   private int m_RowSetIdx = DTM.NULL;
 
@@ -257,15 +261,14 @@ public class SQLDocument extends DTMDocument
   private int m_FirstRowIdx = DTM.NULL;
 
   /**
-   * Keep track of the Last row inserted into the DTM from the ResultSet.
-   * This will be used as the index of the parent Row Element when adding
-   * a row.
+   * Keep track of the Last row inserted into the DTM from the ResultSet. This
+   * will be used as the index of the parent Row Element when adding a row.
    */
   private int m_LastRowIdx = DTM.NULL;
 
   /**
-   * Streaming Mode Control, In Streaming mode we reduce the memory
-   * footprint since we only use a single row instance.
+   * Streaming Mode Control, In Streaming mode we reduce the memory footprint
+   * since we only use a single row instance.
    */
   private boolean m_StreamingMode = true;
 
@@ -275,9 +278,8 @@ public class SQLDocument extends DTMDocument
   private boolean m_MultipleResults = false;
 
   /**
-   * Flag to detect if an error occured during an operation
-   * Defines how errors are handled and how the SQL Connection
-   * is closed.
+   * Flag to detect if an error occured during an operation Defines how errors
+   * are handled and how the SQL Connection is closed.
    */
   private boolean m_HasErrors = false;
 
@@ -297,31 +299,26 @@ public class SQLDocument extends DTMDocument
    * @throws SQLException
    */
   // public cSQLDocument(DTMManager mgr, int ident, Statement stmt,
-  //  ResultSet singleResult, Vector paramdefs, boolean streamingMode,
-  // boolean multipleResults, boolean statementCachingEnabled) throws SQLException
+  // ResultSet singleResult, Vector paramdefs, boolean streamingMode,
+  // boolean multipleResults, boolean statementCachingEnabled) throws
+  // SQLException
 
-  public SQLDocument(DTMManager mgr, int ident)
-  {
+  public SQLDocument(DTMManager mgr, int ident) {
     super(mgr, ident);
   }
 
   /**
-   * This static method simplifies the creation of an SQL Document and allows
-   * us to embedd the complexity of creating / handling the dtmIdent inside
-   * the document. This type of method may better placed inside the DTMDocument
-   * code
+   * This static method simplifies the creation of an SQL Document and allows us
+   * to embedd the complexity of creating / handling the dtmIdent inside the
+   * document. This type of method may better placed inside the DTMDocument code
    */
-  public static SQLDocument getNewDocument(ExpressionContext exprContext)
-  {
-    DTMManager mgr =
-      ((XPathContext.XPathExpressionContext)exprContext).getDTMManager();
-    DTMManagerDefault  mgrDefault = (DTMManagerDefault) mgr;
+  public static SQLDocument getNewDocument(ExpressionContext exprContext) {
+    final DTMManager mgr = ((XPathContext.XPathExpressionContext) exprContext).getDTMManager();
+    final DTMManagerDefault mgrDefault = (DTMManagerDefault) mgr;
 
+    final int dtmIdent = mgrDefault.getFirstFreeDTMID();
 
-    int dtmIdent = mgrDefault.getFirstFreeDTMID();
-
-    SQLDocument doc =
-      new SQLDocument(mgr, dtmIdent << DTMManager.IDENT_DTM_NODE_BITS);
+    final SQLDocument doc = new SQLDocument(mgr, dtmIdent << DTMManager.IDENT_DTM_NODE_BITS);
 
     // Register the document
     mgrDefault.addDTM(doc, dtmIdent);
@@ -331,30 +328,23 @@ public class SQLDocument extends DTMDocument
   }
 
   /**
-   * When building the SQL Document, we need to store the Expression
-   * Context that was used to create the document. This will be se to
-   * reference items int he XSLT process such as any variables that were
-   * present.
+   * When building the SQL Document, we need to store the Expression Context
+   * that was used to create the document. This will be se to reference items
+   * int he XSLT process such as any variables that were present.
    */
-  protected void setExpressionContext(ExpressionContext expr)
-  {
+  protected void setExpressionContext(ExpressionContext expr) {
     m_ExpressionContext = expr;
   }
 
   /**
    * Return the context used to build this document
    */
-  public ExpressionContext getExpressionContext()
-  {
+  public ExpressionContext getExpressionContext() {
     return m_ExpressionContext;
   }
 
-
-  public void execute(XConnection xconn, SQLQueryParser query)
-    throws SQLException
-  {
-    try
-    {
+  public void execute(XConnection xconn, SQLQueryParser query) throws SQLException {
+    try {
       m_StreamingMode = "true".equals(xconn.getFeature("streaming"));
       m_MultipleResults = "true".equals(xconn.getFeature("multiple-results"));
       m_IsStatementCachingEnabled = "true".equals(xconn.getFeature("cache-statements"));
@@ -367,11 +357,11 @@ public class SQLDocument extends DTMDocument
 
       // Start the document here
       m_DocumentIdx = addElement(0, m_Document_TypeID, DTM.NULL, DTM.NULL);
-      m_SQLIdx = addElement(1, m_SQL_TypeID,  m_DocumentIdx, DTM.NULL);
+      m_SQLIdx = addElement(1, m_SQL_TypeID, m_DocumentIdx, DTM.NULL);
 
-
-      if ( ! m_MultipleResults )
+      if (!m_MultipleResults) {
         extractSQLMetaData(m_ResultSet.getMetaData());
+      }
 
       // Only grab the first row, subsequent rows will be
       // fetched on demand.
@@ -382,43 +372,34 @@ public class SQLDocument extends DTMDocument
       // is applied prior to looking at the first record.
       // JCG Changed 9/15/04
       // addRowToDTMFromResultSet();
-    }
-    catch(SQLException e)
-    {
+    } catch (final SQLException e) {
       m_HasErrors = true;
       throw e;
     }
   }
 
-  private void executeSQLStatement() throws SQLException
-  {
+  private void executeSQLStatement() throws SQLException {
     m_ConnectionPool = m_XConnection.getConnectionPool();
 
-    Connection conn = m_ConnectionPool.getConnection();
+    final Connection conn = m_ConnectionPool.getConnection();
 
-    if (! m_QueryParser.hasParameters() )
-    {
+    if (!m_QueryParser.hasParameters()) {
       m_Statement = conn.createStatement();
       m_ResultSet = m_Statement.executeQuery(m_QueryParser.getSQLQuery());
 
-
     }
 
-    else if (m_QueryParser.isCallable())
-    {
-      CallableStatement cstmt =
-        conn.prepareCall(m_QueryParser.getSQLQuery());
+    else if (m_QueryParser.isCallable()) {
+      final CallableStatement cstmt = conn.prepareCall(m_QueryParser.getSQLQuery());
       m_QueryParser.registerOutputParameters(cstmt);
       m_QueryParser.populateStatement(cstmt, m_ExpressionContext);
       m_Statement = cstmt;
-      if (! cstmt.execute()) throw new SQLException("Error in Callable Statement");
+      if (!cstmt.execute())
+        throw new SQLException("Error in Callable Statement");
 
       m_ResultSet = m_Statement.getResultSet();
-    }
-    else
-    {
-      PreparedStatement stmt =
-        conn.prepareStatement(m_QueryParser.getSQLQuery());
+    } else {
+      final PreparedStatement stmt = conn.prepareStatement(m_QueryParser.getSQLQuery());
       m_QueryParser.populateStatement(stmt, m_ExpressionContext);
       m_Statement = stmt;
       m_ResultSet = stmt.executeQuery();
@@ -427,30 +408,25 @@ public class SQLDocument extends DTMDocument
   }
 
   /**
-   * Push the record set forward value rows. Used to help in 
-   * SQL pagination.
+   * Push the record set forward value rows. Used to help in SQL pagination.
    * 
    * @param value
    */
-  public void skip( int value )
-  {
-    try
-    {
-      if (m_ResultSet != null) m_ResultSet.relative(value);
-    }
-    catch(Exception origEx)
-    {
+  public void skip(int value) {
+    try {
+      if (m_ResultSet != null) {
+        m_ResultSet.relative(value);
+      }
+    } catch (final Exception origEx) {
       // For now let's assume that the relative method is not supported.
       // So let's do it manually.
-      try
-      {
-        for (int x=0; x<value; x++)
-        {
-          if (! m_ResultSet.next()) break;
+      try {
+        for (int x = 0; x < value; x++) {
+          if (!m_ResultSet.next()) {
+            break;
+          }
         }
-      }
-      catch(Exception e)
-      {
+      } catch (final Exception e) {
         // If we still fail, add in both exceptions
         m_XConnection.setError(origEx, this, checkWarnings());
         m_XConnection.setError(e, this, checkWarnings());
@@ -458,14 +434,13 @@ public class SQLDocument extends DTMDocument
     }
   }
 
-
   /**
    * Extract the Meta Data and build the Column Attribute List.
+   * 
    * @param meta
    * @return
    */
-  private void extractSQLMetaData( ResultSetMetaData meta )
-  {
+  private void extractSQLMetaData(ResultSetMetaData meta) {
     // Build the Node Tree, just add the Column Header
     // branch now, the Row & col elements will be added
     // on request.
@@ -473,17 +448,14 @@ public class SQLDocument extends DTMDocument
     // Add in the row-set Element
 
     // Add in the MetaData Element
-    m_MetaDataIdx = addElement(1, m_MetaData_TypeID,  m_MultipleResults ? m_RowSetIdx : m_SQLIdx, DTM.NULL);
+    m_MetaDataIdx = addElement(1, m_MetaData_TypeID, m_MultipleResults ? m_RowSetIdx : m_SQLIdx, DTM.NULL);
 
-    try
-    {
+    try {
       m_ColCount = meta.getColumnCount();
       m_ColHeadersIdx = new int[m_ColCount];
-    }
-    catch(Exception e)
-    {
+    } catch (final Exception e) {
       m_XConnection.setError(e, this, checkWarnings());
-      //error("ERROR Extracting Metadata");
+      // error("ERROR Extracting Metadata");
     }
 
     // The ColHeaderIdx will be used to keep track of the
@@ -492,348 +464,220 @@ public class SQLDocument extends DTMDocument
 
     // JDBC Columms Start at 1
     int i = 1;
-    for (i=1; i<= m_ColCount; i++)
-    {
-      m_ColHeadersIdx[i-1] =
-        addElement(2,m_ColumnHeader_TypeID, m_MetaDataIdx, lastColHeaderIdx);
+    for (i = 1; i <= m_ColCount; i++) {
+      m_ColHeadersIdx[i - 1] = addElement(2, m_ColumnHeader_TypeID, m_MetaDataIdx, lastColHeaderIdx);
 
-      lastColHeaderIdx = m_ColHeadersIdx[i-1];
+      lastColHeaderIdx = m_ColHeadersIdx[i - 1];
       // A bit brute force, but not sure how to clean it up
 
-      try
-      {
-        addAttributeToNode(
-          meta.getColumnName(i),
-          m_ColAttrib_COLUMN_NAME_TypeID, lastColHeaderIdx);
-      }
-      catch(Exception e)
-      {
-        addAttributeToNode(
-          S_ATTRIB_NOT_SUPPORTED,
-          m_ColAttrib_COLUMN_NAME_TypeID, lastColHeaderIdx);
+      try {
+        addAttributeToNode(meta.getColumnName(i), m_ColAttrib_COLUMN_NAME_TypeID, lastColHeaderIdx);
+      } catch (final Exception e) {
+        addAttributeToNode(S_ATTRIB_NOT_SUPPORTED, m_ColAttrib_COLUMN_NAME_TypeID, lastColHeaderIdx);
       }
 
-      try
-      {
-        addAttributeToNode(
-          meta.getColumnLabel(i),
-          m_ColAttrib_COLUMN_LABEL_TypeID, lastColHeaderIdx);
-      }
-      catch(Exception e)
-      {
-        addAttributeToNode(
-          S_ATTRIB_NOT_SUPPORTED,
-          m_ColAttrib_COLUMN_LABEL_TypeID, lastColHeaderIdx);
+      try {
+        addAttributeToNode(meta.getColumnLabel(i), m_ColAttrib_COLUMN_LABEL_TypeID, lastColHeaderIdx);
+      } catch (final Exception e) {
+        addAttributeToNode(S_ATTRIB_NOT_SUPPORTED, m_ColAttrib_COLUMN_LABEL_TypeID, lastColHeaderIdx);
       }
 
-      try
-      {
-        addAttributeToNode(
-          meta.getCatalogName(i),
-          m_ColAttrib_CATALOGUE_NAME_TypeID, lastColHeaderIdx);
-      }
-      catch(Exception e)
-      {
-        addAttributeToNode(
-          S_ATTRIB_NOT_SUPPORTED,
-          m_ColAttrib_CATALOGUE_NAME_TypeID, lastColHeaderIdx);
+      try {
+        addAttributeToNode(meta.getCatalogName(i), m_ColAttrib_CATALOGUE_NAME_TypeID, lastColHeaderIdx);
+      } catch (final Exception e) {
+        addAttributeToNode(S_ATTRIB_NOT_SUPPORTED, m_ColAttrib_CATALOGUE_NAME_TypeID, lastColHeaderIdx);
       }
 
-      try
-      {
-        addAttributeToNode(
-          new Integer(meta.getColumnDisplaySize(i)),
-          m_ColAttrib_DISPLAY_SIZE_TypeID, lastColHeaderIdx);
-      }
-      catch(Exception e)
-      {
-        addAttributeToNode(
-          S_ATTRIB_NOT_SUPPORTED,
-          m_ColAttrib_DISPLAY_SIZE_TypeID, lastColHeaderIdx);
+      try {
+        addAttributeToNode(new Integer(meta.getColumnDisplaySize(i)), m_ColAttrib_DISPLAY_SIZE_TypeID, lastColHeaderIdx);
+      } catch (final Exception e) {
+        addAttributeToNode(S_ATTRIB_NOT_SUPPORTED, m_ColAttrib_DISPLAY_SIZE_TypeID, lastColHeaderIdx);
       }
 
-      try
-      {
-        addAttributeToNode(
-          new Integer(meta.getColumnType(i)),
-          m_ColAttrib_COLUMN_TYPE_TypeID, lastColHeaderIdx);
-      }
-      catch(Exception e)
-      {
-        addAttributeToNode(
-          S_ATTRIB_NOT_SUPPORTED,
-          m_ColAttrib_COLUMN_TYPE_TypeID, lastColHeaderIdx);
+      try {
+        addAttributeToNode(new Integer(meta.getColumnType(i)), m_ColAttrib_COLUMN_TYPE_TypeID, lastColHeaderIdx);
+      } catch (final Exception e) {
+        addAttributeToNode(S_ATTRIB_NOT_SUPPORTED, m_ColAttrib_COLUMN_TYPE_TypeID, lastColHeaderIdx);
       }
 
-      try
-      {
-        addAttributeToNode(
-          meta.getColumnTypeName(i),
-          m_ColAttrib_COLUMN_TYPENAME_TypeID, lastColHeaderIdx);
-      }
-      catch(Exception e)
-      {
-        addAttributeToNode(
-          S_ATTRIB_NOT_SUPPORTED,
-          m_ColAttrib_COLUMN_TYPENAME_TypeID, lastColHeaderIdx);
+      try {
+        addAttributeToNode(meta.getColumnTypeName(i), m_ColAttrib_COLUMN_TYPENAME_TypeID, lastColHeaderIdx);
+      } catch (final Exception e) {
+        addAttributeToNode(S_ATTRIB_NOT_SUPPORTED, m_ColAttrib_COLUMN_TYPENAME_TypeID, lastColHeaderIdx);
       }
 
-      try
-      {
-        addAttributeToNode(
-          new Integer(meta.getPrecision(i)),
-          m_ColAttrib_PRECISION_TypeID, lastColHeaderIdx);
+      try {
+        addAttributeToNode(new Integer(meta.getPrecision(i)), m_ColAttrib_PRECISION_TypeID, lastColHeaderIdx);
+      } catch (final Exception e) {
+        addAttributeToNode(S_ATTRIB_NOT_SUPPORTED, m_ColAttrib_PRECISION_TypeID, lastColHeaderIdx);
       }
-      catch(Exception e)
-      {
-        addAttributeToNode(
-          S_ATTRIB_NOT_SUPPORTED,
-          m_ColAttrib_PRECISION_TypeID, lastColHeaderIdx);
-      }
-      try
-      {
-        addAttributeToNode(
-          new Integer(meta.getScale(i)),
-          m_ColAttrib_SCALE_TypeID, lastColHeaderIdx);
-      }
-      catch(Exception e)
-      {
-        addAttributeToNode(
-          S_ATTRIB_NOT_SUPPORTED,
-          m_ColAttrib_SCALE_TypeID, lastColHeaderIdx);
+      try {
+        addAttributeToNode(new Integer(meta.getScale(i)), m_ColAttrib_SCALE_TypeID, lastColHeaderIdx);
+      } catch (final Exception e) {
+        addAttributeToNode(S_ATTRIB_NOT_SUPPORTED, m_ColAttrib_SCALE_TypeID, lastColHeaderIdx);
       }
 
-      try
-      {
-        addAttributeToNode(
-          meta.getSchemaName(i),
-          m_ColAttrib_SCHEMA_NAME_TypeID, lastColHeaderIdx);
+      try {
+        addAttributeToNode(meta.getSchemaName(i), m_ColAttrib_SCHEMA_NAME_TypeID, lastColHeaderIdx);
+      } catch (final Exception e) {
+        addAttributeToNode(S_ATTRIB_NOT_SUPPORTED, m_ColAttrib_SCHEMA_NAME_TypeID, lastColHeaderIdx);
       }
-      catch(Exception e)
-      {
-        addAttributeToNode(
-          S_ATTRIB_NOT_SUPPORTED,
-          m_ColAttrib_SCHEMA_NAME_TypeID, lastColHeaderIdx);
-      }
-      try
-      {
-        addAttributeToNode(
-          meta.getTableName(i),
-          m_ColAttrib_TABLE_NAME_TypeID, lastColHeaderIdx);
-      }
-      catch(Exception e)
-      {
-        addAttributeToNode(
-          S_ATTRIB_NOT_SUPPORTED,
-          m_ColAttrib_TABLE_NAME_TypeID, lastColHeaderIdx);
+      try {
+        addAttributeToNode(meta.getTableName(i), m_ColAttrib_TABLE_NAME_TypeID, lastColHeaderIdx);
+      } catch (final Exception e) {
+        addAttributeToNode(S_ATTRIB_NOT_SUPPORTED, m_ColAttrib_TABLE_NAME_TypeID, lastColHeaderIdx);
       }
 
-      try
-      {
-        addAttributeToNode(
-          meta.isCaseSensitive(i) ? S_ISTRUE : S_ISFALSE,
-          m_ColAttrib_CASESENSITIVE_TypeID, lastColHeaderIdx);
-      }
-      catch(Exception e)
-      {
-        addAttributeToNode(
-          S_ATTRIB_NOT_SUPPORTED,
-          m_ColAttrib_CASESENSITIVE_TypeID, lastColHeaderIdx);
+      try {
+        addAttributeToNode(meta.isCaseSensitive(i) ? S_ISTRUE : S_ISFALSE, m_ColAttrib_CASESENSITIVE_TypeID,
+                lastColHeaderIdx);
+      } catch (final Exception e) {
+        addAttributeToNode(S_ATTRIB_NOT_SUPPORTED, m_ColAttrib_CASESENSITIVE_TypeID, lastColHeaderIdx);
       }
 
-      try
-      {
-        addAttributeToNode(
-          meta.isDefinitelyWritable(i) ? S_ISTRUE : S_ISFALSE,
-          m_ColAttrib_DEFINITELYWRITEABLE_TypeID, lastColHeaderIdx);
-      }
-      catch(Exception e)
-      {
-        addAttributeToNode(
-          S_ATTRIB_NOT_SUPPORTED,
-          m_ColAttrib_DEFINITELYWRITEABLE_TypeID, lastColHeaderIdx);
+      try {
+        addAttributeToNode(meta.isDefinitelyWritable(i) ? S_ISTRUE : S_ISFALSE, m_ColAttrib_DEFINITELYWRITEABLE_TypeID,
+                lastColHeaderIdx);
+      } catch (final Exception e) {
+        addAttributeToNode(S_ATTRIB_NOT_SUPPORTED, m_ColAttrib_DEFINITELYWRITEABLE_TypeID, lastColHeaderIdx);
       }
 
-      try
-      {
-        addAttributeToNode(
-          meta.isNullable(i) != 0 ? S_ISTRUE : S_ISFALSE,
-          m_ColAttrib_ISNULLABLE_TypeID, lastColHeaderIdx);
-      }
-      catch(Exception e)
-      {
-        addAttributeToNode(
-          S_ATTRIB_NOT_SUPPORTED,
-          m_ColAttrib_ISNULLABLE_TypeID, lastColHeaderIdx);
+      try {
+        addAttributeToNode(meta.isNullable(i) != 0 ? S_ISTRUE : S_ISFALSE, m_ColAttrib_ISNULLABLE_TypeID,
+                lastColHeaderIdx);
+      } catch (final Exception e) {
+        addAttributeToNode(S_ATTRIB_NOT_SUPPORTED, m_ColAttrib_ISNULLABLE_TypeID, lastColHeaderIdx);
       }
 
-      try
-      {
-        addAttributeToNode(
-          meta.isSigned(i) ? S_ISTRUE : S_ISFALSE,
-          m_ColAttrib_ISSIGNED_TypeID, lastColHeaderIdx);
-      }
-      catch(Exception e)
-      {
-        addAttributeToNode(
-          S_ATTRIB_NOT_SUPPORTED,
-          m_ColAttrib_ISSIGNED_TypeID, lastColHeaderIdx);
+      try {
+        addAttributeToNode(meta.isSigned(i) ? S_ISTRUE : S_ISFALSE, m_ColAttrib_ISSIGNED_TypeID, lastColHeaderIdx);
+      } catch (final Exception e) {
+        addAttributeToNode(S_ATTRIB_NOT_SUPPORTED, m_ColAttrib_ISSIGNED_TypeID, lastColHeaderIdx);
       }
 
-      try
-      {
-        addAttributeToNode(
-          meta.isWritable(i) == true ? S_ISTRUE : S_ISFALSE,
-          m_ColAttrib_ISWRITEABLE_TypeID, lastColHeaderIdx);
-      }
-      catch(Exception e)
-      {
-        addAttributeToNode(
-          S_ATTRIB_NOT_SUPPORTED,
-          m_ColAttrib_ISWRITEABLE_TypeID, lastColHeaderIdx);
+      try {
+        addAttributeToNode(meta.isWritable(i) == true ? S_ISTRUE : S_ISFALSE, m_ColAttrib_ISWRITEABLE_TypeID,
+                lastColHeaderIdx);
+      } catch (final Exception e) {
+        addAttributeToNode(S_ATTRIB_NOT_SUPPORTED, m_ColAttrib_ISWRITEABLE_TypeID, lastColHeaderIdx);
       }
 
-      try
-      {
-        addAttributeToNode(
-          meta.isSearchable(i) == true ? S_ISTRUE : S_ISFALSE,
-          m_ColAttrib_ISSEARCHABLE_TypeID, lastColHeaderIdx);
-      }
-      catch(Exception e)
-      {
-        addAttributeToNode(
-          S_ATTRIB_NOT_SUPPORTED,
-          m_ColAttrib_ISSEARCHABLE_TypeID, lastColHeaderIdx);
+      try {
+        addAttributeToNode(meta.isSearchable(i) == true ? S_ISTRUE : S_ISFALSE, m_ColAttrib_ISSEARCHABLE_TypeID,
+                lastColHeaderIdx);
+      } catch (final Exception e) {
+        addAttributeToNode(S_ATTRIB_NOT_SUPPORTED, m_ColAttrib_ISSEARCHABLE_TypeID, lastColHeaderIdx);
       }
     }
   }
 
   /**
-   * Populate the Expanded Name Table with the Node that we will use.
-   * Keep a reference of each of the types for access speed.
+   * Populate the Expanded Name Table with the Node that we will use. Keep a
+   * reference of each of the types for access speed.
+   * 
    * @return
    */
-  protected void createExpandedNameTable( )
-  {
+  @Override
+  protected void createExpandedNameTable() {
     super.createExpandedNameTable();
 
-    m_SQL_TypeID =
-      m_expandedNameTable.getExpandedTypeID(S_NAMESPACE, S_SQL, DTM.ELEMENT_NODE);
+    m_SQL_TypeID = m_expandedNameTable.getExpandedTypeID(S_NAMESPACE, S_SQL, DTM.ELEMENT_NODE);
 
-    m_MetaData_TypeID =
-      m_expandedNameTable.getExpandedTypeID(S_NAMESPACE, S_METADATA, DTM.ELEMENT_NODE);
+    m_MetaData_TypeID = m_expandedNameTable.getExpandedTypeID(S_NAMESPACE, S_METADATA, DTM.ELEMENT_NODE);
 
-    m_ColumnHeader_TypeID =
-      m_expandedNameTable.getExpandedTypeID(S_NAMESPACE, S_COLUMN_HEADER, DTM.ELEMENT_NODE);
-    m_RowSet_TypeID =
-      m_expandedNameTable.getExpandedTypeID(S_NAMESPACE, S_ROW_SET, DTM.ELEMENT_NODE);
-    m_Row_TypeID =
-      m_expandedNameTable.getExpandedTypeID(S_NAMESPACE, S_ROW, DTM.ELEMENT_NODE);
-    m_Col_TypeID =
-      m_expandedNameTable.getExpandedTypeID(S_NAMESPACE, S_COL, DTM.ELEMENT_NODE);
-    m_OutParameter_TypeID =
-      m_expandedNameTable.getExpandedTypeID(S_NAMESPACE, S_OUT_PARAMETERS, DTM.ELEMENT_NODE);
+    m_ColumnHeader_TypeID = m_expandedNameTable.getExpandedTypeID(S_NAMESPACE, S_COLUMN_HEADER, DTM.ELEMENT_NODE);
+    m_RowSet_TypeID = m_expandedNameTable.getExpandedTypeID(S_NAMESPACE, S_ROW_SET, DTM.ELEMENT_NODE);
+    m_Row_TypeID = m_expandedNameTable.getExpandedTypeID(S_NAMESPACE, S_ROW, DTM.ELEMENT_NODE);
+    m_Col_TypeID = m_expandedNameTable.getExpandedTypeID(S_NAMESPACE, S_COL, DTM.ELEMENT_NODE);
+    m_OutParameter_TypeID = m_expandedNameTable.getExpandedTypeID(S_NAMESPACE, S_OUT_PARAMETERS, DTM.ELEMENT_NODE);
 
-    m_ColAttrib_CATALOGUE_NAME_TypeID =
-      m_expandedNameTable.getExpandedTypeID(S_NAMESPACE, S_CATALOGUE_NAME, DTM.ATTRIBUTE_NODE);
-    m_ColAttrib_DISPLAY_SIZE_TypeID =
-      m_expandedNameTable.getExpandedTypeID(S_NAMESPACE, S_DISPLAY_SIZE, DTM.ATTRIBUTE_NODE);
-    m_ColAttrib_COLUMN_LABEL_TypeID =
-      m_expandedNameTable.getExpandedTypeID(S_NAMESPACE, S_COLUMN_LABEL, DTM.ATTRIBUTE_NODE);
-    m_ColAttrib_COLUMN_NAME_TypeID =
-      m_expandedNameTable.getExpandedTypeID(S_NAMESPACE, S_COLUMN_NAME, DTM.ATTRIBUTE_NODE);
-    m_ColAttrib_COLUMN_TYPE_TypeID =
-      m_expandedNameTable.getExpandedTypeID(S_NAMESPACE, S_COLUMN_TYPE, DTM.ATTRIBUTE_NODE);
-    m_ColAttrib_COLUMN_TYPENAME_TypeID =
-      m_expandedNameTable.getExpandedTypeID(S_NAMESPACE, S_COLUMN_TYPENAME, DTM.ATTRIBUTE_NODE);
-    m_ColAttrib_PRECISION_TypeID =
-      m_expandedNameTable.getExpandedTypeID(S_NAMESPACE, S_PRECISION, DTM.ATTRIBUTE_NODE);
-    m_ColAttrib_SCALE_TypeID =
-      m_expandedNameTable.getExpandedTypeID(S_NAMESPACE, S_SCALE, DTM.ATTRIBUTE_NODE);
-    m_ColAttrib_SCHEMA_NAME_TypeID =
-      m_expandedNameTable.getExpandedTypeID(S_NAMESPACE, S_SCHEMA_NAME, DTM.ATTRIBUTE_NODE);
-    m_ColAttrib_TABLE_NAME_TypeID =
-      m_expandedNameTable.getExpandedTypeID(S_NAMESPACE, S_TABLE_NAME, DTM.ATTRIBUTE_NODE);
-    m_ColAttrib_CASESENSITIVE_TypeID =
-      m_expandedNameTable.getExpandedTypeID(S_NAMESPACE, S_CASESENSITIVE, DTM.ATTRIBUTE_NODE);
-    m_ColAttrib_DEFINITELYWRITEABLE_TypeID =
-      m_expandedNameTable.getExpandedTypeID(S_NAMESPACE, S_DEFINITELYWRITABLE, DTM.ATTRIBUTE_NODE);
-    m_ColAttrib_ISNULLABLE_TypeID =
-      m_expandedNameTable.getExpandedTypeID(S_NAMESPACE, S_ISNULLABLE, DTM.ATTRIBUTE_NODE);
-    m_ColAttrib_ISSIGNED_TypeID =
-      m_expandedNameTable.getExpandedTypeID(S_NAMESPACE, S_ISSIGNED, DTM.ATTRIBUTE_NODE);
-    m_ColAttrib_ISWRITEABLE_TypeID =
-      m_expandedNameTable.getExpandedTypeID(S_NAMESPACE, S_ISWRITEABLE, DTM.ATTRIBUTE_NODE);
-    m_ColAttrib_ISSEARCHABLE_TypeID =
-      m_expandedNameTable.getExpandedTypeID(S_NAMESPACE, S_ISSEARCHABLE, DTM.ATTRIBUTE_NODE);
+    m_ColAttrib_CATALOGUE_NAME_TypeID = m_expandedNameTable.getExpandedTypeID(S_NAMESPACE, S_CATALOGUE_NAME,
+            DTM.ATTRIBUTE_NODE);
+    m_ColAttrib_DISPLAY_SIZE_TypeID = m_expandedNameTable.getExpandedTypeID(S_NAMESPACE, S_DISPLAY_SIZE,
+            DTM.ATTRIBUTE_NODE);
+    m_ColAttrib_COLUMN_LABEL_TypeID = m_expandedNameTable.getExpandedTypeID(S_NAMESPACE, S_COLUMN_LABEL,
+            DTM.ATTRIBUTE_NODE);
+    m_ColAttrib_COLUMN_NAME_TypeID = m_expandedNameTable.getExpandedTypeID(S_NAMESPACE, S_COLUMN_NAME,
+            DTM.ATTRIBUTE_NODE);
+    m_ColAttrib_COLUMN_TYPE_TypeID = m_expandedNameTable.getExpandedTypeID(S_NAMESPACE, S_COLUMN_TYPE,
+            DTM.ATTRIBUTE_NODE);
+    m_ColAttrib_COLUMN_TYPENAME_TypeID = m_expandedNameTable.getExpandedTypeID(S_NAMESPACE, S_COLUMN_TYPENAME,
+            DTM.ATTRIBUTE_NODE);
+    m_ColAttrib_PRECISION_TypeID = m_expandedNameTable.getExpandedTypeID(S_NAMESPACE, S_PRECISION, DTM.ATTRIBUTE_NODE);
+    m_ColAttrib_SCALE_TypeID = m_expandedNameTable.getExpandedTypeID(S_NAMESPACE, S_SCALE, DTM.ATTRIBUTE_NODE);
+    m_ColAttrib_SCHEMA_NAME_TypeID = m_expandedNameTable.getExpandedTypeID(S_NAMESPACE, S_SCHEMA_NAME,
+            DTM.ATTRIBUTE_NODE);
+    m_ColAttrib_TABLE_NAME_TypeID = m_expandedNameTable
+            .getExpandedTypeID(S_NAMESPACE, S_TABLE_NAME, DTM.ATTRIBUTE_NODE);
+    m_ColAttrib_CASESENSITIVE_TypeID = m_expandedNameTable.getExpandedTypeID(S_NAMESPACE, S_CASESENSITIVE,
+            DTM.ATTRIBUTE_NODE);
+    m_ColAttrib_DEFINITELYWRITEABLE_TypeID = m_expandedNameTable.getExpandedTypeID(S_NAMESPACE, S_DEFINITELYWRITABLE,
+            DTM.ATTRIBUTE_NODE);
+    m_ColAttrib_ISNULLABLE_TypeID = m_expandedNameTable
+            .getExpandedTypeID(S_NAMESPACE, S_ISNULLABLE, DTM.ATTRIBUTE_NODE);
+    m_ColAttrib_ISSIGNED_TypeID = m_expandedNameTable.getExpandedTypeID(S_NAMESPACE, S_ISSIGNED, DTM.ATTRIBUTE_NODE);
+    m_ColAttrib_ISWRITEABLE_TypeID = m_expandedNameTable.getExpandedTypeID(S_NAMESPACE, S_ISWRITEABLE,
+            DTM.ATTRIBUTE_NODE);
+    m_ColAttrib_ISSEARCHABLE_TypeID = m_expandedNameTable.getExpandedTypeID(S_NAMESPACE, S_ISSEARCHABLE,
+            DTM.ATTRIBUTE_NODE);
   }
 
-
   /**
-   * Pull a record from the result set and map it to a DTM based ROW
-   * If we are in Streaming mode, then only create a single row and
-   * keep copying the data into the same row. This will keep the memory
-   * footprint constint independant of the RecordSet Size. If we are not
-   * in Streaming mode then create ROWS for the whole tree.
+   * Pull a record from the result set and map it to a DTM based ROW If we are
+   * in Streaming mode, then only create a single row and keep copying the data
+   * into the same row. This will keep the memory footprint constint independant
+   * of the RecordSet Size. If we are not in Streaming mode then create ROWS for
+   * the whole tree.
+   * 
    * @return
    */
-  private boolean addRowToDTMFromResultSet( )
-  {
-    try
-    {
+  private boolean addRowToDTMFromResultSet() {
+    try {
       // If we have not started the RowSet yet, then add it to the
       // tree.
-      if (m_FirstRowIdx == DTM.NULL)
-      {
-        m_RowSetIdx =
-          addElement(1, m_RowSet_TypeID,  m_SQLIdx, m_MultipleResults ? m_RowSetIdx : m_MetaDataIdx);
-        if ( m_MultipleResults ) extractSQLMetaData(m_ResultSet.getMetaData());
+      if (m_FirstRowIdx == DTM.NULL) {
+        m_RowSetIdx = addElement(1, m_RowSet_TypeID, m_SQLIdx, m_MultipleResults ? m_RowSetIdx : m_MetaDataIdx);
+        if (m_MultipleResults) {
+          extractSQLMetaData(m_ResultSet.getMetaData());
+        }
       }
-
 
       // Check to see if all the data has been read from the Query.
       // If we are at the end the signal that event
-      if ( ! m_ResultSet.next())
-      {
+      if (!m_ResultSet.next()) {
         // In Streaming mode, the current ROW will always point back
         // to itself until all the data was read. Once the Query is
         // empty then point the next row to DTM.NULL so that the stream
         // ends. Only do this if we have statted the loop to begin with.
 
-        if (m_StreamingMode && (m_LastRowIdx != DTM.NULL))
-        {
+        if (m_StreamingMode && m_LastRowIdx != DTM.NULL) {
           // We are at the end, so let's untie the mark
           m_nextsib.setElementAt(DTM.NULL, m_LastRowIdx);
         }
 
         m_ResultSet.close();
-        if ( m_MultipleResults )
-        {
-          while ( !m_Statement.getMoreResults() && m_Statement.getUpdateCount() >= 0 ) ;
+        if (m_MultipleResults) {
+          while (!m_Statement.getMoreResults() && m_Statement.getUpdateCount() >= 0) {
+            ;
+          }
           m_ResultSet = m_Statement.getResultSet();
-        }
-        else
+        } else {
           m_ResultSet = null;
+        }
 
-        if ( m_ResultSet != null )
-        {
+        if (m_ResultSet != null) {
           m_FirstRowIdx = DTM.NULL;
           addRowToDTMFromResultSet();
-        }
-        else
-        {
-          Vector parameters = m_QueryParser.getParameters();
+        } else {
+          final Vector parameters = m_QueryParser.getParameters();
           // Get output parameters.
-          if ( parameters != null )
-          {
-            int outParamIdx = addElement(1, m_OutParameter_TypeID,  m_SQLIdx, m_RowSetIdx);
+          if (parameters != null) {
+            final int outParamIdx = addElement(1, m_OutParameter_TypeID, m_SQLIdx, m_RowSetIdx);
             int lastColID = DTM.NULL;
-            for ( int indx = 0 ; indx < parameters.size() ; indx++ )
-            {
-              QueryParameter parm = (QueryParameter)parameters.elementAt(indx);
-              if ( parm.isOutput() )
-              {
-                Object rawobj = ((CallableStatement)m_Statement).getObject(indx + 1);
+            for (int indx = 0; indx < parameters.size(); indx++) {
+              final QueryParameter parm = (QueryParameter) parameters.elementAt(indx);
+              if (parm.isOutput()) {
+                final Object rawobj = ((CallableStatement) m_Statement).getObject(indx + 1);
                 lastColID = addElementWithData(rawobj, 2, m_Col_TypeID, outParamIdx, lastColID);
                 addAttributeToNode(parm.getName(), m_ColAttrib_COLUMN_NAME_TypeID, lastColID);
                 addAttributeToNode(parm.getName(), m_ColAttrib_COLUMN_LABEL_TypeID, lastColID);
@@ -843,34 +687,30 @@ public class SQLDocument extends DTMDocument
             }
           }
 
-          SQLWarning warn = checkWarnings();
-          if ( warn != null )	m_XConnection.setError(null, null, warn);
+          final SQLWarning warn = checkWarnings();
+          if (warn != null) {
+            m_XConnection.setError(null, null, warn);
+          }
         }
 
         return false;
       }
 
       // If this is the first time here, start the new level
-      if (m_FirstRowIdx == DTM.NULL)
-      {
-        m_FirstRowIdx =
-          addElement(2, m_Row_TypeID, m_RowSetIdx, m_MultipleResults ? m_MetaDataIdx : DTM.NULL);
+      if (m_FirstRowIdx == DTM.NULL) {
+        m_FirstRowIdx = addElement(2, m_Row_TypeID, m_RowSetIdx, m_MultipleResults ? m_MetaDataIdx : DTM.NULL);
 
         m_LastRowIdx = m_FirstRowIdx;
 
-        if (m_StreamingMode)
-        {
+        if (m_StreamingMode) {
           // Let's tie the rows together until the end.
           m_nextsib.setElementAt(m_LastRowIdx, m_LastRowIdx);
         }
 
-      }
-      else
-      {
+      } else {
         //
         // If we are in Streaming mode, then only use a single row instance
-        if (! m_StreamingMode)
-        {
+        if (!m_StreamingMode) {
           m_LastRowIdx = addElement(2, m_Row_TypeID, m_RowSetIdx, m_LastRowIdx);
         }
       }
@@ -883,31 +723,24 @@ public class SQLDocument extends DTMDocument
       int pcolID = DTM.NULL;
 
       // Columns in JDBC Start at 1 and go to the Extent
-      for (int i=1; i<= m_ColCount; i++)
-      {
+      for (int i = 1; i <= m_ColCount; i++) {
         // Just grab the Column Object Type, we will convert it to a string
         // later.
-        Object o = m_ResultSet.getObject(i);
+        final Object o = m_ResultSet.getObject(i);
 
         // Create a new column object if one does not exist.
         // In Streaming mode, this mechinism will reuse the column
         // data the second and subsequent row accesses.
-        if (colID == DTM.NULL)
-        {
-          pcolID = addElementWithData(o,3,m_Col_TypeID, m_LastRowIdx, pcolID);
-          cloneAttributeFromNode(pcolID, m_ColHeadersIdx[i-1]);
-        }
-        else
-        {
+        if (colID == DTM.NULL) {
+          pcolID = addElementWithData(o, 3, m_Col_TypeID, m_LastRowIdx, pcolID);
+          cloneAttributeFromNode(pcolID, m_ColHeadersIdx[i - 1]);
+        } else {
           // We must be in streaming mode, so let's just replace the data
           // If the firstch was not set then we have a major error
-          int dataIdent = _firstch(colID);
-          if (dataIdent == DTM.NULL)
-          {
+          final int dataIdent = _firstch(colID);
+          if (dataIdent == DTM.NULL) {
             error("Streaming Mode, Data Error");
-          }
-          else
-          {
+          } else {
             m_ObjectArray.setAt(dataIdent, o);
           }
         } // If
@@ -915,19 +748,14 @@ public class SQLDocument extends DTMDocument
         // In streaming mode, this will be !DTM.NULL
         // So if the elements were already established then we
         // should be able to walk them in order.
-        if (colID != DTM.NULL)
-        {
+        if (colID != DTM.NULL) {
           colID = _nextsib(colID);
         }
 
       } // For Col Loop
-    }
-    catch(Exception e)
-    {
-      if (DEBUG)
-      {
-        System.out.println(
-          "SQL Error Fetching next row [" + e.getLocalizedMessage() + "]");
+    } catch (final Exception e) {
+      if (DEBUG) {
+        System.out.println("SQL Error Fetching next row [" + e.getLocalizedMessage() + "]");
       }
 
       m_XConnection.setError(e, this, checkWarnings());
@@ -938,13 +766,11 @@ public class SQLDocument extends DTMDocument
     return true;
   }
 
-
   /**
-   * Used by the XConnection to determine if the Document should
-   * handle the document differently.
+   * Used by the XConnection to determine if the Document should handle the
+   * document differently.
    */
-  public boolean hasErrors()
-  {
+  public boolean hasErrors() {
     return m_HasErrors;
   }
 
@@ -952,53 +778,49 @@ public class SQLDocument extends DTMDocument
    * Close down any resources used by this document. If an SQL Error occure
    * while the document was being accessed, the SQL Connection used to create
    * this document will be released to the Connection Pool on error. This allows
-   * the COnnection Pool to give special attention to any connection that may
-   * be in a errored state.
-   *
+   * the COnnection Pool to give special attention to any connection that may be
+   * in a errored state.
+   * 
    */
-  public void close(boolean flushConnPool )
-  {
-    try
-    {
-      SQLWarning warn = checkWarnings();
-      if ( warn != null ) m_XConnection.setError(null, null, warn);
+  public void close(boolean flushConnPool) {
+    try {
+      final SQLWarning warn = checkWarnings();
+      if (warn != null) {
+        m_XConnection.setError(null, null, warn);
+      }
+    } catch (final Exception e) {
     }
-    catch(Exception e) {}
 
-    try
-    {
-      if (null != m_ResultSet)
-      {
+    try {
+      if (null != m_ResultSet) {
         m_ResultSet.close();
         m_ResultSet = null;
       }
+    } catch (final Exception e) {
     }
-    catch(Exception e) {}
-
 
     Connection conn = null;
 
-    try
-    {
-      if (null != m_Statement)
-      {
+    try {
+      if (null != m_Statement) {
         conn = m_Statement.getConnection();
         m_Statement.close();
         m_Statement = null;
       }
+    } catch (final Exception e) {
     }
-    catch(Exception e) {}
 
-    try
-    {
-      if (conn != null)
-      {
-        if (m_HasErrors)  m_ConnectionPool.releaseConnectionOnError(conn);
-        else m_ConnectionPool.releaseConnection(conn);
-//        if (flushConnPool)  m_ConnectionPool.freeUnused();
+    try {
+      if (conn != null) {
+        if (m_HasErrors) {
+          m_ConnectionPool.releaseConnectionOnError(conn);
+        } else {
+          m_ConnectionPool.releaseConnection(conn);
+          // if (flushConnPool) m_ConnectionPool.freeUnused();
+        }
       }
+    } catch (final Exception e) {
     }
-    catch(Exception e) {}
 
     getManager().release(this, true);
   }
@@ -1006,16 +828,15 @@ public class SQLDocument extends DTMDocument
   /**
    * @return
    */
-  protected boolean nextNode( )
-  {
-    if (DEBUG) System.out.println("nextNode()");
-    try
-    {
-      return false;
-//      return m_ResultSet.isAfterLast();
+  @Override
+  protected boolean nextNode() {
+    if (DEBUG) {
+      System.out.println("nextNode()");
     }
-    catch(Exception e)
-    {
+    try {
+      return false;
+      // return m_ResultSet.isAfterLast();
+    } catch (final Exception e) {
       return false;
     }
   }
@@ -1024,64 +845,63 @@ public class SQLDocument extends DTMDocument
    * @param identity
    * @return
    */
-  protected int _nextsib( int identity )
-  {
+  @Override
+  protected int _nextsib(int identity) {
     // If we are asking for the next row and we have not
     // been there yet then let's see if we can get another
     // row from the ResultSet.
     //
 
-  if ( m_ResultSet != null )
-  {
-      int id = _exptype(identity);
-      
+    if (m_ResultSet != null) {
+      final int id = _exptype(identity);
+
       // We need to prime the pump since we don't do it in execute any more.
-      if (m_FirstRowIdx == DTM.NULL)
-      {
+      if (m_FirstRowIdx == DTM.NULL) {
         addRowToDTMFromResultSet();
       }
-      
-      if (
-        ( id == m_Row_TypeID) &&
-        (identity >= m_LastRowIdx) )
-      {
-        if (DEBUG) System.out.println("reading from the ResultSet");
+
+      if (id == m_Row_TypeID && identity >= m_LastRowIdx) {
+        if (DEBUG) {
+          System.out.println("reading from the ResultSet");
+        }
         addRowToDTMFromResultSet();
+      } else if (m_MultipleResults && identity == m_RowSetIdx) {
+        if (DEBUG) {
+          System.out.println("reading for next ResultSet");
+        }
+        final int startIdx = m_RowSetIdx;
+        while (startIdx == m_RowSetIdx && m_ResultSet != null) {
+          addRowToDTMFromResultSet();
+        }
       }
-      else if ( m_MultipleResults && identity == m_RowSetIdx )
-      {
-        if (DEBUG) System.out.println("reading for next ResultSet");
-      int startIdx = m_RowSetIdx;
-      while ( startIdx == m_RowSetIdx && m_ResultSet != null )
-            addRowToDTMFromResultSet();
-      }
-  }
+    }
 
     return super._nextsib(identity);
   }
 
-  public void documentRegistration()
-  {
-    if (DEBUG) System.out.println("Document Registration");
+  @Override
+  public void documentRegistration() {
+    if (DEBUG) {
+      System.out.println("Document Registration");
+    }
   }
 
-  public void documentRelease()
-  {
-    if (DEBUG) System.out.println("Document Release");
+  @Override
+  public void documentRelease() {
+    if (DEBUG) {
+      System.out.println("Document Release");
+    }
   }
 
-  public SQLWarning checkWarnings()
-  {
+  public SQLWarning checkWarnings() {
     SQLWarning warn = null;
-    if ( m_Statement != null )
-    {
-      try
-      {
+    if (m_Statement != null) {
+      try {
         warn = m_Statement.getWarnings();
         m_Statement.clearWarnings();
+      } catch (final SQLException se) {
       }
-      catch (SQLException se) {}
     }
-    return(warn);
+    return warn;
   }
 }

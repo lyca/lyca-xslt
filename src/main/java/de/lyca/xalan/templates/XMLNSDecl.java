@@ -23,65 +23,73 @@ package de.lyca.xalan.templates;
 /**
  * Represents an xmlns declaration
  */
-public class XMLNSDecl
-        implements java.io.Serializable // 20001009 jkess
+public class XMLNSDecl implements java.io.Serializable // 20001009 jkess
 {
-    static final long serialVersionUID = 6710237366877605097L;
+  static final long serialVersionUID = 6710237366877605097L;
 
   /**
    * Constructor XMLNSDecl
-   *
-   * @param prefix non-null reference to prefix, using "" for default namespace.
-   * @param uri non-null reference to namespace URI.
-   * @param isExcluded true if this namespace declaration should normally be excluded.
+   * 
+   * @param prefix
+   *          non-null reference to prefix, using "" for default namespace.
+   * @param uri
+   *          non-null reference to namespace URI.
+   * @param isExcluded
+   *          true if this namespace declaration should normally be excluded.
    */
-  public XMLNSDecl(String prefix, String uri, boolean isExcluded)
-  {
+  public XMLNSDecl(String prefix, String uri, boolean isExcluded) {
 
     m_prefix = prefix;
     m_uri = uri;
     m_isExcluded = isExcluded;
   }
 
-  /** non-null reference to prefix, using "" for default namespace.
-   *  @serial */
-  private String m_prefix;
+  /**
+   * non-null reference to prefix, using "" for default namespace.
+   * 
+   * @serial
+   */
+  private final String m_prefix;
 
   /**
    * Return the prefix.
-   * @return The prefix that is associated with this URI, or null
-   * if the XMLNSDecl is declaring the default namespace.
+   * 
+   * @return The prefix that is associated with this URI, or null if the
+   *         XMLNSDecl is declaring the default namespace.
    */
-  public String getPrefix()
-  {
+  public String getPrefix() {
     return m_prefix;
   }
 
-  /** non-null reference to namespace URI.
-   *  @serial  */
-  private String m_uri;
+  /**
+   * non-null reference to namespace URI.
+   * 
+   * @serial
+   */
+  private final String m_uri;
 
   /**
    * Return the URI.
+   * 
    * @return The URI that is associated with this declaration.
    */
-  public String getURI()
-  {
+  public String getURI() {
     return m_uri;
   }
 
-  /** true if this namespace declaration should normally be excluded.
-   *  @serial  */
-  private boolean m_isExcluded;
+  /**
+   * true if this namespace declaration should normally be excluded.
+   * 
+   * @serial
+   */
+  private final boolean m_isExcluded;
 
   /**
-   * Tell if this declaration should be excluded from the
-   * result namespace.
-   *
+   * Tell if this declaration should be excluded from the result namespace.
+   * 
    * @return true if this namespace declaration should normally be excluded.
    */
-  public boolean getIsExcluded()
-  {
+  public boolean getIsExcluded() {
     return m_isExcluded;
   }
 }

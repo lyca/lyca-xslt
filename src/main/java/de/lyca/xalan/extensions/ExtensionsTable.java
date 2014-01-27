@@ -31,211 +31,191 @@ import de.lyca.xpath.functions.FuncExtFunction;
 
 /**
  * Class holding a table registered extension namespace handlers
+ * 
  * @xsl.usage internal
  */
-public class ExtensionsTable
-{  
+public class ExtensionsTable {
   /**
-   * Table of extensions that may be called from the expression language
-   * via the call(name, ...) function.  Objects are keyed on the call
-   * name.
+   * Table of extensions that may be called from the expression language via the
+   * call(name, ...) function. Objects are keyed on the call name.
+   * 
    * @xsl.usage internal
    */
   public Hashtable m_extensionFunctionNamespaces = new Hashtable();
-  
+
   /**
    * The StylesheetRoot associated with this extensions table.
    */
-  private StylesheetRoot m_sroot;
-  
+  private final StylesheetRoot m_sroot;
+
   /**
-   * The constructor (called from TransformerImpl) registers the
-   * StylesheetRoot for the transformation and instantiates an
-   * ExtensionHandler for each extension namespace.
+   * The constructor (called from TransformerImpl) registers the StylesheetRoot
+   * for the transformation and instantiates an ExtensionHandler for each
+   * extension namespace.
+   * 
    * @xsl.usage advanced
    */
-  public ExtensionsTable(StylesheetRoot sroot)
-    throws javax.xml.transform.TransformerException
-  {
+  public ExtensionsTable(StylesheetRoot sroot) throws javax.xml.transform.TransformerException {
     m_sroot = sroot;
-    Vector extensions = m_sroot.getExtensions();
-    for (int i = 0; i < extensions.size(); i++)
-    {
-      ExtensionNamespaceSupport extNamespaceSpt = 
-                 (ExtensionNamespaceSupport)extensions.get(i);
-      ExtensionHandler extHandler = extNamespaceSpt.launch();
-        if (extHandler != null)
-          addExtensionNamespace(extNamespaceSpt.getNamespace(), extHandler);
+    final Vector extensions = m_sroot.getExtensions();
+    for (int i = 0; i < extensions.size(); i++) {
+      final ExtensionNamespaceSupport extNamespaceSpt = (ExtensionNamespaceSupport) extensions.get(i);
+      final ExtensionHandler extHandler = extNamespaceSpt.launch();
+      if (extHandler != null) {
+        addExtensionNamespace(extNamespaceSpt.getNamespace(), extHandler);
       }
     }
-       
+  }
+
   /**
-   * Get an ExtensionHandler object that represents the
-   * given namespace.
-   * @param extns A valid extension namespace.
-   *
-   * @return ExtensionHandler object that represents the
-   * given namespace.
+   * Get an ExtensionHandler object that represents the given namespace.
+   * 
+   * @param extns
+   *          A valid extension namespace.
+   * 
+   * @return ExtensionHandler object that represents the given namespace.
    */
-  public ExtensionHandler get(String extns)
-  {
+  public ExtensionHandler get(String extns) {
     return (ExtensionHandler) m_extensionFunctionNamespaces.get(extns);
   }
 
   /**
-   * Register an extension namespace handler. This handler provides
-   * functions for testing whether a function is known within the
-   * namespace and also for invoking the functions.
-   *
-   * @param uri the URI for the extension.
-   * @param extNS the extension handler.
+   * Register an extension namespace handler. This handler provides functions
+   * for testing whether a function is known within the namespace and also for
+   * invoking the functions.
+   * 
+   * @param uri
+   *          the URI for the extension.
+   * @param extNS
+   *          the extension handler.
    * @xsl.usage advanced
    */
-  public void addExtensionNamespace(String uri, ExtensionHandler extNS)
-  {
+  public void addExtensionNamespace(String uri, ExtensionHandler extNS) {
     m_extensionFunctionNamespaces.put(uri, extNS);
   }
 
   /**
    * Execute the function-available() function.
-   * @param ns       the URI of namespace in which the function is needed
-   * @param funcName the function name being tested
-   *
+   * 
+   * @param ns
+   *          the URI of namespace in which the function is needed
+   * @param funcName
+   *          the function name being tested
+   * 
    * @return whether the given function is available or not.
-   *
+   * 
    * @throws javax.xml.transform.TransformerException
    */
-  public boolean functionAvailable(String ns, String funcName)
-          throws javax.xml.transform.TransformerException
-  {
+  public boolean functionAvailable(String ns, String funcName) throws javax.xml.transform.TransformerException {
     boolean isAvailable = false;
-    
-    if (null != ns)
-    {
-      ExtensionHandler extNS = 
-           (ExtensionHandler) m_extensionFunctionNamespaces.get(ns);
-      if (extNS != null)
+
+    if (null != ns) {
+      final ExtensionHandler extNS = (ExtensionHandler) m_extensionFunctionNamespaces.get(ns);
+      if (extNS != null) {
         isAvailable = extNS.isFunctionAvailable(funcName);
+      }
     }
     return isAvailable;
   }
-  
+
   /**
    * Execute the element-available() function.
-   * @param ns       the URI of namespace in which the function is needed
-   * @param elemName name of element being tested
-   *
+   * 
+   * @param ns
+   *          the URI of namespace in which the function is needed
+   * @param elemName
+   *          name of element being tested
+   * 
    * @return whether the given element is available or not.
-   *
+   * 
    * @throws javax.xml.transform.TransformerException
    */
-  public boolean elementAvailable(String ns, String elemName)
-          throws javax.xml.transform.TransformerException
-  {
+  public boolean elementAvailable(String ns, String elemName) throws javax.xml.transform.TransformerException {
     boolean isAvailable = false;
-    if (null != ns)
-    {
-      ExtensionHandler extNS = 
-               (ExtensionHandler) m_extensionFunctionNamespaces.get(ns);
-      if (extNS != null) // defensive
+    if (null != ns) {
+      final ExtensionHandler extNS = (ExtensionHandler) m_extensionFunctionNamespaces.get(ns);
+      if (extNS != null) {
         isAvailable = extNS.isElementAvailable(elemName);
-    } 
-    return isAvailable;        
-  }  
-  
-  /**
-   * Handle an extension function.
-   * @param ns        the URI of namespace in which the function is needed
-   * @param funcName  the function name being called
-   * @param argVec    arguments to the function in a vector
-   * @param methodKey a unique key identifying this function instance in the
-   *                  stylesheet
-   * @param exprContext a context which may be passed to an extension function
-   *                  and provides callback functions to access various
-   *                  areas in the environment
-   *
-   * @return result of executing the function
-   *
-   * @throws javax.xml.transform.TransformerException
-   */
-  public Object extFunction(String ns, String funcName, 
-                            Vector argVec, Object methodKey, 
-                            ExpressionContext exprContext)
-            throws javax.xml.transform.TransformerException
-  {
-    Object result = null;
-    if (null != ns)
-    {
-      ExtensionHandler extNS =
-        (ExtensionHandler) m_extensionFunctionNamespaces.get(ns);
-      if (null != extNS)
-      {
-        try
-        {
-          result = extNS.callFunction(funcName, argVec, methodKey,
-                                      exprContext);
-        }
-        catch (javax.xml.transform.TransformerException e)
-        {
-          throw e;
-        }
-        catch (Exception e)
-        {
-          throw new javax.xml.transform.TransformerException(e);
-        }
-      }
-      else
-      {
-        throw new XPathProcessorException(XSLMessages.createMessage(XSLTErrorResources.ER_EXTENSION_FUNC_UNKNOWN, new Object[]{ns, funcName })); 
-        //"Extension function '" + ns + ":" + funcName + "' is unknown");
       }
     }
-    return result;    
+    return isAvailable;
   }
-  
+
   /**
    * Handle an extension function.
-   * @param extFunction  the extension function
-   * @param argVec    arguments to the function in a vector
-   * @param exprContext a context which may be passed to an extension function
-   *                  and provides callback functions to access various
-   *                  areas in the environment
-   *
+   * 
+   * @param ns
+   *          the URI of namespace in which the function is needed
+   * @param funcName
+   *          the function name being called
+   * @param argVec
+   *          arguments to the function in a vector
+   * @param methodKey
+   *          a unique key identifying this function instance in the stylesheet
+   * @param exprContext
+   *          a context which may be passed to an extension function and
+   *          provides callback functions to access various areas in the
+   *          environment
+   * 
    * @return result of executing the function
-   *
+   * 
    * @throws javax.xml.transform.TransformerException
    */
-  public Object extFunction(FuncExtFunction extFunction, Vector argVec, 
-                            ExpressionContext exprContext)
-         throws javax.xml.transform.TransformerException
-  {
+  public Object extFunction(String ns, String funcName, Vector argVec, Object methodKey, ExpressionContext exprContext)
+          throws javax.xml.transform.TransformerException {
     Object result = null;
-    String ns = extFunction.getNamespace();
-    if (null != ns)
-    {
-      ExtensionHandler extNS =
-        (ExtensionHandler) m_extensionFunctionNamespaces.get(ns);
-      if (null != extNS)
-      {
-        try
-        {
-          result = extNS.callFunction(extFunction, argVec, exprContext);
-        }
-        catch (javax.xml.transform.TransformerException e)
-        {
+    if (null != ns) {
+      final ExtensionHandler extNS = (ExtensionHandler) m_extensionFunctionNamespaces.get(ns);
+      if (null != extNS) {
+        try {
+          result = extNS.callFunction(funcName, argVec, methodKey, exprContext);
+        } catch (final javax.xml.transform.TransformerException e) {
           throw e;
-        }
-        catch (Exception e)
-        {
+        } catch (final Exception e) {
           throw new javax.xml.transform.TransformerException(e);
         }
-      }
-      else
-      {
-        throw new XPathProcessorException(XSLMessages.createMessage(XSLTErrorResources.ER_EXTENSION_FUNC_UNKNOWN, 
-                                          new Object[]{ns, extFunction.getFunctionName()})); 
-      }
+      } else
+        throw new XPathProcessorException(XSLMessages.createMessage(XSLTErrorResources.ER_EXTENSION_FUNC_UNKNOWN,
+                new Object[] { ns, funcName }));
+      // "Extension function '" + ns + ":" + funcName + "' is unknown");
     }
-    return result;        
+    return result;
+  }
+
+  /**
+   * Handle an extension function.
+   * 
+   * @param extFunction
+   *          the extension function
+   * @param argVec
+   *          arguments to the function in a vector
+   * @param exprContext
+   *          a context which may be passed to an extension function and
+   *          provides callback functions to access various areas in the
+   *          environment
+   * 
+   * @return result of executing the function
+   * 
+   * @throws javax.xml.transform.TransformerException
+   */
+  public Object extFunction(FuncExtFunction extFunction, Vector argVec, ExpressionContext exprContext)
+          throws javax.xml.transform.TransformerException {
+    Object result = null;
+    final String ns = extFunction.getNamespace();
+    if (null != ns) {
+      final ExtensionHandler extNS = (ExtensionHandler) m_extensionFunctionNamespaces.get(ns);
+      if (null != extNS) {
+        try {
+          result = extNS.callFunction(extFunction, argVec, exprContext);
+        } catch (final javax.xml.transform.TransformerException e) {
+          throw e;
+        } catch (final Exception e) {
+          throw new javax.xml.transform.TransformerException(e);
+        }
+      } else
+        throw new XPathProcessorException(XSLMessages.createMessage(XSLTErrorResources.ER_EXTENSION_FUNC_UNKNOWN,
+                new Object[] { ns, extFunction.getFunctionName() }));
+    }
+    return result;
   }
 }

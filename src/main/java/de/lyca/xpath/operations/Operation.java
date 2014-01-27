@@ -29,43 +29,49 @@ import de.lyca.xpath.objects.XObject;
 /**
  * The baseclass for a binary operation.
  */
-public class Operation extends Expression implements ExpressionOwner
-{
-    static final long serialVersionUID = -3037139537171050430L;
+public class Operation extends Expression implements ExpressionOwner {
+  static final long serialVersionUID = -3037139537171050430L;
 
-  /** The left operand expression.
-   *  @serial */
+  /**
+   * The left operand expression.
+   * 
+   * @serial
+   */
   protected Expression m_left;
 
-  /** The right operand expression.
-   *  @serial */
-  protected Expression m_right;
-  
   /**
-   * This function is used to fixup variables from QNames to stack frame 
-   * indexes at stylesheet build time.
-   * @param vars List of QNames that correspond to variables.  This list 
-   * should be searched backwards for the first qualified name that 
-   * corresponds to the variable reference qname.  The position of the 
-   * QName in the vector from the start of the vector will be its position 
-   * in the stack frame (but variables above the globalsTop value will need 
-   * to be offset to the current stack frame).
+   * The right operand expression.
+   * 
+   * @serial
    */
-  public void fixupVariables(java.util.Vector vars, int globalsSize)
-  {
+  protected Expression m_right;
+
+  /**
+   * This function is used to fixup variables from QNames to stack frame indexes
+   * at stylesheet build time.
+   * 
+   * @param vars
+   *          List of QNames that correspond to variables. This list should be
+   *          searched backwards for the first qualified name that corresponds
+   *          to the variable reference qname. The position of the QName in the
+   *          vector from the start of the vector will be its position in the
+   *          stack frame (but variables above the globalsTop value will need to
+   *          be offset to the current stack frame).
+   */
+  @Override
+  public void fixupVariables(java.util.Vector vars, int globalsSize) {
     m_left.fixupVariables(vars, globalsSize);
     m_right.fixupVariables(vars, globalsSize);
   }
 
-
   /**
-   * Tell if this expression or it's subexpressions can traverse outside
-   * the current subtree.
-   *
+   * Tell if this expression or it's subexpressions can traverse outside the
+   * current subtree.
+   * 
    * @return true if traversal outside the context node's subtree can occur.
    */
-  public boolean canTraverseOutsideSubtree()
-  {
+  @Override
+  public boolean canTraverseOutsideSubtree() {
 
     if (null != m_left && m_left.canTraverseOutsideSubtree())
       return true;
@@ -78,13 +84,14 @@ public class Operation extends Expression implements ExpressionOwner
 
   /**
    * Set the left and right operand expressions for this operation.
-   *
-   *
-   * @param l The left expression operand.
-   * @param r The right expression operand.
+   * 
+   * 
+   * @param l
+   *          The left expression operand.
+   * @param r
+   *          The right expression operand.
    */
-  public void setLeftRight(Expression l, Expression r)
-  {
+  public void setLeftRight(Expression l, Expression r) {
     m_left = l;
     m_right = r;
     l.exprSetParent(this);
@@ -92,24 +99,24 @@ public class Operation extends Expression implements ExpressionOwner
   }
 
   /**
-   * Execute a binary operation by calling execute on each of the operands,
-   * and then calling the operate method on the derived class.
-   *
-   *
-   * @param xctxt The runtime execution context.
-   *
+   * Execute a binary operation by calling execute on each of the operands, and
+   * then calling the operate method on the derived class.
+   * 
+   * 
+   * @param xctxt
+   *          The runtime execution context.
+   * 
    * @return The XObject result of the operation.
-   *
+   * 
    * @throws javax.xml.transform.TransformerException
    */
-  public XObject execute(XPathContext xctxt)
-          throws javax.xml.transform.TransformerException
-  {
+  @Override
+  public XObject execute(XPathContext xctxt) throws javax.xml.transform.TransformerException {
 
-    XObject left = m_left.execute(xctxt, true);
-    XObject right = m_right.execute(xctxt, true);
+    final XObject left = m_left.execute(xctxt, true);
+    final XObject right = m_right.execute(xctxt, true);
 
-    XObject result = operate(left, right);
+    final XObject result = operate(left, right);
     left.detach();
     right.detach();
     return result;
@@ -117,96 +124,98 @@ public class Operation extends Expression implements ExpressionOwner
 
   /**
    * Apply the operation to two operands, and return the result.
-   *
-   *
-   * @param left non-null reference to the evaluated left operand.
-   * @param right non-null reference to the evaluated right operand.
-   *
-   * @return non-null reference to the XObject that represents the result of the operation.
-   *
+   * 
+   * 
+   * @param left
+   *          non-null reference to the evaluated left operand.
+   * @param right
+   *          non-null reference to the evaluated right operand.
+   * 
+   * @return non-null reference to the XObject that represents the result of the
+   *         operation.
+   * 
    * @throws javax.xml.transform.TransformerException
    */
-  public XObject operate(XObject left, XObject right)
-          throws javax.xml.transform.TransformerException
-  {
-    return null;  // no-op
+  public XObject operate(XObject left, XObject right) throws javax.xml.transform.TransformerException {
+    return null; // no-op
   }
 
-  /** @return the left operand of binary operation, as an Expression.
+  /**
+   * @return the left operand of binary operation, as an Expression.
    */
-  public Expression getLeftOperand(){
+  public Expression getLeftOperand() {
     return m_left;
   }
 
-  /** @return the right operand of binary operation, as an Expression.
+  /**
+   * @return the right operand of binary operation, as an Expression.
    */
-  public Expression getRightOperand(){
+  public Expression getRightOperand() {
     return m_right;
   }
-  
-  class LeftExprOwner implements ExpressionOwner
-  {
+
+  class LeftExprOwner implements ExpressionOwner {
     /**
      * @see ExpressionOwner#getExpression()
      */
-    public Expression getExpression()
-    {
+    @Override
+    public Expression getExpression() {
       return m_left;
     }
 
     /**
      * @see ExpressionOwner#setExpression(Expression)
      */
-    public void setExpression(Expression exp)
-    {
-    	exp.exprSetParent(Operation.this);
-    	m_left = exp;
+    @Override
+    public void setExpression(Expression exp) {
+      exp.exprSetParent(Operation.this);
+      m_left = exp;
     }
   }
 
   /**
-   * @see de.lyca.xpath.XPathVisitable#callVisitors(ExpressionOwner, XPathVisitor)
+   * @see de.lyca.xpath.XPathVisitable#callVisitors(ExpressionOwner,
+   *      XPathVisitor)
    */
-  public void callVisitors(ExpressionOwner owner, XPathVisitor visitor)
-  {
-  	if(visitor.visitBinaryOperation(owner, this))
-  	{
-  		m_left.callVisitors(new LeftExprOwner(), visitor);
-  		m_right.callVisitors(this, visitor);
-  	}
+  @Override
+  public void callVisitors(ExpressionOwner owner, XPathVisitor visitor) {
+    if (visitor.visitBinaryOperation(owner, this)) {
+      m_left.callVisitors(new LeftExprOwner(), visitor);
+      m_right.callVisitors(this, visitor);
+    }
   }
 
   /**
    * @see ExpressionOwner#getExpression()
    */
-  public Expression getExpression()
-  {
+  @Override
+  public Expression getExpression() {
     return m_right;
   }
 
   /**
    * @see ExpressionOwner#setExpression(Expression)
    */
-  public void setExpression(Expression exp)
-  {
-  	exp.exprSetParent(this);
-  	m_right = exp;
+  @Override
+  public void setExpression(Expression exp) {
+    exp.exprSetParent(this);
+    m_right = exp;
   }
 
   /**
    * @see Expression#deepEquals(Expression)
    */
-  public boolean deepEquals(Expression expr)
-  {
-  	if(!isSameClass(expr))
-  		return false;
-  		
-  	if(!m_left.deepEquals(((Operation)expr).m_left))
-  		return false;
-  		
-  	if(!m_right.deepEquals(((Operation)expr).m_right))
-  		return false;
-  		
-  	return true;
+  @Override
+  public boolean deepEquals(Expression expr) {
+    if (!isSameClass(expr))
+      return false;
+
+    if (!m_left.deepEquals(((Operation) expr).m_left))
+      return false;
+
+    if (!m_right.deepEquals(((Operation) expr).m_right))
+      return false;
+
+    return true;
   }
 }

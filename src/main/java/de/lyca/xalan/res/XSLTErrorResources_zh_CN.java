@@ -17,6 +17,5 @@
  */
 package de.lyca.xalan.res;
 
-public class XSLTErrorResources_zh_CN extends XSLTErrorResources_zh
-{
+public class XSLTErrorResources_zh_CN extends XSLTErrorResources_zh {
 }

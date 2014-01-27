@@ -35,23 +35,26 @@ import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
  * @author Santiago Pericas-Geertsen
  */
 final class RealExpr extends Expression {
-    private double _value;
+  private final double _value;
 
-    public RealExpr(double value) {
-	_value = value;
-    }
+  public RealExpr(double value) {
+    _value = value;
+  }
 
-    public Type typeCheck(SymbolTable stable) throws TypeCheckError {
-	return _type = Type.Real;
-    }
+  @Override
+  public Type typeCheck(SymbolTable stable) throws TypeCheckError {
+    return _type = Type.Real;
+  }
 
-    public String toString() {
-	return "real-expr(" + _value + ')';
-    }
+  @Override
+  public String toString() {
+    return "real-expr(" + _value + ')';
+  }
 
-    public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
-	ConstantPoolGen cpg = classGen.getConstantPool();
-	InstructionList il = methodGen.getInstructionList();
-	il.append(new PUSH(cpg, _value));
-    }
+  @Override
+  public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
+    final ConstantPoolGen cpg = classGen.getConstantPool();
+    final InstructionList il = methodGen.getInstructionList();
+    il.append(new PUSH(cpg, _value));
+  }
 }

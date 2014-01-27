@@ -38,116 +38,114 @@ import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
  */
 public final class Compile {
 
-    // Versioning numbers  for the compiler -v option output
-    private static int VERSION_MAJOR = 1;
-    private static int VERSION_MINOR = 4;
-    private static int VERSION_DELTA = 0;
- 
+  // Versioning numbers for the compiler -v option output
+  private static int VERSION_MAJOR = 1;
+  private static int VERSION_MINOR = 4;
+  private static int VERSION_DELTA = 0;
 
-    public static void printUsage() {
-        StringBuffer vers = new StringBuffer("XSLTC version " + VERSION_MAJOR
-                + "." + VERSION_MINOR
-                + ((VERSION_DELTA > 0) ? ("." + VERSION_DELTA) : ("")));
-        System.err.println(vers + "\n"
-                + new ErrorMsg(ErrorMsg.COMPILE_USAGE_STR));
+  public static void printUsage() {
+    final StringBuffer vers = new StringBuffer("XSLTC version " + VERSION_MAJOR + "." + VERSION_MINOR
+            + (VERSION_DELTA > 0 ? "." + VERSION_DELTA : ""));
+    System.err.println(vers + "\n" + new ErrorMsg(ErrorMsg.COMPILE_USAGE_STR));
+  }
+
+  /**
+   * This method implements the command line compiler. See the USAGE_STRING
+   * constant for a description. It may make sense to move the command-line
+   * handling to a separate package (ie. make one xsltc.cmdline.Compiler class
+   * that contains this main() method and one xsltc.cmdline.Transform class that
+   * contains the DefaultRun stuff).
+   */
+  public static void main(String[] args) {
+    try {
+      boolean inputIsURL = false;
+      boolean useStdIn = false;
+      boolean classNameSet = false;
+      final GetOpt getopt = new GetOpt(args, "o:d:j:p:uxhsinv");
+      if (args.length < 1) {
+        printUsage();
+      }
+
+      final XSLTC xsltc = new XSLTC();
+      xsltc.init();
+
+      int c;
+      while ((c = getopt.getNextOption()) != -1) {
+        switch (c) {
+          case 'i':
+            useStdIn = true;
+            break;
+          case 'o':
+            xsltc.setClassName(getopt.getOptionArg());
+            classNameSet = true;
+            break;
+          case 'd':
+            xsltc.setDestDirectory(getopt.getOptionArg());
+            break;
+          case 'p':
+            xsltc.setPackageName(getopt.getOptionArg());
+            break;
+          case 'j':
+            xsltc.setJarFileName(getopt.getOptionArg());
+            break;
+          case 'x':
+            xsltc.setDebug(true);
+            break;
+          case 'u':
+            inputIsURL = true;
+            break;
+          case 'n':
+            xsltc.setTemplateInlining(true); // used to be 'false'
+            break;
+          case 'v':
+            // fall through to case h
+          case 'h':
+          default:
+            printUsage();
+            break;
+        }
+      }
+
+      boolean compileOK;
+
+      if (useStdIn) {
+        if (!classNameSet) {
+          System.err.println(new ErrorMsg(ErrorMsg.COMPILE_STDIN_ERR));
+        }
+        compileOK = xsltc.compile(System.in, xsltc.getClassName());
+      } else {
+        // Generate a vector containg URLs for all stylesheets specified
+        final String[] stylesheetNames = getopt.getCmdArgs();
+        final Vector stylesheetVector = new Vector();
+        for (int i = 0; i < stylesheetNames.length; i++) {
+          final String name = stylesheetNames[i];
+          URL url;
+          if (inputIsURL) {
+            url = new URL(name);
+          } else {
+            url = new File(name).toURL();
+          }
+          stylesheetVector.addElement(url);
+        }
+        compileOK = xsltc.compile(stylesheetVector);
+      }
+
+      // Compile the stylesheet and output class/jar file(s)
+      if (compileOK) {
+        xsltc.printWarnings();
+        if (xsltc.getJarFileName() != null) {
+          xsltc.outputToJar();
+        }
+      } else {
+        xsltc.printWarnings();
+        xsltc.printErrors();
+      }
+    } catch (final GetOptsException ex) {
+      System.err.println(ex);
+      printUsage();
+    } catch (final Exception e) {
+      e.printStackTrace();
     }
-
-    /** 
-     * This method implements the command line compiler. See the USAGE_STRING
-     * constant for a description. It may make sense to move the command-line
-     * handling to a separate package (ie. make one xsltc.cmdline.Compiler
-     * class that contains this main() method and one xsltc.cmdline.Transform
-     * class that contains the DefaultRun stuff).
-     */
-    public static void main(String[] args) {
-	try {
-	    boolean inputIsURL = false;
-	    boolean useStdIn = false;
-	    boolean classNameSet = false;
-	    final GetOpt getopt = new GetOpt(args, "o:d:j:p:uxhsinv");
-	    if (args.length < 1) printUsage();
-
-	    final XSLTC xsltc = new XSLTC();
-	    xsltc.init();
-
-	    int c;
-	    while ((c = getopt.getNextOption()) != -1) {
-		switch(c) {
-		case 'i':
-		    useStdIn = true;
-		    break;
-		case 'o':
-		    xsltc.setClassName(getopt.getOptionArg());
-		    classNameSet = true;
-		    break;
-		case 'd':
-		    xsltc.setDestDirectory(getopt.getOptionArg());
-		    break;
-		case 'p':
-		    xsltc.setPackageName(getopt.getOptionArg());
-		    break;
-		case 'j':  
-		    xsltc.setJarFileName(getopt.getOptionArg());
-		    break;
-		case 'x':
-		    xsltc.setDebug(true);
-		    break;
-		case 'u':
-		    inputIsURL = true;
-		    break;
-		case 'n':
-		    xsltc.setTemplateInlining(true);	// used to be 'false'
-		    break;
-		case 'v':
-		    // fall through to case h
-		case 'h':
-		default:
-		    printUsage();
-		    break; 
-		}
-	    }
-
-	    boolean compileOK;
-
-	    if (useStdIn) {
-		if (!classNameSet) {
-		    System.err.println(new ErrorMsg(ErrorMsg.COMPILE_STDIN_ERR));
-		}
-		compileOK = xsltc.compile(System.in, xsltc.getClassName());
-	    }
-	    else {
-		// Generate a vector containg URLs for all stylesheets specified
-		final String[] stylesheetNames = getopt.getCmdArgs();
-		final Vector   stylesheetVector = new Vector();
-		for (int i = 0; i < stylesheetNames.length; i++) {
-		    final String name = stylesheetNames[i];
-		    URL url;
-		    if (inputIsURL)
-			url = new URL(name);
-		    else
-			url = (new File(name)).toURL();
-		    stylesheetVector.addElement(url);
-		}
-		compileOK = xsltc.compile(stylesheetVector);
-	    }
-
-	    // Compile the stylesheet and output class/jar file(s)
-	    if (compileOK) {
-		xsltc.printWarnings();
-		if (xsltc.getJarFileName() != null) xsltc.outputToJar();
-	    }
-	    else {
-		xsltc.printWarnings();
-		xsltc.printErrors();
-	    }
-	}
-	catch (GetOptsException ex) {
-	    System.err.println(ex);
-	    printUsage();
-	}
-	catch (Exception e) {
-	    e.printStackTrace();
-	}
-    }
+  }
 
 }

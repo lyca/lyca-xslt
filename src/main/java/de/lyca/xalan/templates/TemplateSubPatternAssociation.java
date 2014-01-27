@@ -30,39 +30,41 @@ import de.lyca.xpath.XPathContext;
 import de.lyca.xpath.patterns.StepPattern;
 
 /**
- * A class to contain a match pattern and it's corresponding template.
- * This class also defines a node in a match pattern linked list.
+ * A class to contain a match pattern and it's corresponding template. This
+ * class also defines a node in a match pattern linked list.
  */
-class TemplateSubPatternAssociation implements Serializable, Cloneable
-{
-    static final long serialVersionUID = -8902606755229903350L;
+class TemplateSubPatternAssociation implements Serializable, Cloneable {
+  static final long serialVersionUID = -8902606755229903350L;
 
-  /** Step pattern           */
+  /** Step pattern */
   StepPattern m_stepPattern;
 
-  /** Template pattern          */
-  private String m_pattern;
+  /** Template pattern */
+  private final String m_pattern;
 
-  /** The template element         */
-  private ElemTemplate m_template;
+  /** The template element */
+  private final ElemTemplate m_template;
 
-  /** Next pattern         */
+  /** Next pattern */
   private TemplateSubPatternAssociation m_next = null;
 
-  /** Flag indicating whether this is wild card pattern          */
-  private boolean m_wild;
+  /** Flag indicating whether this is wild card pattern */
+  private final boolean m_wild;
 
-  /** Target string for this match pattern           */
+  /** Target string for this match pattern */
   private String m_targetString;
 
   /**
    * Construct a match pattern from a pattern and template.
-   * @param template The node that contains the template for this pattern.
-   * @param pattern An executable XSLT StepPattern.
-   * @param pat For now a Nodelist that contains old-style element patterns.
+   * 
+   * @param template
+   *          The node that contains the template for this pattern.
+   * @param pattern
+   *          An executable XSLT StepPattern.
+   * @param pat
+   *          For now a Nodelist that contains old-style element patterns.
    */
-  TemplateSubPatternAssociation(ElemTemplate template, StepPattern pattern, String pat)
-  {
+  TemplateSubPatternAssociation(ElemTemplate template, StepPattern pattern, String pat) {
 
     m_pattern = pat;
     m_template = template;
@@ -73,16 +75,15 @@ class TemplateSubPatternAssociation implements Serializable, Cloneable
 
   /**
    * Clone this object.
-   *
+   * 
    * @return The cloned object.
-   *
+   * 
    * @throws CloneNotSupportedException
    */
-  public Object clone() throws CloneNotSupportedException
-  {
+  @Override
+  public Object clone() throws CloneNotSupportedException {
 
-    TemplateSubPatternAssociation tspa =
-      (TemplateSubPatternAssociation) super.clone();
+    final TemplateSubPatternAssociation tspa = (TemplateSubPatternAssociation) super.clone();
 
     tspa.m_next = null;
 
@@ -90,160 +91,151 @@ class TemplateSubPatternAssociation implements Serializable, Cloneable
   }
 
   /**
-   * Get the target string of the pattern.  For instance, if the pattern is
+   * Get the target string of the pattern. For instance, if the pattern is
    * "foo/baz/boo[@daba]", this string will be "boo".
-   *
+   * 
    * @return The "target" string.
    */
-  public final String getTargetString()
-  {
+  public final String getTargetString() {
     return m_targetString;
   }
 
   /**
-   * Set Target String for this template pattern  
-   *
-   *
-   * @param key Target string to set
+   * Set Target String for this template pattern
+   * 
+   * 
+   * @param key
+   *          Target string to set
    */
-  public void setTargetString(String key)
-  {
+  public void setTargetString(String key) {
     m_targetString = key;
   }
 
   /**
    * Tell if two modes match according to the rules of XSLT.
-   *
-   * @param m1 mode to match
-   *
+   * 
+   * @param m1
+   *          mode to match
+   * 
    * @return True if the given mode matches this template's mode
    */
-  boolean matchMode(QName m1)
-  {
+  boolean matchMode(QName m1) {
     return matchModes(m1, m_template.getMode());
   }
 
   /**
    * Tell if two modes match according to the rules of XSLT.
-   *
-   * @param m1 First mode to match
-   * @param m2 Second mode to match
-   *
+   * 
+   * @param m1
+   *          First mode to match
+   * @param m2
+   *          Second mode to match
+   * 
    * @return True if the two given modes match
    */
-  private boolean matchModes(QName m1, QName m2)
-  {
-    return (((null == m1) && (null == m2))
-            || ((null != m1) && (null != m2) && m1.equals(m2)));
+  private boolean matchModes(QName m1, QName m2) {
+    return null == m1 && null == m2 || null != m1 && null != m2 && m1.equals(m2);
   }
 
   /**
    * Return the mode associated with the template.
-   *
-   *
-   * @param xctxt XPath context to use with this template
-   * @param targetNode Target node
-   * @param mode reference, which may be null, to the <a href="http://www.w3.org/TR/xslt#modes">current mode</a>.
+   * 
+   * 
+   * @param xctxt
+   *          XPath context to use with this template
+   * @param targetNode
+   *          Target node
+   * @param mode
+   *          reference, which may be null, to the <a
+   *          href="http://www.w3.org/TR/xslt#modes">current mode</a>.
    * @return The mode associated with the template.
-   *
+   * 
    * @throws TransformerException
    */
-  public boolean matches(XPathContext xctxt, int targetNode, QName mode)
-          throws TransformerException
-  {
+  public boolean matches(XPathContext xctxt, int targetNode, QName mode) throws TransformerException {
 
-    double score = m_stepPattern.getMatchScore(xctxt, targetNode);
+    final double score = m_stepPattern.getMatchScore(xctxt, targetNode);
 
-    return (XPath.MATCH_SCORE_NONE != score)
-           && matchModes(mode, m_template.getMode());
+    return XPath.MATCH_SCORE_NONE != score && matchModes(mode, m_template.getMode());
   }
 
   /**
    * Tell if the pattern for this association is a wildcard.
-   *
+   * 
    * @return true if this pattern is considered to be a wild match.
    */
-  public final boolean isWild()
-  {
+  public final boolean isWild() {
     return m_wild;
   }
 
   /**
    * Get associated XSLT StepPattern.
-   *
+   * 
    * @return An executable StepPattern object, never null.
-   *
+   * 
    */
-  public final StepPattern getStepPattern()
-  {
+  public final StepPattern getStepPattern() {
     return m_stepPattern;
   }
 
   /**
    * Get the pattern string for diagnostic purposes.
-   *
+   * 
    * @return The pattern string for diagnostic purposes.
-   *
+   * 
    */
-  public final String getPattern()
-  {
+  public final String getPattern() {
     return m_pattern;
   }
 
   /**
-   * Return the position of the template in document
-   * order in the stylesheet.
-   *
+   * Return the position of the template in document order in the stylesheet.
+   * 
    * @return The position of the template in the overall template order.
    */
-  public int getDocOrderPos()
-  {
+  public int getDocOrderPos() {
     return m_template.getUid();
   }
 
   /**
-   * Return the import level associated with the stylesheet into which  
-   * this template is composed.
-   *
+   * Return the import level associated with the stylesheet into which this
+   * template is composed.
+   * 
    * @return The import level of this template.
    */
-  public final int getImportLevel()
-  {
+  public final int getImportLevel() {
     return m_template.getStylesheetComposed().getImportCountComposed();
   }
 
   /**
    * Get the assocated xsl:template.
-   *
+   * 
    * @return An ElemTemplate, never null.
-   *
+   * 
    */
-  public final ElemTemplate getTemplate()
-  {
+  public final ElemTemplate getTemplate() {
     return m_template;
   }
 
   /**
    * Get the next association.
-   *
+   * 
    * @return A valid TemplateSubPatternAssociation, or null.
    */
-  public final TemplateSubPatternAssociation getNext()
-  {
+  public final TemplateSubPatternAssociation getNext() {
     return m_next;
   }
 
   /**
-   * Set the next element on this association
-   * list, which should be equal or less in priority to
-   * this association, and, if equal priority, should occur
+   * Set the next element on this association list, which should be equal or
+   * less in priority to this association, and, if equal priority, should occur
    * before this template in document order.
-   *
-   * @param mp The next association to score if this one fails.
-   *
+   * 
+   * @param mp
+   *          The next association to score if this one fails.
+   * 
    */
-  public void setNext(TemplateSubPatternAssociation mp)
-  {
+  public void setNext(TemplateSubPatternAssociation mp) {
     m_next = mp;
   }
 }

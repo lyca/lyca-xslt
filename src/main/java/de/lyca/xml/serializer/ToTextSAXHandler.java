@@ -33,381 +33,348 @@ import org.xml.sax.SAXException;
 import org.xml.sax.ext.LexicalHandler;
 
 /**
- * This class converts SAX-like event to SAX events for
- * xsl:output method "text". 
+ * This class converts SAX-like event to SAX events for xsl:output method
+ * "text".
  * 
  * This class is only to be used internally. This class is not a public API.
  * 
- * @deprecated As of Xalan 2.7.1, replaced by the use of {@link ToXMLSAXHandler}.
+ * @deprecated As of Xalan 2.7.1, replaced by the use of {@link ToXMLSAXHandler}
+ *             .
  * 
  * @xsl.usage internal
  */
-public final class ToTextSAXHandler extends ToSAXHandler 
-{
-    /**
-     * From XSLTC
-     * @see ExtendedContentHandler#endElement(String)
-     */
-    public void endElement(String elemName) throws SAXException
-    {
-        if (m_tracer != null)
-            super.fireEndElem(elemName);
+@Deprecated
+public final class ToTextSAXHandler extends ToSAXHandler {
+  /**
+   * From XSLTC
+   * 
+   * @see ExtendedContentHandler#endElement(String)
+   */
+  @Override
+  public void endElement(String elemName) throws SAXException {
+    if (m_tracer != null) {
+      super.fireEndElem(elemName);
     }
+  }
 
-    /**
-     * @see org.xml.sax.ContentHandler#endElement(String, String, String)
-     */
-    public void endElement(String arg0, String arg1, String arg2)
-        throws SAXException
-    {
-		if (m_tracer != null)
-            super.fireEndElem(arg2);    	
+  /**
+   * @see org.xml.sax.ContentHandler#endElement(String, String, String)
+   */
+  @Override
+  public void endElement(String arg0, String arg1, String arg2) throws SAXException {
+    if (m_tracer != null) {
+      super.fireEndElem(arg2);
     }
+  }
 
-    public ToTextSAXHandler(ContentHandler hdlr, LexicalHandler lex, String encoding)
-    {
-        super(hdlr, lex, encoding);
+  public ToTextSAXHandler(ContentHandler hdlr, LexicalHandler lex, String encoding) {
+    super(hdlr, lex, encoding);
+  }
+
+  /**
+   * From XSLTC
+   */
+  public ToTextSAXHandler(ContentHandler handler, String encoding) {
+    super(handler, encoding);
+  }
+
+  @Override
+  public void comment(char ch[], int start, int length) throws org.xml.sax.SAXException {
+    if (m_tracer != null) {
+      super.fireCommentEvent(ch, start, length);
     }
-    
-        /**
-     * From XSLTC
-     */
-    public ToTextSAXHandler(ContentHandler handler, String encoding)
-    {
-        super(handler,encoding);
+  }
+
+  @Override
+  public void comment(String data) throws org.xml.sax.SAXException {
+    final int length = data.length();
+    if (length > m_charsBuff.length) {
+      m_charsBuff = new char[length * 2 + 1];
     }
+    data.getChars(0, length, m_charsBuff, 0);
+    comment(m_charsBuff, 0, length);
+  }
 
-    public void comment(char ch[], int start, int length)
-        throws org.xml.sax.SAXException
-    {
-        if (m_tracer != null)
-            super.fireCommentEvent(ch, start, length);
+  /**
+   * @see Serializer#getOutputFormat()
+   */
+  @Override
+  public Properties getOutputFormat() {
+    return null;
+  }
+
+  /**
+   * @see Serializer#getOutputStream()
+   */
+  @Override
+  public OutputStream getOutputStream() {
+    return null;
+  }
+
+  /**
+   * @see Serializer#getWriter()
+   */
+  @Override
+  public Writer getWriter() {
+    return null;
+  }
+
+  /**
+   * Does nothing because the indent attribute is ignored for text output.
+   * 
+   */
+  public void indent(int n) throws SAXException {
+  }
+
+  /**
+   * @see Serializer#reset()
+   */
+  @Override
+  public boolean reset() {
+    return false;
+  }
+
+  /**
+   * @see DOMSerializer#serialize(Node)
+   */
+  @Override
+  public void serialize(Node node) throws IOException {
+  }
+
+  /**
+   * @see SerializationHandler#setEscaping(boolean)
+   */
+  @Override
+  public boolean setEscaping(boolean escape) {
+    return false;
+  }
+
+  /**
+   * @see SerializationHandler#setIndent(boolean)
+   */
+  @Override
+  public void setIndent(boolean indent) {
+  }
+
+  /**
+   * @see Serializer#setOutputFormat(Properties)
+   */
+  @Override
+  public void setOutputFormat(Properties format) {
+  }
+
+  /**
+   * @see Serializer#setOutputStream(OutputStream)
+   */
+  @Override
+  public void setOutputStream(OutputStream output) {
+  }
+
+  /**
+   * @see Serializer#setWriter(Writer)
+   */
+  @Override
+  public void setWriter(Writer writer) {
+  }
+
+  /**
+   * @see ExtendedContentHandler#addAttribute(String, String, String, String,
+   *      String)
+   */
+  @Override
+  public void addAttribute(String uri, String localName, String rawName, String type, String value, boolean XSLAttribute) {
+  }
+
+  /**
+   * @see org.xml.sax.ext.DeclHandler#attributeDecl(String, String, String,
+   *      String, String)
+   */
+  @Override
+  public void attributeDecl(String arg0, String arg1, String arg2, String arg3, String arg4) throws SAXException {
+  }
+
+  /**
+   * @see org.xml.sax.ext.DeclHandler#elementDecl(String, String)
+   */
+  @Override
+  public void elementDecl(String arg0, String arg1) throws SAXException {
+  }
+
+  /**
+   * @see org.xml.sax.ext.DeclHandler#externalEntityDecl(String, String, String)
+   */
+  @Override
+  public void externalEntityDecl(String arg0, String arg1, String arg2) throws SAXException {
+  }
+
+  /**
+   * @see org.xml.sax.ext.DeclHandler#internalEntityDecl(String, String)
+   */
+  @Override
+  public void internalEntityDecl(String arg0, String arg1) throws SAXException {
+  }
+
+  /**
+   * @see org.xml.sax.ContentHandler#endPrefixMapping(String)
+   */
+  @Override
+  public void endPrefixMapping(String arg0) throws SAXException {
+  }
+
+  /**
+   * @see org.xml.sax.ContentHandler#ignorableWhitespace(char[], int, int)
+   */
+  @Override
+  public void ignorableWhitespace(char[] arg0, int arg1, int arg2) throws SAXException {
+  }
+
+  /**
+   * From XSLTC
+   * 
+   * @see org.xml.sax.ContentHandler#processingInstruction(String, String)
+   */
+  @Override
+  public void processingInstruction(String arg0, String arg1) throws SAXException {
+    if (m_tracer != null) {
+      super.fireEscapingEvent(arg0, arg1);
     }
+  }
 
-    public void comment(String data) throws org.xml.sax.SAXException
-    {
-        final int length = data.length();
-        if (length > m_charsBuff.length)
-        {
-            m_charsBuff = new char[length*2 + 1];
-        }
-        data.getChars(0, length, m_charsBuff, 0);
-        comment(m_charsBuff, 0, length);
+  /**
+   * @see org.xml.sax.ContentHandler#setDocumentLocator(Locator)
+   */
+  @Override
+  public void setDocumentLocator(Locator arg0) {
+  }
+
+  /**
+   * @see org.xml.sax.ContentHandler#skippedEntity(String)
+   */
+  @Override
+  public void skippedEntity(String arg0) throws SAXException {
+  }
+
+  /**
+   * @see org.xml.sax.ContentHandler#startElement(String, String, String,
+   *      Attributes)
+   */
+  @Override
+  public void startElement(String arg0, String arg1, String arg2, Attributes arg3) throws SAXException {
+    flushPending();
+    super.startElement(arg0, arg1, arg2, arg3);
+  }
+
+  /**
+   * @see org.xml.sax.ext.LexicalHandler#endCDATA()
+   */
+  @Override
+  public void endCDATA() throws SAXException {
+  }
+
+  /**
+   * @see org.xml.sax.ext.LexicalHandler#endDTD()
+   */
+  @Override
+  public void endDTD() throws SAXException {
+  }
+
+  /**
+   * @see org.xml.sax.ext.LexicalHandler#startCDATA()
+   */
+  @Override
+  public void startCDATA() throws SAXException {
+  }
+
+  /**
+   * @see org.xml.sax.ext.LexicalHandler#startEntity(String)
+   */
+  @Override
+  public void startEntity(String arg0) throws SAXException {
+  }
+
+  /**
+   * From XSLTC
+   * 
+   * @see ExtendedContentHandler#startElement(String)
+   */
+  @Override
+  public void startElement(String elementNamespaceURI, String elementLocalName, String elementName) throws SAXException {
+    super.startElement(elementNamespaceURI, elementLocalName, elementName);
+  }
+
+  @Override
+  public void startElement(String elementName) throws SAXException {
+    super.startElement(elementName);
+  }
+
+  /**
+   * From XSLTC
+   * 
+   * @see org.xml.sax.ContentHandler#endDocument()
+   */
+  @Override
+  public void endDocument() throws SAXException {
+
+    flushPending();
+    m_saxHandler.endDocument();
+
+    if (m_tracer != null) {
+      super.fireEndDoc();
     }
+  }
 
-    /**
-     * @see Serializer#getOutputFormat()
-     */
-    public Properties getOutputFormat()
-    {
-        return null;
+  /**
+   * 
+   * @see ExtendedContentHandler#characters(String)
+   */
+  @Override
+  public void characters(String characters) throws SAXException {
+    final int length = characters.length();
+    if (length > m_charsBuff.length) {
+      m_charsBuff = new char[length * 2 + 1];
     }
+    characters.getChars(0, length, m_charsBuff, 0);
 
-    /**
-     * @see Serializer#getOutputStream()
-     */
-    public OutputStream getOutputStream()
-    {
-        return null;
+    m_saxHandler.characters(m_charsBuff, 0, length);
+
+  }
+
+  /**
+   * @see org.xml.sax.ContentHandler#characters(char[], int, int)
+   */
+  @Override
+  public void characters(char[] characters, int offset, int length) throws SAXException {
+
+    m_saxHandler.characters(characters, offset, length);
+
+    // time to fire off characters event
+    if (m_tracer != null) {
+      super.fireCharEvent(characters, offset, length);
     }
+  }
 
-    /**
-     * @see Serializer#getWriter()
-     */
-    public Writer getWriter()
-    {
-        return null;
-    }
+  /**
+   * From XSLTC
+   */
+  @Override
+  public void addAttribute(String name, String value) {
+    // do nothing
+  }
 
-    /**
-     * Does nothing because 
-     * the indent attribute is ignored for text output.
-     *
-     */
-    public void indent(int n) throws SAXException
-    {
-    }
+  @Override
+  public boolean startPrefixMapping(String prefix, String uri, boolean shouldFlush) throws SAXException {
+    // no namespace support for HTML
+    return false;
+  }
 
-    /**
-     * @see Serializer#reset()
-     */
-    public boolean reset()
-    {
-        return false;
-    }
+  @Override
+  public void startPrefixMapping(String prefix, String uri) throws org.xml.sax.SAXException {
+    // no namespace support for HTML
+  }
 
-    /**
-     * @see DOMSerializer#serialize(Node)
-     */
-    public void serialize(Node node) throws IOException
-    {
-    }
-
-    /**
-     * @see SerializationHandler#setEscaping(boolean)
-     */
-    public boolean setEscaping(boolean escape)
-    {
-        return false;
-    }
-
-    /**
-     * @see SerializationHandler#setIndent(boolean)
-     */
-    public void setIndent(boolean indent)
-    {
-    }
-
-    /**
-     * @see Serializer#setOutputFormat(Properties)
-     */
-    public void setOutputFormat(Properties format)
-    {
-    }
-
-    /**
-     * @see Serializer#setOutputStream(OutputStream)
-     */
-    public void setOutputStream(OutputStream output)
-    {
-    }
-
-    /**
-     * @see Serializer#setWriter(Writer)
-     */
-    public void setWriter(Writer writer)
-    {
-    }
-
-    /**
-     * @see ExtendedContentHandler#addAttribute(String, String, String, String, String)
-     */
-    public void addAttribute(
-        String uri,
-        String localName,
-        String rawName,
-        String type,
-        String value,
-        boolean XSLAttribute)
-    {
-    }
-
-    /**
-     * @see org.xml.sax.ext.DeclHandler#attributeDecl(String, String, String, String, String)
-     */
-    public void attributeDecl(
-        String arg0,
-        String arg1,
-        String arg2,
-        String arg3,
-        String arg4)
-        throws SAXException
-    {
-    }
-
-    /**
-     * @see org.xml.sax.ext.DeclHandler#elementDecl(String, String)
-     */
-    public void elementDecl(String arg0, String arg1) throws SAXException
-    {
-    }
-
-    /**
-     * @see org.xml.sax.ext.DeclHandler#externalEntityDecl(String, String, String)
-     */
-    public void externalEntityDecl(String arg0, String arg1, String arg2)
-        throws SAXException
-    {
-    }
-
-    /**
-     * @see org.xml.sax.ext.DeclHandler#internalEntityDecl(String, String)
-     */
-    public void internalEntityDecl(String arg0, String arg1)
-        throws SAXException
-    {
-    }
-
-    /**
-     * @see org.xml.sax.ContentHandler#endPrefixMapping(String)
-     */
-    public void endPrefixMapping(String arg0) throws SAXException
-    {
-    }
-
-    /**
-     * @see org.xml.sax.ContentHandler#ignorableWhitespace(char[], int, int)
-     */
-    public void ignorableWhitespace(char[] arg0, int arg1, int arg2)
-        throws SAXException
-    {
-    }
-
-    /**
-     * From XSLTC
-     * @see org.xml.sax.ContentHandler#processingInstruction(String, String)
-     */
-    public void processingInstruction(String arg0, String arg1)
-        throws SAXException
-    {
-        if (m_tracer != null)
-            super.fireEscapingEvent(arg0, arg1);
-    }
-
-    /**
-     * @see org.xml.sax.ContentHandler#setDocumentLocator(Locator)
-     */
-    public void setDocumentLocator(Locator arg0)
-    {
-    }
-
-    /**
-     * @see org.xml.sax.ContentHandler#skippedEntity(String)
-     */
-    public void skippedEntity(String arg0) throws SAXException
-    {
-    }
-
-    /**
-     * @see org.xml.sax.ContentHandler#startElement(String, String, String, Attributes)
-     */
-    public void startElement(
-        String arg0,
-        String arg1,
-        String arg2,
-        Attributes arg3)
-        throws SAXException
-    {
-        flushPending();
-        super.startElement(arg0, arg1, arg2, arg3);
-    }
-
-    /**
-     * @see org.xml.sax.ext.LexicalHandler#endCDATA()
-     */
-    public void endCDATA() throws SAXException
-    {
-    }
-
-    /**
-     * @see org.xml.sax.ext.LexicalHandler#endDTD()
-     */
-    public void endDTD() throws SAXException
-    {
-    }
-
-    /**
-     * @see org.xml.sax.ext.LexicalHandler#startCDATA()
-     */
-    public void startCDATA() throws SAXException
-    {
-    }
-
-
-    /**
-     * @see org.xml.sax.ext.LexicalHandler#startEntity(String)
-     */
-    public void startEntity(String arg0) throws SAXException
-    {
-    }
-
-
-    /**
-     * From XSLTC
-     * @see ExtendedContentHandler#startElement(String)
-     */
-    public void startElement(
-    String elementNamespaceURI,
-    String elementLocalName,
-    String elementName) throws SAXException
-    {
-        super.startElement(elementNamespaceURI, elementLocalName, elementName);
-    }
-    
-    public void startElement(
-    String elementName) throws SAXException
-    {
-        super.startElement(elementName);
-    }
-    
-
-    /**
-     * From XSLTC
-     * @see org.xml.sax.ContentHandler#endDocument()
-     */
-    public void endDocument() throws SAXException { 
-        
-        flushPending();
-        m_saxHandler.endDocument();
-		
-        if (m_tracer != null)
-            super.fireEndDoc();
-    }
- 
-    /**
-	 *	
-     * @see ExtendedContentHandler#characters(String)
-     */
-    public void characters(String characters) 
-    throws SAXException 
-    { 
-        final int length = characters.length();
-        if (length > m_charsBuff.length)
-        {
-            m_charsBuff = new char[length*2 + 1];
-        }
-        characters.getChars(0, length, m_charsBuff, 0);
-   
-        m_saxHandler.characters(m_charsBuff, 0, length);
-    
-    }
-    /**
-	 * @see org.xml.sax.ContentHandler#characters(char[], int, int)
-     */
-    public void characters(char[] characters, int offset, int length)
-    throws SAXException 
-    { 
-    
-        m_saxHandler.characters(characters, offset, length);
-
-        // time to fire off characters event
-		if (m_tracer != null)
-            super.fireCharEvent(characters, offset, length);                
-    }
-
-    /**
-     * From XSLTC
-     */
-    public void addAttribute(String name, String value) 
-    {
-        // do nothing
-    }
-
-
-    public boolean startPrefixMapping(
-        String prefix,
-        String uri,
-        boolean shouldFlush)
-        throws SAXException
-    {
-        // no namespace support for HTML
-        return false;
-    }
-
-
-    public void startPrefixMapping(String prefix, String uri)
-        throws org.xml.sax.SAXException
-    {
-        // no namespace support for HTML
-    }
-
-
-    public void namespaceAfterStartElement(
-        final String prefix,
-        final String uri)
-        throws SAXException
-    {
-        // no namespace support for HTML
-    }
+  @Override
+  public void namespaceAfterStartElement(final String prefix, final String uri) throws SAXException {
+    // no namespace support for HTML
+  }
 
 }

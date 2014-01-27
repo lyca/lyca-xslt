@@ -20,6 +20,7 @@ package de.lyca.xpath.objects;
 
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xpath.XPathContext;
+
 /*
  * 
  * @author igorh
@@ -27,32 +28,44 @@ import de.lyca.xpath.XPathContext;
  * Simple wrapper to DTM and XPathContext objects.
  * Used in XRTreeFrag for caching references to the objects.
  */
- public final class DTMXRTreeFrag {
+public final class DTMXRTreeFrag {
   private DTM m_dtm;
   private int m_dtmIdentity = DTM.NULL;
   private XPathContext m_xctxt;
- 
-  public DTMXRTreeFrag(int dtmIdentity, XPathContext xctxt){
-      m_xctxt = xctxt;
-      m_dtmIdentity = dtmIdentity;
-      m_dtm = xctxt.getDTM(dtmIdentity); 
-    }
 
-  public final void destruct(){
-    m_dtm = null;         
-    m_xctxt = null; 
- }
+  public DTMXRTreeFrag(int dtmIdentity, XPathContext xctxt) {
+    m_xctxt = xctxt;
+    m_dtmIdentity = dtmIdentity;
+    m_dtm = xctxt.getDTM(dtmIdentity);
+  }
 
-final  DTM getDTM(){return m_dtm;}
-public final  int getDTMIdentity(){return m_dtmIdentity;}
-final  XPathContext getXPathContext(){return m_xctxt;}
+  public final void destruct() {
+    m_dtm = null;
+    m_xctxt = null;
+  }
 
-public final int hashCode() { return m_dtmIdentity; }
-public final boolean equals(Object obj) {
-   if (obj instanceof DTMXRTreeFrag) {
-       return (m_dtmIdentity == ((DTMXRTreeFrag)obj).getDTMIdentity());
-   }
-   return false;
- }
+  final DTM getDTM() {
+    return m_dtm;
+  }
+
+  public final int getDTMIdentity() {
+    return m_dtmIdentity;
+  }
+
+  final XPathContext getXPathContext() {
+    return m_xctxt;
+  }
+
+  @Override
+  public final int hashCode() {
+    return m_dtmIdentity;
+  }
+
+  @Override
+  public final boolean equals(Object obj) {
+    if (obj instanceof DTMXRTreeFrag)
+      return m_dtmIdentity == ((DTMXRTreeFrag) obj).getDTMIdentity();
+    return false;
+  }
 
 }

@@ -19,15 +19,15 @@
  * $Id$
  */
 
-package de.lyca.xalan.xsltc.cmdline.getopt; 
-
+package de.lyca.xalan.xsltc.cmdline.getopt;
 
 /**
- * @author G Todd Miller 
+ * @author G Todd Miller
  */
-class MissingOptArgException extends GetOptsException{
-    static final long serialVersionUID = -1972471465394544822L;
-    public MissingOptArgException(String msg){
-	super(msg);
-    }
+class MissingOptArgException extends GetOptsException {
+  static final long serialVersionUID = -1972471465394544822L;
+
+  public MissingOptArgException(String msg) {
+    super(msg);
+  }
 }

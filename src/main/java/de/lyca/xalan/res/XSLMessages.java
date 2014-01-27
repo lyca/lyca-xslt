@@ -25,62 +25,65 @@ import java.util.ListResourceBundle;
 import de.lyca.xpath.res.XPATHMessages;
 
 /**
- * Sets things up for issuing error messages.  This class is misnamed, and
- * should be called XalanMessages, or some such.
+ * Sets things up for issuing error messages. This class is misnamed, and should
+ * be called XalanMessages, or some such.
+ * 
  * @xsl.usage internal
  */
-public class XSLMessages extends XPATHMessages
-{
+public class XSLMessages extends XPATHMessages {
 
-  /** The language specific resource object for Xalan messages.  */
+  /** The language specific resource object for Xalan messages. */
   private static ListResourceBundle XSLTBundle = null;
 
-  /** The class name of the Xalan error message string table.    */
-  private static final String XSLT_ERROR_RESOURCES =
-    "de.lyca.xalan.res.XSLTErrorResources";
+  /** The class name of the Xalan error message string table. */
+  private static final String XSLT_ERROR_RESOURCES = "de.lyca.xalan.res.XSLTErrorResources";
 
   /**
-   * Creates a message from the specified key and replacement
-   * arguments, localized to the given locale.
-   *
-   * @param msgKey    The key for the message text.
-   * @param args      The arguments to be used as replacement text
-   *                  in the message created.
-   *
+   * Creates a message from the specified key and replacement arguments,
+   * localized to the given locale.
+   * 
+   * @param msgKey
+   *          The key for the message text.
+   * @param args
+   *          The arguments to be used as replacement text in the message
+   *          created.
+   * 
    * @return The formatted message string.
    */
-  public static final String createMessage(String msgKey, Object args[])  //throws Exception
+  public static final String createMessage(String msgKey, Object args[]) // throws
+                                                                         // Exception
   {
-    if (XSLTBundle == null)
+    if (XSLTBundle == null) {
       XSLTBundle = loadResourceBundle(XSLT_ERROR_RESOURCES);
-    
-    if (XSLTBundle != null)
-    {
-      return createMsg(XSLTBundle, msgKey, args);
     }
+
+    if (XSLTBundle != null)
+      return createMsg(XSLTBundle, msgKey, args);
     else
       return "Could not load any resource bundles.";
   }
-  
+
   /**
-   * Creates a message from the specified key and replacement
-   * arguments, localized to the given locale.
-   *
-   * @param msgKey    The key for the message text.
-   * @param args      The arguments to be used as replacement text
-   *                  in the message created.
-   *
+   * Creates a message from the specified key and replacement arguments,
+   * localized to the given locale.
+   * 
+   * @param msgKey
+   *          The key for the message text.
+   * @param args
+   *          The arguments to be used as replacement text in the message
+   *          created.
+   * 
    * @return The formatted warning string.
    */
-  public static final String createWarning(String msgKey, Object args[])  //throws Exception
+  public static final String createWarning(String msgKey, Object args[]) // throws
+                                                                         // Exception
   {
-    if (XSLTBundle == null)
+    if (XSLTBundle == null) {
       XSLTBundle = loadResourceBundle(XSLT_ERROR_RESOURCES);
+    }
 
     if (XSLTBundle != null)
-    {
       return createMsg(XSLTBundle, msgKey, args);
-    }
     else
       return "Could not load any resource bundles.";
   }

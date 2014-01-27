@@ -41,108 +41,106 @@ import de.lyca.xml.utils.SystemIDResolver;
  */
 final class Include extends TopLevelElement {
 
-    private Stylesheet _included = null;
+  private Stylesheet _included = null;
 
-    public Stylesheet getIncludedStylesheet() {
-	return _included;
+  public Stylesheet getIncludedStylesheet() {
+    return _included;
+  }
+
+  @Override
+  public void parseContents(final Parser parser) {
+    final XSLTC xsltc = parser.getXSLTC();
+    final Stylesheet context = parser.getCurrentStylesheet();
+
+    String docToLoad = getAttribute("href");
+    try {
+      if (context.checkForLoop(docToLoad)) {
+        final ErrorMsg msg = new ErrorMsg(ErrorMsg.CIRCULAR_INCLUDE_ERR, docToLoad, this);
+        parser.reportError(Constants.FATAL, msg);
+        return;
+      }
+
+      InputSource input = null;
+      XMLReader reader = null;
+      final String currLoadedDoc = context.getSystemId();
+      final SourceLoader loader = context.getSourceLoader();
+
+      // Use SourceLoader if available
+      if (loader != null) {
+        input = loader.loadSource(docToLoad, currLoadedDoc, xsltc);
+        if (input != null) {
+          docToLoad = input.getSystemId();
+          reader = xsltc.getXMLReader();
+        }
+      }
+
+      // No SourceLoader or not resolved by SourceLoader
+      if (input == null) {
+        docToLoad = SystemIDResolver.getAbsoluteURI(docToLoad, currLoadedDoc);
+        input = new InputSource(docToLoad);
+      }
+
+      // Return if we could not resolve the URL
+      if (input == null) {
+        final ErrorMsg msg = new ErrorMsg(ErrorMsg.FILE_NOT_FOUND_ERR, docToLoad, this);
+        parser.reportError(Constants.FATAL, msg);
+        return;
+      }
+
+      final SyntaxTreeNode root;
+      if (reader != null) {
+        root = parser.parse(reader, input);
+      } else {
+        root = parser.parse(input);
+      }
+
+      if (root == null)
+        return;
+      _included = parser.makeStylesheet(root);
+      if (_included == null)
+        return;
+
+      _included.setSourceLoader(loader);
+      _included.setSystemId(docToLoad);
+      _included.setParentStylesheet(context);
+      _included.setIncludingStylesheet(context);
+      _included.setTemplateInlining(context.getTemplateInlining());
+
+      // An included stylesheet gets the same import precedence
+      // as the stylesheet that included it.
+      final int precedence = context.getImportPrecedence();
+      _included.setImportPrecedence(precedence);
+      parser.setCurrentStylesheet(_included);
+      _included.parseContents(parser);
+
+      final Enumeration elements = _included.elements();
+      final Stylesheet topStylesheet = parser.getTopLevelStylesheet();
+      while (elements.hasMoreElements()) {
+        final Object element = elements.nextElement();
+        if (element instanceof TopLevelElement) {
+          if (element instanceof Variable) {
+            topStylesheet.addVariable((Variable) element);
+          } else if (element instanceof Param) {
+            topStylesheet.addParam((Param) element);
+          } else {
+            topStylesheet.addElement((TopLevelElement) element);
+          }
+        }
+      }
+    } catch (final Exception e) {
+      e.printStackTrace();
+    } finally {
+      parser.setCurrentStylesheet(context);
     }
+  }
 
-    public void parseContents(final Parser parser) {
-	XSLTC xsltc = parser.getXSLTC();
-	Stylesheet context = parser.getCurrentStylesheet();
-        
-	String docToLoad = getAttribute("href");
-	try {
-	    if (context.checkForLoop(docToLoad)) {
-		final ErrorMsg msg = new ErrorMsg(ErrorMsg.CIRCULAR_INCLUDE_ERR,
-                                                  docToLoad, this);
-		parser.reportError(Constants.FATAL, msg);
-		return;
-	    }
+  @Override
+  public Type typeCheck(SymbolTable stable) throws TypeCheckError {
+    return Type.Void;
+  }
 
-	    InputSource input = null;
-	    XMLReader reader = null;
-	    String currLoadedDoc = context.getSystemId();
-	    SourceLoader loader = context.getSourceLoader();
-            
-            // Use SourceLoader if available
-	    if (loader != null) {
-		input = loader.loadSource(docToLoad, currLoadedDoc, xsltc);
-                if (input != null) {
-                    docToLoad = input.getSystemId();
-                    reader = xsltc.getXMLReader();
-                }
-	    }
-
-            // No SourceLoader or not resolved by SourceLoader
-            if (input == null) {
-                docToLoad = SystemIDResolver.getAbsoluteURI(docToLoad, currLoadedDoc);
-                input = new InputSource(docToLoad);
-	    }
-
-	    // Return if we could not resolve the URL
-	    if (input == null) {
-		final ErrorMsg msg = 
-		    new ErrorMsg(ErrorMsg.FILE_NOT_FOUND_ERR, docToLoad, this);
-		parser.reportError(Constants.FATAL, msg);
-		return;
-	    }
-
-	    final SyntaxTreeNode root;
-            if (reader != null) {
-                root = parser.parse(reader,input);
-            }
-            else {
-                root = parser.parse(input);
-            }
-              
-	    if (root == null) return;
-	    _included = parser.makeStylesheet(root);
-	    if (_included == null) return;
-
-	    _included.setSourceLoader(loader);
-	    _included.setSystemId(docToLoad);
-	    _included.setParentStylesheet(context);
-	    _included.setIncludingStylesheet(context);
-	    _included.setTemplateInlining(context.getTemplateInlining());
-
-	    // An included stylesheet gets the same import precedence
-	    // as the stylesheet that included it.
-	    final int precedence = context.getImportPrecedence();
-	    _included.setImportPrecedence(precedence);
-	    parser.setCurrentStylesheet(_included);
-	    _included.parseContents(parser);
-
-	    final Enumeration elements = _included.elements();
-	    final Stylesheet topStylesheet = parser.getTopLevelStylesheet();
-	    while (elements.hasMoreElements()) {
-		final Object element = elements.nextElement();
-		if (element instanceof TopLevelElement) {
-		    if (element instanceof Variable) {
-			topStylesheet.addVariable((Variable) element);
-		    }
-		    else if (element instanceof Param) {
-			topStylesheet.addParam((Param) element);
-		    }
-		    else {
-			topStylesheet.addElement((TopLevelElement) element);
-		    }
-		}
-	    }
-	}
-	catch (Exception e) {
-	    e.printStackTrace();
-	}
-	finally {
-	    parser.setCurrentStylesheet(context);
-	}
-    }
-    
-    public Type typeCheck(SymbolTable stable) throws TypeCheckError {
-	return Type.Void;
-    }
-    
-    public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
-	// do nothing
-    }
+  @Override
+  public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
+    // do nothing
+  }
 }

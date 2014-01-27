@@ -36,70 +36,74 @@ import de.lyca.xalan.xsltc.compiler.util.Util;
  */
 final class When extends Instruction {
 
-    private Expression _test;
-    private boolean _ignore = false;
+  private Expression _test;
+  private boolean _ignore = false;
 
-    public void display(int indent) {
-	indent(indent);
-	Util.println("When");
-	indent(indent + IndentIncrement);
-	System.out.print("test ");
-	Util.println(_test.toString());
-	displayContents(indent + IndentIncrement);
-    }
-		
-    public Expression getTest() {
-	return _test;
-    }
+  @Override
+  public void display(int indent) {
+    indent(indent);
+    Util.println("When");
+    indent(indent + IndentIncrement);
+    System.out.print("test ");
+    Util.println(_test.toString());
+    displayContents(indent + IndentIncrement);
+  }
 
-    public boolean ignore() {
-	return(_ignore);
-    }
+  public Expression getTest() {
+    return _test;
+  }
 
-    public void parseContents(Parser parser) {
-	_test = parser.parseExpression(this, "test", null);
+  public boolean ignore() {
+    return _ignore;
+  }
 
-	// Ignore xsl:if when test is false (function-available() and
-	// element-available())
-	Object result = _test.evaluateAtCompileTime();
-	if (result != null && result instanceof Boolean) {
-	    _ignore = !((Boolean) result).booleanValue();
-	}
+  @Override
+  public void parseContents(Parser parser) {
+    _test = parser.parseExpression(this, "test", null);
 
-	parseChildren(parser);
-
-	// Make sure required attribute(s) have been set
-	if (_test.isDummy()) {
-	    reportError(this, parser, ErrorMsg.REQUIRED_ATTR_ERR, "test");
-	}
+    // Ignore xsl:if when test is false (function-available() and
+    // element-available())
+    final Object result = _test.evaluateAtCompileTime();
+    if (result != null && result instanceof Boolean) {
+      _ignore = !((Boolean) result).booleanValue();
     }
 
-    /**
-     * Type-check this when element. The test should always be type checked,
-     * while we do not bother with the contents if we know the test fails.
-     * This is important in cases where the "test" expression tests for
-     * the support of a non-available element, and the <xsl:when> body contains
-     * this non-available element.
-     */
-    public Type typeCheck(SymbolTable stable) throws TypeCheckError {
-	// Type-check the test expression
-	if (_test.typeCheck(stable) instanceof BooleanType == false) {
-	    _test = new CastExpr(_test, Type.Boolean);
-	}
-	// Type-check the contents (if necessary)
-	if (!_ignore) {
-	    typeCheckContents(stable);
-	}
+    parseChildren(parser);
 
-	return Type.Void;
+    // Make sure required attribute(s) have been set
+    if (_test.isDummy()) {
+      reportError(this, parser, ErrorMsg.REQUIRED_ATTR_ERR, "test");
+    }
+  }
+
+  /**
+   * Type-check this when element. The test should always be type checked, while
+   * we do not bother with the contents if we know the test fails. This is
+   * important in cases where the "test" expression tests for the support of a
+   * non-available element, and the <xsl:when> body contains this non-available
+   * element.
+   */
+  @Override
+  public Type typeCheck(SymbolTable stable) throws TypeCheckError {
+    // Type-check the test expression
+    if (_test.typeCheck(stable) instanceof BooleanType == false) {
+      _test = new CastExpr(_test, Type.Boolean);
+    }
+    // Type-check the contents (if necessary)
+    if (!_ignore) {
+      typeCheckContents(stable);
     }
 
-    /**
-     * This method should never be called. An Otherwise object will explicitly
-     * translate the "test" expression and and contents of this element.
-     */
-    public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
-	final ErrorMsg msg = new ErrorMsg(ErrorMsg.STRAY_WHEN_ERR, this);
-	getParser().reportError(Constants.ERROR, msg);
-    }
+    return Type.Void;
+  }
+
+  /**
+   * This method should never be called. An Otherwise object will explicitly
+   * translate the "test" expression and and contents of this element.
+   */
+  @Override
+  public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
+    final ErrorMsg msg = new ErrorMsg(ErrorMsg.STRAY_WHEN_ERR, this);
+    getParser().reportError(Constants.ERROR, msg);
+  }
 }

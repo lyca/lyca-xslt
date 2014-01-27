@@ -29,6 +29,7 @@ import de.lyca.xpath.objects.XObject;
 
 /**
  * Implement xsl:if.
+ * 
  * <pre>
  * <!ELEMENT xsl:if %template;>
  * <!ATTLIST xsl:if
@@ -36,142 +37,148 @@ import de.lyca.xpath.objects.XObject;
  *   %space-att;
  * >
  * </pre>
- * @see <a href="http://www.w3.org/TR/xslt#section-Conditional-Processing-with-xsl:if">XXX in XSLT Specification</a>
+ * 
+ * @see <a
+ *      href="http://www.w3.org/TR/xslt#section-Conditional-Processing-with-xsl:if">XXX
+ *      in XSLT Specification</a>
  * @xsl.usage advanced
  */
-public class ElemIf extends ElemTemplateElement
-{
-    static final long serialVersionUID = 2158774632427453022L;
+public class ElemIf extends ElemTemplateElement {
+  static final long serialVersionUID = 2158774632427453022L;
 
   /**
-   * The xsl:if element must have a test attribute, which specifies an expression.
+   * The xsl:if element must have a test attribute, which specifies an
+   * expression.
+   * 
    * @serial
    */
   private XPath m_test = null;
 
   /**
-   * Set the "test" attribute.
-   * The xsl:if element must have a test attribute, which specifies an expression.
-   *
-   * @param v test attribute to set
+   * Set the "test" attribute. The xsl:if element must have a test attribute,
+   * which specifies an expression.
+   * 
+   * @param v
+   *          test attribute to set
    */
-  public void setTest(XPath v)
-  {
+  public void setTest(XPath v) {
     m_test = v;
   }
 
   /**
-   * Get the "test" attribute.
-   * The xsl:if element must have a test attribute, which specifies an expression.
-   *
+   * Get the "test" attribute. The xsl:if element must have a test attribute,
+   * which specifies an expression.
+   * 
    * @return the "test" attribute for this element.
    */
-  public XPath getTest()
-  {
+  public XPath getTest() {
     return m_test;
   }
 
   /**
-   * This function is called after everything else has been
-   * recomposed, and allows the template to set remaining
-   * values that may be based on some other property that
-   * depends on recomposition.
-   *
-   * @param sroot The root stylesheet.
-   *
+   * This function is called after everything else has been recomposed, and
+   * allows the template to set remaining values that may be based on some other
+   * property that depends on recomposition.
+   * 
+   * @param sroot
+   *          The root stylesheet.
+   * 
    * @throws TransformerException
    */
-  public void compose(StylesheetRoot sroot) throws TransformerException
-  {
+  @Override
+  public void compose(StylesheetRoot sroot) throws TransformerException {
 
     super.compose(sroot);
 
-    java.util.Vector vnames = sroot.getComposeState().getVariableNames();
+    final java.util.Vector vnames = sroot.getComposeState().getVariableNames();
 
-    if (null != m_test)
+    if (null != m_test) {
       m_test.fixupVariables(vnames, sroot.getComposeState().getGlobalsSize());
+    }
   }
 
   /**
    * Get an int constant identifying the type of element.
+   * 
    * @see de.lyca.xalan.templates.Constants
-   *
+   * 
    * @return The token ID for this element
    */
-  public int getXSLToken()
-  {
+  @Override
+  public int getXSLToken() {
     return Constants.ELEMNAME_IF;
   }
 
   /**
    * Return the node name.
-   *
+   * 
    * @return the element's name
    */
-  public String getNodeName()
-  {
+  @Override
+  public String getNodeName() {
     return Constants.ELEMNAME_IF_STRING;
   }
 
   /**
-   * Conditionally execute a sub-template.
-   * The expression is evaluated and the resulting object is converted
-   * to a boolean as if by a call to the boolean function. If the result
-   * is true, then the content template is instantiated; otherwise, nothing
-   * is created.
-   *
-   * @param transformer non-null reference to the the current transform-time state.
-   *
+   * Conditionally execute a sub-template. The expression is evaluated and the
+   * resulting object is converted to a boolean as if by a call to the boolean
+   * function. If the result is true, then the content template is instantiated;
+   * otherwise, nothing is created.
+   * 
+   * @param transformer
+   *          non-null reference to the the current transform-time state.
+   * 
    * @throws TransformerException
    */
-  public void execute(TransformerImpl transformer) throws TransformerException
-  {
+  @Override
+  public void execute(TransformerImpl transformer) throws TransformerException {
 
-    XPathContext xctxt = transformer.getXPathContext();
-    int sourceNode = xctxt.getCurrentNode();
+    final XPathContext xctxt = transformer.getXPathContext();
+    final int sourceNode = xctxt.getCurrentNode();
 
-    if (transformer.getDebug())
-    {
-      XObject test = m_test.execute(xctxt, sourceNode, this);
+    if (transformer.getDebug()) {
+      final XObject test = m_test.execute(xctxt, sourceNode, this);
 
-      if (transformer.getDebug())
-        transformer.getTraceManager().fireSelectedEvent(sourceNode, this,
-                "test", m_test, test);
-    
+      if (transformer.getDebug()) {
+        transformer.getTraceManager().fireSelectedEvent(sourceNode, this, "test", m_test, test);
+      }
+
       // xsl:for-each now fires one trace event + one for every
       // iteration; changing xsl:if to fire one regardless of true/false
 
-      if (transformer.getDebug())
+      if (transformer.getDebug()) {
         transformer.getTraceManager().fireTraceEvent(this);
-
-      if (test.bool())
-      {
-        transformer.executeChildTemplates(this, true);        
       }
 
-      if (transformer.getDebug())
-        transformer.getTraceManager().fireTraceEndEvent(this);
+      if (test.bool()) {
+        transformer.executeChildTemplates(this, true);
+      }
 
-      // I don't think we want this.  -sb
-      //  if (transformer.getDebug())
-      //    transformer.getTraceManager().fireSelectedEvent(sourceNode, this,
-      //            "endTest", m_test, test);
-    }
-    else if (m_test.bool(xctxt, sourceNode, this))
-    {
+      if (transformer.getDebug()) {
+        transformer.getTraceManager().fireTraceEndEvent(this);
+      }
+
+      // I don't think we want this. -sb
+      // if (transformer.getDebug())
+      // transformer.getTraceManager().fireSelectedEvent(sourceNode, this,
+      // "endTest", m_test, test);
+    } else if (m_test.bool(xctxt, sourceNode, this)) {
       transformer.executeChildTemplates(this, true);
     }
-    
+
   }
-  
+
   /**
    * Call the children visitors.
-   * @param visitor The visitor whose appropriate method will be called.
+   * 
+   * @param visitor
+   *          The visitor whose appropriate method will be called.
    */
-  protected void callChildVisitors(XSLTVisitor visitor, boolean callAttrs)
-  {
-  	if(callAttrs)
-  		m_test.getExpression().callVisitors(m_test, visitor);
+  @Override
+  protected void callChildVisitors(XSLTVisitor visitor, boolean callAttrs) {
+    if (callAttrs) {
+      m_test.getExpression().callVisitors(m_test, visitor);
+    }
     super.callChildVisitors(visitor, callAttrs);
   }
 

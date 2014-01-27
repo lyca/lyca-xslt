@@ -26,88 +26,94 @@ import de.lyca.xml.dtm.DTMAxisIterator;
 import de.lyca.xml.dtm.ref.DTMAxisIteratorBase;
 
 /**
- * CachedNodeListIterator is used for select expressions in a 
- * variable or parameter. This iterator caches all nodes in an 
- * IntegerArray. Its cloneIterator() method is overridden to 
- * return an object of ClonedNodeListIterator.
+ * CachedNodeListIterator is used for select expressions in a variable or
+ * parameter. This iterator caches all nodes in an IntegerArray. Its
+ * cloneIterator() method is overridden to return an object of
+ * ClonedNodeListIterator.
  */
 public final class CachedNodeListIterator extends DTMAxisIteratorBase {
 
-    /**
-     * Source for this iterator.
-     */
-    private DTMAxisIterator _source;
-    private IntegerArray _nodes = new IntegerArray();
-    private int _numCachedNodes = 0;
-    private int _index = 0;
-    private boolean _isEnded = false;
+  /**
+   * Source for this iterator.
+   */
+  private final DTMAxisIterator _source;
+  private final IntegerArray _nodes = new IntegerArray();
+  private int _numCachedNodes = 0;
+  private int _index = 0;
+  private boolean _isEnded = false;
 
-    public CachedNodeListIterator(DTMAxisIterator source) {
-	_source = source;
-    }
+  public CachedNodeListIterator(DTMAxisIterator source) {
+    _source = source;
+  }
 
-    public void setRestartable(boolean isRestartable) {
-	//_isRestartable = isRestartable;
-	//_source.setRestartable(isRestartable);
-    }
+  @Override
+  public void setRestartable(boolean isRestartable) {
+    // _isRestartable = isRestartable;
+    // _source.setRestartable(isRestartable);
+  }
 
-    public DTMAxisIterator setStartNode(int node) {
-	if (_isRestartable) {
-	    _startNode = node;
-	    _source.setStartNode(node);
-	    resetPosition();
-	    
-	    _isRestartable = false;
-	}
-	return this;
-    }
+  @Override
+  public DTMAxisIterator setStartNode(int node) {
+    if (_isRestartable) {
+      _startNode = node;
+      _source.setStartNode(node);
+      resetPosition();
 
-    public int next() {
-        return getNode(_index++);
+      _isRestartable = false;
     }
-    
-    public int getPosition() {
-    	return _index == 0 ? 1 : _index;
-    }
-    
-    public int getNodeByPosition(int pos) {
-    	return getNode(pos);
-    }
-        
-    public int getNode(int index) {
-        if (index < _numCachedNodes) {
-            return _nodes.at(index);
-        }
-        else if (!_isEnded){
-            int node = _source.next();
-            if (node != END) {
-            	_nodes.add(node);
-            	_numCachedNodes++;
-            }
-            else {
-            	_isEnded = true;
-            }
-            return node;
-        }
-        else
-            return END;
-    }
+    return this;
+  }
 
-    public DTMAxisIterator cloneIterator() {
-	ClonedNodeListIterator clone = new ClonedNodeListIterator(this);
-	return clone;
-    }
+  @Override
+  public int next() {
+    return getNode(_index++);
+  }
 
-    public DTMAxisIterator reset() {
-    	_index = 0;
-    	return this;
-    }
-    
-    public void setMark() {
-	_source.setMark();
-    }
+  @Override
+  public int getPosition() {
+    return _index == 0 ? 1 : _index;
+  }
 
-    public void gotoMark() {
-	_source.gotoMark();
-    }
+  @Override
+  public int getNodeByPosition(int pos) {
+    return getNode(pos);
+  }
+
+  public int getNode(int index) {
+    if (index < _numCachedNodes)
+      return _nodes.at(index);
+    else if (!_isEnded) {
+      final int node = _source.next();
+      if (node != END) {
+        _nodes.add(node);
+        _numCachedNodes++;
+      } else {
+        _isEnded = true;
+      }
+      return node;
+    } else
+      return END;
+  }
+
+  @Override
+  public DTMAxisIterator cloneIterator() {
+    final ClonedNodeListIterator clone = new ClonedNodeListIterator(this);
+    return clone;
+  }
+
+  @Override
+  public DTMAxisIterator reset() {
+    _index = 0;
+    return this;
+  }
+
+  @Override
+  public void setMark() {
+    _source.setMark();
+  }
+
+  @Override
+  public void gotoMark() {
+    _source.gotoMark();
+  }
 }

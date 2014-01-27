@@ -23,21 +23,20 @@
  * This class implements an RTF Iterator. Currently exists for sole
  * purpose of enabling EXSLT object-type function to return "RTF".
  * 
-  * @xsl.usage advanced
-  */
+ * @xsl.usage advanced
+ */
 package de.lyca.xpath.axes;
 
 import de.lyca.xml.dtm.DTMManager;
 import de.lyca.xpath.NodeSetDTM;
 
 public class RTFIterator extends NodeSetDTM {
-    static final long serialVersionUID = 7658117366258528996L;
+  static final long serialVersionUID = 7658117366258528996L;
 
-	/**
-	 * Constructor for RTFIterator
-	 */	
-	public RTFIterator(int root, DTMManager manager) {
-		super(root, manager);
-	}
+  /**
+   * Constructor for RTFIterator
+   */
+  public RTFIterator(int root, DTMManager manager) {
+    super(root, manager);
+  }
 }
-

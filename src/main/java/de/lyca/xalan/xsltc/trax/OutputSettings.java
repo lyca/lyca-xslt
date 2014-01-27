@@ -27,21 +27,20 @@ import java.util.Properties;
  * @author Morten Jorgensen
  */
 public final class OutputSettings {
-    
-    private String _cdata_section_elements = null;
-    private String _doctype_public = null;
-    private String _encoding = null;
-    private String _indent = null;
-    private String _media_type = null;
-    private String _method = null;
-    private String _omit_xml_declaration = null;
-    private String _standalone = null;
-    private String _version = null;
 
-    public Properties getProperties() {
-	Properties properties = new Properties();
-	return(properties);
-    }
+  private final String _cdata_section_elements = null;
+  private final String _doctype_public = null;
+  private final String _encoding = null;
+  private final String _indent = null;
+  private final String _media_type = null;
+  private final String _method = null;
+  private final String _omit_xml_declaration = null;
+  private final String _standalone = null;
+  private final String _version = null;
 
-    
+  public Properties getProperties() {
+    final Properties properties = new Properties();
+    return properties;
+  }
+
 }

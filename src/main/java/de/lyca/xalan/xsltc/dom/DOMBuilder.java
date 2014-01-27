@@ -20,8 +20,8 @@
  */
 package de.lyca.xalan.xsltc.dom;
 
-
 /**
  * @author Morten Jorgensen
  */
-public interface DOMBuilder extends  ExtendedSAX { }
+public interface DOMBuilder extends ExtendedSAX {
+}

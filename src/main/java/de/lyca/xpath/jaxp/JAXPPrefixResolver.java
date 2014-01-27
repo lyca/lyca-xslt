@@ -19,110 +19,106 @@
 
 package de.lyca.xpath.jaxp;
 
-import org.w3c.dom.Node;
+import javax.xml.namespace.NamespaceContext;
+
 import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
 
 import de.lyca.xml.utils.PrefixResolver;
 
-import javax.xml.namespace.NamespaceContext;
-
 /**
- * <meta name="usage" content="general"/>
- * This class implements a Default PrefixResolver which
- * can be used to perform prefix-to-namespace lookup
- * for the XPath object.
- * This class delegates the resolution to the passed NamespaceContext
+ * <meta name="usage" content="general"/> This class implements a Default
+ * PrefixResolver which can be used to perform prefix-to-namespace lookup for
+ * the XPath object. This class delegates the resolution to the passed
+ * NamespaceContext
  */
-public class JAXPPrefixResolver implements PrefixResolver
-{
+public class JAXPPrefixResolver implements PrefixResolver {
 
-    private NamespaceContext namespaceContext;
-    
+  private final NamespaceContext namespaceContext;
 
-    public JAXPPrefixResolver ( NamespaceContext nsContext ) {
-        this.namespaceContext = nsContext;
-    } 
+  public JAXPPrefixResolver(NamespaceContext nsContext) {
+    namespaceContext = nsContext;
+  }
 
+  @Override
+  public String getNamespaceForPrefix(String prefix) {
+    return namespaceContext.getNamespaceURI(prefix);
+  }
 
-    public String getNamespaceForPrefix( String prefix ) {
-        return namespaceContext.getNamespaceURI( prefix );
-    }
+  /**
+   * Return the base identifier.
+   * 
+   * @return null
+   */
+  @Override
+  public String getBaseIdentifier() {
+    return null;
+  }
 
-    /**
-     * Return the base identifier.
-     *
-     * @return null
-     */
-    public String getBaseIdentifier() {
-        return null;
-    }
+  /**
+   * @see PrefixResolver#handlesNullPrefixes()
+   */
+  @Override
+  public boolean handlesNullPrefixes() {
+    return false;
+  }
 
-    /**
-     * @see PrefixResolver#handlesNullPrefixes() 
-     */
-    public boolean handlesNullPrefixes() {
-        return false;
-    }
+  /**
+   * The URI for the XML namespace. (Duplicate of that found in
+   * de.lyca.xpath.XPathContext).
+   */
 
+  public static final String S_XMLNAMESPACEURI = "http://www.w3.org/XML/1998/namespace";
 
-    /**
-     * The URI for the XML namespace.
-     * (Duplicate of that found in de.lyca.xpath.XPathContext). 
-     */
-     
-    public static final String S_XMLNAMESPACEURI =
-        "http://www.w3.org/XML/1998/namespace";
+  /**
+   * Given a prefix and a Context Node, get the corresponding namespace.
+   * Warning: This will not work correctly if namespaceContext is an attribute
+   * node.
+   * 
+   * @param prefix
+   *          Prefix to resolve.
+   * @param namespaceContext
+   *          Node from which to start searching for a xmlns attribute that
+   *          binds a prefix to a namespace.
+   * @return Namespace that prefix resolves to, or null if prefix is not bound.
+   */
+  @Override
+  public String getNamespaceForPrefix(String prefix, org.w3c.dom.Node namespaceContext) {
+    Node parent = namespaceContext;
+    String namespace = null;
 
+    if (prefix.equals("xml")) {
+      namespace = S_XMLNAMESPACEURI;
+    } else {
+      int type;
 
-    /**
-     * Given a prefix and a Context Node, get the corresponding namespace.
-     * Warning: This will not work correctly if namespaceContext
-     * is an attribute node.
-     * @param prefix Prefix to resolve.
-     * @param namespaceContext Node from which to start searching for a
-     * xmlns attribute that binds a prefix to a namespace.
-     * @return Namespace that prefix resolves to, or null if prefix
-     * is not bound.
-     */
-    public String getNamespaceForPrefix(String prefix,
-                                      org.w3c.dom.Node namespaceContext) {
-        Node parent = namespaceContext;
-        String namespace = null;
+      while (null != parent && null == namespace
+              && ((type = parent.getNodeType()) == Node.ELEMENT_NODE || type == Node.ENTITY_REFERENCE_NODE)) {
 
-        if (prefix.equals("xml")) {
-            namespace = S_XMLNAMESPACEURI;
-        } else {
-            int type;
+        if (type == Node.ELEMENT_NODE) {
+          final NamedNodeMap nnm = parent.getAttributes();
 
-            while ((null != parent) && (null == namespace)
-                && (((type = parent.getNodeType()) == Node.ELEMENT_NODE)
-                    || (type == Node.ENTITY_REFERENCE_NODE))) {
+          for (int i = 0; i < nnm.getLength(); i++) {
+            final Node attr = nnm.item(i);
+            final String aname = attr.getNodeName();
+            final boolean isPrefix = aname.startsWith("xmlns:");
 
-                if (type == Node.ELEMENT_NODE) {
-                    NamedNodeMap nnm = parent.getAttributes();
+            if (isPrefix || aname.equals("xmlns")) {
+              final int index = aname.indexOf(':');
+              final String p = isPrefix ? aname.substring(index + 1) : "";
 
-                    for (int i = 0; i < nnm.getLength(); i++) {
-                        Node attr = nnm.item(i);
-                        String aname = attr.getNodeName();
-                        boolean isPrefix = aname.startsWith("xmlns:");
-
-                        if (isPrefix || aname.equals("xmlns")) {
-                            int index = aname.indexOf(':');
-                            String p =isPrefix ?aname.substring(index + 1) :"";
-
-                            if (p.equals(prefix)) {
-                                namespace = attr.getNodeValue();
-                                break;
-                            }
-                        }
-                    }
-                }
-
-                parent = parent.getParentNode();
+              if (p.equals(prefix)) {
+                namespace = attr.getNodeValue();
+                break;
+              }
             }
+          }
         }
-        return namespace;
+
+        parent = parent.getParentNode();
+      }
     }
+    return namespace;
+  }
 
 }
-

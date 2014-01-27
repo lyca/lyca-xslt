@@ -28,27 +28,27 @@ import de.lyca.xpath.objects.XString;
 /**
  * @xsl.usage advanced
  */
-public class FuncUnparsedEntityURI extends FunctionOneArg
-{
-    static final long serialVersionUID = 845309759097448178L;
+public class FuncUnparsedEntityURI extends FunctionOneArg {
+  static final long serialVersionUID = 845309759097448178L;
 
   /**
-   * Execute the function.  The function must return
-   * a valid object.
-   * @param xctxt The current execution context.
+   * Execute the function. The function must return a valid object.
+   * 
+   * @param xctxt
+   *          The current execution context.
    * @return A valid XObject.
-   *
+   * 
    * @throws javax.xml.transform.TransformerException
    */
-  public XObject execute(XPathContext xctxt) throws javax.xml.transform.TransformerException
-  {
+  @Override
+  public XObject execute(XPathContext xctxt) throws javax.xml.transform.TransformerException {
 
-    String name = m_arg0.execute(xctxt).str();
-    int context = xctxt.getCurrentNode();
-    DTM dtm = xctxt.getDTM(context);
-    int doc = dtm.getDocument();
-    
-    String uri = dtm.getUnparsedEntityURI(name);
+    final String name = m_arg0.execute(xctxt).str();
+    final int context = xctxt.getCurrentNode();
+    final DTM dtm = xctxt.getDTM(context);
+    final int doc = dtm.getDocument();
+
+    final String uri = dtm.getUnparsedEntityURI(name);
 
     return new XString(uri);
   }

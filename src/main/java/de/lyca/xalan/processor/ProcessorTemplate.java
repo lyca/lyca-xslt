@@ -26,25 +26,25 @@ import de.lyca.xalan.templates.ElemTemplateElement;
 /**
  * TransformerFactory for xsl:template markup.
  */
-class ProcessorTemplate extends ProcessorTemplateElem
-{
-    static final long serialVersionUID = -8457812845473603860L;
-  
+class ProcessorTemplate extends ProcessorTemplateElem {
+  static final long serialVersionUID = -8457812845473603860L;
+
   /**
-   * Append the current template element to the current
-   * template element, and then push it onto the current template
-   * element stack.
-   *
-   * @param handler non-null reference to current StylesheetHandler that is constructing the Templates.
-   * @param elem Must be a non-null reference to a {@link de.lyca.xalan.templates.ElemTemplate} object.
-   *
-   * @throws org.xml.sax.SAXException Any SAX exception, possibly
-   *            wrapping another exception.
+   * Append the current template element to the current template element, and
+   * then push it onto the current template element stack.
+   * 
+   * @param handler
+   *          non-null reference to current StylesheetHandler that is
+   *          constructing the Templates.
+   * @param elem
+   *          Must be a non-null reference to a
+   *          {@link de.lyca.xalan.templates.ElemTemplate} object.
+   * 
+   * @throws org.xml.sax.SAXException
+   *           Any SAX exception, possibly wrapping another exception.
    */
-  protected void appendAndPush(
-          StylesheetHandler handler, ElemTemplateElement elem)
-            throws org.xml.sax.SAXException
-  {
+  @Override
+  protected void appendAndPush(StylesheetHandler handler, ElemTemplateElement elem) throws org.xml.sax.SAXException {
 
     super.appendAndPush(handler, elem);
     elem.setDOMBackPointer(handler.getOriginatingNode());

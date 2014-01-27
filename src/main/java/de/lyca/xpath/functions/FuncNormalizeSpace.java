@@ -30,56 +30,52 @@ import de.lyca.xpath.objects.XString;
 
 /**
  * Execute the normalize-space() function.
+ * 
  * @xsl.usage advanced
  */
-public class FuncNormalizeSpace extends FunctionDef1Arg
-{
-    static final long serialVersionUID = -3377956872032190880L;
+public class FuncNormalizeSpace extends FunctionDef1Arg {
+  static final long serialVersionUID = -3377956872032190880L;
 
   /**
-   * Execute the function.  The function must return
-   * a valid object.
-   * @param xctxt The current execution context.
+   * Execute the function. The function must return a valid object.
+   * 
+   * @param xctxt
+   *          The current execution context.
    * @return A valid XObject.
-   *
+   * 
    * @throws javax.xml.transform.TransformerException
    */
-  public XObject execute(XPathContext xctxt) throws javax.xml.transform.TransformerException
-  {
-    XMLString s1 = getArg0AsString(xctxt);
+  @Override
+  public XObject execute(XPathContext xctxt) throws javax.xml.transform.TransformerException {
+    final XMLString s1 = getArg0AsString(xctxt);
 
-    return (XString)s1.fixWhiteSpace(true, true, false);
+    return (XString) s1.fixWhiteSpace(true, true, false);
   }
-  
+
   /**
-   * Execute an expression in the XPath runtime context, and return the 
-   * result of the expression.
-   *
-   *
-   * @param xctxt The XPath runtime context.
-   *
+   * Execute an expression in the XPath runtime context, and return the result
+   * of the expression.
+   * 
+   * 
+   * @param xctxt
+   *          The XPath runtime context.
+   * 
    * @return The result of the expression in the form of a <code>XObject</code>.
-   *
-   * @throws javax.xml.transform.TransformerException if a runtime exception 
-   *         occurs.
+   * 
+   * @throws javax.xml.transform.TransformerException
+   *           if a runtime exception occurs.
    */
-  public void executeCharsToContentHandler(XPathContext xctxt, 
-                                              ContentHandler handler)
-    throws javax.xml.transform.TransformerException,
-           org.xml.sax.SAXException
-  {
-    if(Arg0IsNodesetExpr())
-    {
-      int node = getArg0AsNode(xctxt);
-      if(DTM.NULL != node)
-      {
-        DTM dtm = xctxt.getDTM(node);
+  @Override
+  public void executeCharsToContentHandler(XPathContext xctxt, ContentHandler handler)
+          throws javax.xml.transform.TransformerException, org.xml.sax.SAXException {
+    if (Arg0IsNodesetExpr()) {
+      final int node = getArg0AsNode(xctxt);
+      if (DTM.NULL != node) {
+        final DTM dtm = xctxt.getDTM(node);
         dtm.dispatchCharactersEvents(node, handler, true);
       }
-    }
-    else
-    {
-      XObject obj = execute(xctxt);
+    } else {
+      final XObject obj = execute(xctxt);
       obj.dispatchCharactersEvents(handler);
     }
   }

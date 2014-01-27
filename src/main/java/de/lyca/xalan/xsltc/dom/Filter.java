@@ -26,5 +26,5 @@ package de.lyca.xalan.xsltc.dom;
  * @author Santiago Pericas-Geertsen
  */
 public interface Filter {
-    public boolean test(int node);
+  public boolean test(int node);
 }

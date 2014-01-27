@@ -23,18 +23,15 @@ package de.lyca.xml.serializer.utils;
 /**
  * This class contains utilities used by the serializer.
  * 
- * This class is not a public API, it is only public because it is
- * used by the serializer.
+ * This class is not a public API, it is only public because it is used by the
+ * serializer.
  * 
  * @xsl.usage internal
  */
-public final class Utils
-{
-    /**
-     * A singleton Messages object is used to load the 
-     * given resource bundle just once, it is
-     * used by multiple transformations as long as the JVM stays up.
-     */
-    public static final Messages messages= 
-        new Messages(SerializerMessages.class.getName());
+public final class Utils {
+  /**
+   * A singleton Messages object is used to load the given resource bundle just
+   * once, it is used by multiple transformations as long as the JVM stays up.
+   */
+  public static final Messages messages = new Messages(SerializerMessages.class.getName());
 }

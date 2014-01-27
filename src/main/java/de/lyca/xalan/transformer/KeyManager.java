@@ -32,59 +32,55 @@ import de.lyca.xpath.objects.XNodeSet;
 /**
  * This class manages the key tables.
  */
-public class KeyManager
-{
+public class KeyManager {
 
   /**
    * Table of tables of element keys.
+   * 
    * @see de.lyca.xalan.transformer.KeyTable
    */
   private transient Vector m_key_tables = null;
 
   /**
    * Given a valid element key, return the corresponding node list.
-   *
-   * @param xctxt The XPath runtime state
-   * @param doc The document node
-   * @param name The key element name
-   * @param ref The key value we're looking for 
-   * @param nscontext The prefix resolver for the execution context
-   *
+   * 
+   * @param xctxt
+   *          The XPath runtime state
+   * @param doc
+   *          The document node
+   * @param name
+   *          The key element name
+   * @param ref
+   *          The key value we're looking for
+   * @param nscontext
+   *          The prefix resolver for the execution context
+   * 
    * @return A nodelist of nodes mathing the given key
-   *
+   * 
    * @throws javax.xml.transform.TransformerException
    */
-  public XNodeSet getNodeSetDTMByKey(
-          XPathContext xctxt, int doc, QName name, XMLString ref, PrefixResolver nscontext)
-            throws javax.xml.transform.TransformerException
-  {
+  public XNodeSet getNodeSetDTMByKey(XPathContext xctxt, int doc, QName name, XMLString ref, PrefixResolver nscontext)
+          throws javax.xml.transform.TransformerException {
 
     XNodeSet nl = null;
-    ElemTemplateElement template = (ElemTemplateElement) nscontext;  // yuck -sb
+    final ElemTemplateElement template = (ElemTemplateElement) nscontext; // yuck
+                                                                          // -sb
 
-    if ((null != template)
-            && null != template.getStylesheetRoot().getKeysComposed())
-    {
+    if (null != template && null != template.getStylesheetRoot().getKeysComposed()) {
       boolean foundDoc = false;
 
-      if (null == m_key_tables)
-      {
+      if (null == m_key_tables) {
         m_key_tables = new Vector(4);
-      }
-      else
-      {
-        int nKeyTables = m_key_tables.size();
+      } else {
+        final int nKeyTables = m_key_tables.size();
 
-        for (int i = 0; i < nKeyTables; i++)
-        {
-          KeyTable kt = (KeyTable) m_key_tables.elementAt(i);
+        for (int i = 0; i < nKeyTables; i++) {
+          final KeyTable kt = (KeyTable) m_key_tables.elementAt(i);
 
-          if (kt.getKeyTableName().equals(name) && doc == kt.getDocKey())
-          {
+          if (kt.getKeyTableName().equals(name) && doc == kt.getDocKey()) {
             nl = kt.getNodeSetDTMByKey(name, ref);
 
-            if (nl != null)
-            {
+            if (nl != null) {
               foundDoc = true;
 
               break;
@@ -93,17 +89,12 @@ public class KeyManager
         }
       }
 
-      if ((null == nl) &&!foundDoc /* && m_needToBuildKeysTable */)
-      {
-        KeyTable kt =
-          new KeyTable(doc, nscontext, name,
-                       template.getStylesheetRoot().getKeysComposed(),
-                       xctxt);
+      if (null == nl && !foundDoc /* && m_needToBuildKeysTable */) {
+        final KeyTable kt = new KeyTable(doc, nscontext, name, template.getStylesheetRoot().getKeysComposed(), xctxt);
 
         m_key_tables.addElement(kt);
 
-        if (doc == kt.getDocKey())
-        {
+        if (doc == kt.getDocKey()) {
           foundDoc = true;
           nl = kt.getNodeSetDTMByKey(name, ref);
         }

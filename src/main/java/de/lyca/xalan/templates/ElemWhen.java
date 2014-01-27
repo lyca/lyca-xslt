@@ -24,6 +24,7 @@ import de.lyca.xpath.XPath;
 
 /**
  * Implement xsl:when.
+ * 
  * <pre>
  * <!ELEMENT xsl:when %template;>
  * <!ATTLIST xsl:when
@@ -31,95 +32,98 @@ import de.lyca.xpath.XPath;
  *   %space-att;
  * >
  * </pre>
- * @see <a href="http://www.w3.org/TR/xslt#section-Conditional-Processing-with-xsl:choose">XXX in XSLT Specification</a>
+ * 
+ * @see <a
+ *      href="http://www.w3.org/TR/xslt#section-Conditional-Processing-with-xsl:choose">XXX
+ *      in XSLT Specification</a>
  * @xsl.usage advanced
  */
-public class ElemWhen extends ElemTemplateElement
-{
-    static final long serialVersionUID = 5984065730262071360L;
+public class ElemWhen extends ElemTemplateElement {
+  static final long serialVersionUID = 5984065730262071360L;
 
   /**
-   * Each xsl:when element has a single attribute, test,
-   * which specifies an expression.
+   * Each xsl:when element has a single attribute, test, which specifies an
+   * expression.
+   * 
    * @serial
    */
   private XPath m_test;
 
   /**
-   * Set the "test" attribute.
-   * Each xsl:when element has a single attribute, test,
-   * which specifies an expression.
-   *
-   * @param v Value to set for the "test" attribute.
+   * Set the "test" attribute. Each xsl:when element has a single attribute,
+   * test, which specifies an expression.
+   * 
+   * @param v
+   *          Value to set for the "test" attribute.
    */
-  public void setTest(XPath v)
-  {
+  public void setTest(XPath v) {
     m_test = v;
   }
 
   /**
-   * Get the "test" attribute.
-   * Each xsl:when element has a single attribute, test,
-   * which specifies an expression.
-   *
+   * Get the "test" attribute. Each xsl:when element has a single attribute,
+   * test, which specifies an expression.
+   * 
    * @return Value of the "test" attribute.
    */
-  public XPath getTest()
-  {
+  public XPath getTest() {
     return m_test;
   }
 
   /**
    * Get an integer representation of the element type.
-   *
-   * @return An integer representation of the element, defined in the
-   *     Constants class.
+   * 
+   * @return An integer representation of the element, defined in the Constants
+   *         class.
    * @see de.lyca.xalan.templates.Constants
    */
-  public int getXSLToken()
-  {
+  @Override
+  public int getXSLToken() {
     return Constants.ELEMNAME_WHEN;
   }
-  
+
   /**
-   * This function is called after everything else has been
-   * recomposed, and allows the template to set remaining
-   * values that may be based on some other property that
-   * depends on recomposition.
+   * This function is called after everything else has been recomposed, and
+   * allows the template to set remaining values that may be based on some other
+   * property that depends on recomposition.
    */
-  public void compose(StylesheetRoot sroot) 
-    throws javax.xml.transform.TransformerException
-  {
+  @Override
+  public void compose(StylesheetRoot sroot) throws javax.xml.transform.TransformerException {
     super.compose(sroot);
-    java.util.Vector vnames = sroot.getComposeState().getVariableNames();
-    if(null != m_test)
+    final java.util.Vector vnames = sroot.getComposeState().getVariableNames();
+    if (null != m_test) {
       m_test.fixupVariables(vnames, sroot.getComposeState().getGlobalsSize());
+    }
   }
 
   /**
    * Return the node name.
-   *
+   * 
    * @return The node name
    */
-  public String getNodeName()
-  {
+  @Override
+  public String getNodeName() {
     return Constants.ELEMNAME_WHEN_STRING;
   }
 
   /**
    * Constructor ElemWhen
-   *
+   * 
    */
-  public ElemWhen(){}
-  
+  public ElemWhen() {
+  }
+
   /**
    * Call the children visitors.
-   * @param visitor The visitor whose appropriate method will be called.
+   * 
+   * @param visitor
+   *          The visitor whose appropriate method will be called.
    */
-  protected void callChildVisitors(XSLTVisitor visitor, boolean callAttrs)
-  {
-  	if(callAttrs)
-  		m_test.getExpression().callVisitors(m_test, visitor);
+  @Override
+  protected void callChildVisitors(XSLTVisitor visitor, boolean callAttrs) {
+    if (callAttrs) {
+      m_test.getExpression().callVisitors(m_test, visitor);
+    }
     super.callChildVisitors(visitor, callAttrs);
   }
 

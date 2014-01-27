@@ -26,116 +26,115 @@ import de.lyca.xpath.XPathContext;
 
 /**
  * Walker for a reverse axes.
+ * 
  * @see <a href="http://www.w3.org/TR/xpath#predicates">XPath 2.4 Predicates</a>
  */
-public class ReverseAxesWalker extends AxesWalker
-{
-    static final long serialVersionUID = 2847007647832768941L;
+public class ReverseAxesWalker extends AxesWalker {
+  static final long serialVersionUID = 2847007647832768941L;
 
   /**
    * Construct an AxesWalker using a LocPathIterator.
-   *
-   * @param locPathIterator The location path iterator that 'owns' this walker.
+   * 
+   * @param locPathIterator
+   *          The location path iterator that 'owns' this walker.
    */
-  ReverseAxesWalker(LocPathIterator locPathIterator, int axis)
-  {
+  ReverseAxesWalker(LocPathIterator locPathIterator, int axis) {
     super(locPathIterator, axis);
   }
-  
+
   /**
-   * Set the root node of the TreeWalker.
-   * (Not part of the DOM2 TreeWalker interface).
-   *
-   * @param root The context node of this step.
+   * Set the root node of the TreeWalker. (Not part of the DOM2 TreeWalker
+   * interface).
+   * 
+   * @param root
+   *          The context node of this step.
    */
-  public void setRoot(int root)
-  {
+  @Override
+  public void setRoot(int root) {
     super.setRoot(root);
     m_iterator = getDTM(root).getAxisIterator(m_axis);
     m_iterator.setStartNode(root);
   }
 
   /**
-   * Detaches the walker from the set which it iterated over, releasing
-   * any computational resources and placing the iterator in the INVALID
-   * state.
+   * Detaches the walker from the set which it iterated over, releasing any
+   * computational resources and placing the iterator in the INVALID state.
    */
-  public void detach()
-  {
+  @Override
+  public void detach() {
     m_iterator = null;
     super.detach();
   }
-  
+
   /**
    * Get the next node in document order on the axes.
-   *
+   * 
    * @return the next node in document order on the axes, or null.
    */
-  protected int getNextNode()
-  {
+  @Override
+  protected int getNextNode() {
     if (m_foundLast)
       return DTM.NULL;
 
-    int next = m_iterator.next();
-    
-    if (m_isFresh)
-      m_isFresh = false;
+    final int next = m_iterator.next();
 
-    if (DTM.NULL == next)
-      this.m_foundLast = true;
+    if (m_isFresh) {
+      m_isFresh = false;
+    }
+
+    if (DTM.NULL == next) {
+      m_foundLast = true;
+    }
 
     return next;
   }
 
-
   /**
-   * Tells if this is a reverse axes.  Overrides AxesWalker#isReverseAxes.
-   *
+   * Tells if this is a reverse axes. Overrides AxesWalker#isReverseAxes.
+   * 
    * @return true for this class.
    */
-  public boolean isReverseAxes()
-  {
+  @Override
+  public boolean isReverseAxes() {
     return true;
   }
 
-//  /**
-//   *  Set the root node of the TreeWalker.
-//   *
-//   * @param root The context node of this step.
-//   */
-//  public void setRoot(int root)
-//  {
-//    super.setRoot(root);
-//  }
+  // /**
+  // * Set the root node of the TreeWalker.
+  // *
+  // * @param root The context node of this step.
+  // */
+  // public void setRoot(int root)
+  // {
+  // super.setRoot(root);
+  // }
 
   /**
-   * Get the current sub-context position.  In order to do the
-   * reverse axes count, for the moment this re-searches the axes
-   * up to the predicate.  An optimization on this is to cache
-   * the nodes searched, but, for the moment, this case is probably
-   * rare enough that the added complexity isn't worth it.
-   *
-   * @param predicateIndex The predicate index of the proximity position.
-   *
+   * Get the current sub-context position. In order to do the reverse axes
+   * count, for the moment this re-searches the axes up to the predicate. An
+   * optimization on this is to cache the nodes searched, but, for the moment,
+   * this case is probably rare enough that the added complexity isn't worth it.
+   * 
+   * @param predicateIndex
+   *          The predicate index of the proximity position.
+   * 
    * @return The pridicate index, or -1.
    */
-  protected int getProximityPosition(int predicateIndex)
-  {
+  @Override
+  protected int getProximityPosition(int predicateIndex) {
     // A negative predicate index seems to occur with
     // (preceding-sibling::*|following-sibling::*)/ancestor::*[position()]/*[position()]
     // -sb
-    if(predicateIndex < 0)
+    if (predicateIndex < 0)
       return -1;
-      
-    int count = m_proximityPositions[predicateIndex];
-      
-    if (count <= 0)
-    {
-      AxesWalker savedWalker = wi().getLastUsedWalker();
 
-      try
-      {
-        ReverseAxesWalker clone = (ReverseAxesWalker) this.clone();
+    int count = m_proximityPositions[predicateIndex];
+
+    if (count <= 0) {
+      final AxesWalker savedWalker = wi().getLastUsedWalker();
+
+      try {
+        final ReverseAxesWalker clone = (ReverseAxesWalker) this.clone();
 
         clone.setRoot(this.getRoot());
 
@@ -149,56 +148,53 @@ public class ReverseAxesWalker extends AxesWalker
         count++;
         int next;
 
-        while (DTM.NULL != (next = clone.nextNode()))
-        {
+        while (DTM.NULL != (next = clone.nextNode())) {
           count++;
         }
 
         m_proximityPositions[predicateIndex] = count;
-      }
-      catch (CloneNotSupportedException cnse)
-      {
+      } catch (final CloneNotSupportedException cnse) {
 
         // can't happen
-      }
-      finally
-      {
+      } finally {
         wi().setLastUsedWalker(savedWalker);
       }
     }
-    
+
     return count;
   }
 
   /**
    * Count backwards one proximity position.
-   *
-   * @param i The predicate index.
+   * 
+   * @param i
+   *          The predicate index.
    */
-  protected void countProximityPosition(int i)
-  {
-    if (i < m_proximityPositions.length)
+  @Override
+  protected void countProximityPosition(int i) {
+    if (i < m_proximityPositions.length) {
       m_proximityPositions[i]--;
+    }
   }
 
   /**
-   * Get the number of nodes in this node list.  The function is probably ill
+   * Get the number of nodes in this node list. The function is probably ill
    * named?
-   *
-   *
-   * @param xctxt The XPath runtime context.
-   *
+   * 
+   * 
+   * @param xctxt
+   *          The XPath runtime context.
+   * 
    * @return the number of nodes in this node list.
    */
-  public int getLastPos(XPathContext xctxt)
-  {
+  @Override
+  public int getLastPos(XPathContext xctxt) {
 
     int count = 0;
-    AxesWalker savedWalker = wi().getLastUsedWalker();
+    final AxesWalker savedWalker = wi().getLastUsedWalker();
 
-    try
-    {
-      ReverseAxesWalker clone = (ReverseAxesWalker) this.clone();
+    try {
+      final ReverseAxesWalker clone = (ReverseAxesWalker) this.clone();
 
       clone.setRoot(this.getRoot());
 
@@ -212,36 +208,30 @@ public class ReverseAxesWalker extends AxesWalker
       // count = 1;
       int next;
 
-      while (DTM.NULL != (next = clone.nextNode()))
-      {
+      while (DTM.NULL != (next = clone.nextNode())) {
         count++;
       }
-    }
-    catch (CloneNotSupportedException cnse)
-    {
+    } catch (final CloneNotSupportedException cnse) {
 
       // can't happen
-    }
-    finally
-    {
+    } finally {
       wi().setLastUsedWalker(savedWalker);
     }
 
     return count;
   }
-  
+
   /**
-   * Returns true if all the nodes in the iteration well be returned in document 
-   * order.
-   * Warning: This can only be called after setRoot has been called!
+   * Returns true if all the nodes in the iteration well be returned in document
+   * order. Warning: This can only be called after setRoot has been called!
    * 
    * @return false.
    */
-  public boolean isDocOrdered()
-  {
-    return false;  // I think.
+  @Override
+  public boolean isDocOrdered() {
+    return false; // I think.
   }
-  
+
   /** The DTM inner traversal class, that corresponds to the super axis. */
   protected DTMAxisIterator m_iterator;
 }

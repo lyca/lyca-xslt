@@ -25,94 +25,94 @@ import java.util.Properties;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
-
 /**
  * A Connection Pool that wraps a JDBC datasource to provide connections.
  * 
  * An instance of this class is created by <code>XConnection</code> when it
- * attempts to resolves a <code>ConnectionPool</code> name as a JNDI data source.
+ * attempts to resolves a <code>ConnectionPool</code> name as a JNDI data
+ * source.
  * 
  * Most methods in this implementation do nothing since configuration is handled
- * by the underlying JDBC datasource.  Users should always call
+ * by the underlying JDBC datasource. Users should always call
  * <code>XConnection.close()</code> from their stylsheet to explicitely close
- * their connection.  However, since there is no way to enforce this
- * (Yikes!), it is recommended that a relatively short datasource timeout
- * be used to prevent dangling connections.
+ * their connection. However, since there is no way to enforce this (Yikes!), it
+ * is recommended that a relatively short datasource timeout be used to prevent
+ * dangling connections.
  */
-public class JNDIConnectionPool implements ConnectionPool
-{
-  
+public class JNDIConnectionPool implements ConnectionPool {
+
   /**
    * Reference to the datasource
    */
   protected Object jdbcSource = null;
 
-  /** 
-   * To maintain Java 1.3 compatibility, we need to work with the
-   * DataSource class through Reflection. The getConnection method
-   * is one of the methods used, and there are two different flavors.
+  /**
+   * To maintain Java 1.3 compatibility, we need to work with the DataSource
+   * class through Reflection. The getConnection method is one of the methods
+   * used, and there are two different flavors.
    * 
-   */  
+   */
   private Method getConnectionWithArgs = null;
   private Method getConnection = null;
-  
-  
+
   /**
    * The unique jndi path for this datasource.
    */
   protected String jndiPath = null;
-  
+
   /**
    * User name for protected datasources.
    */
   protected String user = null;
-  
+
   /**
    * Password for protected datasources.
    */
   protected String pwd = null;
-  
+
   /**
    * Use of the default constructor requires the jndi path to be set via
    * setJndiPath().
    */
-  public JNDIConnectionPool() {  }
-  
+  public JNDIConnectionPool() {
+  }
+
   /**
-   * Creates a connection pool with a specified JNDI path. 
-   * @param jndiDatasourcePath Complete path to the JNDI datasource
+   * Creates a connection pool with a specified JNDI path.
+   * 
+   * @param jndiDatasourcePath
+   *          Complete path to the JNDI datasource
    */
-  public JNDIConnectionPool(String jndiDatasourcePath)
-  {
+  public JNDIConnectionPool(String jndiDatasourcePath) {
     jndiPath = jndiDatasourcePath.trim();
   }
-  
+
   /**
-   * Sets the path for the jndi datasource 
-   * @param jndiPath 
+   * Sets the path for the jndi datasource
+   * 
+   * @param jndiPath
    */
-  public void setJndiPath(String jndiPath)
-  {
+  public void setJndiPath(String jndiPath) {
     this.jndiPath = jndiPath;
   }
 
   /**
-   * Returns the path for the jndi datasource 
-   * @param jndiPath 
+   * Returns the path for the jndi datasource
+   * 
+   * @param jndiPath
    */
-  public String getJndiPath()
-  {
+  public String getJndiPath() {
     return jndiPath;
   }
 
   /**
-   * Always returns true.
-   * This method was intended to indicate if the pool was enabled, however, in
-   * this implementation that is not relavant.
-   * @return 
+   * Always returns true. This method was intended to indicate if the pool was
+   * enabled, however, in this implementation that is not relavant.
+   * 
+   * @return
    */
-  public boolean isEnabled()
-  {
+  @Override
+  public boolean isEnabled() {
     return true;
   }
 
@@ -120,74 +120,85 @@ public class JNDIConnectionPool implements ConnectionPool
    * Not implemented and will throw an Error if called.
    * 
    * Connection configuration is handled by the underlying JNDI DataSource.
-   * @param d 
+   * 
+   * @param d
    */
-  public void setDriver(String d)
-  {
-    throw new Error(
-      "This method is not supported. " +
-      "All connection information is handled by the JDBC datasource provider");
+  @Override
+  public void setDriver(String d) {
+    throw new Error("This method is not supported. "
+            + "All connection information is handled by the JDBC datasource provider");
   }
 
   /**
    * Not implemented and will throw an Error if called.
    * 
    * Connection configuration is handled by the underlying JNDI DataSource.
-   * @param d 
+   * 
+   * @param d
    */
-  public void setURL(String url)
-  {
-    throw new Error(
-      "This method is not supported. " +
-      "All connection information is handled by the JDBC datasource provider");
+  @Override
+  public void setURL(String url) {
+    throw new Error("This method is not supported. "
+            + "All connection information is handled by the JDBC datasource provider");
   }
 
   /**
-   * Intended to release unused connections from the pool.
-   * Does nothing in this implementation.
+   * Intended to release unused connections from the pool. Does nothing in this
+   * implementation.
    */
-  public void freeUnused()
-  {
-    //Do nothing - not an error to call this method
+  @Override
+  public void freeUnused() {
+    // Do nothing - not an error to call this method
   }
 
   /**
    * Always returns false, indicating that this wrapper has no idea of what
    * connections the underlying JNDI source is maintaining.
-   * @return 
+   * 
+   * @return
    */
-  public boolean hasActiveConnections()
-  {
+  @Override
+  public boolean hasActiveConnections() {
     return false;
   }
 
   /**
-   * Sets the password for the connection.
-   * If the jndi datasource does not require a password (which is typical),
-   * this can be left null.
-   * @param p the password
+   * Sets the password for the connection. If the jndi datasource does not
+   * require a password (which is typical), this can be left null.
+   * 
+   * @param p
+   *          the password
    */
-  public void setPassword(String p)
-  {
-    
-    if (p != null) p = p.trim();
-    if (p != null && p.length() == 0) p = null;
-    
+  @Override
+  public void setPassword(String p) {
+
+    if (p != null) {
+      p = p.trim();
+    }
+    if (p != null && p.length() == 0) {
+      p = null;
+    }
+
     pwd = p;
   }
 
   /**
-   * Sets the user name for the connection.
-   * If the jndi datasource does not require a user name (which is typical),
-   * this can be left null.
-   * @param u the user name
+   * Sets the user name for the connection. If the jndi datasource does not
+   * require a user name (which is typical), this can be left null.
+   * 
+   * @param u
+   *          the user name
    */
-  public void setUser(String u)
-  {
-    
-    if (u != null) u = u.trim();
-    if (u != null && u.length() == 0) u = null;
-    
+  @Override
+  public void setUser(String u) {
+
+    if (u != null) {
+      u = u.trim();
+    }
+    if (u != null && u.length() == 0) {
+      u = null;
+    }
+
     user = u;
   }
 
@@ -195,117 +206,103 @@ public class JNDIConnectionPool implements ConnectionPool
    * Returns a connection from the JDNI DataSource found at the JNDI Datasource
    * path.
    * 
-   * @return 
-   * @throws SQLException 
+   * @return
+   * @throws SQLException
    */
-  public Connection getConnection() throws SQLException
-  {
-    if (jdbcSource == null)
-    {
-      try
-      {
+  @Override
+  public Connection getConnection() throws SQLException {
+    if (jdbcSource == null) {
+      try {
         findDatasource();
-      }
-      catch (NamingException ne)
-      {
-        throw new SQLException(
-          "Could not create jndi context for " + 
-          jndiPath + " - " + ne.getLocalizedMessage());
+      } catch (final NamingException ne) {
+        throw new SQLException("Could not create jndi context for " + jndiPath + " - " + ne.getLocalizedMessage());
       }
     }
-    
-    try
-    {
-      if (user != null || pwd != null)
-      {
-        Object arglist[] = { user, pwd }; 
+
+    try {
+      if (user != null || pwd != null) {
+        final Object arglist[] = { user, pwd };
         return (Connection) getConnectionWithArgs.invoke(jdbcSource, arglist);
-      }
-      else
-      {
-        Object arglist[] = {}; 
+      } else {
+        final Object arglist[] = {};
         return (Connection) getConnection.invoke(jdbcSource, arglist);
       }
+    } catch (final Exception e) {
+      throw new SQLException("Could not create jndi connection for " + jndiPath + " - " + e.getLocalizedMessage());
     }
-    catch (Exception e)
-    {
-      throw new SQLException(
-        "Could not create jndi connection for " + 
-        jndiPath + " - " + e.getLocalizedMessage());
-    }
-    
+
   }
-  
+
   /**
-   * Internal method used to look up the datasource. 
-   * @throws NamingException 
+   * Internal method used to look up the datasource.
+   * 
+   * @throws NamingException
    */
-  protected void findDatasource() throws NamingException
-  {
-    try
-    {
-      InitialContext context = new InitialContext();
-      jdbcSource =  context.lookup(jndiPath);
-      
-      Class withArgs[] = { String.class, String.class };
-      getConnectionWithArgs = 
-        jdbcSource.getClass().getDeclaredMethod("getConnection", withArgs);
-      
-      Class noArgs[] = { };
-      getConnection = 
-        jdbcSource.getClass().getDeclaredMethod("getConnection", noArgs);
-      
-    }
-    catch (NamingException e)
-    {
+  protected void findDatasource() throws NamingException {
+    try {
+      final InitialContext context = new InitialContext();
+      jdbcSource = context.lookup(jndiPath);
+
+      final Class withArgs[] = { String.class, String.class };
+      getConnectionWithArgs = jdbcSource.getClass().getDeclaredMethod("getConnection", withArgs);
+
+      final Class noArgs[] = {};
+      getConnection = jdbcSource.getClass().getDeclaredMethod("getConnection", noArgs);
+
+    } catch (final NamingException e) {
       throw e;
-    }
-    catch (NoSuchMethodException e)
-    {
+    } catch (final NoSuchMethodException e) {
       // For simpleification, we will just throw a NamingException. We will only
       // use the message part of the exception anyway.
       throw new NamingException("Unable to resolve JNDI DataSource - " + e);
     }
   }
 
-  public void releaseConnection(Connection con) throws SQLException
-  {
+  @Override
+  public void releaseConnection(Connection con) throws SQLException {
     con.close();
   }
 
-  public void releaseConnectionOnError(Connection con) throws SQLException
-  {
+  @Override
+  public void releaseConnectionOnError(Connection con) throws SQLException {
     con.close();
   }
 
   /**
-   * Releases the reference to the jndi datasource.
-   * The original intention of this method was to actually turn the pool *off*.
-   * Since we are not managing the pool, we simply release our reference to
-   * the datasource.  Future calls to the getConnection will simply recreate
-   * the datasource.
-   * @param flag If false, the reference to the datasource is released.
+   * Releases the reference to the jndi datasource. The original intention of
+   * this method was to actually turn the pool *off*. Since we are not managing
+   * the pool, we simply release our reference to the datasource. Future calls
+   * to the getConnection will simply recreate the datasource.
+   * 
+   * @param flag
+   *          If false, the reference to the datasource is released.
    */
-  public void setPoolEnabled(boolean flag)
-  {
-    if (! flag) jdbcSource = null;
+  @Override
+  public void setPoolEnabled(boolean flag) {
+    if (!flag) {
+      jdbcSource = null;
+    }
   }
 
   /**
-   * Ignored in this implementation b/c the pooling is determined by the jndi dataosource. 
+   * Ignored in this implementation b/c the pooling is determined by the jndi
+   * dataosource.
+   * 
    * @param p
    */
-  public void setProtocol(Properties p)
-  {
+  @Override
+  public void setProtocol(Properties p) {
     /* ignore - properties are determined by datasource */
   }
-  
+
   /**
-   * Ignored in this implementation b/c the pooling is determined by the jndi dataosource. 
-   * @param n 
+   * Ignored in this implementation b/c the pooling is determined by the jndi
+   * dataosource.
+   * 
+   * @param n
    */
-  public void setMinConnections(int n)
-  {
+  @Override
+  public void setMinConnections(int n) {
     /* ignore - pooling is determined by datasource */
   }
 
@@ -315,23 +312,17 @@ public class JNDIConnectionPool implements ConnectionPool
    * Note that this test does not ensure that the datasource will return valid
    * connections.
    */
-  public boolean testConnection()
-  {
-    if (jdbcSource == null)
-    {
-      try
-      {
+  @Override
+  public boolean testConnection() {
+    if (jdbcSource == null) {
+      try {
         findDatasource();
-      }
-      catch (NamingException ne)
-      {
+      } catch (final NamingException ne) {
         return false;
       }
     }
-    
+
     return true;
   }
-
-
 
 }

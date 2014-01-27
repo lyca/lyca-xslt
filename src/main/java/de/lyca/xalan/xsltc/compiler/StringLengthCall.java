@@ -36,21 +36,20 @@ import de.lyca.xalan.xsltc.compiler.util.Type;
  * @author Santiago Pericas-Geertsen
  */
 final class StringLengthCall extends FunctionCall {
-    public StringLengthCall(QName fname, Vector arguments) {
-	super(fname, arguments);
-    }
+  public StringLengthCall(QName fname, Vector arguments) {
+    super(fname, arguments);
+  }
 
-    public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
-	final ConstantPoolGen cpg = classGen.getConstantPool();
-	final InstructionList il = methodGen.getInstructionList();
-	if (argumentCount() > 0) {
-	    argument().translate(classGen, methodGen);
-	}
-	else {
-	    il.append(methodGen.loadContextNode());
-	    Type.Node.translateTo(classGen, methodGen, Type.String);
-	}
-	il.append(new INVOKEVIRTUAL(cpg.addMethodref(STRING_CLASS,
-						     "length", "()I")));
+  @Override
+  public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
+    final ConstantPoolGen cpg = classGen.getConstantPool();
+    final InstructionList il = methodGen.getInstructionList();
+    if (argumentCount() > 0) {
+      argument().translate(classGen, methodGen);
+    } else {
+      il.append(methodGen.loadContextNode());
+      Type.Node.translateTo(classGen, methodGen, Type.String);
     }
+    il.append(new INVOKEVIRTUAL(cpg.addMethodref(STRING_CLASS, "length", "()I")));
+  }
 }

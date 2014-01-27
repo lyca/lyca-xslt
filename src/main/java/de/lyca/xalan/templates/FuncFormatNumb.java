@@ -26,7 +26,6 @@ import javax.xml.transform.TransformerException;
 import de.lyca.xalan.res.XSLMessages;
 import de.lyca.xalan.res.XSLTErrorResources;
 import de.lyca.xml.utils.QName;
-import de.lyca.xml.utils.SAXSourceLocator;
 import de.lyca.xpath.Expression;
 import de.lyca.xpath.XPathContext;
 import de.lyca.xpath.functions.Function3Args;
@@ -36,60 +35,57 @@ import de.lyca.xpath.objects.XString;
 
 /**
  * Execute the FormatNumber() function.
+ * 
  * @xsl.usage advanced
  */
-public class FuncFormatNumb extends Function3Args
-{
-    static final long serialVersionUID = -8869935264870858636L;
+public class FuncFormatNumb extends Function3Args {
+  static final long serialVersionUID = -8869935264870858636L;
 
   /**
-   * Execute the function.  The function must return
-   * a valid object.
-   * @param xctxt The current execution context.
+   * Execute the function. The function must return a valid object.
+   * 
+   * @param xctxt
+   *          The current execution context.
    * @return A valid XObject.
-   *
+   * 
    * @throws javax.xml.transform.TransformerException
    */
-  public XObject execute(XPathContext xctxt) throws javax.xml.transform.TransformerException
-  {
+  @Override
+  public XObject execute(XPathContext xctxt) throws javax.xml.transform.TransformerException {
 
     // A bit of an ugly hack to get our context.
-    ElemTemplateElement templElem =
-      (ElemTemplateElement) xctxt.getNamespaceContext();
-    StylesheetRoot ss = templElem.getStylesheetRoot();
+    final ElemTemplateElement templElem = (ElemTemplateElement) xctxt.getNamespaceContext();
+    final StylesheetRoot ss = templElem.getStylesheetRoot();
     java.text.DecimalFormat formatter = null;
     java.text.DecimalFormatSymbols dfs = null;
-    double num = getArg0().execute(xctxt).num();
-    String patternStr = getArg1().execute(xctxt).str();
+    final double num = getArg0().execute(xctxt).num();
+    final String patternStr = getArg1().execute(xctxt).str();
 
     // TODO: what should be the behavior here??
-    if (patternStr.indexOf(0x00A4) > 0)
-      ss.error(XSLTErrorResources.ER_CURRENCY_SIGN_ILLEGAL);  // currency sign not allowed
+    if (patternStr.indexOf(0x00A4) > 0) {
+      ss.error(XSLTErrorResources.ER_CURRENCY_SIGN_ILLEGAL); // currency sign
+                                                             // not allowed
+    }
 
     // this third argument is not a locale name. It is the name of a
     // decimal-format declared in the stylesheet!(xsl:decimal-format
-    try
-    {
-      Expression arg2Expr = getArg2();
+    try {
+      final Expression arg2Expr = getArg2();
 
-      if (null != arg2Expr)
-      {
-        String dfName = arg2Expr.execute(xctxt).str();
-        QName qname = new QName(dfName, xctxt.getNamespaceContext());
+      if (null != arg2Expr) {
+        final String dfName = arg2Expr.execute(xctxt).str();
+        final QName qname = new QName(dfName, xctxt.getNamespaceContext());
 
         dfs = ss.getDecimalFormatComposed(qname);
 
-        if (null == dfs)
-        {
-          warn(xctxt, XSLTErrorResources.WG_NO_DECIMALFORMAT_DECLARATION,
-               new Object[]{ dfName });  //"not found!!!
+        if (null == dfs) {
+          warn(xctxt, XSLTErrorResources.WG_NO_DECIMALFORMAT_DECLARATION, new Object[] { dfName }); // "not
+                                                                                                    // found!!!
 
-          //formatter = new java.text.DecimalFormat(patternStr);
-        }
-        else
-        {
+          // formatter = new java.text.DecimalFormat(patternStr);
+        } else {
 
-          //formatter = new java.text.DecimalFormat(patternStr, dfs);
+          // formatter = new java.text.DecimalFormat(patternStr, dfs);
           formatter = new java.text.DecimalFormat();
 
           formatter.setDecimalFormatSymbols(dfs);
@@ -97,22 +93,18 @@ public class FuncFormatNumb extends Function3Args
         }
       }
 
-      //else
-      if (null == formatter)
-      {
+      // else
+      if (null == formatter) {
 
         // look for a possible default decimal-format
         dfs = ss.getDecimalFormatComposed(new QName(""));
 
-        if (dfs != null)
-        {
+        if (dfs != null) {
           formatter = new java.text.DecimalFormat();
 
           formatter.setDecimalFormatSymbols(dfs);
           formatter.applyLocalizedPattern(patternStr);
-        }
-        else
-        {
+        } else {
           dfs = new java.text.DecimalFormatSymbols(java.util.Locale.US);
 
           dfs.setInfinity(Constants.ATTRVAL_INFINITY);
@@ -122,67 +114,70 @@ public class FuncFormatNumb extends Function3Args
 
           formatter.setDecimalFormatSymbols(dfs);
 
-          if (null != patternStr)
+          if (null != patternStr) {
             formatter.applyLocalizedPattern(patternStr);
+          }
         }
       }
 
       return new XString(formatter.format(num));
-    }
-    catch (Exception iae)
-    {
-      templElem.error(XSLTErrorResources.ER_MALFORMED_FORMAT_STRING,
-                      new Object[]{ patternStr });
+    } catch (final Exception iae) {
+      templElem.error(XSLTErrorResources.ER_MALFORMED_FORMAT_STRING, new Object[] { patternStr });
 
       return XString.EMPTYSTRING;
 
-      //throw new XSLProcessorException(iae);
+      // throw new XSLProcessorException(iae);
     }
   }
 
   /**
    * Warn the user of a problem.
-   *
-   * @param xctxt The XPath runtime state.
-   * @param msg Warning message key
-   * @param args Arguments to be used in warning message
-   * @throws XSLProcessorException thrown if the active ProblemListener and XPathContext decide
-   * the error condition is severe enough to halt processing.
-   *
+   * 
+   * @param xctxt
+   *          The XPath runtime state.
+   * @param msg
+   *          Warning message key
+   * @param args
+   *          Arguments to be used in warning message
+   * @throws XSLProcessorException
+   *           thrown if the active ProblemListener and XPathContext decide the
+   *           error condition is severe enough to halt processing.
+   * 
    * @throws javax.xml.transform.TransformerException
    */
-  public void warn(XPathContext xctxt, String msg, Object args[])
-          throws javax.xml.transform.TransformerException
-  {
+  @Override
+  public void warn(XPathContext xctxt, String msg, Object args[]) throws javax.xml.transform.TransformerException {
 
-    String formattedMsg = XSLMessages.createWarning(msg, args);
-    ErrorListener errHandler = xctxt.getErrorListener();
+    final String formattedMsg = XSLMessages.createWarning(msg, args);
+    final ErrorListener errHandler = xctxt.getErrorListener();
 
-    errHandler.warning(new TransformerException(formattedMsg,
-                                             (SAXSourceLocator)xctxt.getSAXLocator()));
+    errHandler.warning(new TransformerException(formattedMsg, xctxt.getSAXLocator()));
   }
 
   /**
-   * Overide the superclass method to allow one or two arguments. 
-   *
-   *
-   * @param argNum Number of arguments passed in
-   *
+   * Overide the superclass method to allow one or two arguments.
+   * 
+   * 
+   * @param argNum
+   *          Number of arguments passed in
+   * 
    * @throws WrongNumberArgsException
    */
-  public void checkNumberArgs(int argNum) throws WrongNumberArgsException
-  {
-    if ((argNum > 3) || (argNum < 2))
+  @Override
+  public void checkNumberArgs(int argNum) throws WrongNumberArgsException {
+    if (argNum > 3 || argNum < 2) {
       reportWrongNumberArgs();
+    }
   }
 
   /**
    * Constructs and throws a WrongNumberArgException with the appropriate
    * message for this function object.
-   *
+   * 
    * @throws WrongNumberArgsException
    */
+  @Override
   protected void reportWrongNumberArgs() throws WrongNumberArgsException {
-      throw new WrongNumberArgsException(XSLMessages.createMessage(XSLTErrorResources.ER_TWO_OR_THREE, null)); //"2 or 3");
+    throw new WrongNumberArgsException(XSLMessages.createMessage(XSLTErrorResources.ER_TWO_OR_THREE, null)); // "2 or 3");
   }
 }

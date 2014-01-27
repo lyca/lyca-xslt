@@ -34,52 +34,54 @@ import de.lyca.xpath.XPath;
 import de.lyca.xpath.axes.OneStepIteratorForward;
 
 /**
- * This class implements an optimized iterator for 
- * "key()" patterns, matching each node to the 
- * match attribute in one or more xsl:key declarations.
+ * This class implements an optimized iterator for "key()" patterns, matching
+ * each node to the match attribute in one or more xsl:key declarations.
+ * 
  * @xsl.usage internal
  */
-public class KeyIterator extends OneStepIteratorForward
-{
-    static final long serialVersionUID = -1349109910100249661L;
+public class KeyIterator extends OneStepIteratorForward {
+  static final long serialVersionUID = -1349109910100249661L;
 
-  /** Key name.
-   *  @serial           */
-  private QName m_name;
+  /**
+   * Key name.
+   * 
+   * @serial
+   */
+  private final QName m_name;
 
   /**
    * Get the key name from a key declaration this iterator will process
-   *
-   *
+   * 
+   * 
    * @return Key name
    */
-  public QName getName()
-  {
+  public QName getName() {
     return m_name;
   }
 
-  /** Vector of Key declarations in the stylesheet.
-   *  @serial          */
-  private Vector m_keyDeclarations;
+  /**
+   * Vector of Key declarations in the stylesheet.
+   * 
+   * @serial
+   */
+  private final Vector m_keyDeclarations;
 
   /**
-   * Get the key declarations from the stylesheet 
-   *
-   *
+   * Get the key declarations from the stylesheet
+   * 
+   * 
    * @return Vector containing the key declarations from the stylesheet
    */
-  public Vector getKeyDeclarations()
-  {
+  public Vector getKeyDeclarations() {
     return m_keyDeclarations;
   }
 
   /**
-    * Create a KeyIterator object.
-    *
-    * @throws javax.xml.transform.TransformerException
-    */
-  KeyIterator(QName name, Vector keyDeclarations)
-  {
+   * Create a KeyIterator object.
+   * 
+   * @throws javax.xml.transform.TransformerException
+   */
+  KeyIterator(QName name, Vector keyDeclarations) {
     super(Axis.ALL);
     m_keyDeclarations = keyDeclarations;
     // m_prefixResolver = nscontext;
@@ -87,66 +89,64 @@ public class KeyIterator extends OneStepIteratorForward
   }
 
   /**
-   *  Test whether a specified node is visible in the logical view of a
+   * Test whether a specified node is visible in the logical view of a
    * TreeWalker or NodeIterator. This function will be called by the
-   * implementation of TreeWalker and NodeIterator; it is not intended to
-   * be called directly from user code.
+   * implementation of TreeWalker and NodeIterator; it is not intended to be
+   * called directly from user code.
    * 
-   * @param testNode  The node to check to see if it passes the filter or not.
-   *
-   * @return  a constant to determine whether the node is accepted,
-   *   rejected, or skipped, as defined  above .
+   * @param testNode
+   *          The node to check to see if it passes the filter or not.
+   * 
+   * @return a constant to determine whether the node is accepted, rejected, or
+   *         skipped, as defined above .
    */
-  public short acceptNode(int testNode)
-  {
+  @Override
+  public short acceptNode(int testNode) {
     boolean foundKey = false;
-    KeyIterator ki = (KeyIterator) m_lpi;
-    de.lyca.xpath.XPathContext xctxt = ki.getXPathContext();
-    Vector keys = ki.getKeyDeclarations();
+    final KeyIterator ki = (KeyIterator) m_lpi;
+    final de.lyca.xpath.XPathContext xctxt = ki.getXPathContext();
+    final Vector keys = ki.getKeyDeclarations();
 
-    QName name = ki.getName();
-    try
-    {
+    final QName name = ki.getName();
+    try {
       // System.out.println("lookupKey: "+lookupKey);
-      int nDeclarations = keys.size();
+      final int nDeclarations = keys.size();
 
       // Walk through each of the declarations made with xsl:key
-      for (int i = 0; i < nDeclarations; i++)
-      {
-        KeyDeclaration kd = (KeyDeclaration) keys.elementAt(i);
+      for (int i = 0; i < nDeclarations; i++) {
+        final KeyDeclaration kd = (KeyDeclaration) keys.elementAt(i);
 
         // Only continue if the name on this key declaration
-        // matches the name on the iterator for this walker. 
-        if (!kd.getName().equals(name))
+        // matches the name on the iterator for this walker.
+        if (!kd.getName().equals(name)) {
           continue;
+        }
 
         foundKey = true;
         // xctxt.setNamespaceContext(ki.getPrefixResolver());
 
-        // See if our node matches the given key declaration according to 
+        // See if our node matches the given key declaration according to
         // the match attribute on xsl:key.
-        XPath matchExpr = kd.getMatch();
-        double score = matchExpr.getMatchScore(xctxt, testNode);
+        final XPath matchExpr = kd.getMatch();
+        final double score = matchExpr.getMatchScore(xctxt, testNode);
 
-        if (score == kd.getMatch().MATCH_SCORE_NONE)
+        kd.getMatch();
+        if (score == XPath.MATCH_SCORE_NONE) {
           continue;
+        }
 
         return DTMIterator.FILTER_ACCEPT;
 
       } // end for(int i = 0; i < nDeclarations; i++)
-    }
-    catch (TransformerException se)
-    {
+    } catch (final TransformerException se) {
 
       // TODO: What to do?
     }
 
     if (!foundKey)
-      throw new RuntimeException(
-        XSLMessages.createMessage(
-          XSLTErrorResources.ER_NO_XSLKEY_DECLARATION,
-          new Object[] { name.getLocalName()}));
-          
+      throw new RuntimeException(XSLMessages.createMessage(XSLTErrorResources.ER_NO_XSLKEY_DECLARATION,
+              new Object[] { name.getLocalName() }));
+
     return DTMIterator.FILTER_REJECT;
   }
 

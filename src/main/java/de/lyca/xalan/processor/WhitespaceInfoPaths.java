@@ -25,58 +25,51 @@ import java.util.Vector;
 import de.lyca.xalan.templates.Stylesheet;
 import de.lyca.xalan.templates.WhiteSpaceInfo;
 
-public class WhitespaceInfoPaths extends WhiteSpaceInfo
-{
-    static final long serialVersionUID = 5954766719577516723L;
-	
+public class WhitespaceInfoPaths extends WhiteSpaceInfo {
+  static final long serialVersionUID = 5954766719577516723L;
+
   /**
-   * Bean property to allow setPropertiesFromAttributes to
-   * get the elements attribute.
+   * Bean property to allow setPropertiesFromAttributes to get the elements
+   * attribute.
    */
   private Vector m_elements;
 
   /**
-   * Set from the elements attribute.  This is a list of 
-   * whitespace delimited element qualified names that specify
-   * preservation of whitespace.
-   *
-   * @param elems Should be a non-null reference to a list 
-   *              of {@link de.lyca.xpath.XPath} objects.
+   * Set from the elements attribute. This is a list of whitespace delimited
+   * element qualified names that specify preservation of whitespace.
+   * 
+   * @param elems
+   *          Should be a non-null reference to a list of
+   *          {@link de.lyca.xpath.XPath} objects.
    */
-  public void setElements(Vector elems)
-  {
+  public void setElements(Vector elems) {
     m_elements = elems;
   }
 
   /**
-   * Get the property set by setElements().  This is a list of 
-   * whitespace delimited element qualified names that specify
-   * preservation of whitespace.
-   *
-   * @return A reference to a list of {@link de.lyca.xpath.XPath} objects, 
-   *         or null.
+   * Get the property set by setElements(). This is a list of whitespace
+   * delimited element qualified names that specify preservation of whitespace.
+   * 
+   * @return A reference to a list of {@link de.lyca.xpath.XPath} objects, or
+   *         null.
    */
-  Vector getElements()
-  {
+  Vector getElements() {
     return m_elements;
   }
-  
-  public void clearElements()
-  {
-  	m_elements = null;
+
+  public void clearElements() {
+    m_elements = null;
   }
 
- /**
+  /**
    * Constructor WhitespaceInfoPaths
-   *
-   * @param thisSheet The current stylesheet
+   * 
+   * @param thisSheet
+   *          The current stylesheet
    */
-  public WhitespaceInfoPaths(Stylesheet thisSheet)
-  {
-  	super(thisSheet);
-  	setStylesheet(thisSheet);
+  public WhitespaceInfoPaths(Stylesheet thisSheet) {
+    super(thisSheet);
+    setStylesheet(thisSheet);
   }
-
 
 }
-

@@ -1,4 +1,3 @@
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
@@ -21,42 +20,75 @@
  */
 package de.lyca.xml.dtm.ref;
 
-import de.lyca.xml.dtm.DTM;
 import de.lyca.xml.dtm.DTMAxisIterator;
-
 
 /**
  * DTM Empty Axis Iterator. The class is immutable
  */
-public final class EmptyIterator implements DTMAxisIterator
-{
-  private static final EmptyIterator INSTANCE =  new EmptyIterator();
-  
-  public static DTMAxisIterator  getInstance() {return INSTANCE;}
-  
-  private EmptyIterator(){}
-  
-  public final  int  next(){ return END; }  
-  
-  public final DTMAxisIterator reset(){ return this; }
+public final class EmptyIterator implements DTMAxisIterator {
+  private static final EmptyIterator INSTANCE = new EmptyIterator();
 
-  public final int getLast(){ return 0; }
+  public static DTMAxisIterator getInstance() {
+    return INSTANCE;
+  }
 
-  public final int getPosition(){ return 1; }
+  private EmptyIterator() {
+  }
 
-  public final void setMark(){}
+  @Override
+  public final int next() {
+    return END;
+  }
 
-  public final void gotoMark(){}
+  @Override
+  public final DTMAxisIterator reset() {
+    return this;
+  }
 
-  public final DTMAxisIterator setStartNode(int node){ return this; }
+  @Override
+  public final int getLast() {
+    return 0;
+  }
 
-  public final int getStartNode(){ return END; } 
-  
-  public final boolean isReverse(){return false;} 
-  
-  public final DTMAxisIterator cloneIterator(){ return this; }
-  
-  public final void setRestartable(boolean isRestartable) {}
-  
-  public final int getNodeByPosition(int position){ return END; } 
+  @Override
+  public final int getPosition() {
+    return 1;
+  }
+
+  @Override
+  public final void setMark() {
+  }
+
+  @Override
+  public final void gotoMark() {
+  }
+
+  @Override
+  public final DTMAxisIterator setStartNode(int node) {
+    return this;
+  }
+
+  @Override
+  public final int getStartNode() {
+    return END;
+  }
+
+  @Override
+  public final boolean isReverse() {
+    return false;
+  }
+
+  @Override
+  public final DTMAxisIterator cloneIterator() {
+    return this;
+  }
+
+  @Override
+  public final void setRestartable(boolean isRestartable) {
+  }
+
+  @Override
+  public final int getNodeByPosition(int position) {
+    return END;
+  }
 }

@@ -31,6 +31,7 @@ import de.lyca.xalan.templates.KeyDeclaration;
 
 /**
  * TransformerFactory for xsl:key markup.
+ * 
  * <pre>
  * <!ELEMENT xsl:key EMPTY>
  * <!ATTLIST xsl:key
@@ -39,35 +40,36 @@ import de.lyca.xalan.templates.KeyDeclaration;
  *   use %expr; #REQUIRED
  * >
  * </pre>
+ * 
  * @see <a href="http://www.w3.org/TR/xslt#dtd">XSLT DTD</a>
  * @see <a href="http://www.w3.org/TR/xslt#key">key in XSLT Specification</a>
  */
-class ProcessorKey extends XSLTElementProcessor
-{
-    static final long serialVersionUID = 4285205417566822979L;
+class ProcessorKey extends XSLTElementProcessor {
+  static final long serialVersionUID = 4285205417566822979L;
 
   /**
    * Receive notification of the start of an xsl:key element.
-   *
-   * @param handler The calling StylesheetHandler/TemplatesBuilder.
-   * @param uri The Namespace URI, or the empty string if the
-   *        element has no Namespace URI or if Namespace
-   *        processing is not being performed.
-   * @param localName The local name (without prefix), or the
-   *        empty string if Namespace processing is not being
-   *        performed.
-   * @param rawName The raw XML 1.0 name (with prefix), or the
-   *        empty string if raw names are not available.
-   * @param attributes The attributes attached to the element.  If
-   *        there are no attributes, it shall be an empty
-   *        Attributes object.
+   * 
+   * @param handler
+   *          The calling StylesheetHandler/TemplatesBuilder.
+   * @param uri
+   *          The Namespace URI, or the empty string if the element has no
+   *          Namespace URI or if Namespace processing is not being performed.
+   * @param localName
+   *          The local name (without prefix), or the empty string if Namespace
+   *          processing is not being performed.
+   * @param rawName
+   *          The raw XML 1.0 name (with prefix), or the empty string if raw
+   *          names are not available.
+   * @param attributes
+   *          The attributes attached to the element. If there are no
+   *          attributes, it shall be an empty Attributes object.
    */
-  public void startElement(
-          StylesheetHandler handler, String uri, String localName, String rawName, Attributes attributes)
-            throws org.xml.sax.SAXException
-  {
+  @Override
+  public void startElement(StylesheetHandler handler, String uri, String localName, String rawName,
+          Attributes attributes) throws org.xml.sax.SAXException {
 
-    KeyDeclaration kd = new KeyDeclaration(handler.getStylesheet(), handler.nextUid());
+    final KeyDeclaration kd = new KeyDeclaration(handler.getStylesheet(), handler.nextUid());
 
     kd.setDOMBackPointer(handler.getOriginatingNode());
     kd.setLocaterInfo(handler.getLocator());
@@ -77,80 +79,67 @@ class ProcessorKey extends XSLTElementProcessor
 
   /**
    * Set the properties of an object from the given attribute list.
-   * @param handler The stylesheet's Content handler, needed for
-   *                error reporting.
-   * @param rawName The raw name of the owner element, needed for
-   *                error reporting.
-   * @param attributes The list of attributes.
-   * @param target The target element where the properties will be set.
+   * 
+   * @param handler
+   *          The stylesheet's Content handler, needed for error reporting.
+   * @param rawName
+   *          The raw name of the owner element, needed for error reporting.
+   * @param attributes
+   *          The list of attributes.
+   * @param target
+   *          The target element where the properties will be set.
    */
-  void setPropertiesFromAttributes(
-          StylesheetHandler handler, String rawName, Attributes attributes, 
-          de.lyca.xalan.templates.ElemTemplateElement target)
-            throws org.xml.sax.SAXException
-  {
+  @Override
+  void setPropertiesFromAttributes(StylesheetHandler handler, String rawName, Attributes attributes,
+          de.lyca.xalan.templates.ElemTemplateElement target) throws org.xml.sax.SAXException {
 
-    XSLTElementDef def = getElemDef();
+    final XSLTElementDef def = getElemDef();
 
-    // Keep track of which XSLTAttributeDefs have been processed, so 
+    // Keep track of which XSLTAttributeDefs have been processed, so
     // I can see which default values need to be set.
-    List processedDefs = new ArrayList();
-    int nAttrs = attributes.getLength();
+    final List processedDefs = new ArrayList();
+    final int nAttrs = attributes.getLength();
 
-    for (int i = 0; i < nAttrs; i++)
-    {
-      String attrUri = attributes.getURI(i);
-      String attrLocalName = attributes.getLocalName(i);
-      XSLTAttributeDef attrDef = def.getAttributeDef(attrUri, attrLocalName);
+    for (int i = 0; i < nAttrs; i++) {
+      final String attrUri = attributes.getURI(i);
+      final String attrLocalName = attributes.getLocalName(i);
+      final XSLTAttributeDef attrDef = def.getAttributeDef(attrUri, attrLocalName);
 
-      if (null == attrDef)
-      {
+      if (null == attrDef) {
 
         // Then barf, because this element does not allow this attribute.
-        handler.error(attributes.getQName(i)
-                      + "attribute is not allowed on the " + rawName
-                      + " element!", null);
-      }
-      else
-      {
-        String valueString = attributes.getValue(i);
+        handler.error(attributes.getQName(i) + "attribute is not allowed on the " + rawName + " element!", null);
+      } else {
+        final String valueString = attributes.getValue(i);
 
-        if (valueString.indexOf(de.lyca.xpath.compiler.Keywords.FUNC_KEY_STRING
-                                + "(") >= 0)
-          handler.error(
-            XSLMessages.createMessage(
-            XSLTErrorResources.ER_INVALID_KEY_CALL, null), null);
+        if (valueString.indexOf(de.lyca.xpath.compiler.Keywords.FUNC_KEY_STRING + "(") >= 0) {
+          handler.error(XSLMessages.createMessage(XSLTErrorResources.ER_INVALID_KEY_CALL, null), null);
+        }
 
         processedDefs.add(attrDef);
-        attrDef.setAttrValue(handler, attrUri, attrLocalName,
-                             attributes.getQName(i), attributes.getValue(i),
-                             target);
+        attrDef.setAttrValue(handler, attrUri, attrLocalName, attributes.getQName(i), attributes.getValue(i), target);
       }
     }
 
-    XSLTAttributeDef[] attrDefs = def.getAttributes();
-    int nAttrDefs = attrDefs.length;
+    final XSLTAttributeDef[] attrDefs = def.getAttributes();
+    final int nAttrDefs = attrDefs.length;
 
-    for (int i = 0; i < nAttrDefs; i++)
-    {
-      XSLTAttributeDef attrDef = attrDefs[i];
-      String defVal = attrDef.getDefault();
+    for (int i = 0; i < nAttrDefs; i++) {
+      final XSLTAttributeDef attrDef = attrDefs[i];
+      final String defVal = attrDef.getDefault();
 
-      if (null != defVal)
-      {
-        if (!processedDefs.contains(attrDef))
-        {
+      if (null != defVal) {
+        if (!processedDefs.contains(attrDef)) {
           attrDef.setDefAttrValue(handler, target);
         }
       }
 
-      if (attrDef.getRequired())
-      {
-        if (!processedDefs.contains(attrDef))
+      if (attrDef.getRequired()) {
+        if (!processedDefs.contains(attrDef)) {
           handler.error(
-            XSLMessages.createMessage(
-              XSLTErrorResources.ER_REQUIRES_ATTRIB, new Object[]{ rawName,
-                                                                   attrDef.getName() }), null);
+                  XSLMessages.createMessage(XSLTErrorResources.ER_REQUIRES_ATTRIB,
+                          new Object[] { rawName, attrDef.getName() }), null);
+        }
       }
     }
   }

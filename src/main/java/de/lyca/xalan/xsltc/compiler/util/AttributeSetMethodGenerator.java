@@ -32,68 +32,67 @@ import org.apache.bcel.generic.InstructionList;
  * @author Santiago Pericas-Geertsen
  */
 public final class AttributeSetMethodGenerator extends MethodGenerator {
-    private static final int DOM_INDEX       = 1;
-    private static final int ITERATOR_INDEX  = 2;
-    private static final int HANDLER_INDEX   = 3;
+  private static final int DOM_INDEX = 1;
+  private static final int ITERATOR_INDEX = 2;
+  private static final int HANDLER_INDEX = 3;
 
-    private static final org.apache.bcel.generic.Type[] argTypes =
-   new org.apache.bcel.generic.Type[3];
-    private static final String[] argNames = new String[3];
-    
-    static {
-       argTypes[0] = Util.getJCRefType(DOM_INTF_SIG);
-       argNames[0] = DOM_PNAME;
-       argTypes[1] = Util.getJCRefType(NODE_ITERATOR_SIG);
-       argNames[1] = ITERATOR_PNAME;
-       argTypes[2] = Util.getJCRefType(TRANSLET_OUTPUT_SIG);
-       argNames[2] = TRANSLET_OUTPUT_PNAME;
-    }
+  private static final org.apache.bcel.generic.Type[] argTypes = new org.apache.bcel.generic.Type[3];
+  private static final String[] argNames = new String[3];
 
-    
-    private final Instruction _aloadDom;
-    private final Instruction _astoreDom;
-    private final Instruction _astoreIterator;
-    private final Instruction _aloadIterator;
-    private final Instruction _astoreHandler;
-    private final Instruction _aloadHandler;
-    
-    public AttributeSetMethodGenerator(String methodName, ClassGen classGen) {
-	super(org.apache.bcel.Constants.ACC_PRIVATE,
-	      org.apache.bcel.generic.Type.VOID,
-	      argTypes, argNames, methodName, 
-	      classGen.getClassName(),
-	      new InstructionList(),
-	      classGen.getConstantPool());
-	
-	_aloadDom       = new ALOAD(DOM_INDEX);
-	_astoreDom      = new ASTORE(DOM_INDEX);
-	_astoreIterator = new ASTORE(ITERATOR_INDEX);
-	_aloadIterator  = new ALOAD(ITERATOR_INDEX);
-	_astoreHandler  = new ASTORE(HANDLER_INDEX);
-	_aloadHandler   = new ALOAD(HANDLER_INDEX);
-    }
+  static {
+    argTypes[0] = Util.getJCRefType(DOM_INTF_SIG);
+    argNames[0] = DOM_PNAME;
+    argTypes[1] = Util.getJCRefType(NODE_ITERATOR_SIG);
+    argNames[1] = ITERATOR_PNAME;
+    argTypes[2] = Util.getJCRefType(TRANSLET_OUTPUT_SIG);
+    argNames[2] = TRANSLET_OUTPUT_PNAME;
+  }
 
-    public Instruction storeIterator() {
-	return _astoreIterator;
-    }
-    
-    public Instruction loadIterator() {
-	return _aloadIterator;
-    }
+  private final Instruction _aloadDom;
+  private final Instruction _astoreDom;
+  private final Instruction _astoreIterator;
+  private final Instruction _aloadIterator;
+  private final Instruction _astoreHandler;
+  private final Instruction _aloadHandler;
 
-    public int getIteratorIndex() {
-	return ITERATOR_INDEX;
-    }
+  public AttributeSetMethodGenerator(String methodName, ClassGen classGen) {
+    super(org.apache.bcel.Constants.ACC_PRIVATE, org.apache.bcel.generic.Type.VOID, argTypes, argNames, methodName,
+            classGen.getClassName(), new InstructionList(), classGen.getConstantPool());
 
-    public Instruction storeHandler() {
-	return _astoreHandler;
-    }
+    _aloadDom = new ALOAD(DOM_INDEX);
+    _astoreDom = new ASTORE(DOM_INDEX);
+    _astoreIterator = new ASTORE(ITERATOR_INDEX);
+    _aloadIterator = new ALOAD(ITERATOR_INDEX);
+    _astoreHandler = new ASTORE(HANDLER_INDEX);
+    _aloadHandler = new ALOAD(HANDLER_INDEX);
+  }
 
-    public Instruction loadHandler() {
-	return _aloadHandler;
-    }
+  @Override
+  public Instruction storeIterator() {
+    return _astoreIterator;
+  }
 
-    public int getLocalIndex(String name) {
-	return INVALID_INDEX;	// not available
-    }
+  @Override
+  public Instruction loadIterator() {
+    return _aloadIterator;
+  }
+
+  public int getIteratorIndex() {
+    return ITERATOR_INDEX;
+  }
+
+  @Override
+  public Instruction storeHandler() {
+    return _astoreHandler;
+  }
+
+  @Override
+  public Instruction loadHandler() {
+    return _aloadHandler;
+  }
+
+  @Override
+  public int getLocalIndex(String name) {
+    return INVALID_INDEX; // not available
+  }
 }

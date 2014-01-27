@@ -36,113 +36,105 @@ import de.lyca.xpath.objects.XObject;
 
 /**
  * Execute the Key() function.
+ * 
  * @xsl.usage advanced
  */
-public class FuncKey extends Function2Args
-{
-    static final long serialVersionUID = 9089293100115347340L;
+public class FuncKey extends Function2Args {
+  static final long serialVersionUID = 9089293100115347340L;
 
-  /** Dummy value to be used in usedrefs hashtable           */
+  /** Dummy value to be used in usedrefs hashtable */
   static private Boolean ISTRUE = new Boolean(true);
 
   /**
-   * Execute the function.  The function must return
-   * a valid object.
-   * @param xctxt The current execution context.
+   * Execute the function. The function must return a valid object.
+   * 
+   * @param xctxt
+   *          The current execution context.
    * @return A valid XObject.
-   *
+   * 
    * @throws javax.xml.transform.TransformerException
    */
-  public XObject execute(XPathContext xctxt) throws javax.xml.transform.TransformerException
-  {
+  @Override
+  public XObject execute(XPathContext xctxt) throws javax.xml.transform.TransformerException {
 
     // TransformerImpl transformer = (TransformerImpl)xctxt;
-    TransformerImpl transformer = (TransformerImpl) xctxt.getOwnerObject();
+    final TransformerImpl transformer = (TransformerImpl) xctxt.getOwnerObject();
     XNodeSet nodes = null;
-    int context = xctxt.getCurrentNode();
+    final int context = xctxt.getCurrentNode();
     DTM dtm = xctxt.getDTM(context);
-    int docContext = dtm.getDocumentRoot(context);
+    final int docContext = dtm.getDocumentRoot(context);
 
-    if (DTM.NULL == docContext)
-    {
+    if (DTM.NULL == docContext) {
 
-      // path.error(context, XPATHErrorResources.ER_CONTEXT_HAS_NO_OWNERDOC); //"context does not have an owner document!");
+      // path.error(context, XPATHErrorResources.ER_CONTEXT_HAS_NO_OWNERDOC);
+      // //"context does not have an owner document!");
     }
 
-    String xkeyname = getArg0().execute(xctxt).str();
-    QName keyname = new QName(xkeyname, xctxt.getNamespaceContext());
-    XObject arg = getArg1().execute(xctxt);
-    boolean argIsNodeSetDTM = (XObject.CLASS_NODESET == arg.getType());
-    KeyManager kmgr = transformer.getKeyManager();
-    
+    final String xkeyname = getArg0().execute(xctxt).str();
+    final QName keyname = new QName(xkeyname, xctxt.getNamespaceContext());
+    final XObject arg = getArg1().execute(xctxt);
+    boolean argIsNodeSetDTM = XObject.CLASS_NODESET == arg.getType();
+    final KeyManager kmgr = transformer.getKeyManager();
+
     // Don't bother with nodeset logic if the thing is only one node.
-    if(argIsNodeSetDTM)
-    {
-    	XNodeSet ns = (XNodeSet)arg;
-    	ns.setShouldCacheNodes(true);
-    	int len = ns.getLength();
-    	if(len <= 1)
-    		argIsNodeSetDTM = false;
+    if (argIsNodeSetDTM) {
+      final XNodeSet ns = (XNodeSet) arg;
+      ns.setShouldCacheNodes(true);
+      final int len = ns.getLength();
+      if (len <= 1) {
+        argIsNodeSetDTM = false;
+      }
     }
 
-    if (argIsNodeSetDTM)
-    {
+    if (argIsNodeSetDTM) {
       Hashtable usedrefs = null;
-      DTMIterator ni = arg.iter();
+      final DTMIterator ni = arg.iter();
       int pos;
-      UnionPathIterator upi = new UnionPathIterator();
+      final UnionPathIterator upi = new UnionPathIterator();
       upi.exprSetParent(this);
 
-      while (DTM.NULL != (pos = ni.nextNode()))
-      {
+      while (DTM.NULL != (pos = ni.nextNode())) {
         dtm = xctxt.getDTM(pos);
-        XMLString ref = dtm.getStringValue(pos);
+        final XMLString ref = dtm.getStringValue(pos);
 
-        if (null == ref)
+        if (null == ref) {
           continue;
-
-        if (null == usedrefs)
-          usedrefs = new Hashtable();
-
-        if (usedrefs.get(ref) != null)
-        {
-          continue;  // We already have 'em.
         }
-        else
-        {
+
+        if (null == usedrefs) {
+          usedrefs = new Hashtable();
+        }
+
+        if (usedrefs.get(ref) != null) {
+          continue; // We already have 'em.
+        } else {
 
           // ISTRUE being used as a dummy value.
           usedrefs.put(ref, ISTRUE);
         }
 
-        XNodeSet nl =
-          kmgr.getNodeSetDTMByKey(xctxt, docContext, keyname, ref,
-                               xctxt.getNamespaceContext());
-                               
+        final XNodeSet nl = kmgr.getNodeSetDTMByKey(xctxt, docContext, keyname, ref, xctxt.getNamespaceContext());
+
         nl.setRoot(xctxt.getCurrentNode(), xctxt);
 
-//        try
-//        {
-          upi.addIterator(nl);
-//        }
-//        catch(CloneNotSupportedException cnse)
-//        {
-//          // will never happen.
-//        }
-        //mnodeset.addNodesInDocOrder(nl, xctxt); needed??
+        // try
+        // {
+        upi.addIterator(nl);
+        // }
+        // catch(CloneNotSupportedException cnse)
+        // {
+        // // will never happen.
+        // }
+        // mnodeset.addNodesInDocOrder(nl, xctxt); needed??
       }
 
-      int current = xctxt.getCurrentNode();
+      final int current = xctxt.getCurrentNode();
       upi.setRoot(current, xctxt);
 
       nodes = new XNodeSet(upi);
-    }
-    else
-    {
-      XMLString ref = arg.xstr();
-      nodes = kmgr.getNodeSetDTMByKey(xctxt, docContext, keyname,
-                                                ref,
-                                                xctxt.getNamespaceContext());
+    } else {
+      final XMLString ref = arg.xstr();
+      nodes = kmgr.getNodeSetDTMByKey(xctxt, docContext, keyname, ref, xctxt.getNamespaceContext());
       nodes.setRoot(xctxt.getCurrentNode(), xctxt);
     }
 

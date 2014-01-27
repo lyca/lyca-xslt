@@ -25,8 +25,7 @@ import java.sql.SQLException;
 
 /**
  */
-public class PooledConnection
-{
+public class PooledConnection {
 
   // Real JDBC Connection
   /**
@@ -42,50 +41,48 @@ public class PooledConnection
   /**
    * @param value
    */
-  public PooledConnection( Connection value )
-  {
-    if ( value != null ) { connection = value; }
+  public PooledConnection(Connection value) {
+    if (value != null) {
+      connection = value;
+    }
   }
 
   /**
    * Returns a reference to the JDBC Connection
+   * 
    * @return Connection
    */
-  public Connection getConnection( )
-  {
+  public Connection getConnection() {
     // get the JDBC Connection
     return connection;
   }
 
   /**
    * Set the status of the PooledConnection.
-   *
+   * 
    * @param value
-   *
+   * 
    */
-  public void setInUse( boolean value )
-  {
+  public void setInUse(boolean value) {
     inuse = value;
   }
 
   /**
    * Returns the current status of the PooledConnection.
-   *
+   * 
    */
-  public boolean inUse( ) { return inuse; }
+  public boolean inUse() {
+    return inuse;
+  }
 
   /**
-   *  Close the real JDBC Connection
-   *
+   * Close the real JDBC Connection
+   * 
    */
-  public void close( )
-  {
-    try
-    {
+  public void close() {
+    try {
       connection.close();
-    }
-    catch (SQLException sqle)
-    {
+    } catch (final SQLException sqle) {
       System.err.println(sqle.getMessage());
     }
   }

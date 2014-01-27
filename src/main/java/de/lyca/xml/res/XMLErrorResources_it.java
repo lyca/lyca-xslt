@@ -20,62 +20,56 @@
  */
 package de.lyca.xml.res;
 
-
 import java.util.ListResourceBundle;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 /**
- * Set up error messages.
- * We build a two dimensional array of message keys and
- * message strings. In order to add a new message here,
- * you need to first add a String constant. And you need
- * to enter key, value pair as part of the contents
- * array. You also need to update MAX_CODE for error strings
- * and MAX_WARNING for warnings ( Needed for only information
- * purpose )
+ * Set up error messages. We build a two dimensional array of message keys and
+ * message strings. In order to add a new message here, you need to first add a
+ * String constant. And you need to enter key, value pair as part of the
+ * contents array. You also need to update MAX_CODE for error strings and
+ * MAX_WARNING for warnings ( Needed for only information purpose )
  */
-public class XMLErrorResources_it extends ListResourceBundle
-{
+public class XMLErrorResources_it extends ListResourceBundle {
 
-/*
- * This file contains error and warning messages related to Xalan Error
- * Handling.
- *
- *  General notes to translators:
- *
- *  1) Xalan (or more properly, Xalan-interpretive) and XSLTC are names of
- *     components.
- *     XSLT is an acronym for "XML Stylesheet Language: Transformations".
- *     XSLTC is an acronym for XSLT Compiler.
- *
- *  2) A stylesheet is a description of how to transform an input XML document
- *     into a resultant XML document (or HTML document or text).  The
- *     stylesheet itself is described in the form of an XML document.
- *
- *  3) A template is a component of a stylesheet that is used to match a
- *     particular portion of an input document and specifies the form of the
- *     corresponding portion of the output document.
- *
- *  4) An element is a mark-up tag in an XML document; an attribute is a
- *     modifier on the tag.  For example, in <elem attr='val' attr2='val2'>
- *     "elem" is an element name, "attr" and "attr2" are attribute names with
- *     the values "val" and "val2", respectively.
- *
- *  5) A namespace declaration is a special attribute that is used to associate
- *     a prefix with a URI (the namespace).  The meanings of element names and
- *     attribute names that use that prefix are defined with respect to that
- *     namespace.
- *
- *  6) "Translet" is an invented term that describes the class file that
- *     results from compiling an XML stylesheet into a Java class.
- *
- *  7) XPath is a specification that describes a notation for identifying
- *     nodes in a tree-structured representation of an XML document.  An
- *     instance of that notation is referred to as an XPath expression.
- *
- */
+  /*
+   * This file contains error and warning messages related to Xalan Error
+   * Handling.
+   * 
+   * General notes to translators:
+   * 
+   * 1) Xalan (or more properly, Xalan-interpretive) and XSLTC are names of
+   * components. XSLT is an acronym for
+   * "XML Stylesheet Language: Transformations". XSLTC is an acronym for XSLT
+   * Compiler.
+   * 
+   * 2) A stylesheet is a description of how to transform an input XML document
+   * into a resultant XML document (or HTML document or text). The stylesheet
+   * itself is described in the form of an XML document.
+   * 
+   * 3) A template is a component of a stylesheet that is used to match a
+   * particular portion of an input document and specifies the form of the
+   * corresponding portion of the output document.
+   * 
+   * 4) An element is a mark-up tag in an XML document; an attribute is a
+   * modifier on the tag. For example, in <elem attr='val' attr2='val2'> "elem"
+   * is an element name, "attr" and "attr2" are attribute names with the values
+   * "val" and "val2", respectively.
+   * 
+   * 5) A namespace declaration is a special attribute that is used to associate
+   * a prefix with a URI (the namespace). The meanings of element names and
+   * attribute names that use that prefix are defined with respect to that
+   * namespace.
+   * 
+   * 6) "Translet" is an invented term that describes the class file that
+   * results from compiling an XML stylesheet into a Java class.
+   * 
+   * 7) XPath is a specification that describes a notation for identifying nodes
+   * in a tree-structured representation of an XML document. An instance of that
+   * notation is referred to as an XPath expression.
+   */
 
   /*
    * Message keys
@@ -114,7 +108,7 @@ public class XMLErrorResources_it extends ListResourceBundle
   public static final String ER_HOST_ADDRESS_NOT_WELLFORMED = "ER_HOST_ADDRESS_NOT_WELLFORMED";
   public static final String ER_PORT_WHEN_HOST_NULL = "ER_PORT_WHEN_HOST_NULL";
   public static final String ER_INVALID_PORT = "ER_INVALID_PORT";
-  public static final String ER_FRAG_FOR_GENERIC_URI ="ER_FRAG_FOR_GENERIC_URI";
+  public static final String ER_FRAG_FOR_GENERIC_URI = "ER_FRAG_FOR_GENERIC_URI";
   public static final String ER_FRAG_WHEN_PATH_NULL = "ER_FRAG_WHEN_PATH_NULL";
   public static final String ER_FRAG_INVALID_CHAR = "ER_FRAG_INVALID_CHAR";
   public static final String ER_PARSER_IN_USE = "ER_PARSER_IN_USE";
@@ -125,7 +119,7 @@ public class XMLErrorResources_it extends ListResourceBundle
   public static final String ER_NO_QUERY_STRING_IN_PATH = "ER_NO_QUERY_STRING_IN_PATH";
   public static final String ER_NO_FRAGMENT_STRING_IN_PATH = "ER_NO_FRAGMENT_STRING_IN_PATH";
   public static final String ER_CANNOT_INIT_URI_EMPTY_PARMS = "ER_CANNOT_INIT_URI_EMPTY_PARMS";
-  public static final String ER_METHOD_NOT_SUPPORTED ="ER_METHOD_NOT_SUPPORTED";
+  public static final String ER_METHOD_NOT_SUPPORTED = "ER_METHOD_NOT_SUPPORTED";
   public static final String ER_INCRSAXSRCFILTER_NOT_RESTARTABLE = "ER_INCRSAXSRCFILTER_NOT_RESTARTABLE";
   public static final String ER_XMLRDR_NOT_BEFORE_STARTPARSE = "ER_XMLRDR_NOT_BEFORE_STARTPARSE";
   public static final String ER_AXIS_TRAVERSER_NOT_SUPPORTED = "ER_AXIS_TRAVERSER_NOT_SUPPORTED";
@@ -144,285 +138,225 @@ public class XMLErrorResources_it extends ListResourceBundle
   public static final String ER_NAME_CANT_START_WITH_COLON = "ER_NAME_CANT_START_WITH_COLON";
 
   /*
-   * Now fill in the message text.
-   * Then fill in the message text for that message code in the
-   * array. Use the new error code as the index into the array.
+   * Now fill in the message text. Then fill in the message text for that
+   * message code in the array. Use the new error code as the index into the
+   * array.
    */
 
   // Error messages...
 
   /**
    * Get the lookup table for error messages
-   *
+   * 
    * @return The association list.
    */
-  public Object[][] getContents()
-  {
+  @Override
+  public Object[][] getContents() {
     return new Object[][] {
 
-  /** Error message ID that has a null message, but takes in a single object.    */
-    {"ER0000" , "{0}" },
+            /**
+             * Error message ID that has a null message, but takes in a single
+             * object.
+             */
+            { "ER0000", "{0}" },
 
-    { ER_FUNCTION_NOT_SUPPORTED,
-      "Funzione non supportata."},
+            { ER_FUNCTION_NOT_SUPPORTED, "Funzione non supportata." },
 
-    { ER_CANNOT_OVERWRITE_CAUSE,
-      "Impossibile sovrascrivere causa"},
+            { ER_CANNOT_OVERWRITE_CAUSE, "Impossibile sovrascrivere causa" },
 
-    { ER_NO_DEFAULT_IMPL,
-      "Non \u00e8 stata trovata alcuna implementazione predefinita "},
+            { ER_NO_DEFAULT_IMPL, "Non \u00e8 stata trovata alcuna implementazione predefinita " },
 
-    { ER_CHUNKEDINTARRAY_NOT_SUPPORTED,
-      "ChunkedIntArray({0}) correntemente non supportato"},
+            { ER_CHUNKEDINTARRAY_NOT_SUPPORTED, "ChunkedIntArray({0}) correntemente non supportato" },
 
-    { ER_OFFSET_BIGGER_THAN_SLOT,
-      "Offset pi\u00f9 grande dello slot"},
+            { ER_OFFSET_BIGGER_THAN_SLOT, "Offset pi\u00f9 grande dello slot" },
 
-    { ER_COROUTINE_NOT_AVAIL,
-      "Coroutine non disponibile, id={0}"},
+            { ER_COROUTINE_NOT_AVAIL, "Coroutine non disponibile, id={0}" },
 
-    { ER_COROUTINE_CO_EXIT,
-      "CoroutineManager ha ricevuto la richiesta co_exit()"},
+            { ER_COROUTINE_CO_EXIT, "CoroutineManager ha ricevuto la richiesta co_exit()" },
 
-    { ER_COJOINROUTINESET_FAILED,
-      "co_joinCoroutineSet() con esito negativo"},
+            { ER_COJOINROUTINESET_FAILED, "co_joinCoroutineSet() con esito negativo" },
 
-    { ER_COROUTINE_PARAM,
-      "Errore parametro Coroutine {0})"},
+            { ER_COROUTINE_PARAM, "Errore parametro Coroutine {0})" },
 
-    { ER_PARSER_DOTERMINATE_ANSWERS,
-      "\nNON PREVISTO: Risposte doTerminate del parser {0}"},
+            { ER_PARSER_DOTERMINATE_ANSWERS, "\nNON PREVISTO: Risposte doTerminate del parser {0}" },
 
-    { ER_NO_PARSE_CALL_WHILE_PARSING,
-      "impossibile richiamare l'analisi durante l'analisi"},
+            { ER_NO_PARSE_CALL_WHILE_PARSING, "impossibile richiamare l'analisi durante l'analisi" },
 
-    { ER_TYPED_ITERATOR_AXIS_NOT_IMPLEMENTED,
-      "Errore: iteratore immesso per l''''asse {0} non implementato"},
+            { ER_TYPED_ITERATOR_AXIS_NOT_IMPLEMENTED, "Errore: iteratore immesso per l''''asse {0} non implementato" },
 
-    { ER_ITERATOR_AXIS_NOT_IMPLEMENTED,
-      "Errore: iteratore per l''''asse {0} non implementato "},
+            { ER_ITERATOR_AXIS_NOT_IMPLEMENTED, "Errore: iteratore per l''''asse {0} non implementato " },
 
-    { ER_ITERATOR_CLONE_NOT_SUPPORTED,
-      "Clone iteratore non supportato"},
+            { ER_ITERATOR_CLONE_NOT_SUPPORTED, "Clone iteratore non supportato" },
 
-    { ER_UNKNOWN_AXIS_TYPE,
-      "Tipo trasversale di asse sconosciuto: {0}"},
+            { ER_UNKNOWN_AXIS_TYPE, "Tipo trasversale di asse sconosciuto: {0}" },
 
-    { ER_AXIS_NOT_SUPPORTED,
-      "Trasversale dell''''asse non supportato: {0}"},
+            { ER_AXIS_NOT_SUPPORTED, "Trasversale dell''''asse non supportato: {0}" },
 
-    { ER_NO_DTMIDS_AVAIL,
-      "Non vi sono ulteriori ID DTM disponibili"},
+            { ER_NO_DTMIDS_AVAIL, "Non vi sono ulteriori ID DTM disponibili" },
 
-    { ER_NOT_SUPPORTED,
-      "Non supportato: {0}"},
+            { ER_NOT_SUPPORTED, "Non supportato: {0}" },
 
-    { ER_NODE_NON_NULL,
-      "Il nodo deve essere non nullo per getDTMHandleFromNode"},
+            { ER_NODE_NON_NULL, "Il nodo deve essere non nullo per getDTMHandleFromNode" },
 
-    { ER_COULD_NOT_RESOLVE_NODE,
-      "Impossibile risolvere il nodo in un handle"},
+            { ER_COULD_NOT_RESOLVE_NODE, "Impossibile risolvere il nodo in un handle" },
 
-    { ER_STARTPARSE_WHILE_PARSING,
-       "Impossibile richiamare startParse durante l'analisi"},
+            { ER_STARTPARSE_WHILE_PARSING, "Impossibile richiamare startParse durante l'analisi" },
 
-    { ER_STARTPARSE_NEEDS_SAXPARSER,
-       "startParse richiede SAXParser non nullo"},
+            { ER_STARTPARSE_NEEDS_SAXPARSER, "startParse richiede SAXParser non nullo" },
 
-    { ER_COULD_NOT_INIT_PARSER,
-       "impossibile inizializzare il parser con"},
+            { ER_COULD_NOT_INIT_PARSER, "impossibile inizializzare il parser con" },
 
-    { ER_EXCEPTION_CREATING_POOL,
-       "si \u00e8 verificata un'eccezione durante la creazione della nuova istanza per il pool"},
+            { ER_EXCEPTION_CREATING_POOL,
+                    "si \u00e8 verificata un'eccezione durante la creazione della nuova istanza per il pool" },
 
-    { ER_PATH_CONTAINS_INVALID_ESCAPE_SEQUENCE,
-       "Il percorso contiene sequenza di escape non valida"},
+            { ER_PATH_CONTAINS_INVALID_ESCAPE_SEQUENCE, "Il percorso contiene sequenza di escape non valida" },
 
-    { ER_SCHEME_REQUIRED,
-       "Lo schema \u00e8 obbligatorio."},
+            { ER_SCHEME_REQUIRED, "Lo schema \u00e8 obbligatorio." },
 
-    { ER_NO_SCHEME_IN_URI,
-       "Nessuno schema trovato nell''''URI: {0}"},
+            { ER_NO_SCHEME_IN_URI, "Nessuno schema trovato nell''''URI: {0}" },
 
-    { ER_NO_SCHEME_INURI,
-       "Non \u00e8 stato trovato alcuno schema nell'URI"},
+            { ER_NO_SCHEME_INURI, "Non \u00e8 stato trovato alcuno schema nell'URI" },
 
-    { ER_PATH_INVALID_CHAR,
-       "Il percorso contiene un carattere non valido: {0}"},
+            { ER_PATH_INVALID_CHAR, "Il percorso contiene un carattere non valido: {0}" },
 
-    { ER_SCHEME_FROM_NULL_STRING,
-       "Impossibile impostare lo schema da una stringa nulla"},
+            { ER_SCHEME_FROM_NULL_STRING, "Impossibile impostare lo schema da una stringa nulla" },
 
-    { ER_SCHEME_NOT_CONFORMANT,
-       "Lo schema non \u00e8 conforme."},
+            { ER_SCHEME_NOT_CONFORMANT, "Lo schema non \u00e8 conforme." },
 
-    { ER_HOST_ADDRESS_NOT_WELLFORMED,
-       "Host non \u00e8 un'indirizzo corretto"},
+            { ER_HOST_ADDRESS_NOT_WELLFORMED, "Host non \u00e8 un'indirizzo corretto" },
 
-    { ER_PORT_WHEN_HOST_NULL,
-       "La porta non pu\u00f2 essere impostata se l'host \u00e8 nullo"},
+            { ER_PORT_WHEN_HOST_NULL, "La porta non pu\u00f2 essere impostata se l'host \u00e8 nullo" },
 
-    { ER_INVALID_PORT,
-       "Numero di porta non valido"},
+            { ER_INVALID_PORT, "Numero di porta non valido" },
 
-    { ER_FRAG_FOR_GENERIC_URI,
-       "Il frammento pu\u00f2 essere impostato solo per un URI generico"},
+            { ER_FRAG_FOR_GENERIC_URI, "Il frammento pu\u00f2 essere impostato solo per un URI generico" },
 
-    { ER_FRAG_WHEN_PATH_NULL,
-       "Il frammento non pu\u00f2 essere impostato se il percorso \u00e8 nullo"},
+            { ER_FRAG_WHEN_PATH_NULL, "Il frammento non pu\u00f2 essere impostato se il percorso \u00e8 nullo" },
 
-    { ER_FRAG_INVALID_CHAR,
-       "Il frammento contiene un carattere non valido"},
+            { ER_FRAG_INVALID_CHAR, "Il frammento contiene un carattere non valido" },
 
-    { ER_PARSER_IN_USE,
-      "Parser gi\u00e0 in utilizzo"},
+            { ER_PARSER_IN_USE, "Parser gi\u00e0 in utilizzo" },
 
-    { ER_CANNOT_CHANGE_WHILE_PARSING,
-      "Impossibile modificare {0} {1} durante l''''analisi"},
+            { ER_CANNOT_CHANGE_WHILE_PARSING, "Impossibile modificare {0} {1} durante l''''analisi" },
 
-    { ER_SELF_CAUSATION_NOT_PERMITTED,
-      "Self-causation non consentito"},
+            { ER_SELF_CAUSATION_NOT_PERMITTED, "Self-causation non consentito" },
 
-    { ER_NO_USERINFO_IF_NO_HOST,
-      "Userinfo non pu\u00f2 essere specificato se l'host non \u00e8 specificato"},
+            { ER_NO_USERINFO_IF_NO_HOST, "Userinfo non pu\u00f2 essere specificato se l'host non \u00e8 specificato" },
 
-    { ER_NO_PORT_IF_NO_HOST,
-      "La porta non pu\u00f2 essere specificata se l'host non \u00e8 specificato"},
+            { ER_NO_PORT_IF_NO_HOST, "La porta non pu\u00f2 essere specificata se l'host non \u00e8 specificato" },
 
-    { ER_NO_QUERY_STRING_IN_PATH,
-      "La stringa di interrogazione non pu\u00f2 essere specificata nella stringa di interrogazione e percorso."},
+            { ER_NO_QUERY_STRING_IN_PATH,
+                    "La stringa di interrogazione non pu\u00f2 essere specificata nella stringa di interrogazione e percorso." },
 
-    { ER_NO_FRAGMENT_STRING_IN_PATH,
-      "Il frammento non pu\u00f2 essere specificato sia nel percorso che nel frammento"},
+            { ER_NO_FRAGMENT_STRING_IN_PATH,
+                    "Il frammento non pu\u00f2 essere specificato sia nel percorso che nel frammento" },
 
-    { ER_CANNOT_INIT_URI_EMPTY_PARMS,
-      "Impossibile inizializzare l'URI con i parametri vuoti"},
+            { ER_CANNOT_INIT_URI_EMPTY_PARMS, "Impossibile inizializzare l'URI con i parametri vuoti" },
 
-    { ER_METHOD_NOT_SUPPORTED,
-      "Metodo non ancora supportato "},
+            { ER_METHOD_NOT_SUPPORTED, "Metodo non ancora supportato " },
 
-    { ER_INCRSAXSRCFILTER_NOT_RESTARTABLE,
-      "IncrementalSAXSource_Filter correntemente non riavviabile"},
+            { ER_INCRSAXSRCFILTER_NOT_RESTARTABLE, "IncrementalSAXSource_Filter correntemente non riavviabile" },
 
-    { ER_XMLRDR_NOT_BEFORE_STARTPARSE,
-      "XMLReader non si trova prima della richiesta startParse"},
+            { ER_XMLRDR_NOT_BEFORE_STARTPARSE, "XMLReader non si trova prima della richiesta startParse" },
 
-    { ER_AXIS_TRAVERSER_NOT_SUPPORTED,
-      "Trasversale dell''''asse non supportato: {0}"},
+            { ER_AXIS_TRAVERSER_NOT_SUPPORTED, "Trasversale dell''''asse non supportato: {0}" },
 
-    { ER_ERRORHANDLER_CREATED_WITH_NULL_PRINTWRITER,
-      "ListingErrorHandler creato con PrintWriter nullo."},
+            { ER_ERRORHANDLER_CREATED_WITH_NULL_PRINTWRITER, "ListingErrorHandler creato con PrintWriter nullo." },
 
-    { ER_SYSTEMID_UNKNOWN,
-      "SystemId sconosciuto"},
+            { ER_SYSTEMID_UNKNOWN, "SystemId sconosciuto" },
 
-    { ER_LOCATION_UNKNOWN,
-      "Posizione di errore sconosciuta"},
+            { ER_LOCATION_UNKNOWN, "Posizione di errore sconosciuta" },
 
-    { ER_PREFIX_MUST_RESOLVE,
-      "Il prefisso deve risolvere in uno namespace: {0}"},
+            { ER_PREFIX_MUST_RESOLVE, "Il prefisso deve risolvere in uno namespace: {0}" },
 
-    { ER_CREATEDOCUMENT_NOT_SUPPORTED,
-      "createDocument() non supportato in XPathContext!"},
+            { ER_CREATEDOCUMENT_NOT_SUPPORTED, "createDocument() non supportato in XPathContext!" },
 
-    { ER_CHILD_HAS_NO_OWNER_DOCUMENT,
-      "Il child dell'attributo non ha un documento proprietario."},
+            { ER_CHILD_HAS_NO_OWNER_DOCUMENT, "Il child dell'attributo non ha un documento proprietario." },
 
-    { ER_CHILD_HAS_NO_OWNER_DOCUMENT_ELEMENT,
-      "Il child dell'attributo non ha un elemento del documento proprietario."},
+            { ER_CHILD_HAS_NO_OWNER_DOCUMENT_ELEMENT,
+                    "Il child dell'attributo non ha un elemento del documento proprietario." },
 
-    { ER_CANT_OUTPUT_TEXT_BEFORE_DOC,
-      "Attenzione: impossibile emettere testo prima dell'elemento del documento.  Operazione ignorata..."},
+            { ER_CANT_OUTPUT_TEXT_BEFORE_DOC,
+                    "Attenzione: impossibile emettere testo prima dell'elemento del documento.  Operazione ignorata..." },
 
-    { ER_CANT_HAVE_MORE_THAN_ONE_ROOT,
-      "Impossibile avere pi\u00f9 di una root in un DOM!"},
+            { ER_CANT_HAVE_MORE_THAN_ONE_ROOT, "Impossibile avere pi\u00f9 di una root in un DOM!" },
 
-    { ER_ARG_LOCALNAME_NULL,
-       "Argomento 'localName' nullo"},
+            { ER_ARG_LOCALNAME_NULL, "Argomento 'localName' nullo" },
 
-    // Note to translators:  A QNAME has the syntactic form [NCName:]NCName
-    // The localname is the portion after the optional colon; the message indicates
-    // that there is a problem with that part of the QNAME.
-    { ER_ARG_LOCALNAME_INVALID,
-       "Localname in QNAME deve essere un NCName valido"},
+            // Note to translators: A QNAME has the syntactic form
+            // [NCName:]NCName
+            // The localname is the portion after the optional colon; the
+            // message indicates
+            // that there is a problem with that part of the QNAME.
+            { ER_ARG_LOCALNAME_INVALID, "Localname in QNAME deve essere un NCName valido" },
 
-    // Note to translators:  A QNAME has the syntactic form [NCName:]NCName
-    // The prefix is the portion before the optional colon; the message indicates
-    // that there is a problem with that part of the QNAME.
-    { ER_ARG_PREFIX_INVALID,
-       "Prefix in QNAME deve essere un NCName valido"},
+            // Note to translators: A QNAME has the syntactic form
+            // [NCName:]NCName
+            // The prefix is the portion before the optional colon; the message
+            // indicates
+            // that there is a problem with that part of the QNAME.
+            { ER_ARG_PREFIX_INVALID, "Prefix in QNAME deve essere un NCName valido" },
 
-    { ER_NAME_CANT_START_WITH_COLON,
-      "Il nome non pu\u00f2 iniziare con un carattere di due punti"},
+            { ER_NAME_CANT_START_WITH_COLON, "Il nome non pu\u00f2 iniziare con un carattere di due punti" },
 
-    { "BAD_CODE", "Il parametro per createMessage fuori limite"},
-    { "FORMAT_FAILED", "Rilevata eccezione durante la chiamata messageFormat"},
-    { "line", "Riga #"},
-    { "column","Colonna #"}
+            { "BAD_CODE", "Il parametro per createMessage fuori limite" },
+            { "FORMAT_FAILED", "Rilevata eccezione durante la chiamata messageFormat" }, { "line", "Riga #" },
+            { "column", "Colonna #" }
 
-
-  };
+    };
   }
 
   /**
-   *   Return a named ResourceBundle for a particular locale.  This method mimics the behavior
-   *   of ResourceBundle.getBundle().
-   *
-   *   @param className the name of the class that implements the resource bundle.
-   *   @return the ResourceBundle
-   *   @throws MissingResourceException
+   * Return a named ResourceBundle for a particular locale. This method mimics
+   * the behavior of ResourceBundle.getBundle().
+   * 
+   * @param className
+   *          the name of the class that implements the resource bundle.
+   * @return the ResourceBundle
+   * @throws MissingResourceException
    */
-  public static final XMLErrorResources loadResourceBundle(String className)
-          throws MissingResourceException
-  {
+  public static final XMLErrorResources loadResourceBundle(String className) throws MissingResourceException {
 
-    Locale locale = Locale.getDefault();
-    String suffix = getResourceSuffix(locale);
+    final Locale locale = Locale.getDefault();
+    final String suffix = getResourceSuffix(locale);
 
-    try
-    {
+    try {
 
       // first try with the given locale
-      return (XMLErrorResources) ResourceBundle.getBundle(className
-              + suffix, locale);
-    }
-    catch (MissingResourceException e)
-    {
-      try  // try to fall back to en_US if we can't load
+      return (XMLErrorResources) ResourceBundle.getBundle(className + suffix, locale);
+    } catch (final MissingResourceException e) {
+      try // try to fall back to en_US if we can't load
       {
 
         // Since we can't find the localized property file,
         // fall back to en_US.
-        return (XMLErrorResources) ResourceBundle.getBundle(className,
-                new Locale("it", "IT"));
-      }
-      catch (MissingResourceException e2)
-      {
+        return (XMLErrorResources) ResourceBundle.getBundle(className, new Locale("it", "IT"));
+      } catch (final MissingResourceException e2) {
 
         // Now we are really in trouble.
         // very bad, definitely very bad...not going to get very far
-        throw new MissingResourceException(
-          "Could not load any resource bundles.", className, "");
+        throw new MissingResourceException("Could not load any resource bundles.", className, "");
       }
     }
   }
 
   /**
-   * Return the resource file suffic for the indicated locale
-   * For most locales, this will be based the language code.  However
-   * for Chinese, we do distinguish between Taiwan and PRC
-   *
-   * @param locale the locale
+   * Return the resource file suffic for the indicated locale For most locales,
+   * this will be based the language code. However for Chinese, we do
+   * distinguish between Taiwan and PRC
+   * 
+   * @param locale
+   *          the locale
    * @return an String suffix which canbe appended to a resource name
    */
-  private static final String getResourceSuffix(Locale locale)
-  {
+  private static final String getResourceSuffix(Locale locale) {
 
     String suffix = "_" + locale.getLanguage();
-    String country = locale.getCountry();
+    final String country = locale.getCountry();
 
-    if (country.equals("TW"))
+    if (country.equals("TW")) {
       suffix += "_" + country;
+    }
 
     return suffix;
   }

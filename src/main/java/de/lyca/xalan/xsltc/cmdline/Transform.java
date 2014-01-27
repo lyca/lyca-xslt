@@ -55,240 +55,226 @@ import de.lyca.xml.serializer.SerializationHandler;
  */
 final public class Transform {
 
-    private SerializationHandler _handler;
+  private SerializationHandler _handler;
 
-    private String  _fileName;
-    private String  _className;
-    private String  _jarFileSrc;
-    private boolean _isJarFileSpecified = false;
-    private Vector  _params = null;
-    private boolean _uri, _debug;
-    private int     _iterations;
+  private final String _fileName;
+  private final String _className;
+  private String _jarFileSrc;
+  private boolean _isJarFileSpecified = false;
+  private Vector _params = null;
+  private final boolean _uri, _debug;
+  private final int _iterations;
 
-    public Transform(String className, String fileName,
-		     boolean uri, boolean debug, int iterations) {
-	_fileName = fileName;
-	_className = className;
-	_uri = uri;
-	_debug = debug;
-	_iterations = iterations;
+  public Transform(String className, String fileName, boolean uri, boolean debug, int iterations) {
+    _fileName = fileName;
+    _className = className;
+    _uri = uri;
+    _debug = debug;
+    _iterations = iterations;
   }
-  
-   public String getFileName(){return _fileName;}
-   public String getClassName(){return _className;}
 
-    public void setParameters(Vector params) {
-	_params = params;
-    }
+  public String getFileName() {
+    return _fileName;
+  }
 
-    private void setJarFileInputSrc(boolean flag,  String jarFile) {
-	// TODO: at this time we do not do anything with this
-	// information, attempts to add the jarfile to the CLASSPATH
-	// were successful via System.setProperty, but the effects
-	// were not visible to the running JVM. For now we add jarfile
-	// to CLASSPATH in the wrapper script that calls this program. 
-	_isJarFileSpecified = flag;
-	// TODO verify jarFile exists...
-	_jarFileSrc = jarFile;	
-    }
+  public String getClassName() {
+    return _className;
+  }
 
-    private void doTransform() {
-	try {
-            final Class clazz = ObjectFactory.findProviderClass(
-                _className, ObjectFactory.findClassLoader(), true);
-	    final AbstractTranslet translet = (AbstractTranslet)clazz.newInstance();
-            translet.postInitialization();
+  public void setParameters(Vector params) {
+    _params = params;
+  }
 
-	    // Create a SAX parser and get the XMLReader object it uses
-	    final SAXParserFactory factory = SAXParserFactory.newInstance();
-	    try {
-		factory.setFeature(Constants.NAMESPACE_FEATURE,true);
-	    }
-	    catch (Exception e) {
-		factory.setNamespaceAware(true);
-	    }
-	    final SAXParser parser = factory.newSAXParser();
-	    final XMLReader reader = parser.getXMLReader();
+  private void setJarFileInputSrc(boolean flag, String jarFile) {
+    // TODO: at this time we do not do anything with this
+    // information, attempts to add the jarfile to the CLASSPATH
+    // were successful via System.setProperty, but the effects
+    // were not visible to the running JVM. For now we add jarfile
+    // to CLASSPATH in the wrapper script that calls this program.
+    _isJarFileSpecified = flag;
+    // TODO verify jarFile exists...
+    _jarFileSrc = jarFile;
+  }
 
-	    // Set the DOM's DOM builder as the XMLReader's SAX2 content handler
-            XSLTCDTMManager dtmManager =
-                (XSLTCDTMManager)XSLTCDTMManager.getDTMManagerClass()
-                                                .newInstance();
+  private void doTransform() {
+    try {
+      final Class clazz = ObjectFactory.findProviderClass(_className, ObjectFactory.findClassLoader(), true);
+      final AbstractTranslet translet = (AbstractTranslet) clazz.newInstance();
+      translet.postInitialization();
 
-	    DTMWSFilter wsfilter;
-	    if (translet != null && translet instanceof StripFilter) {
-	        wsfilter = new DOMWSFilter(translet);
-            } else {
-	        wsfilter = null;
-            }
+      // Create a SAX parser and get the XMLReader object it uses
+      final SAXParserFactory factory = SAXParserFactory.newInstance();
+      try {
+        factory.setFeature(Constants.NAMESPACE_FEATURE, true);
+      } catch (final Exception e) {
+        factory.setNamespaceAware(true);
+      }
+      final SAXParser parser = factory.newSAXParser();
+      final XMLReader reader = parser.getXMLReader();
 
-            final DOMEnhancedForDTM dom =
-                   (DOMEnhancedForDTM)dtmManager.getDTM(
-                            new SAXSource(reader, new InputSource(_fileName)),
-                            false, wsfilter, true, false, translet.hasIdCall());
+      // Set the DOM's DOM builder as the XMLReader's SAX2 content handler
+      final XSLTCDTMManager dtmManager = (XSLTCDTMManager) XSLTCDTMManager.getDTMManagerClass().newInstance();
 
-	    dom.setDocumentURI(_fileName);
-            translet.prepassDocument(dom);
+      DTMWSFilter wsfilter;
+      if (translet != null && translet instanceof StripFilter) {
+        wsfilter = new DOMWSFilter(translet);
+      } else {
+        wsfilter = null;
+      }
 
-	    // Pass global parameters
-	    int n = _params.size();
-	    for (int i = 0; i < n; i++) {
-		Parameter param = (Parameter) _params.elementAt(i);
-		translet.addParameter(param._name, param._value);
-	    }
+      final DOMEnhancedForDTM dom = (DOMEnhancedForDTM) dtmManager.getDTM(new SAXSource(reader, new InputSource(
+              _fileName)), false, wsfilter, true, false, translet.hasIdCall());
 
-	    // Transform the document
-	    TransletOutputHandlerFactory tohFactory = 
-		TransletOutputHandlerFactory.newInstance();
-	    tohFactory.setOutputType(TransletOutputHandlerFactory.STREAM);
-	    tohFactory.setEncoding(translet._encoding);
-	    tohFactory.setOutputMethod(translet._method);
+      dom.setDocumentURI(_fileName);
+      translet.prepassDocument(dom);
 
-	    if (_iterations == -1) {
-		translet.transform(dom, tohFactory.getSerializationHandler());
-	    }
-	    else if (_iterations > 0) {
-		long mm = System.currentTimeMillis();
-		for (int i = 0; i < _iterations; i++) {
-		    translet.transform(dom,
-				       tohFactory.getSerializationHandler());
-		}
-		mm = System.currentTimeMillis() - mm;
+      // Pass global parameters
+      final int n = _params.size();
+      for (int i = 0; i < n; i++) {
+        final Parameter param = (Parameter) _params.elementAt(i);
+        translet.addParameter(param._name, param._value);
+      }
 
-		System.err.println("\n<!--");
-		System.err.println("  transform  = "
-                                   + (((double) mm) / ((double) _iterations))
-                                   + " ms");
-		System.err.println("  throughput = "
-                                   + (1000.0 / (((double) mm)
-                                                 / ((double) _iterations)))
-                                   + " tps");
-		System.err.println("-->");
-	    }
-	}
-	catch (TransletException e) {
-	    if (_debug) e.printStackTrace();
-	    System.err.println(new ErrorMsg(ErrorMsg.RUNTIME_ERROR_KEY)+
-                   e.getMessage());	    
-	}
-	catch (RuntimeException e) {
-	    if (_debug) e.printStackTrace();
-	    System.err.println(new ErrorMsg(ErrorMsg.RUNTIME_ERROR_KEY)+
-			       e.getMessage());
-	}
-	catch (FileNotFoundException e) {
-	    if (_debug) e.printStackTrace();
-	    ErrorMsg err = new ErrorMsg(ErrorMsg.FILE_NOT_FOUND_ERR, _fileName);
-	    System.err.println(new ErrorMsg(ErrorMsg.RUNTIME_ERROR_KEY)+
-			       err.toString());
-	}
-	catch (MalformedURLException e) {
-	    if (_debug) e.printStackTrace();
-	    ErrorMsg err = new ErrorMsg(ErrorMsg.INVALID_URI_ERR, _fileName);
-	    System.err.println(new ErrorMsg(ErrorMsg.RUNTIME_ERROR_KEY)+
-			       err.toString());
-	}
-	catch (ClassNotFoundException e) {
-	    if (_debug) e.printStackTrace();
-	    ErrorMsg err= new ErrorMsg(ErrorMsg.CLASS_NOT_FOUND_ERR,_className);
-	    System.err.println(new ErrorMsg(ErrorMsg.RUNTIME_ERROR_KEY)+
-			       err.toString());
-	}
-        catch (UnknownHostException e) {
-	    if (_debug) e.printStackTrace();
-	    ErrorMsg err = new ErrorMsg(ErrorMsg.INVALID_URI_ERR, _fileName);
-	    System.err.println(new ErrorMsg(ErrorMsg.RUNTIME_ERROR_KEY)+
-			       err.toString());
+      // Transform the document
+      final TransletOutputHandlerFactory tohFactory = TransletOutputHandlerFactory.newInstance();
+      tohFactory.setOutputType(TransletOutputHandlerFactory.STREAM);
+      tohFactory.setEncoding(translet._encoding);
+      tohFactory.setOutputMethod(translet._method);
+
+      if (_iterations == -1) {
+        translet.transform(dom, tohFactory.getSerializationHandler());
+      } else if (_iterations > 0) {
+        long mm = System.currentTimeMillis();
+        for (int i = 0; i < _iterations; i++) {
+          translet.transform(dom, tohFactory.getSerializationHandler());
         }
-	catch (SAXException e) {
-	    Exception ex = e.getException();
-	    if (_debug) {
-		if (ex != null) ex.printStackTrace();
-		e.printStackTrace();
-	    }
-	    System.err.print(new ErrorMsg(ErrorMsg.RUNTIME_ERROR_KEY));
-	    if (ex != null)
-		System.err.println(ex.getMessage());
-	    else
-		System.err.println(e.getMessage());
-	}
-	catch (Exception e) {
-	    if (_debug) e.printStackTrace();
-	    System.err.println(new ErrorMsg(ErrorMsg.RUNTIME_ERROR_KEY)+
-			       e.getMessage());
-	}
+        mm = System.currentTimeMillis() - mm;
+
+        System.err.println("\n<!--");
+        System.err.println("  transform  = " + (double) mm / (double) _iterations + " ms");
+        System.err.println("  throughput = " + 1000.0 / ((double) mm / (double) _iterations) + " tps");
+        System.err.println("-->");
+      }
+    } catch (final TransletException e) {
+      if (_debug) {
+        e.printStackTrace();
+      }
+      System.err.println(new ErrorMsg(ErrorMsg.RUNTIME_ERROR_KEY) + e.getMessage());
+    } catch (final RuntimeException e) {
+      if (_debug) {
+        e.printStackTrace();
+      }
+      System.err.println(new ErrorMsg(ErrorMsg.RUNTIME_ERROR_KEY) + e.getMessage());
+    } catch (final FileNotFoundException e) {
+      if (_debug) {
+        e.printStackTrace();
+      }
+      final ErrorMsg err = new ErrorMsg(ErrorMsg.FILE_NOT_FOUND_ERR, _fileName);
+      System.err.println(new ErrorMsg(ErrorMsg.RUNTIME_ERROR_KEY) + err.toString());
+    } catch (final MalformedURLException e) {
+      if (_debug) {
+        e.printStackTrace();
+      }
+      final ErrorMsg err = new ErrorMsg(ErrorMsg.INVALID_URI_ERR, _fileName);
+      System.err.println(new ErrorMsg(ErrorMsg.RUNTIME_ERROR_KEY) + err.toString());
+    } catch (final ClassNotFoundException e) {
+      if (_debug) {
+        e.printStackTrace();
+      }
+      final ErrorMsg err = new ErrorMsg(ErrorMsg.CLASS_NOT_FOUND_ERR, _className);
+      System.err.println(new ErrorMsg(ErrorMsg.RUNTIME_ERROR_KEY) + err.toString());
+    } catch (final UnknownHostException e) {
+      if (_debug) {
+        e.printStackTrace();
+      }
+      final ErrorMsg err = new ErrorMsg(ErrorMsg.INVALID_URI_ERR, _fileName);
+      System.err.println(new ErrorMsg(ErrorMsg.RUNTIME_ERROR_KEY) + err.toString());
+    } catch (final SAXException e) {
+      final Exception ex = e.getException();
+      if (_debug) {
+        if (ex != null) {
+          ex.printStackTrace();
+        }
+        e.printStackTrace();
+      }
+      System.err.print(new ErrorMsg(ErrorMsg.RUNTIME_ERROR_KEY));
+      if (ex != null) {
+        System.err.println(ex.getMessage());
+      } else {
+        System.err.println(e.getMessage());
+      }
+    } catch (final Exception e) {
+      if (_debug) {
+        e.printStackTrace();
+      }
+      System.err.println(new ErrorMsg(ErrorMsg.RUNTIME_ERROR_KEY) + e.getMessage());
     }
+  }
 
-    public static void printUsage() {
-	System.err.println(new ErrorMsg(ErrorMsg.TRANSFORM_USAGE_STR));
+  public static void printUsage() {
+    System.err.println(new ErrorMsg(ErrorMsg.TRANSFORM_USAGE_STR));
+  }
+
+  public static void main(String[] args) {
+    try {
+      if (args.length > 0) {
+        int i;
+        int iterations = -1;
+        boolean uri = false, debug = false;
+        boolean isJarFileSpecified = false;
+        String jarFile = null;
+
+        // Parse options starting with '-'
+        for (i = 0; i < args.length && args[i].charAt(0) == '-'; i++) {
+          if (args[i].equals("-u")) {
+            uri = true;
+          } else if (args[i].equals("-x")) {
+            debug = true;
+          } else if (args[i].equals("-j")) {
+            isJarFileSpecified = true;
+            jarFile = args[++i];
+          } else if (args[i].equals("-n")) {
+            try {
+              iterations = Integer.parseInt(args[++i]);
+            } catch (final NumberFormatException e) {
+              // ignore
+            }
+          } else {
+            printUsage();
+          }
+        }
+
+        // Enough arguments left ?
+        if (args.length - i < 2) {
+          printUsage();
+        }
+
+        // Get document file and class name
+        final Transform handler = new Transform(args[i + 1], args[i], uri, debug, iterations);
+        handler.setJarFileInputSrc(isJarFileSpecified, jarFile);
+
+        // Parse stylesheet parameters
+        final Vector params = new Vector();
+        for (i += 2; i < args.length; i++) {
+          final int equal = args[i].indexOf('=');
+          if (equal > 0) {
+            final String name = args[i].substring(0, equal);
+            final String value = args[i].substring(equal + 1);
+            params.addElement(new Parameter(name, value));
+          } else {
+            printUsage();
+          }
+        }
+
+        if (i == args.length) {
+          handler.setParameters(params);
+          handler.doTransform();
+        }
+      } else {
+        printUsage();
+      }
+    } catch (final Exception e) {
+      e.printStackTrace();
     }
-
-    public static void main(String[] args) {
-	try {
-	    if (args.length > 0) {
-		int i;
-		int iterations = -1;
-		boolean uri = false, debug = false;
-		boolean isJarFileSpecified = false;
-		String  jarFile = null;
-
-		// Parse options starting with '-'
-		for (i = 0; i < args.length && args[i].charAt(0) == '-'; i++) {
-		    if (args[i].equals("-u")) {
-			uri = true;
-		    }
-		    else if (args[i].equals("-x")) {
-			debug = true;
-		    }
-		    else if (args[i].equals("-j")) {
-			isJarFileSpecified = true;	
-			jarFile = args[++i];
-		    }
-		    else if (args[i].equals("-n")) {
-			try {
-			    iterations = Integer.parseInt(args[++i]);
-			}
-			catch (NumberFormatException e) {
-			    // ignore
-			}
-		    }
-		    else {
-			printUsage();
-		    }
-		}
-
-		// Enough arguments left ?
-		if (args.length - i < 2) printUsage();
-
-		// Get document file and class name
-		Transform handler = new Transform(args[i+1], args[i], uri,
-		    debug, iterations);
-		handler.setJarFileInputSrc(isJarFileSpecified,	jarFile);
-
-		// Parse stylesheet parameters
-		Vector params = new Vector();
-		for (i += 2; i < args.length; i++) {
-		    final int equal = args[i].indexOf('=');
-		    if (equal > 0) {
-			final String name  = args[i].substring(0, equal);
-			final String value = args[i].substring(equal+1);
-			params.addElement(new Parameter(name, value));
-		    }
-		    else {
-			printUsage();
-		    }
-		}
-
-		if (i == args.length) {
-		    handler.setParameters(params);
-		    handler.doTransform();
-		}
-	    } else {
-		printUsage();
-	    }
-	}
-	catch (Exception e) {
-	    e.printStackTrace();
-	}
-    }
+  }
 }

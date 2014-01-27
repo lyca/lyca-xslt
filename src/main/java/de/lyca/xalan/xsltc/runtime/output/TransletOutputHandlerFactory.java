@@ -44,146 +44,123 @@ import de.lyca.xml.serializer.ToXMLStream;
  */
 public class TransletOutputHandlerFactory {
 
-    public static final int STREAM = 0;
-    public static final int SAX    = 1;
-    public static final int DOM    = 2;
+  public static final int STREAM = 0;
+  public static final int SAX = 1;
+  public static final int DOM = 2;
 
-    private String _encoding       = "utf-8";
-    private String _method         = null;
-    private int    _outputType     = STREAM;
-    private OutputStream _ostream  = System.out;
-    private Writer _writer         = null;
-    private Node           _node   = null;
-    private Node   _nextSibling    = null;
-    private int _indentNumber      = -1;
-    private ContentHandler _handler    = null;
-    private LexicalHandler _lexHandler = null;
+  private String _encoding = "utf-8";
+  private String _method = null;
+  private int _outputType = STREAM;
+  private OutputStream _ostream = System.out;
+  private Writer _writer = null;
+  private Node _node = null;
+  private Node _nextSibling = null;
+  private int _indentNumber = -1;
+  private ContentHandler _handler = null;
+  private LexicalHandler _lexHandler = null;
 
-    static public TransletOutputHandlerFactory newInstance() {
-	return new TransletOutputHandlerFactory();
+  static public TransletOutputHandlerFactory newInstance() {
+    return new TransletOutputHandlerFactory();
+  }
+
+  public void setOutputType(int outputType) {
+    _outputType = outputType;
+  }
+
+  public void setEncoding(String encoding) {
+    if (encoding != null) {
+      _encoding = encoding;
     }
+  }
 
-    public void setOutputType(int outputType) {
-	_outputType = outputType;
-    }
+  public void setOutputMethod(String method) {
+    _method = method;
+  }
 
-    public void setEncoding(String encoding) {
-	if (encoding != null) {
-	    _encoding = encoding;
-	}
-    }
+  public void setOutputStream(OutputStream ostream) {
+    _ostream = ostream;
+  }
 
-    public void setOutputMethod(String method) {
-	_method = method;
-    }
+  public void setWriter(Writer writer) {
+    _writer = writer;
+  }
 
-    public void setOutputStream(OutputStream ostream) {
-	_ostream = ostream;
-    }
+  public void setHandler(ContentHandler handler) {
+    _handler = handler;
+  }
 
-    public void setWriter(Writer writer) {
-	_writer = writer;
-    }
+  public void setLexicalHandler(LexicalHandler lex) {
+    _lexHandler = lex;
+  }
 
-    public void setHandler(ContentHandler handler) {
-        _handler = handler;
-    }
+  public void setNode(Node node) {
+    _node = node;
+  }
 
-    public void setLexicalHandler(LexicalHandler lex) {
-	_lexHandler = lex;
-    }
+  public Node getNode() {
+    return _handler instanceof SAX2DOM ? ((SAX2DOM) _handler).getDOM() : null;
+  }
 
-    public void setNode(Node node) {
-	_node = node;
-    }
+  public void setNextSibling(Node nextSibling) {
+    _nextSibling = nextSibling;
+  }
 
-    public Node getNode() {
-	return (_handler instanceof SAX2DOM) ? ((SAX2DOM)_handler).getDOM() 
-	   : null;
-    }
-    
-    public void setNextSibling(Node nextSibling) {
-        _nextSibling = nextSibling;
-    }
+  public void setIndentNumber(int value) {
+    _indentNumber = value;
+  }
 
-    public void setIndentNumber(int value) {
-	_indentNumber = value;
-    }
+  public SerializationHandler getSerializationHandler() throws IOException, ParserConfigurationException {
+    SerializationHandler result = null;
+    switch (_outputType) {
+      case STREAM:
 
-    public SerializationHandler getSerializationHandler()
-        throws IOException, ParserConfigurationException
-    {
-        SerializationHandler result = null;
-        switch (_outputType)
-        {
-            case STREAM :
+        if (_method == null) {
+          result = new ToUnknownStream();
+        } else if (_method.equalsIgnoreCase("xml")) {
 
-                if (_method == null)
-                {
-                    result = new ToUnknownStream();
-                }
-                else if (_method.equalsIgnoreCase("xml"))
-                {
+          result = new ToXMLStream();
 
-                    result = new ToXMLStream();
+        } else if (_method.equalsIgnoreCase("html")) {
 
-                }
-                else if (_method.equalsIgnoreCase("html"))
-                {
+          result = new ToHTMLStream();
 
-                    result = new ToHTMLStream();
+        } else if (_method.equalsIgnoreCase("text")) {
 
-                }
-                else if (_method.equalsIgnoreCase("text"))
-                {
+          result = new ToTextStream();
 
-                    result = new ToTextStream();
-
-                }
-
-                if (result != null && _indentNumber >= 0)
-                {
-                    result.setIndentAmount(_indentNumber);
-                }
-
-                result.setEncoding(_encoding);
-
-                if (_writer != null)
-                {
-                    result.setWriter(_writer);
-                }
-                else
-                {
-                    result.setOutputStream(_ostream);
-                }
-                return result;
-
-            case DOM :
-                _handler = (_node != null) ? new SAX2DOM(_node, _nextSibling) : new SAX2DOM();
-                _lexHandler = (LexicalHandler) _handler;
-                // falls through
-            case SAX :
-                if (_method == null)
-                {
-                    _method = "xml"; // default case
-                }
-
-                if (_lexHandler == null)
-                {
-                    result = new ToXMLSAXHandler(_handler, _encoding);
-                }
-                else
-                {
-                    result =
-                        new ToXMLSAXHandler(
-                            _handler,
-                            _lexHandler,
-                            _encoding);
-                }
-
-                return result;
         }
-        return null;
+
+        if (result != null && _indentNumber >= 0) {
+          result.setIndentAmount(_indentNumber);
+        }
+
+        result.setEncoding(_encoding);
+
+        if (_writer != null) {
+          result.setWriter(_writer);
+        } else {
+          result.setOutputStream(_ostream);
+        }
+        return result;
+
+      case DOM:
+        _handler = _node != null ? new SAX2DOM(_node, _nextSibling) : new SAX2DOM();
+        _lexHandler = (LexicalHandler) _handler;
+        // falls through
+      case SAX:
+        if (_method == null) {
+          _method = "xml"; // default case
+        }
+
+        if (_lexHandler == null) {
+          result = new ToXMLSAXHandler(_handler, _encoding);
+        } else {
+          result = new ToXMLSAXHandler(_handler, _lexHandler, _encoding);
+        }
+
+        return result;
     }
+    return null;
+  }
 
 }

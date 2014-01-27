@@ -21,11 +21,10 @@
 package de.lyca.xpath.compiler;
 
 /**
- * This is used to represent names of nodes that may not be named, like a 
+ * This is used to represent names of nodes that may not be named, like a
  * comment node.
  */
-public class PsuedoNames
-{
+public class PsuedoNames {
 
   /**
    * Psuedo name for a wild card pattern ('*').

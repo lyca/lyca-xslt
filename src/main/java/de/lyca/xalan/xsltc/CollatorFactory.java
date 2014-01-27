@@ -29,7 +29,8 @@ import java.util.Locale;
  * @author Santiago Pericas-Geertsen
  */
 public interface CollatorFactory {
-    
-    public Collator getCollator(String lang, String country);
-    public Collator getCollator(Locale locale);
+
+  public Collator getCollator(String lang, String country);
+
+  public Collator getCollator(Locale locale);
 }

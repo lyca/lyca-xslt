@@ -36,215 +36,205 @@ import de.lyca.xpath.objects.XObject;
 
 /**
  * Implement xsl:copy-of.
+ * 
  * <pre>
  * <!ELEMENT xsl:copy-of EMPTY>
  * <!ATTLIST xsl:copy-of select %expr; #REQUIRED>
  * </pre>
- * @see <a href="http://www.w3.org/TR/xslt#copy-of">copy-of in XSLT Specification</a>
+ * 
+ * @see <a href="http://www.w3.org/TR/xslt#copy-of">copy-of in XSLT
+ *      Specification</a>
  * @xsl.usage advanced
  */
-public class ElemCopyOf extends ElemTemplateElement
-{
-    static final long serialVersionUID = -7433828829497411127L;
+public class ElemCopyOf extends ElemTemplateElement {
+  static final long serialVersionUID = -7433828829497411127L;
 
   /**
    * The required select attribute contains an expression.
+   * 
    * @serial
    */
   public XPath m_selectExpression = null;
 
   /**
-   * Set the "select" attribute.
-   * The required select attribute contains an expression.
-   *
-   * @param expr Expression for select attribute 
+   * Set the "select" attribute. The required select attribute contains an
+   * expression.
+   * 
+   * @param expr
+   *          Expression for select attribute
    */
-  public void setSelect(XPath expr)
-  {
+  public void setSelect(XPath expr) {
     m_selectExpression = expr;
   }
 
   /**
-   * Get the "select" attribute.
-   * The required select attribute contains an expression.
-   *
-   * @return Expression for select attribute 
+   * Get the "select" attribute. The required select attribute contains an
+   * expression.
+   * 
+   * @return Expression for select attribute
    */
-  public XPath getSelect()
-  {
+  public XPath getSelect() {
     return m_selectExpression;
   }
-  
+
   /**
-   * This function is called after everything else has been
-   * recomposed, and allows the template to set remaining
-   * values that may be based on some other property that
-   * depends on recomposition.
+   * This function is called after everything else has been recomposed, and
+   * allows the template to set remaining values that may be based on some other
+   * property that depends on recomposition.
    */
-  public void compose(StylesheetRoot sroot) throws TransformerException
-  {
+  @Override
+  public void compose(StylesheetRoot sroot) throws TransformerException {
     super.compose(sroot);
-    
-    StylesheetRoot.ComposeState cstate = sroot.getComposeState();
+
+    final StylesheetRoot.ComposeState cstate = sroot.getComposeState();
     m_selectExpression.fixupVariables(cstate.getVariableNames(), cstate.getGlobalsSize());
   }
 
   /**
    * Get an int constant identifying the type of element.
+   * 
    * @see de.lyca.xalan.templates.Constants
-   *
+   * 
    * @return The token ID for this element
    */
-  public int getXSLToken()
-  {
+  @Override
+  public int getXSLToken() {
     return Constants.ELEMNAME_COPY_OF;
   }
 
   /**
    * Return the node name.
-   *
+   * 
    * @return The element's name
    */
-  public String getNodeName()
-  {
+  @Override
+  public String getNodeName() {
     return Constants.ELEMNAME_COPY_OF_STRING;
   }
 
   /**
-   * The xsl:copy-of element can be used to insert a result tree
-   * fragment into the result tree, without first converting it to
-   * a string as xsl:value-of does (see [7.6.1 Generating Text with
-   * xsl:value-of]).
-   *
-   * @param transformer non-null reference to the the current transform-time state.
-   *
+   * The xsl:copy-of element can be used to insert a result tree fragment into
+   * the result tree, without first converting it to a string as xsl:value-of
+   * does (see [7.6.1 Generating Text with xsl:value-of]).
+   * 
+   * @param transformer
+   *          non-null reference to the the current transform-time state.
+   * 
    * @throws TransformerException
    */
-  public void execute(
-          TransformerImpl transformer)
-            throws TransformerException
-  {
-    if (transformer.getDebug())
-    	transformer.getTraceManager().fireTraceEvent(this);
+  @Override
+  public void execute(TransformerImpl transformer) throws TransformerException {
+    if (transformer.getDebug()) {
+      transformer.getTraceManager().fireTraceEvent(this);
+    }
 
-    try
-    {
-      XPathContext xctxt = transformer.getXPathContext();
-      int sourceNode = xctxt.getCurrentNode();
-      XObject value = m_selectExpression.execute(xctxt, sourceNode, this);
+    try {
+      final XPathContext xctxt = transformer.getXPathContext();
+      final int sourceNode = xctxt.getCurrentNode();
+      final XObject value = m_selectExpression.execute(xctxt, sourceNode, this);
 
-      if (transformer.getDebug())
-        transformer.getTraceManager().fireSelectedEvent(sourceNode, this,
-                                                        "select", m_selectExpression, value);
+      if (transformer.getDebug()) {
+        transformer.getTraceManager().fireSelectedEvent(sourceNode, this, "select", m_selectExpression, value);
+      }
 
-      SerializationHandler handler = transformer.getSerializationHandler();
+      final SerializationHandler handler = transformer.getSerializationHandler();
 
-      if (null != value)
-                        {
-        int type = value.getType();
+      if (null != value) {
+        final int type = value.getType();
         String s;
 
-        switch (type)
-        {
-        case XObject.CLASS_BOOLEAN :
-        case XObject.CLASS_NUMBER :
-        case XObject.CLASS_STRING :
-          s = value.str();
+        switch (type) {
+          case XObject.CLASS_BOOLEAN:
+          case XObject.CLASS_NUMBER:
+          case XObject.CLASS_STRING:
+            s = value.str();
 
-          handler.characters(s.toCharArray(), 0, s.length());
-          break;
-        case XObject.CLASS_NODESET :
+            handler.characters(s.toCharArray(), 0, s.length());
+            break;
+          case XObject.CLASS_NODESET:
 
-          // System.out.println(value);
-          DTMIterator nl = value.iter();
+            // System.out.println(value);
+            final DTMIterator nl = value.iter();
 
-          // Copy the tree.
-          DTMTreeWalker tw = new TreeWalker2Result(transformer, handler);
-          int pos;
+            // Copy the tree.
+            final DTMTreeWalker tw = new TreeWalker2Result(transformer, handler);
+            int pos;
 
-          while (DTM.NULL != (pos = nl.nextNode()))
-          {
-            DTM dtm = xctxt.getDTMManager().getDTM(pos);
-            short t = dtm.getNodeType(pos);
+            while (DTM.NULL != (pos = nl.nextNode())) {
+              final DTM dtm = xctxt.getDTMManager().getDTM(pos);
+              final short t = dtm.getNodeType(pos);
 
-            // If we just copy the whole document, a startDoc and endDoc get 
-            // generated, so we need to only walk the child nodes.
-            if (t == DTM.DOCUMENT_NODE)
-            {
-              for (int child = dtm.getFirstChild(pos); child != DTM.NULL;
-                   child = dtm.getNextSibling(child))
-              {
-                tw.traverse(child);
+              // If we just copy the whole document, a startDoc and endDoc get
+              // generated, so we need to only walk the child nodes.
+              if (t == DTM.DOCUMENT_NODE) {
+                for (int child = dtm.getFirstChild(pos); child != DTM.NULL; child = dtm.getNextSibling(child)) {
+                  tw.traverse(child);
+                }
+              } else if (t == DTM.ATTRIBUTE_NODE) {
+                SerializerUtils.addAttribute(handler, pos);
+              } else {
+                tw.traverse(pos);
               }
             }
-            else if (t == DTM.ATTRIBUTE_NODE)
-            {
-              SerializerUtils.addAttribute(handler, pos);
-            }
-            else
-            {
-              tw.traverse(pos);
-            }
-          }
-          // nl.detach();
-          break;
-        case XObject.CLASS_RTREEFRAG :
-          SerializerUtils.outputResultTreeFragment(
-            handler, value, transformer.getXPathContext());
-          break;
-        default :
-          
-          s = value.str();
+            // nl.detach();
+            break;
+          case XObject.CLASS_RTREEFRAG:
+            SerializerUtils.outputResultTreeFragment(handler, value, transformer.getXPathContext());
+            break;
+          default:
 
-          handler.characters(s.toCharArray(), 0, s.length());
-          break;
+            s = value.str();
+
+            handler.characters(s.toCharArray(), 0, s.length());
+            break;
         }
       }
-                        
-      // I don't think we want this.  -sb
-      //  if (transformer.getDebug())
-      //  transformer.getTraceManager().fireSelectedEvent(sourceNode, this,
-      //  "endSelect", m_selectExpression, value);
 
-    }
-    catch(org.xml.sax.SAXException se)
-    {
+      // I don't think we want this. -sb
+      // if (transformer.getDebug())
+      // transformer.getTraceManager().fireSelectedEvent(sourceNode, this,
+      // "endSelect", m_selectExpression, value);
+
+    } catch (final org.xml.sax.SAXException se) {
       throw new TransformerException(se);
-    }
-    finally
-    {
-      if (transformer.getDebug())
+    } finally {
+      if (transformer.getDebug()) {
         transformer.getTraceManager().fireTraceEndEvent(this);
+      }
     }
 
   }
 
   /**
    * Add a child to the child list.
-   *
-   * @param newChild Child to add to this node's child list
-   *
+   * 
+   * @param newChild
+   *          Child to add to this node's child list
+   * 
    * @return Child just added to child list
    */
-  public ElemTemplateElement appendChild(ElemTemplateElement newChild)
-  {
+  @Override
+  public ElemTemplateElement appendChild(ElemTemplateElement newChild) {
 
-    error(XSLTErrorResources.ER_CANNOT_ADD,
-          new Object[]{ newChild.getNodeName(),
-                        this.getNodeName() });  //"Can not add " +((ElemTemplateElement)newChild).m_elemName +
+    error(XSLTErrorResources.ER_CANNOT_ADD, new Object[] { newChild.getNodeName(), this.getNodeName() }); // "Can not add "
+                                                                                                          // +((ElemTemplateElement)newChild).m_elemName
+                                                                                                          // +
 
-    //" to " + this.m_elemName);
+    // " to " + this.m_elemName);
     return null;
   }
-  
+
   /**
    * Call the children visitors.
-   * @param visitor The visitor whose appropriate method will be called.
+   * 
+   * @param visitor
+   *          The visitor whose appropriate method will be called.
    */
-  protected void callChildVisitors(XSLTVisitor visitor, boolean callAttrs)
-  {
-  	if(callAttrs)
-  		m_selectExpression.getExpression().callVisitors(m_selectExpression, visitor);
+  @Override
+  protected void callChildVisitors(XSLTVisitor visitor, boolean callAttrs) {
+    if (callAttrs) {
+      m_selectExpression.getExpression().callVisitors(m_selectExpression, visitor);
+    }
     super.callChildVisitors(visitor, callAttrs);
   }
 

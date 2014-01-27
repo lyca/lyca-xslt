@@ -23,7 +23,6 @@ package de.lyca.xpath.functions;
 import de.lyca.xalan.res.XSLMessages;
 import de.lyca.xalan.res.XSLTErrorResources;
 import de.lyca.xml.dtm.DTM;
-import de.lyca.xml.dtm.DTMIterator;
 import de.lyca.xpath.XPathContext;
 import de.lyca.xpath.axes.LocPathIterator;
 import de.lyca.xpath.axes.PredicatedNodeTest;
@@ -32,50 +31,47 @@ import de.lyca.xpath.objects.XNodeSet;
 import de.lyca.xpath.objects.XObject;
 import de.lyca.xpath.patterns.StepPattern;
 
-
 /**
  * Execute the current() function.
+ * 
  * @xsl.usage advanced
  */
-public class FuncCurrent extends Function
-{
-    static final long serialVersionUID = 5715316804877715008L;
+public class FuncCurrent extends Function {
+  static final long serialVersionUID = 5715316804877715008L;
 
   /**
-   * Execute the function.  The function must return
-   * a valid object.
-   * @param xctxt The current execution context.
+   * Execute the function. The function must return a valid object.
+   * 
+   * @param xctxt
+   *          The current execution context.
    * @return A valid XObject.
-   *
+   * 
    * @throws javax.xml.transform.TransformerException
    */
-  public XObject execute(XPathContext xctxt) throws javax.xml.transform.TransformerException
-  {
-   
-    SubContextList subContextList = xctxt.getCurrentNodeList();
+  @Override
+  public XObject execute(XPathContext xctxt) throws javax.xml.transform.TransformerException {
+
+    final SubContextList subContextList = xctxt.getCurrentNodeList();
     int currentNode = DTM.NULL;
 
     if (null != subContextList) {
-        if (subContextList instanceof PredicatedNodeTest) {
-            LocPathIterator iter = ((PredicatedNodeTest)subContextList)
-                                                          .getLocPathIterator();
-            currentNode = iter.getCurrentContextNode();
-         } else if(subContextList instanceof StepPattern) {
-           throw new RuntimeException(XSLMessages.createMessage(
-              XSLTErrorResources.ER_PROCESSOR_ERROR,null));
-         }
+      if (subContextList instanceof PredicatedNodeTest) {
+        final LocPathIterator iter = ((PredicatedNodeTest) subContextList).getLocPathIterator();
+        currentNode = iter.getCurrentContextNode();
+      } else if (subContextList instanceof StepPattern)
+        throw new RuntimeException(XSLMessages.createMessage(XSLTErrorResources.ER_PROCESSOR_ERROR, null));
     } else {
-        // not predicate => ContextNode == CurrentNode
-        currentNode = xctxt.getContextNode();
+      // not predicate => ContextNode == CurrentNode
+      currentNode = xctxt.getContextNode();
     }
     return new XNodeSet(currentNode, xctxt.getDTMManager());
   }
-  
+
   /**
    * No arguments to process, so this does nothing.
    */
-  public void fixupVariables(java.util.Vector vars, int globalsSize)
-  {
+  @Override
+  public void fixupVariables(java.util.Vector vars, int globalsSize) {
     // no-op
   }
 

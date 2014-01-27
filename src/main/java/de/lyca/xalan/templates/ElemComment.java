@@ -22,59 +22,64 @@ package de.lyca.xalan.templates;
 
 import javax.xml.transform.TransformerException;
 
+import org.w3c.dom.DOMException;
+
 import de.lyca.xalan.res.XSLTErrorResources;
 import de.lyca.xalan.transformer.TransformerImpl;
 
 /**
  * Implement xsl:comment.
+ * 
  * <pre>
  * <!ELEMENT xsl:comment %char-template;>
  * <!ATTLIST xsl:comment %space-att;>
  * </pre>
- * @see <a href="http://www.w3.org/TR/xslt#section-Creating-Comments">section-Creating-Comments in XSLT Specification</a>
+ * 
+ * @see <a
+ *      href="http://www.w3.org/TR/xslt#section-Creating-Comments">section-Creating-Comments
+ *      in XSLT Specification</a>
  * @xsl.usage advanced
  */
-public class ElemComment extends ElemTemplateElement
-{
-    static final long serialVersionUID = -8813199122875770142L;
+public class ElemComment extends ElemTemplateElement {
+  static final long serialVersionUID = -8813199122875770142L;
 
   /**
    * Get an int constant identifying the type of element.
+   * 
    * @see de.lyca.xalan.templates.Constants
-   *
+   * 
    * @return The token ID for this element
    */
-  public int getXSLToken()
-  {
+  @Override
+  public int getXSLToken() {
     return Constants.ELEMNAME_COMMENT;
   }
 
   /**
    * Return the node name.
-   *
+   * 
    * @return This element's name
    */
-  public String getNodeName()
-  {
+  @Override
+  public String getNodeName() {
     return Constants.ELEMNAME_COMMENT_STRING;
   }
 
   /**
-   * Execute the xsl:comment transformation 
-   *
-   *
-   * @param transformer non-null reference to the the current transform-time state.
-   *
+   * Execute the xsl:comment transformation
+   * 
+   * 
+   * @param transformer
+   *          non-null reference to the the current transform-time state.
+   * 
    * @throws TransformerException
    */
-  public void execute(
-          TransformerImpl transformer)
-            throws TransformerException
-  {
-    if (transformer.getDebug())
+  @Override
+  public void execute(TransformerImpl transformer) throws TransformerException {
+    if (transformer.getDebug()) {
       transformer.getTraceManager().fireTraceEvent(this);
-    try
-    {
+    }
+    try {
       // Note the content model is:
       // <!ENTITY % instructions "
       // %char-instructions;
@@ -83,66 +88,63 @@ public class ElemComment extends ElemTemplateElement
       // | xsl:element
       // | xsl:attribute
       // ">
-      String data = transformer.transformToString(this);
+      final String data = transformer.transformToString(this);
 
       transformer.getResultTreeHandler().comment(data);
-    }
-    catch(org.xml.sax.SAXException se)
-    {
+    } catch (final org.xml.sax.SAXException se) {
       throw new TransformerException(se);
-    }
-    finally
-    {
-      if (transformer.getDebug())
+    } finally {
+      if (transformer.getDebug()) {
         transformer.getTraceManager().fireTraceEndEvent(this);
+      }
     }
   }
 
   /**
    * Add a child to the child list.
-   *
-   * @param newChild Child to add to this node's child list
-   *
+   * 
+   * @param newChild
+   *          Child to add to this node's child list
+   * 
    * @return Child that was just added to child list
-   *
+   * 
    * @throws DOMException
    */
-  public ElemTemplateElement appendChild(ElemTemplateElement newChild)
-  {
+  @Override
+  public ElemTemplateElement appendChild(ElemTemplateElement newChild) {
 
-    int type = ((ElemTemplateElement) newChild).getXSLToken();
+    final int type = newChild.getXSLToken();
 
-    switch (type)
-    {
+    switch (type) {
 
-    // char-instructions 
-    case Constants.ELEMNAME_TEXTLITERALRESULT :
-    case Constants.ELEMNAME_APPLY_TEMPLATES :
-    case Constants.ELEMNAME_APPLY_IMPORTS :
-    case Constants.ELEMNAME_CALLTEMPLATE :
-    case Constants.ELEMNAME_FOREACH :
-    case Constants.ELEMNAME_VALUEOF :
-    case Constants.ELEMNAME_COPY_OF :
-    case Constants.ELEMNAME_NUMBER :
-    case Constants.ELEMNAME_CHOOSE :
-    case Constants.ELEMNAME_IF :
-    case Constants.ELEMNAME_TEXT :
-    case Constants.ELEMNAME_COPY :
-    case Constants.ELEMNAME_VARIABLE :
-    case Constants.ELEMNAME_MESSAGE :
+    // char-instructions
+      case Constants.ELEMNAME_TEXTLITERALRESULT:
+      case Constants.ELEMNAME_APPLY_TEMPLATES:
+      case Constants.ELEMNAME_APPLY_IMPORTS:
+      case Constants.ELEMNAME_CALLTEMPLATE:
+      case Constants.ELEMNAME_FOREACH:
+      case Constants.ELEMNAME_VALUEOF:
+      case Constants.ELEMNAME_COPY_OF:
+      case Constants.ELEMNAME_NUMBER:
+      case Constants.ELEMNAME_CHOOSE:
+      case Constants.ELEMNAME_IF:
+      case Constants.ELEMNAME_TEXT:
+      case Constants.ELEMNAME_COPY:
+      case Constants.ELEMNAME_VARIABLE:
+      case Constants.ELEMNAME_MESSAGE:
 
-      // instructions 
-      // case Constants.ELEMNAME_PI:
-      // case Constants.ELEMNAME_COMMENT:
-      // case Constants.ELEMNAME_ELEMENT:
-      // case Constants.ELEMNAME_ATTRIBUTE:
-      break;
-    default :
-      error(XSLTErrorResources.ER_CANNOT_ADD,
-            new Object[]{ newChild.getNodeName(),
-                          this.getNodeName() });  //"Can not add " +((ElemTemplateElement)newChild).m_elemName +
+        // instructions
+        // case Constants.ELEMNAME_PI:
+        // case Constants.ELEMNAME_COMMENT:
+        // case Constants.ELEMNAME_ELEMENT:
+        // case Constants.ELEMNAME_ATTRIBUTE:
+        break;
+      default:
+        error(XSLTErrorResources.ER_CANNOT_ADD, new Object[] { newChild.getNodeName(), this.getNodeName() }); // "Can not add "
+                                                                                                              // +((ElemTemplateElement)newChild).m_elemName
+                                                                                                              // +
 
-    //" to " + this.m_elemName);
+        // " to " + this.m_elemName);
     }
 
     return super.appendChild(newChild);

@@ -28,52 +28,49 @@ import de.lyca.xpath.functions.FuncExtFunctionAvailable;
 import de.lyca.xpath.functions.Function;
 
 /**
- * When {@link de.lyca.xalan.processor.StylesheetHandler} creates 
- * an {@link de.lyca.xpath.XPath}, the ExpressionVisitor
- * visits the XPath expression. For any extension functions it 
- * encounters, it instructs StylesheetRoot to register the
- * extension namespace. 
+ * When {@link de.lyca.xalan.processor.StylesheetHandler} creates an
+ * {@link de.lyca.xpath.XPath}, the ExpressionVisitor visits the XPath
+ * expression. For any extension functions it encounters, it instructs
+ * StylesheetRoot to register the extension namespace.
  * 
- * This mechanism is required to locate extension functions
- * that may be embedded within an expression.
+ * This mechanism is required to locate extension functions that may be embedded
+ * within an expression.
  */
-public class ExpressionVisitor extends XPathVisitor
-{
-  private StylesheetRoot m_sroot;
-  
+public class ExpressionVisitor extends XPathVisitor {
+  private final StylesheetRoot m_sroot;
+
   /**
-   * The constructor sets the StylesheetRoot variable which
-   * is used to register extension namespaces.
-   * @param sroot the StylesheetRoot that is being constructed.
+   * The constructor sets the StylesheetRoot variable which is used to register
+   * extension namespaces.
+   * 
+   * @param sroot
+   *          the StylesheetRoot that is being constructed.
    */
-  public ExpressionVisitor (StylesheetRoot sroot)
-  {
+  public ExpressionVisitor(StylesheetRoot sroot) {
     m_sroot = sroot;
   }
-  
+
   /**
    * If the function is an extension function, register the namespace.
    * 
-   * @param owner The current XPath object that owns the expression.
-   * @param func The function currently being visited.
+   * @param owner
+   *          The current XPath object that owns the expression.
+   * @param func
+   *          The function currently being visited.
    * 
    * @return true to continue the visit in the subtree, if any.
    */
-  public boolean visitFunction(ExpressionOwner owner, Function func)
-  {
-    if (func instanceof FuncExtFunction)
-    {
-      String namespace = ((FuncExtFunction)func).getNamespace();
-      m_sroot.getExtensionNamespacesManager().registerExtension(namespace);      
-    }
-    else if (func instanceof FuncExtFunctionAvailable)
-    {
-      String arg = ((FuncExtFunctionAvailable)func).getArg0().toString();
-      if (arg.indexOf(":") > 0)
-      {
-      	String prefix = arg.substring(0,arg.indexOf(":"));
-      	String namespace = this.m_sroot.getNamespaceForPrefix(prefix);
-      	m_sroot.getExtensionNamespacesManager().registerExtension(namespace);
+  @Override
+  public boolean visitFunction(ExpressionOwner owner, Function func) {
+    if (func instanceof FuncExtFunction) {
+      final String namespace = ((FuncExtFunction) func).getNamespace();
+      m_sroot.getExtensionNamespacesManager().registerExtension(namespace);
+    } else if (func instanceof FuncExtFunctionAvailable) {
+      final String arg = ((FuncExtFunctionAvailable) func).getArg0().toString();
+      if (arg.indexOf(":") > 0) {
+        final String prefix = arg.substring(0, arg.indexOf(":"));
+        final String namespace = m_sroot.getNamespaceForPrefix(prefix);
+        m_sroot.getExtensionNamespacesManager().registerExtension(namespace);
       }
     }
     return true;

@@ -20,12 +20,10 @@
  */
 package de.lyca.xpath.compiler;
 
-
 /**
  * Class for XPath diagnostic functions.
  */
-public class XPathDumper
-{
+public class XPathDumper {
 
   // deleted for the time being.
 }
