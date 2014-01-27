@@ -21,6 +21,7 @@
 package de.lyca.xalan.extensions;
 
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Vector;
 
 import de.lyca.xalan.res.XSLMessages;
@@ -161,7 +162,7 @@ public class ExtensionsTable {
    * 
    * @throws javax.xml.transform.TransformerException
    */
-  public Object extFunction(String ns, String funcName, Vector argVec, Object methodKey, ExpressionContext exprContext)
+  public Object extFunction(String ns, String funcName, List argVec, Object methodKey, ExpressionContext exprContext)
           throws javax.xml.transform.TransformerException {
     Object result = null;
     if (null != ns) {
@@ -198,7 +199,7 @@ public class ExtensionsTable {
    * 
    * @throws javax.xml.transform.TransformerException
    */
-  public Object extFunction(FuncExtFunction extFunction, Vector argVec, ExpressionContext exprContext)
+  public Object extFunction(FuncExtFunction extFunction, List argVec, ExpressionContext exprContext)
           throws javax.xml.transform.TransformerException {
     Object result = null;
     final String ns = extFunction.getNamespace();

@@ -63,7 +63,7 @@ public class ContextMatchStepPattern extends StepPattern {
     if (xctxt.getIteratorRoot() == xctxt.getCurrentNode())
       return getStaticScore();
     else
-      return SCORE_NONE;
+      return NodeTest.SCORE_NONE;
   }
 
   /**

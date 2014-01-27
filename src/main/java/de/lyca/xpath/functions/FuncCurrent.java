@@ -20,9 +20,12 @@
  */
 package de.lyca.xpath.functions;
 
+import java.util.List;
+
 import de.lyca.xalan.res.XSLMessages;
 import de.lyca.xalan.res.XSLTErrorResources;
 import de.lyca.xml.dtm.DTM;
+import de.lyca.xml.utils.QName;
 import de.lyca.xpath.XPathContext;
 import de.lyca.xpath.axes.LocPathIterator;
 import de.lyca.xpath.axes.PredicatedNodeTest;
@@ -71,7 +74,7 @@ public class FuncCurrent extends Function {
    * No arguments to process, so this does nothing.
    */
   @Override
-  public void fixupVariables(java.util.Vector vars, int globalsSize) {
+  public void fixupVariables(List<QName> vars, int globalsSize) {
     // no-op
   }
 

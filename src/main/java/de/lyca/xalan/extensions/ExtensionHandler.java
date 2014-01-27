@@ -23,7 +23,7 @@ package de.lyca.xalan.extensions;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.util.Vector;
+import java.util.List;
 
 import javax.xml.transform.TransformerException;
 
@@ -113,7 +113,7 @@ public abstract class ExtensionHandler {
    * @throws TransformerException
    *           if parsing trouble
    */
-  public abstract Object callFunction(String funcName, Vector args, Object methodKey, ExpressionContext exprContext)
+  public abstract Object callFunction(String funcName, List args, Object methodKey, ExpressionContext exprContext)
           throws TransformerException;
 
   /**
@@ -131,7 +131,7 @@ public abstract class ExtensionHandler {
    * @throws TransformerException
    *           if parsing trouble
    */
-  public abstract Object callFunction(FuncExtFunction extFunction, Vector args, ExpressionContext exprContext)
+  public abstract Object callFunction(FuncExtFunction extFunction, List args, ExpressionContext exprContext)
           throws TransformerException;
 
   /**

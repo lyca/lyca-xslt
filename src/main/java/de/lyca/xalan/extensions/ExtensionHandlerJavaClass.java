@@ -26,7 +26,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.Vector;
+import java.util.List;
 
 import javax.xml.transform.TransformerException;
 
@@ -177,7 +177,7 @@ public class ExtensionHandlerJavaClass extends ExtensionHandlerJava {
    */
 
   @Override
-  public Object callFunction(String funcName, Vector args, Object methodKey, ExpressionContext exprContext)
+  public Object callFunction(String funcName, List args, Object methodKey, ExpressionContext exprContext)
           throws TransformerException {
 
     Object[] methodArgs;
@@ -393,7 +393,7 @@ public class ExtensionHandlerJavaClass extends ExtensionHandlerJava {
    * @throws TransformerException
    */
   @Override
-  public Object callFunction(FuncExtFunction extFunction, Vector args, ExpressionContext exprContext)
+  public Object callFunction(FuncExtFunction extFunction, List args, ExpressionContext exprContext)
           throws TransformerException {
     return callFunction(extFunction.getFunctionName(), args, extFunction.getMethodKey(), exprContext);
   }

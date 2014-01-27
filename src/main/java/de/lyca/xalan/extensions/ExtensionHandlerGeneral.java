@@ -28,6 +28,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Vector;
 
 import javax.xml.transform.TransformerException;
@@ -259,7 +260,7 @@ public class ExtensionHandlerGeneral extends ExtensionHandler {
    *           if parsing trouble
    */
   @Override
-  public Object callFunction(String funcName, Vector args, Object methodKey, ExpressionContext exprContext)
+  public Object callFunction(String funcName, List args, Object methodKey, ExpressionContext exprContext)
           throws TransformerException {
 
     Object[] argArray;
@@ -317,7 +318,7 @@ public class ExtensionHandlerGeneral extends ExtensionHandler {
    * @throws TransformerException
    */
   @Override
-  public Object callFunction(FuncExtFunction extFunction, Vector args, ExpressionContext exprContext)
+  public Object callFunction(FuncExtFunction extFunction, List args, ExpressionContext exprContext)
           throws TransformerException {
     return callFunction(extFunction.getFunctionName(), args, extFunction.getMethodKey(), exprContext);
   }

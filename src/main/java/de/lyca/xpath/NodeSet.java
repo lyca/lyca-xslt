@@ -547,66 +547,6 @@ public class NodeSet implements NodeList, NodeIterator, Cloneable, ContextNodeLi
   }
 
   /**
-   * Add the node list to this node set in document order.
-   * 
-   * @param start
-   *          index.
-   * @param end
-   *          index.
-   * @param testIndex
-   *          index.
-   * @param nodelist
-   *          The nodelist to add.
-   * @param support
-   *          The XPath runtime context.
-   * 
-   * @return false always.
-   * @throws RuntimeException
-   *           thrown if this NodeSet is not of a mutable type.
-   */
-  private boolean addNodesInDocOrder(int start, int end, int testIndex, NodeList nodelist, XPathContext support) {
-
-    if (!m_mutable)
-      throw new RuntimeException(XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_NODESET_NOT_MUTABLE, null)); // "This NodeSet is not mutable!");
-
-    final boolean foundit = false;
-    int i;
-    final Node node = nodelist.item(testIndex);
-
-    for (i = end; i >= start; i--) {
-      final Node child = elementAt(i);
-
-      if (child == node) {
-        i = -2; // Duplicate, suppress insert
-
-        break;
-      }
-
-      if (!DOM2Helper.isNodeAfter(node, child)) {
-        insertElementAt(node, i + 1);
-
-        testIndex--;
-
-        if (testIndex > 0) {
-          final boolean foundPrev = addNodesInDocOrder(0, i, testIndex, nodelist, support);
-
-          if (!foundPrev) {
-            addNodesInDocOrder(i, size() - 1, testIndex, nodelist, support);
-          }
-        }
-
-        break;
-      }
-    }
-
-    if (i == -1) {
-      insertElementAt(node, 0);
-    }
-
-    return foundit;
-  }
-
-  /**
    * Add the node into a vector of nodes where it should occur in document
    * order.
    * 

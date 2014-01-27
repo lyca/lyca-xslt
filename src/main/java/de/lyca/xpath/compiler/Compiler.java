@@ -20,6 +20,8 @@
  */
 package de.lyca.xpath.compiler;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 import javax.xml.transform.ErrorListener;
 import javax.xml.transform.SourceLocator;
 import javax.xml.transform.TransformerException;
@@ -1092,17 +1094,13 @@ public class Compiler extends OpMap {
   }
 
   // The current id for extension functions.
-  private static long s_nextMethodId = 0;
+  private static AtomicLong s_nextMethodId = new AtomicLong(0);
 
   /**
    * Get the next available method id
    */
-  synchronized private long getNextMethodId() {
-    if (s_nextMethodId == Long.MAX_VALUE) {
-      s_nextMethodId = 0;
-    }
-
-    return s_nextMethodId++;
+  private long getNextMethodId() {
+    return s_nextMethodId.getAndIncrement();
   }
 
   /**

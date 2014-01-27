@@ -20,7 +20,9 @@
  */
 package de.lyca.xpath;
 
-import java.util.Vector;
+import java.util.List;
+
+import javax.xml.transform.TransformerException;
 
 import de.lyca.xpath.functions.FuncExtFunction;
 
@@ -33,21 +35,21 @@ public interface ExtensionsProvider {
    * Is the extension function available?
    */
 
-  public boolean functionAvailable(String ns, String funcName) throws javax.xml.transform.TransformerException;
+  public boolean functionAvailable(String ns, String funcName) throws TransformerException;
 
   /**
    * Is the extension element available?
    */
-  public boolean elementAvailable(String ns, String elemName) throws javax.xml.transform.TransformerException;
+  public boolean elementAvailable(String ns, String elemName) throws TransformerException;
 
   /**
    * Execute the extension function.
    */
-  public Object extFunction(String ns, String funcName, Vector argVec, Object methodKey)
-          throws javax.xml.transform.TransformerException;
+  public Object extFunction(String ns, String funcName, List argVec, Object methodKey) throws TransformerException;
 
   /**
    * Execute the extension function.
    */
-  public Object extFunction(FuncExtFunction extFunction, Vector argVec) throws javax.xml.transform.TransformerException;
+  public Object extFunction(FuncExtFunction extFunction, List argVec) throws TransformerException;
+
 }

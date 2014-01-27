@@ -20,8 +20,11 @@
  */
 package de.lyca.xpath.functions;
 
+import java.util.List;
+
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xml.dtm.DTMIterator;
+import de.lyca.xml.utils.QName;
 import de.lyca.xpath.XPathContext;
 import de.lyca.xpath.axes.SubContextList;
 import de.lyca.xpath.compiler.Compiler;
@@ -123,7 +126,7 @@ public class FuncPosition extends Function {
    * No arguments to process, so this does nothing.
    */
   @Override
-  public void fixupVariables(java.util.Vector vars, int globalsSize) {
+  public void fixupVariables(List<QName> vars, int globalsSize) {
     // no-op
   }
 }

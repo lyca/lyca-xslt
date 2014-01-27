@@ -20,7 +20,7 @@
  */
 package de.lyca.xpath.compiler;
 
-import java.util.Vector;
+import java.util.List;
 
 import de.lyca.xml.utils.PrefixResolver;
 import de.lyca.xpath.res.XPATHErrorResources;
@@ -105,11 +105,11 @@ class Lexer {
    * @param pat
    *          XSLT Expression.
    * @param targetStrings
-   *          Vector to hold Strings, may be null.
+   *          List to hold Strings, may be null.
    * 
    * @throws javax.xml.transform.TransformerException
    */
-  void tokenize(String pat, Vector targetStrings) throws javax.xml.transform.TransformerException {
+  void tokenize(String pat, List<String> targetStrings) throws javax.xml.transform.TransformerException {
 
     m_compiler.m_currentPattern = pat;
     m_patternMapSize = 0;
@@ -415,7 +415,7 @@ class Lexer {
     int tok;
 
     try {
-      final Integer itok = (Integer) Keywords.getKeyWord(key);
+      final Integer itok = Keywords.getKeyWord(key);
 
       tok = null != itok ? itok.intValue() : 0;
     } catch (final NullPointerException npe) {
@@ -428,12 +428,12 @@ class Lexer {
   }
 
   /**
-   * Record the current token in the passed vector.
+   * Record the current token in the passed list.
    * 
    * @param targetStrings
-   *          Vector of string.
+   *          List of string.
    */
-  private void recordTokenString(Vector targetStrings) {
+  private void recordTokenString(List<String> targetStrings) {
 
     int tokPos = getTokenQueuePosFromMap(m_patternMapSize - 1);
 
@@ -444,25 +444,25 @@ class Lexer {
 
       switch (tok) {
         case OpCodes.NODETYPE_COMMENT:
-          targetStrings.addElement(PsuedoNames.PSEUDONAME_COMMENT);
+          targetStrings.add(PsuedoNames.PSEUDONAME_COMMENT);
           break;
         case OpCodes.NODETYPE_TEXT:
-          targetStrings.addElement(PsuedoNames.PSEUDONAME_TEXT);
+          targetStrings.add(PsuedoNames.PSEUDONAME_TEXT);
           break;
         case OpCodes.NODETYPE_NODE:
-          targetStrings.addElement(PsuedoNames.PSEUDONAME_ANY);
+          targetStrings.add(PsuedoNames.PSEUDONAME_ANY);
           break;
         case OpCodes.NODETYPE_ROOT:
-          targetStrings.addElement(PsuedoNames.PSEUDONAME_ROOT);
+          targetStrings.add(PsuedoNames.PSEUDONAME_ROOT);
           break;
         case OpCodes.NODETYPE_ANYELEMENT:
-          targetStrings.addElement(PsuedoNames.PSEUDONAME_ANY);
+          targetStrings.add(PsuedoNames.PSEUDONAME_ANY);
           break;
         case OpCodes.NODETYPE_PI:
-          targetStrings.addElement(PsuedoNames.PSEUDONAME_ANY);
+          targetStrings.add(PsuedoNames.PSEUDONAME_ANY);
           break;
         default:
-          targetStrings.addElement(PsuedoNames.PSEUDONAME_ANY);
+          targetStrings.add(PsuedoNames.PSEUDONAME_ANY);
       }
     } else {
       if (m_processor.tokenIs('@')) {
@@ -475,7 +475,7 @@ class Lexer {
         tokPos += 2;
       }
 
-      targetStrings.addElement(m_compiler.getTokenQueue().elementAt(tokPos));
+      targetStrings.add((String) m_compiler.getTokenQueue().elementAt(tokPos));
     }
   }
 

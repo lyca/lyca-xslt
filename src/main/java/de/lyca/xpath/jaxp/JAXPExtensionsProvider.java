@@ -21,7 +21,7 @@
 package de.lyca.xpath.jaxp;
 
 import java.util.ArrayList;
-import java.util.Vector;
+import java.util.List;
 
 import javax.xml.namespace.QName;
 import javax.xml.xpath.XPathFunction;
@@ -90,7 +90,7 @@ public class JAXPExtensionsProvider implements ExtensionsProvider {
    * Execute the extension function.
    */
   @Override
-  public Object extFunction(String ns, String funcName, Vector argVec, Object methodKey)
+  public Object extFunction(String ns, String funcName, List argVec, Object methodKey)
           throws javax.xml.transform.TransformerException {
     try {
 
@@ -120,7 +120,7 @@ public class JAXPExtensionsProvider implements ExtensionsProvider {
       // not using methodKey
       final ArrayList argList = new ArrayList(arity);
       for (int i = 0; i < arity; i++) {
-        final Object argument = argVec.elementAt(i);
+        final Object argument = argVec.get(i);
         // XNodeSet object() returns NodeVector and not NodeList
         // Explicitly getting NodeList by using nodelist()
         if (argument instanceof XNodeSet) {
@@ -148,7 +148,7 @@ public class JAXPExtensionsProvider implements ExtensionsProvider {
    * Execute the extension function.
    */
   @Override
-  public Object extFunction(FuncExtFunction extFunction, Vector argVec) throws javax.xml.transform.TransformerException {
+  public Object extFunction(FuncExtFunction extFunction, List argVec) throws javax.xml.transform.TransformerException {
     try {
       final String namespace = extFunction.getNamespace();
       final String functionName = extFunction.getFunctionName();
@@ -168,7 +168,7 @@ public class JAXPExtensionsProvider implements ExtensionsProvider {
 
       final ArrayList argList = new ArrayList(arity);
       for (int i = 0; i < arity; i++) {
-        final Object argument = argVec.elementAt(i);
+        final Object argument = argVec.get(i);
         // XNodeSet object() returns NodeVector and not NodeList
         // Explicitly getting NodeList by using nodelist()
         if (argument instanceof XNodeSet) {

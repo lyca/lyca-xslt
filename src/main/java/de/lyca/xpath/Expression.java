@@ -20,6 +20,8 @@
  */
 package de.lyca.xpath;
 
+import java.util.List;
+
 import javax.xml.transform.ErrorListener;
 import javax.xml.transform.TransformerException;
 
@@ -27,6 +29,7 @@ import org.xml.sax.ContentHandler;
 
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xml.dtm.DTMIterator;
+import de.lyca.xml.utils.QName;
 import de.lyca.xml.utils.XMLString;
 import de.lyca.xpath.objects.XNodeSet;
 import de.lyca.xpath.objects.XObject;
@@ -325,11 +328,11 @@ public abstract class Expression implements java.io.Serializable, ExpressionNode
    *          List of QNames that correspond to variables. This list should be
    *          searched backwards for the first qualified name that corresponds
    *          to the variable reference qname. The position of the QName in the
-   *          vector from the start of the vector will be its position in the
-   *          stack frame (but variables above the globalsTop value will need to
-   *          be offset to the current stack frame). NEEDSDOC @param globalsSize
+   *          list from the start of the list will be its position in the stack
+   *          frame (but variables above the globalsTop value will need to be
+   *          offset to the current stack frame). NEEDSDOC @param globalsSize
    */
-  public abstract void fixupVariables(java.util.Vector vars, int globalsSize);
+  public abstract void fixupVariables(List<QName> vars, int globalsSize);
 
   /**
    * Compare this object with another object and see if they are equal, include

@@ -20,7 +20,10 @@
  */
 package de.lyca.xpath.axes;
 
+import java.util.List;
+
 import de.lyca.xml.dtm.DTM;
+import de.lyca.xml.utils.QName;
 import de.lyca.xpath.Expression;
 import de.lyca.xpath.ExpressionOwner;
 import de.lyca.xpath.XPathVisitor;
@@ -107,12 +110,12 @@ public class FilterExprIterator extends BasicTestIterator {
    *          List of QNames that correspond to variables. This list should be
    *          searched backwards for the first qualified name that corresponds
    *          to the variable reference qname. The position of the QName in the
-   *          vector from the start of the vector will be its position in the
-   *          stack frame (but variables above the globalsTop value will need to
-   *          be offset to the current stack frame).
+   *          list from the start of the list will be its position in the stack
+   *          frame (but variables above the globalsTop value will need to be
+   *          offset to the current stack frame).
    */
   @Override
-  public void fixupVariables(java.util.Vector vars, int globalsSize) {
+  public void fixupVariables(List<QName> vars, int globalsSize) {
     super.fixupVariables(vars, globalsSize);
     m_expr.fixupVariables(vars, globalsSize);
   }

@@ -21,6 +21,7 @@
 package de.lyca.xpath.objects;
 
 import java.io.Serializable;
+import java.util.List;
 
 import org.w3c.dom.DocumentFragment;
 import org.w3c.dom.NodeList;
@@ -28,6 +29,7 @@ import org.w3c.dom.traversal.NodeIterator;
 
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xml.dtm.DTMIterator;
+import de.lyca.xml.utils.QName;
 import de.lyca.xml.utils.XMLString;
 import de.lyca.xpath.Expression;
 import de.lyca.xpath.ExpressionOwner;
@@ -666,7 +668,7 @@ public class XObject extends Expression implements Serializable, Cloneable {
    * XObjects should not normally need to fix up variables.
    */
   @Override
-  public void fixupVariables(java.util.Vector vars, int globalsSize) {
+  public void fixupVariables(List<QName> vars, int globalsSize) {
     // no-op
   }
 

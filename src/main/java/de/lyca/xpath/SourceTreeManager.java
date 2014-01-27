@@ -21,7 +21,8 @@
 package de.lyca.xpath;
 
 import java.io.IOException;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.SourceLocator;
@@ -43,15 +44,15 @@ import de.lyca.xml.utils.SystemIDResolver;
  */
 public class SourceTreeManager {
 
-  /** Vector of SourceTree objects that this manager manages. */
-  private Vector m_sourceTree = new Vector();
+  /** List of SourceTree objects that this manager manages. */
+  private List<SourceTree> m_sourceTree = new ArrayList<SourceTree>();
 
   /**
    * Reset the list of SourceTree objects that this manager manages.
    * 
    */
   public void reset() {
-    m_sourceTree = new Vector();
+    m_sourceTree = new ArrayList<SourceTree>();
   }
 
   /** The TrAX URI resolver used to obtain source trees. */
@@ -88,7 +89,7 @@ public class SourceTreeManager {
     final int n = m_sourceTree.size();
 
     for (int i = 0; i < n; i++) {
-      final SourceTree sTree = (SourceTree) m_sourceTree.elementAt(i);
+      final SourceTree sTree = m_sourceTree.get(i);
 
       if (owner == sTree.m_root)
         return sTree.m_url;
@@ -141,9 +142,9 @@ public class SourceTreeManager {
     if (DTM.NULL == n)
       return;
     for (int i = m_sourceTree.size() - 1; i >= 0; --i) {
-      final SourceTree st = (SourceTree) m_sourceTree.elementAt(i);
+      final SourceTree st = m_sourceTree.get(i);
       if (st != null && st.m_root == n) {
-        m_sourceTree.removeElementAt(i);
+        m_sourceTree.remove(i);
         return;
       }
     }
@@ -169,7 +170,7 @@ public class SourceTreeManager {
       return;
     }
     if (null != source.getSystemId()) {
-      m_sourceTree.addElement(new SourceTree(n, source.getSystemId()));
+      m_sourceTree.add(new SourceTree(n, source.getSystemId()));
     }
   }
 
@@ -196,7 +197,7 @@ public class SourceTreeManager {
 
     // System.out.println("getNode: "+n);
     for (int i = 0; i < n; i++) {
-      final SourceTree sTree = (SourceTree) m_sourceTree.elementAt(i);
+      final SourceTree sTree = m_sourceTree.get(i);
 
       // System.out.println("getNode -         url: "+url);
       // System.out.println("getNode - sTree.m_url: "+sTree.m_url);

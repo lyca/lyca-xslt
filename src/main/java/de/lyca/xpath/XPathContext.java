@@ -15,16 +15,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * $Id$
- */
 package de.lyca.xpath;
 
 import java.lang.reflect.Method;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Stack;
-import java.util.Vector;
+import java.util.List;
+import java.util.Map;
 
 import javax.xml.transform.ErrorListener;
 import javax.xml.transform.SourceLocator;
@@ -75,7 +74,7 @@ public class XPathContext extends DTMManager // implements ExpressionContext
    * versus discarding the DTM and starting a new one... but the retained RTF
    * DTM will have been tail-pruned so should be small.
    */
-  private Vector m_rtfdtm_stack = null;
+  private List<SAX2RTFDTM> m_rtfdtm_stack = null;
   /** Index of currently active RTF DTM in m_rtfdtm_stack */
   private int m_which_rtfdtm = -1;
 
@@ -89,7 +88,7 @@ public class XPathContext extends DTMManager // implements ExpressionContext
    * HashMap of cached the DTMXRTreeFrag objects, which are identified by DTM
    * IDs. The object are just wrappers for DTMs which are used in XRTreeFrag.
    */
-  private HashMap m_DTMXRTreeFrags = null;
+  private Map<Integer, DTMXRTreeFrag> m_DTMXRTreeFrags = null;
 
   /**
    * state of the secure processing feature.
@@ -255,10 +254,9 @@ public class XPathContext extends DTMManager // implements ExpressionContext
    * href="http://www.w3.org/TR/xpath#NT-UnionExpr">UnionExpr</a>.
    * 
    * @param xpathString
-   *          Must be a valid string expressing a <a
-   *          href="http://www.w3.org/TR/xpath#NT-LocationPath>LocationPath</a>
-   *          or a <a
-   *          href="http://www.w3.org/TR/xpath#NT-UnionExpr">UnionExpr</a>.
+   *          Must be a valid string expressing a <a href=
+   *          "http://www.w3.org/TR/xpath#NT-LocationPath>LocationPath</a> or a
+   *          <a href="http://www.w3.org/TR/xpath#NT-UnionExpr">UnionExpr</a>.
    * 
    * @param presolver
    *          An object that can resolve prefixes to namespace URLs.
@@ -376,11 +374,10 @@ public class XPathContext extends DTMManager // implements ExpressionContext
     // These couldn't be disposed of earlier (see comments in release()); zap
     // them now.
     if (m_rtfdtm_stack != null) {
-      for (final java.util.Enumeration e = m_rtfdtm_stack.elements(); e.hasMoreElements();) {
-        m_dtmManager.release((DTM) e.nextElement(), true);
+      for (final SAX2RTFDTM element : m_rtfdtm_stack) {
+        m_dtmManager.release(element, true);
       }
     }
-
     m_rtfdtm_stack = null; // drop our references too
     m_which_rtfdtm = -1;
 
@@ -392,8 +389,8 @@ public class XPathContext extends DTMManager // implements ExpressionContext
     m_dtmManager = DTMManager.newInstance(de.lyca.xpath.objects.XMLStringFactoryImpl.getFactory());
 
     m_saxLocations.removeAllElements();
-    m_axesIteratorStack.removeAllElements();
-    m_contextNodeLists.removeAllElements();
+    m_axesIteratorStack.clear();
+    m_contextNodeLists.clear();
     m_currentExpressionNodes.removeAllElements();
     m_currentNodes.removeAllElements();
     m_iteratorRoots.RemoveAllNoClear();
@@ -672,13 +669,13 @@ public class XPathContext extends DTMManager // implements ExpressionContext
   /**
    * The current context node list.
    */
-  private Stack m_contextNodeLists = new Stack();
+  private Deque<DTMIterator> m_contextNodeLists = new ArrayDeque<DTMIterator>();
 
-  public Stack getContextNodeListsStack() {
+  public Deque<DTMIterator> getContextNodeListsStack() {
     return m_contextNodeLists;
   }
 
-  public void setContextNodeListsStack(Stack s) {
+  public void setContextNodeListsStack(Deque<DTMIterator> s) {
     m_contextNodeLists = s;
   }
 
@@ -692,7 +689,7 @@ public class XPathContext extends DTMManager // implements ExpressionContext
   public final DTMIterator getContextNodeList() {
 
     if (m_contextNodeLists.size() > 0)
-      return (DTMIterator) m_contextNodeLists.peek();
+      return m_contextNodeLists.peek();
     else
       return null;
   }
@@ -982,13 +979,13 @@ public class XPathContext extends DTMManager // implements ExpressionContext
   /**
    * Stack of AxesIterators.
    */
-  private Stack m_axesIteratorStack = new Stack();
+  private Deque<SubContextList> m_axesIteratorStack = new ArrayDeque<SubContextList>();
 
-  public Stack getAxesIteratorStackStacks() {
+  public Deque<SubContextList> getAxesIteratorStackStacks() {
     return m_axesIteratorStack;
   }
 
-  public void setAxesIteratorStackStacks(Stack s) {
+  public void setAxesIteratorStackStacks(Deque<SubContextList> s) {
     m_axesIteratorStack = s;
   }
 
@@ -1033,7 +1030,8 @@ public class XPathContext extends DTMManager // implements ExpressionContext
    */
 
   public de.lyca.xpath.axes.SubContextList getCurrentNodeList() {
-    return m_axesIteratorStack.isEmpty() ? null : (SubContextList) m_axesIteratorStack.elementAt(0);
+    // TODO was m_axesIteratorStack.elementAt(0);
+    return m_axesIteratorStack.isEmpty() ? null : (SubContextList) m_axesIteratorStack.peekFirst();
   }
 
   // ==========================================================
@@ -1055,10 +1053,8 @@ public class XPathContext extends DTMManager // implements ExpressionContext
    * @return An iterator for the current context list, as defined in XSLT.
    */
   public final DTMIterator getContextNodes() {
-
     try {
       final DTMIterator cnl = getContextNodeList();
-
       if (null != cnl)
         return cnl.cloneWithReset();
       else
@@ -1112,7 +1108,6 @@ public class XPathContext extends DTMManager // implements ExpressionContext
     @Override
     public org.w3c.dom.Node getContextNode() {
       final int context = getCurrentNode();
-
       return getDTM(context).getNode(context);
     }
 
@@ -1176,13 +1171,11 @@ public class XPathContext extends DTMManager // implements ExpressionContext
      * @return The evaluated value of the variable.
      * @throws javax.xml.transform.TransformerException
      */
-
     @Override
     public final XObject getVariableOrParam(de.lyca.xml.utils.QName qname)
             throws javax.xml.transform.TransformerException {
       return m_variableStacks.getVariableOrParam(XPathContext.this, qname);
     }
-
   }
 
   /**
@@ -1238,23 +1231,22 @@ public class XPathContext extends DTMManager // implements ExpressionContext
     // We probably should _NOT_ be applying whitespace filtering at this stage!
     //
     // Some magic has been applied in DTMManagerDefault to recognize this set of
-    // options
-    // and generate an instance of DTM which can contain multiple documents
-    // (SAX2RTFDTM). Perhaps not the optimal way of achieving that result, but
-    // I didn't want to change the manager API at this time, or expose
-    // too many dependencies on its internals. (Ideally, I'd like to move
+    // options and generate an instance of DTM which can contain multiple
+    // documents (SAX2RTFDTM). Perhaps not the optimal way of achieving that
+    // result, butI didn't want to change the manager API at this time, or
+    // exposetoo many dependencies on its internals. (Ideally, I'd like to move
     // isTreeIncomplete all the way up to DTM, so we wouldn't need to explicitly
     // specify the subclass here.)
 
     if (m_rtfdtm_stack == null) {
-      m_rtfdtm_stack = new Vector();
+      m_rtfdtm_stack = new ArrayList<SAX2RTFDTM>();
       rtfdtm = (SAX2RTFDTM) m_dtmManager.getDTM(null, true, null, false, false);
-      m_rtfdtm_stack.addElement(rtfdtm);
+      m_rtfdtm_stack.add(rtfdtm);
       ++m_which_rtfdtm;
     } else if (m_which_rtfdtm < 0) {
-      rtfdtm = (SAX2RTFDTM) m_rtfdtm_stack.elementAt(++m_which_rtfdtm);
+      rtfdtm = m_rtfdtm_stack.get(++m_which_rtfdtm);
     } else {
-      rtfdtm = (SAX2RTFDTM) m_rtfdtm_stack.elementAt(m_which_rtfdtm);
+      rtfdtm = m_rtfdtm_stack.get(m_which_rtfdtm);
 
       // It might already be under construction -- the classic example would be
       // an xsl:variable which uses xsl:call-template as part of its value. To
@@ -1264,14 +1256,13 @@ public class XPathContext extends DTMManager // implements ExpressionContext
       // as if it were a procedural language...
       if (rtfdtm.isTreeIncomplete()) {
         if (++m_which_rtfdtm < m_rtfdtm_stack.size()) {
-          rtfdtm = (SAX2RTFDTM) m_rtfdtm_stack.elementAt(m_which_rtfdtm);
+          rtfdtm = m_rtfdtm_stack.get(m_which_rtfdtm);
         } else {
           rtfdtm = (SAX2RTFDTM) m_dtmManager.getDTM(null, true, null, false, false);
-          m_rtfdtm_stack.addElement(rtfdtm);
+          m_rtfdtm_stack.add(rtfdtm);
         }
       }
     }
-
     return rtfdtm;
   }
 
@@ -1280,7 +1271,7 @@ public class XPathContext extends DTMManager // implements ExpressionContext
    * point. (If it doesn't exist we don't push, since we might still be able to
    * get away with not creating it. That requires that excessive pops be
    * harmless.)
-   * */
+   */
   public void pushRTFContext() {
     m_last_pushed_rtfdtm.push(m_which_rtfdtm);
     if (null != m_rtfdtm_stack) {
@@ -1302,23 +1293,22 @@ public class XPathContext extends DTMManager // implements ExpressionContext
    * previous if one exists, in whatever state we left it in. UGLY, but
    * hopefully the situation which forces us to consider this will arise
    * exceedingly rarely.
-   * */
+   */
   public void popRTFContext() {
     final int previous = m_last_pushed_rtfdtm.pop();
     if (null == m_rtfdtm_stack)
       return;
-
     if (m_which_rtfdtm == previous) {
       if (previous >= 0) // guard against none-active
       {
-        final boolean isEmpty = ((SAX2RTFDTM) m_rtfdtm_stack.elementAt(previous)).popRewindMark();
+        m_rtfdtm_stack.get(previous).popRewindMark();
       }
     } else {
       while (m_which_rtfdtm != previous) {
         // Empty each DTM before popping, so it's ready for reuse
         // _DON'T_ pop the previous, since it's still open (which is why we
         // stacked up more of these) and did not receive a mark.
-        final boolean isEmpty = ((SAX2RTFDTM) m_rtfdtm_stack.elementAt(m_which_rtfdtm)).popRewindMark();
+        m_rtfdtm_stack.get(m_which_rtfdtm).popRewindMark();
         --m_which_rtfdtm;
       }
     }
@@ -1333,16 +1323,14 @@ public class XPathContext extends DTMManager // implements ExpressionContext
    */
   public DTMXRTreeFrag getDTMXRTreeFrag(int dtmIdentity) {
     if (m_DTMXRTreeFrags == null) {
-      m_DTMXRTreeFrags = new HashMap();
+      m_DTMXRTreeFrags = new HashMap<Integer, DTMXRTreeFrag>();
     }
-
-    if (m_DTMXRTreeFrags.containsKey(new Integer(dtmIdentity)))
-      return (DTMXRTreeFrag) m_DTMXRTreeFrags.get(new Integer(dtmIdentity));
-    else {
-      final DTMXRTreeFrag frag = new DTMXRTreeFrag(dtmIdentity, this);
-      m_DTMXRTreeFrags.put(new Integer(dtmIdentity), frag);
-      return frag;
+    DTMXRTreeFrag result = m_DTMXRTreeFrags.get(dtmIdentity);
+    if (result == null) {
+      result = new DTMXRTreeFrag(dtmIdentity, this);
+      m_DTMXRTreeFrags.put(dtmIdentity, result);
     }
+    return result;
   }
 
   /**
@@ -1352,12 +1340,10 @@ public class XPathContext extends DTMManager // implements ExpressionContext
   private final void releaseDTMXRTreeFrags() {
     if (m_DTMXRTreeFrags == null)
       return;
-    final Iterator iter = m_DTMXRTreeFrags.values().iterator();
-    while (iter.hasNext()) {
-      final DTMXRTreeFrag frag = (DTMXRTreeFrag) iter.next();
+    for (final DTMXRTreeFrag frag : m_DTMXRTreeFrags.values()) {
       frag.destruct();
-      iter.remove();
     }
     m_DTMXRTreeFrags = null;
   }
+
 }

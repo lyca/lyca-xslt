@@ -20,6 +20,9 @@
  */
 package de.lyca.xpath.objects;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.w3c.dom.NodeList;
 import org.w3c.dom.traversal.NodeIterator;
 
@@ -468,7 +471,7 @@ public class XNodeSet extends NodeSequence {
       final DTMIterator list1 = iterRaw();
       final DTMIterator list2 = ((XNodeSet) obj2).iterRaw();
       int node1;
-      java.util.Vector node2Strings = null;
+      List<XMLString> node2Strings = null;
 
       while (DTM.NULL != (node1 = list1.nextNode())) {
         final XMLString s1 = getStringFromNode(node1);
@@ -486,16 +489,16 @@ public class XNodeSet extends NodeSequence {
             }
 
             if (null == node2Strings) {
-              node2Strings = new java.util.Vector();
+              node2Strings = new ArrayList<XMLString>();
             }
 
-            node2Strings.addElement(s2);
+            node2Strings.add(s2);
           }
         } else {
           final int n = node2Strings.size();
 
           for (int i = 0; i < n; i++) {
-            if (comparator.compareStrings(s1, (XMLString) node2Strings.elementAt(i))) {
+            if (comparator.compareStrings(s1, node2Strings.get(i))) {
               result = true;
 
               break;

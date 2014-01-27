@@ -20,10 +20,13 @@
  */
 package de.lyca.xpath.patterns;
 
+import java.util.List;
+
 import de.lyca.xml.dtm.Axis;
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xml.dtm.DTMAxisTraverser;
 import de.lyca.xml.dtm.DTMFilter;
+import de.lyca.xml.utils.QName;
 import de.lyca.xpath.Expression;
 import de.lyca.xpath.ExpressionOwner;
 import de.lyca.xpath.XPathContext;
@@ -119,7 +122,7 @@ public class StepPattern extends NodeTest implements SubContextList, ExpressionO
         m_targetString = PsuedoNames.PSEUDONAME_ROOT;
         break;
       case DTMFilter.SHOW_ELEMENT:
-        if (WILD == m_name) {
+        if (NodeTest.WILD == m_name) {
           m_targetString = PsuedoNames.PSEUDONAME_ANY;
         } else {
           m_targetString = m_name;
@@ -158,14 +161,14 @@ public class StepPattern extends NodeTest implements SubContextList, ExpressionO
    *          List of QNames that correspond to variables. This list should be
    *          searched backwards for the first qualified name that corresponds
    *          to the variable reference qname. The position of the QName in the
-   *          vector from the start of the vector will be its position in the
-   *          stack frame (but variables above the globalsTop value will need to
-   *          be offset to the current stack frame).
+   *          list from the start of the list will be its position in the stack
+   *          frame (but variables above the globalsTop value will need to be
+   *          offset to the current stack frame).
    * @param globalsSize
    *          The number of variables in the global variable area.
    */
   @Override
-  public void fixupVariables(java.util.Vector vars, int globalsSize) {
+  public void fixupVariables(List<QName> vars, int globalsSize) {
 
     super.fixupVariables(vars, globalsSize);
 
@@ -725,7 +728,7 @@ public class StepPattern extends NodeTest implements SubContextList, ExpressionO
   @Override
   public String toString() {
 
-    final StringBuffer buf = new StringBuffer();
+    final StringBuilder buf = new StringBuilder();
 
     for (StepPattern pat = this; pat != null; pat = pat.m_relativePathPattern) {
       if (pat != this) {

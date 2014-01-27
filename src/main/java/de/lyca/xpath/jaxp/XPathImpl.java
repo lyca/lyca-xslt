@@ -42,7 +42,6 @@ import org.xml.sax.SAXException;
 
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xpath.XPath;
-import de.lyca.xpath.XPathFactory;
 import de.lyca.xpath.objects.XObject;
 import de.lyca.xpath.res.XPATHErrorResources;
 import de.lyca.xpath.res.XPATHMessages;

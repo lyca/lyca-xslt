@@ -20,8 +20,10 @@
  */
 package de.lyca.xpath.functions;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
+import de.lyca.xml.utils.QName;
 import de.lyca.xpath.Expression;
 import de.lyca.xpath.ExpressionNode;
 import de.lyca.xpath.ExpressionOwner;
@@ -71,7 +73,7 @@ public class FuncExtFunction extends Function {
    * 
    * @serial
    */
-  Vector m_argVec = new Vector();
+  List<Expression> m_argVec = new ArrayList<Expression>();
 
   /**
    * This function is used to fixup variables from QNames to stack frame indexes
@@ -81,18 +83,18 @@ public class FuncExtFunction extends Function {
    *          List of QNames that correspond to variables. This list should be
    *          searched backwards for the first qualified name that corresponds
    *          to the variable reference qname. The position of the QName in the
-   *          vector from the start of the vector will be its position in the
-   *          stack frame (but variables above the globalsTop value will need to
-   *          be offset to the current stack frame). NEEDSDOC @param globalsSize
+   *          list from the start of the list will be its position in the stack
+   *          frame (but variables above the globalsTop value will need to be
+   *          offset to the current stack frame). NEEDSDOC @param globalsSize
    */
   @Override
-  public void fixupVariables(java.util.Vector vars, int globalsSize) {
+  public void fixupVariables(List<QName> vars, int globalsSize) {
 
     if (null != m_argVec) {
       final int nArgs = m_argVec.size();
 
       for (int i = 0; i < nArgs; i++) {
-        final Expression arg = (Expression) m_argVec.elementAt(i);
+        final Expression arg = m_argVec.get(i);
 
         arg.fixupVariables(vars, globalsSize);
       }
@@ -135,7 +137,7 @@ public class FuncExtFunction extends Function {
    */
   public Expression getArg(int n) {
     if (n >= 0 && n < m_argVec.size())
-      return (Expression) m_argVec.elementAt(n);
+      return m_argVec.get(n);
     else
       return null;
   }
@@ -187,18 +189,18 @@ public class FuncExtFunction extends Function {
               XPATHErrorResources.ER_EXTENSION_FUNCTION_CANNOT_BE_INVOKED, new Object[] { toString() }));
 
     XObject result;
-    final Vector argVec = new Vector();
     final int nArgs = m_argVec.size();
+    final List<XObject> argVec = new ArrayList<XObject>(nArgs);
 
     for (int i = 0; i < nArgs; i++) {
-      final Expression arg = (Expression) m_argVec.elementAt(i);
+      final Expression arg = m_argVec.get(i);
 
       final XObject xobj = arg.execute(xctxt);
       /*
        * Should cache the arguments for func:function
        */
       xobj.allowDetachToRelease(false);
-      argVec.addElement(xobj);
+      argVec.add(xobj);
     }
     // dml
     final ExtensionsProvider extProvider = (ExtensionsProvider) xctxt.getOwnerObject();
@@ -228,7 +230,7 @@ public class FuncExtFunction extends Function {
    */
   @Override
   public void setArg(Expression arg, int argNum) throws WrongNumberArgsException {
-    m_argVec.addElement(arg);
+    m_argVec.add(arg);
     arg.exprSetParent(this);
   }
 
@@ -277,7 +279,7 @@ public class FuncExtFunction extends Function {
   @Override
   public void callArgVisitors(XPathVisitor visitor) {
     for (int i = 0; i < m_argVec.size(); i++) {
-      final Expression exp = (Expression) m_argVec.elementAt(i);
+      final Expression exp = m_argVec.get(i);
       exp.callVisitors(new ArgExtOwner(exp), visitor);
     }
 
@@ -298,7 +300,7 @@ public class FuncExtFunction extends Function {
     final int nArgs = m_argVec.size();
 
     for (int i = 0; i < nArgs; i++) {
-      final Expression arg = (Expression) m_argVec.elementAt(i);
+      final Expression arg = m_argVec.get(i);
 
       arg.exprSetParent(n);
     }

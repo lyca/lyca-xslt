@@ -20,6 +20,9 @@
  */
 package de.lyca.xpath.patterns;
 
+import java.util.List;
+
+import de.lyca.xml.utils.QName;
 import de.lyca.xpath.Expression;
 import de.lyca.xpath.ExpressionOwner;
 import de.lyca.xpath.XPathContext;
@@ -46,7 +49,7 @@ public class UnionPattern extends Expression {
    * No arguments to process, so this does nothing.
    */
   @Override
-  public void fixupVariables(java.util.Vector vars, int globalsSize) {
+  public void fixupVariables(List<QName> vars, int globalsSize) {
     for (int i = 0; i < m_patterns.length; i++) {
       m_patterns[i].fixupVariables(vars, globalsSize);
     }

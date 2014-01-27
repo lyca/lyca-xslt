@@ -20,7 +20,7 @@
  */
 package de.lyca.xpath.axes;
 
-import java.util.Vector;
+import java.util.List;
 
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xml.dtm.DTMAxisTraverser;
@@ -104,21 +104,21 @@ public class AxesWalker extends PredicatedNodeTest implements Cloneable, PathCom
    *          non-null reference to the cloned location path iterator to which
    *          this clone will be added.
    * @param cloneList
-   *          non-null vector of sources in odd elements, and the corresponding
+   *          non-null list of sources in odd elements, and the corresponding
    *          clones in even vectors.
    * 
    * @return non-null clone, which may be a new clone, or may be a clone
    *         contained on the cloneList.
    */
-  AxesWalker cloneDeep(WalkingIterator cloneOwner, Vector cloneList) throws CloneNotSupportedException {
+  AxesWalker cloneDeep(WalkingIterator cloneOwner, List<AxesWalker> cloneList) throws CloneNotSupportedException {
     AxesWalker clone = findClone(this, cloneList);
     if (null != clone)
       return clone;
     clone = (AxesWalker) this.clone();
     clone.setLocPathIterator(cloneOwner);
     if (null != cloneList) {
-      cloneList.addElement(this);
-      cloneList.addElement(clone);
+      cloneList.add(this);
+      cloneList.add(clone);
     }
 
     if (wi().m_lastUsedWalker == this) {
@@ -149,18 +149,18 @@ public class AxesWalker extends PredicatedNodeTest implements Cloneable, PathCom
    * @param key
    *          The original AxesWalker for which there may be a clone.
    * @param cloneList
-   *          vector of sources in odd elements, and the corresponding clones in
+   *          list of sources in odd elements, and the corresponding clones in
    *          even vectors, may be null.
    * 
    * @return A clone that corresponds to the key, or null if key not found.
    */
-  static AxesWalker findClone(AxesWalker key, Vector cloneList) {
+  static AxesWalker findClone(AxesWalker key, List<AxesWalker> cloneList) {
     if (null != cloneList) {
       // First, look for clone on list.
       final int n = cloneList.size();
       for (int i = 0; i < n; i += 2) {
-        if (key == cloneList.elementAt(i))
-          return (AxesWalker) cloneList.elementAt(i + 1);
+        if (key == cloneList.get(i))
+          return cloneList.get(i + 1);
       }
     }
     return null;

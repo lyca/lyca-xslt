@@ -1227,7 +1227,7 @@ public class WalkerFactory {
   }
 
   public static String getAnalysisString(int analysis) {
-    final StringBuffer buf = new StringBuffer();
+    final StringBuilder buf = new StringBuilder();
     buf.append("count: " + getStepCount(analysis) + " ");
     if ((analysis & BIT_NODETEST_ANY) != 0) {
       buf.append("NTANY|");

@@ -20,13 +20,14 @@
  */
 package de.lyca.xpath.axes;
 
-import java.util.Vector;
+import java.util.List;
 
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xml.dtm.DTMFilter;
 import de.lyca.xml.dtm.DTMIterator;
 import de.lyca.xml.dtm.DTMManager;
 import de.lyca.xml.utils.NodeVector;
+import de.lyca.xml.utils.QName;
 import de.lyca.xpath.NodeSetDTM;
 import de.lyca.xpath.XPathContext;
 import de.lyca.xpath.objects.XObject;
@@ -656,10 +657,10 @@ public class NodeSequence extends XObject implements DTMIterator, Cloneable, Pat
   }
 
   /**
-   * @see de.lyca.xpath.Expression#fixupVariables(Vector, int)
+   * @see de.lyca.xpath.Expression#fixupVariables(List, int)
    */
   @Override
-  public void fixupVariables(Vector vars, int globalsSize) {
+  public void fixupVariables(List<QName> vars, int globalsSize) {
     super.fixupVariables(vars, globalsSize);
   }
 

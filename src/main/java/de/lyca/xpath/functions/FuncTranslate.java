@@ -52,7 +52,7 @@ public class FuncTranslate extends Function3Args {
 
     // A vector to contain the new characters. We'll use it to construct
     // the result string.
-    final StringBuffer sbuffer = new StringBuffer();
+    final StringBuilder sbuffer = new StringBuilder();
 
     for (int i = 0; i < theFirstStringLength; i++) {
       final char theCurrentChar = theFirstString.charAt(i);

@@ -41,7 +41,7 @@ public final class IteratorPool implements java.io.Serializable {
   /**
    * Stack of given objects this points to.
    */
-  private final ArrayList m_freeStack;
+  private final ArrayList<DTMIterator> m_freeStack;
 
   /**
    * Constructor IteratorPool
@@ -51,7 +51,7 @@ public final class IteratorPool implements java.io.Serializable {
    */
   public IteratorPool(DTMIterator original) {
     m_orig = original;
-    m_freeStack = new ArrayList();
+    m_freeStack = new ArrayList<DTMIterator>();
   }
 
   /**
@@ -66,7 +66,7 @@ public final class IteratorPool implements java.io.Serializable {
       return (DTMIterator) m_orig.clone();
     else {
       // Remove object from end of free pool.
-      final DTMIterator result = (DTMIterator) m_freeStack.remove(m_freeStack.size() - 1);
+      final DTMIterator result = m_freeStack.remove(m_freeStack.size() - 1);
       return result;
     }
   }
@@ -88,7 +88,7 @@ public final class IteratorPool implements java.io.Serializable {
       }
     } else {
       // Remove object from end of free pool.
-      final DTMIterator result = (DTMIterator) m_freeStack.remove(m_freeStack.size() - 1);
+      final DTMIterator result = m_freeStack.remove(m_freeStack.size() - 1);
       return result;
     }
   }

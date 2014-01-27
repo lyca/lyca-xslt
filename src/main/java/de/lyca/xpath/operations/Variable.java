@@ -20,6 +20,8 @@
  */
 package de.lyca.xpath.operations;
 
+import java.util.List;
+
 import javax.xml.transform.TransformerException;
 
 import de.lyca.xml.utils.QName;
@@ -110,17 +112,16 @@ public class Variable extends Expression implements PathComponent {
    *          List of QNames that correspond to variables. This list should be
    *          searched backwards for the first qualified name that corresponds
    *          to the variable reference qname. The position of the QName in the
-   *          vector from the start of the vector will be its position in the
-   *          stack frame (but variables above the globalsTop value will need to
-   *          be offset to the current stack frame).
+   *          list from the start of the list will be its position in the stack
+   *          frame (but variables above the globalsTop value will need to be
+   *          offset to the current stack frame).
    */
   @Override
-  public void fixupVariables(java.util.Vector vars, int globalsSize) {
+  public void fixupVariables(List<QName> vars, int globalsSize) {
     m_fixUpWasCalled = true;
-    final int sz = vars.size();
 
     for (int i = vars.size() - 1; i >= 0; i--) {
-      final QName qn = (QName) vars.elementAt(i);
+      final QName qn = vars.get(i);
       // System.out.println("qn: "+qn);
       if (qn.equals(m_qname)) {
 

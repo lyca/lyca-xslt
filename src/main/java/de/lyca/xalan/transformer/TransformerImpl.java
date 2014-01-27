@@ -23,6 +23,7 @@ package de.lyca.xalan.transformer;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Properties;
 import java.util.Stack;
 import java.util.StringTokenizer;
@@ -439,7 +440,7 @@ public class TransformerImpl extends Transformer implements Runnable, DTMWSFilte
   }
 
   @Override
-  public Object extFunction(String ns, String funcName, Vector argVec, Object methodKey)
+  public Object extFunction(String ns, String funcName, List argVec, Object methodKey)
           throws javax.xml.transform.TransformerException {// System.out.println("TransImpl.extFunction() "
                                                            // + ns + " " +
                                                            // funcName +" " +
@@ -448,7 +449,7 @@ public class TransformerImpl extends Transformer implements Runnable, DTMWSFilte
   }
 
   @Override
-  public Object extFunction(FuncExtFunction extFunction, Vector argVec) throws javax.xml.transform.TransformerException {
+  public Object extFunction(FuncExtFunction extFunction, List argVec) throws javax.xml.transform.TransformerException {
     return getExtensionsTable().extFunction(extFunction, argVec, getXPathContext().getExpressionContext());
   }
 
@@ -3167,52 +3168,6 @@ public class TransformerImpl extends Transformer implements Runnable, DTMWSFilte
   }
 
   // Fragment re-execution interfaces for a tool.
-
-  /**
-   * This will get a snapshot of the current executing context
-   * 
-   * 
-   * @return TransformSnapshot object, snapshot of executing context
-   * @deprecated This is an internal tooling API that nobody seems to be using
-   */
-  @Deprecated
-  public TransformSnapshot getSnapshot() {
-    return new TransformSnapshotImpl(this);
-  }
-
-  /**
-   * This will execute the following XSLT instructions from the snapshot point,
-   * after the stylesheet execution context has been reset from the snapshot
-   * point.
-   * 
-   * @param ts
-   *          The snapshot of where to start execution
-   * 
-   * @throws TransformerException
-   * @deprecated This is an internal tooling API that nobody seems to be using
-   */
-  @Deprecated
-  public void executeFromSnapshot(TransformSnapshot ts) throws TransformerException {
-
-    final ElemTemplateElement template = getMatchedTemplate();
-    final int child = getMatchedNode();
-
-    pushElemTemplateElement(template); // needed??
-    m_xcontext.pushCurrentNode(child); // needed??
-    this.executeChildTemplates(template, true); // getResultTreeHandler());
-  }
-
-  /**
-   * This will reset the stylesheet execution context from the snapshot point.
-   * 
-   * @param ts
-   *          The snapshot of where to start execution
-   * @deprecated This is an internal tooling API that nobody seems to be using
-   */
-  @Deprecated
-  public void resetToStylesheet(TransformSnapshot ts) {
-    ((TransformSnapshotImpl) ts).apply(this);
-  }
 
   /**
    * NEEDSDOC Method stopTransformation
