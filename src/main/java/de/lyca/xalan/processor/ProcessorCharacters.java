@@ -156,7 +156,7 @@ public class ProcessorCharacters extends XSLTElementProcessor {
   /**
    * Accumulate characters, until a non-whitespace event has occured.
    */
-  private final StringBuffer m_accumulator = new StringBuffer();
+  private final StringBuilder m_accumulator = new StringBuilder();
 
   /**
    * The xsl:text processor will call this to set a preserve space state.

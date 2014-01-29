@@ -72,7 +72,7 @@ public class CustomStringPool extends DTMStringPool {
 
   @Override
   public void removeAllElements() {
-    m_intToString.removeAllElements();
+    m_intToString.clear();
     if (m_stringToInt != null) {
       m_stringToInt.clear();
     }
@@ -85,7 +85,7 @@ public class CustomStringPool extends DTMStringPool {
    * */
   @Override
   public String indexToString(int i) throws java.lang.ArrayIndexOutOfBoundsException {
-    return (String) m_intToString.elementAt(i);
+    return (String) m_intToString.get(i);
   }
 
   /** @return integer index uniquely identifying the value of this string. */
@@ -95,7 +95,7 @@ public class CustomStringPool extends DTMStringPool {
       return NULL;
     Integer iobj = (Integer) m_stringToInt.get(s);
     if (iobj == null) {
-      m_intToString.addElement(s);
+      m_intToString.add(s);
       iobj = new Integer(m_intToString.size());
       m_stringToInt.put(s, iobj);
     }

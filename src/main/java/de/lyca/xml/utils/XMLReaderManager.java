@@ -20,7 +20,8 @@
  */
 package de.lyca.xml.utils;
 
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
@@ -48,12 +49,12 @@ public class XMLReaderManager {
   /**
    * Cache of XMLReader objects
    */
-  private ThreadLocal m_readers;
+  private ThreadLocal<XMLReader> m_readers;
 
   /**
    * Keeps track of whether an XMLReader object is in use.
    */
-  private Hashtable m_inUse;
+  private Map<XMLReader, Boolean> m_inUse;
 
   /**
    * Hidden constructor
@@ -75,21 +76,20 @@ public class XMLReaderManager {
    */
   public synchronized XMLReader getXMLReader() throws SAXException {
     XMLReader reader;
-    final boolean readerInUse;
 
     if (m_readers == null) {
       // When the m_readers.get() method is called for the first time
       // on a thread, a new XMLReader will automatically be created.
-      m_readers = new ThreadLocal();
+      m_readers = new ThreadLocal<XMLReader>();
     }
 
     if (m_inUse == null) {
-      m_inUse = new Hashtable();
+      m_inUse = new HashMap<>();
     }
 
     // If the cached reader for this thread is in use, construct a new
     // one; otherwise, return the cached reader.
-    reader = (XMLReader) m_readers.get();
+    reader = m_readers.get();
     final boolean threadHasReader = reader != null;
     if (!threadHasReader || m_inUse.get(reader) == Boolean.TRUE) {
       try {

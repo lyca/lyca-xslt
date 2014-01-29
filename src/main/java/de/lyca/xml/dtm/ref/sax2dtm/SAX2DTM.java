@@ -20,8 +20,10 @@
  */
 package de.lyca.xml.dtm.ref.sax2dtm;
 
-import java.util.Hashtable;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.SourceLocator;
@@ -120,7 +122,7 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
    * Namespace support, only relevent at construction time. Made protected
    * rather than private so SAX2RTFDTM can access it.
    */
-  transient protected java.util.Vector m_prefixMappings = new java.util.Vector();
+  transient protected List<String> m_prefixMappings = new ArrayList<String>();
 
   /**
    * Namespace support, only relevent at construction time. Made protected
@@ -163,7 +165,7 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
   /**
    * This table holds the ID string to node associations, for XML IDs.
    */
-  protected Hashtable m_idAttributes = new Hashtable();
+  protected Map<String, Integer> m_idAttributes = new HashMap<>();
 
   /**
    * fixed dom-style names.
@@ -177,10 +179,10 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
           null }; // Notation
 
   /**
-   * Vector of entities. Each record is composed of four Strings: publicId,
+   * List of entities. Each record is composed of four Strings: publicId,
    * systemID, notationName, and name.
    */
-  private Vector m_entities = null;
+  private List<String> m_entities = null;
 
   /** m_entities public ID offset. */
   private static final int ENTITY_FIELD_PUBLICID = 0;
@@ -1061,10 +1063,10 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
     final int n = m_entities.size();
 
     for (int i = 0; i < n; i += ENTITY_FIELDS_PER) {
-      final String ename = (String) m_entities.elementAt(i + ENTITY_FIELD_NAME);
+      final String ename = m_entities.get(i + ENTITY_FIELD_NAME);
 
       if (null != ename && ename.equals(name)) {
-        final String nname = (String) m_entities.elementAt(i + ENTITY_FIELD_NOTATIONNAME);
+        final String nname = m_entities.get(i + ENTITY_FIELD_NOTATIONNAME);
 
         if (null != nname) {
 
@@ -1077,10 +1079,10 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
           // the resource containing the entity declaration as the base
           // URI [RFC2396]."
           // So I'm falling a bit short here.
-          url = (String) m_entities.elementAt(i + ENTITY_FIELD_SYSTEMID);
+          url = m_entities.get(i + ENTITY_FIELD_SYSTEMID);
 
           if (null == url) {
-            url = (String) m_entities.elementAt(i + ENTITY_FIELD_PUBLICID);
+            url = m_entities.get(i + ENTITY_FIELD_PUBLICID);
           }
         }
 
@@ -1324,7 +1326,7 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
     boolean isMore = true;
 
     do {
-      intObj = (Integer) m_idAttributes.get(elementId);
+      intObj = m_idAttributes.get(elementId);
 
       if (null != intObj)
         return makeNodeHandle(intObj.intValue());
@@ -1356,13 +1358,13 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
     int uriIndex = -1;
 
     if (null != uri && uri.length() > 0) {
-
+      final int size = m_prefixMappings.size();
       do {
-        uriIndex = m_prefixMappings.indexOf(uri, ++uriIndex);
+        uriIndex = m_prefixMappings.subList(++uriIndex, size).indexOf(uri);
       } while ((uriIndex & 0x01) == 0);
 
       if (uriIndex >= 0) {
-        prefix = (String) m_prefixMappings.elementAt(uriIndex - 1);
+        prefix = m_prefixMappings.get(uriIndex - 1);
       } else if (null != qname) {
         final int indexOfNSSep = qname.indexOf(':');
 
@@ -1427,13 +1429,13 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
     if (null == prefix) {
       prefix = "";
     }
-
+    final int size = m_prefixMappings.size();
     do {
-      prefixIndex = m_prefixMappings.indexOf(prefix, ++prefixIndex);
+      prefixIndex = m_prefixMappings.subList(++prefixIndex, size).indexOf(prefix);
     } while (prefixIndex >= 0 && (prefixIndex & 0x01) == 0x01);
 
     if (prefixIndex > -1) {
-      uri = (String) m_prefixMappings.elementAt(prefixIndex + 1);
+      uri = m_prefixMappings.get(prefixIndex + 1);
     }
 
     return uri;
@@ -1576,7 +1578,7 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
           throws SAXException {
 
     if (null == m_entities) {
-      m_entities = new Vector();
+      m_entities = new ArrayList<>();
     }
 
     try {
@@ -1586,16 +1588,16 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
     }
 
     // private static final int ENTITY_FIELD_PUBLICID = 0;
-    m_entities.addElement(publicId);
+    m_entities.add(publicId);
 
     // private static final int ENTITY_FIELD_SYSTEMID = 1;
-    m_entities.addElement(systemId);
+    m_entities.add(systemId);
 
     // private static final int ENTITY_FIELD_NOTATIONNAME = 2;
-    m_entities.addElement(notationName);
+    m_entities.add(notationName);
 
     // private static final int ENTITY_FIELD_NAME = 3;
-    m_entities.addElement(name);
+    m_entities.add(name);
   }
 
   // //////////////////////////////////////////////////////////////////
@@ -1706,8 +1708,8 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
     if (null == prefix) {
       prefix = "";
     }
-    m_prefixMappings.addElement(prefix); // JDK 1.1.x compat -sc
-    m_prefixMappings.addElement(uri); // JDK 1.1.x compat -sc
+    m_prefixMappings.add(prefix); // JDK 1.1.x compat -sc
+    m_prefixMappings.add(uri); // JDK 1.1.x compat -sc
   }
 
   /**
@@ -1735,14 +1737,14 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
     }
 
     int index = m_contextIndexes.peek() - 1;
-
+    final int size = m_prefixMappings.size();
     do {
-      index = m_prefixMappings.indexOf(prefix, ++index);
+      index = m_prefixMappings.subList(++index, size).indexOf(prefix);
     } while (index >= 0 && (index & 0x01) == 0x01);
 
     if (index > -1) {
-      m_prefixMappings.setElementAt("%@$#^@#", index);
-      m_prefixMappings.setElementAt("%@$#^@#", index + 1);
+      m_prefixMappings.set(index, "%@$#^@#");
+      m_prefixMappings.set(index + 1, "%@$#^@#");
     }
 
     // no op
@@ -1760,11 +1762,11 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
   protected boolean declAlreadyDeclared(String prefix) {
 
     final int startDecls = m_contextIndexes.peek();
-    final java.util.Vector prefixMappings = m_prefixMappings;
+    final List<String> prefixMappings = m_prefixMappings;
     final int nDecls = prefixMappings.size();
 
     for (int i = startDecls; i < nDecls; i += 2) {
-      final String prefixDecl = (String) prefixMappings.elementAt(i);
+      final String prefixDecl = prefixMappings.get(i);
 
       if (prefixDecl == null) {
         continue;
@@ -1853,13 +1855,13 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
     }
 
     for (int i = startDecls; i < nDecls; i += 2) {
-      prefix = (String) m_prefixMappings.elementAt(i);
+      prefix = m_prefixMappings.get(i);
 
       if (prefix == null) {
         continue;
       }
 
-      final String declURL = (String) m_prefixMappings.elementAt(i + 1);
+      final String declURL = m_prefixMappings.get(i + 1);
 
       exName = m_expandedNameTable.getExpandedTypeID(null, prefix, DTM.NAMESPACE_NODE);
 
@@ -1973,7 +1975,8 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
     // Do it again for this one (the one pushed by the last endElement).
     final int topContextIndex = m_contextIndexes.peek();
     if (topContextIndex != m_prefixMappings.size()) {
-      m_prefixMappings.setSize(topContextIndex);
+      m_prefixMappings = new ArrayList<String>(m_prefixMappings.subList(0, topContextIndex));
+      // TODO m_prefixMappings.setSize(topContextIndex);
     }
 
     final int lastNode = m_previous;

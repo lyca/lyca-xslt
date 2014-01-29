@@ -25,7 +25,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.xml.transform.TransformerException;
@@ -526,7 +527,7 @@ final class DOM3TreeWalker {
           // DOCTYPE internal subset via an event call, so we write it
           // out here.
           final Writer writer = fSerializer.getWriter();
-          final StringBuffer dtd = new StringBuffer();
+          final StringBuilder dtd = new StringBuilder();
 
           dtd.append("<!DOCTYPE ");
           dtd.append(docTypeName);
@@ -1731,7 +1732,7 @@ final class DOM3TreeWalker {
    * values 1,2,4,8,16...
    * 
    */
-  private static final Hashtable s_propKeys = new Hashtable();
+  private static final Map<String, Object> S_PROP_KEYS = new HashMap<>();
   static {
 
     // Initialize the mappings of property keys to bit values (Integer objects)
@@ -1739,57 +1740,40 @@ final class DOM3TreeWalker {
     // in the property, but it does not have a simple bit value to flip
 
     // cdata-sections
-    final int i = CDATA;
-    Integer val = new Integer(i);
-    s_propKeys.put(DOMConstants.S_DOM3_PROPERTIES_NS + DOMConstants.DOM_CDATA_SECTIONS, val);
+    S_PROP_KEYS.put(DOMConstants.S_DOM3_PROPERTIES_NS + DOMConstants.DOM_CDATA_SECTIONS, CDATA);
 
     // comments
-    final int i1 = COMMENTS;
-    val = new Integer(i1);
-    s_propKeys.put(DOMConstants.S_DOM3_PROPERTIES_NS + DOMConstants.DOM_COMMENTS, val);
+    S_PROP_KEYS.put(DOMConstants.S_DOM3_PROPERTIES_NS + DOMConstants.DOM_COMMENTS, COMMENTS);
 
     // element-content-whitespace
-    final int i2 = ELEM_CONTENT_WHITESPACE;
-    val = new Integer(i2);
-    s_propKeys.put(DOMConstants.S_DOM3_PROPERTIES_NS + DOMConstants.DOM_ELEMENT_CONTENT_WHITESPACE, val);
-    final int i3 = ENTITIES;
+    S_PROP_KEYS.put(DOMConstants.S_DOM3_PROPERTIES_NS + DOMConstants.DOM_ELEMENT_CONTENT_WHITESPACE,
+            ELEM_CONTENT_WHITESPACE);
 
     // entities
-    val = new Integer(i3);
-    s_propKeys.put(DOMConstants.S_DOM3_PROPERTIES_NS + DOMConstants.DOM_ENTITIES, val);
+    S_PROP_KEYS.put(DOMConstants.S_DOM3_PROPERTIES_NS + DOMConstants.DOM_ENTITIES, ENTITIES);
 
     // namespaces
-    final int i4 = NAMESPACES;
-    val = new Integer(i4);
-    s_propKeys.put(DOMConstants.S_DOM3_PROPERTIES_NS + DOMConstants.DOM_NAMESPACES, val);
+    S_PROP_KEYS.put(DOMConstants.S_DOM3_PROPERTIES_NS + DOMConstants.DOM_NAMESPACES, NAMESPACES);
 
     // namespace-declarations
-    final int i5 = NAMESPACEDECLS;
-    val = new Integer(i5);
-    s_propKeys.put(DOMConstants.S_DOM3_PROPERTIES_NS + DOMConstants.DOM_NAMESPACE_DECLARATIONS, val);
+    S_PROP_KEYS.put(DOMConstants.S_DOM3_PROPERTIES_NS + DOMConstants.DOM_NAMESPACE_DECLARATIONS, NAMESPACEDECLS);
 
     // split-cdata-sections
-    final int i6 = SPLITCDATA;
-    val = new Integer(i6);
-    s_propKeys.put(DOMConstants.S_DOM3_PROPERTIES_NS + DOMConstants.DOM_SPLIT_CDATA, val);
+    S_PROP_KEYS.put(DOMConstants.S_DOM3_PROPERTIES_NS + DOMConstants.DOM_SPLIT_CDATA, SPLITCDATA);
 
     // discard-default-content
-    final int i7 = WELLFORMED;
-    val = new Integer(i7);
-    s_propKeys.put(DOMConstants.S_DOM3_PROPERTIES_NS + DOMConstants.DOM_WELLFORMED, val);
+    S_PROP_KEYS.put(DOMConstants.S_DOM3_PROPERTIES_NS + DOMConstants.DOM_WELLFORMED, WELLFORMED);
 
     // discard-default-content
-    final int i8 = DISCARDDEFAULT;
-    val = new Integer(i8);
-    s_propKeys.put(DOMConstants.S_DOM3_PROPERTIES_NS + DOMConstants.DOM_DISCARD_DEFAULT_CONTENT, val);
+    S_PROP_KEYS.put(DOMConstants.S_DOM3_PROPERTIES_NS + DOMConstants.DOM_DISCARD_DEFAULT_CONTENT, DISCARDDEFAULT);
 
     // We are interested in these properties, but they don't have a simple
     // bit value to deal with.
-    s_propKeys.put(DOMConstants.S_DOM3_PROPERTIES_NS + DOMConstants.DOM_FORMAT_PRETTY_PRINT, "");
-    s_propKeys.put(DOMConstants.S_XSL_OUTPUT_OMIT_XML_DECL, "");
-    s_propKeys.put(DOMConstants.S_XERCES_PROPERTIES_NS + DOMConstants.S_XML_VERSION, "");
-    s_propKeys.put(DOMConstants.S_XSL_OUTPUT_ENCODING, "");
-    s_propKeys.put(DOMConstants.S_XERCES_PROPERTIES_NS + DOMConstants.DOM_ENTITIES, "");
+    S_PROP_KEYS.put(DOMConstants.S_DOM3_PROPERTIES_NS + DOMConstants.DOM_FORMAT_PRETTY_PRINT, "");
+    S_PROP_KEYS.put(DOMConstants.S_XSL_OUTPUT_OMIT_XML_DECL, "");
+    S_PROP_KEYS.put(DOMConstants.S_XERCES_PROPERTIES_NS + DOMConstants.S_XML_VERSION, "");
+    S_PROP_KEYS.put(DOMConstants.S_XSL_OUTPUT_ENCODING, "");
+    S_PROP_KEYS.put(DOMConstants.S_XERCES_PROPERTIES_NS + DOMConstants.DOM_ENTITIES, "");
   }
 
   /**
@@ -1815,7 +1799,7 @@ final class DOM3TreeWalker {
       // Other features will be enabled or disabled when this is set to true
 
       // A quick lookup for the given set of properties (cdata-sections ...)
-      final Object iobj = s_propKeys.get(key);
+      final Object iobj = S_PROP_KEYS.get(key);
       if (iobj != null) {
         if (iobj instanceof Integer) {
           // Dealing with a property that has a simple bit value that

@@ -20,7 +20,8 @@
  */
 package de.lyca.xml.dtm.ref;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.w3c.dom.Attr;
 import org.w3c.dom.CDATASection;
@@ -721,7 +722,7 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
    */
   @Override
   public final NodeList getElementsByTagName(String tagname) {
-    final Vector listVector = new Vector();
+    final List listVector = new ArrayList();
     final Node retNode = dtm.getNode(node);
     if (retNode != null) {
       final boolean isTagNameWildCard = "*".equals(tagname);
@@ -737,7 +738,7 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
     final int size = listVector.size();
     final NodeSet nodeSet = new NodeSet(size);
     for (int i = 0; i < size; i++) {
-      nodeSet.addNode((Node) listVector.elementAt(i));
+      nodeSet.addNode((Node) listVector.get(i));
     }
     return nodeSet;
   }
@@ -753,7 +754,7 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
    *          Private method to be used for recursive iterations to obtain
    *          elements by tag name.
    */
-  private final void traverseChildren(Vector listVector, Node tempNode, String tagname, boolean isTagNameWildCard) {
+  private final void traverseChildren(List listVector, Node tempNode, String tagname, boolean isTagNameWildCard) {
     if (tempNode == null)
       return;
     else {
@@ -824,7 +825,7 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
    */
   @Override
   public final NodeList getElementsByTagNameNS(String namespaceURI, String localName) {
-    final Vector listVector = new Vector();
+    final List listVector = new ArrayList();
     final Node retNode = dtm.getNode(node);
     if (retNode != null) {
       final boolean isNamespaceURIWildCard = "*".equals(namespaceURI);
@@ -843,7 +844,7 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
     final int size = listVector.size();
     final NodeSet nodeSet = new NodeSet(size);
     for (int i = 0; i < size; i++) {
-      nodeSet.addNode((Node) listVector.elementAt(i));
+      nodeSet.addNode((Node) listVector.get(i));
     }
     return nodeSet;
   }
@@ -860,7 +861,7 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
    *          Private method to be used for recursive iterations to obtain
    *          elements by tag name and namespaceURI.
    */
-  private final void traverseChildren(Vector listVector, Node tempNode, String namespaceURI, String localname,
+  private final void traverseChildren(List listVector, Node tempNode, String namespaceURI, String localname,
           boolean isNamespaceURIWildCard, boolean isLocalNameWildCard) {
     if (tempNode == null)
       return;
@@ -1999,9 +2000,9 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
 
     /*
      * if (needsSyncData()) { synchronizeData(); } if (nextSibling == null) {
-     * return data; } StringBuffer buffer = new StringBuffer(); if (data != null
-     * && data.length() != 0) { buffer.append(data); } getWholeText(nextSibling,
-     * buffer); return buffer.toString();
+     * return data; } StringBuilder buffer = new StringBuilder(); if (data !=
+     * null && data.length() != 0) { buffer.append(data); }
+     * getWholeText(nextSibling, buffer); return buffer.toString();
      */
     return null; // PENDING
   }

@@ -20,7 +20,8 @@
  */
 package de.lyca.xml.utils;
 
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This class is in support of SerializerToHTML, and acts as a sort of element
@@ -31,7 +32,7 @@ import java.util.Hashtable;
 class ElemDesc {
 
   /** Table of attributes for the element */
-  Hashtable m_attrs = null;
+  Map<String, Integer> m_attrs = null;
 
   /**
    * Element's flags, describing the role this element plays during formatting
@@ -157,10 +158,10 @@ class ElemDesc {
   void setAttr(String name, int flags) {
 
     if (null == m_attrs) {
-      m_attrs = new Hashtable();
+      m_attrs = new HashMap<>();
     }
 
-    m_attrs.put(name, new Integer(flags));
+    m_attrs.put(name, flags);
   }
 
   /**
@@ -179,7 +180,7 @@ class ElemDesc {
   boolean isAttrFlagSet(String name, int flags) {
 
     if (null != m_attrs) {
-      final Integer _flags = (Integer) m_attrs.get(name);
+      final Integer _flags = m_attrs.get(name);
 
       if (null != _flags)
         return (_flags.intValue() & flags) != 0;

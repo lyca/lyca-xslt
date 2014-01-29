@@ -27,8 +27,9 @@ import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
@@ -105,9 +106,9 @@ public final class Encodings extends Object {
     EncodingInfo ei;
 
     final String normalizedEncoding = toUpperCaseFast(encoding);
-    ei = (EncodingInfo) _encodingTableKeyJava.get(normalizedEncoding);
+    ei = _encodingTableKeyJava.get(normalizedEncoding);
     if (ei == null) {
-      ei = (EncodingInfo) _encodingTableKeyMime.get(normalizedEncoding);
+      ei = _encodingTableKeyMime.get(normalizedEncoding);
     }
     if (ei == null) {
       // We shouldn't have to do this, but just in case.
@@ -129,9 +130,9 @@ public final class Encodings extends Object {
     EncodingInfo ei;
 
     final String normalizedEncoding = encoding.toUpperCase();
-    ei = (EncodingInfo) _encodingTableKeyJava.get(normalizedEncoding);
+    ei = _encodingTableKeyJava.get(normalizedEncoding);
     if (ei == null) {
-      ei = (EncodingInfo) _encodingTableKeyMime.get(normalizedEncoding);
+      ei = _encodingTableKeyMime.get(normalizedEncoding);
     }
     if (ei != null)
       return true;
@@ -249,7 +250,7 @@ public final class Encodings extends Object {
    * @xsl.usage internal
    */
   private static String convertJava2MimeEncoding(String encoding) {
-    final EncodingInfo enc = (EncodingInfo) _encodingTableKeyJava.get(toUpperCaseFast(encoding));
+    final EncodingInfo enc = _encodingTableKeyJava.get(toUpperCaseFast(encoding));
     if (null != enc)
       return enc.name;
     return encoding;
@@ -307,7 +308,7 @@ public final class Encodings extends Object {
 
       final int totalEntries = props.size();
 
-      final List encodingInfo_list = new ArrayList();
+      final List<EncodingInfo> encodingInfo_list = new ArrayList<>();
       final Enumeration keys = props.keys();
       for (int i = 0; i < totalEntries; ++i) {
         final String javaName = (String) keys.nextElement();
@@ -454,9 +455,9 @@ public final class Encodings extends Object {
     EncodingInfo ei;
 
     final String normalizedEncoding = toUpperCaseFast(encoding);
-    ei = (EncodingInfo) _encodingTableKeyJava.get(normalizedEncoding);
+    ei = _encodingTableKeyJava.get(normalizedEncoding);
     if (ei == null) {
-      ei = (EncodingInfo) _encodingTableKeyMime.get(normalizedEncoding);
+      ei = _encodingTableKeyMime.get(normalizedEncoding);
     }
     if (ei != null) {
       highCodePoint = ei.getHighChar();
@@ -466,7 +467,7 @@ public final class Encodings extends Object {
     return highCodePoint;
   }
 
-  private static final Hashtable _encodingTableKeyJava = new Hashtable();
-  private static final Hashtable _encodingTableKeyMime = new Hashtable();
+  private static final Map<String, EncodingInfo> _encodingTableKeyJava = new HashMap<>();
+  private static final Map<String, EncodingInfo> _encodingTableKeyMime = new HashMap<>();
   private static final EncodingInfo[] _encodings = loadEncodingInfo();
 }

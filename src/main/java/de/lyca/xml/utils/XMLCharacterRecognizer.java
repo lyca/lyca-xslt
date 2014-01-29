@@ -70,10 +70,10 @@ public class XMLCharacterRecognizer {
    * Tell if the string is whitespace.
    * 
    * @param buf
-   *          StringBuffer to check as XML whitespace.
+   *          StringBuilder to check as XML whitespace.
    * @return True if characters in buffer are XML whitespace, false otherwise
    */
-  public static boolean isWhiteSpace(StringBuffer buf) {
+  public static boolean isWhiteSpace(StringBuilder buf) {
 
     final int n = buf.length();
 

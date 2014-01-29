@@ -21,6 +21,8 @@
 package de.lyca.xml.serializer;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.Writer;
 
 /**
  * It is unfortunate that java.io.Writer is a class rather than an interface.
@@ -77,11 +79,11 @@ interface WriterChain {
    * It is possible that the Writer returned by this method does not implement
    * the WriterChain interface.
    */
-  public java.io.Writer getWriter();
+  public Writer getWriter();
 
   /**
    * If this method returns null, getWriter() must return non-null. Get the
    * OutputStream that this writer sends its output to.
    */
-  public java.io.OutputStream getOutputStream();
+  public OutputStream getOutputStream();
 }

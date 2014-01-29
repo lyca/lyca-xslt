@@ -20,8 +20,10 @@
  */
 package de.lyca.xml.utils;
 
-import java.util.Stack;
-import java.util.Vector;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.List;
 
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Document;
@@ -60,11 +62,11 @@ public class DOMBuilder implements ContentHandler, LexicalHandler {
   /** First node of document fragment or null if not a DocumentFragment */
   public DocumentFragment m_docFrag = null;
 
-  /** Vector of element nodes */
-  protected Stack m_elemStack = new Stack();
+  /** Deque of element nodes */
+  protected Deque<Node> m_elemStack = new ArrayDeque<Node>();
 
   /** Namespace support */
-  protected Vector m_prefixMappings = new Vector();
+  protected List<String> m_prefixMappings = new ArrayList<String>();
 
   /**
    * DOMBuilder instance constructor... it will add the DOM nodes to the
@@ -372,13 +374,13 @@ public class DOMBuilder implements ContentHandler, LexicalHandler {
       String prefix, declURL;
 
       for (int i = 0; i < nDecls; i += 2) {
-        prefix = (String) m_prefixMappings.elementAt(i);
+        prefix = m_prefixMappings.get(i);
 
         if (prefix == null) {
           continue;
         }
 
-        declURL = (String) m_prefixMappings.elementAt(i + 1);
+        declURL = m_prefixMappings.get(i + 1);
 
         elem.setAttributeNS("http://www.w3.org/2000/xmlns/", prefix, declURL);
       }
@@ -790,8 +792,8 @@ public class DOMBuilder implements ContentHandler, LexicalHandler {
     } else {
       prefix = "xmlns:" + prefix;
     }
-    m_prefixMappings.addElement(prefix);
-    m_prefixMappings.addElement(uri);
+    m_prefixMappings.add(prefix);
+    m_prefixMappings.add(uri);
   }
 
   /**

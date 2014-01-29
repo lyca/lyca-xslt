@@ -234,10 +234,9 @@ public abstract class DTMManager {
    * href="http://www.w3.org/TR/xpath#NT-UnionExpr">UnionExpr</a>.
    * 
    * @param xpathString
-   *          Must be a valid string expressing a <a
-   *          href="http://www.w3.org/TR/xpath#NT-LocationPath>LocationPath</a>
-   *          or a <a
-   *          href="http://www.w3.org/TR/xpath#NT-UnionExpr">UnionExpr</a>.
+   *          Must be a valid string expressing a <a href=
+   *          "http://www.w3.org/TR/xpath#NT-LocationPath>LocationPath</a> or a
+   *          <a href="http://www.w3.org/TR/xpath#NT-UnionExpr">UnionExpr</a>.
    * 
    * @param presolver
    *          An object that can resolve prefixes to namespace URLs.

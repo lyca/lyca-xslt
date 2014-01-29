@@ -295,7 +295,7 @@ public class NamespaceSupport {
 
     @Override
     public String toString() {
-      final StringBuffer buf = new StringBuffer();
+      final StringBuilder buf = new StringBuilder();
       for (int i = 0; i < size; i++) {
         buf.append(prefixes[i]);
         buf.append(" ");

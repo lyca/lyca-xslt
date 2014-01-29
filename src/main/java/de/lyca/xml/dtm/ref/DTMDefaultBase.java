@@ -25,7 +25,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream; // for dumpDTM
 import java.io.PrintStream;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.transform.Source;
 
@@ -75,8 +76,8 @@ public abstract class DTMDefaultBase implements DTM {
   /** Previous sibling values, one array element for each node. */
   protected SuballocatedIntVector m_parent;
 
-  /** Vector of SuballocatedIntVectors of NS decl sets */
-  protected Vector m_namespaceDeclSets = null;
+  /** List of SuballocatedIntVectors of NS decl sets */
+  protected List<SuballocatedIntVector> m_namespaceDeclSets = null;
 
   /**
    * SuballocatedIntVector of elements at which corresponding namespaceDeclSets
@@ -433,19 +434,6 @@ public abstract class DTMDefaultBase implements DTM {
 
   /** Stateless axis traversers, lazely built. */
   protected DTMAxisTraverser[] m_traversers;
-
-  // /**
-  // * Ensure that the size of the information arrays can hold another entry
-  // * at the given index.
-  // *
-  // * @param index On exit from this function, the information arrays sizes
-  // must be
-  // * at least index+1.
-  // */
-  // protected void ensureSize(int index)
-  // {
-  // // We've cut over to Suballocated*Vector, which are self-sizing.
-  // }
 
   /**
    * Get the simple type ID for the given node identity.
@@ -826,7 +814,7 @@ public abstract class DTMDefaultBase implements DTM {
         break;
     }
 
-    final StringBuffer sb = new StringBuffer();
+    final StringBuilder sb = new StringBuilder();
     sb.append("[" + nodeHandle + ": " + typestring + "(0x" + Integer.toHexString(getExpandedTypeID(nodeHandle)) + ") "
             + getNodeNameX(nodeHandle) + " {" + getNamespaceURI(nodeHandle) + "}" + "=\"" + getNodeValue(nodeHandle)
             + "\"]");
@@ -1220,12 +1208,9 @@ public abstract class DTMDefaultBase implements DTM {
     return DTM.NULL;
   }
 
-  /** Lazily created namespace lists. */
-  private final Vector m_namespaceLists = null; // on demand
-
   /**
    * Build table of namespace declaration locations during DTM construction.
-   * Table is a Vector of SuballocatedIntVectors containing the namespace node
+   * Table is a List of SuballocatedIntVectors containing the namespace node
    * HANDLES declared at that ID, plus an SuballocatedIntVector of the element
    * node INDEXES at which these declarations appeared.
    * 
@@ -1243,16 +1228,16 @@ public abstract class DTMDefaultBase implements DTM {
       // First
       m_namespaceDeclSetElements = new SuballocatedIntVector(32);
       m_namespaceDeclSetElements.addElement(elementNodeIndex);
-      m_namespaceDeclSets = new Vector();
+      m_namespaceDeclSets = new ArrayList<>();
       nsList = new SuballocatedIntVector(32);
-      m_namespaceDeclSets.addElement(nsList);
+      m_namespaceDeclSets.add(nsList);
     } else {
       // Most recent. May be -1 (none) if DTM was pruned.
       // %OPT% Is there a lastElement() method? Should there be?
       final int last = m_namespaceDeclSetElements.size() - 1;
 
       if (last >= 0 && elementNodeIndex == m_namespaceDeclSetElements.elementAt(last)) {
-        nsList = (SuballocatedIntVector) m_namespaceDeclSets.elementAt(last);
+        nsList = m_namespaceDeclSets.get(last);
       }
     }
     if (nsList == null) {
@@ -1277,7 +1262,7 @@ public abstract class DTMDefaultBase implements DTM {
         nsList = new SuballocatedIntVector(32);
       }
 
-      m_namespaceDeclSets.addElement(nsList);
+      m_namespaceDeclSets.add(nsList);
     }
 
     // Handle overwriting inherited.
@@ -1309,7 +1294,7 @@ public abstract class DTMDefaultBase implements DTM {
       // (... It may be, in large docs with many NS decls.)
       int wouldBeAt = findInSortedSuballocatedIntVector(m_namespaceDeclSetElements, elementNodeIndex);
       if (wouldBeAt >= 0) // Found it
-        return (SuballocatedIntVector) m_namespaceDeclSets.elementAt(wouldBeAt);
+        return m_namespaceDeclSets.get(wouldBeAt);
       if (wouldBeAt == -1) // -1-wouldbeat == 0
         return null; // Not after anything; definitely not found
 
@@ -1337,13 +1322,13 @@ public abstract class DTMDefaultBase implements DTM {
         }
 
         if (candidate == uppermostNSCandidateID)
-          return (SuballocatedIntVector) m_namespaceDeclSets.elementAt(wouldBeAt);
+          return m_namespaceDeclSets.get(wouldBeAt);
       }
 
       while (wouldBeAt >= 0 && ancestor > 0) {
         if (candidate == ancestor)
           // Found ancestor in list
-          return (SuballocatedIntVector) m_namespaceDeclSets.elementAt(wouldBeAt);
+          return m_namespaceDeclSets.get(wouldBeAt);
         else if (candidate < ancestor) {
           // Too deep in tree
           do {

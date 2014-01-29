@@ -20,7 +20,8 @@
  */
 package de.lyca.xml.dtm.ref.sax2dtm;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.transform.Source;
 
@@ -1717,17 +1718,17 @@ public class SAX2DTM2 extends SAX2DTM {
   // %OPT% Cache the array of extended types in this class
   protected ExtendedType[] m_extendedTypes;
 
-  // A Vector which is used to store the values of attribute, namespace,
+  // A List which is used to store the values of attribute, namespace,
   // comment and PI nodes.
   //
   // %OPT% These values are unlikely to be equal. Storing
-  // them in a plain Vector is more efficient than storing in the
+  // them in a plain List is more efficient than storing in the
   // DTMStringPool because we can save the cost for hash calculation.
   //
   // %REVISIT% Do we need a custom class (e.g. StringVector) here?
-  protected Vector m_values;
+  protected List<String> m_values;
 
-  // The current index into the m_values Vector.
+  // The current index into the m_values List.
   private int m_valueIndex = 0;
 
   // The maximum value of the current node index.
@@ -1797,9 +1798,9 @@ public class SAX2DTM2 extends SAX2DTM {
     m_buildIdIndex = buildIdIndex;
 
     // Some documents do not have attribute nodes. That is why
-    // we set the initial size of this Vector to be small and set
+    // we set the initial size of this List to be small and set
     // the increment to a bigger number.
-    m_values = new Vector(32, 512);
+    m_values = new ArrayList<String>(32);// TODO (32, 512);
 
     m_maxNodeIndex = 1 << DTMManager.IDENT_DTM_NODE_BITS;
 
@@ -1965,7 +1966,7 @@ public class SAX2DTM2 extends SAX2DTM {
   public int getIdForNamespace(String uri) {
     final int index = m_values.indexOf(uri);
     if (index < 0) {
-      m_values.addElement(uri);
+      m_values.add(uri);
       return m_valueIndex++;
     } else
       return index;
@@ -2024,24 +2025,24 @@ public class SAX2DTM2 extends SAX2DTM {
       prefix = "xml";
       final String declURL = "http://www.w3.org/XML/1998/namespace";
       exName = m_expandedNameTable.getExpandedTypeID(null, prefix, DTM.NAMESPACE_NODE);
-      m_values.addElement(declURL);
+      m_values.add(declURL);
       final int val = m_valueIndex++;
       addNode(DTM.NAMESPACE_NODE, exName, elemNode, DTM.NULL, val, false);
       m_pastFirstElement = true;
     }
 
     for (int i = startDecls; i < nDecls; i += 2) {
-      prefix = (String) m_prefixMappings.elementAt(i);
+      prefix = m_prefixMappings.get(i);
 
       if (prefix == null) {
         continue;
       }
 
-      final String declURL = (String) m_prefixMappings.elementAt(i + 1);
+      final String declURL = m_prefixMappings.get(i + 1);
 
       exName = m_expandedNameTable.getExpandedTypeID(null, prefix, DTM.NAMESPACE_NODE);
 
-      m_values.addElement(declURL);
+      m_values.add(declURL);
       final int val = m_valueIndex++;
 
       addNode(DTM.NAMESPACE_NODE, exName, elemNode, DTM.NULL, val, false);
@@ -2079,7 +2080,7 @@ public class SAX2DTM2 extends SAX2DTM {
         valString = "";
       }
 
-      m_values.addElement(valString);
+      m_values.add(valString);
       int val = m_valueIndex++;
 
       if (attrLocalName.length() != attrQName.length()) {
@@ -2143,7 +2144,8 @@ public class SAX2DTM2 extends SAX2DTM {
     // Do it again for this one (the one pushed by the last endElement).
     final int topContextIndex = m_contextIndexes.peek();
     if (topContextIndex != m_prefixMappings.size()) {
-      m_prefixMappings.setSize(topContextIndex);
+      m_prefixMappings = new ArrayList<String>(m_prefixMappings.subList(0, topContextIndex));
+      // TODO m_prefixMappings.setSize(topContextIndex);
     }
 
     m_previous = m_parents.pop();
@@ -2178,7 +2180,7 @@ public class SAX2DTM2 extends SAX2DTM {
 
     // %OPT% Saving the comment string in a Vector has a lower cost than
     // saving it in DTMStringPool.
-    m_values.addElement(new String(ch, start, length));
+    m_values.add(new String(ch, start, length));
     final int dataIndex = m_valueIndex++;
 
     m_previous = addNode(DTM.COMMENT_NODE, DTM.COMMENT_NODE, m_parents.peek(), m_previous, dataIndex, false);
@@ -2369,7 +2371,7 @@ public class SAX2DTM2 extends SAX2DTM {
             m_previous, -dataIndex, false);
 
     m_data.addElement(m_valuesOrPrefixes.stringToIndex(target));
-    m_values.addElement(data);
+    m_values.add(data);
     m_data.addElement(m_valueIndex++);
 
   }
@@ -2723,9 +2725,9 @@ public class SAX2DTM2 extends SAX2DTM {
       }
 
       if (m_xstrf != null)
-        return m_xstrf.newstr((String) m_values.elementAt(dataIndex));
+        return m_xstrf.newstr(m_values.get(dataIndex));
       else
-        return new XMLStringDefault((String) m_values.elementAt(dataIndex));
+        return new XMLStringDefault(m_values.get(dataIndex));
     }
   }
 
@@ -2801,7 +2803,7 @@ public class SAX2DTM2 extends SAX2DTM {
         dataIndex = m_data.elementAt(dataIndex + 1);
       }
 
-      return (String) m_values.elementAt(dataIndex);
+      return m_values.get(dataIndex);
     }
   }
 
@@ -2920,7 +2922,7 @@ public class SAX2DTM2 extends SAX2DTM {
         dataIndex = m_data.elementAt(dataIndex + 1);
       }
 
-      final String str = (String) m_values.elementAt(dataIndex);
+      final String str = m_values.get(dataIndex);
 
       if (normalize) {
         FastStringBuffer.sendNormalizedSAXcharacters(str.toCharArray(), 0, str.length(), ch);
@@ -2962,7 +2964,7 @@ public class SAX2DTM2 extends SAX2DTM {
         dataIndex = m_data.elementAt(dataIndex + 1);
       }
 
-      return (String) m_values.elementAt(dataIndex);
+      return m_values.get(dataIndex);
     }
   }
 
@@ -3047,7 +3049,7 @@ public class SAX2DTM2 extends SAX2DTM {
     // need to do namespace copying. We can safely return without
     // doing anything.
     if (m_namespaceDeclSetElements != null && m_namespaceDeclSetElements.size() == 1 && m_namespaceDeclSets != null
-            && ((SuballocatedIntVector) m_namespaceDeclSets.elementAt(0)).size() == 1)
+            && m_namespaceDeclSets.get(0).size() == 1)
       return;
 
     SuballocatedIntVector nsContext = null;
@@ -3079,7 +3081,7 @@ public class SAX2DTM2 extends SAX2DTM {
         dataIndex = m_data.elementAt(dataIndex + 1);
       }
 
-      final String nodeValue = (String) m_values.elementAt(dataIndex);
+      final String nodeValue = m_values.get(dataIndex);
 
       handler.namespaceAfterStartElement(nodeName, nodeValue);
 
@@ -3169,7 +3171,7 @@ public class SAX2DTM2 extends SAX2DTM {
     }
 
     final String nodeName = prefix != null ? qname : localName;
-    final String nodeValue = (String) m_values.elementAt(valueIndex);
+    final String nodeValue = m_values.get(valueIndex);
 
     handler.addAttribute(nodeName, nodeValue);
   }

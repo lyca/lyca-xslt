@@ -185,7 +185,7 @@ public class SystemIDResolver {
    * @return The string after conversion
    */
   private static String replaceChars(String str) {
-    final StringBuffer buf = new StringBuffer(str);
+    final StringBuilder buf = new StringBuilder(str);
     int length = buf.length();
     for (int i = 0; i < length; i++) {
       final char currentChar = buf.charAt(i);

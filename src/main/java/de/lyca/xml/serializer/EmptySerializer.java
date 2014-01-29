@@ -24,8 +24,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Properties;
-import java.util.Vector;
 
 import javax.xml.transform.SourceLocator;
 import javax.xml.transform.Transformer;
@@ -149,10 +149,10 @@ public class EmptySerializer implements SerializationHandler {
   }
 
   /**
-   * @see SerializationHandler#setCdataSectionElements(java.util.Vector)
+   * @see SerializationHandler#setCdataSectionElements(java.util.List)
    */
   @Override
-  public void setCdataSectionElements(Vector URI_and_localNames) {
+  public void setCdataSectionElements(List URI_and_localNames) {
     aMethodIsCalled();
   }
 

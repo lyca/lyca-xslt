@@ -20,8 +20,12 @@
  */
 package de.lyca.xml.serializer;
 
-import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
@@ -77,7 +81,7 @@ public class NamespaceMappings {
    * such a stack. Mappings pushed earlier on the stack will have smaller values
    * for MappingRecord.m_declarationDepth.
    */
-  private Hashtable m_namespaces = new Hashtable();
+  private final Map<String, Deque<MappingRecord>> m_namespaces = new HashMap<>();
 
   /**
    * This stack is used as a convenience. It contains the pushed NamespaceNodes
@@ -89,7 +93,7 @@ public class NamespaceMappings {
    * All prefixes pushed at the current depth can be removed at the same time by
    * using this stack to ensure prefix/uri map scopes are closed correctly.
    */
-  private Stack m_nodeStack = new Stack();
+  private final Deque<MappingRecord> m_nodeStack = new ArrayDeque<>();
 
   private static final String EMPTYSTRING = "";
   private static final String XML_PREFIX = "xml"; // was "xmlns"
@@ -113,16 +117,16 @@ public class NamespaceMappings {
     // (a kludge)
 
     // Define the default namespace (initially maps to "" uri)
-    Stack stack;
-    MappingRecord nn;
-    nn = new MappingRecord(EMPTYSTRING, EMPTYSTRING, -1);
-    stack = createPrefixStack(EMPTYSTRING);
-    stack.push(nn);
+    final MappingRecord emptyRecord = new MappingRecord(EMPTYSTRING, EMPTYSTRING, -1);
+    final Deque<MappingRecord> emptyRecordStack = new ArrayDeque<>();
+    emptyRecordStack.push(emptyRecord);
+    m_namespaces.put(EMPTYSTRING, emptyRecordStack);
 
     // define "xml" namespace
-    nn = new MappingRecord(XML_PREFIX, "http://www.w3.org/XML/1998/namespace", -1);
-    stack = createPrefixStack(XML_PREFIX);
-    stack.push(nn);
+    final MappingRecord xmlRecord = new MappingRecord(XML_PREFIX, "http://www.w3.org/XML/1998/namespace", -1);
+    final Deque<MappingRecord> xmlRecordStack = new ArrayDeque<>();
+    xmlRecordStack.push(xmlRecord);
+    m_namespaces.put(XML_PREFIX, xmlRecordStack);
   }
 
   /**
@@ -135,19 +139,18 @@ public class NamespaceMappings {
    */
   public String lookupNamespace(String prefix) {
     String uri = null;
-    final Stack stack = getPrefixStack(prefix);
-    if (stack != null && !stack.isEmpty()) {
-      uri = ((MappingRecord) stack.peek()).m_uri;
-    }
-    if (uri == null) {
+    final Deque<MappingRecord> stack = m_namespaces.get(prefix);
+    if (stack == null || stack.isEmpty()) {
       uri = EMPTYSTRING;
+    } else {
+      uri = stack.peek().m_uri;
     }
     return uri;
   }
 
   MappingRecord getMappingFromPrefix(String prefix) {
-    final Stack stack = (Stack) m_namespaces.get(prefix);
-    return stack != null && !stack.isEmpty() ? (MappingRecord) stack.peek() : null;
+    final Deque<MappingRecord> stack = m_namespaces.get(prefix);
+    return stack == null || stack.isEmpty() ? null : stack.peek();
   }
 
   /**
@@ -161,9 +164,7 @@ public class NamespaceMappings {
    */
   public String lookupPrefix(String uri) {
     String foundPrefix = null;
-    final Enumeration prefixes = m_namespaces.keys();
-    while (prefixes.hasMoreElements()) {
-      final String prefix = (String) prefixes.nextElement();
+    for (final String prefix : m_namespaces.keySet()) {
       final String uri2 = lookupNamespace(prefix);
       if (uri2 != null && uri2.equals(uri)) {
         foundPrefix = prefix;
@@ -175,9 +176,7 @@ public class NamespaceMappings {
 
   MappingRecord getMappingFromURI(String uri) {
     MappingRecord foundMap = null;
-    final Enumeration prefixes = m_namespaces.keys();
-    while (prefixes.hasMoreElements()) {
-      final String prefix = (String) prefixes.nextElement();
+    for (final String prefix : m_namespaces.keySet()) {
       final MappingRecord map2 = getMappingFromPrefix(prefix);
       if (map2 != null && map2.m_uri.equals(uri)) {
         foundMap = map2;
@@ -195,8 +194,8 @@ public class NamespaceMappings {
     if (prefix.startsWith(XML_PREFIX))
       return false;
 
-    Stack stack;
-    if ((stack = getPrefixStack(prefix)) != null) {
+    final Deque<MappingRecord> stack = m_namespaces.get(prefix);
+    if (stack != null) {
       stack.pop();
       return true;
     }
@@ -218,14 +217,14 @@ public class NamespaceMappings {
     if (prefix.startsWith(XML_PREFIX))
       return false;
 
-    Stack stack;
+    Deque<MappingRecord> stack = m_namespaces.get(prefix);
     // Get the stack that contains URIs for the specified prefix
-    if ((stack = (Stack) m_namespaces.get(prefix)) == null) {
-      m_namespaces.put(prefix, stack = new Stack());
+    if (stack == null) {
+      m_namespaces.put(prefix, stack = new ArrayDeque<>());
     }
 
-    if (!stack.empty()) {
-      final MappingRecord mr = (MappingRecord) stack.peek();
+    if (!stack.isEmpty()) {
+      final MappingRecord mr = stack.peek();
       if (uri.equals(mr.m_uri) || elemDepth == mr.m_declarationDepth)
         // If the same prefix/uri mapping is already on the stack
         // don't push this one.
@@ -254,7 +253,7 @@ public class NamespaceMappings {
     while (true) {
       if (m_nodeStack.isEmpty())
         return;
-      final MappingRecord map = (MappingRecord) m_nodeStack.peek();
+      final MappingRecord map = m_nodeStack.peek();
       final int depth = map.m_declarationDepth;
       if (elemDepth < 1 || map.m_declarationDepth < elemDepth) {
         break;
@@ -264,12 +263,12 @@ public class NamespaceMappings {
          */
       }
 
-      final MappingRecord nm1 = (MappingRecord) m_nodeStack.pop();
+      final MappingRecord nm1 = m_nodeStack.pop();
       // pop the node from the stack
       final String prefix = map.m_prefix;
 
-      final Stack prefixStack = getPrefixStack(prefix);
-      final MappingRecord nm2 = (MappingRecord) prefixStack.peek();
+      final Deque<MappingRecord> prefixStack = m_namespaces.get(prefix);
+      final MappingRecord nm2 = prefixStack.peek();
       if (nm1 == nm2) {
         // It would be nice to always pop() but we
         // need to check that the prefix stack still has
@@ -306,22 +305,6 @@ public class NamespaceMappings {
     return "ns" + count++;
   }
 
-  /**
-   * This method makes a clone of this object.
-   * 
-   */
-  @Override
-  public Object clone() throws CloneNotSupportedException {
-    final NamespaceMappings clone = new NamespaceMappings();
-    clone.m_nodeStack = (NamespaceMappings.Stack) m_nodeStack.clone();
-    clone.count = count;
-    clone.m_namespaces = (Hashtable) m_namespaces.clone();
-
-    clone.count = count;
-    return clone;
-
-  }
-
   final void reset() {
     count = 0;
     m_namespaces.clear();
@@ -349,111 +332,6 @@ public class NamespaceMappings {
   }
 
   /**
-   * Rather than using java.util.Stack, this private class provides a minimal
-   * subset of methods and is faster because it is not thread-safe.
-   */
-  private class Stack {
-    private int top = -1;
-    private int max = 20;
-    Object[] m_stack = new Object[max];
-
-    @Override
-    public Object clone() throws CloneNotSupportedException {
-      final NamespaceMappings.Stack clone = new NamespaceMappings.Stack();
-      clone.max = max;
-      clone.top = top;
-      clone.m_stack = new Object[clone.max];
-      for (int i = 0; i <= top; i++) {
-        // We are just copying references to immutable MappingRecord objects
-        // here
-        // so it is OK if the clone has references to these.
-        clone.m_stack[i] = m_stack[i];
-      }
-      return clone;
-    }
-
-    public Stack() {
-    }
-
-    public Object push(Object o) {
-      top++;
-      if (max <= top) {
-        final int newMax = 2 * max + 1;
-        final Object[] newArray = new Object[newMax];
-        System.arraycopy(m_stack, 0, newArray, 0, max);
-        max = newMax;
-        m_stack = newArray;
-      }
-      m_stack[top] = o;
-      return o;
-    }
-
-    public Object pop() {
-      Object o;
-      if (0 <= top) {
-        o = m_stack[top];
-        // m_stack[top] = null; do we really care?
-        top--;
-      } else {
-        o = null;
-      }
-      return o;
-    }
-
-    public Object peek() {
-      Object o;
-      if (0 <= top) {
-        o = m_stack[top];
-      } else {
-        o = null;
-      }
-      return o;
-    }
-
-    public Object peek(int idx) {
-      return m_stack[idx];
-    }
-
-    public boolean isEmpty() {
-      return top < 0;
-    }
-
-    public boolean empty() {
-      return top < 0;
-    }
-
-    public void clear() {
-      for (int i = 0; i <= top; i++) {
-        m_stack[i] = null;
-      }
-      top = -1;
-    }
-
-    public Object getElement(int index) {
-      return m_stack[index];
-    }
-  }
-
-  /**
-   * A more type-safe way to get a stack of prefix mappings from the Hashtable
-   * m_namespaces (this is the only method that does the type cast).
-   */
-
-  private Stack getPrefixStack(String prefix) {
-    final Stack fs = (Stack) m_namespaces.get(prefix);
-    return fs;
-  }
-
-  /**
-   * A more type-safe way of saving stacks under the m_namespaces Hashtable.
-   */
-  private Stack createPrefixStack(String prefix) {
-    final Stack fs = new Stack();
-    m_namespaces.put(prefix, fs);
-    return fs;
-  }
-
-  /**
    * Given a namespace uri, get all prefixes bound to the Namespace URI in the
    * current scope.
    * 
@@ -464,17 +342,13 @@ public class NamespaceMappings {
    *         no prefixes map to the given namespace URI.
    */
   public String[] lookupAllPrefixes(String uri) {
-    final java.util.ArrayList foundPrefixes = new java.util.ArrayList();
-    final Enumeration prefixes = m_namespaces.keys();
-    while (prefixes.hasMoreElements()) {
-      final String prefix = (String) prefixes.nextElement();
+    final List<String> foundPrefixes = new ArrayList<>();
+    for (final String prefix : m_namespaces.keySet()) {
       final String uri2 = lookupNamespace(prefix);
       if (uri2 != null && uri2.equals(uri)) {
         foundPrefixes.add(prefix);
       }
     }
-    final String[] prefixArray = new String[foundPrefixes.size()];
-    foundPrefixes.toArray(prefixArray);
-    return prefixArray;
+    return foundPrefixes.toArray(new String[0]);
   }
 }

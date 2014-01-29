@@ -76,11 +76,11 @@ final public class LSSerializerImpl implements DOMConfiguration, LSSerializer {
   // The default end-of-line character sequence used in serialization.
   private static final String DEFAULT_END_OF_LINE;
   static {
-    final String lineSeparator = (String) AccessController.doPrivileged(new PrivilegedAction() {
+    final String lineSeparator = AccessController.doPrivileged(new PrivilegedAction<String>() {
       @Override
-      public Object run() {
+      public String run() {
         try {
-          return System.getProperty("line.separator");
+          return System.lineSeparator();
         } catch (final SecurityException ex) {
         }
         return null;
@@ -1404,7 +1404,7 @@ final public class LSSerializerImpl implements DOMConfiguration, LSSerializer {
     if (origPath != null && origPath.length() != 0 && origPath.indexOf('%') != -1) {
       // Locate the escape characters
       final StringTokenizer tokenizer = new StringTokenizer(origPath, "%");
-      final StringBuffer result = new StringBuffer(origPath.length());
+      final StringBuilder result = new StringBuilder(origPath.length());
       final int size = tokenizer.countTokens();
       result.append(tokenizer.nextToken());
       for (int i = 1; i < size; ++i) {

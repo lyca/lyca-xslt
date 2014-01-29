@@ -38,7 +38,7 @@ public class ObjectPool implements java.io.Serializable {
    * 
    * @serial
    */
-  private final Class objectType;
+  private final Class<?> objectType;
 
   /**
    * Stack of given objects this points to.

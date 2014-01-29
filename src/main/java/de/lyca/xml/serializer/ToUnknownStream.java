@@ -23,8 +23,9 @@ package de.lyca.xml.serializer;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
-import java.util.Vector;
 
 import javax.xml.transform.SourceLocator;
 import javax.xml.transform.Transformer;
@@ -97,12 +98,12 @@ public final class ToUnknownStream extends SerializerBase {
    * A collection of namespace URI's (only for first element). _namespacePrefix
    * has the matching prefix for these URI's
    */
-  private Vector m_namespaceURI = null;
+  private List m_namespaceURI = null;
   /**
    * A collection of namespace Prefix (only for first element) _namespaceURI has
    * the matching URIs for these prefix'
    */
-  private Vector m_namespacePrefix = null;
+  private List m_namespacePrefix = null;
 
   /**
    * true if startDocument() was called before the underlying handler was
@@ -399,11 +400,11 @@ public final class ToUnknownStream extends SerializerBase {
         pushed = m_handler.startPrefixMapping(prefix, uri, shouldFlush);
       } else {
         if (m_namespacePrefix == null) {
-          m_namespacePrefix = new Vector();
-          m_namespaceURI = new Vector();
+          m_namespacePrefix = new ArrayList();
+          m_namespaceURI = new ArrayList();
         }
-        m_namespacePrefix.addElement(prefix);
-        m_namespaceURI.addElement(uri);
+        m_namespacePrefix.add(prefix);
+        m_namespaceURI.add(uri);
 
         if (m_firstElementURI == null) {
           if (prefix.equals(m_firstElementPrefix)) {
@@ -1055,8 +1056,8 @@ public final class ToUnknownStream extends SerializerBase {
       if (m_namespacePrefix != null) {
         final int n = m_namespacePrefix.size();
         for (int i = 0; i < n; i++) {
-          final String prefix = (String) m_namespacePrefix.elementAt(i);
-          final String uri = (String) m_namespaceURI.elementAt(i);
+          final String prefix = (String) m_namespacePrefix.get(i);
+          final String uri = (String) m_namespaceURI.get(i);
           m_handler.startPrefixMapping(prefix, uri, false);
         }
         m_namespacePrefix = null;
@@ -1122,8 +1123,8 @@ public final class ToUnknownStream extends SerializerBase {
        */
       final int max = m_namespacePrefix.size();
       for (int i = 0; i < max; i++) {
-        final String prefix = (String) m_namespacePrefix.elementAt(i);
-        final String uri = (String) m_namespaceURI.elementAt(i);
+        final String prefix = (String) m_namespacePrefix.get(i);
+        final String uri = (String) m_namespaceURI.get(i);
 
         if (m_firstElementPrefix != null && m_firstElementPrefix.equals(prefix) && !EMPTYSTRING.equals(uri)) {
           // The first element has a prefix, so it can't be <html>
@@ -1148,10 +1149,10 @@ public final class ToUnknownStream extends SerializerBase {
    * @param URI_and_localNames
    *          Vector a list of pairs of URI/localName specified in the
    *          cdata-section-elements attribute.
-   * @see SerializationHandler#setCdataSectionElements(java.util.Vector)
+   * @see SerializationHandler#setCdataSectionElements(java.util.List)
    */
   @Override
-  public void setCdataSectionElements(Vector URI_and_localNames) {
+  public void setCdataSectionElements(List URI_and_localNames) {
     m_handler.setCdataSectionElements(URI_and_localNames);
   }
 
@@ -1273,15 +1274,16 @@ public final class ToUnknownStream extends SerializerBase {
   protected void firePseudoElement(String elementName) {
 
     if (m_tracer != null) {
-      final StringBuffer sb = new StringBuffer();
+      final StringBuilder sb = new StringBuilder();
 
       sb.append('<');
       sb.append(elementName);
 
-      // convert the StringBuffer to a char array and
+      // convert the StringBuilder to a char array and
       // emit the trace event that these characters "might"
       // be written
-      final char ch[] = sb.toString().toCharArray();
+      final char[] ch = new char[sb.length()];
+      sb.getChars(0, sb.length(), ch, 0);
       m_tracer.fireGenerateEvent(SerializerTrace.EVENTTYPE_OUTPUT_PSEUDO_CHARACTERS, ch, 0, ch.length);
     }
   }

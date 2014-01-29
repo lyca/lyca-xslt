@@ -777,7 +777,7 @@ public class URI implements Serializable {
    */
   public String getSchemeSpecificPart() {
 
-    final StringBuffer schemespec = new StringBuffer();
+    final StringBuilder schemespec = new StringBuilder();
 
     if (m_userinfo != null || m_host != null || m_port != -1) {
       schemespec.append("//");
@@ -856,7 +856,7 @@ public class URI implements Serializable {
    */
   public String getPath(boolean p_includeQueryString, boolean p_includeFragment) {
 
-    final StringBuffer pathString = new StringBuffer(m_path);
+    final StringBuilder pathString = new StringBuilder(m_path);
 
     if (p_includeQueryString && m_queryString != null) {
       pathString.append('?');
@@ -1173,7 +1173,7 @@ public class URI implements Serializable {
   @Override
   public String toString() {
 
-    final StringBuffer uriSpecString = new StringBuffer();
+    final StringBuilder uriSpecString = new StringBuilder();
 
     if (m_scheme != null) {
       uriSpecString.append(m_scheme);

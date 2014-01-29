@@ -20,10 +20,12 @@
  */
 package de.lyca.xml.utils;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EmptyStackException;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.Vector;
+import java.util.List;
 
 /**
  * Encapsulate Namespace tracking logic for use by SAX drivers.
@@ -458,7 +460,7 @@ final class Context2 {
   /**
    * An empty enumeration.
    */
-  private final static Enumeration EMPTY_ENUMERATION = new Vector().elements();
+  private final static Enumeration EMPTY_ENUMERATION = Collections.emptyEnumeration();
 
   // //////////////////////////////////////////////////////////////
   // Protected state.
@@ -474,7 +476,7 @@ final class Context2 {
   // Internal state.
   // //////////////////////////////////////////////////////////////
 
-  private Vector declarations = null;
+  private List declarations = null;
   private boolean tablesDirty = false;
   private Context2 parent = null;
   private Context2 child = null;
@@ -542,7 +544,7 @@ final class Context2 {
       copyTables();
     }
     if (declarations == null) {
-      declarations = new Vector();
+      declarations = new ArrayList();
     }
 
     prefix = prefix.intern();
@@ -557,7 +559,7 @@ final class Context2 {
       prefixTable.put(prefix, uri);
       uriTable.put(uri, prefix); // may wipe out another prefix
     }
-    declarations.addElement(prefix);
+    declarations.add(prefix);
   }
 
   /**
@@ -682,7 +684,7 @@ final class Context2 {
     if (declarations == null)
       return EMPTY_ENUMERATION;
     else
-      return declarations.elements();
+      return Collections.enumeration(declarations);
   }
 
   /**

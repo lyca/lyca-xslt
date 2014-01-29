@@ -29,7 +29,7 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Hashtable;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 import javax.xml.transform.TransformerException;
@@ -53,7 +53,7 @@ final class CharInfo {
    * Given a character, lookup a String to output (e.g. a decorated entity
    * reference).
    */
-  private HashMap m_charToString;
+  private Map<CharKey, String> m_charToString;
 
   /**
    * The name of the HTML entities file. If specified, the file will be resource
@@ -167,7 +167,7 @@ final class CharInfo {
   private CharInfo(String entitiesResource, String method, boolean internal) {
     // call the default constructor to create the fields
     this();
-    m_charToString = new HashMap();
+    m_charToString = new HashMap<>();
 
     ResourceBundle entities = null;
     boolean noExtraEntities = true;
@@ -190,9 +190,9 @@ final class CharInfo {
     }
 
     if (entities != null) {
-      final Enumeration keys = entities.getKeys();
+      final Enumeration<String> keys = entities.getKeys();
       while (keys.hasMoreElements()) {
-        final String name = (String) keys.nextElement();
+        final String name = keys.nextElement();
         final String value = entities.getString(name);
         final int code = Integer.parseInt(value);
         final boolean extra = defineEntity(name, (char) code);
@@ -349,7 +349,7 @@ final class CharInfo {
      * </ul>
      */
   private boolean defineEntity(String name, char value) {
-    final StringBuffer sb = new StringBuffer("&");
+    final StringBuilder sb = new StringBuilder("&");
     sb.append(name);
     sb.append(';');
     final String entityString = sb.toString();
@@ -389,7 +389,7 @@ final class CharInfo {
   String getOutputStringForChar(char value) {
     // CharKey m_charKey = new CharKey(); //Alternative to synchronized
     m_charKey.setChar(value);
-    return (String) m_charToString.get(m_charKey);
+    return m_charToString.get(m_charKey);
   }
 
   /**
@@ -438,9 +438,9 @@ final class CharInfo {
 
   private static CharInfo getCharInfoBasedOnPrivilege(final String entitiesFileName, final String method,
           final boolean internal) {
-    return (CharInfo) AccessController.doPrivileged(new PrivilegedAction() {
+    return AccessController.doPrivileged(new PrivilegedAction<CharInfo>() {
       @Override
-      public Object run() {
+      public CharInfo run() {
         return new CharInfo(entitiesFileName, method, internal);
       }
     });
@@ -471,7 +471,7 @@ final class CharInfo {
    * @xsl.usage internal
    */
   static CharInfo getCharInfo(String entitiesFileName, String method) {
-    CharInfo charInfo = (CharInfo) m_getCharInfoCache.get(entitiesFileName);
+    CharInfo charInfo = m_getCharInfoCache.get(entitiesFileName);
     if (charInfo != null)
       return mutableCopyOf(charInfo);
 
@@ -530,7 +530,7 @@ final class CharInfo {
     // utility field copy.m_charKey is already created in the default
     // constructor
 
-    copy.m_charToString = (HashMap) charInfo.m_charToString.clone();
+    copy.m_charToString = new HashMap<>(charInfo.m_charToString);
 
     copy.onlyQuotAmpLtGt = charInfo.onlyQuotAmpLtGt;
 
@@ -542,7 +542,7 @@ final class CharInfo {
    * name of the property file without the .properties extension) to CharInfo
    * objects populated with entities defined in corresponding property file.
    */
-  private static Hashtable m_getCharInfoCache = new Hashtable();
+  private static Map<String, CharInfo> m_getCharInfoCache = new HashMap<>();
 
   /**
    * Returns the array element holding the bit value for the given integer

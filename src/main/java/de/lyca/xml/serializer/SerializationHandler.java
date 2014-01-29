@@ -26,6 +26,7 @@ import javax.xml.transform.Transformer;
 
 import org.w3c.dom.Node;
 import org.xml.sax.ContentHandler;
+import org.xml.sax.DTDHandler;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.ext.DeclHandler;
@@ -41,7 +42,7 @@ import org.xml.sax.ext.DeclHandler;
  * @xsl.usage internal
  */
 public interface SerializationHandler extends ExtendedContentHandler, ExtendedLexicalHandler, XSLOutputAttributes,
-        DeclHandler, org.xml.sax.DTDHandler, ErrorHandler, DOMSerializer, Serializer {
+        DeclHandler, DTDHandler, ErrorHandler, DOMSerializer, Serializer {
   /**
    * Set the SAX Content handler that the serializer sends its output to. This
    * method only applies to a ToSAXHandler, not to a ToStream serializer.

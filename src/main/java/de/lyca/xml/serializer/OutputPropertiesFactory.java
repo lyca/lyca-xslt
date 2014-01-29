@@ -197,9 +197,9 @@ public final class OutputPropertiesFactory {
   /** The properties when method="" for the "unknown" wrapper */
   private static Properties m_unknown_properties = null;
 
-  private static final Class ACCESS_CONTROLLER_CLASS = findAccessControllerClass();
+  private static final Class<?> ACCESS_CONTROLLER_CLASS = findAccessControllerClass();
 
-  private static Class findAccessControllerClass() {
+  private static Class<?> findAccessControllerClass() {
     try {
       // This Class was introduced in JDK 1.2. With the re-architecture of
       // security mechanism ( starting in JDK 1.2 ), we have option of
@@ -318,9 +318,9 @@ public final class OutputPropertiesFactory {
 
     try {
       if (ACCESS_CONTROLLER_CLASS != null) {
-        is = (InputStream) AccessController.doPrivileged(new PrivilegedAction() {
+        is = AccessController.doPrivileged(new PrivilegedAction<InputStream>() {
           @Override
-          public Object run() {
+          public InputStream run() {
             return OutputPropertiesFactory.class.getResourceAsStream(resourceName);
           }
         });

@@ -61,7 +61,7 @@ public class IncrementalSAXSource_Xerces implements IncrementalSAXSource {
   Method fConfigSetInput = null; // Xerces2 method
   Method fConfigParse = null; // Xerces2 method
   Method fSetInputSource = null; // Xerces2 pull control method
-  Constructor fConfigInputSourceCtor = null; // Xerces2 initialization method
+  Constructor<?> fConfigInputSourceCtor = null; // Xerces2 initialization method
   Method fConfigSetByteStream = null; // Xerces2 initialization method
   Method fConfigSetCharStream = null; // Xerces2 initialization method
   Method fConfigSetEncoding = null; // Xerces2 initialization method
@@ -99,41 +99,41 @@ public class IncrementalSAXSource_Xerces implements IncrementalSAXSource {
       // this will simplify significantly.
 
       // If we can't get the magic constructor, no need to look further.
-      final Class xniConfigClass = ObjectFactory.findProviderClass(
+      final Class<?> xniConfigClass = ObjectFactory.findProviderClass(
               "org.apache.xerces.xni.parser.XMLParserConfiguration", ObjectFactory.findClassLoader(), true);
-      final Class[] args1 = { xniConfigClass };
-      final Constructor ctor = SAXParser.class.getConstructor(args1);
+      final Class<?>[] args1 = { xniConfigClass };
+      final Constructor<SAXParser> ctor = SAXParser.class.getConstructor(args1);
 
       // Build the parser configuration object. StandardParserConfiguration
       // happens to implement XMLPullParserConfiguration, which is the API
       // we're going to want to use.
-      final Class xniStdConfigClass = ObjectFactory.findProviderClass(
+      final Class<?> xniStdConfigClass = ObjectFactory.findProviderClass(
               "org.apache.xerces.parsers.StandardParserConfiguration", ObjectFactory.findClassLoader(), true);
       fPullParserConfig = xniStdConfigClass.newInstance();
       final Object[] args2 = { fPullParserConfig };
-      fIncrementalParser = (SAXParser) ctor.newInstance(args2);
+      fIncrementalParser = ctor.newInstance(args2);
 
       // Preload all the needed the configuration methods... I want to know
       // they're
       // all here before we commit to trying to use them, just in case the
       // API changes again.
-      final Class fXniInputSourceClass = ObjectFactory.findProviderClass("org.apache.xerces.xni.parser.XMLInputSource",
-              ObjectFactory.findClassLoader(), true);
-      final Class[] args3 = { fXniInputSourceClass };
+      final Class<?> fXniInputSourceClass = ObjectFactory.findProviderClass(
+              "org.apache.xerces.xni.parser.XMLInputSource", ObjectFactory.findClassLoader(), true);
+      final Class<?>[] args3 = { fXniInputSourceClass };
       fConfigSetInput = xniStdConfigClass.getMethod("setInputSource", args3);
 
-      final Class[] args4 = { String.class, String.class, String.class };
+      final Class<?>[] args4 = { String.class, String.class, String.class };
       fConfigInputSourceCtor = fXniInputSourceClass.getConstructor(args4);
-      final Class[] args5 = { java.io.InputStream.class };
+      final Class<?>[] args5 = { java.io.InputStream.class };
       fConfigSetByteStream = fXniInputSourceClass.getMethod("setByteStream", args5);
-      final Class[] args6 = { java.io.Reader.class };
+      final Class<?>[] args6 = { java.io.Reader.class };
       fConfigSetCharStream = fXniInputSourceClass.getMethod("setCharacterStream", args6);
-      final Class[] args7 = { String.class };
+      final Class<?>[] args7 = { String.class };
       fConfigSetEncoding = fXniInputSourceClass.getMethod("setEncoding", args7);
 
-      final Class[] argsb = { Boolean.TYPE };
+      final Class<?>[] argsb = { Boolean.TYPE };
       fConfigParse = xniStdConfigClass.getMethod("parse", argsb);
-      final Class[] noargs = new Class[0];
+      final Class<?>[] noargs = new Class[0];
       fReset = fIncrementalParser.getClass().getMethod("reset", noargs);
     } catch (final Exception e) {
       // Fallback if this fails (implemented in createIncrementalSAXSource) is
@@ -166,10 +166,10 @@ public class IncrementalSAXSource_Xerces implements IncrementalSAXSource {
     // Xerces2 incremental support is made available on previously
     // constructed SAXParser instances.
     fIncrementalParser = parser;
-    final Class me = parser.getClass();
-    Class[] parms = { InputSource.class };
+    final Class<?> me = parser.getClass();
+    Class<?>[] parms = { InputSource.class };
     fParseSomeSetup = me.getMethod("parseSomeSetup", parms);
-    parms = new Class[0];
+    parms = new Class<?>[0];
     fParseSome = me.getMethod("parseSome", parms);
     // Fallback if this fails (implemented in createIncrementalSAXSource) is
     // to use IncrementalSAXSource_Filter rather than Xerces-specific code.

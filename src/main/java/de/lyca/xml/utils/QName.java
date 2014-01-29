@@ -20,7 +20,8 @@
  */
 package de.lyca.xml.utils;
 
-import java.util.Stack;
+import java.util.Deque;
+import java.util.Iterator;
 import java.util.StringTokenizer;
 
 import org.w3c.dom.Element;
@@ -229,7 +230,7 @@ public class QName implements java.io.Serializable {
    * @param namespaces
    *          Namespace stack to use to resolve namespace
    */
-  public QName(String qname, Stack namespaces) {
+  public QName(String qname, Deque<NameSpace> namespaces) {
     this(qname, namespaces, false);
   }
 
@@ -245,7 +246,7 @@ public class QName implements java.io.Serializable {
    *          If true the new QName will be validated and an
    *          IllegalArgumentException will be thrown if it is invalid.
    */
-  public QName(String qname, Stack namespaces, boolean validate) {
+  public QName(String qname, Deque<NameSpace> namespaces, boolean validate) {
 
     String namespace = null;
     String prefix = null;
@@ -261,20 +262,10 @@ public class QName implements java.io.Serializable {
       else if (prefix.equals("xmlns"))
         return;
       else {
-        final int depth = namespaces.size();
-
-        for (int i = depth - 1; i >= 0; i--) {
-          NameSpace ns = (NameSpace) namespaces.elementAt(i);
-
-          while (null != ns) {
-            if (null != ns.m_prefix && prefix.equals(ns.m_prefix)) {
-              namespace = ns.m_uri;
-              i = -1;
-
-              break;
-            }
-
-            ns = ns.m_next;
+        for (final Iterator<NameSpace> iterator = namespaces.descendingIterator(); iterator.hasNext();) {
+          final NameSpace ns = iterator.next();
+          if (null != ns.m_prefix && prefix.equals(ns.m_prefix)) {
+            namespace = ns.m_uri;
           }
         }
       }

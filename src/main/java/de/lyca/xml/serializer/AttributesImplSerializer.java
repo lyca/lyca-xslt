@@ -21,7 +21,8 @@
 
 package de.lyca.xml.serializer;
 
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.helpers.AttributesImpl;
@@ -42,12 +43,12 @@ public final class AttributesImplSerializer extends AttributesImpl {
    * attributes qName. qNames are in uppercase in the hash table to make the
    * search case insensitive.
    * 
-   * The keys to the hashtable to find the index are either "prefix:localName"
-   * or "{uri}localName".
+   * The keys to the map to find the index are either "prefix:localName" or
+   * "{uri}localName".
    */
-  private final Hashtable m_indexFromQName = new Hashtable();
+  private final Map<String, Integer> m_indexFromQName = new HashMap<>();
 
-  private final StringBuffer m_buff = new StringBuffer();
+  private final StringBuilder m_buff = new StringBuilder();
 
   /**
    * This is the number of attributes before switching to the hash table, and
@@ -80,7 +81,7 @@ public final class AttributesImplSerializer extends AttributesImpl {
     }
     // we have too many attributes and the super class is slow
     // so find it quickly using our Hashtable.
-    final Integer i = (Integer) m_indexFromQName.get(qname);
+    final Integer i = m_indexFromQName.get(qname);
     if (i == null) {
       index = -1;
     } else {
@@ -122,14 +123,13 @@ public final class AttributesImplSerializer extends AttributesImpl {
     } else {
       /* add the key with the format of "prefix:localName" */
       /* we have just added the attibute, its index is the old length */
-      final Integer i = new Integer(index);
-      m_indexFromQName.put(qname, i);
+      m_indexFromQName.put(qname, index);
 
       /* now add with key of the format "{uri}localName" */
       m_buff.setLength(0);
       m_buff.append('{').append(uri).append('}').append(local);
       final String key = m_buff.toString();
-      m_indexFromQName.put(key, i);
+      m_indexFromQName.put(key, index);
     }
     return;
   }
@@ -145,8 +145,7 @@ public final class AttributesImplSerializer extends AttributesImpl {
   private void switchOverToHash(int numAtts) {
     for (int index = 0; index < numAtts; index++) {
       final String qName = super.getQName(index);
-      final Integer i = new Integer(index);
-      m_indexFromQName.put(qName, i);
+      m_indexFromQName.put(qName, index);
 
       // Add quick look-up to find with uri/local name pair
       final String uri = super.getURI(index);
@@ -154,7 +153,7 @@ public final class AttributesImplSerializer extends AttributesImpl {
       m_buff.setLength(0);
       m_buff.append('{').append(uri).append('}').append(local);
       final String key = m_buff.toString();
-      m_indexFromQName.put(key, i);
+      m_indexFromQName.put(key, index);
     }
   }
 
@@ -165,7 +164,6 @@ public final class AttributesImplSerializer extends AttributesImpl {
    */
   @Override
   public final void clear() {
-
     final int len = super.getLength();
     super.clear();
     if (MAX <= len) {
@@ -226,7 +224,7 @@ public final class AttributesImplSerializer extends AttributesImpl {
     m_buff.setLength(0);
     m_buff.append('{').append(uri).append('}').append(localName);
     final String key = m_buff.toString();
-    final Integer i = (Integer) m_indexFromQName.get(key);
+    final Integer i = m_indexFromQName.get(key);
     if (i == null) {
       index = -1;
     } else {

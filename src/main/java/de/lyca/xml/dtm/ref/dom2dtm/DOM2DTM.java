@@ -20,7 +20,8 @@
  */
 package de.lyca.xml.dtm.ref.dom2dtm;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.transform.SourceLocator;
 import javax.xml.transform.dom.DOMSource;
@@ -109,7 +110,7 @@ public class DOM2DTM extends DTMDefaultBaseIterators {
    * been coalesced into a single DTM Text node); this table points only to the
    * first in that sequence.
    */
-  protected Vector m_nodes = new Vector();
+  protected List<Node> m_nodes = new ArrayList<Node>();
 
   /**
    * Construct a DOM2DTM object from a DOM node.
@@ -245,7 +246,7 @@ public class DOM2DTM extends DTMDefaultBaseIterators {
       }
     }
 
-    m_nodes.addElement(node);
+    m_nodes.add(node);
 
     m_firstch.setElementAt(NOTPROCESSED, nodeIndex);
     m_nextsib.setElementAt(NOTPROCESSED, nodeIndex);
@@ -586,7 +587,7 @@ public class DOM2DTM extends DTMDefaultBaseIterators {
 
     final int identity = makeNodeIdentity(nodeHandle);
 
-    return (Node) m_nodes.elementAt(identity);
+    return m_nodes.get(identity);
   }
 
   /**
@@ -597,7 +598,7 @@ public class DOM2DTM extends DTMDefaultBaseIterators {
    * NEEDSDOC ($objectName$) @return
    */
   protected Node lookupNode(int nodeIdentity) {
-    return (Node) m_nodes.elementAt(nodeIdentity);
+    return m_nodes.get(nodeIdentity);
   }
 
   /**
@@ -653,7 +654,7 @@ public class DOM2DTM extends DTMDefaultBaseIterators {
       int i = 0;
       do {
         for (; i < len; i++) {
-          if (m_nodes.elementAt(i) == node)
+          if (m_nodes.get(i) == node)
             return makeNodeHandle(i);
         }
 
@@ -978,7 +979,7 @@ public class DOM2DTM extends DTMDefaultBaseIterators {
       final int id = makeNodeIdentity(nodeHandle);
       if (NULL == id)
         return null;
-      final Node newnode = (Node) m_nodes.elementAt(id);
+      final Node newnode = m_nodes.get(id);
       String newname = newnode.getLocalName();
       if (null == newname) {
         // XSLT treats PIs, and possibly other things, as having QNames.
@@ -1094,7 +1095,7 @@ public class DOM2DTM extends DTMDefaultBaseIterators {
       final int id = makeNodeIdentity(nodeHandle);
       if (id == NULL)
         return null;
-      final Node node = (Node) m_nodes.elementAt(id);
+      final Node node = m_nodes.get(id);
       return node.getNamespaceURI();
     } else {
       String nsuri;

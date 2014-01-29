@@ -1855,9 +1855,9 @@ public class UnImplNode implements Node, Element, NodeList, Document {
 
     /*
      * if (needsSyncData()) { synchronizeData(); } if (nextSibling == null) {
-     * return data; } StringBuffer buffer = new StringBuffer(); if (data != null
-     * && data.length() != 0) { buffer.append(data); } getWholeText(nextSibling,
-     * buffer); return buffer.toString();
+     * return data; } StringBuilder buffer = new StringBuilder(); if (data !=
+     * null && data.length() != 0) { buffer.append(data); }
+     * getWholeText(nextSibling, buffer); return buffer.toString();
      */
     return null; // PENDING
 

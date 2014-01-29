@@ -225,7 +225,7 @@ public class DTMException extends RuntimeException {
    */
   public String getMessageAndLocation() {
 
-    final StringBuffer sbuffer = new StringBuffer();
+    final StringBuilder sbuffer = new StringBuilder();
     final String message = super.getMessage();
 
     if (null != message) {
@@ -265,7 +265,7 @@ public class DTMException extends RuntimeException {
   public String getLocationAsString() {
 
     if (null != locator) {
-      final StringBuffer sbuffer = new StringBuffer();
+      final StringBuilder sbuffer = new StringBuilder();
       final String systemID = locator.getSystemId();
       final int line = locator.getLineNumber();
       final int column = locator.getColumnNumber();
@@ -320,75 +320,17 @@ public class DTMException extends RuntimeException {
    */
   @Override
   public void printStackTrace(java.io.PrintWriter s) {
-
     if (s == null) {
       s = new java.io.PrintWriter(System.err, true);
     }
-
     try {
       final String locInfo = getLocationAsString();
-
       if (null != locInfo) {
         s.println(locInfo);
       }
-
       super.printStackTrace(s);
     } catch (final Throwable e) {
     }
-
-    boolean isJdk14OrHigher = false;
-    try {
-      Throwable.class.getMethod("getCause", null);
-      isJdk14OrHigher = true;
-    } catch (final NoSuchMethodException nsme) {
-      // do nothing
-    }
-
-    // The printStackTrace method of the Throwable class in jdk 1.4
-    // and higher will include the cause when printing the backtrace.
-    // The following code is only required when using jdk 1.3 or lower
-    if (!isJdk14OrHigher) {
-      Throwable exception = getException();
-
-      for (int i = 0; i < 10 && null != exception; i++) {
-        s.println("---------");
-
-        try {
-          if (exception instanceof DTMException) {
-            final String locInfo = ((DTMException) exception).getLocationAsString();
-
-            if (null != locInfo) {
-              s.println(locInfo);
-            }
-          }
-
-          exception.printStackTrace(s);
-        } catch (final Throwable e) {
-          s.println("Could not print stack trace...");
-        }
-
-        try {
-          final Method meth = ((Object) exception).getClass().getMethod("getException", null);
-
-          if (null != meth) {
-            final Throwable prev = exception;
-
-            exception = (Throwable) meth.invoke(exception, null);
-
-            if (prev == exception) {
-              break;
-            }
-          } else {
-            exception = null;
-          }
-        } catch (final InvocationTargetException ite) {
-          exception = null;
-        } catch (final IllegalAccessException iae) {
-          exception = null;
-        } catch (final NoSuchMethodException nsme) {
-          exception = null;
-        }
-      }
-    }
   }
+
 }

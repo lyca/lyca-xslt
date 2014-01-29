@@ -146,8 +146,8 @@ public class DTMNodeIterator implements org.w3c.dom.traversal.NodeIterator {
   }
 
   /**
-   * @return the next node in the set and advance the position of the iterator in
-   *         the set.
+   * @return the next node in the set and advance the position of the iterator
+   *         in the set.
    * 
    * @throws DOMException
    *           - INVALID_STATE_ERR Raised if this method is called after the

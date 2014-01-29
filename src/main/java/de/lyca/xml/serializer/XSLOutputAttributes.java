@@ -20,7 +20,7 @@
  */
 package de.lyca.xml.serializer;
 
-import java.util.Vector;
+import java.util.List;
 
 /**
  * This interface has methods associated with the XSLT xsl:output attribues
@@ -129,7 +129,7 @@ interface XSLOutputAttributes {
    *          prefix itself is not relevant in specifying which elements have
    *          their text to be output as CDATA sections.
    */
-  public void setCdataSectionElements(Vector URI_and_localNames);
+  public void setCdataSectionElements(List URI_and_localNames);
 
   /**
    * Set the value coming from the xsl:output doctype-public and doctype-system

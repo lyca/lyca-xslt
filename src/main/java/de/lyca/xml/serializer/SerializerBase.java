@@ -21,7 +21,9 @@
 package de.lyca.xml.serializer;
 
 import java.io.IOException;
+import java.io.Writer;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import javax.xml.transform.OutputKeys;
@@ -34,6 +36,7 @@ import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
+import de.lyca.xml.serializer.dom3.DOM3SerializerImpl;
 import de.lyca.xml.serializer.utils.MsgKey;
 import de.lyca.xml.serializer.utils.Utils;
 
@@ -72,7 +75,7 @@ public abstract class SerializerBase implements SerializationHandler, Serializer
       PKG_NAME = fullyQualifiedName.substring(0, lastDot);
     }
 
-    final StringBuffer sb = new StringBuffer();
+    final StringBuilder sb = new StringBuilder();
     for (int i = 0; i < PKG_NAME.length(); i++) {
       final char ch = PKG_NAME.charAt(i);
       if (ch == '.') {
@@ -216,7 +219,7 @@ public abstract class SerializerBase implements SerializationHandler, Serializer
    * serializers, but exists here just so that the fireStartDoc() and other
    * fire... methods can flush this writer when tracing.
    */
-  protected java.io.Writer m_writer = null;
+  protected Writer m_writer = null;
 
   /**
    * A reference to "stack frame" corresponding to the current element. Such a
@@ -824,20 +827,6 @@ public abstract class SerializerBase implements SerializationHandler, Serializer
   }
 
   /**
-   * Tell if two strings are equal, without worry if the first string is null.
-   * 
-   * @param p
-   *          String reference, which may be null.
-   * @param t
-   *          String reference, which may be null.
-   * 
-   * @return true if strings are equal.
-   */
-  private static final boolean subPartMatch(String p, String t) {
-    return p == t || null != p && p.equals(t);
-  }
-
-  /**
    * Returns the local name of a qualified name. If the name has no prefix, then
    * it works as the identity (SAX2).
    * 
@@ -1396,7 +1385,7 @@ public abstract class SerializerBase implements SerializationHandler, Serializer
       // true if we found a URI but haven't yet processed the local name
       boolean foundURI = false;
 
-      final StringBuffer buf = new StringBuffer();
+      final StringBuilder buf = new StringBuilder();
       String uri = null;
       String localName = null;
 
@@ -1450,20 +1439,18 @@ public abstract class SerializerBase implements SerializationHandler, Serializer
     }
   }
 
-  protected java.util.Hashtable m_CdataElems = null;
+  protected Map<String, Map<String, String>> m_CdataElems = null;
 
   private void addCDATAElement(String uri, String localName) {
     if (m_CdataElems == null) {
-      m_CdataElems = new java.util.Hashtable();
+      m_CdataElems = new HashMap<>();
     }
-
-    java.util.Hashtable h = (java.util.Hashtable) m_CdataElems.get(localName);
+    Map<String, String> h = m_CdataElems.get(localName);
     if (h == null) {
-      h = new java.util.Hashtable();
+      h = new HashMap<>();
       m_CdataElems.put(localName, h);
     }
     h.put(uri, uri);
-
   }
 
   /**
@@ -1517,10 +1504,10 @@ public abstract class SerializerBase implements SerializationHandler, Serializer
         }
       }
 
-      final java.util.Hashtable h = (java.util.Hashtable) m_CdataElems.get(m_elemContext.m_elementLocalName);
+      final Map<String, String> h = m_CdataElems.get(m_elemContext.m_elementLocalName);
       if (h != null) {
-        final Object obj = h.get(m_elemContext.m_elementURI);
-        if (obj != null) {
+        final String s = h.get(m_elemContext.m_elementURI);
+        if (s != null) {
           b = true;
         }
       }
@@ -1600,7 +1587,7 @@ public abstract class SerializerBase implements SerializationHandler, Serializer
    */
   @Override
   public Object asDOM3Serializer() throws IOException {
-    return new de.lyca.xml.serializer.dom3.DOM3SerializerImpl(this);
+    return new DOM3SerializerImpl(this);
   }
 
   /**
@@ -1637,33 +1624,33 @@ public abstract class SerializerBase implements SerializationHandler, Serializer
    * <xsl:output/> has an "encoding" attribute, this map will have what that
    * attribute maps to.
    */
-  private HashMap m_OutputProps;
+  private Map<String, String> m_OutputProps;
   /**
    * A mapping of keys to default values, for example if the default value of
    * the encoding is "UTF-8" then this map will have that "encoding" maps to
    * "UTF-8".
    */
-  private HashMap m_OutputPropsDefault;
+  private Map<String, String> m_OutputPropsDefault;
 
-  Set getOutputPropDefaultKeys() {
+  Set<String> getOutputPropDefaultKeys() {
     return m_OutputPropsDefault.keySet();
   }
 
-  Set getOutputPropKeys() {
+  Set<String> getOutputPropKeys() {
     return m_OutputProps.keySet();
   }
 
   private String getProp(String name, boolean defaultVal) {
     if (m_OutputProps == null) {
-      m_OutputProps = new HashMap();
-      m_OutputPropsDefault = new HashMap();
+      m_OutputProps = new HashMap<>();
+      m_OutputPropsDefault = new HashMap<>();
     }
 
     String val;
     if (defaultVal) {
-      val = (String) m_OutputPropsDefault.get(name);
+      val = m_OutputPropsDefault.get(name);
     } else {
-      val = (String) m_OutputProps.get(name);
+      val = m_OutputProps.get(name);
     }
 
     return val;
@@ -1684,8 +1671,8 @@ public abstract class SerializerBase implements SerializationHandler, Serializer
    */
   void setProp(String name, String val, boolean defaultVal) {
     if (m_OutputProps == null) {
-      m_OutputProps = new HashMap();
-      m_OutputPropsDefault = new HashMap();
+      m_OutputProps = new HashMap<>();
+      m_OutputPropsDefault = new HashMap<>();
     }
 
     if (defaultVal) {
@@ -1693,7 +1680,7 @@ public abstract class SerializerBase implements SerializationHandler, Serializer
     } else {
       if (OutputKeys.CDATA_SECTION_ELEMENTS.equals(name) && val != null) {
         initCdataElems(val);
-        final String oldVal = (String) m_OutputProps.get(name);
+        final String oldVal = m_OutputProps.get(name);
         String newVal;
         if (oldVal == null) {
           newVal = oldVal + ' ' + val;

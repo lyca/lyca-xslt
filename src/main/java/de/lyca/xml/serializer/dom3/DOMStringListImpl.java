@@ -20,7 +20,8 @@
  */
 package de.lyca.xml.serializer.dom3;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 //import org.apache.xerces.dom3.DOMStringList;
 import org.w3c.dom.DOMStringList;
@@ -33,19 +34,19 @@ import org.w3c.dom.DOMStringList;
 final class DOMStringListImpl implements DOMStringList {
 
   // A collection of DOMString values
-  private final Vector fStrings;
+  private final List<String> fStrings;
 
   /**
    * Construct an empty list of DOMStringListImpl
    */
   DOMStringListImpl() {
-    fStrings = new Vector();
+    fStrings = new ArrayList<String>();
   }
 
   /**
    * Construct an empty list of DOMStringListImpl
    */
-  DOMStringListImpl(Vector params) {
+  DOMStringListImpl(List<String> params) {
     fStrings = params;
   }
 
@@ -53,7 +54,7 @@ final class DOMStringListImpl implements DOMStringList {
    * Construct an empty list of DOMStringListImpl
    */
   DOMStringListImpl(String[] params) {
-    fStrings = new Vector();
+    fStrings = new ArrayList<String>();
     if (params != null) {
       for (int i = 0; i < params.length; i++) {
         fStrings.add(params[i]);
@@ -67,7 +68,7 @@ final class DOMStringListImpl implements DOMStringList {
   @Override
   public String item(int index) {
     try {
-      return (String) fStrings.elementAt(index);
+      return fStrings.get(index);
     } catch (final ArrayIndexOutOfBoundsException e) {
       return null;
     }

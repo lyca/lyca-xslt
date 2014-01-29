@@ -28,6 +28,7 @@ import java.io.Writer;
 import java.util.EmptyStackException;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -420,8 +421,10 @@ abstract public class ToStream extends SerializerBase {
                       errHandler.warning(new TransformerException(msg, m_sourceLocator));
                       errHandler.warning(new TransformerException(msg2, m_sourceLocator));
                     } else {
-                      System.out.println(msg);
-                      System.out.println(msg2);
+                      errHandler.warning(new TransformerException(msg));
+                      errHandler.warning(new TransformerException(msg2));
+                      // System.out.println(msg);
+                      // System.out.println(msg2);
                     }
                   } else {
                     System.out.println(msg);
@@ -585,10 +588,10 @@ abstract public class ToStream extends SerializerBase {
   public Properties getOutputFormat() {
     final Properties def = new Properties();
     {
-      final Set s = getOutputPropDefaultKeys();
-      final Iterator i = s.iterator();
+      final Set<String> s = getOutputPropDefaultKeys();
+      final Iterator<String> i = s.iterator();
       while (i.hasNext()) {
-        final String key = (String) i.next();
+        final String key = i.next();
         final String val = getOutputPropertyDefault(key);
         def.put(key, val);
       }
@@ -596,10 +599,10 @@ abstract public class ToStream extends SerializerBase {
 
     final Properties props = new Properties(def);
     {
-      final Set s = getOutputPropKeys();
-      final Iterator i = s.iterator();
+      final Set<String> s = getOutputPropKeys();
+      final Iterator<String> i = s.iterator();
       while (i.hasNext()) {
-        final String key = (String) i.next();
+        final String key = i.next();
         final String val = getOutputPropertyNonDefault(key);
         if (val != null) {
           props.put(key, val);
@@ -2653,19 +2656,19 @@ abstract public class ToStream extends SerializerBase {
    *          a vector of pairs of Strings (URI/local)
    */
   @Override
-  public void setCdataSectionElements(Vector URI_and_localNames) {
+  public void setCdataSectionElements(List URI_and_localNames) {
     // convert to the new way.
     if (URI_and_localNames != null) {
       final int len = URI_and_localNames.size() - 1;
       if (len > 0) {
-        final StringBuffer sb = new StringBuffer();
+        final StringBuilder sb = new StringBuilder();
         for (int i = 0; i < len; i += 2) {
           // whitspace separated "{uri1}local1 {uri2}local2 ..."
           if (i != 0) {
             sb.append(' ');
           }
-          final String uri = (String) URI_and_localNames.elementAt(i);
-          final String localName = (String) URI_and_localNames.elementAt(i + 1);
+          final String uri = (String) URI_and_localNames.get(i);
+          final String localName = (String) URI_and_localNames.get(i + 1);
           if (uri != null) {
             // If there is no URI don't put this in, just the localName then.
             sb.append('{');
@@ -2938,13 +2941,13 @@ abstract public class ToStream extends SerializerBase {
         // flush out the "<elemName" if not already flushed
         m_writer.flush();
 
-        // make a StringBuffer to write the name="value" pairs to.
-        final StringBuffer sb = new StringBuffer();
+        // make a StringBuilder to write the name="value" pairs to.
+        final StringBuilder sb = new StringBuilder();
         final int nAttrs = m_attributes.getLength();
         if (nAttrs > 0) {
           // make a writer that internally appends to the same
-          // StringBuffer
-          final java.io.Writer writer = new ToStream.WritertoStringBuffer(sb);
+          // StringBuilder
+          final java.io.Writer writer = new ToStream.WritertoStringBuilder(sb);
 
           processAttributes(writer, nAttrs);
           // Don't clear the attributes!
@@ -2952,7 +2955,7 @@ abstract public class ToStream extends SerializerBase {
           // at this point, we don't want to loose them.
         }
         sb.append('>'); // the potential > after the attributes.
-        // convert the StringBuffer to a char array and
+        // convert the StringBuilder to a char array and
         // emit the trace event that these characters "might"
         // be written
         final char ch[] = sb.toString().toCharArray();
@@ -2970,13 +2973,13 @@ abstract public class ToStream extends SerializerBase {
    * method writeAttrString() into a string buffer. In this manner trace events,
    * and the real writing of attributes will use the same code.
    */
-  private static class WritertoStringBuffer extends java.io.Writer {
-    final private StringBuffer m_stringbuf;
+  private static class WritertoStringBuilder extends java.io.Writer {
+    final private StringBuilder m_stringbuf;
 
     /**
      * @see java.io.Writer#write(char[], int, int)
      */
-    WritertoStringBuffer(StringBuffer sb) {
+    WritertoStringBuilder(StringBuilder sb) {
       m_stringbuf = sb;
     }
 

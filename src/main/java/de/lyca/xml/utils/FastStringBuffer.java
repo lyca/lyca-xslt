@@ -383,7 +383,7 @@ public class FastStringBuffer {
    * chunked array, as there is no factory method to produce a String object
    * directly from an array of arrays and hence a double copy is needed. By
    * using ensureCapacity we hope to minimize the heap overhead of building the
-   * intermediate StringBuffer.
+   * intermediate StringBuilder.
    * <p>
    * (It really is a pity that Java didn't design String as a final subclass of
    * MutableString, rather than having StringBuffer be a separate hierarchy.
@@ -396,7 +396,7 @@ public class FastStringBuffer {
 
     final int length = (m_lastChunk << m_chunkBits) + m_firstFree;
 
-    return getString(new StringBuffer(length), 0, 0, length).toString();
+    return getString(new StringBuilder(length), 0, 0, length).toString();
   }
 
   /**
@@ -533,16 +533,16 @@ public class FastStringBuffer {
   }
 
   /**
-   * Append the contents of a StringBuffer onto the FastStringBuffer, growing
+   * Append the contents of a StringBuilder onto the FastStringBuffer, growing
    * the storage if necessary.
    * <p>
    * NOTE THAT after calling append(), previously obtained references to
    * m_array[] may no longer be valid.
    * 
    * @param value
-   *          StringBuffer whose contents are to be appended.
+   *          StringBuilder whose contents are to be appended.
    */
-  public final void append(StringBuffer value) {
+  public final void append(StringBuilder value) {
 
     if (value == null)
       return;
@@ -833,7 +833,7 @@ public class FastStringBuffer {
     final int startChunk = start >>> m_chunkBits;
     if (startColumn + length < m_chunkMask && m_innerFSB == null)
       return getOneChunkString(startChunk, startColumn, length);
-    return getString(new StringBuffer(length), startChunk, startColumn, length).toString();
+    return getString(new StringBuilder(length), startChunk, startColumn, length).toString();
   }
 
   protected String getOneChunkString(int startChunk, int startColumn, int length) {
@@ -842,27 +842,27 @@ public class FastStringBuffer {
 
   /**
    * @param sb
-   *          StringBuffer to be appended to
+   *          StringBuilder to be appended to
    * @param start
    *          Offset of first character in the range.
    * @param length
    *          Number of characters to send.
    * @return sb with the requested text appended to it
    */
-  StringBuffer getString(StringBuffer sb, int start, int length) {
+  StringBuilder getString(StringBuilder sb, int start, int length) {
     return getString(sb, start >>> m_chunkBits, start & m_chunkMask, length);
   }
 
   /**
    * Internal support for toString() and getString(). PLEASE NOTE SIGNATURE
    * CHANGE from earlier versions; it now appends into and returns a
-   * StringBuffer supplied by the caller. This simplifies m_innerFSB support.
+   * StringBuilder supplied by the caller. This simplifies m_innerFSB support.
    * <p>
    * Note that this operation has been somewhat deoptimized by the shift to a
    * chunked array, as there is no factory method to produce a String object
    * directly from an array of arrays and hence a double copy is needed. By
    * presetting length we hope to minimize the heap overhead of building the
-   * intermediate StringBuffer.
+   * intermediate StringBuilder.
    * <p>
    * (It really is a pity that Java didn't design String as a final subclass of
    * MutableString, rather than having StringBuffer be a separate hierarchy.
@@ -876,14 +876,14 @@ public class FastStringBuffer {
    * 
    * @return the contents of the FastStringBuffer as a standard Java string.
    */
-  StringBuffer getString(StringBuffer sb, int startChunk, int startColumn, int length) {
+  StringBuilder getString(StringBuilder sb, int startChunk, int startColumn, int length) {
 
     final int stop = (startChunk << m_chunkBits) + startColumn + length;
     final int stopChunk = stop >>> m_chunkBits;
     final int stopColumn = stop & m_chunkMask;
 
     // Factored out
-    // StringBuffer sb=new StringBuffer(length);
+    // StringBuilder sb=new StringBuilder(length);
     for (int i = startChunk; i < stopChunk; ++i) {
       if (i == 0 && m_innerFSB != null) {
         m_innerFSB.getString(sb, startColumn, m_chunkSize - startColumn);

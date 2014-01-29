@@ -20,8 +20,9 @@
  */
 package de.lyca.xml.utils;
 
+import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.Vector;
+import java.util.List;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
@@ -555,10 +556,10 @@ public class DOMHelper {
   protected static final NSInfo m_NSInfoNullNoAncestorXMLNS = new NSInfo(true, false, NSInfo.ANCESTORNOXMLNS);
 
   /**
-   * Vector of node (odd indexes) and NSInfos (even indexes) that tell if the
+   * List of node (odd indexes) and NSInfos (even indexes) that tell if the
    * given node is a candidate for ancestor namespace processing.
    */
-  protected Vector m_candidateNoAncestorXMLNS = new Vector();
+  protected List m_candidateNoAncestorXMLNS = new ArrayList();
 
   /**
    * Returns the namespace of the given node. Differs from simply getting the
@@ -668,8 +669,8 @@ public class DOMHelper {
           if (Node.ATTRIBUTE_NODE == parentType) {
             parent = getParentOfNode(parent);
           } else {
-            m_candidateNoAncestorXMLNS.addElement(parent);
-            m_candidateNoAncestorXMLNS.addElement(nsInfo);
+            m_candidateNoAncestorXMLNS.add(parent);
+            m_candidateNoAncestorXMLNS.add(nsInfo);
 
             parent = parent.getParentNode();
           }
@@ -686,17 +687,17 @@ public class DOMHelper {
         if (nCandidates > 0) {
           if (false == ancestorsHaveXMLNS && null == parent) {
             for (int i = 0; i < nCandidates; i += 2) {
-              final Object candidateInfo = m_candidateNoAncestorXMLNS.elementAt(i + 1);
+              final Object candidateInfo = m_candidateNoAncestorXMLNS.get(i + 1);
 
               if (candidateInfo == m_NSInfoUnProcWithoutXMLNS) {
-                m_NSInfos.put(m_candidateNoAncestorXMLNS.elementAt(i), m_NSInfoUnProcNoAncestorXMLNS);
+                m_NSInfos.put(m_candidateNoAncestorXMLNS.get(i), m_NSInfoUnProcNoAncestorXMLNS);
               } else if (candidateInfo == m_NSInfoNullWithoutXMLNS) {
-                m_NSInfos.put(m_candidateNoAncestorXMLNS.elementAt(i), m_NSInfoNullNoAncestorXMLNS);
+                m_NSInfos.put(m_candidateNoAncestorXMLNS.get(i), m_NSInfoNullNoAncestorXMLNS);
               }
             }
           }
 
-          m_candidateNoAncestorXMLNS.removeAllElements();
+          m_candidateNoAncestorXMLNS.clear();
         }
       }
 

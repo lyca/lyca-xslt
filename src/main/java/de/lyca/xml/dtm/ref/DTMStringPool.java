@@ -21,7 +21,8 @@
 
 package de.lyca.xml.dtm.ref;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import de.lyca.xml.utils.IntVector;
 
@@ -65,7 +66,7 @@ import de.lyca.xml.utils.IntVector;
  * </p>
  * */
 public class DTMStringPool {
-  Vector m_intToString;
+  List m_intToString;
   static final int HASHPRIME = 101;
   int[] m_hashStart = new int[HASHPRIME];
   IntVector m_hashChain;
@@ -78,7 +79,7 @@ public class DTMStringPool {
    *          The size of the hash chain vector
    */
   public DTMStringPool(int chainSize) {
-    m_intToString = new Vector();
+    m_intToString = new ArrayList<>();
     m_hashChain = new IntVector(chainSize);
     removeAllElements();
 
@@ -91,7 +92,7 @@ public class DTMStringPool {
   }
 
   public void removeAllElements() {
-    m_intToString.removeAllElements();
+    m_intToString.clear();
     for (int i = 0; i < HASHPRIME; ++i) {
       m_hashStart[i] = NULL;
     }
@@ -106,7 +107,7 @@ public class DTMStringPool {
   public String indexToString(int i) throws java.lang.ArrayIndexOutOfBoundsException {
     if (i == NULL)
       return null;
-    return (String) m_intToString.elementAt(i);
+    return (String) m_intToString.get(i);
   }
 
   /** @return integer index uniquely identifying the value of this string. */
@@ -123,7 +124,7 @@ public class DTMStringPool {
     int hashlast = m_hashStart[hashslot];
     int hashcandidate = hashlast;
     while (hashcandidate != NULL) {
-      if (m_intToString.elementAt(hashcandidate).equals(s))
+      if (m_intToString.get(hashcandidate).equals(s))
         return hashcandidate;
 
       hashlast = hashcandidate;
@@ -132,12 +133,13 @@ public class DTMStringPool {
 
     // New value. Add to tables.
     final int newIndex = m_intToString.size();
-    m_intToString.addElement(s);
+    m_intToString.add(s);
 
     m_hashChain.addElement(NULL); // Initialize to no-following-same-hash
     if (hashlast == NULL) {
       m_hashStart[hashslot] = newIndex;
     } else {
+      // Link from previous with same hash
       m_hashChain.setElementAt(newIndex, hashlast);
     }
 

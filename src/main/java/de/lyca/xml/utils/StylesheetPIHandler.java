@@ -20,8 +20,9 @@
  */
 package de.lyca.xml.utils;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
-import java.util.Vector;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerException;
@@ -52,7 +53,7 @@ public class StylesheetPIHandler extends DefaultHandler {
   String m_charset;
 
   /** A list of SAXSource objects that match the criteria. */
-  Vector m_stylesheets = new Vector();
+  List<Source> m_stylesheets = new ArrayList<Source>();
 
   // Add code to use a URIResolver. Patch from Dmitri Ilyin.
 
@@ -114,7 +115,7 @@ public class StylesheetPIHandler extends DefaultHandler {
     final int sz = m_stylesheets.size();
 
     if (sz > 0) {
-      final Source source = (Source) m_stylesheets.elementAt(sz - 1);
+      final Source source = m_stylesheets.get(sz - 1);
       return source;
     } else
       return null;
@@ -258,7 +259,7 @@ public class StylesheetPIHandler extends DefaultHandler {
             return;
         }
 
-        m_stylesheets.addElement(source);
+        m_stylesheets.add(source);
       }
     }
   }

@@ -20,6 +20,8 @@
  */
 package de.lyca.xml.dtm.ref.sax2dtm;
 
+import java.util.ArrayList;
+
 import javax.xml.transform.Source;
 
 import org.xml.sax.SAXException;
@@ -214,7 +216,7 @@ public class SAX2RTFDTM extends SAX2DTM {
   public void startDocument() throws SAXException {
     // Re-initialize the tree append process
     m_endDocumentOccured = false;
-    m_prefixMappings = new java.util.Vector();
+    m_prefixMappings = new ArrayList<String>();
     m_contextIndexes = new IntStack();
     m_parents = new IntStack();
 
@@ -318,7 +320,8 @@ public class SAX2RTFDTM extends SAX2DTM {
 
     final int ds = top ? m_emptyNSDeclSetCount : mark_nsdeclset_size.pop();
     if (m_namespaceDeclSets != null) {
-      m_namespaceDeclSets.setSize(ds);
+      m_namespaceDeclSets = new ArrayList(m_namespaceDeclSets.subList(0, ds));
+      // TODO m_namespaceDeclSets.setSize(ds);
     }
 
     final int ds1 = top ? m_emptyNSDeclSetElemsCount : mark_nsdeclelem_size.pop();

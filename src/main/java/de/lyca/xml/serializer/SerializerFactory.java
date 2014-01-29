@@ -120,7 +120,7 @@ public final class SerializerFactory {
 
       final ClassLoader loader = ObjectFactory.findClassLoader();
 
-      Class cls = ObjectFactory.findProviderClass(className, loader, true);
+      Class<?> cls = ObjectFactory.findProviderClass(className, loader, true);
 
       // _serializers.put(method, cls);
 
