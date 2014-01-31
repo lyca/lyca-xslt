@@ -21,7 +21,7 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import java.util.Vector;
+import java.util.List;
 
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.PUSH;
@@ -38,7 +38,7 @@ import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
  */
 final class ElementAvailableCall extends FunctionCall {
 
-  public ElementAvailableCall(QName fname, Vector arguments) {
+  public ElementAvailableCall(QName fname, List<Expression> arguments) {
     super(fname, arguments);
   }
 

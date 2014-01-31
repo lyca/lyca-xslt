@@ -21,12 +21,13 @@
 
 package de.lyca.xalan.xsltc.dom;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 import de.lyca.xalan.xsltc.DOM;
 import de.lyca.xalan.xsltc.DOMEnhancedForDTM;
 import de.lyca.xalan.xsltc.runtime.BasisLibrary;
-import de.lyca.xalan.xsltc.runtime.Hashtable;
 import de.lyca.xalan.xsltc.util.IntegerArray;
 import de.lyca.xml.dtm.Axis;
 import de.lyca.xml.dtm.DTM;
@@ -47,7 +48,7 @@ public class KeyIndex extends DTMAxisIteratorBase {
    * A mapping between values and nodesets for the current document. Used only
    * while building keys.
    */
-  private Hashtable _index;
+  private Map<Object, IntegerArray> _index;
 
   /**
    * The document node currently being processed. Used only while building keys.
@@ -57,7 +58,7 @@ public class KeyIndex extends DTMAxisIteratorBase {
   /**
    * A mapping from a document node to the mapping between values and nodesets
    */
-  private Hashtable _rootToIndexMap = new Hashtable();
+  private Map<Integer, Map<Object, IntegerArray>> _rootToIndexMap = new HashMap<>();
 
   /**
    * The node set associated to the current value passed to lookupKey();
@@ -91,11 +92,11 @@ public class KeyIndex extends DTMAxisIteratorBase {
   public void add(Object value, int node, int rootNode) {
     if (_currentDocumentNode != rootNode) {
       _currentDocumentNode = rootNode;
-      _index = new Hashtable();
-      _rootToIndexMap.put(new Integer(rootNode), _index);
+      _index = new HashMap<>();
+      _rootToIndexMap.put(rootNode, _index);
     }
 
-    IntegerArray nodes = (IntegerArray) _index.get(value);
+    IntegerArray nodes = _index.get(value);
 
     if (nodes == null) {
       nodes = new IntegerArray();
@@ -144,7 +145,7 @@ public class KeyIndex extends DTMAxisIteratorBase {
     final StringTokenizer values = new StringTokenizer((String) value, " \n\t");
     while (values.hasMoreElements()) {
       final String token = (String) values.nextElement();
-      IntegerArray nodes = (IntegerArray) _index.get(token);
+      IntegerArray nodes = _index.get(token);
 
       if (nodes == null && _enhancedDOM != null && _enhancedDOM.hasDOMSource()) {
         nodes = getDOMNodeById(token);
@@ -177,14 +178,14 @@ public class KeyIndex extends DTMAxisIteratorBase {
       final int ident = _enhancedDOM.getElementById(id);
 
       if (ident != DTM.NULL) {
-        final Integer root = new Integer(_enhancedDOM.getDocument());
-        Hashtable index = (Hashtable) _rootToIndexMap.get(root);
+        final Integer root = _enhancedDOM.getDocument();
+        Map<Object, IntegerArray> index = _rootToIndexMap.get(root);
 
         if (index == null) {
-          index = new Hashtable();
+          index = new HashMap<>();
           _rootToIndexMap.put(root, index);
         } else {
-          nodes = (IntegerArray) index.get(id);
+          nodes = index.get(id);
         }
 
         if (nodes == null) {
@@ -213,7 +214,7 @@ public class KeyIndex extends DTMAxisIteratorBase {
    */
   @Deprecated
   public void lookupKey(Object value) {
-    final IntegerArray nodes = (IntegerArray) _index.get(value);
+    final IntegerArray nodes = _index.get(value);
     _nodes = nodes != null ? (IntegerArray) nodes.clone() : null;
     _position = 0;
   }
@@ -257,7 +258,7 @@ public class KeyIndex extends DTMAxisIteratorBase {
     final int rootHandle = _dom.getAxisIterator(Axis.ROOT).setStartNode(node).next();
 
     // Get the mapping table for the document containing the context node
-    final Hashtable index = (Hashtable) _rootToIndexMap.get(new Integer(rootHandle));
+    final Map<Object, IntegerArray> index = _rootToIndexMap.get(rootHandle);
 
     // Split argument to id function into XML whitespace separated tokens
     final StringTokenizer values = new StringTokenizer(string, " \n\t");
@@ -267,7 +268,7 @@ public class KeyIndex extends DTMAxisIteratorBase {
       IntegerArray nodes = null;
 
       if (index != null) {
-        nodes = (IntegerArray) index.get(token);
+        nodes = index.get(token);
       }
 
       // If input was from W3C DOM, use DOM's getElementById to do
@@ -310,12 +311,12 @@ public class KeyIndex extends DTMAxisIteratorBase {
     final int rootHandle = _dom.getAxisIterator(Axis.ROOT).setStartNode(node).next();
 
     // Get the mapping table for the document containing the context node
-    final Hashtable index = (Hashtable) _rootToIndexMap.get(new Integer(rootHandle));
+    final Map<Object, IntegerArray> index = _rootToIndexMap.get(rootHandle);
 
     // Check whether the context node is present in the set of nodes
     // returned by the key function
     if (index != null) {
-      final IntegerArray nodes = (IntegerArray) index.get(value);
+      final IntegerArray nodes = index.get(value);
       return nodes != null && nodes.indexOf(node) >= 0 ? 1 : 0;
     }
 
@@ -771,7 +772,7 @@ public class KeyIndex extends DTMAxisIteratorBase {
       IntegerArray result = null;
 
       // Get mapping from key values/IDs to DTM nodes for this document
-      final Hashtable index = (Hashtable) _rootToIndexMap.get(new Integer(root));
+      final Map<Object, IntegerArray> index = _rootToIndexMap.get(root);
 
       if (!_isKeyIterator) {
         // For id function, tokenize argument as whitespace separated
@@ -784,7 +785,7 @@ public class KeyIndex extends DTMAxisIteratorBase {
 
           // Does the ID map to any node in the document?
           if (index != null) {
-            nodes = (IntegerArray) index.get(token);
+            nodes = index.get(token);
           }
 
           // If input was from W3C DOM, use DOM's getElementById to do
@@ -805,7 +806,7 @@ public class KeyIndex extends DTMAxisIteratorBase {
         }
       } else if (index != null) {
         // For key function, map key value to nodes
-        result = (IntegerArray) index.get(keyValue);
+        result = index.get(keyValue);
       }
 
       return result;
@@ -902,7 +903,6 @@ public class KeyIndex extends DTMAxisIteratorBase {
         }
       } else {
         final DTMAxisIterator keyValues = _keyValueIterator.reset();
-        final int retrievedKeyValueIdx = 0;
         boolean foundNodes = false;
 
         _nodes = null;

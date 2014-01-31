@@ -41,9 +41,9 @@ public interface Translet {
   public void buildKeys(DOM document, DTMAxisIterator iterator, SerializationHandler handler, int root)
           throws TransletException;
 
-  public void addAuxiliaryClass(Class auxClass);
+  public void addAuxiliaryClass(Class<?> auxClass);
 
-  public Class getAuxiliaryClass(String className);
+  public Class<?> getAuxiliaryClass(String className);
 
   public String[] getNamesArray();
 

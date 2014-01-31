@@ -21,7 +21,7 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import java.util.Vector;
+import java.util.List;
 
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.GETFIELD;
@@ -48,7 +48,7 @@ final class DocumentCall extends FunctionCall {
   /**
    * Default function call constructor
    */
-  public DocumentCall(QName fname, Vector arguments) {
+  public DocumentCall(QName fname, List<Expression> arguments) {
     super(fname, arguments);
   }
 

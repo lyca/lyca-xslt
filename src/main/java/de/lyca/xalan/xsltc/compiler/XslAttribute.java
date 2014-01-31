@@ -21,7 +21,7 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import java.util.Vector;
+import java.util.List;
 
 import org.apache.bcel.generic.ALOAD;
 import org.apache.bcel.generic.ASTORE;
@@ -103,9 +103,8 @@ final class XslAttribute extends Instruction {
 
     // Ignore attribute if preceeded by some other type of element
     final SyntaxTreeNode parent = getParent();
-    final Vector siblings = parent.getContents();
-    for (int i = 0; i < parent.elementCount(); i++) {
-      final SyntaxTreeNode item = (SyntaxTreeNode) siblings.elementAt(i);
+    final List<SyntaxTreeNode> siblings = parent.getContents();
+    for (final SyntaxTreeNode item : siblings) {
       if (item == this) {
         break;
       }

@@ -21,12 +21,13 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
+import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Iterator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
-import java.util.Vector;
 
 import org.apache.bcel.generic.ANEWARRAY;
 import org.apache.bcel.generic.ConstantPoolGen;
@@ -37,7 +38,6 @@ import org.apache.bcel.generic.INVOKEINTERFACE;
 import org.apache.bcel.generic.INVOKESPECIAL;
 import org.apache.bcel.generic.INVOKEVIRTUAL;
 import org.apache.bcel.generic.ISTORE;
-import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.LocalVariableGen;
 import org.apache.bcel.generic.NEW;
@@ -45,9 +45,8 @@ import org.apache.bcel.generic.NEWARRAY;
 import org.apache.bcel.generic.PUSH;
 import org.apache.bcel.generic.PUTFIELD;
 import org.apache.bcel.generic.PUTSTATIC;
-import org.apache.bcel.generic.TargetLostException;
-import org.apache.bcel.util.InstructionFinder;
 
+import de.lyca.xalan.xsltc.compiler.Whitespace.WhitespaceRule;
 import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
@@ -83,7 +82,7 @@ public final class Stylesheet extends SyntaxTreeNode {
   /**
    * Contains global variables and parameters defined in the stylesheet.
    */
-  private final Vector _globals = new Vector();
+  private final List<VariableBase> _globals = new ArrayList<VariableBase>();
 
   /**
    * Used to cache the result returned by <code>hasLocalParams()</code>.
@@ -98,15 +97,13 @@ public final class Stylesheet extends SyntaxTreeNode {
   /**
    * Contains all templates defined in this stylesheet
    */
-  private final Vector _templates = new Vector();
+  private final List<Template> _templates = new ArrayList<Template>();
 
   /**
    * Used to cache result of <code>getAllValidTemplates()</code>. Only set in
    * top-level stylesheets that include/import other stylesheets.
    */
-  private Vector _allValidTemplates = null;
-
-  private final Vector _elementsWithNamespacesUsedDynamically = null;
+  private List<Template> _allValidTemplates = null;
 
   /**
    * Counter to generate unique mode suffixes.
@@ -116,7 +113,7 @@ public final class Stylesheet extends SyntaxTreeNode {
   /**
    * Mapping between mode names and Mode instances.
    */
-  private final Hashtable _modes = new Hashtable();
+  private final Map<QName, Mode> _modes = new HashMap<>();
 
   /**
    * A reference to the default Mode object.
@@ -126,7 +123,7 @@ public final class Stylesheet extends SyntaxTreeNode {
   /**
    * Mapping between extension URIs and their prefixes.
    */
-  private final Hashtable _extensions = new Hashtable();
+  private final Map<String, String> _extensions = new HashMap<>();
 
   /**
    * Reference to the stylesheet from which this stylesheet was imported (if
@@ -143,7 +140,7 @@ public final class Stylesheet extends SyntaxTreeNode {
   /**
    * Array of all the stylesheets imported or included from this one.
    */
-  private Vector _includedStylesheets = null;
+  private List<Stylesheet> _includedStylesheets = null;
 
   /**
    * Import precendence for this stylesheet.
@@ -159,7 +156,7 @@ public final class Stylesheet extends SyntaxTreeNode {
   /**
    * Mapping between key names and Key objects (needed by Key/IdPattern).
    */
-  private final Hashtable _keys = new Hashtable();
+  private final Map<String, Key> _keys = new HashMap<>();
 
   /**
    * A reference to the SourceLoader set by the user (a URIResolver if the JAXP
@@ -324,9 +321,9 @@ public final class Stylesheet extends SyntaxTreeNode {
     _importPrecedence = precedence;
 
     // Set import precedence for all included stylesheets
-    final Enumeration elements = elements();
+    final Enumeration<SyntaxTreeNode> elements = elements();
     while (elements.hasMoreElements()) {
-      final SyntaxTreeNode child = (SyntaxTreeNode) elements.nextElement();
+      final SyntaxTreeNode child = elements.nextElement();
       if (child instanceof Include) {
         final Stylesheet included = ((Include) child).getIncludedStylesheet();
         if (included != null && included._includedFrom == this) {
@@ -370,7 +367,7 @@ public final class Stylesheet extends SyntaxTreeNode {
       final int inclImpCount = _includedStylesheets != null ? _includedStylesheets.size() : 0;
 
       for (int i = 0; i < inclImpCount; i++) {
-        final int prec = ((Stylesheet) _includedStylesheets.elementAt(i)).getMinimumDescendantPrecedence();
+        final int prec = _includedStylesheets.get(i).getMinimumDescendantPrecedence();
 
         if (prec < min) {
           min = prec;
@@ -419,9 +416,9 @@ public final class Stylesheet extends SyntaxTreeNode {
 
   public void addIncludedStylesheet(Stylesheet child) {
     if (_includedStylesheets == null) {
-      _includedStylesheets = new Vector();
+      _includedStylesheets = new ArrayList<Stylesheet>();
     }
-    _includedStylesheets.addElement(child);
+    _includedStylesheets.add(child);
   }
 
   public void setSystemId(String systemId) {
@@ -459,10 +456,10 @@ public final class Stylesheet extends SyntaxTreeNode {
    */
   public boolean hasLocalParams() {
     if (_hasLocalParams == null) {
-      final Vector templates = getAllValidTemplates();
+      final List<Template> templates = getAllValidTemplates();
       final int n = templates.size();
       for (int i = 0; i < n; i++) {
-        final Template template = (Template) templates.elementAt(i);
+        final Template template = templates.get(i);
         if (template.hasParams()) {
           _hasLocalParams = Boolean.TRUE;
           return true;
@@ -573,13 +570,13 @@ public final class Stylesheet extends SyntaxTreeNode {
     stable.excludeNamespaces(excludePrefixes);
     stable.excludeNamespaces(extensionPrefixes);
 
-    final Vector contents = getContents();
+    final List<SyntaxTreeNode> contents = getContents();
     final int count = contents.size();
 
     // We have to scan the stylesheet element's top-level elements for
     // variables and/or parameters before we parse the other elements
     for (int i = 0; i < count; i++) {
-      final SyntaxTreeNode child = (SyntaxTreeNode) contents.elementAt(i);
+      final SyntaxTreeNode child = contents.get(i);
       if (child instanceof VariableBase || child instanceof NamespaceAlias) {
         parser.getSymbolTable().setCurrentNode(child);
         child.parseContents(parser);
@@ -588,7 +585,7 @@ public final class Stylesheet extends SyntaxTreeNode {
 
     // Now go through all the other top-level elements...
     for (int i = 0; i < count; i++) {
-      final SyntaxTreeNode child = (SyntaxTreeNode) contents.elementAt(i);
+      final SyntaxTreeNode child = contents.get(i);
       if (!(child instanceof VariableBase) && !(child instanceof NamespaceAlias)) {
         parser.getSymbolTable().setCurrentNode(child);
         child.parseContents(parser);
@@ -610,19 +607,15 @@ public final class Stylesheet extends SyntaxTreeNode {
     if (_defaultMode == null) {
       _defaultMode = new Mode(null, this, Constants.EMPTYSTRING);
     }
-    _defaultMode.processPatterns(_keys);
-    final Enumeration modes = _modes.elements();
-    while (modes.hasMoreElements()) {
-      final Mode mode = (Mode) modes.nextElement();
-      mode.processPatterns(_keys);
+    _defaultMode.processPatterns();
+    for (final Mode mode : _modes.values()) {
+      mode.processPatterns();
     }
   }
 
   private void compileModes(ClassGenerator classGen) {
     _defaultMode.compileApplyTemplates(classGen);
-    final Enumeration modes = _modes.elements();
-    while (modes.hasMoreElements()) {
-      final Mode mode = (Mode) modes.nextElement();
+    for (final Mode mode : _modes.values()) {
       mode.compileApplyTemplates(classGen);
     }
   }
@@ -634,7 +627,7 @@ public final class Stylesheet extends SyntaxTreeNode {
       }
       return _defaultMode;
     } else {
-      Mode mode = (Mode) _modes.get(modeName);
+      Mode mode = _modes.get(modeName);
       if (mode == null) {
         final String suffix = Integer.toString(_nextModeSerial++);
         _modes.put(modeName, mode = new Mode(modeName, this, suffix));
@@ -650,7 +643,7 @@ public final class Stylesheet extends SyntaxTreeNode {
   public Type typeCheck(SymbolTable stable) throws TypeCheckError {
     final int count = _globals.size();
     for (int i = 0; i < count; i++) {
-      final VariableBase var = (VariableBase) _globals.elementAt(i);
+      final VariableBase var = _globals.get(i);
       var.typeCheck(stable);
     }
     return typeCheckContents(stable);
@@ -697,9 +690,9 @@ public final class Stylesheet extends SyntaxTreeNode {
     compileTransform(classGen);
 
     // Translate all non-template elements and filter out all templates
-    final Enumeration elements = elements();
+    final Enumeration<SyntaxTreeNode> elements = elements();
     while (elements.hasMoreElements()) {
-      final Object element = elements.nextElement();
+      final SyntaxTreeNode element = elements.nextElement();
       // xsl:template
       if (element instanceof Template) {
         // Separate templates by modes
@@ -813,7 +806,7 @@ public final class Stylesheet extends SyntaxTreeNode {
     }
 
     // Put the names array into the translet - used for dom/translet mapping
-    final Vector namesIndex = getXSLTC().getNamesIndex();
+    final List<String> namesIndex = getXSLTC().getNamesIndex();
     final int size = namesIndex.size();
     final String[] namesArray = new String[size];
     final String[] urisArray = new String[size];
@@ -821,7 +814,7 @@ public final class Stylesheet extends SyntaxTreeNode {
 
     int index;
     for (int i = 0; i < size; i++) {
-      final String encodedName = (String) namesIndex.elementAt(i);
+      final String encodedName = namesIndex.get(i);
       if ((index = encodedName.lastIndexOf(':')) > -1) {
         urisArray[i] = encodedName.substring(0, index);
       }
@@ -896,7 +889,7 @@ public final class Stylesheet extends SyntaxTreeNode {
     }
 
     // Put the namespace names array into the translet
-    final Vector namespaces = getXSLTC().getNamespaceIndex();
+    final List<String> namespaces = getXSLTC().getNamespaceIndex();
     staticConst.markChunkStart();
     il.append(new PUSH(cpg, namespaces.size()));
     il.append(new ANEWARRAY(cpg.addClass(STRING)));
@@ -905,7 +898,7 @@ public final class Stylesheet extends SyntaxTreeNode {
     staticConst.markChunkEnd();
 
     for (int i = 0; i < namespaces.size(); i++) {
-      final String ns = (String) namespaces.elementAt(i);
+      final String ns = namespaces.get(i);
       staticConst.markChunkStart();
       il.append(new GETSTATIC(namespaceArrayRef));
       il.append(new PUSH(cpg, i));
@@ -915,7 +908,7 @@ public final class Stylesheet extends SyntaxTreeNode {
     }
 
     // Put the tree of stylesheet namespace declarations into the translet
-    final Vector namespaceAncestors = getXSLTC().getNSAncestorPointers();
+    final List<Integer> namespaceAncestors = getXSLTC().getNSAncestorPointers();
     if (namespaceAncestors != null && namespaceAncestors.size() != 0) {
       addStaticField(classGen, NS_ANCESTORS_INDEX_SIG, STATIC_NS_ANCESTORS_ARRAY_FIELD);
       staticConst.markChunkStart();
@@ -926,7 +919,7 @@ public final class Stylesheet extends SyntaxTreeNode {
       il.append(new PUTSTATIC(namespaceAncestorsArrayRef));
       staticConst.markChunkEnd();
       for (int i = 0; i < namespaceAncestors.size(); i++) {
-        final int ancestor = ((Integer) namespaceAncestors.get(i)).intValue();
+        final int ancestor = namespaceAncestors.get(i).intValue();
         staticConst.markChunkStart();
         il.append(new GETSTATIC(namespaceAncestorsArrayRef));
         il.append(new PUSH(cpg, i));
@@ -937,7 +930,7 @@ public final class Stylesheet extends SyntaxTreeNode {
     }
     // Put the array of indices into the namespace prefix/URI pairs array
     // into the translet
-    final Vector prefixURIPairsIdx = getXSLTC().getPrefixURIPairsIdx();
+    final List<Integer> prefixURIPairsIdx = getXSLTC().getPrefixURIPairsIdx();
     if (prefixURIPairsIdx != null && prefixURIPairsIdx.size() != 0) {
       addStaticField(classGen, PREFIX_URIS_IDX_SIG, STATIC_PREFIX_URIS_IDX_ARRAY_FIELD);
       staticConst.markChunkStart();
@@ -948,7 +941,7 @@ public final class Stylesheet extends SyntaxTreeNode {
       il.append(new PUTSTATIC(prefixURIPairsIdxArrayRef));
       staticConst.markChunkEnd();
       for (int i = 0; i < prefixURIPairsIdx.size(); i++) {
-        final int idx = ((Integer) prefixURIPairsIdx.get(i)).intValue();
+        final int idx = prefixURIPairsIdx.get(i).intValue();
         staticConst.markChunkStart();
         il.append(new GETSTATIC(prefixURIPairsIdxArrayRef));
         il.append(new PUSH(cpg, i));
@@ -960,7 +953,7 @@ public final class Stylesheet extends SyntaxTreeNode {
 
     // Put the array of pairs of namespace prefixes and URIs into the
     // translet
-    final Vector prefixURIPairs = getXSLTC().getPrefixURIPairs();
+    final List<String> prefixURIPairs = getXSLTC().getPrefixURIPairs();
     if (prefixURIPairs != null && prefixURIPairs.size() != 0) {
       addStaticField(classGen, PREFIX_URIS_ARRAY_SIG, STATIC_PREFIX_URIS_ARRAY_FIELD);
 
@@ -971,7 +964,7 @@ public final class Stylesheet extends SyntaxTreeNode {
       il.append(new PUTSTATIC(prefixURIPairsRef));
       staticConst.markChunkEnd();
       for (int i = 0; i < prefixURIPairs.size(); i++) {
-        final String prefixOrURI = (String) prefixURIPairs.get(i);
+        final String prefixOrURI = prefixURIPairs.get(i);
         staticConst.markChunkStart();
         il.append(new GETSTATIC(prefixURIPairsRef));
         il.append(new PUSH(cpg, i));
@@ -1111,12 +1104,12 @@ public final class Stylesheet extends SyntaxTreeNode {
     current.setStart(il.append(new ISTORE(current.getIndex())));
 
     // Create a new list containing variables/params + keys
-    Vector varDepElements = new Vector(_globals);
-    Enumeration elements = elements();
+    List<TopLevelElement> varDepElements = new ArrayList<TopLevelElement>(_globals);
+    Enumeration<SyntaxTreeNode> elements = elements();
     while (elements.hasMoreElements()) {
-      final Object element = elements.nextElement();
+      final SyntaxTreeNode element = elements.nextElement();
       if (element instanceof Key) {
-        varDepElements.add(element);
+        varDepElements.add((Key) element);
       }
     }
 
@@ -1126,7 +1119,7 @@ public final class Stylesheet extends SyntaxTreeNode {
     // Translate vars/params and keys in the right order
     final int count = varDepElements.size();
     for (int i = 0; i < count; i++) {
-      final TopLevelElement tle = (TopLevelElement) varDepElements.elementAt(i);
+      final TopLevelElement tle = varDepElements.get(i);
       tle.translate(classGen, toplevel);
       if (tle instanceof Key) {
         final Key key = (Key) tle;
@@ -1135,7 +1128,7 @@ public final class Stylesheet extends SyntaxTreeNode {
     }
 
     // Compile code for other top-level elements
-    final Vector whitespaceRules = new Vector();
+    final List<WhitespaceRule> whitespaceRules = new ArrayList<WhitespaceRule>();
     elements = elements();
     while (elements.hasMoreElements()) {
       final Object element = elements.nextElement();
@@ -1169,31 +1162,31 @@ public final class Stylesheet extends SyntaxTreeNode {
   }
 
   /**
-   * This method returns a vector with variables/params and keys in the order in
+   * This method returns a list with variables/params and keys in the order in
    * which they are to be compiled for initialization. The order is determined
    * by analyzing the dependencies between them. The XSLT 1.0 spec does not
    * allow a key to depend on a variable. However, for compatibility with Xalan
    * interpretive, that type of dependency is allowed and, therefore, consider
    * to determine the partial order.
    */
-  private Vector resolveDependencies(Vector input) {
+  private List<TopLevelElement> resolveDependencies(List<TopLevelElement> input) {
     /*
      * DEBUG CODE - INGORE for (int i = 0; i < input.size(); i++) { final
      * TopLevelElement e = (TopLevelElement) input.elementAt(i);
-     * System.out.println("e = " + e + " depends on:"); Vector dep =
-     * e.getDependencies(); for (int j = 0; j < (dep != null ? dep.size() : 0);
-     * j++) { System.out.println("\t" + dep.elementAt(j)); } }
+     * System.out.println("e = " + e + " depends on:"); List<TopLevelElement>
+     * dep = e.getDependencies(); for (int j = 0; j < (dep != null ? dep.size()
+     * : 0); j++) { System.out.println("\t" + dep.get(j)); } }
      * System.out.println("=================================");
      */
 
-    final Vector result = new Vector();
+    final List<TopLevelElement> result = new ArrayList<>();
     while (input.size() > 0) {
       boolean changed = false;
       for (int i = 0; i < input.size();) {
-        final TopLevelElement vde = (TopLevelElement) input.elementAt(i);
-        final Vector dep = vde.getDependencies();
+        final TopLevelElement vde = input.get(i);
+        final List<TopLevelElement> dep = vde.getDependencies();
         if (dep == null || result.containsAll(dep)) {
-          result.addElement(vde);
+          result.add(vde);
           input.remove(i);
           changed = true;
         } else {
@@ -1226,8 +1219,6 @@ public final class Stylesheet extends SyntaxTreeNode {
    * document() function.
    */
   private String compileBuildKeys(ClassGenerator classGen) {
-    final ConstantPoolGen cpg = classGen.getConstantPool();
-
     final org.apache.bcel.generic.Type[] argTypes = { Util.getJCRefType(DOM_INTF_SIG),
             Util.getJCRefType(NODE_ITERATOR_SIG), Util.getJCRefType(TRANSLET_OUTPUT_SIG),
             org.apache.bcel.generic.Type.INT };
@@ -1241,7 +1232,7 @@ public final class Stylesheet extends SyntaxTreeNode {
 
     buildKeys.addException("de.lyca.xalan.xsltc.TransletException");
 
-    final Enumeration elements = elements();
+    final Enumeration<SyntaxTreeNode> elements = elements();
     while (elements.hasMoreElements()) {
       // xsl:key
       final Object element = elements.nextElement();
@@ -1336,10 +1327,10 @@ public final class Stylesheet extends SyntaxTreeNode {
      * method is still needed by the LoadDocument class.
      */
     final String keySig = compileBuildKeys(classGen);
-    final int keyIdx = cpg.addMethodref(getClassName(), "buildKeys", keySig);
+    cpg.addMethodref(getClassName(), "buildKeys", keySig);
 
     // Look for top-level elements that need handling
-    final Enumeration toplevel = elements();
+    final Enumeration<SyntaxTreeNode> toplevel = elements();
     if (_globals.size() > 0 || toplevel.hasMoreElements()) {
       // Compile method for handling top-level elements
       final String topLevelSig = compileTopLevel(classGen);
@@ -1380,27 +1371,27 @@ public final class Stylesheet extends SyntaxTreeNode {
   /**
    * Peephole optimization: Remove sequences of [ALOAD, POP].
    */
-  private void peepHoleOptimization(MethodGenerator methodGen) {
-    final String pattern = "`aload'`pop'`instruction'";
-    final InstructionList il = methodGen.getInstructionList();
-    final InstructionFinder find = new InstructionFinder(il);
-    for (final Iterator iter = find.search(pattern); iter.hasNext();) {
-      final InstructionHandle[] match = (InstructionHandle[]) iter.next();
-      try {
-        il.delete(match[0], match[1]);
-      } catch (final TargetLostException e) {
-        // TODO: move target down into the list
-      }
-    }
-  }
+  // private void peepHoleOptimization(MethodGenerator methodGen) {
+  // final String pattern = "`aload'`pop'`instruction'";
+  // final InstructionList il = methodGen.getInstructionList();
+  // final InstructionFinder find = new InstructionFinder(il);
+  // for (Iterator iter = find.search(pattern); iter.hasNext();) {
+  // InstructionHandle[] match = (InstructionHandle[]) iter.next();
+  // try {
+  // il.delete(match[0], match[1]);
+  // } catch (TargetLostException e) {
+  // // TODO: move target down into the list
+  // }
+  // }
+  // }
 
   public int addParam(Param param) {
-    _globals.addElement(param);
+    _globals.add(param);
     return _globals.size() - 1;
   }
 
   public int addVariable(Variable global) {
-    _globals.addElement(global);
+    _globals.add(global);
     return _globals.size() - 1;
   }
 
@@ -1420,21 +1411,21 @@ public final class Stylesheet extends SyntaxTreeNode {
     return _className;
   }
 
-  public Vector getTemplates() {
+  public List<Template> getTemplates() {
     return _templates;
   }
 
-  public Vector getAllValidTemplates() {
+  public List<Template> getAllValidTemplates() {
     // Return templates if no imported/included stylesheets
     if (_includedStylesheets == null)
       return _templates;
 
     // Is returned value cached?
     if (_allValidTemplates == null) {
-      final Vector templates = new Vector();
+      final List<Template> templates = new ArrayList<Template>();
       final int size = _includedStylesheets.size();
       for (int i = 0; i < size; i++) {
-        final Stylesheet included = (Stylesheet) _includedStylesheets.elementAt(i);
+        final Stylesheet included = _includedStylesheets.get(i);
         templates.addAll(included.getAllValidTemplates());
       }
       templates.addAll(_templates);
@@ -1449,6 +1440,6 @@ public final class Stylesheet extends SyntaxTreeNode {
   }
 
   protected void addTemplate(Template template) {
-    _templates.addElement(template);
+    _templates.add(template);
   }
 }

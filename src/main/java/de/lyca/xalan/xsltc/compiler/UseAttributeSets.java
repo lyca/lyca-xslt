@@ -21,8 +21,9 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
-import java.util.Vector;
 
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.INVOKESPECIAL;
@@ -45,7 +46,7 @@ final class UseAttributeSets extends Instruction {
   private final static String ATTR_SET_NOT_FOUND = "";
 
   // Contains the names of all references attribute sets
-  private final Vector _sets = new Vector(2);
+  private final List<QName> _sets = new ArrayList<QName>(2);
 
   /**
    * Constructur - define initial attribute sets to use
@@ -91,7 +92,7 @@ final class UseAttributeSets extends Instruction {
     // Go through each attribute set and generate a method call
     for (int i = 0; i < _sets.size(); i++) {
       // Get the attribute set name
-      final QName name = (QName) _sets.elementAt(i);
+      final QName name = _sets.get(i);
       // Get the AttributeSet reference from the symbol table
       final AttributeSet attrs = symbolTable.lookupAttributeSet(name);
       // Compile the call to the set's method if the set exists

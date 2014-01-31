@@ -26,6 +26,7 @@ import java.io.OutputStream;
 import java.io.Writer;
 
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
 
 import org.w3c.dom.Node;
 import org.xml.sax.ContentHandler;
@@ -109,7 +110,8 @@ public class TransletOutputHandlerFactory {
     _indentNumber = value;
   }
 
-  public SerializationHandler getSerializationHandler() throws IOException, ParserConfigurationException {
+  public SerializationHandler getSerializationHandler(Transformer transformer) throws IOException,
+          ParserConfigurationException {
     SerializationHandler result = null;
     switch (_outputType) {
       case STREAM:
@@ -129,6 +131,8 @@ public class TransletOutputHandlerFactory {
           result = new ToTextStream();
 
         }
+
+        result.setTransformer(transformer);
 
         if (result != null && _indentNumber >= 0) {
           result.setIndentAmount(_indentNumber);

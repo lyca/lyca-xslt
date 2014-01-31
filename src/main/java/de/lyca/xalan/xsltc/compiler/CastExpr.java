@@ -21,6 +21,13 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.IF_ICMPNE;
 import org.apache.bcel.generic.INVOKEINTERFACE;
@@ -31,7 +38,6 @@ import de.lyca.xalan.xsltc.compiler.util.BooleanType;
 import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
-import de.lyca.xalan.xsltc.compiler.util.MultiHashtable;
 import de.lyca.xalan.xsltc.compiler.util.NodeType;
 import de.lyca.xalan.xsltc.compiler.util.ResultTreeType;
 import de.lyca.xalan.xsltc.compiler.util.Type;
@@ -50,73 +56,62 @@ final class CastExpr extends Expression {
   /**
    * Legal conversions between internal types.
    */
-  static private MultiHashtable InternalTypeMap = new MultiHashtable();
+  private static Map<Type, Set<Type>> InternalTypeMap = new HashMap<>();
 
   static {
     // Possible type conversions between internal types
-    InternalTypeMap.put(Type.Boolean, Type.Boolean);
-    InternalTypeMap.put(Type.Boolean, Type.Real);
-    InternalTypeMap.put(Type.Boolean, Type.String);
-    InternalTypeMap.put(Type.Boolean, Type.Reference);
-    InternalTypeMap.put(Type.Boolean, Type.Object);
+    InternalTypeMap.put(
+            Type.Boolean,
+            new HashSet<>(Arrays
+                    .asList(new Type[] { Type.Boolean, Type.Real, Type.String, Type.Reference, Type.Object })));
 
-    InternalTypeMap.put(Type.Real, Type.Real);
-    InternalTypeMap.put(Type.Real, Type.Int);
-    InternalTypeMap.put(Type.Real, Type.Boolean);
-    InternalTypeMap.put(Type.Real, Type.String);
-    InternalTypeMap.put(Type.Real, Type.Reference);
-    InternalTypeMap.put(Type.Real, Type.Object);
+    InternalTypeMap.put(
+            Type.Real,
+            new HashSet<>(Arrays.asList(new Type[] { Type.Real, Type.Int, Type.Boolean, Type.String, Type.Reference,
+                    Type.Object })));
 
-    InternalTypeMap.put(Type.Int, Type.Int);
-    InternalTypeMap.put(Type.Int, Type.Real);
-    InternalTypeMap.put(Type.Int, Type.Boolean);
-    InternalTypeMap.put(Type.Int, Type.String);
-    InternalTypeMap.put(Type.Int, Type.Reference);
-    InternalTypeMap.put(Type.Int, Type.Object);
+    InternalTypeMap.put(
+            Type.Int,
+            new HashSet<>(Arrays.asList(new Type[] { Type.Int, Type.Real, Type.Boolean, Type.String, Type.Reference,
+                    Type.Object })));
 
-    InternalTypeMap.put(Type.String, Type.String);
-    InternalTypeMap.put(Type.String, Type.Boolean);
-    InternalTypeMap.put(Type.String, Type.Real);
-    InternalTypeMap.put(Type.String, Type.Reference);
-    InternalTypeMap.put(Type.String, Type.Object);
+    InternalTypeMap.put(
+            Type.String,
+            new HashSet<>(Arrays
+                    .asList(new Type[] { Type.String, Type.Boolean, Type.Real, Type.Reference, Type.Object })));
 
-    InternalTypeMap.put(Type.NodeSet, Type.NodeSet);
-    InternalTypeMap.put(Type.NodeSet, Type.Boolean);
-    InternalTypeMap.put(Type.NodeSet, Type.Real);
-    InternalTypeMap.put(Type.NodeSet, Type.String);
-    InternalTypeMap.put(Type.NodeSet, Type.Node);
-    InternalTypeMap.put(Type.NodeSet, Type.Reference);
-    InternalTypeMap.put(Type.NodeSet, Type.Object);
+    InternalTypeMap.put(
+            Type.NodeSet,
+            new HashSet<>(Arrays.asList(new Type[] { Type.NodeSet, Type.Boolean, Type.Real, Type.String, Type.Node,
+                    Type.Reference, Type.Object })));
 
-    InternalTypeMap.put(Type.Node, Type.Node);
-    InternalTypeMap.put(Type.Node, Type.Boolean);
-    InternalTypeMap.put(Type.Node, Type.Real);
-    InternalTypeMap.put(Type.Node, Type.String);
-    InternalTypeMap.put(Type.Node, Type.NodeSet);
-    InternalTypeMap.put(Type.Node, Type.Reference);
-    InternalTypeMap.put(Type.Node, Type.Object);
+    InternalTypeMap.put(
+            Type.Node,
+            new HashSet<>(Arrays.asList(new Type[] { Type.Node, Type.Boolean, Type.Real, Type.String, Type.NodeSet,
+                    Type.Reference, Type.Object })));
 
-    InternalTypeMap.put(Type.ResultTree, Type.ResultTree);
-    InternalTypeMap.put(Type.ResultTree, Type.Boolean);
-    InternalTypeMap.put(Type.ResultTree, Type.Real);
-    InternalTypeMap.put(Type.ResultTree, Type.String);
-    InternalTypeMap.put(Type.ResultTree, Type.NodeSet);
-    InternalTypeMap.put(Type.ResultTree, Type.Reference);
-    InternalTypeMap.put(Type.ResultTree, Type.Object);
+    InternalTypeMap.put(
+            Type.ResultTree,
+            new HashSet<>(Arrays.asList(new Type[] { Type.ResultTree, Type.Boolean, Type.Real, Type.String,
+                    Type.NodeSet, Type.Reference, Type.Object })));
 
-    InternalTypeMap.put(Type.Reference, Type.Reference);
-    InternalTypeMap.put(Type.Reference, Type.Boolean);
-    InternalTypeMap.put(Type.Reference, Type.Int);
-    InternalTypeMap.put(Type.Reference, Type.Real);
-    InternalTypeMap.put(Type.Reference, Type.String);
-    InternalTypeMap.put(Type.Reference, Type.Node);
-    InternalTypeMap.put(Type.Reference, Type.NodeSet);
-    InternalTypeMap.put(Type.Reference, Type.ResultTree);
-    InternalTypeMap.put(Type.Reference, Type.Object);
+    InternalTypeMap.put(
+            Type.Reference,
+            new HashSet<>(Arrays.asList(new Type[] { Type.Reference, Type.Boolean, Type.Int, Type.Real, Type.String,
+                    Type.Node, Type.NodeSet, Type.ResultTree, Type.Object })));
 
-    InternalTypeMap.put(Type.Object, Type.String);
+    InternalTypeMap.put(Type.Object, new HashSet<>(Arrays.asList(new Type[] { Type.String })));
 
-    InternalTypeMap.put(Type.Void, Type.String);
+    InternalTypeMap.put(Type.Void, new HashSet<>(Arrays.asList(new Type[] { Type.String })));
+  }
+
+  private static boolean maps(Type from, Type to) {
+    if (from == null)
+      return false;
+    final Collection<Type> collection = InternalTypeMap.get(from);
+    if (collection != null)
+      return collection.contains(to);
+    return false;
   }
 
   private boolean _typeTest = false;
@@ -183,7 +178,7 @@ final class CastExpr extends Expression {
     } else if (tleft instanceof ResultTreeType) {
       tleft = Type.ResultTree; // multiple instances
     }
-    if (InternalTypeMap.maps(tleft, _type) != null)
+    if (maps(tleft, _type))
       return _type;
     // throw new TypeCheckError(this);
     throw new TypeCheckError(new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, tleft.toString(), _type.toString()));

@@ -46,7 +46,6 @@ import de.lyca.xml.dtm.DTM;
 final class ParentLocationPath extends RelativeLocationPath {
   private final Expression _step;
   private final RelativeLocationPath _path;
-  private Type stype;
   private boolean _orderNodes = false;
   private boolean _axisMismatch = false;
 
@@ -93,7 +92,7 @@ final class ParentLocationPath extends RelativeLocationPath {
 
   @Override
   public Type typeCheck(SymbolTable stable) throws TypeCheckError {
-    stype = _step.typeCheck(stable);
+    _step.typeCheck(stable);
     _path.typeCheck(stable);
 
     if (_axisMismatch) {

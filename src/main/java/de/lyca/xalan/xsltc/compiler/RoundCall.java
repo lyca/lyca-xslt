@@ -21,7 +21,7 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import java.util.Vector;
+import java.util.List;
 
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.INVOKESTATIC;
@@ -36,7 +36,7 @@ import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
  */
 final class RoundCall extends FunctionCall {
 
-  public RoundCall(QName fname, Vector arguments) {
+  public RoundCall(QName fname, List<Expression> arguments) {
     super(fname, arguments);
   }
 

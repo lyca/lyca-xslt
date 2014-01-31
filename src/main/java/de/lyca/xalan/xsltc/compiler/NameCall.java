@@ -21,7 +21,7 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import java.util.Vector;
+import java.util.List;
 
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.INVOKEINTERFACE;
@@ -47,7 +47,7 @@ final class NameCall extends NameBase {
   /**
    * Handles calls with one parameter (either node or node-set).
    */
-  public NameCall(QName fname, Vector arguments) {
+  public NameCall(QName fname, List<Expression> arguments) {
     super(fname, arguments);
   }
 

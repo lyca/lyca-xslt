@@ -21,7 +21,7 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import java.util.Vector;
+import java.util.List;
 
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.ILOAD;
@@ -45,7 +45,7 @@ final class LangCall extends FunctionCall {
   /**
    * Get the parameters passed to function: lang(string)
    */
-  public LangCall(QName fname, Vector arguments) {
+  public LangCall(QName fname, List<Expression> arguments) {
     super(fname, arguments);
     _lang = argument(0);
   }

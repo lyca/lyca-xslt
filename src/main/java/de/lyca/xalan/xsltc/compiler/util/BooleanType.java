@@ -146,7 +146,7 @@ public final class BooleanType extends Type {
    * Translates an internal boolean into an external (Java) boolean.
    */
   @Override
-  public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, Class clazz) {
+  public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, Class<?> clazz) {
     if (clazz == java.lang.Boolean.TYPE) {
       methodGen.getInstructionList().append(NOP);
     }
@@ -163,7 +163,7 @@ public final class BooleanType extends Type {
    * Translates an external (Java) boolean into internal boolean.
    */
   @Override
-  public void translateFrom(ClassGenerator classGen, MethodGenerator methodGen, Class clazz) {
+  public void translateFrom(ClassGenerator classGen, MethodGenerator methodGen, Class<?> clazz) {
     translateTo(classGen, methodGen, clazz);
   }
 

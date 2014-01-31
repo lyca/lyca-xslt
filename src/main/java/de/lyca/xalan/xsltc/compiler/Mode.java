@@ -21,10 +21,11 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.bcel.generic.BranchHandle;
 import org.apache.bcel.generic.ConstantPoolGen;
@@ -80,14 +81,14 @@ final class Mode implements Constants {
   private final String _methodName;
 
   /**
-   * A vector of all the templates in this mode.
+   * A list of all the templates in this mode.
    */
-  private Vector _templates;
+  private List<Template> _templates;
 
   /**
    * Group for patterns with node()-type kernel and child axis.
    */
-  private Vector _childNodeGroup = null;
+  private List<LocationPathPattern> _childNodeGroup = null;
 
   /**
    * Test sequence for patterns with node()-type kernel and child axis.
@@ -97,17 +98,12 @@ final class Mode implements Constants {
   /**
    * Group for patterns with node()-type kernel and attribute axis.
    */
-  private Vector _attribNodeGroup = null;
-
-  /**
-   * Test sequence for patterns with node()-type kernel and attribute axis.
-   */
-  private final TestSeq _attribNodeTestSeq = null;
+  private List<LocationPathPattern> _attribNodeGroup = null;
 
   /**
    * Group for patterns with id() or key()-type kernel.
    */
-  private Vector _idxGroup = null;
+  private List<LocationPathPattern> _idxGroup = null;
 
   /**
    * Test sequence for patterns with id() or key()-type kernel.
@@ -117,7 +113,7 @@ final class Mode implements Constants {
   /**
    * Group for patterns with any other kernel type.
    */
-  private Vector[] _patternGroups;
+  private List<LocationPathPattern>[] _patternGroups;
 
   /**
    * Test sequence for patterns with any other kernel type.
@@ -127,22 +123,22 @@ final class Mode implements Constants {
   /**
    * A mapping between templates and test sequences.
    */
-  private Hashtable _neededTemplates = new Hashtable();
+  private Map<Template, Mode> _neededTemplates = new HashMap<>();
 
   /**
    * A mapping between named templates and Mode objects.
    */
-  private Hashtable _namedTemplates = new Hashtable();
+  private Map<Template, Mode> _namedTemplates = new HashMap<>();
 
   /**
    * A mapping between templates and instruction handles.
    */
-  private Hashtable _templateIHs = new Hashtable();
+  private Map<Template, InstructionHandle> _templateIHs = new HashMap<>();
 
   /**
    * A mapping between templates and instruction lists.
    */
-  private Hashtable _templateILs = new Hashtable();
+  private Map<Template, InstructionList> _templateILs = new HashMap<>();
 
   /**
    * A reference to the pattern matching the root node.
@@ -151,14 +147,9 @@ final class Mode implements Constants {
 
   /**
    * Stores ranges of template precendences for the compilation of apply-imports
-   * (a Hashtable for historical reasons).
+   * (a Map for historical reasons).
    */
-  private Hashtable _importLevels = null;
-
-  /**
-   * A mapping between key names and keys.
-   */
-  private Hashtable _keys = null;
+  private Map<Integer, Integer> _importLevels = null;
 
   /**
    * Variable index for the current node used in code generation.
@@ -180,8 +171,8 @@ final class Mode implements Constants {
     _name = name;
     _stylesheet = stylesheet;
     _methodName = APPLY_TEMPLATES + suffix;
-    _templates = new Vector();
-    _patternGroups = new Vector[32];
+    _templates = new ArrayList<Template>();
+    _patternGroups = new ArrayList[32];
   }
 
   /**
@@ -197,9 +188,9 @@ final class Mode implements Constants {
 
   public String functionName(int min, int max) {
     if (_importLevels == null) {
-      _importLevels = new Hashtable();
+      _importLevels = new HashMap<>();
     }
-    _importLevels.put(new Integer(max), new Integer(min));
+    _importLevels.put(max, min);
     return _methodName + '_' + max;
   }
 
@@ -215,10 +206,10 @@ final class Mode implements Constants {
   }
 
   public void addTemplate(Template template) {
-    _templates.addElement(template);
+    _templates.add(template);
   }
 
-  private Vector quicksort(Vector templates, int p, int r) {
+  private List<Template> quicksort(List<Template> templates, int p, int r) {
     if (p < r) {
       final int q = partition(templates, p, r);
       quicksort(templates, p, q);
@@ -227,19 +218,19 @@ final class Mode implements Constants {
     return templates;
   }
 
-  private int partition(Vector templates, int p, int r) {
-    final Template x = (Template) templates.elementAt(p);
+  private int partition(List<Template> templates, int p, int r) {
+    final Template x = templates.get(p);
     int i = p - 1;
     int j = r + 1;
     while (true) {
-      while (x.compareTo(templates.elementAt(--j)) > 0) {
+      while (x.compareTo(templates.get(--j)) > 0) {
         ;
       }
-      while (x.compareTo(templates.elementAt(++i)) < 0) {
+      while (x.compareTo(templates.get(++i)) < 0) {
         ;
       }
       if (i < j) {
-        templates.set(j, templates.set(i, templates.elementAt(j)));
+        templates.set(j, templates.set(i, templates.get(j)));
       } else
         return j;
     }
@@ -248,9 +239,7 @@ final class Mode implements Constants {
   /**
    * Process all the test patterns in this mode
    */
-  public void processPatterns(Hashtable keys) {
-    _keys = keys;
-
+  public void processPatterns() {
     /*
      * System.out.println("Before Sort " + _name); for (int i = 0; i <
      * _templates.size(); i++) { System.out.println("name = " +
@@ -278,11 +267,7 @@ final class Mode implements Constants {
      */
 
     // Traverse all templates
-    final Enumeration templates = _templates.elements();
-    while (templates.hasMoreElements()) {
-      // Get the next template
-      final Template template = (Template) templates.nextElement();
-
+    for (final Template template : _templates) {
       /*
        * Add this template to a table of named templates if it has a name. If
        * there are multiple templates with the same name, all but one (the one
@@ -295,7 +280,7 @@ final class Mode implements Constants {
       // Add this template to a test sequence if it has a pattern
       final Pattern pattern = template.getPattern();
       if (pattern != null) {
-        flattenAlternative(pattern, template, keys);
+        flattenAlternative(pattern, template);
       }
     }
     prepareTestSequences();
@@ -306,7 +291,7 @@ final class Mode implements Constants {
    * such as match="A/B | C/B") and add the basic patterns to their respective
    * pattern groups.
    */
-  private void flattenAlternative(Pattern pattern, Template template, Hashtable keys) {
+  private void flattenAlternative(Pattern pattern, Template template) {
     // Patterns on type id() and key() are special since they do not have
     // any kernel node type (it can be anything as long as the node is in
     // the id's or key's index).
@@ -314,15 +299,15 @@ final class Mode implements Constants {
       final IdKeyPattern idkey = (IdKeyPattern) pattern;
       idkey.setTemplate(template);
       if (_idxGroup == null) {
-        _idxGroup = new Vector();
+        _idxGroup = new ArrayList<>();
       }
-      _idxGroup.add(pattern);
+      _idxGroup.add(idkey);
     }
     // Alternative patterns are broken up and re-processed recursively
     else if (pattern instanceof AlternativePattern) {
       final AlternativePattern alt = (AlternativePattern) pattern;
-      flattenAlternative(alt.getLeft(), template, keys);
-      flattenAlternative(alt.getRight(), template, keys);
+      flattenAlternative(alt.getLeft(), template);
+      flattenAlternative(alt.getRight(), template);
     }
     // Finally we have a pattern that can be added to a test sequence!
     else if (pattern instanceof LocationPathPattern) {
@@ -360,40 +345,41 @@ final class Mode implements Constants {
     // Make sure the array of pattern groups is long enough
     final int oldLength = _patternGroups.length;
     if (kernelType >= oldLength) {
-      final Vector[] newGroups = new Vector[kernelType * 2];
+      @SuppressWarnings("unchecked")
+      final List<LocationPathPattern>[] newGroups = new ArrayList[kernelType * 2];
       System.arraycopy(_patternGroups, 0, newGroups, 0, oldLength);
       _patternGroups = newGroups;
     }
 
-    // Find the vector to put this pattern into
-    Vector patterns;
+    // Find the list to put this pattern into
+    List<LocationPathPattern> patterns;
 
     if (kernelType == DOM.NO_TYPE) {
       if (pattern.getAxis() == Axis.ATTRIBUTE) {
-        patterns = _attribNodeGroup == null ? (_attribNodeGroup = new Vector(2)) : _attribNodeGroup;
+        patterns = _attribNodeGroup == null ? (_attribNodeGroup = new ArrayList<>(2)) : _attribNodeGroup;
       } else {
-        patterns = _childNodeGroup == null ? (_childNodeGroup = new Vector(2)) : _childNodeGroup;
+        patterns = _childNodeGroup == null ? (_childNodeGroup = new ArrayList<>(2)) : _childNodeGroup;
       }
     } else {
-      patterns = _patternGroups[kernelType] == null ? (_patternGroups[kernelType] = new Vector(2))
+      patterns = _patternGroups[kernelType] == null ? (_patternGroups[kernelType] = new ArrayList<>(2))
               : _patternGroups[kernelType];
     }
 
     if (patterns.size() == 0) {
-      patterns.addElement(pattern);
+      patterns.add(pattern);
     } else {
       boolean inserted = false;
       for (int i = 0; i < patterns.size(); i++) {
-        final LocationPathPattern lppToCompare = (LocationPathPattern) patterns.elementAt(i);
+        final LocationPathPattern lppToCompare = patterns.get(i);
 
         if (pattern.noSmallerThan(lppToCompare)) {
           inserted = true;
-          patterns.insertElementAt(pattern, i);
+          patterns.add(i, pattern);
           break;
         }
       }
       if (inserted == false) {
-        patterns.addElement(pattern);
+        patterns.add(pattern);
       }
     }
   }
@@ -402,14 +388,14 @@ final class Mode implements Constants {
    * Complete test sequences of a given type by adding all patterns from a given
    * group.
    */
-  private void completeTestSequences(int nodeType, Vector patterns) {
+  private void completeTestSequences(int nodeType, List<LocationPathPattern> patterns) {
     if (patterns != null) {
       if (_patternGroups[nodeType] == null) {
         _patternGroups[nodeType] = patterns;
       } else {
         final int m = patterns.size();
         for (int j = 0; j < m; j++) {
-          addPattern(nodeType, (LocationPathPattern) patterns.elementAt(j));
+          addPattern(nodeType, patterns.get(j));
         }
       }
     }
@@ -421,8 +407,8 @@ final class Mode implements Constants {
    * sequences, and of "@*" to all attribute test sequences.
    */
   private void prepareTestSequences() {
-    final Vector starGroup = _patternGroups[DTM.ELEMENT_NODE];
-    final Vector atStarGroup = _patternGroups[DTM.ATTRIBUTE_NODE];
+    final List<LocationPathPattern> starGroup = _patternGroups[DTM.ELEMENT_NODE];
+    final List<LocationPathPattern> atStarGroup = _patternGroups[DTM.ATTRIBUTE_NODE];
 
     // Complete test sequence for "text()" with "child::node()"
     completeTestSequences(DTM.TEXT_NODE, _childNodeGroup);
@@ -439,7 +425,7 @@ final class Mode implements Constants {
     // Complete test sequence for "@*" with "attribute::node()"
     completeTestSequences(DTM.ATTRIBUTE_NODE, _attribNodeGroup);
 
-    final Vector names = _stylesheet.getXSLTC().getNamesIndex();
+    final List<String> names = _stylesheet.getXSLTC().getNamesIndex();
     if (starGroup != null || atStarGroup != null || _childNodeGroup != null || _attribNodeGroup != null) {
       final int n = _patternGroups.length;
 
@@ -449,7 +435,7 @@ final class Mode implements Constants {
           continue;
         }
 
-        final String name = (String) names.elementAt(i - DTM.NTYPES);
+        final String name = names.get(i - DTM.NTYPES);
 
         if (isAttributeName(name)) {
           // If an attribute then copy "@*" to its test sequence
@@ -471,7 +457,7 @@ final class Mode implements Constants {
 
     final int n = _patternGroups.length;
     for (int i = 0; i < n; i++) {
-      final Vector patterns = _patternGroups[i];
+      final List<LocationPathPattern> patterns = _patternGroups[i];
       if (patterns != null) {
         final TestSeq testSeq = new TestSeq(patterns, i, this);
         // System.out.println("testSeq[" + i + "] = " + testSeq);
@@ -513,7 +499,7 @@ final class Mode implements Constants {
 
     int numParams = 0;
     if (template.isSimpleNamedTemplate()) {
-      final Vector parameters = template.getParameters();
+      final List<Param> parameters = template.getParameters();
       numParams = parameters.size();
     }
 
@@ -547,15 +533,11 @@ final class Mode implements Constants {
   }
 
   private void compileTemplates(ClassGenerator classGen, MethodGenerator methodGen, InstructionHandle next) {
-    Enumeration templates = _namedTemplates.keys();
-    while (templates.hasMoreElements()) {
-      final Template template = (Template) templates.nextElement();
+    for (final Template template : _namedTemplates.keySet()) {
       compileNamedTemplate(template, classGen);
     }
 
-    templates = _neededTemplates.keys();
-    while (templates.hasMoreElements()) {
-      final Template template = (Template) templates.nextElement();
+    for (final Template template : _neededTemplates.keySet()) {
       if (template.hasContents()) {
         // !!! TODO templates both named and matched
         final InstructionList til = template.compile(classGen, methodGen);
@@ -570,11 +552,10 @@ final class Mode implements Constants {
   }
 
   private void appendTemplateCode(InstructionList body) {
-    final Enumeration templates = _neededTemplates.keys();
-    while (templates.hasMoreElements()) {
-      final Object iList = _templateILs.get(templates.nextElement());
+    for (final Template template : _neededTemplates.keySet()) {
+      final InstructionList iList = _templateILs.get(template);
       if (iList != null) {
-        body.append((InstructionList) iList);
+        body.append(iList);
       }
     }
   }
@@ -647,8 +628,8 @@ final class Mode implements Constants {
     final ConstantPoolGen cpg = classGen.getConstantPool();
 
     // Append switch() statement - namespace test dispatch loop
-    final Vector namespaces = xsltc.getNamespaceIndex();
-    final Vector names = xsltc.getNamesIndex();
+    final List<String> namespaces = xsltc.getNamespaceIndex();
+    final List<String> names = xsltc.getNamesIndex();
     final int namespaceCount = namespaces.size() + 1;
     final int namesCount = names.size();
 
@@ -668,7 +649,7 @@ final class Mode implements Constants {
       // Add test sequences for known namespace types
       for (int i = DTM.NTYPES; i < DTM.NTYPES + namesCount; i++) {
         if (isNamespace[i] && isAttribute[i] == attrFlag) {
-          final String name = (String) names.elementAt(i - DTM.NTYPES);
+          final String name = names.get(i - DTM.NTYPES);
           final String namespace = name.substring(0, name.lastIndexOf(':'));
           final int type = xsltc.registerNamespace(namespace);
 
@@ -701,7 +682,7 @@ final class Mode implements Constants {
   public void compileApplyTemplates(ClassGenerator classGen) {
     final XSLTC xsltc = classGen.getParser().getXSLTC();
     final ConstantPoolGen cpg = classGen.getConstantPool();
-    final Vector names = xsltc.getNamesIndex();
+    final List<String> names = xsltc.getNamesIndex();
 
     // Create the applyTemplates() method
     final org.apache.bcel.generic.Type[] argTypes = new org.apache.bcel.generic.Type[3];
@@ -772,7 +753,7 @@ final class Mode implements Constants {
     final boolean[] isAttribute = new boolean[types.length];
     final boolean[] isNamespace = new boolean[types.length];
     for (int i = 0; i < names.size(); i++) {
-      final String name = (String) names.elementAt(i);
+      final String name = names.get(i);
       isAttribute[i + DTM.NTYPES] = isAttributeName(name);
       isNamespace[i + DTM.NTYPES] = isNamespaceName(name);
     }
@@ -964,7 +945,7 @@ final class Mode implements Constants {
     body.append(new INVOKEINTERFACE(getType, 2));
 
     // Append switch() statement - main dispatch loop in applyTemplates()
-    final InstructionHandle disp = body.append(new SWITCH(types, targets, ihLoop));
+    body.append(new SWITCH(types, targets, ihLoop));
 
     // Append all the "case:" statements
     appendTestSequences(body);
@@ -996,20 +977,15 @@ final class Mode implements Constants {
 
     // Compile method(s) for <xsl:apply-imports/> for this mode
     if (_importLevels != null) {
-      final Enumeration levels = _importLevels.keys();
-      while (levels.hasMoreElements()) {
-        final Integer max = (Integer) levels.nextElement();
-        final Integer min = (Integer) _importLevels.get(max);
-        compileApplyImports(classGen, min.intValue(), max.intValue());
+      for (final Map.Entry<Integer, Integer> entry : _importLevels.entrySet()) {
+        compileApplyImports(classGen, entry.getValue().intValue(), entry.getKey().intValue());
       }
     }
   }
 
   private void compileTemplateCalls(ClassGenerator classGen, MethodGenerator methodGen, InstructionHandle next,
           int min, int max) {
-    final Enumeration templates = _neededTemplates.keys();
-    while (templates.hasMoreElements()) {
-      final Template template = (Template) templates.nextElement();
+    for (final Template template : _neededTemplates.keySet()) {
       final int prec = template.getImportPrecedence();
       if (prec >= min && prec < max) {
         if (template.hasContents()) {
@@ -1028,24 +1004,22 @@ final class Mode implements Constants {
   public void compileApplyImports(ClassGenerator classGen, int min, int max) {
     final XSLTC xsltc = classGen.getParser().getXSLTC();
     final ConstantPoolGen cpg = classGen.getConstantPool();
-    final Vector names = xsltc.getNamesIndex();
+    final List<String> names = xsltc.getNamesIndex();
 
     // Clear some datastructures
-    _namedTemplates = new Hashtable();
-    _neededTemplates = new Hashtable();
-    _templateIHs = new Hashtable();
-    _templateILs = new Hashtable();
-    _patternGroups = new Vector[32];
+    _namedTemplates = new HashMap<Template, Mode>();
+    _neededTemplates = new HashMap<Template, Mode>();
+    _templateIHs = new HashMap<Template, InstructionHandle>();
+    _templateILs = new HashMap<Template, InstructionList>();
+    _patternGroups = new ArrayList[32];
     _rootPattern = null;
 
     // IMPORTANT: Save orignal & complete set of templates!!!!
-    final Vector oldTemplates = _templates;
+    final List<Template> oldTemplates = _templates;
 
     // Gather templates that are within the scope of this import
-    _templates = new Vector();
-    final Enumeration templates = oldTemplates.elements();
-    while (templates.hasMoreElements()) {
-      final Template template = (Template) templates.nextElement();
+    _templates = new ArrayList<Template>();
+    for (final Template template : oldTemplates) {
       final int prec = template.getImportPrecedence();
       if (prec >= min && prec < max) {
         addTemplate(template);
@@ -1053,7 +1027,7 @@ final class Mode implements Constants {
     }
 
     // Process all patterns from those templates
-    processPatterns(_keys);
+    processPatterns();
 
     // Create the applyTemplates() method
     final org.apache.bcel.generic.Type[] argTypes = new org.apache.bcel.generic.Type[4];
@@ -1109,7 +1083,7 @@ final class Mode implements Constants {
     final boolean[] isAttribute = new boolean[types.length];
     final boolean[] isNamespace = new boolean[types.length];
     for (int i = 0; i < names.size(); i++) {
-      final String name = (String) names.elementAt(i);
+      final String name = names.get(i);
       isAttribute[i + DTM.NTYPES] = isAttributeName(name);
       isNamespace[i + DTM.NTYPES] = isNamespaceName(name);
     }
@@ -1299,7 +1273,7 @@ final class Mode implements Constants {
     body.append(new INVOKEINTERFACE(getType, 2));
 
     // Append switch() statement - main dispatch loop in applyTemplates()
-    final InstructionHandle disp = body.append(new SWITCH(types, targets, ihLoop));
+    body.append(new SWITCH(types, targets, ihLoop));
 
     // Append all the "case:" statements
     appendTestSequences(body);
@@ -1343,13 +1317,13 @@ final class Mode implements Constants {
   private void peepHoleOptimization(MethodGenerator methodGen) {
     final InstructionList il = methodGen.getInstructionList();
     final InstructionFinder find = new InstructionFinder(il);
-    final InstructionHandle ih;
     String pattern;
 
     // LoadInstruction, POP => (removed)
     pattern = "LoadInstruction POP";
-    for (final Iterator iter = find.search(pattern); iter.hasNext();) {
-      final InstructionHandle[] match = (InstructionHandle[]) iter.next();
+    for (@SuppressWarnings("unchecked")
+    final Iterator<InstructionHandle[]> iter = find.search(pattern); iter.hasNext();) {
+      final InstructionHandle[] match = iter.next();
       try {
         if (!match[0].hasTargeters() && !match[1].hasTargeters()) {
           il.delete(match[0], match[1]);
@@ -1361,8 +1335,9 @@ final class Mode implements Constants {
 
     // ILOAD_N, ILOAD_N, SWAP, ISTORE_N => ILOAD_N
     pattern = "ILOAD ILOAD SWAP ISTORE";
-    for (final Iterator iter = find.search(pattern); iter.hasNext();) {
-      final InstructionHandle[] match = (InstructionHandle[]) iter.next();
+    for (@SuppressWarnings("unchecked")
+    final Iterator<InstructionHandle[]> iter = find.search(pattern); iter.hasNext();) {
+      final InstructionHandle[] match = iter.next();
       try {
         final org.apache.bcel.generic.ILOAD iload1 = (org.apache.bcel.generic.ILOAD) match[0].getInstruction();
         final org.apache.bcel.generic.ILOAD iload2 = (org.apache.bcel.generic.ILOAD) match[1].getInstruction();
@@ -1380,8 +1355,9 @@ final class Mode implements Constants {
     // LoadInstruction_N, LoadInstruction_M, SWAP => LoadInstruction_M,
     // LoadInstruction_N
     pattern = "LoadInstruction LoadInstruction SWAP";
-    for (final Iterator iter = find.search(pattern); iter.hasNext();) {
-      final InstructionHandle[] match = (InstructionHandle[]) iter.next();
+    for (@SuppressWarnings("unchecked")
+    final Iterator<InstructionHandle[]> iter = find.search(pattern); iter.hasNext();) {
+      final InstructionHandle[] match = iter.next();
       try {
         if (!match[0].hasTargeters() && !match[1].hasTargeters() && !match[2].hasTargeters()) {
           final Instruction load_m = match[1].getInstruction();
@@ -1395,8 +1371,9 @@ final class Mode implements Constants {
 
     // ALOAD_N ALOAD_N => ALOAD_N DUP
     pattern = "ALOAD ALOAD";
-    for (final Iterator iter = find.search(pattern); iter.hasNext();) {
-      final InstructionHandle[] match = (InstructionHandle[]) iter.next();
+    for (@SuppressWarnings("unchecked")
+    final Iterator<InstructionHandle[]> iter = find.search(pattern); iter.hasNext();) {
+      final InstructionHandle[] match = iter.next();
       try {
         if (!match[1].hasTargeters()) {
           final org.apache.bcel.generic.ALOAD aload1 = (org.apache.bcel.generic.ALOAD) match[0].getInstruction();
@@ -1414,7 +1391,7 @@ final class Mode implements Constants {
   }
 
   public InstructionHandle getTemplateInstructionHandle(Template template) {
-    return (InstructionHandle) _templateIHs.get(template);
+    return _templateIHs.get(template);
   }
 
   /**

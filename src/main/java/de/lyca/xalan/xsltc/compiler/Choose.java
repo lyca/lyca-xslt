@@ -63,20 +63,19 @@ final class Choose extends Instruction {
    */
   @Override
   public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
-    final List whenElements = new ArrayList();
+    final List<When> whenElements = new ArrayList<>();
     Otherwise otherwise = null;
-    final Enumeration elements = elements();
+    final Enumeration<SyntaxTreeNode> elements = elements();
 
-    // These two are for reporting errors only
+    // This is for reporting errors only
     ErrorMsg error = null;
-    final int line = getLineNumber();
 
     // Traverse all child nodes - must be either When or Otherwise
     while (elements.hasMoreElements()) {
       final Object element = elements.nextElement();
       // Add a When child element
       if (element instanceof When) {
-        whenElements.add(element);
+        whenElements.add((When) element);
       }
       // Add an Otherwise child element
       else if (element instanceof Otherwise) {
@@ -108,12 +107,12 @@ final class Choose extends Instruction {
     // next element will hold a handle to the beginning of next
     // When/Otherwise if test on current When fails
     BranchHandle nextElement = null;
-    final List exitHandles = new ArrayList();
+    final List<BranchHandle> exitHandles = new ArrayList<>();
     InstructionHandle exit = null;
 
-    final Iterator whens = whenElements.iterator();
+    final Iterator<When> whens = whenElements.iterator();
     while (whens.hasNext()) {
-      final When when = (When) whens.next();
+      final When when = whens.next();
       final Expression test = when.getTest();
 
       InstructionHandle truec = il.getEnd();
@@ -162,9 +161,9 @@ final class Choose extends Instruction {
     }
 
     // now that end is known set targets of exit gotos
-    final Iterator exitGotos = exitHandles.iterator();
+    final Iterator<BranchHandle> exitGotos = exitHandles.iterator();
     while (exitGotos.hasNext()) {
-      final BranchHandle gotoExit = (BranchHandle) exitGotos.next();
+      final BranchHandle gotoExit = exitGotos.next();
       gotoExit.setTarget(exit);
     }
   }

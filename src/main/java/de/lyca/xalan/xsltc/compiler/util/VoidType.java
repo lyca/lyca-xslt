@@ -91,7 +91,7 @@ public final class VoidType extends Type {
    * "void" can be converted to this class.
    */
   @Override
-  public void translateFrom(ClassGenerator classGen, MethodGenerator methodGen, Class clazz) {
+  public void translateFrom(ClassGenerator classGen, MethodGenerator methodGen, Class<?> clazz) {
     if (!clazz.getName().equals("void")) {
       final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), clazz.getName());
       classGen.getParser().reportError(Constants.FATAL, err);

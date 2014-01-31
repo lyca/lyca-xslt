@@ -21,7 +21,7 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import java.util.Vector;
+import java.util.List;
 
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.generic.ALOAD;
@@ -69,7 +69,7 @@ class StepPattern extends RelativePathPattern {
 
   protected final int _axis;
   protected final int _nodeType;
-  protected Vector _predicates;
+  protected List<Predicate> _predicates;
 
   private Step _step = null;
   private boolean _isEpsilon = false;
@@ -77,7 +77,7 @@ class StepPattern extends RelativePathPattern {
 
   private double _priority = Double.MAX_VALUE;
 
-  public StepPattern(int axis, int nodeType, Vector predicates) {
+  public StepPattern(int axis, int nodeType, List<Predicate> predicates) {
     _axis = axis;
     _nodeType = nodeType;
     _predicates = predicates;
@@ -87,9 +87,7 @@ class StepPattern extends RelativePathPattern {
   public void setParser(Parser parser) {
     super.setParser(parser);
     if (_predicates != null) {
-      final int n = _predicates.size();
-      for (int i = 0; i < n; i++) {
-        final Predicate exp = (Predicate) _predicates.elementAt(i);
+      for (final Predicate exp : _predicates) {
         exp.setParser(parser);
         exp.setParent(this);
       }
@@ -114,7 +112,7 @@ class StepPattern extends RelativePathPattern {
     return _isEpsilon && hasPredicates() == false;
   }
 
-  public StepPattern setPredicates(Vector predicates) {
+  public StepPattern setPredicates(List<Predicate> predicates) {
     _predicates = predicates;
     return this;
   }
@@ -154,7 +152,7 @@ class StepPattern extends RelativePathPattern {
 
   @Override
   public String toString() {
-    final StringBuffer buffer = new StringBuffer("stepPattern(\"");
+    final StringBuilder buffer = new StringBuilder("stepPattern(\"");
     buffer.append(Axis.getNames(_axis)).append("\", ")
             .append(_isEpsilon ? "epsilon{" + Integer.toString(_nodeType) + "}" : Integer.toString(_nodeType));
     if (_predicates != null) {
@@ -168,7 +166,7 @@ class StepPattern extends RelativePathPattern {
     final int n = _predicates.size();
 
     for (int i = 0; i < n && noContext; i++) {
-      final Predicate pred = (Predicate) _predicates.elementAt(i);
+      final Predicate pred = _predicates.get(i);
       if (pred.isNthPositionFilter() || pred.hasPositionCall() || pred.hasLastCall()) {
         noContext = false;
       }
@@ -189,9 +187,7 @@ class StepPattern extends RelativePathPattern {
   public Type typeCheck(SymbolTable stable) throws TypeCheckError {
     if (hasPredicates()) {
       // Type check all the predicates (e -> position() = e)
-      final int n = _predicates.size();
-      for (int i = 0; i < n; i++) {
-        final Predicate pred = (Predicate) _predicates.elementAt(i);
+      for (final Predicate pred : _predicates) {
         pred.typeCheck(stable);
       }
 
@@ -202,7 +198,7 @@ class StepPattern extends RelativePathPattern {
 
       // Create an instance of Step to do the translation
       if (_contextCase == SIMPLE_CONTEXT) {
-        final Predicate pred = (Predicate) _predicates.elementAt(0);
+        final Predicate pred = _predicates.get(0);
         if (pred.isNthPositionFilter()) {
           _contextCase = GENERAL_CONTEXT;
           step = new Step(_axis, _nodeType, _predicates);
@@ -210,9 +206,8 @@ class StepPattern extends RelativePathPattern {
           step = new Step(_axis, _nodeType, null);
         }
       } else if (_contextCase == GENERAL_CONTEXT) {
-        final int len = _predicates.size();
-        for (int i = 0; i < len; i++) {
-          ((Predicate) _predicates.elementAt(i)).dontOptimize();
+        for (final Predicate predicate : _predicates) {
+          predicate.dontOptimize();
         }
 
         step = new Step(_axis, _nodeType, _predicates);
@@ -267,7 +262,6 @@ class StepPattern extends RelativePathPattern {
   }
 
   private void translateNoContext(ClassGenerator classGen, MethodGenerator methodGen) {
-    final ConstantPoolGen cpg = classGen.getConstantPool();
     final InstructionList il = methodGen.getInstructionList();
 
     // Push current node on the stack
@@ -284,9 +278,7 @@ class StepPattern extends RelativePathPattern {
     }
 
     // Compile the expressions within the predicates
-    final int n = _predicates.size();
-    for (int i = 0; i < n; i++) {
-      final Predicate pred = (Predicate) _predicates.elementAt(i);
+    for (final Predicate pred : _predicates) {
       final Expression exp = pred.getExpr();
       exp.translateDesynthesized(classGen, methodGen);
       _trueList.append(exp._trueList);
@@ -366,7 +358,7 @@ class StepPattern extends RelativePathPattern {
     il.append(methodGen.storeCurrentNode());
 
     // Translate the expression of the predicate
-    final Predicate pred = (Predicate) _predicates.elementAt(0);
+    final Predicate pred = _predicates.get(0);
     final Expression exp = pred.getExpr();
     exp.translateDesynthesized(classGen, methodGen);
 
@@ -474,7 +466,6 @@ class StepPattern extends RelativePathPattern {
 
   @Override
   public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
-    final ConstantPoolGen cpg = classGen.getConstantPool();
     final InstructionList il = methodGen.getInstructionList();
 
     if (hasPredicates()) {

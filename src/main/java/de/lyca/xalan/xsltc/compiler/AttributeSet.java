@@ -22,7 +22,7 @@
 package de.lyca.xalan.xsltc.compiler;
 
 import java.util.Enumeration;
-import java.util.Vector;
+import java.util.List;
 
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.INVOKESPECIAL;
@@ -111,10 +111,8 @@ final class AttributeSet extends TopLevelElement {
 
     // Parse the contents of this node. All child elements must be
     // <xsl:attribute> elements. Other elements cause an error.
-    final Vector contents = getContents();
-    final int count = contents.size();
-    for (int i = 0; i < count; i++) {
-      final SyntaxTreeNode child = (SyntaxTreeNode) contents.elementAt(i);
+    final List<SyntaxTreeNode> contents = getContents();
+    for (final SyntaxTreeNode child : contents) {
       if (child instanceof XslAttribute) {
         parser.getSymbolTable().setCurrentNode(child);
         child.parseContents(parser);
@@ -185,9 +183,9 @@ final class AttributeSet extends TopLevelElement {
     }
 
     // Translate all local attributes
-    final Enumeration attributes = elements();
+    final Enumeration<SyntaxTreeNode> attributes = elements();
     while (attributes.hasMoreElements()) {
-      final SyntaxTreeNode element = (SyntaxTreeNode) attributes.nextElement();
+      final SyntaxTreeNode element = attributes.nextElement();
       if (element instanceof XslAttribute) {
         final XslAttribute attribute = (XslAttribute) element;
         attribute.translate(classGen, methodGen);
@@ -201,13 +199,13 @@ final class AttributeSet extends TopLevelElement {
 
   @Override
   public String toString() {
-    final StringBuffer buf = new StringBuffer("attribute-set: ");
+    final StringBuilder sb = new StringBuilder("attribute-set: ");
     // Translate all local attributes
-    final Enumeration attributes = elements();
+    final Enumeration<SyntaxTreeNode> attributes = elements();
     while (attributes.hasMoreElements()) {
       final XslAttribute attribute = (XslAttribute) attributes.nextElement();
-      buf.append(attribute);
+      sb.append(attribute);
     }
-    return buf.toString();
+    return sb.toString();
   }
 }

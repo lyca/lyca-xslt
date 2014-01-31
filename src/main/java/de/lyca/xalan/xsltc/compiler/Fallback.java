@@ -21,9 +21,6 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.InstructionList;
-
 import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 import de.lyca.xalan.xsltc.compiler.util.Type;
@@ -76,9 +73,6 @@ final class Fallback extends Instruction {
    */
   @Override
   public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
-    final ConstantPoolGen cpg = classGen.getConstantPool();
-    final InstructionList il = methodGen.getInstructionList();
-
     if (_active) {
       translateContents(classGen, methodGen);
     }

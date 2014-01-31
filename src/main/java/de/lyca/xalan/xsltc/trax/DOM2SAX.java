@@ -22,10 +22,11 @@
 package de.lyca.xalan.xsltc.trax;
 
 import java.io.IOException;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Stack;
 
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -56,7 +57,7 @@ public class DOM2SAX implements XMLReader, Locator {
   private ContentHandler _sax = null;
   private LexicalHandler _lex = null;
   private SAXImpl _saxImpl = null;
-  private final Hashtable _nsPrefixes = new Hashtable();
+  private final Hashtable<String, Deque<String>> _nsPrefixes = new Hashtable<>();
 
   public DOM2SAX(Node root) {
     _dom = root;
@@ -85,14 +86,14 @@ public class DOM2SAX implements XMLReader, Locator {
    */
   private boolean startPrefixMapping(String prefix, String uri) throws SAXException {
     boolean pushed = true;
-    Stack uriStack = (Stack) _nsPrefixes.get(prefix);
+    Deque<String> uriStack = _nsPrefixes.get(prefix);
 
     if (uriStack != null) {
       if (uriStack.isEmpty()) {
         _sax.startPrefixMapping(prefix, uri);
         uriStack.push(uri);
       } else {
-        final String lastUri = (String) uriStack.peek();
+        final String lastUri = uriStack.peek();
         if (!lastUri.equals(uri)) {
           _sax.startPrefixMapping(prefix, uri);
           uriStack.push(uri);
@@ -102,7 +103,7 @@ public class DOM2SAX implements XMLReader, Locator {
       }
     } else {
       _sax.startPrefixMapping(prefix, uri);
-      _nsPrefixes.put(prefix, uriStack = new Stack());
+      _nsPrefixes.put(prefix, uriStack = new ArrayDeque<>());
       uriStack.push(uri);
     }
     return pushed;
@@ -113,7 +114,7 @@ public class DOM2SAX implements XMLReader, Locator {
    * event to the SAX Handler.
    */
   private void endPrefixMapping(String prefix) throws SAXException {
-    final Stack uriStack = (Stack) _nsPrefixes.get(prefix);
+    final Deque<String> uriStack = _nsPrefixes.get(prefix);
 
     if (uriStack != null) {
       _sax.endPrefixMapping(prefix);
@@ -161,7 +162,6 @@ public class DOM2SAX implements XMLReader, Locator {
    * event passes all attributes, including namespace declarations.
    */
   private void parse(Node node) throws IOException, SAXException {
-    final Node first = null;
     if (node == null)
       return;
 
@@ -207,7 +207,7 @@ public class DOM2SAX implements XMLReader, Locator {
 
       case Node.ELEMENT_NODE:
         String prefix;
-        final List pushedPrefixes = new ArrayList();
+        final List<String> pushedPrefixes = new ArrayList<>();
         final AttributesImpl attrs = new AttributesImpl();
         final NamedNodeMap map = node.getAttributes();
         final int length = map.getLength();
@@ -236,7 +236,6 @@ public class DOM2SAX implements XMLReader, Locator {
           // Ignore NS declarations here
           if (!qnameAttr.startsWith(XMLNS_PREFIX)) {
             final String uriAttr = attr.getNamespaceURI();
-            final String localNameAttr = getLocalName(attr);
 
             // Uri may be implicitly declared
             if (uriAttr != null) {
@@ -286,7 +285,7 @@ public class DOM2SAX implements XMLReader, Locator {
         // Generate endPrefixMapping() for all pushed prefixes
         final int nPushedPrefixes = pushedPrefixes.size();
         for (int i = 0; i < nPushedPrefixes; i++) {
-          endPrefixMapping((String) pushedPrefixes.get(i));
+          endPrefixMapping(pushedPrefixes.get(i));
         }
         break;
 

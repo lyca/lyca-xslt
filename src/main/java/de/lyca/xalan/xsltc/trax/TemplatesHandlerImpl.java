@@ -21,7 +21,7 @@
 
 package de.lyca.xalan.xsltc.trax;
 
-import java.util.Vector;
+import java.util.List;
 
 import javax.xml.XMLConstants;
 import javax.xml.transform.Source;
@@ -254,8 +254,8 @@ public class TemplatesHandlerImpl implements ContentHandler, TemplatesHandler, S
         // Check that the transformation went well before returning
         final byte[][] bytecodes = xsltc.getBytecodes();
         if (bytecodes != null) {
-          _templates = new TemplatesImpl(xsltc.getBytecodes(), transletName, _parser.getOutputProperties(),
-                  _indentNumber, _tfactory);
+          _templates = new TemplatesImpl(bytecodes, transletName, _parser.getOutputProperties(), _indentNumber,
+                  _tfactory);
 
           // Set URIResolver on templates object
           if (_uriResolver != null) {
@@ -263,14 +263,14 @@ public class TemplatesHandlerImpl implements ContentHandler, TemplatesHandler, S
           }
         }
       } else {
-        final StringBuffer errorMessage = new StringBuffer();
-        final Vector errors = _parser.getErrors();
+        final StringBuilder errorMessage = new StringBuilder();
+        final List<ErrorMsg> errors = _parser.getErrors();
         final int count = errors.size();
         for (int i = 0; i < count; i++) {
           if (errorMessage.length() > 0) {
             errorMessage.append('\n');
           }
-          errorMessage.append(errors.elementAt(i).toString());
+          errorMessage.append(errors.get(i).toString());
         }
         throw new SAXException(ErrorMsg.JAXP_COMPILE_ERR, new TransformerException(errorMessage.toString()));
       }

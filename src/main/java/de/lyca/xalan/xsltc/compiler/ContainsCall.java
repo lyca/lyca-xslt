@@ -21,7 +21,7 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import java.util.Vector;
+import java.util.List;
 
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.IFLT;
@@ -47,7 +47,7 @@ final class ContainsCall extends FunctionCall {
   /**
    * Create a contains() call - two arguments, both strings
    */
-  public ContainsCall(QName fname, Vector arguments) {
+  public ContainsCall(QName fname, List<Expression> arguments) {
     super(fname, arguments);
   }
 

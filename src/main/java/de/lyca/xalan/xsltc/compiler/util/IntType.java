@@ -180,7 +180,7 @@ public final class IntType extends NumberType {
    * after coercion.
    */
   @Override
-  public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, Class clazz) {
+  public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, Class<?> clazz) {
     final InstructionList il = methodGen.getInstructionList();
     if (clazz == Character.TYPE) {
       il.append(I2C);

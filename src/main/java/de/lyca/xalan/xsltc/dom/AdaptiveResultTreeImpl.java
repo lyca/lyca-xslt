@@ -20,6 +20,8 @@
  */
 package de.lyca.xalan.xsltc.dom;
 
+import java.util.Map;
+
 import javax.xml.transform.SourceLocator;
 
 import org.w3c.dom.Node;
@@ -32,7 +34,6 @@ import de.lyca.xalan.xsltc.StripFilter;
 import de.lyca.xalan.xsltc.TransletException;
 import de.lyca.xalan.xsltc.runtime.AttributeList;
 import de.lyca.xalan.xsltc.runtime.BasisLibrary;
-import de.lyca.xalan.xsltc.runtime.Hashtable;
 import de.lyca.xml.dtm.DTMAxisIterator;
 import de.lyca.xml.dtm.DTMAxisTraverser;
 import de.lyca.xml.dtm.DTMWSFilter;
@@ -467,7 +468,7 @@ public class AdaptiveResultTreeImpl extends SimpleResultTreeImpl {
   }
 
   @Override
-  public Hashtable getElementsWithIDs() {
+  public Map<String, Integer> getElementsWithIDs() {
     if (_dom != null)
       return _dom.getElementsWithIDs();
     else

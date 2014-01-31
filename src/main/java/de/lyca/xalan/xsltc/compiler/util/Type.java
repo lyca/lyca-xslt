@@ -69,7 +69,7 @@ public abstract class Type implements Constants {
    * Factory method to instantiate object types. Returns a pre-defined instance
    * for java.lang.Object.class and java.lang.String.class.
    */
-  public static Type newObjectType(Class clazz) {
+  public static Type newObjectType(Class<?> clazz) {
     if (clazz == java.lang.Object.class)
       return Type.Object;
     else if (clazz == java.lang.String.class)
@@ -169,7 +169,7 @@ public abstract class Type implements Constants {
    * <code>clazz</code>. This method is used to translate parameters when
    * external functions are called.
    */
-  public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, Class clazz) {
+  public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, Class<?> clazz) {
     final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), clazz.getClass().toString());
     classGen.getParser().reportError(Constants.FATAL, err);
   }
@@ -179,7 +179,7 @@ public abstract class Type implements Constants {
    * object of this type. This method is used to translate return values when
    * external functions are called.
    */
-  public void translateFrom(ClassGenerator classGen, MethodGenerator methodGen, Class clazz) {
+  public void translateFrom(ClassGenerator classGen, MethodGenerator methodGen, Class<?> clazz) {
     final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, clazz.getClass().toString(), toString());
     classGen.getParser().reportError(Constants.FATAL, err);
   }

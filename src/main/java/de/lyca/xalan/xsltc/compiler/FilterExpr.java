@@ -21,7 +21,7 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import java.util.Vector;
+import java.util.List;
 
 import org.apache.bcel.generic.ALOAD;
 import org.apache.bcel.generic.ASTORE;
@@ -56,9 +56,9 @@ class FilterExpr extends Expression {
   /**
    * Array of predicates in '(e)[p1]...[pn]'.
    */
-  private final Vector _predicates;
+  private final List<Expression> _predicates;
 
-  public FilterExpr(Expression primary, Vector predicates) {
+  public FilterExpr(Expression primary, List<Expression> predicates) {
     _primary = primary;
     _predicates = predicates;
     primary.setParent(this);
@@ -78,7 +78,7 @@ class FilterExpr extends Expression {
     if (_predicates != null) {
       final int n = _predicates.size();
       for (int i = 0; i < n; i++) {
-        final Expression exp = (Expression) _predicates.elementAt(i);
+        final Expression exp = _predicates.get(i);
         exp.setParser(parser);
         exp.setParent(this);
       }
@@ -111,7 +111,7 @@ class FilterExpr extends Expression {
     // Type check predicates and turn all optimizations off if appropriate
     final int n = _predicates.size();
     for (int i = 0; i < n; i++) {
-      final Predicate pred = (Predicate) _predicates.elementAt(i);
+      final Predicate pred = (Predicate) _predicates.get(i);
 
       if (!canOptimize) {
         pred.dontOptimize();
@@ -149,7 +149,7 @@ class FilterExpr extends Expression {
       translate(classGen, methodGen);
     } else {
       // Remove the next predicate to be translated
-      final Predicate predicate = (Predicate) _predicates.lastElement();
+      final Predicate predicate = (Predicate) _predicates.get(_predicates.size() - 1);
       _predicates.remove(predicate);
 
       // Translate the rest of the predicates from right to left

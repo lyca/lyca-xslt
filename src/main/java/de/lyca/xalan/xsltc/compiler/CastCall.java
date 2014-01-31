@@ -21,7 +21,7 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import java.util.Vector;
+import java.util.List;
 
 import org.apache.bcel.generic.CHECKCAST;
 import org.apache.bcel.generic.ConstantPoolGen;
@@ -53,7 +53,7 @@ final class CastCall extends FunctionCall {
   /**
    * Constructor.
    */
-  public CastCall(QName fname, Vector arguments) {
+  public CastCall(QName fname, List<Expression> arguments) {
     super(fname, arguments);
   }
 

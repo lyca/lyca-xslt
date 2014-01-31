@@ -21,7 +21,8 @@
 
 package de.lyca.xalan.xsltc.dom;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import de.lyca.xalan.xsltc.DOM;
 import de.lyca.xalan.xsltc.Translet;
@@ -52,8 +53,8 @@ public abstract class NodeCounter {
 
   private boolean _separFirst = true;
   private boolean _separLast = false;
-  private final Vector _separToks = new Vector();
-  private final Vector _formatToks = new Vector();
+  private final List<String> _separToks = new ArrayList<String>();
+  private final List<String> _formatToks = new ArrayList<String>();
   private int _nSepars = 0;
   private int _nFormats = 0;
 
@@ -62,7 +63,7 @@ public abstract class NodeCounter {
   private final static String[] Tens = { "", "x", "xx", "xxx", "xl", "l", "lx", "lxx", "lxxx", "xc" };
   private final static String[] Ones = { "", "i", "ii", "iii", "iv", "v", "vi", "vii", "viii", "ix" };
 
-  private final StringBuffer _tempBuffer = new StringBuffer();
+  private final StringBuilder _tempBuffer = new StringBuilder();
 
   protected NodeCounter(Translet translet, DOM document, DTMAxisIterator iterator) {
     _translet = translet;
@@ -131,10 +132,10 @@ public abstract class NodeCounter {
       }
       if (i > j) {
         if (isFirst) {
-          _separToks.addElement(".");
+          _separToks.add(".");
           isFirst = _separFirst = false;
         }
-        _formatToks.addElement(format.substring(j, i));
+        _formatToks.add(format.substring(j, i));
       }
 
       if (i == length) {
@@ -150,7 +151,7 @@ public abstract class NodeCounter {
         isFirst = false;
       }
       if (i > j) {
-        _separToks.addElement(format.substring(j, i));
+        _separToks.add(format.substring(j, i));
       }
     }
 
@@ -167,7 +168,7 @@ public abstract class NodeCounter {
       _nSepars--;
     }
     if (_nSepars == 0) {
-      _separToks.insertElementAt(".", 1);
+      _separToks.add(1, ".");
       _nSepars++;
     }
     if (_separFirst) {
@@ -229,7 +230,6 @@ public abstract class NodeCounter {
    */
   protected String formatNumbers(int[] values) {
     final int nValues = values.length;
-    final int length = _format.length();
 
     boolean isEmpty = true;
     for (int i = 0; i < nValues; i++)
@@ -243,11 +243,11 @@ public abstract class NodeCounter {
     boolean isFirst = true;
     int t = 0, n = 0, s = 1;
     _tempBuffer.setLength(0);
-    final StringBuffer buffer = _tempBuffer;
+    final StringBuilder buffer = _tempBuffer;
 
     // Append separation token before first digit/letter/numeral
     if (_separFirst) {
-      buffer.append((String) _separToks.elementAt(0));
+      buffer.append(_separToks.get(0));
     }
 
     // Append next digit/letter/numeral and separation token
@@ -255,9 +255,9 @@ public abstract class NodeCounter {
       final int value = values[n];
       if (value != Integer.MIN_VALUE) {
         if (!isFirst) {
-          buffer.append((String) _separToks.elementAt(s++));
+          buffer.append(_separToks.get(s++));
         }
-        formatValue(value, (String) _formatToks.elementAt(t++), buffer);
+        formatValue(value, _formatToks.get(t++), buffer);
         if (t == _nFormats) {
           t--;
         }
@@ -271,7 +271,7 @@ public abstract class NodeCounter {
 
     // Append separation token after last digit/letter/numeral
     if (_separLast) {
-      buffer.append((String) _separToks.lastElement());
+      buffer.append(_separToks.get(_separToks.size() - 1));
     }
     return buffer.toString();
   }
@@ -280,15 +280,15 @@ public abstract class NodeCounter {
    * Format a single value based on the appropriate formatting token. This
    * method is based on saxon (Michael Kay) and only implements lang="en".
    */
-  private void formatValue(int value, String format, StringBuffer buffer) {
+  private void formatValue(int value, String format, StringBuilder buffer) {
     final char c = format.charAt(0);
 
     if (Character.isDigit(c)) {
       final char zero = (char) (c - Character.getNumericValue(c));
 
-      StringBuffer temp = buffer;
+      StringBuilder temp = buffer;
       if (_groupSize > 0) {
-        temp = new StringBuffer();
+        temp = new StringBuilder();
       }
       String s = "";
       int n = value;

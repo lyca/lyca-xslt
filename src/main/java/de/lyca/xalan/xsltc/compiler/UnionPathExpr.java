@@ -21,7 +21,8 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.INVOKEINTERFACE;
@@ -59,10 +60,10 @@ final class UnionPathExpr extends Expression {
   public void setParser(Parser parser) {
     super.setParser(parser);
     // find all expressions in this Union
-    final Vector components = new Vector();
+    final List<Expression> components = new ArrayList<>();
     flatten(components);
     final int size = components.size();
-    _components = (Expression[]) components.toArray(new Expression[size]);
+    _components = components.toArray(new Expression[size]);
     for (int i = 0; i < size; i++) {
       _components[i].setParser(parser);
       _components[i].setParent(this);
@@ -103,13 +104,13 @@ final class UnionPathExpr extends Expression {
     return "union(" + _pathExpr + ", " + _rest + ')';
   }
 
-  private void flatten(Vector components) {
-    components.addElement(_pathExpr);
+  private void flatten(List<Expression> components) {
+    components.add(_pathExpr);
     if (_rest != null) {
       if (_rest instanceof UnionPathExpr) {
         ((UnionPathExpr) _rest).flatten(components);
       } else {
-        components.addElement(_rest);
+        components.add(_rest);
       }
     }
   }
@@ -129,9 +130,8 @@ final class UnionPathExpr extends Expression {
     il.append(new INVOKESPECIAL(init));
 
     // Add the various iterators to the UnionIterator
-    final int length = _components.length;
-    for (int i = 0; i < length; i++) {
-      _components[i].translate(classGen, methodGen);
+    for (final Expression expression : _components) {
+      expression.translate(classGen, methodGen);
       il.append(new INVOKEVIRTUAL(iter));
     }
 

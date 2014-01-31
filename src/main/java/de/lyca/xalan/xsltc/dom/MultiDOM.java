@@ -21,6 +21,9 @@
 
 package de.lyca.xalan.xsltc.dom;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -28,7 +31,6 @@ import de.lyca.xalan.xsltc.DOM;
 import de.lyca.xalan.xsltc.StripFilter;
 import de.lyca.xalan.xsltc.TransletException;
 import de.lyca.xalan.xsltc.runtime.BasisLibrary;
-import de.lyca.xalan.xsltc.runtime.Hashtable;
 import de.lyca.xml.dtm.Axis;
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xml.dtm.DTMAxisIterator;
@@ -54,7 +56,7 @@ public final class MultiDOM implements DOM {
   private int _free;
   private int _size;
 
-  private final Hashtable _documents = new Hashtable();
+  private final Map<String, Integer> _documents = new HashMap<>();
 
   private final class AxisIterator extends DTMAxisIteratorBase {
     // constitutive data
@@ -332,7 +334,7 @@ public final class MultiDOM implements DOM {
     // Store reference to document (URI) in hashtable
     if (indexByURI) {
       final String uri = adapter.getDocumentURI(0);
-      _documents.put(uri, new Integer(domNo));
+      _documents.put(uri, domNo);
     }
 
     // If the dom is an AdaptiveResultTreeImpl, we need to create a
@@ -352,7 +354,7 @@ public final class MultiDOM implements DOM {
   }
 
   public int getDocumentMask(String uri) {
-    final Integer domIdx = (Integer) _documents.get(uri);
+    final Integer domIdx = _documents.get(uri);
     if (domIdx == null)
       return -1;
     else
@@ -360,7 +362,7 @@ public final class MultiDOM implements DOM {
   }
 
   public DOM getDOMAdapter(String uri) {
-    final Integer domIdx = (Integer) _documents.get(uri);
+    final Integer domIdx = _documents.get(uri);
     if (domIdx == null)
       return null;
     else
@@ -658,7 +660,7 @@ public final class MultiDOM implements DOM {
 
   // %HZ% Does this method make any sense here???
   @Override
-  public Hashtable getElementsWithIDs() {
+  public Map<String, Integer> getElementsWithIDs() {
     return _main.getElementsWithIDs();
   }
 }

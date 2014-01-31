@@ -21,10 +21,11 @@
 
 package de.lyca.xalan.xsltc;
 
+import java.util.Map;
+
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import de.lyca.xalan.xsltc.runtime.Hashtable;
 import de.lyca.xml.dtm.DTMAxisIterator;
 import de.lyca.xml.serializer.SerializationHandler;
 
@@ -33,108 +34,108 @@ import de.lyca.xml.serializer.SerializationHandler;
  * @author Santiago Pericas-Geertsen
  */
 public interface DOM {
-  public final static int FIRST_TYPE = 0;
+  final static int FIRST_TYPE = 0;
 
-  public final static int NO_TYPE = -1;
+  final static int NO_TYPE = -1;
 
   // 0 is reserved for NodeIterator.END
-  public final static int NULL = 0;
+  final static int NULL = 0;
 
   // used by some node iterators to know which node to return
-  public final static int RETURN_CURRENT = 0;
-  public final static int RETURN_PARENT = 1;
+  final static int RETURN_CURRENT = 0;
+  final static int RETURN_PARENT = 1;
 
   // Constants used by getResultTreeFrag to indicate the types of the RTFs.
-  public final static int SIMPLE_RTF = 0;
-  public final static int ADAPTIVE_RTF = 1;
-  public final static int TREE_RTF = 2;
+  final static int SIMPLE_RTF = 0;
+  final static int ADAPTIVE_RTF = 1;
+  final static int TREE_RTF = 2;
 
   /** returns singleton iterator containg the document root */
-  public DTMAxisIterator getIterator();
+  DTMAxisIterator getIterator();
 
-  public String getStringValue();
+  String getStringValue();
 
-  public DTMAxisIterator getChildren(final int node);
+  DTMAxisIterator getChildren(final int node);
 
-  public DTMAxisIterator getTypedChildren(final int type);
+  DTMAxisIterator getTypedChildren(final int type);
 
-  public DTMAxisIterator getAxisIterator(final int axis);
+  DTMAxisIterator getAxisIterator(final int axis);
 
-  public DTMAxisIterator getTypedAxisIterator(final int axis, final int type);
+  DTMAxisIterator getTypedAxisIterator(final int axis, final int type);
 
-  public DTMAxisIterator getNthDescendant(int node, int n, boolean includeself);
+  DTMAxisIterator getNthDescendant(int node, int n, boolean includeself);
 
-  public DTMAxisIterator getNamespaceAxisIterator(final int axis, final int ns);
+  DTMAxisIterator getNamespaceAxisIterator(final int axis, final int ns);
 
-  public DTMAxisIterator getNodeValueIterator(DTMAxisIterator iter, int returnType, String value, boolean op);
+  DTMAxisIterator getNodeValueIterator(DTMAxisIterator iter, int returnType, String value, boolean op);
 
-  public DTMAxisIterator orderNodes(DTMAxisIterator source, int node);
+  DTMAxisIterator orderNodes(DTMAxisIterator source, int node);
 
-  public String getNodeName(final int node);
+  String getNodeName(final int node);
 
-  public String getNodeNameX(final int node);
+  String getNodeNameX(final int node);
 
-  public String getNamespaceName(final int node);
+  String getNamespaceName(final int node);
 
-  public int getExpandedTypeID(final int node);
+  int getExpandedTypeID(final int node);
 
-  public int getNamespaceType(final int node);
+  int getNamespaceType(final int node);
 
-  public int getParent(final int node);
+  int getParent(final int node);
 
-  public int getAttributeNode(final int gType, final int element);
+  int getAttributeNode(final int gType, final int element);
 
-  public String getStringValueX(final int node);
+  String getStringValueX(final int node);
 
-  public void copy(final int node, SerializationHandler handler) throws TransletException;
+  void copy(final int node, SerializationHandler handler) throws TransletException;
 
-  public void copy(DTMAxisIterator nodes, SerializationHandler handler) throws TransletException;
+  void copy(DTMAxisIterator nodes, SerializationHandler handler) throws TransletException;
 
-  public String shallowCopy(final int node, SerializationHandler handler) throws TransletException;
+  String shallowCopy(final int node, SerializationHandler handler) throws TransletException;
 
-  public boolean lessThan(final int node1, final int node2);
+  boolean lessThan(final int node1, final int node2);
 
-  public void characters(final int textNode, SerializationHandler handler) throws TransletException;
+  void characters(final int textNode, SerializationHandler handler) throws TransletException;
 
-  public Node makeNode(int index);
+  Node makeNode(int index);
 
-  public Node makeNode(DTMAxisIterator iter);
+  Node makeNode(DTMAxisIterator iter);
 
-  public NodeList makeNodeList(int index);
+  NodeList makeNodeList(int index);
 
-  public NodeList makeNodeList(DTMAxisIterator iter);
+  NodeList makeNodeList(DTMAxisIterator iter);
 
-  public String getLanguage(int node);
+  String getLanguage(int node);
 
-  public int getSize();
+  int getSize();
 
-  public String getDocumentURI(int node);
+  String getDocumentURI(int node);
 
-  public void setFilter(StripFilter filter);
+  void setFilter(StripFilter filter);
 
-  public void setupMapping(String[] names, String[] urisArray, int[] typesArray, String[] namespaces);
+  void setupMapping(String[] names, String[] urisArray, int[] typesArray, String[] namespaces);
 
-  public boolean isElement(final int node);
+  boolean isElement(final int node);
 
-  public boolean isAttribute(final int node);
+  boolean isAttribute(final int node);
 
-  public String lookupNamespace(int node, String prefix) throws TransletException;
+  String lookupNamespace(int node, String prefix) throws TransletException;
 
-  public int getNodeIdent(final int nodehandle);
+  int getNodeIdent(final int nodehandle);
 
-  public int getNodeHandle(final int nodeId);
+  int getNodeHandle(final int nodeId);
 
-  public DOM getResultTreeFrag(int initialSize, int rtfType);
+  DOM getResultTreeFrag(int initialSize, int rtfType);
 
-  public DOM getResultTreeFrag(int initialSize, int rtfType, boolean addToDTMManager);
+  DOM getResultTreeFrag(int initialSize, int rtfType, boolean addToDTMManager);
 
-  public SerializationHandler getOutputDomBuilder();
+  SerializationHandler getOutputDomBuilder();
 
-  public int getNSType(int node);
+  int getNSType(int node);
 
-  public int getDocument();
+  int getDocument();
 
-  public String getUnparsedEntityURI(String name);
+  String getUnparsedEntityURI(String name);
 
-  public Hashtable getElementsWithIDs();
+  Map<String, Integer> getElementsWithIDs();
 }

@@ -21,7 +21,7 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import java.util.Vector;
+import java.util.List;
 
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.INVOKEVIRTUAL;
@@ -62,17 +62,17 @@ final class KeyCall extends FunctionCall {
 
   /**
    * Get the parameters passed to function: key(String name, String value)
-   * key(String name, NodeSet value) The 'arguments' vector should contain two
+   * key(String name, NodeSet value) The 'arguments' list should contain two
    * parameters for key() calls, one holding the key name and one holding the
-   * value(s) to look up. The vector has only one parameter for id() calls (the
+   * value(s) to look up. The list has only one parameter for id() calls (the
    * key name is always "##id" for id() calls).
    * 
    * @param fname
    *          The function name (should be 'key' or 'id')
    * @param arguments
-   *          A vector containing the arguments the the function
+   *          A list containing the arguments the the function
    */
-  public KeyCall(QName fname, Vector arguments) {
+  public KeyCall(QName fname, List<Expression> arguments) {
     super(fname, arguments);
     switch (argumentCount()) {
       case 1:

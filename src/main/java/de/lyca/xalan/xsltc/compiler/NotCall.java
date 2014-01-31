@@ -21,7 +21,7 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import java.util.Vector;
+import java.util.List;
 
 import org.apache.bcel.generic.BranchHandle;
 import org.apache.bcel.generic.GOTO;
@@ -35,7 +35,7 @@ import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
  * @author Santiago Pericas-Geertsen
  */
 final class NotCall extends FunctionCall {
-  public NotCall(QName fname, Vector arguments) {
+  public NotCall(QName fname, List<Expression> arguments) {
     super(fname, arguments);
   }
 

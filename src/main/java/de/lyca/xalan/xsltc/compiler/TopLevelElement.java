@@ -21,7 +21,8 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.bcel.generic.InstructionList;
 
@@ -38,7 +39,7 @@ class TopLevelElement extends SyntaxTreeNode {
    * List of dependencies with other variables, parameters or keys defined at
    * the top level.
    */
-  protected Vector _dependencies = null;
+  protected List<TopLevelElement> _dependencies = null;
 
   /**
    * Type check all the children of this node.
@@ -82,10 +83,10 @@ class TopLevelElement extends SyntaxTreeNode {
    */
   public void addDependency(TopLevelElement other) {
     if (_dependencies == null) {
-      _dependencies = new Vector();
+      _dependencies = new ArrayList<>();
     }
     if (!_dependencies.contains(other)) {
-      _dependencies.addElement(other);
+      _dependencies.add(other);
     }
   }
 
@@ -93,7 +94,7 @@ class TopLevelElement extends SyntaxTreeNode {
    * Get the list of dependencies with other top-level elements like variables,
    * parameteres or keys.
    */
-  public Vector getDependencies() {
+  public List<TopLevelElement> getDependencies() {
     return _dependencies;
   }
 

@@ -132,7 +132,6 @@ public final class ResultTreeType extends Type {
   public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, BooleanType type) {
     // A result tree is always 'true' when converted to a boolean value,
     // since the tree always has at least one node (the root).
-    final ConstantPoolGen cpg = classGen.getConstantPool();
     final InstructionList il = methodGen.getInstructionList();
     il.append(POP); // don't need the DOM reference
     il.append(ICONST_1); // push 'true' on the stack
@@ -158,7 +157,6 @@ public final class ResultTreeType extends Type {
       il.append(new INVOKEINTERFACE(index, 1));
     } else {
       final String className = classGen.getClassName();
-      final int current = methodGen.getLocalIndex("current");
 
       // Push required parameters
       il.append(classGen.loadTranslet());
@@ -229,7 +227,6 @@ public final class ResultTreeType extends Type {
     } else {
       LocalVariableGen domBuilder, newDom;
       final String className = classGen.getClassName();
-      final int current = methodGen.getLocalIndex("current");
 
       // Push required parameters
       il.append(classGen.loadTranslet());
@@ -374,7 +371,7 @@ public final class ResultTreeType extends Type {
    * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
    */
   @Override
-  public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, Class clazz) {
+  public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, Class<?> clazz) {
     final String className = clazz.getName();
     final ConstantPoolGen cpg = classGen.getConstantPool();
     final InstructionList il = methodGen.getInstructionList();

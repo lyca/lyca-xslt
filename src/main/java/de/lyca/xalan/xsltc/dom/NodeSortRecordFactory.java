@@ -37,7 +37,7 @@ public class NodeSortRecordFactory {
 
   private final DOM _dom;
   private final String _className;
-  private Class _class;
+  private Class<?> _class;
   private SortSettings _sortSettings;
 
   /**

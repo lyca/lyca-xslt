@@ -21,7 +21,7 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import java.util.Vector;
+import java.util.List;
 
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.INVOKEVIRTUAL;
@@ -52,7 +52,7 @@ final class CallTemplate extends Instruction {
    * array can be either a WithParam or a Param if no WithParam exists for a
    * particular parameter.
    */
-  private Object[] _parameters = null;
+  private SyntaxTreeNode[] _parameters = null;
 
   /**
    * The corresponding template which this CallTemplate calls.
@@ -138,18 +138,14 @@ final class CallTemplate extends Instruction {
     il.append(methodGen.loadCurrentNode());
 
     // Initialize prefix of method signature
-    final StringBuffer methodSig = new StringBuffer("(" + DOM_INTF_SIG + NODE_ITERATOR_SIG + TRANSLET_OUTPUT_SIG
+    final StringBuilder methodSig = new StringBuilder("(" + DOM_INTF_SIG + NODE_ITERATOR_SIG + TRANSLET_OUTPUT_SIG
             + NODE_SIG);
 
     // If calling a simply named template, push actual arguments
     if (_calleeTemplate != null) {
-      final Vector calleeParams = _calleeTemplate.getParameters();
-      final int numParams = _parameters.length;
-
-      for (int i = 0; i < numParams; i++) {
-        final SyntaxTreeNode node = (SyntaxTreeNode) _parameters[i];
+      // List<Param> calleeParams = _calleeTemplate.getParameters();
+      for (final SyntaxTreeNode node : _parameters) {
         methodSig.append(OBJECT_SIG); // append Object to signature
-
         // Push 'null' if Param to indicate no actual parameter specified
         if (node instanceof Param) {
           il.append(ACONST_NULL);
@@ -193,18 +189,12 @@ final class CallTemplate extends Instruction {
   private void buildParameterList() {
     // Put the parameters from the called template into the array first.
     // This is to ensure the order of the parameters.
-    final Vector defaultParams = _calleeTemplate.getParameters();
+    final List<Param> defaultParams = _calleeTemplate.getParameters();
     final int numParams = defaultParams.size();
-    _parameters = new Object[numParams];
-    for (int i = 0; i < numParams; i++) {
-      _parameters[i] = defaultParams.elementAt(i);
-    }
+    _parameters = defaultParams.toArray(new SyntaxTreeNode[numParams]);
 
     // Replace a Param with a WithParam if they have the same name.
-    final int count = elementCount();
-    for (int i = 0; i < count; i++) {
-      final Object node = elementAt(i);
-
+    for (final SyntaxTreeNode node : getContents()) {
       // Ignore if not WithParam
       if (node instanceof WithParam) {
         final WithParam withParam = (WithParam) node;
@@ -212,7 +202,7 @@ final class CallTemplate extends Instruction {
 
         // Search for a Param with the same name
         for (int k = 0; k < numParams; k++) {
-          final Object object = _parameters[k];
+          final SyntaxTreeNode object = _parameters[k];
           if (object instanceof Param && ((Param) object).getName().equals(name)) {
             withParam.setDoParameterOptimization(true);
             _parameters[k] = withParam;

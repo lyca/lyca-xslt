@@ -21,7 +21,8 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.INVOKESPECIAL;
@@ -59,10 +60,7 @@ class VariableBase extends TopLevelElement {
   protected String select; // Textual repr. of variable expr.
 
   // References to this variable (when local)
-  protected Vector _refs = new Vector(2);
-
-  // Dependencies to other variables/parameters (for globals only)
-  protected Vector _dependencies = null;
+  protected List<VariableRefBase> _refs = new ArrayList<>(2);
 
   // Used to make sure parameter field is not added twice
   protected boolean _ignore = false;
@@ -79,7 +77,7 @@ class VariableBase extends TopLevelElement {
    * contains a reference to this variable.
    */
   public void addReference(VariableRefBase vref) {
-    _refs.addElement(vref);
+    _refs.add(vref);
   }
 
   /**
@@ -111,7 +109,6 @@ class VariableBase extends TopLevelElement {
    * stack.
    */
   public Instruction loadInstruction() {
-    final Instruction instr = _loadInstruction;
     if (_loadInstruction == null) {
       _loadInstruction = _type.LOAD(_local.getIndex());
     }
@@ -123,7 +120,6 @@ class VariableBase extends TopLevelElement {
    * variable.
    */
   public Instruction storeInstruction() {
-    final Instruction instr = _storeInstruction;
     if (_storeInstruction == null) {
       _storeInstruction = _type.STORE(_local.getIndex());
     }

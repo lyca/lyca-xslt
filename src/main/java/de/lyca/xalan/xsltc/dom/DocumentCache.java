@@ -54,7 +54,7 @@ import de.lyca.xml.utils.SystemIDResolver;
 public final class DocumentCache implements DOMCache {
 
   private final int _size;
-  private final Hashtable _references;
+  private final Hashtable<String, CachedDocument> _references;
   private final String[] _URIs;
   private int _count;
   private int _current;
@@ -187,7 +187,7 @@ public final class DocumentCache implements DOMCache {
     _count = 0;
     _current = 0;
     _size = size;
-    _references = new Hashtable(_size + 2);
+    _references = new Hashtable<>(_size + 2);
     _URIs = new String[_size];
 
     try {
@@ -232,7 +232,7 @@ public final class DocumentCache implements DOMCache {
      *
      */
   private CachedDocument lookupDocument(String uri) {
-    return (CachedDocument) _references.get(uri);
+    return _references.get(uri);
   }
 
   /**
@@ -259,7 +259,7 @@ public final class DocumentCache implements DOMCache {
      *
      */
   private synchronized void replaceDocument(String uri, CachedDocument doc) {
-    final CachedDocument old = (CachedDocument) _references.get(uri);
+    final CachedDocument old = _references.get(uri);
     if (doc == null) {
       insertDocument(uri, doc);
     } else {
@@ -341,7 +341,7 @@ public final class DocumentCache implements DOMCache {
             + "<td><center><b>Last accessed</b></center></td>" + "<td><center><b>Last modified</b></center></td></tr>");
 
     for (int i = 0; i < _count; i++) {
-      final CachedDocument doc = (CachedDocument) _references.get(_URIs[i]);
+      final CachedDocument doc = _references.get(_URIs[i]);
       out.print("<tr><td><a href=\"" + _URIs[i] + "\">" + "<font size=-1>" + _URIs[i] + "</font></a></td>");
       out.print("<td><center>" + doc.getLatency() + "ms</center></td>");
       out.print("<td><center>" + doc.getAccessCount() + "</center></td>");

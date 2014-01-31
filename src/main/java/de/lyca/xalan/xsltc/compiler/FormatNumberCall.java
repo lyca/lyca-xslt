@@ -21,7 +21,7 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import java.util.Vector;
+import java.util.List;
 
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.INVOKESTATIC;
@@ -47,7 +47,7 @@ final class FormatNumberCall extends FunctionCall {
   private Expression _name;
   private QName _resolvedQName = null;
 
-  public FormatNumberCall(QName fname, Vector arguments) {
+  public FormatNumberCall(QName fname, List<Expression> arguments) {
     super(fname, arguments);
     _value = argument(0);
     _format = argument(1);

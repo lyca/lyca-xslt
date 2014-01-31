@@ -146,7 +146,7 @@ final class Key extends TopLevelElement {
     // DOM.getStringValueX(nodeIndex) => String
     final int getNodeValue = cpg.addInterfaceMethodref(DOM_INTF, GET_NODE_VALUE, "(I)" + STRING_SIG);
 
-    final int getNodeIdent = cpg.addInterfaceMethodref(DOM_INTF, "getNodeIdent", "(I)" + NODE_SIG);
+    cpg.addInterfaceMethodref(DOM_INTF, "getNodeIdent", "(I)" + NODE_SIG);
 
     // AbstractTranslet.SetKeyIndexDom(name, Dom) => void
     final int keyDom = cpg.addMethodref(TRANSLET_CLASS, "setKeyIndexDom", "(" + STRING_SIG + DOM_INTF_SIG + ")V");
@@ -210,7 +210,6 @@ final class Key extends TopLevelElement {
 
     final ConstantPoolGen cpg = classGen.getConstantPool();
     final InstructionList il = methodGen.getInstructionList();
-    final int current = methodGen.getLocalIndex("current");
 
     // AbstractTranslet.buildKeyIndex(name,node_id,value) => void
     final int key = cpg.addMethodref(TRANSLET_CLASS, "buildKeyIndex", "(" + STRING_SIG + "I" + OBJECT_SIG + ")V");
@@ -218,7 +217,7 @@ final class Key extends TopLevelElement {
     // AbstractTranslet.SetKeyIndexDom(name, Dom) => void
     final int keyDom = cpg.addMethodref(TRANSLET_CLASS, "setKeyIndexDom", "(" + STRING_SIG + DOM_INTF_SIG + ")V");
 
-    final int getNodeIdent = cpg.addInterfaceMethodref(DOM_INTF, "getNodeIdent", "(I)" + NODE_SIG);
+    cpg.addInterfaceMethodref(DOM_INTF, "getNodeIdent", "(I)" + NODE_SIG);
 
     // DOM.getAxisIterator(root) => NodeIterator
     final int git = cpg.addInterfaceMethodref(DOM_INTF, "getAxisIterator", "(I)" + NODE_ITERATOR_SIG);

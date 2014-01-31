@@ -126,7 +126,7 @@ final class XslElement extends Instruction {
           }
 
           // Prepend prefix to local name
-          final StringBuffer newName = new StringBuffer(prefix);
+          final StringBuilder newName = new StringBuilder(prefix);
           if (prefix != EMPTYSTRING) {
             newName.append(':');
           }
@@ -211,7 +211,6 @@ final class XslElement extends Instruction {
    */
   @Override
   public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
-    final LocalVariableGen local = null;
     final ConstantPoolGen cpg = classGen.getConstantPool();
     final InstructionList il = methodGen.getInstructionList();
 
@@ -291,9 +290,7 @@ final class XslElement extends Instruction {
    */
   @Override
   public void translateContents(ClassGenerator classGen, MethodGenerator methodGen) {
-    final int n = elementCount();
-    for (int i = 0; i < n; i++) {
-      final SyntaxTreeNode item = (SyntaxTreeNode) getContents().elementAt(i);
+    for (final SyntaxTreeNode item : getContents()) {
       if (_ignore && item instanceof XslAttribute) {
         continue;
       }

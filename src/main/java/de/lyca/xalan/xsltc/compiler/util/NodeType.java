@@ -234,7 +234,7 @@ public final class NodeType extends Type {
    * coercion.
    */
   @Override
-  public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, Class clazz) {
+  public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, Class<?> clazz) {
     final ConstantPoolGen cpg = classGen.getConstantPool();
     final InstructionList il = methodGen.getInstructionList();
 

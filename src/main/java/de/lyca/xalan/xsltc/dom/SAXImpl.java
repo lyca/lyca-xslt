@@ -21,7 +21,7 @@
 
 package de.lyca.xalan.xsltc.dom;
 
-import java.util.Iterator;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.transform.Source;
@@ -41,7 +41,6 @@ import de.lyca.xalan.xsltc.DOMEnhancedForDTM;
 import de.lyca.xalan.xsltc.StripFilter;
 import de.lyca.xalan.xsltc.TransletException;
 import de.lyca.xalan.xsltc.runtime.BasisLibrary;
-import de.lyca.xalan.xsltc.runtime.Hashtable;
 import de.lyca.xml.dtm.Axis;
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xml.dtm.DTMAxisIterator;
@@ -115,7 +114,7 @@ public final class SAXImpl extends SAX2DTM2 implements DOMEnhancedForDTM, DOMBui
   private int _namesSize = -1;
 
   // Namespace related stuff
-  private final Hashtable _nsIndex = new Hashtable();
+  private final Map<Integer, Integer> _nsIndex = new HashMap<>();
 
   // The initial size of the text buffer
   private int _size = 0;
@@ -133,7 +132,7 @@ public final class SAXImpl extends SAX2DTM2 implements DOMEnhancedForDTM, DOMBui
   // The hashtable for org.w3c.dom.Node to node id mapping.
   // This is only used when the input is a DOMSource and the
   // buildIdIndex flag is true.
-  private Hashtable _node2Ids = null;
+  private Map<Node, Integer> _node2Ids = null;
 
   // True if the input source is a DOMSource.
   private boolean _hasDOMSource = false;
@@ -463,7 +462,7 @@ public final class SAXImpl extends SAX2DTM2 implements DOMEnhancedForDTM, DOMBui
     if (s == null)
       return 0;
     final int eType = getIdForNamespace(s);
-    return ((Integer) _nsIndex.get(new Integer(eType))).intValue();
+    return _nsIndex.get(eType).intValue();
   }
 
   /**
@@ -651,7 +650,7 @@ public final class SAXImpl extends SAX2DTM2 implements DOMEnhancedForDTM, DOMBui
 
     for (i = 0; i < nsLength; i++) {
       final int eType = getIdForNamespace(namespaces[i]);
-      final Integer type = (Integer) _nsIndex.get(new Integer(eType));
+      final Integer type = _nsIndex.get(eType);
       if (type != null) {
         result[type.intValue()] = (short) i;
       }
@@ -671,7 +670,7 @@ public final class SAXImpl extends SAX2DTM2 implements DOMEnhancedForDTM, DOMBui
 
     for (i = 0; i < length; i++) {
       final int eType = getIdForNamespace(namespaces[i]);
-      final Integer type = (Integer) _nsIndex.get(new Integer(eType));
+      final Integer type = _nsIndex.get(eType);
       result[i] = type == null ? -1 : type.shortValue();
     }
 
@@ -714,7 +713,7 @@ public final class SAXImpl extends SAX2DTM2 implements DOMEnhancedForDTM, DOMBui
       } else {
         _document = node.getOwnerDocument();
       }
-      _node2Ids = new Hashtable();
+      _node2Ids = new HashMap<>();
     }
   }
 
@@ -746,7 +745,7 @@ public final class SAXImpl extends SAX2DTM2 implements DOMEnhancedForDTM, DOMBui
   public int getElementById(String idString) {
     final Node node = _document.getElementById(idString);
     if (node != null) {
-      final Integer id = (Integer) _node2Ids.get(node);
+      final Integer id = _node2Ids.get(node);
       return id != null ? id.intValue() : DTM.NULL;
     } else
       return DTM.NULL;
@@ -840,7 +839,7 @@ public final class SAXImpl extends SAX2DTM2 implements DOMEnhancedForDTM, DOMBui
   public void startDocument() throws SAXException {
     super.startDocument();
 
-    _nsIndex.put(new Integer(0), new Integer(_uriCount++));
+    _nsIndex.put(0, _uriCount++);
     definePrefixAndUri(XML_PREFIX, XML_URI);
   }
 
@@ -864,7 +863,7 @@ public final class SAXImpl extends SAX2DTM2 implements DOMEnhancedForDTM, DOMBui
     this.startElement(uri, localName, qname, attributes);
 
     if (m_buildIdIndex) {
-      _node2Ids.put(node, new Integer(m_parents.peek()));
+      _node2Ids.put(node, m_parents.peek());
     }
   }
 
@@ -935,9 +934,9 @@ public final class SAXImpl extends SAX2DTM2 implements DOMEnhancedForDTM, DOMBui
 
   private void definePrefixAndUri(String prefix, String uri) throws SAXException {
     // Check if the URI already exists before pushing on stack
-    final Integer eType = new Integer(getIdForNamespace(uri));
-    if ((Integer) _nsIndex.get(eType) == null) {
-      _nsIndex.put(eType, new Integer(_uriCount++));
+    final Integer eType = getIdForNamespace(uri);
+    if (_nsIndex.get(eType) == null) {
+      _nsIndex.put(eType, _uriCount++);
     }
   }
 
@@ -1742,23 +1741,11 @@ public final class SAXImpl extends SAX2DTM2 implements DOMEnhancedForDTM, DOMBui
    * %HZ% Need Javadoc
    */
   @Override
-  public Hashtable getElementsWithIDs() {
-    if (m_idAttributes == null)
+  public Map<String, Integer> getElementsWithIDs() {
+    if (m_idAttributes == null || m_idAttributes.isEmpty())
       return null;
-
-    // Convert a java.util.Hashtable to an xsltc.runtime.Hashtable
-    final Iterator idEntries = m_idAttributes.entrySet().iterator();
-    if (!idEntries.hasNext())
-      return null;
-
-    final Hashtable idAttrsTable = new Hashtable();
-
-    while (idEntries.hasNext()) {
-      final Map.Entry entry = (Map.Entry) idEntries.next();
-      idAttrsTable.put(entry.getKey(), entry.getValue());
-    }
-
-    return idAttrsTable;
+    // TODO is the copy needed?
+    return new HashMap<>(m_idAttributes);
   }
 
   /**

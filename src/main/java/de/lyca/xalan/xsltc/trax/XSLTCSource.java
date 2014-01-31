@@ -41,7 +41,7 @@ public final class XSLTCSource implements Source {
 
   private String _systemId = null;
   private Source _source = null;
-  private final ThreadLocal _dom = new ThreadLocal();
+  private final ThreadLocal<SAXImpl> _dom = new ThreadLocal<>();
 
   /**
    * Create a new XSLTC-specific source from a system ID
@@ -93,7 +93,7 @@ public final class XSLTCSource implements Source {
    * Internal interface which returns a DOM for a given DTMManager and translet.
    */
   protected DOM getDOM(XSLTCDTMManager dtmManager, AbstractTranslet translet) throws SAXException {
-    SAXImpl idom = (SAXImpl) _dom.get();
+    SAXImpl idom = _dom.get();
 
     if (idom != null) {
       if (dtmManager != null) {

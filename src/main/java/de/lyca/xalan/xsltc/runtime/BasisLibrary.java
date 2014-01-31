@@ -303,7 +303,7 @@ public final class BasisLibrary {
     final int froml = from.length();
     final int valuel = value.length();
 
-    final StringBuffer result = new StringBuffer();
+    final StringBuilder result = new StringBuilder();
     for (int j, i = 0; i < valuel; i++) {
       final char ch = value.charAt(i);
       for (j = 0; j < froml; j++) {
@@ -334,7 +334,7 @@ public final class BasisLibrary {
   public static String normalize_spaceF(String value) {
     int i = 0;
     final int n = value.length();
-    final StringBuffer result = new StringBuffer();
+    final StringBuilder result = new StringBuilder();
 
     while (i < n && isWhiteSpace(value.charAt(i))) {
       i++;
@@ -842,7 +842,8 @@ public final class BasisLibrary {
   private static String defaultPattern = "";
 
   static {
-    final NumberFormat f = NumberFormat.getInstance(Locale.getDefault());
+    // TODO Localaware
+    final NumberFormat f = NumberFormat.getInstance(Locale.US);
     defaultFormatter = f instanceof DecimalFormat ? (DecimalFormat) f : new DecimalFormat();
     // Set max fraction digits so that truncation does not occur. Setting
     // the max to Integer.MAX_VALUE may cause problems with some JDK's.
@@ -854,7 +855,7 @@ public final class BasisLibrary {
 
   /**
    * Utility function: used in RealType to convert a real to a string. Removes
-   * the decimal if null.
+   * the decimal if null. TODO make Local aware?
    */
   public static String realToString(double d) {
     final double m = Math.abs(d);
@@ -1581,7 +1582,7 @@ public final class BasisLibrary {
 
   public static String replace(String base, String delim, String[] str) {
     final int len = base.length();
-    final StringBuffer result = new StringBuffer();
+    final StringBuilder result = new StringBuilder();
 
     for (int i = 0; i < len; i++) {
       final char ch = base.charAt(i);

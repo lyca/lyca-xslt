@@ -116,7 +116,6 @@ final class Variable extends VariableBase {
    * ForEach class for an explanation
    */
   public void initialize(ClassGenerator classGen, MethodGenerator methodGen) {
-    final ConstantPoolGen cpg = classGen.getConstantPool();
     final InstructionList il = methodGen.getInstructionList();
 
     // This is only done for local variables that are actually used

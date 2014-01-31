@@ -24,9 +24,15 @@ package de.lyca.xalan.xsltc.compiler;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.IFEQ;
@@ -47,7 +53,6 @@ import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.IntType;
 import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 import de.lyca.xalan.xsltc.compiler.util.MethodType;
-import de.lyca.xalan.xsltc.compiler.util.MultiHashtable;
 import de.lyca.xalan.xsltc.compiler.util.ObjectType;
 import de.lyca.xalan.xsltc.compiler.util.ReferenceType;
 import de.lyca.xalan.xsltc.compiler.util.Type;
@@ -65,9 +70,9 @@ class FunctionCall extends Expression {
   // Name of this function call
   private QName _fname;
   // Arguments to this function call (might not be any)
-  private final Vector _arguments;
+  private final List<Expression> _arguments;
   // Empty argument list, used for certain functions
-  private final static Vector EMPTY_ARG_LIST = new Vector(0);
+  private final static List<Expression> EMPTY_ARG_LIST = Collections.emptyList();
 
   // Valid namespaces for Java function-call extension
   protected final static String EXT_XSLTC = TRANSLET_URI;
@@ -106,9 +111,9 @@ class FunctionCall extends Expression {
 
   // External Java function's class/method/signature
   private String _className;
-  private Class _clazz;
+  private Class<?> _clazz;
   private Method _chosenMethod;
-  private Constructor _chosenConstructor;
+  private Constructor<?> _chosenConstructor;
   private MethodType _chosenMethodType;
 
   // Encapsulates all unsupported external function calls
@@ -121,26 +126,26 @@ class FunctionCall extends Expression {
   private boolean _isStatic = false;
 
   // Legal conversions between internal and Java types.
-  private static final MultiHashtable _internal2Java = new MultiHashtable();
+  private static final Map<Type, Set<JavaType>> _internal2Java = new HashMap<>();
 
   // Legal conversions between Java and internal types.
-  private static final Hashtable _java2Internal = new Hashtable();
+  private static final Map<Class<?>, Type> _java2Internal = new HashMap<>();
 
   // The mappings between EXSLT extension namespaces and implementation classes
-  private static final Hashtable _extensionNamespaceTable = new Hashtable();
+  private static final Map<String, String> _extensionNamespaceTable = new HashMap<>();
 
   // Extension functions that are implemented in BasisLibrary
-  private static final Hashtable _extensionFunctionTable = new Hashtable();
+  private static final Map<String, String> _extensionFunctionTable = new HashMap<>();
 
   /**
    * inner class to used in internal2Java mappings, contains the Java type and
    * the distance between the internal type and the Java type.
    */
   static class JavaType {
-    public Class type;
+    public Class<?> type;
     public int distance;
 
-    public JavaType(Class type, int distance) {
+    public JavaType(Class<?> type, int distance) {
       this.type = type;
       this.distance = distance;
     }
@@ -158,62 +163,61 @@ class FunctionCall extends Expression {
    */
   static {
     try {
-      final Class nodeClass = Class.forName("org.w3c.dom.Node");
-      final Class nodeListClass = Class.forName("org.w3c.dom.NodeList");
+      final Class<?> nodeClass = Class.forName("org.w3c.dom.Node");
+      final Class<?> nodeListClass = Class.forName("org.w3c.dom.NodeList");
 
       // -- Internal to Java --------------------------------------------
 
       // Type.Boolean -> { boolean(0), Boolean(1), Object(2) }
-      _internal2Java.put(Type.Boolean, new JavaType(Boolean.TYPE, 0));
-      _internal2Java.put(Type.Boolean, new JavaType(Boolean.class, 1));
-      _internal2Java.put(Type.Boolean, new JavaType(Object.class, 2));
+      _internal2Java.put(
+              Type.Boolean,
+              new HashSet<>(Arrays.asList(new JavaType[] { new JavaType(Boolean.TYPE, 0),
+                      new JavaType(Boolean.class, 1), new JavaType(Object.class, 3) })));
 
       // Type.Real -> { double(0), Double(1), float(2), long(3), int(4),
       // short(5), byte(6), char(7), Object(8) }
-      _internal2Java.put(Type.Real, new JavaType(Double.TYPE, 0));
-      _internal2Java.put(Type.Real, new JavaType(Double.class, 1));
-      _internal2Java.put(Type.Real, new JavaType(Float.TYPE, 2));
-      _internal2Java.put(Type.Real, new JavaType(Long.TYPE, 3));
-      _internal2Java.put(Type.Real, new JavaType(Integer.TYPE, 4));
-      _internal2Java.put(Type.Real, new JavaType(Short.TYPE, 5));
-      _internal2Java.put(Type.Real, new JavaType(Byte.TYPE, 6));
-      _internal2Java.put(Type.Real, new JavaType(Character.TYPE, 7));
-      _internal2Java.put(Type.Real, new JavaType(Object.class, 8));
+      _internal2Java.put(
+              Type.Real,
+              new HashSet<>(Arrays.asList(new JavaType[] { new JavaType(Double.TYPE, 0), new JavaType(Double.class, 1),
+                      new JavaType(Float.TYPE, 2), new JavaType(Long.TYPE, 3), new JavaType(Integer.TYPE, 4),
+                      new JavaType(Short.TYPE, 5), new JavaType(Byte.TYPE, 6), new JavaType(Character.TYPE, 7),
+                      new JavaType(Object.class, 8) })));
 
       // Type.Int must be the same as Type.Real
-      _internal2Java.put(Type.Int, new JavaType(Double.TYPE, 0));
-      _internal2Java.put(Type.Int, new JavaType(Double.class, 1));
-      _internal2Java.put(Type.Int, new JavaType(Float.TYPE, 2));
-      _internal2Java.put(Type.Int, new JavaType(Long.TYPE, 3));
-      _internal2Java.put(Type.Int, new JavaType(Integer.TYPE, 4));
-      _internal2Java.put(Type.Int, new JavaType(Short.TYPE, 5));
-      _internal2Java.put(Type.Int, new JavaType(Byte.TYPE, 6));
-      _internal2Java.put(Type.Int, new JavaType(Character.TYPE, 7));
-      _internal2Java.put(Type.Int, new JavaType(Object.class, 8));
+      _internal2Java.put(
+              Type.Int,
+              new HashSet<>(Arrays.asList(new JavaType[] { new JavaType(Double.TYPE, 0), new JavaType(Double.class, 1),
+                      new JavaType(Float.TYPE, 2), new JavaType(Long.TYPE, 3), new JavaType(Integer.TYPE, 4),
+                      new JavaType(Short.TYPE, 5), new JavaType(Byte.TYPE, 6), new JavaType(Character.TYPE, 7),
+                      new JavaType(Object.class, 8) })));
 
       // Type.String -> { String(0), Object(1) }
-      _internal2Java.put(Type.String, new JavaType(String.class, 0));
-      _internal2Java.put(Type.String, new JavaType(Object.class, 1));
+      _internal2Java.put(
+              Type.String,
+              new HashSet<>(Arrays
+                      .asList(new JavaType[] { new JavaType(String.class, 0), new JavaType(Object.class, 1) })));
 
       // Type.NodeSet -> { NodeList(0), Node(1), Object(2), String(3) }
-      _internal2Java.put(Type.NodeSet, new JavaType(nodeListClass, 0));
-      _internal2Java.put(Type.NodeSet, new JavaType(nodeClass, 1));
-      _internal2Java.put(Type.NodeSet, new JavaType(Object.class, 2));
-      _internal2Java.put(Type.NodeSet, new JavaType(String.class, 3));
+      _internal2Java.put(
+              Type.NodeSet,
+              new HashSet<>(Arrays.asList(new JavaType[] { new JavaType(nodeListClass, 0), new JavaType(nodeClass, 1),
+                      new JavaType(Object.class, 2), new JavaType(String.class, 3) })));
 
-      // Type.Node -> { Node(0), NodeList(1), Object(2), String(3) }
-      _internal2Java.put(Type.Node, new JavaType(nodeListClass, 0));
-      _internal2Java.put(Type.Node, new JavaType(nodeClass, 1));
-      _internal2Java.put(Type.Node, new JavaType(Object.class, 2));
-      _internal2Java.put(Type.Node, new JavaType(String.class, 3));
+      // Type.Node -> { Node(0), NodeList(1), Object(2), String(3) } TODO
+      // switched nodeClass and nodeListClass
+      _internal2Java.put(
+              Type.Node,
+              new HashSet<>(Arrays.asList(new JavaType[] { new JavaType(nodeClass, 0), new JavaType(nodeListClass, 1),
+                      new JavaType(Object.class, 2), new JavaType(String.class, 3) })));
 
       // Type.ResultTree -> { NodeList(0), Node(1), Object(2), String(3) }
-      _internal2Java.put(Type.ResultTree, new JavaType(nodeListClass, 0));
-      _internal2Java.put(Type.ResultTree, new JavaType(nodeClass, 1));
-      _internal2Java.put(Type.ResultTree, new JavaType(Object.class, 2));
-      _internal2Java.put(Type.ResultTree, new JavaType(String.class, 3));
+      _internal2Java.put(
+              Type.ResultTree,
+              new HashSet<>(Arrays.asList(new JavaType[] { new JavaType(nodeListClass, 0), new JavaType(nodeClass, 1),
+                      new JavaType(Object.class, 2), new JavaType(String.class, 3) })));
 
-      _internal2Java.put(Type.Reference, new JavaType(Object.class, 0));
+      _internal2Java
+              .put(Type.Reference, new HashSet<>(Arrays.asList(new JavaType[] { new JavaType(Object.class, 0) })));
 
       // Possible conversions between Java and internal types
       _java2Internal.put(Boolean.TYPE, Type.Boolean);
@@ -251,7 +255,20 @@ class FunctionCall extends Expression {
     }
   }
 
-  public FunctionCall(QName fname, Vector arguments) {
+  private static JavaType maps(Type from, Class<?> to) {
+    if (from == null)
+      return null;
+    final Collection<JavaType> collection = _internal2Java.get(from);
+    if (collection != null) {
+      for (final JavaType javaType : collection) {
+        if (javaType.equals(to))
+          return javaType;
+      }
+    }
+    return null;
+  }
+
+  public FunctionCall(QName fname, List<Expression> arguments) {
     _fname = fname;
     _arguments = arguments;
     _type = null;
@@ -271,7 +288,7 @@ class FunctionCall extends Expression {
     if (_arguments != null) {
       final int n = _arguments.size();
       for (int i = 0; i < n; i++) {
-        final Expression exp = (Expression) _arguments.elementAt(i);
+        final Expression exp = _arguments.get(i);
         exp.setParser(parser);
         exp.setParent(this);
       }
@@ -279,7 +296,7 @@ class FunctionCall extends Expression {
   }
 
   public String getClassNameFromUri(String uri) {
-    final String className = (String) _extensionNamespaceTable.get(uri);
+    final String className = _extensionNamespaceTable.get(uri);
 
     if (className != null)
       return className;
@@ -349,7 +366,7 @@ class FunctionCall extends Expression {
             local = replaceDash(local);
           }
 
-          final String extFunction = (String) _extensionFunctionTable.get(namespace + ":" + local);
+          final String extFunction = _extensionFunctionTable.get(namespace + ":" + local);
           if (extFunction != null) {
             _fname = new QName(null, null, extFunction);
             return typeCheckStandard(stable);
@@ -380,17 +397,17 @@ class FunctionCall extends Expression {
     _fname.clearNamespace(); // HACK!!!
 
     final int n = _arguments.size();
-    final Vector argsType = typeCheckArgs(stable);
+    final List<Type> argsType = typeCheckArgs(stable);
     final MethodType args = new MethodType(Type.Void, argsType);
     final MethodType ptype = lookupPrimop(stable, _fname.getLocalPart(), args);
 
     if (ptype != null) {
       for (int i = 0; i < n; i++) {
-        final Type argType = (Type) ptype.argsType().elementAt(i);
-        final Expression exp = (Expression) _arguments.elementAt(i);
+        final Type argType = ptype.argsType().get(i);
+        final Expression exp = _arguments.get(i);
         if (!argType.identicalTo(exp.getType())) {
           try {
-            _arguments.setElementAt(new CastExpr(exp, argType), i);
+            _arguments.set(i, new CastExpr(exp, argType));
           } catch (final TypeCheckError e) {
             throw new TypeCheckError(this); // invalid conversion
           }
@@ -403,32 +420,32 @@ class FunctionCall extends Expression {
   }
 
   public Type typeCheckConstructor(SymbolTable stable) throws TypeCheckError {
-    final Vector constructors = findConstructors();
+    final List<Constructor<?>> constructors = findConstructors();
     if (constructors == null)
       // Constructor not found in this class
       throw new TypeCheckError(ErrorMsg.CONSTRUCTOR_NOT_FOUND, _className);
 
     final int nConstructors = constructors.size();
     final int nArgs = _arguments.size();
-    final Vector argsType = typeCheckArgs(stable);
+    final List<Type> argsType = typeCheckArgs(stable);
 
     // Try all constructors
     int bestConstrDistance = Integer.MAX_VALUE;
     _type = null; // reset
     for (int j, i = 0; i < nConstructors; i++) {
       // Check if all parameters to this constructor can be converted
-      final Constructor constructor = (Constructor) constructors.elementAt(i);
-      final Class[] paramTypes = constructor.getParameterTypes();
+      final Constructor<?> constructor = constructors.get(i);
+      final Class<?>[] paramTypes = constructor.getParameterTypes();
 
-      Class extType = null;
+      Class<?> extType = null;
       int currConstrDistance = 0;
       for (j = 0; j < nArgs; j++) {
         // Convert from internal (translet) type to external (Java) type
         extType = paramTypes[j];
-        final Type intType = (Type) argsType.elementAt(j);
-        final Object match = _internal2Java.maps(intType, extType);
+        final Type intType = argsType.get(j);
+        final JavaType match = maps(intType, extType);
         if (match != null) {
-          currConstrDistance += ((JavaType) match).distance;
+          currConstrDistance += match.distance;
         } else if (intType instanceof ObjectType) {
           final ObjectType objectType = (ObjectType) intType;
           if (objectType.getJavaClass() == extType) {
@@ -486,7 +503,7 @@ class FunctionCall extends Expression {
           hasThisArgument = true;
         }
 
-        final Expression firstArg = (Expression) _arguments.elementAt(0);
+        final Expression firstArg = _arguments.get(0);
         final Type firstArgType = firstArg.typeCheck(stable);
 
         if (_namespace_format == NAMESPACE_FORMAT_CLASS && firstArgType instanceof ObjectType && _clazz != null
@@ -495,7 +512,7 @@ class FunctionCall extends Expression {
         }
 
         if (hasThisArgument) {
-          _thisArgument = (Expression) _arguments.elementAt(0);
+          _thisArgument = _arguments.get(0);
           _arguments.remove(0);
           nArgs--;
           if (firstArgType instanceof ObjectType) {
@@ -519,32 +536,32 @@ class FunctionCall extends Expression {
       }
     }
 
-    final Vector methods = findMethods();
+    final List<Method> methods = findMethods();
 
     if (methods == null)
       // Method not found in this class
       throw new TypeCheckError(ErrorMsg.METHOD_NOT_FOUND_ERR, _className + "." + name);
 
-    Class extType = null;
+    Class<?> extType = null;
     final int nMethods = methods.size();
-    final Vector argsType = typeCheckArgs(stable);
+    final List<Type> argsType = typeCheckArgs(stable);
 
     // Try all methods to identify the best fit
     int bestMethodDistance = Integer.MAX_VALUE;
     _type = null; // reset internal type
     for (int j, i = 0; i < nMethods; i++) {
       // Check if all paramteters to this method can be converted
-      final Method method = (Method) methods.elementAt(i);
-      final Class[] paramTypes = method.getParameterTypes();
+      final Method method = methods.get(i);
+      final Class<?>[] paramTypes = method.getParameterTypes();
 
       int currMethodDistance = 0;
       for (j = 0; j < nArgs; j++) {
         // Convert from internal (translet) type to external (Java) type
         extType = paramTypes[j];
-        final Type intType = (Type) argsType.elementAt(j);
-        final Object match = _internal2Java.maps(intType, extType);
+        final Type intType = argsType.get(j);
+        final JavaType match = maps(intType, extType);
         if (match != null) {
-          currMethodDistance += ((JavaType) match).distance;
+          currMethodDistance += match.distance;
         } else {
           // no mapping available
           //
@@ -573,7 +590,7 @@ class FunctionCall extends Expression {
         // Check if the return type can be converted
         extType = method.getReturnType();
 
-        _type = (Type) _java2Internal.get(extType);
+        _type = _java2Internal.get(extType);
         if (_type == null) {
           _type = Type.newObjectType(extType);
         }
@@ -604,18 +621,16 @@ class FunctionCall extends Expression {
   /**
    * Type check the actual arguments of this function call.
    */
-  public Vector typeCheckArgs(SymbolTable stable) throws TypeCheckError {
-    final Vector result = new Vector();
-    final Enumeration e = _arguments.elements();
-    while (e.hasMoreElements()) {
-      final Expression exp = (Expression) e.nextElement();
-      result.addElement(exp.typeCheck(stable));
+  public List<Type> typeCheckArgs(SymbolTable stable) throws TypeCheckError {
+    final List<Type> result = new ArrayList<Type>();
+    for (final Expression exp : _arguments) {
+      result.add(exp.typeCheck(stable));
     }
     return result;
   }
 
   protected final Expression argument(int i) {
-    return (Expression) _arguments.elementAt(i);
+    return _arguments.get(i);
   }
 
   protected final Expression argument() {
@@ -627,7 +642,11 @@ class FunctionCall extends Expression {
   }
 
   protected final void setArgument(int i, Expression exp) {
-    _arguments.setElementAt(exp, i);
+    _arguments.set(i, exp);
+  }
+
+  protected final List<Expression> getArguments() {
+    return _arguments;
   }
 
   /**
@@ -701,7 +720,7 @@ class FunctionCall extends Expression {
       }
 
       final String clazz = _chosenConstructor.getDeclaringClass().getName();
-      final Class[] paramTypes = _chosenConstructor.getParameterTypes();
+      final Class<?>[] paramTypes = _chosenConstructor.getParameterTypes();
       final LocalVariableGen[] paramTemp = new LocalVariableGen[n];
 
       // Backwards branches are prohibited if an uninitialized object is
@@ -732,7 +751,7 @@ class FunctionCall extends Expression {
         paramTemp[i].setEnd(il.append(arg.getType().LOAD(paramTemp[i].getIndex())));
       }
 
-      final StringBuffer buffer = new StringBuffer();
+      final StringBuilder buffer = new StringBuilder();
       buffer.append('(');
       for (int i = 0; i < paramTypes.length; i++) {
         buffer.append(getSignature(paramTypes[i]));
@@ -754,7 +773,7 @@ class FunctionCall extends Expression {
       }
 
       final String clazz = _chosenMethod.getDeclaringClass().getName();
-      final Class[] paramTypes = _chosenMethod.getParameterTypes();
+      final Class<?>[] paramTypes = _chosenMethod.getParameterTypes();
 
       // Push "this" if it is an instance method
       if (_thisArgument != null) {
@@ -769,7 +788,7 @@ class FunctionCall extends Expression {
         exp.getType().translateTo(classGen, methodGen, paramTypes[i]);
       }
 
-      final StringBuffer buffer = new StringBuffer();
+      final StringBuilder buffer = new StringBuilder();
       buffer.append('(');
       for (int i = 0; i < paramTypes.length; i++) {
         buffer.append(getSignature(paramTypes[i]));
@@ -807,13 +826,12 @@ class FunctionCall extends Expression {
   }
 
   /**
-   * Returns a vector with all methods named <code>_fname</code> after stripping
+   * Returns a list with all methods named <code>_fname</code> after stripping
    * its namespace or <code>null</code> if no such methods exist.
    */
-  private Vector findMethods() {
+  private List<Method> findMethods() {
 
-    Vector result = null;
-    final String namespace = _fname.getNamespace();
+    List<Method> result = null;
 
     if (_className != null && _className.length() > 0) {
       final int nArgs = _arguments.size();
@@ -836,9 +854,9 @@ class FunctionCall extends Expression {
           if (Modifier.isPublic(mods) && methods[i].getName().equals(methodName)
                   && methods[i].getParameterTypes().length == nArgs) {
             if (result == null) {
-              result = new Vector();
+              result = new ArrayList<>();
             }
-            result.addElement(methods[i]);
+            result.add(methods[i]);
           }
         }
       } catch (final ClassNotFoundException e) {
@@ -850,12 +868,11 @@ class FunctionCall extends Expression {
   }
 
   /**
-   * Returns a vector with all constructors named <code>_fname</code> after
+   * Returns a list with all constructors named <code>_fname</code> after
    * stripping its namespace or <code>null</code> if no such methods exist.
    */
-  private Vector findConstructors() {
-    Vector result = null;
-    final String namespace = _fname.getNamespace();
+  private List<Constructor<?>> findConstructors() {
+    List<Constructor<?>> result = null;
 
     final int nArgs = _arguments.size();
     try {
@@ -868,16 +885,16 @@ class FunctionCall extends Expression {
         }
       }
 
-      final Constructor[] constructors = _clazz.getConstructors();
+      final Constructor<?>[] constructors = _clazz.getConstructors();
 
       for (int i = 0; i < constructors.length; i++) {
         final int mods = constructors[i].getModifiers();
         // Is it public, static and same number of args ?
         if (Modifier.isPublic(mods) && constructors[i].getParameterTypes().length == nArgs) {
           if (result == null) {
-            result = new Vector();
+            result = new ArrayList<>();
           }
-          result.addElement(constructors[i]);
+          result.add(constructors[i]);
         }
       }
     } catch (final ClassNotFoundException e) {
@@ -891,10 +908,10 @@ class FunctionCall extends Expression {
   /**
    * Compute the JVM signature for the class.
    */
-  static final String getSignature(Class clazz) {
+  static final String getSignature(Class<?> clazz) {
     if (clazz.isArray()) {
-      final StringBuffer sb = new StringBuffer();
-      Class cl = clazz;
+      final StringBuilder sb = new StringBuilder();
+      Class<?> cl = clazz;
       while (cl.isArray()) {
         sb.append("[");
         cl = cl.getComponentType();
@@ -933,9 +950,9 @@ class FunctionCall extends Expression {
    * Compute the JVM method descriptor for the method.
    */
   static final String getSignature(Method meth) {
-    final StringBuffer sb = new StringBuffer();
+    final StringBuilder sb = new StringBuilder();
     sb.append('(');
-    final Class[] params = meth.getParameterTypes(); // avoid clone
+    final Class<?>[] params = meth.getParameterTypes(); // avoid clone
     for (int j = 0; j < params.length; j++) {
       sb.append(getSignature(params[j]));
     }
@@ -945,10 +962,10 @@ class FunctionCall extends Expression {
   /**
    * Compute the JVM constructor descriptor for the constructor.
    */
-  static final String getSignature(Constructor cons) {
-    final StringBuffer sb = new StringBuffer();
+  static final String getSignature(Constructor<?> cons) {
+    final StringBuilder sb = new StringBuilder();
     sb.append('(');
-    final Class[] params = cons.getParameterTypes(); // avoid clone
+    final Class<?>[] params = cons.getParameterTypes(); // avoid clone
     for (int j = 0; j < params.length; j++) {
       sb.append(getSignature(params[j]));
     }
@@ -958,13 +975,13 @@ class FunctionCall extends Expression {
   /**
    * Return the signature of the current method
    */
-  private String getMethodSignature(Vector argsType) {
-    final StringBuffer buf = new StringBuffer(_className);
+  private String getMethodSignature(List<Type> argsType) {
+    final StringBuilder buf = new StringBuilder(_className);
     buf.append('.').append(_fname.getLocalPart()).append('(');
 
     final int nArgs = argsType.size();
     for (int i = 0; i < nArgs; i++) {
-      final Type intType = (Type) argsType.elementAt(i);
+      final Type intType = argsType.get(i);
       buf.append(intType.toString());
       if (i < nArgs - 1) {
         buf.append(", ");
@@ -982,7 +999,7 @@ class FunctionCall extends Expression {
    */
   protected static String replaceDash(String name) {
     final char dash = '-';
-    final StringBuffer buff = new StringBuffer("");
+    final StringBuilder buff = new StringBuilder("");
     for (int i = 0; i < name.length(); i++) {
       if (i > 0 && name.charAt(i - 1) == dash) {
         buff.append(Character.toUpperCase(name.charAt(i)));

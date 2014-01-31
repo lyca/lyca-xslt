@@ -113,17 +113,17 @@ final class Include extends TopLevelElement {
       parser.setCurrentStylesheet(_included);
       _included.parseContents(parser);
 
-      final Enumeration elements = _included.elements();
+      final Enumeration<SyntaxTreeNode> elements = _included.elements();
       final Stylesheet topStylesheet = parser.getTopLevelStylesheet();
       while (elements.hasMoreElements()) {
-        final Object element = elements.nextElement();
+        final SyntaxTreeNode element = elements.nextElement();
         if (element instanceof TopLevelElement) {
           if (element instanceof Variable) {
             topStylesheet.addVariable((Variable) element);
           } else if (element instanceof Param) {
             topStylesheet.addParam((Param) element);
           } else {
-            topStylesheet.addElement((TopLevelElement) element);
+            topStylesheet.addElement(element);
           }
         }
       }

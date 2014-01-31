@@ -59,7 +59,7 @@ final class Comment extends Instruction {
     // Shortcut for literal strings
     Text rawText = null;
     if (elementCount() == 1) {
-      final Object content = elementAt(0);
+      final SyntaxTreeNode content = elementAt(0);
       if (content instanceof Text) {
         rawText = (Text) content;
       }

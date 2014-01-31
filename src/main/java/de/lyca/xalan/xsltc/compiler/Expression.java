@@ -21,10 +21,9 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import java.util.Vector;
+import java.util.List;
 
 import org.apache.bcel.generic.BranchHandle;
-import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.GOTO_W;
 import org.apache.bcel.generic.IFEQ;
 import org.apache.bcel.generic.InstructionHandle;
@@ -152,7 +151,6 @@ abstract class Expression extends SyntaxTreeNode {
    * instruction to be backpatched.
    */
   public void synthesize(ClassGenerator classGen, MethodGenerator methodGen) {
-    final ConstantPoolGen cpg = classGen.getConstantPool();
     final InstructionList il = methodGen.getInstructionList();
     _trueList.backPatch(il.append(ICONST_1));
     final BranchHandle truec = il.append(new GOTO_W(null));
@@ -185,17 +183,17 @@ abstract class Expression extends SyntaxTreeNode {
    * Search for a primop in the symbol table that matches the method type
    * <code>ctype</code>. Two methods match if they have the same arity. If a
    * primop is overloaded then the "closest match" is returned. The first entry
-   * in the vector of primops that has the right arity is considered to be the
+   * in the list of primops that has the right arity is considered to be the
    * default one.
    */
   public MethodType lookupPrimop(SymbolTable stable, String op, MethodType ctype) {
     MethodType result = null;
-    final Vector primop = stable.lookupPrimop(op);
+    final List<MethodType> primop = stable.lookupPrimop(op);
     if (primop != null) {
       final int n = primop.size();
       int minDistance = Integer.MAX_VALUE;
       for (int i = 0; i < n; i++) {
-        final MethodType ptype = (MethodType) primop.elementAt(i);
+        final MethodType ptype = primop.get(i);
         // Skip if different arity
         if (ptype.argsCount() != ctype.argsCount()) {
           continue;

@@ -21,7 +21,7 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import java.util.Vector;
+import java.util.List;
 
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.INVOKEVIRTUAL;
@@ -36,7 +36,7 @@ import de.lyca.xalan.xsltc.compiler.util.Type;
  * @author Santiago Pericas-Geertsen
  */
 final class StringLengthCall extends FunctionCall {
-  public StringLengthCall(QName fname, Vector arguments) {
+  public StringLengthCall(QName fname, List<Expression> arguments) {
     super(fname, arguments);
   }
 

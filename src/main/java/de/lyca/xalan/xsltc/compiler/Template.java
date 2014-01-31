@@ -21,7 +21,8 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.INVOKEVIRTUAL;
@@ -59,7 +60,7 @@ public final class Template extends TopLevelElement {
 
   // The list of parameters in this template. This is only used
   // for simple named templates.
-  private final Vector _parameters = new Vector();
+  private final List<Param> _parameters = new ArrayList<Param>();
 
   public boolean hasParams() {
     return _parameters.size() > 0;
@@ -78,10 +79,10 @@ public final class Template extends TopLevelElement {
   }
 
   public void addParameter(Param param) {
-    _parameters.addElement(param);
+    _parameters.add(param);
   }
 
-  public Vector getParameters() {
+  public List<Param> getParameters() {
     return _parameters;
   }
 
@@ -270,8 +271,8 @@ public final class Template extends TopLevelElement {
     _priority = Double.NaN;
     _pattern = parser.parsePattern(this, "/");
 
-    final Vector contents = _stylesheet.getContents();
-    final SyntaxTreeNode root = (SyntaxTreeNode) contents.elementAt(0);
+    final List<SyntaxTreeNode> contents = _stylesheet.getContents();
+    final SyntaxTreeNode root = contents.get(0);
 
     if (root instanceof LiteralElement) {
       addElement(root);
@@ -325,7 +326,7 @@ public final class Template extends TopLevelElement {
 
       // Update load/store instructions to access Params from the stack
       for (int i = 0; i < numParams; i++) {
-        final Param param = (Param) _parameters.elementAt(i);
+        final Param param = _parameters.get(i);
         param.setLoadInstruction(namedMethodGen.loadParameter(i));
         param.setStoreInstruction(namedMethodGen.storeParameter(i));
       }

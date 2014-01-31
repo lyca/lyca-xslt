@@ -24,7 +24,8 @@ package de.lyca.xalan.xsltc.cmdline;
 import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -45,7 +46,6 @@ import de.lyca.xalan.xsltc.runtime.Constants;
 import de.lyca.xalan.xsltc.runtime.Parameter;
 import de.lyca.xalan.xsltc.runtime.output.TransletOutputHandlerFactory;
 import de.lyca.xml.dtm.DTMWSFilter;
-import de.lyca.xml.serializer.SerializationHandler;
 
 /**
  * @author Jacek Ambroziak
@@ -55,13 +55,11 @@ import de.lyca.xml.serializer.SerializationHandler;
  */
 final public class Transform {
 
-  private SerializationHandler _handler;
-
   private final String _fileName;
   private final String _className;
   private String _jarFileSrc;
   private boolean _isJarFileSpecified = false;
-  private Vector _params = null;
+  private List<Parameter> _params = null;
   private final boolean _uri, _debug;
   private final int _iterations;
 
@@ -81,7 +79,7 @@ final public class Transform {
     return _className;
   }
 
-  public void setParameters(Vector params) {
+  public void setParameters(List<Parameter> params) {
     _params = params;
   }
 
@@ -98,7 +96,7 @@ final public class Transform {
 
   private void doTransform() {
     try {
-      final Class clazz = ObjectFactory.findProviderClass(_className, ObjectFactory.findClassLoader(), true);
+      final Class<?> clazz = ObjectFactory.findProviderClass(_className, ObjectFactory.findClassLoader(), true);
       final AbstractTranslet translet = (AbstractTranslet) clazz.newInstance();
       translet.postInitialization();
 
@@ -131,7 +129,7 @@ final public class Transform {
       // Pass global parameters
       final int n = _params.size();
       for (int i = 0; i < n; i++) {
-        final Parameter param = (Parameter) _params.elementAt(i);
+        final Parameter param = _params.get(i);
         translet.addParameter(param._name, param._value);
       }
 
@@ -142,11 +140,13 @@ final public class Transform {
       tohFactory.setOutputMethod(translet._method);
 
       if (_iterations == -1) {
-        translet.transform(dom, tohFactory.getSerializationHandler());
+        // TODO transformer
+        translet.transform(dom, tohFactory.getSerializationHandler(null));
       } else if (_iterations > 0) {
         long mm = System.currentTimeMillis();
         for (int i = 0; i < _iterations; i++) {
-          translet.transform(dom, tohFactory.getSerializationHandler());
+          // TODO transformer
+          translet.transform(dom, tohFactory.getSerializationHandler(null));
         }
         mm = System.currentTimeMillis() - mm;
 
@@ -254,13 +254,13 @@ final public class Transform {
         handler.setJarFileInputSrc(isJarFileSpecified, jarFile);
 
         // Parse stylesheet parameters
-        final Vector params = new Vector();
+        final List<Parameter> params = new ArrayList<Parameter>();
         for (i += 2; i < args.length; i++) {
           final int equal = args[i].indexOf('=');
           if (equal > 0) {
             final String name = args[i].substring(0, equal);
             final String value = args[i].substring(equal + 1);
-            params.addElement(new Parameter(name, value));
+            params.add(new Parameter(name, value));
           } else {
             printUsage();
           }

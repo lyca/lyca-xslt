@@ -96,7 +96,7 @@ abstract class IdKeyPattern extends LocationPathPattern {
     // Initialises a KeyIndex to return nodes with specific values
     final int lookupId = cpg.addMethodref(KEY_INDEX_CLASS, "containsID", "(ILjava/lang/Object;)I");
     final int lookupKey = cpg.addMethodref(KEY_INDEX_CLASS, "containsKey", "(ILjava/lang/Object;)I");
-    final int getNodeIdent = cpg.addInterfaceMethodref(DOM_INTF, "getNodeIdent", "(I)" + NODE_SIG);
+    cpg.addInterfaceMethodref(DOM_INTF, "getNodeIdent", "(I)" + NODE_SIG);
 
     // Call getKeyIndex in AbstractTranslet with the name of the key
     // to get the index for this key (which is also a node iterator).

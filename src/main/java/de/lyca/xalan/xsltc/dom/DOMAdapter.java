@@ -21,6 +21,8 @@
 
 package de.lyca.xalan.xsltc.dom;
 
+import java.util.Map;
+
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -28,7 +30,6 @@ import de.lyca.xalan.xsltc.DOM;
 import de.lyca.xalan.xsltc.DOMEnhancedForDTM;
 import de.lyca.xalan.xsltc.StripFilter;
 import de.lyca.xalan.xsltc.TransletException;
-import de.lyca.xalan.xsltc.runtime.Hashtable;
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xml.dtm.DTMAxisIterator;
 import de.lyca.xml.serializer.SerializationHandler;
@@ -432,7 +433,7 @@ public final class DOMAdapter implements DOM {
   }
 
   @Override
-  public Hashtable getElementsWithIDs() {
+  public Map<String, Integer> getElementsWithIDs() {
     return _dom.getElementsWithIDs();
   }
 }

@@ -21,7 +21,7 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import java.util.Vector;
+import java.util.List;
 
 import org.apache.bcel.generic.INVOKESTATIC;
 
@@ -33,7 +33,7 @@ import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
  * @author Santiago Pericas-Geertsen
  */
 final class FloorCall extends FunctionCall {
-  public FloorCall(QName fname, Vector arguments) {
+  public FloorCall(QName fname, List<Expression> arguments) {
     super(fname, arguments);
   }
 

@@ -41,7 +41,7 @@ import de.lyca.xalan.xsltc.compiler.Constants;
 public final class ObjectType extends Type {
 
   private String _javaClassName = "java.lang.Object";
-  private Class _clazz = java.lang.Object.class;
+  private Class<?> _clazz = java.lang.Object.class;
 
   /**
    * Used to represent a Java Class type such is required to support non-static
@@ -60,7 +60,7 @@ public final class ObjectType extends Type {
     }
   }
 
-  protected ObjectType(Class clazz) {
+  protected ObjectType(Class<?> clazz) {
     _clazz = clazz;
     _javaClassName = clazz.getName();
   }
@@ -83,7 +83,7 @@ public final class ObjectType extends Type {
     return _javaClassName;
   }
 
-  public Class getJavaClass() {
+  public Class<?> getJavaClass() {
     return _clazz;
   }
 
@@ -99,7 +99,7 @@ public final class ObjectType extends Type {
 
   @Override
   public String toSignature() {
-    final StringBuffer result = new StringBuffer("L");
+    final StringBuilder result = new StringBuilder("L");
     result.append(_javaClassName.replace('.', '/')).append(';');
     return result.toString();
   }
@@ -150,7 +150,7 @@ public final class ObjectType extends Type {
    * external functions are called.
    */
   @Override
-  public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, Class clazz) {
+  public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, Class<?> clazz) {
     if (clazz.isAssignableFrom(_clazz)) {
       methodGen.getInstructionList().append(NOP);
     } else {
@@ -163,7 +163,7 @@ public final class ObjectType extends Type {
    * Translates an external Java type into an Object type
    */
   @Override
-  public void translateFrom(ClassGenerator classGen, MethodGenerator methodGen, Class clazz) {
+  public void translateFrom(ClassGenerator classGen, MethodGenerator methodGen, Class<?> clazz) {
     methodGen.getInstructionList().append(NOP);
   }
 

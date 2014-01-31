@@ -153,7 +153,6 @@ public final class RealType extends NumberType {
   public FlowList translateToDesynthesized(ClassGenerator classGen, MethodGenerator methodGen, BooleanType type) {
     LocalVariableGen local;
     final FlowList flowlist = new FlowList();
-    final ConstantPoolGen cpg = classGen.getConstantPool();
     final InstructionList il = methodGen.getInstructionList();
 
     // Store real into a local variable
@@ -197,7 +196,7 @@ public final class RealType extends NumberType {
    * coercion.
    */
   @Override
-  public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, final Class clazz) {
+  public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, final Class<?> clazz) {
     final InstructionList il = methodGen.getInstructionList();
     if (clazz == Character.TYPE) {
       il.append(D2I);
@@ -231,7 +230,7 @@ public final class RealType extends NumberType {
    * object on the stack and pushes a real (i.e., a double).
    */
   @Override
-  public void translateFrom(ClassGenerator classGen, MethodGenerator methodGen, Class clazz) {
+  public void translateFrom(ClassGenerator classGen, MethodGenerator methodGen, Class<?> clazz) {
     final InstructionList il = methodGen.getInstructionList();
 
     if (clazz == Character.TYPE || clazz == Byte.TYPE || clazz == Short.TYPE || clazz == Integer.TYPE) {

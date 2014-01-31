@@ -127,8 +127,8 @@ public class ClassGenerator extends ClassGen {
 
   public void addMethod(MethodGenerator methodGen) {
     final Method[] methodsToAdd = methodGen.getGeneratedMethods(this);
-    for (int i = 0; i < methodsToAdd.length; i++) {
-      addMethod(methodsToAdd[i]);
+    for (final Method method : methodsToAdd) {
+      addMethod(method);
     }
   }
 }

@@ -26,8 +26,11 @@ import java.io.FileWriter;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Vector;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -68,7 +71,7 @@ public abstract class AbstractTranslet implements Translet {
   public String _doctypeSystem = null;
   public boolean _indent = false;
   public String _mediaType = null;
-  public Vector _cdata = null;
+  public List<String> _cdata = null;
   public int _indentamount = -1;
 
   public static final int FIRST_TRANSLET_VERSION = 100;
@@ -109,8 +112,8 @@ public abstract class AbstractTranslet implements Translet {
   public void printInternalState() {
     System.out.println("-------------------------------------");
     System.out.println("AbstractTranslet this = " + this);
-    System.out.println("pbase = " + pbase);
-    System.out.println("vframe = " + pframe);
+    System.out.println("pbase = " + paramsStack.size());
+    System.out.println("vframe = " + paramsStack.peek().size());
     System.out.println("paramsStack.size() = " + paramsStack.size());
     System.out.println("namesArray.size = " + namesArray.length);
     System.out.println("namespaceArray.size = " + namespaceArray.length);
@@ -134,28 +137,23 @@ public abstract class AbstractTranslet implements Translet {
 
   // Parameter's stack: <tt>pbase</tt> and <tt>pframe</tt> are used
   // to denote the current parameter frame.
-  protected int pbase = 0, pframe = 0;
-  protected ArrayList paramsStack = new ArrayList();
+  // protected int pbase = 0, pframe = 0;
+  // old handling replaced through deque.
+  protected Deque<List<Parameter>> paramsStack = new LinkedList<>();
 
   /**
    * Push a new parameter frame.
    */
   public final void pushParamFrame() {
-    paramsStack.add(pframe, new Integer(pbase));
-    pbase = ++pframe;
+    paramsStack.push(new ArrayList<Parameter>());
   }
 
   /**
    * Pop the topmost parameter frame.
    */
   public final void popParamFrame() {
-    if (pbase > 0) {
-      final int oldpbase = ((Integer) paramsStack.get(--pbase)).intValue();
-      for (int i = pframe - 1; i >= pbase; i--) {
-        paramsStack.remove(i);
-      }
-      pframe = pbase;
-      pbase = oldpbase;
+    if (!paramsStack.isEmpty()) {
+      paramsStack.pop();
     }
   }
 
@@ -179,23 +177,28 @@ public abstract class AbstractTranslet implements Translet {
    */
   public final Object addParameter(String name, Object value, boolean isDefault) {
     // Local parameters need to be re-evaluated for each iteration
-    for (int i = pframe - 1; i >= pbase; i--) {
-      final Parameter param = (Parameter) paramsStack.get(i);
-
-      if (param._name.equals(name)) {
+    List<Parameter> parameters;
+    if (paramsStack.isEmpty()) {
+      parameters = new ArrayList<Parameter>();
+      paramsStack.push(parameters);
+    } else {
+      parameters = paramsStack.peek();
+    }
+    for (final Parameter parameter : parameters) {
+      if (parameter._name.equals(name)) {
         // Only overwrite if current value is the default value and
         // the new value is _NOT_ the default value.
-        if (param._isDefault || !isDefault) {
-          param._value = value;
-          param._isDefault = isDefault;
+        if (parameter._isDefault || !isDefault) {
+          parameter._value = value;
+          parameter._isDefault = isDefault;
           return value;
         }
-        return param._value;
+        return parameter._value;
       }
     }
 
     // Add new parameter to parameter stack
-    paramsStack.add(pframe++, new Parameter(name, value, isDefault));
+    parameters.add(new Parameter(name, value, isDefault));
     return value;
   }
 
@@ -203,7 +206,6 @@ public abstract class AbstractTranslet implements Translet {
    * Clears the parameter stack.
    */
   public void clearParameters() {
-    pbase = pframe = 0;
     paramsStack.clear();
   }
 
@@ -212,13 +214,13 @@ public abstract class AbstractTranslet implements Translet {
    * undefined.
    */
   public final Object getParameter(String name) {
-
     name = BasisLibrary.mapQNameToJavaName(name);
-
-    for (int i = pframe - 1; i >= pbase; i--) {
-      final Parameter param = (Parameter) paramsStack.get(i);
-      if (param._name.equals(name))
-        return param._value;
+    final List<Parameter> parameters = paramsStack.peek();
+    if (parameters != null) {
+      for (final Parameter param : parameters) {
+        if (param._name.equals(name))
+          return param._value;
+      }
     }
     return null;
   }
@@ -255,7 +257,7 @@ public abstract class AbstractTranslet implements Translet {
    ************************************************************************/
 
   // Contains decimal number formatting symbols used by FormatNumberCall
-  public Hashtable _formatSymbols = null;
+  public Map<String, DecimalFormat> _formatSymbols = null;
 
   /**
    * Adds a DecimalFormat object to the _formatSymbols hashtable. The entry is
@@ -264,7 +266,7 @@ public abstract class AbstractTranslet implements Translet {
   public void addDecimalFormat(String name, DecimalFormatSymbols symbols) {
     // Instanciate hashtable for formatting symbols if needed
     if (_formatSymbols == null) {
-      _formatSymbols = new Hashtable();
+      _formatSymbols = new HashMap<>();
     }
 
     // The name cannot be null - use empty string instead
@@ -291,9 +293,9 @@ public abstract class AbstractTranslet implements Translet {
         name = EMPTYSTRING;
       }
 
-      DecimalFormat df = (DecimalFormat) _formatSymbols.get(name);
+      DecimalFormat df = _formatSymbols.get(name);
       if (df == null) {
-        df = (DecimalFormat) _formatSymbols.get(EMPTYSTRING);
+        df = _formatSymbols.get(EMPTYSTRING);
       }
       return df;
     }
@@ -329,7 +331,7 @@ public abstract class AbstractTranslet implements Translet {
         buildKeyIndex(ID_INDEX_NAME, document);
         return;
       } else {
-        final Hashtable elementsByID = enhancedDOM.getElementsWithIDs();
+        final Map<String, Integer> elementsByID = enhancedDOM.getElementsWithIDs();
 
         if (elementsByID == null)
           return;
@@ -337,12 +339,9 @@ public abstract class AbstractTranslet implements Translet {
         // Given a Hashtable of DTM nodes indexed by ID attribute values,
         // loop through the table copying information to a KeyIndex
         // for the mapping from ID attribute value to DTM node
-        final Enumeration idValues = elementsByID.keys();
         boolean hasIDValues = false;
-
-        while (idValues.hasMoreElements()) {
-          final Object idValue = idValues.nextElement();
-          final int element = document.getNodeHandle(((Integer) elementsByID.get(idValue)).intValue());
+        for (final String idValue : elementsByID.keySet()) {
+          final int element = document.getNodeHandle(elementsByID.get(idValue).intValue());
 
           buildKeyIndex(ID_INDEX_NAME, element, idValue);
           hasIDValues = true;
@@ -409,7 +408,7 @@ public abstract class AbstractTranslet implements Translet {
    ************************************************************************/
 
   // Container for all indexes for xsl:key elements
-  private Hashtable _keyIndexes = null;
+  private Map<String, KeyIndex> _keyIndexes = null;
   private KeyIndex _emptyKeyIndex = null;
   private int _indexSize = 0;
   private int _currentRootForKeys = 0;
@@ -443,10 +442,10 @@ public abstract class AbstractTranslet implements Translet {
    */
   public void buildKeyIndex(String name, int node, Object value) {
     if (_keyIndexes == null) {
-      _keyIndexes = new Hashtable();
+      _keyIndexes = new HashMap<>();
     }
 
-    KeyIndex index = (KeyIndex) _keyIndexes.get(name);
+    KeyIndex index = _keyIndexes.get(name);
     if (index == null) {
       _keyIndexes.put(name, index = new KeyIndex(_indexSize));
     }
@@ -463,10 +462,10 @@ public abstract class AbstractTranslet implements Translet {
    */
   public void buildKeyIndex(String name, DOM dom) {
     if (_keyIndexes == null) {
-      _keyIndexes = new Hashtable();
+      _keyIndexes = new HashMap<>();
     }
 
-    KeyIndex index = (KeyIndex) _keyIndexes.get(name);
+    KeyIndex index = _keyIndexes.get(name);
     if (index == null) {
       _keyIndexes.put(name, index = new KeyIndex(_indexSize));
     }
@@ -483,7 +482,7 @@ public abstract class AbstractTranslet implements Translet {
       return _emptyKeyIndex != null ? _emptyKeyIndex : (_emptyKeyIndex = new KeyIndex(1));
 
     // Look up the requested key index
-    final KeyIndex index = (KeyIndex) _keyIndexes.get(name);
+    final KeyIndex index = _keyIndexes.get(name);
 
     // Return an empty key index iterator if the requested index not found
     if (index == null)
@@ -558,7 +557,8 @@ public abstract class AbstractTranslet implements Translet {
       factory.setWriter(new FileWriter(filename, append));
       factory.setOutputType(TransletOutputHandlerFactory.STREAM);
 
-      final SerializationHandler handler = factory.getSerializationHandler();
+      // TODO transformer
+      final SerializationHandler handler = factory.getSerializationHandler(null);
 
       transferOutputSettings(handler);
       handler.startDocument();
@@ -624,7 +624,7 @@ public abstract class AbstractTranslet implements Translet {
    */
   public void addCdataElement(String name) {
     if (_cdata == null) {
-      _cdata = new Vector();
+      _cdata = new ArrayList<String>();
     }
 
     final int lastColon = name.lastIndexOf(':');
@@ -632,11 +632,11 @@ public abstract class AbstractTranslet implements Translet {
     if (lastColon > 0) {
       final String uri = name.substring(0, lastColon);
       final String localName = name.substring(lastColon + 1);
-      _cdata.addElement(uri);
-      _cdata.addElement(localName);
+      _cdata.add(uri);
+      _cdata.add(localName);
     } else {
-      _cdata.addElement(null);
-      _cdata.addElement(name);
+      _cdata.add(null);
+      _cdata.add(name);
     }
   }
 
@@ -684,25 +684,23 @@ public abstract class AbstractTranslet implements Translet {
     }
   }
 
-  private Hashtable _auxClasses = null;
+  private Map<String, Class<?>> _auxClasses = null;
 
   @Override
-  public void addAuxiliaryClass(Class auxClass) {
+  public void addAuxiliaryClass(Class<?> auxClass) {
     if (_auxClasses == null) {
-      _auxClasses = new Hashtable();
+      _auxClasses = new HashMap<>();
     }
     _auxClasses.put(auxClass.getName(), auxClass);
   }
 
-  public void setAuxiliaryClasses(Hashtable auxClasses) {
+  public void setAuxiliaryClasses(Map<String, Class<?>> auxClasses) {
     _auxClasses = auxClasses;
   }
 
   @Override
-  public Class getAuxiliaryClass(String className) {
-    if (_auxClasses == null)
-      return null;
-    return (Class) _auxClasses.get(className);
+  public Class<?> getAuxiliaryClass(String className) {
+    return _auxClasses == null ? null : _auxClasses.get(className);
   }
 
   // GTM added (see pg 110)

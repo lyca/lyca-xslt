@@ -23,7 +23,7 @@ package de.lyca.xalan.xsltc.compiler;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.Vector;
+import java.util.List;
 
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.PUSH;
@@ -51,9 +51,9 @@ final class FunctionAvailableCall extends FunctionCall {
    * qname, for example, 'function-available', and a list of arguments where the
    * arguments must be instances of LiteralExpression.
    */
-  public FunctionAvailableCall(QName fname, Vector arguments) {
+  public FunctionAvailableCall(QName fname, List<Expression> arguments) {
     super(fname, arguments);
-    _arg = (Expression) arguments.elementAt(0);
+    _arg = arguments.get(0);
     _type = null;
 
     if (_arg instanceof LiteralExpr) {
@@ -129,7 +129,7 @@ final class FunctionAvailableCall extends FunctionCall {
     }
 
     try {
-      final Class clazz = ObjectFactory.findProviderClass(className, ObjectFactory.findClassLoader(), true);
+      final Class<?> clazz = ObjectFactory.findProviderClass(className, ObjectFactory.findClassLoader(), true);
 
       if (clazz == null)
         return false;

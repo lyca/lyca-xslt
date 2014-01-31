@@ -21,7 +21,7 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import java.util.Vector;
+import java.util.List;
 
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.INVOKESPECIAL;
@@ -41,7 +41,7 @@ import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
  * @author Santiago Pericas-Geertsen
  */
 final class ConcatCall extends FunctionCall {
-  public ConcatCall(QName fname, Vector arguments) {
+  public ConcatCall(QName fname, List<Expression> arguments) {
     super(fname, arguments);
   }
 
@@ -73,13 +73,13 @@ final class ConcatCall extends FunctionCall {
         break;
 
       default:
-        final int initBuffer = cpg.addMethodref(STRING_BUFFER_CLASS, "<init>", "()V");
-        final Instruction append = new INVOKEVIRTUAL(cpg.addMethodref(STRING_BUFFER_CLASS, "append", "(" + STRING_SIG
-                + ")" + STRING_BUFFER_SIG));
+        final int initBuffer = cpg.addMethodref(STRING_BUILDER_CLASS, "<init>", "()V");
+        final Instruction append = new INVOKEVIRTUAL(cpg.addMethodref(STRING_BUILDER_CLASS, "append", "(" + STRING_SIG
+                + ")" + STRING_BUILDER_SIG));
 
-        final int toString = cpg.addMethodref(STRING_BUFFER_CLASS, "toString", "()" + STRING_SIG);
+        final int toString = cpg.addMethodref(STRING_BUILDER_CLASS, "toString", "()" + STRING_SIG);
 
-        il.append(new NEW(cpg.addClass(STRING_BUFFER_CLASS)));
+        il.append(new NEW(cpg.addClass(STRING_BUILDER_CLASS)));
         il.append(DUP);
         il.append(new INVOKESPECIAL(initBuffer));
         for (int i = 0; i < nArgs; i++) {

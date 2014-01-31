@@ -239,7 +239,7 @@ public final class ErrorMsg {
   }
 
   private String formatLine() {
-    final StringBuffer result = new StringBuffer();
+    final StringBuilder result = new StringBuilder();
     if (_url != null) {
       result.append(_url);
       result.append(": ");

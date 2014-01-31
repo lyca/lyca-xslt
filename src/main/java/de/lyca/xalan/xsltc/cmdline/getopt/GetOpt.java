@@ -42,9 +42,9 @@ import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
  */
 public class GetOpt {
   public GetOpt(String[] args, String optString) {
-    theOptions = new ArrayList();
+    theOptions = new ArrayList<>();
     int currOptIndex = 0;
-    theCmdArgs = new ArrayList();
+    theCmdArgs = new ArrayList<>();
     theOptionMatcher = new OptionMatcher(optString);
     // fill in the options list
     for (int i = 0; i < args.length; i++) {
@@ -75,7 +75,7 @@ public class GetOpt {
           // this arg belong to the last arg stored
           int indexoflast = 0;
           indexoflast = theOptions.size() - 1;
-          final Option op = (Option) theOptions.get(indexoflast);
+          final Option op = theOptions.get(indexoflast);
           final char opLetter = op.getArgLetter();
           if (!op.hasArg() && theOptionMatcher.hasArg(opLetter)) {
             op.setArg(token);
@@ -106,8 +106,8 @@ public class GetOpt {
    * debugging routine to print out all options collected
    */
   public void printOptions() {
-    for (final ListIterator it = theOptions.listIterator(); it.hasNext();) {
-      final Option opt = (Option) it.next();
+    for (final ListIterator<Option> it = theOptions.listIterator(); it.hasNext();) {
+      final Option opt = it.next();
       System.out.print("OPT =" + opt.getArgLetter());
       final String arg = opt.getArgument();
       if (arg != null) {
@@ -133,7 +133,7 @@ public class GetOpt {
   public int getNextOption() throws IllegalArgumentException, MissingOptArgException {
     int retval = -1;
     if (theOptionsIterator.hasNext()) {
-      theCurrentOption = (Option) theOptionsIterator.next();
+      theCurrentOption = theOptionsIterator.next();
       final char c = theCurrentOption.getArgLetter();
       final boolean shouldHaveArg = theOptionMatcher.hasArg(c);
       final String arg = theCurrentOption.getArgument();
@@ -175,18 +175,13 @@ public class GetOpt {
    *         and option arguments.
    */
   public String[] getCmdArgs() {
-    final String[] retval = new String[theCmdArgs.size()];
-    int i = 0;
-    for (final ListIterator it = theCmdArgs.listIterator(); it.hasNext();) {
-      retval[i++] = (String) it.next();
-    }
-    return retval;
+    return theCmdArgs.toArray(new String[theCmdArgs.size()]);
   }
 
   private Option theCurrentOption = null;
-  private final ListIterator theOptionsIterator;
-  private List theOptions = null;
-  private List theCmdArgs = null;
+  private final ListIterator<Option> theOptionsIterator;
+  private List<Option> theOptions = null;
+  private List<String> theCmdArgs = null;
   private OptionMatcher theOptionMatcher = null;
 
   // /////////////////////////////////////////////////////////

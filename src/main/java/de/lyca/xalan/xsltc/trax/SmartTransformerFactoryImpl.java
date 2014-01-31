@@ -90,7 +90,7 @@ public class SmartTransformerFactoryImpl extends SAXTransformerFactory {
             + "de.lyca.xalan.processor.TransformerFactoryImpl.";
     // try to create instance of Xalan factory...
     try {
-      final Class xalanFactClass = ObjectFactory.findProviderClass("de.lyca.xalan.processor.TransformerFactoryImpl",
+      final Class<?> xalanFactClass = ObjectFactory.findProviderClass("de.lyca.xalan.processor.TransformerFactoryImpl",
               ObjectFactory.findClassLoader(), true);
       _xalanFactory = (SAXTransformerFactory) xalanFactClass.newInstance();
     } catch (final ClassNotFoundException e) {

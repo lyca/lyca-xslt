@@ -21,7 +21,7 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import java.util.Vector;
+import java.util.List;
 
 import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
@@ -36,7 +36,7 @@ final class BooleanCall extends FunctionCall {
 
   private Expression _arg = null;
 
-  public BooleanCall(QName fname, Vector arguments) {
+  public BooleanCall(QName fname, List<Expression> arguments) {
     super(fname, arguments);
     _arg = argument(0);
   }

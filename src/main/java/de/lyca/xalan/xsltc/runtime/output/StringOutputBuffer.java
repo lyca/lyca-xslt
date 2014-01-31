@@ -25,10 +25,10 @@ package de.lyca.xalan.xsltc.runtime.output;
  * @author Santiago Pericas-Geertsen
  */
 class StringOutputBuffer implements OutputBuffer {
-  private final StringBuffer _buffer;
+  private final StringBuilder _buffer;
 
   public StringOutputBuffer() {
-    _buffer = new StringBuffer();
+    _buffer = new StringBuilder();
   }
 
   @Override

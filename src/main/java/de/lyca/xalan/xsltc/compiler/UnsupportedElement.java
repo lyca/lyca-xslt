@@ -21,7 +21,8 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.INVOKESTATIC;
@@ -40,7 +41,7 @@ import de.lyca.xalan.xsltc.compiler.util.Util;
  */
 final class UnsupportedElement extends SyntaxTreeNode {
 
-  private Vector _fallbacks = null;
+  private List<Fallback> _fallbacks = null;
   private ErrorMsg _message = null;
   private boolean _isExtension = false;
 
@@ -79,19 +80,19 @@ final class UnsupportedElement extends SyntaxTreeNode {
    */
   private void processFallbacks(Parser parser) {
 
-    final Vector children = getContents();
+    final List<SyntaxTreeNode> children = getContents();
     if (children != null) {
       final int count = children.size();
       for (int i = 0; i < count; i++) {
-        final SyntaxTreeNode child = (SyntaxTreeNode) children.elementAt(i);
+        final SyntaxTreeNode child = children.get(i);
         if (child instanceof Fallback) {
           final Fallback fallback = (Fallback) child;
           fallback.activate();
           fallback.parseContents(parser);
           if (_fallbacks == null) {
-            _fallbacks = new Vector();
+            _fallbacks = new ArrayList<Fallback>();
           }
-          _fallbacks.addElement(child);
+          _fallbacks.add(fallback);
         }
       }
     }
@@ -113,7 +114,7 @@ final class UnsupportedElement extends SyntaxTreeNode {
     if (_fallbacks != null) {
       final int count = _fallbacks.size();
       for (int i = 0; i < count; i++) {
-        final Fallback fallback = (Fallback) _fallbacks.elementAt(i);
+        final Fallback fallback = _fallbacks.get(i);
         fallback.typeCheck(stable);
       }
     }
@@ -128,7 +129,7 @@ final class UnsupportedElement extends SyntaxTreeNode {
     if (_fallbacks != null) {
       final int count = _fallbacks.size();
       for (int i = 0; i < count; i++) {
-        final Fallback fallback = (Fallback) _fallbacks.elementAt(i);
+        final Fallback fallback = _fallbacks.get(i);
         fallback.translate(classGen, methodGen);
       }
     }

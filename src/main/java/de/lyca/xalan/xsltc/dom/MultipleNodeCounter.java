@@ -80,7 +80,6 @@ public abstract class MultipleNodeCounter extends NodeCounter {
 
     // Increment array of counters according to semantics
     for (int j = 0, i = nAncestors - 1; i >= 0; i--, j++) {
-      final int counter = counters[j];
       final int ancestor = ancestors.at(i);
 
       if (matchesCount(ancestor)) {

@@ -21,7 +21,7 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import java.util.Vector;
+import java.util.List;
 
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.INVOKEINTERFACE;
@@ -41,7 +41,7 @@ import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
 final class UnparsedEntityUriCall extends FunctionCall {
   private Expression _entity;
 
-  public UnparsedEntityUriCall(QName fname, Vector arguments) {
+  public UnparsedEntityUriCall(QName fname, List<Expression> arguments) {
     super(fname, arguments);
     _entity = argument();
   }

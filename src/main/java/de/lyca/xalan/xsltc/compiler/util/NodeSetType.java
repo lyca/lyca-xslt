@@ -96,7 +96,7 @@ public final class NodeSetType extends Type {
    * object on the stack, pushes the internal type
    */
   @Override
-  public void translateFrom(ClassGenerator classGen, MethodGenerator methodGen, Class clazz) {
+  public void translateFrom(ClassGenerator classGen, MethodGenerator methodGen, Class<?> clazz) {
 
     final InstructionList il = methodGen.getInstructionList();
     final ConstantPoolGen cpg = classGen.getConstantPool();
@@ -217,7 +217,7 @@ public final class NodeSetType extends Type {
    * type after coercion.
    */
   @Override
-  public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, Class clazz) {
+  public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, Class<?> clazz) {
     final ConstantPoolGen cpg = classGen.getConstantPool();
     final InstructionList il = methodGen.getInstructionList();
     final String className = clazz.getName();

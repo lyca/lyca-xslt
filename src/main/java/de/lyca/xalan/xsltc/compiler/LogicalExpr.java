@@ -139,12 +139,12 @@ final class LogicalExpr extends Expression {
     // Yes, the operation is supported
     if (haveType != null) {
       // Check if left-hand side operand must be type casted
-      final Type arg1 = (Type) haveType.argsType().elementAt(0);
+      final Type arg1 = haveType.argsType().get(0);
       if (!arg1.identicalTo(tleft)) {
         _left = new CastExpr(_left, arg1);
       }
       // Check if right-hand side operand must be type casted
-      final Type arg2 = (Type) haveType.argsType().elementAt(1);
+      final Type arg2 = haveType.argsType().get(1);
       if (!arg2.identicalTo(tright)) {
         _right = new CastExpr(_right, arg1);
       }
@@ -170,7 +170,6 @@ final class LogicalExpr extends Expression {
   public void translateDesynthesized(ClassGenerator classGen, MethodGenerator methodGen) {
 
     final InstructionList il = methodGen.getInstructionList();
-    final SyntaxTreeNode parent = getParent();
 
     // Compile AND-expression
     if (_op == AND) {

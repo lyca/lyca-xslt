@@ -28,13 +28,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Iterator;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Vector;
+import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
@@ -80,19 +80,19 @@ public final class XSLTC {
 
   // Name index tables
   private int _nextGType; // Next available element type
-  private Vector _namesIndex; // Index of all registered QNames
-  private Hashtable _elements; // Hashtable of all registered elements
-  private Hashtable _attributes; // Hashtable of all registered attributes
+  private List<String> _namesIndex; // Index of all registered QNames
+  private Map<String, Integer> _elements; // Map of all registered elements
+  private Map<String, Integer> _attributes; // Map of all registered attributes
 
   // Namespace index tables
   private int _nextNSType; // Next available namespace type
-  private Vector _namespaceIndex; // Index of all registered namespaces
-  private Hashtable _namespaces; // Hashtable of all registered namespaces
-  private Hashtable _namespacePrefixes;// Hashtable of all registered namespace
-                                       // prefixes
+  private List<String> _namespaceIndex; // Index of all registered namespaces
+  private Map<String, Integer> _namespaces; // Map of all registered namespaces
+  private Map<String, Integer> _namespacePrefixes;// Map of all registered
+                                                  // namespace prefixes
 
   // All literal text in the stylesheet
-  private Vector m_characterData;
+  private List<StringBuilder> m_characterData;
 
   // These define the various methods for outputting the translet
   public static final int FILE_OUTPUT = 0;
@@ -110,15 +110,15 @@ public final class XSLTC {
   private File _destDir = null; // -d <directory-name>
   private int _outputType = FILE_OUTPUT; // by default
 
-  private Vector _classes;
-  private Vector _bcelClasses;
+  private List<byte[]> _classes;
+  private List<JavaClass> _bcelClasses;
   private boolean _callsNodeset = false;
   private boolean _multiDocument = false;
   private boolean _hasIdCall = false;
 
-  private Vector _stylesheetNSAncestorPointers;
-  private Vector _prefixURIPairs;
-  private Vector _prefixURIPairsIdx;
+  private List<Integer> _stylesheetNSAncestorPointers;
+  private List<String> _prefixURIPairs;
+  private List<Integer> _prefixURIPairsIdx;
 
   /**
    * Set to true if template inlining is requested. Template inlining used to be
@@ -180,8 +180,8 @@ public final class XSLTC {
   public void init() {
     reset();
     _reader = null;
-    _classes = new Vector();
-    _bcelClasses = new Vector();
+    _classes = new ArrayList<>();
+    _bcelClasses = new ArrayList<JavaClass>();
   }
 
   /**
@@ -189,13 +189,13 @@ public final class XSLTC {
    */
   private void reset() {
     _nextGType = DTM.NTYPES;
-    _elements = new Hashtable();
-    _attributes = new Hashtable();
-    _namespaces = new Hashtable();
+    _elements = new HashMap<>();
+    _attributes = new HashMap<>();
+    _namespaces = new HashMap<>();
     _namespaces.put("", new Integer(_nextNSType));
-    _namesIndex = new Vector(128);
-    _namespaceIndex = new Vector(32);
-    _namespacePrefixes = new Hashtable();
+    _namesIndex = new ArrayList<String>(128);
+    _namespaceIndex = new ArrayList<>(32);
+    _namespacePrefixes = new HashMap<>();
     _stylesheet = null;
     _parser.init();
     // _variableSerial = 1;
@@ -326,7 +326,7 @@ public final class XSLTC {
    */
   public boolean compile(InputSource input, String name) {
     try {
-      // Reset globals in case we're called by compile(Vector v);
+      // Reset globals in case we're called by compile(List v);
       reset();
 
       // The systemId may not be set, so we'll have to check the URL
@@ -396,38 +396,34 @@ public final class XSLTC {
   }
 
   /**
-   * Compiles a set of stylesheets pointed to by a Vector of URLs
+   * Compiles a set of stylesheets pointed to by a List of URLs
    * 
-   * @param stylesheets
-   *          A Vector containing URLs pointing to the stylesheets
+   * @param stylesheetURLs
+   *          A List containing URLs pointing to the stylesheets
    * @return 'true' if the compilation was successful
    */
-  public boolean compile(Vector stylesheets) {
-    // Get the number of stylesheets (ie. URLs) in the vector
-    final int count = stylesheets.size();
+  public boolean compile(List<URL> stylesheetURLs) {
+    // Get the number of stylesheets (ie. URLs) in the list
+    final int count = stylesheetURLs.size();
 
-    // Return straight away if the vector is empty
+    // Return straight away if the list is empty
     if (count == 0)
       return true;
 
     // Special handling needed if the URL count is one, becuase the
     // _className global must not be reset if it was set explicitly
     if (count == 1) {
-      final Object url = stylesheets.firstElement();
+      final Object url = stylesheetURLs.get(0);
       if (url instanceof URL)
         return compile((URL) url);
       else
         return false;
     } else {
-      // Traverse all elements in the vector and compile
-      final Enumeration urls = stylesheets.elements();
-      while (urls.hasMoreElements()) {
+      // Traverse all elements in the list and compile
+      for (final URL url : stylesheetURLs) {
         _className = null; // reset, so that new name will be computed
-        final Object url = urls.nextElement();
-        if (url instanceof URL) {
-          if (!compile((URL) url))
-            return false;
-        }
+        if (!compile(url))
+          return false;
       }
     }
     return true;
@@ -439,12 +435,7 @@ public final class XSLTC {
    * @return JVM bytecodes that represent translet class definition
    */
   public byte[][] getBytecodes() {
-    final int count = _classes.size();
-    final byte[][] result = new byte[count][1];
-    for (int i = 0; i < count; i++) {
-      result[i] = (byte[]) _classes.elementAt(i);
-    }
-    return result;
+    return _classes.toArray(new byte[0][0]);
   }
 
   /**
@@ -499,20 +490,20 @@ public final class XSLTC {
   }
 
   /**
-   * Get a Vector containing all compile error messages
+   * Get a List containing all compile error messages
    * 
-   * @return A Vector containing all compile error messages
+   * @return A List containing all compile error messages
    */
-  public Vector getErrors() {
+  public List<ErrorMsg> getErrors() {
     return _parser.getErrors();
   }
 
   /**
-   * Get a Vector containing all compile warning messages
+   * Get a List containing all compile warning messages
    * 
-   * @return A Vector containing all compile error messages
+   * @return A List containing all compile error messages
    */
-  public Vector getWarnings() {
+  public List<ErrorMsg> getWarnings() {
     return _parser.getWarnings();
   }
 
@@ -568,7 +559,7 @@ public final class XSLTC {
   /**
    * Set the class name for the generated translet. This class name is
    * overridden if multiple stylesheets are compiled in one go using the
-   * compile(Vector urls) method.
+   * compile(List urls) method.
    * 
    * @param className
    *          The name to assign to the translet class
@@ -674,16 +665,16 @@ public final class XSLTC {
    * attribute types at run-time.
    */
   public int registerAttribute(QName name) {
-    Integer code = (Integer) _attributes.get(name.toString());
+    Integer code = _attributes.get(name.toString());
     if (code == null) {
       code = new Integer(_nextGType++);
       _attributes.put(name.toString(), code);
       final String uri = name.getNamespace();
       final String local = "@" + name.getLocalPart();
       if (uri != null && uri.length() != 0) {
-        _namesIndex.addElement(uri + ":" + local);
+        _namesIndex.add(uri + ":" + local);
       } else {
-        _namesIndex.addElement(local);
+        _namesIndex.add(local);
       }
       if (name.getLocalPart().equals("*")) {
         registerNamespace(name.getNamespace());
@@ -698,10 +689,10 @@ public final class XSLTC {
    */
   public int registerElement(QName name) {
     // Register element (full QName)
-    Integer code = (Integer) _elements.get(name.toString());
+    Integer code = _elements.get(name.toString());
     if (code == null) {
       _elements.put(name.toString(), code = new Integer(_nextGType++));
-      _namesIndex.addElement(name.toString());
+      _namesIndex.add(name.toString());
     }
     if (name.getLocalPart().equals("*")) {
       registerNamespace(name.getNamespace());
@@ -716,16 +707,16 @@ public final class XSLTC {
 
   public int registerNamespacePrefix(QName name) {
 
-    Integer code = (Integer) _namespacePrefixes.get(name.toString());
+    Integer code = _namespacePrefixes.get(name.toString());
     if (code == null) {
       code = new Integer(_nextGType++);
       _namespacePrefixes.put(name.toString(), code);
       final String uri = name.getNamespace();
       if (uri != null && uri.length() != 0) {
         // namespace::ext2:ped2 will be made empty in TypedNamespaceIterator
-        _namesIndex.addElement("?");
+        _namesIndex.add("?");
       } else {
-        _namesIndex.addElement("?" + name.getLocalPart());
+        _namesIndex.add("?" + name.getLocalPart());
       }
     }
     return code.intValue();
@@ -736,11 +727,11 @@ public final class XSLTC {
    * namespace types at run-time.
    */
   public int registerNamespacePrefix(String name) {
-    Integer code = (Integer) _namespacePrefixes.get(name);
+    Integer code = _namespacePrefixes.get(name);
     if (code == null) {
       code = new Integer(_nextGType++);
       _namespacePrefixes.put(name, code);
-      _namesIndex.addElement("?" + name);
+      _namesIndex.add("?" + name);
     }
     return code.intValue();
   }
@@ -750,11 +741,11 @@ public final class XSLTC {
    * namespace types at run-time.
    */
   public int registerNamespace(String namespaceURI) {
-    Integer code = (Integer) _namespaces.get(namespaceURI);
+    Integer code = _namespaces.get(namespaceURI);
     if (code == null) {
       code = new Integer(_nextNSType++);
       _namespaces.put(namespaceURI, code);
-      _namespaceIndex.addElement(namespaceURI);
+      _namespaceIndex.add(namespaceURI);
     }
     return code.intValue();
   }
@@ -766,8 +757,8 @@ public final class XSLTC {
    * <code>namespace</code> attribute.
    * 
    * @param prefixMap
-   *          a <code>Hashtable</code> mapping namespace prefixes to URIs. Must
-   *          not be <code>null</code>. The default namespace and namespace
+   *          a <code>Map</code> mapping namespace prefixes to URIs. Must not be
+   *          <code>null</code>. The default namespace and namespace
    *          undeclarations are represented by a zero-length string.
    * @param ancestorID
    *          The <code>int</code> node ID of the nearest ancestor in the
@@ -775,46 +766,42 @@ public final class XSLTC {
    *          there is no such ancestor
    * @return A new node ID for the stylesheet element
    */
-  public int registerStylesheetPrefixMappingForRuntime(Hashtable prefixMap, int ancestorID) {
+  public int registerStylesheetPrefixMappingForRuntime(Map<String, String> prefixMap, int ancestorID) {
     if (_stylesheetNSAncestorPointers == null) {
-      _stylesheetNSAncestorPointers = new Vector();
+      _stylesheetNSAncestorPointers = new ArrayList<>();
     }
 
     if (_prefixURIPairs == null) {
-      _prefixURIPairs = new Vector();
+      _prefixURIPairs = new ArrayList<>();
     }
 
     if (_prefixURIPairsIdx == null) {
-      _prefixURIPairsIdx = new Vector();
+      _prefixURIPairsIdx = new ArrayList<>();
     }
 
     final int currentNodeID = _stylesheetNSAncestorPointers.size();
     _stylesheetNSAncestorPointers.add(new Integer(ancestorID));
 
-    final Iterator prefixMapIterator = prefixMap.entrySet().iterator();
     final int prefixNSPairStartIdx = _prefixURIPairs.size();
     _prefixURIPairsIdx.add(new Integer(prefixNSPairStartIdx));
 
-    while (prefixMapIterator.hasNext()) {
-      final Map.Entry entry = (Map.Entry) prefixMapIterator.next();
-      final String prefix = (String) entry.getKey();
-      final String uri = (String) entry.getValue();
-      _prefixURIPairs.add(prefix);
-      _prefixURIPairs.add(uri);
+    for (final Map.Entry<String, String> entry : prefixMap.entrySet()) {
+      _prefixURIPairs.add(entry.getKey());
+      _prefixURIPairs.add(entry.getValue());
     }
 
     return currentNodeID;
   }
 
-  public Vector getNSAncestorPointers() {
+  public List<Integer> getNSAncestorPointers() {
     return _stylesheetNSAncestorPointers;
   }
 
-  public Vector getPrefixURIPairs() {
+  public List<String> getPrefixURIPairs() {
     return _prefixURIPairs;
   }
 
-  public Vector getPrefixURIPairsIdx() {
+  public List<Integer> getPrefixURIPairsIdx() {
     return _prefixURIPairsIdx;
   }
 
@@ -842,11 +829,11 @@ public final class XSLTC {
     return _attributeSetSerial++;
   }
 
-  public Vector getNamesIndex() {
+  public List<String> getNamesIndex() {
     return _namesIndex;
   }
 
-  public Vector getNamespaceIndex() {
+  public List<String> getNamespaceIndex() {
     return _namespaceIndex;
   }
 
@@ -876,7 +863,7 @@ public final class XSLTC {
           clazz.dump(new BufferedOutputStream(new FileOutputStream(getOutputFile(clazz.getClassName()))));
           break;
         case JAR_OUTPUT:
-          _bcelClasses.addElement(clazz);
+          _bcelClasses.add(clazz);
           break;
         case BYTEARRAY_OUTPUT:
         case BYTEARRAY_AND_FILE_OUTPUT:
@@ -884,12 +871,12 @@ public final class XSLTC {
         case CLASSLOADER_OUTPUT:
           final ByteArrayOutputStream out = new ByteArrayOutputStream(2048);
           clazz.dump(out);
-          _classes.addElement(out.toByteArray());
+          _classes.add(out.toByteArray());
 
           if (_outputType == BYTEARRAY_AND_FILE_OUTPUT) {
             clazz.dump(new BufferedOutputStream(new FileOutputStream(getOutputFile(clazz.getClassName()))));
           } else if (_outputType == BYTEARRAY_AND_JAR_OUTPUT) {
-            _bcelClasses.addElement(clazz);
+            _bcelClasses.add(clazz);
           }
 
           break;
@@ -900,39 +887,28 @@ public final class XSLTC {
   }
 
   /**
-   * File separators are converted to forward slashes for ZIP files.
-   */
-  private String entryName(File f) throws IOException {
-    return f.getName().replace(File.separatorChar, '/');
-  }
-
-  /**
    * Generate output JAR-file and packages
    */
   public void outputToJar() throws IOException {
     // create the manifest
     final Manifest manifest = new Manifest();
-    final java.util.jar.Attributes atrs = manifest.getMainAttributes();
-    atrs.put(java.util.jar.Attributes.Name.MANIFEST_VERSION, "1.2");
+    final Attributes atrs = manifest.getMainAttributes();
+    atrs.put(Attributes.Name.MANIFEST_VERSION, "1.2");
 
-    final Map map = manifest.getEntries();
+    final Map<String, Attributes> map = manifest.getEntries();
     // create manifest
-    Enumeration classes = _bcelClasses.elements();
     final String now = new Date().toString();
-    final java.util.jar.Attributes.Name dateAttr = new java.util.jar.Attributes.Name("Date");
-    while (classes.hasMoreElements()) {
-      final JavaClass clazz = (JavaClass) classes.nextElement();
+    final Attributes.Name dateAttr = new Attributes.Name("Date");
+    for (final JavaClass clazz : _bcelClasses) {
       final String className = clazz.getClassName().replace('.', '/');
-      final java.util.jar.Attributes attr = new java.util.jar.Attributes();
+      final Attributes attr = new Attributes();
       attr.put(dateAttr, now);
       map.put(className + ".class", attr);
     }
 
     final File jarFile = new File(_destDir, _jarFileName);
     final JarOutputStream jos = new JarOutputStream(new FileOutputStream(jarFile), manifest);
-    classes = _bcelClasses.elements();
-    while (classes.hasMoreElements()) {
-      final JavaClass clazz = (JavaClass) classes.nextElement();
+    for (final JavaClass clazz : _bcelClasses) {
       final String className = clazz.getClassName().replace('.', '/');
       jos.putNextEntry(new JarEntry(className + ".class"));
       final ByteArrayOutputStream out = new ByteArrayOutputStream(2048);
@@ -967,7 +943,7 @@ public final class XSLTC {
    *         <code>char[]</code>.
    */
   public String getCharacterData(int index) {
-    return ((StringBuffer) m_characterData.elementAt(index)).toString();
+    return m_characterData.get(index).toString();
   }
 
   /**
@@ -975,7 +951,7 @@ public final class XSLTC {
    * literal text in the stylesheet.
    */
   public int getCharacterDataCount() {
-    return m_characterData != null ? m_characterData.size() : 0;
+    return m_characterData == null ? 0 : m_characterData.size();
   }
 
   /**
@@ -988,13 +964,13 @@ public final class XSLTC {
    * @return int offset at which character data will be stored
    */
   public int addCharacterData(String newData) {
-    StringBuffer currData;
+    StringBuilder currData;
     if (m_characterData == null) {
-      m_characterData = new Vector();
-      currData = new StringBuffer();
-      m_characterData.addElement(currData);
+      m_characterData = new ArrayList<>();
+      currData = new StringBuilder();
+      m_characterData.add(currData);
     } else {
-      currData = (StringBuffer) m_characterData.elementAt(m_characterData.size() - 1);
+      currData = m_characterData.get(m_characterData.size() - 1);
     }
 
     // Character data could take up to three-times as much space when
@@ -1002,8 +978,8 @@ public final class XSLTC {
     // constant is 65535/3. If we exceed that,
     // (We really should use some "bin packing".)
     if (newData.length() + currData.length() > 21845) {
-      currData = new StringBuffer();
-      m_characterData.addElement(currData);
+      currData = new StringBuilder();
+      m_characterData.add(currData);
     }
 
     final int newDataOffset = currData.length();

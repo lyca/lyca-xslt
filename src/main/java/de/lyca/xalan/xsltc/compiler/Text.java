@@ -240,7 +240,6 @@ final class Text extends Instruction {
     // The XSLTC object keeps track of character data
     // that is to be stored in char arrays.
     final int offset = xsltc.addCharacterData(_text);
-    final int length = _text.length();
     final String charDataFieldName = STATIC_CHAR_DATA_FIELD + (xsltc.getCharacterDataCount() - 1);
 
     il.append(new GETSTATIC(cpg.addFieldref(xsltc.getClassName(), charDataFieldName, STATIC_CHAR_DATA_FIELD_SIG)));

@@ -20,11 +20,13 @@
  */
 package de.lyca.xalan.xsltc.dom;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import de.lyca.xalan.xsltc.DOM;
 import de.lyca.xalan.xsltc.DOMEnhancedForDTM;
 import de.lyca.xalan.xsltc.StripFilter;
 import de.lyca.xalan.xsltc.runtime.AbstractTranslet;
-import de.lyca.xalan.xsltc.runtime.Hashtable;
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xml.dtm.DTMWSFilter;
 
@@ -39,7 +41,7 @@ public class DOMWSFilter implements DTMWSFilter {
   private StripFilter m_filter;
 
   // The Hashtable for DTM to mapping array
-  private final Hashtable m_mappings;
+  private final Map<DTM, short[]> m_mappings;
 
   // Cache the DTM and mapping that are used last time
   private DTM m_currentDTM;
@@ -57,7 +59,7 @@ public class DOMWSFilter implements DTMWSFilter {
    */
   public DOMWSFilter(AbstractTranslet translet) {
     m_translet = translet;
-    m_mappings = new Hashtable();
+    m_mappings = new HashMap<>();
 
     if (translet instanceof StripFilter) {
       m_filter = (StripFilter) translet;
@@ -90,7 +92,7 @@ public class DOMWSFilter implements DTMWSFilter {
         if (dtm == m_currentDTM) {
           mapping = m_currentMapping;
         } else {
-          mapping = (short[]) m_mappings.get(dtm);
+          mapping = m_mappings.get(dtm);
           if (mapping == null) {
             mapping = mappableDOM.getMapping(m_translet.getNamesArray(), m_translet.getUrisArray(),
                     m_translet.getTypesArray());

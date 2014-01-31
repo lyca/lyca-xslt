@@ -22,6 +22,7 @@
 package de.lyca.xalan.xsltc.compiler;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.generic.ASTORE;
@@ -92,7 +93,7 @@ final class Predicate extends Expression implements Closure {
   /**
    * List of variables in closure.
    */
-  private ArrayList _closureVars = null;
+  private List<VariableRefBase> _closureVars = null;
 
   /**
    * Reference to parent closure.
@@ -214,7 +215,7 @@ final class Predicate extends Expression implements Closure {
   @Override
   public void addVariable(VariableRefBase variableRef) {
     if (_closureVars == null) {
-      _closureVars = new ArrayList();
+      _closureVars = new ArrayList<>();
     }
 
     // Only one reference per variable
@@ -359,14 +360,14 @@ final class Predicate extends Expression implements Closure {
             new String[] { CURRENT_NODE_LIST_FILTER }, classGen.getStylesheet());
 
     final ConstantPoolGen cpg = filterGen.getConstantPool();
-    final int length = _closureVars == null ? 0 : _closureVars.size();
 
     // Add a new instance variable for each var in closure
-    for (int i = 0; i < length; i++) {
-      final VariableBase var = ((VariableRefBase) _closureVars.get(i)).getVariable();
-
-      filterGen.addField(new Field(ACC_PUBLIC, cpg.addUtf8(var.getEscapedName()), cpg.addUtf8(var.getType()
-              .toSignature()), null, cpg.getConstantPool()));
+    if (_closureVars != null) {
+      for (final VariableRefBase varRefBase : _closureVars) {
+        final VariableBase var = varRefBase.getVariable();
+        filterGen.addField(new Field(ACC_PUBLIC, cpg.addUtf8(var.getEscapedName()), cpg.addUtf8(var.getType()
+                .toSignature()), null, cpg.getConstantPool()));
+      }
     }
 
     final InstructionList il = new InstructionList();
@@ -521,7 +522,7 @@ final class Predicate extends Expression implements Closure {
     final int length = _closureVars == null ? 0 : _closureVars.size();
 
     for (int i = 0; i < length; i++) {
-      final VariableRefBase varRef = (VariableRefBase) _closureVars.get(i);
+      final VariableRefBase varRef = _closureVars.get(i);
       final VariableBase var = varRef.getVariable();
       final Type varType = var.getType();
 

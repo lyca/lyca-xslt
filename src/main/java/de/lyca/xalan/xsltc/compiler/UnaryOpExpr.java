@@ -69,7 +69,7 @@ final class UnaryOpExpr extends Expression {
     final MethodType ptype = lookupPrimop(stable, "u-", new MethodType(Type.Void, tleft));
 
     if (ptype != null) {
-      final Type arg1 = (Type) ptype.argsType().elementAt(0);
+      final Type arg1 = ptype.argsType().get(0);
       if (!arg1.identicalTo(tleft)) {
         _left = new CastExpr(_left, arg1);
       }

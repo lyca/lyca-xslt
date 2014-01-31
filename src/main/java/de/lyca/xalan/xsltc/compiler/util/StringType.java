@@ -148,7 +148,7 @@ public class StringType extends Type {
    * @see de.lyca.xalan.xsltc.compiler.util.Type#translateFrom
    */
   @Override
-  public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, Class clazz) {
+  public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, Class<?> clazz) {
     // Is String <: clazz? I.e. clazz in { String, Object }
     if (clazz.isAssignableFrom(java.lang.String.class)) {
       methodGen.getInstructionList().append(NOP);
@@ -164,7 +164,7 @@ public class StringType extends Type {
    * @see de.lyca.xalan.xsltc.compiler.util.Type#translateFrom
    */
   @Override
-  public void translateFrom(ClassGenerator classGen, MethodGenerator methodGen, Class clazz) {
+  public void translateFrom(ClassGenerator classGen, MethodGenerator methodGen, Class<?> clazz) {
     final ConstantPoolGen cpg = classGen.getConstantPool();
     final InstructionList il = methodGen.getInstructionList();
 

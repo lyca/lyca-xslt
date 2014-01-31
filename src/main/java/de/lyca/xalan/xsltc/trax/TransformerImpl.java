@@ -31,10 +31,16 @@ import java.io.Writer;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.UnknownServiceException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.Vector;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -43,6 +49,7 @@ import javax.xml.transform.ErrorListener;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
+import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.URIResolver;
@@ -69,10 +76,9 @@ import de.lyca.xalan.xsltc.dom.DOMWSFilter;
 import de.lyca.xalan.xsltc.dom.SAXImpl;
 import de.lyca.xalan.xsltc.dom.XSLTCDTMManager;
 import de.lyca.xalan.xsltc.runtime.AbstractTranslet;
-import de.lyca.xalan.xsltc.runtime.Hashtable;
 import de.lyca.xalan.xsltc.runtime.output.TransletOutputHandlerFactory;
 import de.lyca.xml.dtm.DTMWSFilter;
-import de.lyca.xml.serializer.OutputPropertiesFactory;
+import de.lyca.xml.serializer.OutputPropertiesMapFactory;
 import de.lyca.xml.serializer.SerializationHandler;
 import de.lyca.xml.utils.SystemIDResolver;
 import de.lyca.xml.utils.XMLReaderManager;
@@ -85,7 +91,7 @@ import de.lyca.xml.utils.XMLReaderManager;
 public final class TransformerImpl extends Transformer implements DOMCache, ErrorListener {
   private final static String EMPTY_STRING = "";
   private final static String NO_STRING = "no";
-  private final static String YES_STRING = "yes";
+  private final static String YES = "yes";
   private final static String XML_STRING = "xml";
 
   private final static String LEXICAL_HANDLER_PROPERTY = "http://xml.org/sax/properties/lexical-handler";
@@ -122,10 +128,11 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
   private URIResolver _uriResolver = null;
 
   /**
-   * Output properties of this transformer instance.
+   * Output maps of this transformer instance.
    */
-  private Properties _properties;
-  private final Properties _propertiesClone;
+  private final Map<String, String> defaultProperties;
+  private final Map<String, String> stylesheetProperties;
+  private final Map<String, String> userProperties = new HashMap<>();
 
   /**
    * A reference to an output handler factory.
@@ -185,7 +192,7 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
    * needed during the transformation, but we must keep track of them to be
    * fully complaint with the JAXP API.
    */
-  private Hashtable _parameters = null;
+  private Map<String, Object> _parameters = null;
 
   /**
    * This class wraps an ErrorListener into a MessageHandler in order to capture
@@ -215,17 +222,20 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
   protected TransformerImpl(Properties outputProperties, int indentNumber, TransformerFactoryImpl tfactory) {
     this(null, outputProperties, indentNumber, tfactory);
     _isIdentity = true;
-    // _properties.put(OutputKeys.METHOD, "xml");
   }
 
   protected TransformerImpl(Translet translet, Properties outputProperties, int indentNumber,
           TransformerFactoryImpl tfactory) {
     _translet = (AbstractTranslet) translet;
-    _properties = createOutputProperties(outputProperties);
-    _propertiesClone = (Properties) _properties.clone();
     _indentNumber = indentNumber;
     _tfactory = tfactory;
-    // _isIncremental = tfactory._incremental;
+    stylesheetProperties = createStylesheetProperties(outputProperties);
+    if (stylesheetProperties.containsKey(OutputKeys.METHOD)) {
+      defaultProperties = OutputPropertiesMapFactory.getDefaultMethodProperties(stylesheetProperties
+              .get(OutputKeys.METHOD));
+    } else {
+      defaultProperties = OutputPropertiesMapFactory.getDefaultMethodProperties("xml");
+    }
   }
 
   /**
@@ -301,11 +311,11 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
    * and contents of the TrAX Result object passed to the transform() method.
    */
   public SerializationHandler getOutputHandler(Result result) throws TransformerException {
-    // Get output method using get() to ignore defaults
-    _method = (String) _properties.get(OutputKeys.METHOD);
+    // Get output method using getLayeredOutputProperty() to ignore defaults
+    _method = getLayeredOutputProperty(OutputKeys.METHOD, userProperties, stylesheetProperties);
 
-    // Get encoding using getProperty() to use defaults
-    _encoding = _properties.getProperty(OutputKeys.ENCODING);
+    // Get encoding using getOutputProperty() to use defaults
+    _encoding = getOutputProperty(OutputKeys.ENCODING);
 
     _tohFactory = TransletOutputHandlerFactory.newInstance();
     _tohFactory.setEncoding(_encoding);
@@ -338,12 +348,12 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
         }
 
         _tohFactory.setOutputType(TransletOutputHandlerFactory.SAX);
-        return _tohFactory.getSerializationHandler();
+        return _tohFactory.getSerializationHandler(this);
       } else if (result instanceof DOMResult) {
         _tohFactory.setNode(((DOMResult) result).getNode());
         _tohFactory.setNextSibling(((DOMResult) result).getNextSibling());
         _tohFactory.setOutputType(TransletOutputHandlerFactory.DOM);
-        return _tohFactory.getSerializationHandler();
+        return _tohFactory.getSerializationHandler(this);
       } else if (result instanceof StreamResult) {
         // Get StreamResult
         final StreamResult target = (StreamResult) result;
@@ -358,14 +368,14 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
         final Writer writer = target.getWriter();
         if (writer != null) {
           _tohFactory.setWriter(writer);
-          return _tohFactory.getSerializationHandler();
+          return _tohFactory.getSerializationHandler(this);
         }
 
         // or try to get an OutputStream from Result object
         final OutputStream ostream = target.getOutputStream();
         if (ostream != null) {
           _tohFactory.setOutputStream(ostream);
-          return _tohFactory.getSerializationHandler();
+          return _tohFactory.getSerializationHandler(this);
         }
 
         // or try to get just a systemId string from Result object
@@ -382,17 +392,17 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
         if (systemId.startsWith("file:")) {
           url = new URL(systemId);
           _tohFactory.setOutputStream(_ostream = new FileOutputStream(url.getFile()));
-          return _tohFactory.getSerializationHandler();
+          return _tohFactory.getSerializationHandler(this);
         } else if (systemId.startsWith("http:")) {
           url = new URL(systemId);
           final URLConnection connection = url.openConnection();
           _tohFactory.setOutputStream(_ostream = connection.getOutputStream());
-          return _tohFactory.getSerializationHandler();
+          return _tohFactory.getSerializationHandler(this);
         } else {
           // system id is just a filename
-          url = new File(systemId).toURL();
+          url = new File(systemId).toURI().toURL();
           _tohFactory.setOutputStream(_ostream = new FileOutputStream(url.getFile()));
-          return _tohFactory.getSerializationHandler();
+          return _tohFactory.getSerializationHandler(this);
         }
       }
     }
@@ -666,45 +676,8 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
   }
 
   /**
-   * Inform TrAX error listener of a warning
-   */
-  private void postWarningToListener(String message) {
-    try {
-      _errorListener.warning(new TransformerException(message));
-    } catch (final TransformerException e) {
-      // ignored - transformation cannot be continued
-    }
-  }
-
-  /**
-   * The translet stores all CDATA sections set in the <xsl:output> element in a
-   * Hashtable. This method will re-construct the whitespace separated list of
-   * elements given in the <xsl:output> element.
-   */
-  private String makeCDATAString(Hashtable cdata) {
-    // Return a 'null' string if no CDATA section elements were specified
-    if (cdata == null)
-      return null;
-
-    final StringBuffer result = new StringBuffer();
-
-    // Get an enumeration of all the elements in the hashtable
-    final Enumeration elements = cdata.keys();
-    if (elements.hasMoreElements()) {
-      result.append((String) elements.nextElement());
-      while (elements.hasMoreElements()) {
-        final String element = (String) elements.nextElement();
-        result.append(' ');
-        result.append(element);
-      }
-    }
-
-    return result.toString();
-  }
-
-  /**
-   * Implements JAXP's Transformer.getOutputProperties(). Returns a copy of the
-   * output properties for the transformation. This is a set of layered
+   * Implements JAXP's {@link Transformer#getOutputProperties()}. Returns a copy
+   * of the output properties for the transformation. This is a set of layered
    * properties. The first layer contains properties set by calls to
    * setOutputProperty() and setOutputProperties() on this class, and the output
    * settings defined in the stylesheet's <xsl:output> element makes up the
@@ -715,7 +688,26 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
    */
   @Override
   public Properties getOutputProperties() {
-    return (Properties) _properties.clone();
+    final Properties defaults = from(defaultProperties, null);
+    final Properties stylesheet = from(stylesheetProperties, defaults);
+    return from(userProperties, stylesheet);
+  }
+
+  /**
+   * @return Properties as demanded by the Templates API.
+   * @see Templates#getOutputProperties()
+   */
+  public Properties getStylesheetOutputProperties() {
+    final Properties defaults = from(defaultProperties, null);
+    return from(stylesheetProperties, defaults);
+  }
+
+  private Properties from(Map<String, String> map, Properties defaults) {
+    final Properties result = new Properties(defaults);
+    for (final Map.Entry<String, String> entry : map.entrySet()) {
+      result.setProperty(entry.getKey(), entry.getValue());
+    }
+    return result;
   }
 
   /**
@@ -735,7 +727,31 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
       final ErrorMsg err = new ErrorMsg(ErrorMsg.JAXP_UNKNOWN_PROP_ERR, name);
       throw new IllegalArgumentException(err.toString());
     }
-    return _properties.getProperty(name);
+    String result = userProperties.get(name);
+    if (result == null) {
+      result = stylesheetProperties.get(name);
+    }
+    if (result == null) {
+      result = defaultProperties.get(name);
+    }
+    return getLayeredOutputProperty(name, userProperties, stylesheetProperties, defaultProperties);
+  }
+
+  private String getLayeredOutputProperty(String name, Map<String, String> first, Map<String, String> second) {
+    String result = first.get(name);
+    if (result == null) {
+      result = second.get(name);
+    }
+    return result;
+  }
+
+  private String getLayeredOutputProperty(String name, Map<String, String> first, Map<String, String> second,
+          Map<String, String> third) {
+    String result = getLayeredOutputProperty(name, first, second);
+    if (result == null) {
+      result = third.get(name);
+    }
+    return result;
   }
 
   /**
@@ -752,8 +768,7 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
   @Override
   public void setOutputProperties(Properties properties) throws IllegalArgumentException {
     if (properties != null) {
-      final Enumeration names = properties.propertyNames();
-
+      final Enumeration<?> names = properties.propertyNames();
       while (names.hasMoreElements()) {
         final String name = (String) names.nextElement();
 
@@ -763,14 +778,14 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
         }
 
         if (validOutputProperty(name)) {
-          _properties.setProperty(name, properties.getProperty(name));
+          userProperties.put(name, properties.getProperty(name));
         } else {
           final ErrorMsg err = new ErrorMsg(ErrorMsg.JAXP_UNKNOWN_PROP_ERR, name);
           throw new IllegalArgumentException(err.toString());
         }
       }
     } else {
-      _properties = _propertiesClone;
+      userProperties.clear();
     }
   }
 
@@ -793,7 +808,7 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
       final ErrorMsg err = new ErrorMsg(ErrorMsg.JAXP_UNKNOWN_PROP_ERR, name);
       throw new IllegalArgumentException(err.toString());
     }
-    _properties.setProperty(name, value);
+    userProperties.put(name, value);
   }
 
   /**
@@ -802,48 +817,65 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
    */
   private void transferOutputProperties(AbstractTranslet translet) {
     // Return right now if no properties are set
-    if (_properties == null)
+    if (stylesheetProperties.isEmpty() && userProperties.isEmpty())
       return;
 
-    // Get a list of all the defined properties
-    final Enumeration names = _properties.propertyNames();
-    while (names.hasMoreElements()) {
-      // Note the use of get() instead of getProperty()
-      final String name = (String) names.nextElement();
-      final String value = (String) _properties.get(name);
+    // Transfer only non-default properties
+    final String encoding = getLayeredOutputProperty(OutputKeys.ENCODING, userProperties, stylesheetProperties);
+    if (encoding != null) {
+      translet._encoding = encoding;
+    }
 
-      // Ignore default properties
-      if (value == null) {
-        continue;
-      }
+    final String method = getLayeredOutputProperty(OutputKeys.METHOD, userProperties, stylesheetProperties);
+    if (method != null) {
+      translet._method = method;
+    }
 
-      // Pass property value to translet - override previous setting
-      if (name.equals(OutputKeys.ENCODING)) {
-        translet._encoding = value;
-      } else if (name.equals(OutputKeys.METHOD)) {
-        translet._method = value;
-      } else if (name.equals(OutputKeys.DOCTYPE_PUBLIC)) {
-        translet._doctypePublic = value;
-      } else if (name.equals(OutputKeys.DOCTYPE_SYSTEM)) {
-        translet._doctypeSystem = value;
-      } else if (name.equals(OutputKeys.MEDIA_TYPE)) {
-        translet._mediaType = value;
-      } else if (name.equals(OutputKeys.STANDALONE)) {
-        translet._standalone = value;
-      } else if (name.equals(OutputKeys.VERSION)) {
-        translet._version = value;
-      } else if (name.equals(OutputKeys.OMIT_XML_DECLARATION)) {
-        translet._omitHeader = value != null && value.toLowerCase().equals("yes");
-      } else if (name.equals(OutputKeys.INDENT)) {
-        translet._indent = value != null && value.toLowerCase().equals("yes");
-      } else if (name.equals(OutputKeys.CDATA_SECTION_ELEMENTS)) {
-        if (value != null) {
-          translet._cdata = null; // clear previous setting
-          final StringTokenizer e = new StringTokenizer(value);
-          while (e.hasMoreTokens()) {
-            translet.addCdataElement(e.nextToken());
-          }
-        }
+    final String doctypePublic = getLayeredOutputProperty(OutputKeys.DOCTYPE_PUBLIC, userProperties,
+            stylesheetProperties);
+    if (doctypePublic != null) {
+      translet._doctypePublic = doctypePublic;
+    }
+
+    final String doctypeSystem = getLayeredOutputProperty(OutputKeys.DOCTYPE_SYSTEM, userProperties,
+            stylesheetProperties);
+    if (doctypeSystem != null) {
+      translet._doctypeSystem = doctypeSystem;
+    }
+
+    final String mediaType = getLayeredOutputProperty(OutputKeys.MEDIA_TYPE, userProperties, stylesheetProperties);
+    if (mediaType != null) {
+      translet._mediaType = mediaType;
+    }
+
+    final String standalone = getLayeredOutputProperty(OutputKeys.STANDALONE, userProperties, stylesheetProperties);
+    if (standalone != null) {
+      translet._standalone = standalone;
+    }
+
+    final String version = getLayeredOutputProperty(OutputKeys.VERSION, userProperties, stylesheetProperties);
+    if (version != null) {
+      translet._version = version;
+    }
+
+    final String omitHeader = getLayeredOutputProperty(OutputKeys.OMIT_XML_DECLARATION, userProperties,
+            stylesheetProperties);
+    if (omitHeader != null) {
+      translet._omitHeader = YES.equalsIgnoreCase(omitHeader);
+    }
+
+    final String indent = getLayeredOutputProperty(OutputKeys.INDENT, userProperties, stylesheetProperties);
+    if (indent != null) {
+      translet._indent = YES.equalsIgnoreCase(indent);
+    }
+
+    final String cdata = getLayeredOutputProperty(OutputKeys.CDATA_SECTION_ELEMENTS, userProperties,
+            stylesheetProperties);
+    if (cdata != null) {
+      translet._cdata = null; // clear previous setting
+      final StringTokenizer e = new StringTokenizer(cdata);
+      while (e.hasMoreTokens()) {
+        translet.addCdataElement(e.nextToken());
       }
     }
   }
@@ -854,71 +886,72 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
    */
   public void transferOutputProperties(SerializationHandler handler) {
     // Return right now if no properties are set
-    if (_properties == null)
+    if (stylesheetProperties.isEmpty() && userProperties.isEmpty())
       return;
 
-    String doctypePublic = null;
-    String doctypeSystem = null;
+    // Transfer only non-default properties
+    final String doctypePublic = getLayeredOutputProperty(OutputKeys.DOCTYPE_PUBLIC, userProperties,
+            stylesheetProperties);
+    final String doctypeSystem = getLayeredOutputProperty(OutputKeys.DOCTYPE_SYSTEM, userProperties,
+            stylesheetProperties);
 
-    // Get a list of all the defined properties
-    final Enumeration names = _properties.propertyNames();
-    while (names.hasMoreElements()) {
-      // Note the use of get() instead of getProperty()
-      final String name = (String) names.nextElement();
-      final String value = (String) _properties.get(name);
+    final String mediaType = getLayeredOutputProperty(OutputKeys.MEDIA_TYPE, userProperties, stylesheetProperties);
+    if (mediaType != null) {
+      handler.setMediaType(mediaType);
+    }
 
-      // Ignore default properties
-      if (value == null) {
-        continue;
-      }
+    final String standalone = getLayeredOutputProperty(OutputKeys.STANDALONE, userProperties, stylesheetProperties);
+    if (standalone != null) {
+      handler.setStandalone(standalone);
+    }
 
-      // Pass property value to translet - override previous setting
-      if (name.equals(OutputKeys.DOCTYPE_PUBLIC)) {
-        doctypePublic = value;
-      } else if (name.equals(OutputKeys.DOCTYPE_SYSTEM)) {
-        doctypeSystem = value;
-      } else if (name.equals(OutputKeys.MEDIA_TYPE)) {
-        handler.setMediaType(value);
-      } else if (name.equals(OutputKeys.STANDALONE)) {
-        handler.setStandalone(value);
-      } else if (name.equals(OutputKeys.VERSION)) {
-        handler.setVersion(value);
-      } else if (name.equals(OutputKeys.OMIT_XML_DECLARATION)) {
-        handler.setOmitXMLDeclaration(value != null && value.toLowerCase().equals("yes"));
-      } else if (name.equals(OutputKeys.INDENT)) {
-        handler.setIndent(value != null && value.toLowerCase().equals("yes"));
-      } else if (name.equals(OutputKeys.CDATA_SECTION_ELEMENTS)) {
-        if (value != null) {
-          final StringTokenizer e = new StringTokenizer(value);
-          Vector uriAndLocalNames = null;
-          while (e.hasMoreTokens()) {
-            final String token = e.nextToken();
+    final String version = getLayeredOutputProperty(OutputKeys.VERSION, userProperties, stylesheetProperties);
+    if (version != null) {
+      handler.setVersion(version);
+    }
 
-            // look for the last colon, as the String may be
-            // something like "http://abc.com:local"
-            final int lastcolon = token.lastIndexOf(':');
-            String uri;
-            String localName;
-            if (lastcolon > 0) {
-              uri = token.substring(0, lastcolon);
-              localName = token.substring(lastcolon + 1);
-            } else {
-              // no colon at all, lets hope this is the
-              // local name itself then
-              uri = null;
-              localName = token;
-            }
+    final String omitHeader = getLayeredOutputProperty(OutputKeys.OMIT_XML_DECLARATION, userProperties,
+            stylesheetProperties);
+    if (omitHeader != null) {
+      handler.setOmitXMLDeclaration(YES.equalsIgnoreCase(omitHeader));
+    }
 
-            if (uriAndLocalNames == null) {
-              uriAndLocalNames = new Vector();
-            }
-            // add the uri/localName as a pair, in that order
-            uriAndLocalNames.addElement(uri);
-            uriAndLocalNames.addElement(localName);
-          }
-          handler.setCdataSectionElements(uriAndLocalNames);
+    final String indent = getLayeredOutputProperty(OutputKeys.INDENT, userProperties, stylesheetProperties);
+    if (indent != null) {
+      handler.setIndent(YES.equalsIgnoreCase(indent));
+    }
+
+    final String cdata = getLayeredOutputProperty(OutputKeys.CDATA_SECTION_ELEMENTS, userProperties,
+            stylesheetProperties);
+    if (cdata != null) {
+      final StringTokenizer e = new StringTokenizer(cdata);
+      List<String> uriAndLocalNames = null;
+      while (e.hasMoreTokens()) {
+        final String token = e.nextToken();
+
+        // look for the last colon, as the String may be
+        // something like "http://abc.com:local"
+        final int lastcolon = token.lastIndexOf(':');
+        String uri;
+        String localName;
+        if (lastcolon > 0) {
+          uri = token.substring(0, lastcolon);
+          localName = token.substring(lastcolon + 1);
+        } else {
+          // no colon at all, lets hope this is the
+          // local name itself then
+          uri = null;
+          localName = token;
         }
+
+        if (uriAndLocalNames == null) {
+          uriAndLocalNames = new ArrayList<String>();
+        }
+        // add the uri/localName as a pair, in that order
+        uriAndLocalNames.add(uri);
+        uriAndLocalNames.add(localName);
       }
+      handler.setCdataSectionElements(uriAndLocalNames);
     }
 
     // Call setDoctype() if needed
@@ -933,68 +966,30 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
    * contains properties defined in the stylesheet or by the user using this
    * API.
    */
-  private Properties createOutputProperties(Properties outputProperties) {
-    final Properties defaults = new Properties();
-    setDefaults(defaults, "xml");
-
-    // Copy propeties set in stylesheet to base
-    final Properties base = new Properties(defaults);
-    if (outputProperties != null) {
-      final Enumeration names = outputProperties.propertyNames();
-      while (names.hasMoreElements()) {
-        final String name = (String) names.nextElement();
-        base.setProperty(name, outputProperties.getProperty(name));
-      }
-    } else {
-      base.setProperty(OutputKeys.ENCODING, _translet._encoding);
+  private Map<String, String> createStylesheetProperties(Properties outputProperties) {
+    if (outputProperties != null)
+      return OutputPropertiesMapFactory.unmodifiableMapFromProperties(outputProperties);
+    else {
+      final Map<String, String> result = new HashMap<>();
+      result.put(OutputKeys.ENCODING, _translet._encoding);
       if (_translet._method != null) {
-        base.setProperty(OutputKeys.METHOD, _translet._method);
+        result.put(OutputKeys.METHOD, _translet._method);
       }
-    }
-
-    // Update defaults based on output method
-    final String method = base.getProperty(OutputKeys.METHOD);
-    if (method != null) {
-      if (method.equals("html")) {
-        setDefaults(defaults, "html");
-      } else if (method.equals("text")) {
-        setDefaults(defaults, "text");
-      }
-    }
-
-    return base;
-  }
-
-  /**
-   * Internal method to get the default properties from the serializer factory
-   * and set them on the property object.
-   * 
-   * @param props
-   *          a java.util.Property object on which the properties are set.
-   * @param method
-   *          The output method type, one of "xml", "text", "html" ...
-   */
-  private void setDefaults(Properties props, String method) {
-    final Properties method_props = OutputPropertiesFactory.getDefaultMethodProperties(method);
-    {
-      final Enumeration names = method_props.propertyNames();
-      while (names.hasMoreElements()) {
-        final String name = (String) names.nextElement();
-        props.setProperty(name, method_props.getProperty(name));
-      }
+      return result;
     }
   }
+
+  private static final Set<String> VALID_OUTPUT_PROPERTIES = new HashSet<String>(Arrays.asList(new String[] {
+          OutputKeys.ENCODING, OutputKeys.METHOD, OutputKeys.INDENT, OutputKeys.DOCTYPE_PUBLIC,
+          OutputKeys.DOCTYPE_SYSTEM, OutputKeys.CDATA_SECTION_ELEMENTS, OutputKeys.MEDIA_TYPE,
+          OutputKeys.OMIT_XML_DECLARATION, OutputKeys.STANDALONE, OutputKeys.VERSION }));
 
   /**
    * Verifies if a given output property name is a property defined in the JAXP
    * 1.1 / TrAX spec
    */
   private boolean validOutputProperty(String name) {
-    return name.equals(OutputKeys.ENCODING) || name.equals(OutputKeys.METHOD) || name.equals(OutputKeys.INDENT)
-            || name.equals(OutputKeys.DOCTYPE_PUBLIC) || name.equals(OutputKeys.DOCTYPE_SYSTEM)
-            || name.equals(OutputKeys.CDATA_SECTION_ELEMENTS) || name.equals(OutputKeys.MEDIA_TYPE)
-            || name.equals(OutputKeys.OMIT_XML_DECLARATION) || name.equals(OutputKeys.STANDALONE)
-            || name.equals(OutputKeys.VERSION) || name.charAt(0) == '{';
+    return VALID_OUTPUT_PROPERTIES.contains(name) || name.charAt(0) == '{' && name.contains("}");
   }
 
   /**
@@ -1025,7 +1020,7 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
 
     if (_isIdentity) {
       if (_parameters == null) {
-        _parameters = new Hashtable();
+        _parameters = new HashMap<>();
       }
       _parameters.put(name, value);
     } else {

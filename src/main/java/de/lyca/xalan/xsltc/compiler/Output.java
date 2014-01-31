@@ -230,7 +230,7 @@ final class Output extends TopLevelElement {
     if (_cdata.equals(Constants.EMPTYSTRING)) {
       _cdata = null;
     } else {
-      final StringBuffer expandedNames = new StringBuffer();
+      final StringBuilder expandedNames = new StringBuilder();
       final StringTokenizer tokens = new StringTokenizer(_cdata);
 
       // Make sure to store names in expanded form

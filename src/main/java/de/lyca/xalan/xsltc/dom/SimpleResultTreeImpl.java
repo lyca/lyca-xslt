@@ -20,6 +20,8 @@
  */
 package de.lyca.xalan.xsltc.dom;
 
+import java.util.Map;
+
 import javax.xml.transform.SourceLocator;
 
 import org.w3c.dom.Node;
@@ -29,7 +31,6 @@ import org.xml.sax.SAXException;
 import de.lyca.xalan.xsltc.DOM;
 import de.lyca.xalan.xsltc.StripFilter;
 import de.lyca.xalan.xsltc.TransletException;
-import de.lyca.xalan.xsltc.runtime.Hashtable;
 import de.lyca.xml.dtm.Axis;
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xml.dtm.DTMAxisIterator;
@@ -616,7 +617,7 @@ public class SimpleResultTreeImpl extends EmptySerializer implements DOM, DTM {
   }
 
   @Override
-  public Hashtable getElementsWithIDs() {
+  public Map<String, Integer> getElementsWithIDs() {
     return null;
   }
 
@@ -639,7 +640,7 @@ public class SimpleResultTreeImpl extends EmptySerializer implements DOM, DTM {
     if (_size == 1) {
       _text = _textArray[0];
     } else {
-      final StringBuffer buffer = new StringBuffer();
+      final StringBuilder buffer = new StringBuilder();
       for (int i = 0; i < _size; i++) {
         buffer.append(_textArray[i]);
       }

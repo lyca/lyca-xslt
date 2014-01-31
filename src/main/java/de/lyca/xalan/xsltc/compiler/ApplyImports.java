@@ -107,7 +107,6 @@ final class ApplyImports extends Instruction {
     final Stylesheet stylesheet = classGen.getStylesheet();
     final ConstantPoolGen cpg = classGen.getConstantPool();
     final InstructionList il = methodGen.getInstructionList();
-    final int current = methodGen.getLocalIndex("current");
 
     // Push the arguments that are passed to applyTemplates()
     il.append(classGen.loadTranslet());

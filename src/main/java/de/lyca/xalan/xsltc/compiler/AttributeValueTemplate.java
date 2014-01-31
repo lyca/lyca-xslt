@@ -22,9 +22,9 @@
 package de.lyca.xalan.xsltc.compiler;
 
 import java.util.Enumeration;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
-import java.util.Vector;
 
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.INVOKESPECIAL;
@@ -77,7 +77,7 @@ final class AttributeValueTemplate extends AttributeValue {
      */
     String t = null;
     String lookahead = null;
-    final StringBuffer buffer = new StringBuffer();
+    final StringBuilder buffer = new StringBuilder();
     int state = OUT_EXPR;
 
     while (tokenizer.hasMoreTokens()) {
@@ -192,12 +192,12 @@ final class AttributeValueTemplate extends AttributeValue {
 
   @Override
   public Type typeCheck(SymbolTable stable) throws TypeCheckError {
-    final Vector contents = getContents();
+    final List<SyntaxTreeNode> contents = getContents();
     final int n = contents.size();
     for (int i = 0; i < n; i++) {
-      final Expression exp = (Expression) contents.elementAt(i);
+      final Expression exp = (Expression) contents.get(i);
       if (!exp.typeCheck(stable).identicalTo(Type.String)) {
-        contents.setElementAt(new CastExpr(exp, Type.String), i);
+        contents.set(i, new CastExpr(exp, Type.String));
       }
     }
     return _type = Type.String;
@@ -205,7 +205,7 @@ final class AttributeValueTemplate extends AttributeValue {
 
   @Override
   public String toString() {
-    final StringBuffer buffer = new StringBuffer("AVT:[");
+    final StringBuilder buffer = new StringBuilder("AVT:[");
     final int count = elementCount();
     for (int i = 0; i < count; i++) {
       buffer.append(elementAt(i).toString());
@@ -224,16 +224,16 @@ final class AttributeValueTemplate extends AttributeValue {
     } else {
       final ConstantPoolGen cpg = classGen.getConstantPool();
       final InstructionList il = methodGen.getInstructionList();
-      final int initBuffer = cpg.addMethodref(STRING_BUFFER_CLASS, "<init>", "()V");
-      final Instruction append = new INVOKEVIRTUAL(cpg.addMethodref(STRING_BUFFER_CLASS, "append", "(" + STRING_SIG
-              + ")" + STRING_BUFFER_SIG));
+      final int initBuffer = cpg.addMethodref(STRING_BUILDER_CLASS, "<init>", "()V");
+      final Instruction append = new INVOKEVIRTUAL(cpg.addMethodref(STRING_BUILDER_CLASS, "append", "(" + STRING_SIG
+              + ")" + STRING_BUILDER_SIG));
 
-      final int toString = cpg.addMethodref(STRING_BUFFER_CLASS, "toString", "()" + STRING_SIG);
-      il.append(new NEW(cpg.addClass(STRING_BUFFER_CLASS)));
+      final int toString = cpg.addMethodref(STRING_BUILDER_CLASS, "toString", "()" + STRING_SIG);
+      il.append(new NEW(cpg.addClass(STRING_BUILDER_CLASS)));
       il.append(DUP);
       il.append(new INVOKESPECIAL(initBuffer));
-      // StringBuffer is on the stack
-      final Enumeration elements = elements();
+      // StringBuilder is on the stack
+      final Enumeration<SyntaxTreeNode> elements = elements();
       while (elements.hasMoreElements()) {
         final Expression exp = (Expression) elements.nextElement();
         exp.translate(classGen, methodGen);

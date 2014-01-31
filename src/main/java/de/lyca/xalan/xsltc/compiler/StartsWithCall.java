@@ -21,7 +21,7 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import java.util.Vector;
+import java.util.List;
 
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.INVOKEVIRTUAL;
@@ -46,7 +46,7 @@ final class StartsWithCall extends FunctionCall {
   /**
    * Create a starts-with() call - two arguments, both strings
    */
-  public StartsWithCall(QName fname, Vector arguments) {
+  public StartsWithCall(QName fname, List<Expression> arguments) {
     super(fname, arguments);
   }
 

@@ -21,7 +21,7 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import java.util.Vector;
+import java.util.List;
 
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.INVOKESTATIC;
@@ -35,7 +35,7 @@ import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
  * @author Santiago Pericas-Geertsen
  */
 final class GenerateIdCall extends FunctionCall {
-  public GenerateIdCall(QName fname, Vector arguments) {
+  public GenerateIdCall(QName fname, List<Expression> arguments) {
     super(fname, arguments);
   }
 

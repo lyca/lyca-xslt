@@ -83,7 +83,7 @@ final class Number extends Instruction implements Closure {
   private boolean _formatNeeded = false;
 
   private String _className = null;
-  private ArrayList _closureVars = null;
+  private ArrayList<VariableRefBase> _closureVars = null;
 
   // -- Begin Closure interface --------------------
 
@@ -119,7 +119,7 @@ final class Number extends Instruction implements Closure {
   @Override
   public void addVariable(VariableRefBase variableRef) {
     if (_closureVars == null) {
-      _closureVars = new ArrayList();
+      _closureVars = new ArrayList<>();
     }
 
     // Only one reference per variable
@@ -328,9 +328,6 @@ final class Number extends Instruction implements Closure {
   }
 
   private void compilePatterns(ClassGenerator classGen, MethodGenerator methodGen) {
-    final int current;
-    final int field;
-    final LocalVariableGen local;
     MatchGenerator matchGen;
     NodeCounterGenerator nodeCounterGen;
 
@@ -344,7 +341,7 @@ final class Number extends Instruction implements Closure {
     final int closureLen = _closureVars == null ? 0 : _closureVars.size();
 
     for (int i = 0; i < closureLen; i++) {
-      final VariableBase var = ((VariableRefBase) _closureVars.get(i)).getVariable();
+      final VariableBase var = _closureVars.get(i).getVariable();
 
       nodeCounterGen.addField(new Field(ACC_PUBLIC, cpg.addUtf8(var.getEscapedName()), cpg.addUtf8(var.getType()
               .toSignature()), null, cpg.getConstantPool()));
@@ -411,7 +408,7 @@ final class Number extends Instruction implements Closure {
 
     // Initialize closure variables
     for (int i = 0; i < closureLen; i++) {
-      final VariableRefBase varRef = (VariableRefBase) _closureVars.get(i);
+      final VariableRefBase varRef = _closureVars.get(i);
       final VariableBase var = varRef.getVariable();
       final Type varType = var.getType();
 

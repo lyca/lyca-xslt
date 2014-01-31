@@ -70,7 +70,7 @@ final class Message extends Instruction {
         il.append(new PUSH(cpg, ""));
         break;
       case 1:
-        final SyntaxTreeNode child = (SyntaxTreeNode) elementAt(0);
+        final SyntaxTreeNode child = elementAt(0);
         if (child instanceof Text) {
           il.append(new PUSH(cpg, ((Text) child).getText()));
           break;

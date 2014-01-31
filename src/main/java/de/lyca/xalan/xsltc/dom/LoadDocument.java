@@ -42,8 +42,6 @@ import de.lyca.xml.utils.SystemIDResolver;
  */
 public final class LoadDocument {
 
-  private static final String NAMESPACE_FEATURE = "http://xml.org/sax/features/namespaces";
-
   /**
    * Interprets the arguments passed from the document() function (see
    * de/lyca/xalan/xsltc/compiler/DocumentCall.java) and returns an iterator
@@ -59,9 +57,9 @@ public final class LoadDocument {
       // the second argument node-set is empty
       return EmptyIterator.getInstance();
     else {
-      // System.err.println("arg2FirstNode name: "
-      // + dom.getNodeName(arg2FirstNode )+"["
-      // +Integer.toHexString(arg2FirstNode )+"]");
+      // System.err.println("arg2FirstNode name: " +
+      // dom.getNodeName(arg2FirstNode ) + "[" +
+      // Integer.toHexString(arg2FirstNode ) + "]");
       baseURI = dom.getDocumentURI(arg2FirstNode);
       if (!SystemIDResolver.isAbsoluteURI(baseURI)) {
         baseURI = SystemIDResolver.getAbsoluteURIFromRelative(baseURI);
@@ -108,17 +106,16 @@ public final class LoadDocument {
         if (href.length() == 0) {
           href = "";
           // %OPT% Optimization to cache the stylesheet DOM.
-          // The stylesheet DOM is built once and cached
-          // in the Templates object.
+          // The stylesheet DOM is built once and cached in the Templates
+          // object.
           final TemplatesImpl templates = (TemplatesImpl) translet.getTemplates();
           DOM sdom = null;
           if (templates != null) {
             sdom = templates.getStylesheetDOM();
           }
 
-          // If the cached dom exists, we need to migrate it
-          // to the new DTMManager and create a DTMAxisIterator
-          // for the document.
+          // If the cached dom exists, we need to migrate it to the new
+          // DTMManager and create a DTMAxisIterator for the document.
           if (sdom != null)
             return document(sdom, translet, dom);
           else
@@ -151,8 +148,8 @@ public final class LoadDocument {
         uri = SystemIDResolver.getAbsoluteURI(uri, base);
       }
 
-      // Return an empty iterator if the URI is clearly invalid
-      // (to prevent some unncessary MalformedURL exceptions).
+      // Return an empty iterator if the URI is clearly invalid (to prevent some
+      // unncessary MalformedURL exceptions).
       if (uri == null || uri.length() == 0)
         return EmptyIterator.getInstance();
 
@@ -178,8 +175,8 @@ public final class LoadDocument {
         }
       } else {
         // Parse the input document and construct DOM object
-        // Trust the DTMManager to pick the right parser and
-        // set up the DOM correctly.
+        // Trust the DTMManager to pick the right parser and set up the DOM
+        // correctly.
         final XSLTCDTMManager dtmManager = (XSLTCDTMManager) multiplexer.getDTMManager();
         final DOMEnhancedForDTM enhancedDOM = (DOMEnhancedForDTM) dtmManager.getDTM(new StreamSource(uri), false, null,
                 true, false, translet.hasIdCall(), cacheDOM);

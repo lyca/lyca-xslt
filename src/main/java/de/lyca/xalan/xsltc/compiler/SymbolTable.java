@@ -21,10 +21,13 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import java.util.Hashtable;
-import java.util.Stack;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
-import java.util.Vector;
 
 import de.lyca.xalan.xsltc.compiler.util.MethodType;
 
@@ -35,71 +38,65 @@ import de.lyca.xalan.xsltc.compiler.util.MethodType;
  */
 final class SymbolTable {
 
-  // These hashtables are used for all stylesheets
-  private final Hashtable _stylesheets = new Hashtable();
-  private final Hashtable _primops = new Hashtable();
+  // These Maps are used for all stylesheets
+  private final Map<QName, Stylesheet> _stylesheets = new HashMap<>();
+  private final Map<String, List<MethodType>> _primops = new HashMap<>();
 
-  // These hashtables are used for some stylesheets
-  private Hashtable _variables = null;
-  private Hashtable _templates = null;
-  private Hashtable _attributeSets = null;
-  private Hashtable _aliases = null;
-  private Hashtable _excludedURI = null;
-  private Stack _excludedURIStack = null;
-  private Hashtable _decimalFormats = null;
-  private Hashtable _keys = null;
+  // These Maps are used for some stylesheets
+  private Map<String, VariableBase> _variables = null;
+  private Map<QName, Template> _templates = null;
+  private Map<QName, AttributeSet> _attributeSets = null;
+  private Map<String, String> _aliases = null;
+  private Map<String, Integer> _excludedURI = null;
+  private Deque<Map<String, Integer>> _excludedURIStack = null;
+  private Map<QName, DecimalFormatting> _decimalFormats = null;
+  private Map<QName, Key> _keys = null;
 
   public DecimalFormatting getDecimalFormatting(QName name) {
-    if (_decimalFormats == null)
-      return null;
-    return (DecimalFormatting) _decimalFormats.get(name);
+    return _decimalFormats == null ? null : _decimalFormats.get(name);
   }
 
   public void addDecimalFormatting(QName name, DecimalFormatting symbols) {
     if (_decimalFormats == null) {
-      _decimalFormats = new Hashtable();
+      _decimalFormats = new HashMap<>();
     }
     _decimalFormats.put(name, symbols);
   }
 
   public Key getKey(QName name) {
-    if (_keys == null)
-      return null;
-    return (Key) _keys.get(name);
+    return _keys == null ? null : _keys.get(name);
   }
 
   public void addKey(QName name, Key key) {
     if (_keys == null) {
-      _keys = new Hashtable();
+      _keys = new HashMap<>();
     }
     _keys.put(name, key);
   }
 
   public Stylesheet addStylesheet(QName name, Stylesheet node) {
-    return (Stylesheet) _stylesheets.put(name, node);
+    return _stylesheets.put(name, node);
   }
 
   public Stylesheet lookupStylesheet(QName name) {
-    return (Stylesheet) _stylesheets.get(name);
+    return _stylesheets.get(name);
   }
 
   public Template addTemplate(Template template) {
     final QName name = template.getName();
     if (_templates == null) {
-      _templates = new Hashtable();
+      _templates = new HashMap<>();
     }
-    return (Template) _templates.put(name, template);
+    return _templates.put(name, template);
   }
 
   public Template lookupTemplate(QName name) {
-    if (_templates == null)
-      return null;
-    return (Template) _templates.get(name);
+    return _templates == null ? null : _templates.get(name);
   }
 
   public Variable addVariable(Variable variable) {
     if (_variables == null) {
-      _variables = new Hashtable();
+      _variables = new HashMap<>();
     }
     final String name = variable.getName().getStringRep();
     return (Variable) _variables.put(name, variable);
@@ -107,7 +104,7 @@ final class SymbolTable {
 
   public Param addParam(Param parameter) {
     if (_variables == null) {
-      _variables = new Hashtable();
+      _variables = new HashMap<>();
     }
     final String name = parameter.getName().getStringRep();
     return (Param) _variables.put(name, parameter);
@@ -133,20 +130,20 @@ final class SymbolTable {
     if (_variables == null)
       return null;
     final String name = qname.getStringRep();
-    return (SyntaxTreeNode) _variables.get(name);
+    return _variables.get(name);
   }
 
   public AttributeSet addAttributeSet(AttributeSet atts) {
     if (_attributeSets == null) {
-      _attributeSets = new Hashtable();
+      _attributeSets = new HashMap<>();
     }
-    return (AttributeSet) _attributeSets.put(atts.getName(), atts);
+    return _attributeSets.put(atts.getName(), atts);
   }
 
   public AttributeSet lookupAttributeSet(QName name) {
     if (_attributeSets == null)
       return null;
-    return (AttributeSet) _attributeSets.get(name);
+    return _attributeSets.get(name);
   }
 
   /**
@@ -155,19 +152,19 @@ final class SymbolTable {
    * prepended.
    */
   public void addPrimop(String name, MethodType mtype) {
-    Vector methods = (Vector) _primops.get(name);
+    List<MethodType> methods = _primops.get(name);
     if (methods == null) {
-      _primops.put(name, methods = new Vector());
+      _primops.put(name, methods = new ArrayList<MethodType>());
     }
-    methods.addElement(mtype);
+    methods.add(mtype);
   }
 
   /**
    * Lookup a primitive operator or function in the symbol table by prepending
    * the prefix <tt>PrimopPrefix</tt>.
    */
-  public Vector lookupPrimop(String name) {
-    return (Vector) _primops.get(name);
+  public List<MethodType> lookupPrimop(String name) {
+    return _primops.get(name);
   }
 
   /**
@@ -200,7 +197,7 @@ final class SymbolTable {
    */
   public void addPrefixAlias(String prefix, String alias) {
     if (_aliases == null) {
-      _aliases = new Hashtable();
+      _aliases = new HashMap<>();
     }
     _aliases.put(prefix, alias);
   }
@@ -211,7 +208,7 @@ final class SymbolTable {
   public String lookupPrefixAlias(String prefix) {
     if (_aliases == null)
       return null;
-    return (String) _aliases.get(prefix);
+    return _aliases.get(prefix);
   }
 
   /**
@@ -223,13 +220,13 @@ final class SymbolTable {
     if (uri == null)
       return;
 
-    // Create new hashtable of exlcuded URIs if none exists
+    // Create new Map of exlcuded URIs if none exists
     if (_excludedURI == null) {
-      _excludedURI = new Hashtable();
+      _excludedURI = new HashMap<>();
     }
 
     // Register the namespace URI
-    Integer refcnt = (Integer) _excludedURI.get(uri);
+    Integer refcnt = _excludedURI.get(uri);
     if (refcnt == null) {
       refcnt = new Integer(1);
     } else {
@@ -265,7 +262,7 @@ final class SymbolTable {
    */
   public boolean isExcludedNamespace(String uri) {
     if (uri != null && _excludedURI != null) {
-      final Integer refcnt = (Integer) _excludedURI.get(uri);
+      final Integer refcnt = _excludedURI.get(uri);
       return refcnt != null && refcnt.intValue() > 0;
     }
     return false;
@@ -287,7 +284,7 @@ final class SymbolTable {
         } else {
           uri = lookupNamespace(prefix);
         }
-        final Integer refcnt = (Integer) _excludedURI.get(uri);
+        final Integer refcnt = _excludedURI.get(uri);
         if (refcnt != null) {
           _excludedURI.put(uri, new Integer(refcnt.intValue() - 1));
         }
@@ -304,7 +301,7 @@ final class SymbolTable {
    */
   public void pushExcludedNamespacesContext() {
     if (_excludedURIStack == null) {
-      _excludedURIStack = new Stack();
+      _excludedURIStack = new LinkedList<>();
     }
     _excludedURIStack.push(_excludedURI);
     _excludedURI = null;
@@ -318,7 +315,7 @@ final class SymbolTable {
    * stylesheet.
    */
   public void popExcludedNamespacesContext() {
-    _excludedURI = (Hashtable) _excludedURIStack.pop();
+    _excludedURI = _excludedURIStack.pop();
     if (_excludedURIStack.isEmpty()) {
       _excludedURIStack = null;
     }

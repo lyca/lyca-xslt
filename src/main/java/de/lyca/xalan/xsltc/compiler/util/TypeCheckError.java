@@ -63,8 +63,6 @@ public class TypeCheckError extends Exception {
 
   @Override
   public String toString() {
-    final String result;
-
     if (_error == null) {
       if (_node != null) {
         _error = new ErrorMsg(ErrorMsg.TYPE_CHECK_ERR, _node.toString());
@@ -72,7 +70,6 @@ public class TypeCheckError extends Exception {
         _error = new ErrorMsg(ErrorMsg.TYPE_CHECK_UNK_LOC_ERR);
       }
     }
-
     return _error.toString();
   }
 }

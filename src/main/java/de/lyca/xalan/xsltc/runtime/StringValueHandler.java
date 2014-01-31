@@ -32,7 +32,7 @@ import de.lyca.xml.serializer.EmptySerializer;
  */
 public final class StringValueHandler extends EmptySerializer {
 
-  private final StringBuffer _buffer = new StringBuffer();
+  private final StringBuilder _buffer = new StringBuilder();
   private String _str = null;
   private static final String EMPTY_STR = "";
   private boolean m_escaping = false;
@@ -108,7 +108,7 @@ public final class StringValueHandler extends EmptySerializer {
 
     if (value.indexOf("?>") > 0) {
       final int n = value.length();
-      final StringBuffer valueOfPI = new StringBuffer();
+      final StringBuilder valueOfPI = new StringBuilder();
 
       for (int i = 0; i < n;) {
         final char ch = value.charAt(i++);

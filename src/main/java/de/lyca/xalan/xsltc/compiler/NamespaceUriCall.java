@@ -21,7 +21,7 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import java.util.Vector;
+import java.util.List;
 
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.INVOKEINTERFACE;
@@ -45,7 +45,7 @@ final class NamespaceUriCall extends NameBase {
   /**
    * Handles calls with one parameter (either node or node-set).
    */
-  public NamespaceUriCall(QName fname, Vector arguments) {
+  public NamespaceUriCall(QName fname, List<Expression> arguments) {
     super(fname, arguments);
   }
 

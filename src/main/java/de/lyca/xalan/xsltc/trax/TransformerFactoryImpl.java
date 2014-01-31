@@ -31,10 +31,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
-import java.util.Vector;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -44,7 +43,6 @@ import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.ErrorListener;
 import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
-import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.URIResolver;
@@ -53,8 +51,6 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.sax.SAXTransformerFactory;
-import javax.xml.transform.sax.TemplatesHandler;
-import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
@@ -134,13 +130,13 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
   private String _jarFileName = null;
 
   /**
-   * This Hashtable is used to store parameters for locating <?xml-stylesheet
-   * ...?> processing instructions in XML docs.
+   * This Map is used to store parameters for locating <?xml-stylesheet ...?>
+   * processing instructions in XML docs.
    */
-  private final Hashtable _piParams = null;
+  private final Map<Source, PIParamWrapper> _piParams = null;
 
   /**
-   * The above hashtable stores objects of this class.
+   * The above map stores objects of this class.
    */
   private static class PIParamWrapper {
     public String _media = null;
@@ -196,7 +192,7 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
    * 
    * @see XSLTCDTMManager#getDTMManagerClass()
    */
-  private final Class m_DTMManagerClass;
+  private final Class<?> m_DTMManagerClass;
 
   /**
    * <p>
@@ -575,7 +571,7 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
    * @throws TransformerConfigurationException
    */
   @Override
-  public Transformer newTransformer() throws TransformerConfigurationException {
+  public TransformerImpl newTransformer() throws TransformerConfigurationException {
     final TransformerImpl result = new TransformerImpl(new Properties(), _indentNumber, this);
     if (_uriResolver != null) {
       result.setURIResolver(_uriResolver);
@@ -597,9 +593,9 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
    * @throws TransformerConfigurationException
    */
   @Override
-  public Transformer newTransformer(Source source) throws TransformerConfigurationException {
-    final Templates templates = newTemplates(source);
-    final Transformer transformer = templates.newTransformer();
+  public TransformerImpl newTransformer(Source source) throws TransformerConfigurationException {
+    final TemplatesImpl templates = newTemplates(source);
+    final TransformerImpl transformer = templates.newTransformer();
     if (_uriResolver != null) {
       transformer.setURIResolver(_uriResolver);
     }
@@ -609,13 +605,13 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
   /**
    * Pass warning messages from the compiler to the error listener
    */
-  private void passWarningsToListener(Vector messages) throws TransformerException {
+  private void passWarningsToListener(List<ErrorMsg> messages) throws TransformerException {
     if (_errorListener == null || messages == null)
       return;
     // Pass messages to listener, one by one
     final int count = messages.size();
     for (int pos = 0; pos < count; pos++) {
-      final ErrorMsg msg = (ErrorMsg) messages.elementAt(pos);
+      final ErrorMsg msg = messages.get(pos);
       // Workaround for the TCK failure ErrorListener.errorTests.error001.
       if (msg.isWarningError()) {
         _errorListener.error(new TransformerConfigurationException(msg.toString()));
@@ -628,14 +624,14 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
   /**
    * Pass error messages from the compiler to the error listener
    */
-  private void passErrorsToListener(Vector messages) {
+  private void passErrorsToListener(List<ErrorMsg> messages) {
     try {
       if (_errorListener == null || messages == null)
         return;
       // Pass messages to listener, one by one
       final int count = messages.size();
       for (int pos = 0; pos < count; pos++) {
-        final String message = messages.elementAt(pos).toString();
+        final String message = messages.get(pos).toString();
         _errorListener.error(new TransformerException(message));
       }
     } catch (final TransformerException e) {
@@ -654,7 +650,7 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
    * @throws TransformerConfigurationException
    */
   @Override
-  public Templates newTemplates(Source source) throws TransformerConfigurationException {
+  public TemplatesImpl newTemplates(Source source) throws TransformerConfigurationException {
     // If the _useClasspath attribute is true, try to load the translet from
     // the CLASSPATH and create a template object using the loaded
     // translet.
@@ -666,7 +662,7 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
       }
 
       try {
-        final Class clazz = ObjectFactory.findProviderClass(transletName, ObjectFactory.findClassLoader(), true);
+        final Class<?> clazz = ObjectFactory.findProviderClass(transletName, ObjectFactory.findClassLoader(), true);
         resetTransientAttributes();
 
         return new TemplatesImpl(new Class[] { clazz }, transletName, null, _indentNumber, this);
@@ -736,7 +732,7 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
     // <?xml-stylesheet ...?> PI in an XML input document
     if (_piParams != null && _piParams.get(source) != null) {
       // Get the parameters for this Source object
-      final PIParamWrapper p = (PIParamWrapper) _piParams.get(source);
+      final PIParamWrapper p = _piParams.get(source);
       // Pass them on to the compiler (which will pass then to the parser)
       if (p != null) {
         xsltc.setPIParameters(p._media, p._title, p._charset);
@@ -826,8 +822,13 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
       }
       throw exc;
     }
-
-    return new TemplatesImpl(bytecodes, transletName, xsltc.getOutputProperties(), _indentNumber, this);
+    final TemplatesImpl templates = new TemplatesImpl(bytecodes, transletName, xsltc.getOutputProperties(),
+            _indentNumber, this);
+    // pass uriResolver to templates
+    if (_uriResolver != null) {
+      templates.setURIResolver(_uriResolver);
+    }
+    return templates;
   }
 
   /**
@@ -839,7 +840,7 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
    * @throws TransformerConfigurationException
    */
   @Override
-  public TemplatesHandler newTemplatesHandler() throws TransformerConfigurationException {
+  public TemplatesHandlerImpl newTemplatesHandler() throws TransformerConfigurationException {
     final TemplatesHandlerImpl handler = new TemplatesHandlerImpl(_indentNumber, this);
     if (_uriResolver != null) {
       handler.setURIResolver(_uriResolver);
@@ -856,12 +857,12 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
    * @throws TransformerConfigurationException
    */
   @Override
-  public TransformerHandler newTransformerHandler() throws TransformerConfigurationException {
-    final Transformer transformer = newTransformer();
+  public TransformerHandlerImpl newTransformerHandler() throws TransformerConfigurationException {
+    final TransformerImpl transformer = newTransformer();
     if (_uriResolver != null) {
       transformer.setURIResolver(_uriResolver);
     }
-    return new TransformerHandlerImpl((TransformerImpl) transformer);
+    return new TransformerHandlerImpl(transformer);
   }
 
   /**
@@ -875,12 +876,12 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
    * @throws TransformerConfigurationException
    */
   @Override
-  public TransformerHandler newTransformerHandler(Source src) throws TransformerConfigurationException {
-    final Transformer transformer = newTransformer(src);
+  public TransformerHandlerImpl newTransformerHandler(Source src) throws TransformerConfigurationException {
+    final TransformerImpl transformer = newTransformer(src);
     if (_uriResolver != null) {
       transformer.setURIResolver(_uriResolver);
     }
-    return new TransformerHandlerImpl((TransformerImpl) transformer);
+    return new TransformerHandlerImpl(transformer);
   }
 
   /**
@@ -894,10 +895,9 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
    * @throws TransformerConfigurationException
    */
   @Override
-  public TransformerHandler newTransformerHandler(Templates templates) throws TransformerConfigurationException {
-    final Transformer transformer = templates.newTransformer();
-    final TransformerImpl internal = (TransformerImpl) transformer;
-    return new TransformerHandlerImpl(internal);
+  public TransformerHandlerImpl newTransformerHandler(Templates templates) throws TransformerConfigurationException {
+    final TransformerImpl transformer = ((TemplatesImpl) templates).newTransformer();
+    return new TransformerHandlerImpl(transformer);
   }
 
   /**
@@ -929,7 +929,7 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
   @Override
   public XMLFilter newXMLFilter(Templates templates) throws TransformerConfigurationException {
     try {
-      return new de.lyca.xalan.xsltc.trax.TrAXFilter(templates);
+      return new TrAXFilter(templates);
     } catch (final TransformerConfigurationException e1) {
       if (_errorListener != null) {
         try {
@@ -1110,7 +1110,7 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
     }
 
     // Load the translet into a bytecode array.
-    final List bytecodes = new ArrayList();
+    final List<byte[]> bytecodes = new ArrayList<>();
     final int fileLength = (int) transletFile.length();
     if (fileLength > 0) {
       FileInputStream input = null;
@@ -1175,12 +1175,12 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
       }
     }
 
-    // Convert the Vector of byte[] to byte[][].
+    // Convert the list of byte[] to byte[][].
     final int count = bytecodes.size();
     if (count > 0) {
       final byte[][] result = new byte[count][1];
       for (int i = 0; i < count; i++) {
-        result[i] = (byte[]) bytecodes.get(i);
+        result[i] = bytecodes.get(i);
       }
 
       return result;
@@ -1231,52 +1231,47 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
     }
 
     // Create a ZipFile object for the jar file
-    ZipFile jarFile = null;
-    try {
-      jarFile = new ZipFile(file);
+    try (ZipFile jarFile = new ZipFile(file)) {
+      final String transletPath = fullClassName.replace('.', '/');
+      final String transletAuxPrefix = transletPath + "$";
+      final String transletFullName = transletPath + ".class";
+
+      final List<byte[]> bytecodes = new ArrayList<>();
+
+      // Iterate through all entries in the jar file to find the
+      // translet and auxiliary classes.
+      final Enumeration<? extends ZipEntry> entries = jarFile.entries();
+      while (entries.hasMoreElements()) {
+        final ZipEntry entry = entries.nextElement();
+        final String entryName = entry.getName();
+        if (entry.getSize() > 0
+                && (entryName.equals(transletFullName) || entryName.endsWith(".class")
+                        && entryName.startsWith(transletAuxPrefix))) {
+          try (InputStream input = jarFile.getInputStream(entry)) {
+            final int size = (int) entry.getSize();
+            final byte[] bytes = new byte[size];
+            readFromInputStream(bytes, input, size);
+            bytecodes.add(bytes);
+          } catch (final IOException e) {
+            return null;
+          }
+        }
+      }
+
+      // Convert the list of byte[] to byte[][].
+      final int count = bytecodes.size();
+      if (count > 0) {
+        final byte[][] result = new byte[count][1];
+        for (int i = 0; i < count; i++) {
+          result[i] = bytecodes.get(i);
+        }
+
+        return result;
+      } else
+        return null;
     } catch (final IOException e) {
       return null;
     }
-
-    final String transletPath = fullClassName.replace('.', '/');
-    final String transletAuxPrefix = transletPath + "$";
-    final String transletFullName = transletPath + ".class";
-
-    final List bytecodes = new ArrayList();
-
-    // Iterate through all entries in the jar file to find the
-    // translet and auxiliary classes.
-    final Enumeration entries = jarFile.entries();
-    while (entries.hasMoreElements()) {
-      final ZipEntry entry = (ZipEntry) entries.nextElement();
-      final String entryName = entry.getName();
-      if (entry.getSize() > 0
-              && (entryName.equals(transletFullName) || entryName.endsWith(".class")
-                      && entryName.startsWith(transletAuxPrefix))) {
-        try {
-          final InputStream input = jarFile.getInputStream(entry);
-          final int size = (int) entry.getSize();
-          final byte[] bytes = new byte[size];
-          readFromInputStream(bytes, input, size);
-          input.close();
-          bytecodes.add(bytes);
-        } catch (final IOException e) {
-          return null;
-        }
-      }
-    }
-
-    // Convert the Vector of byte[] to byte[][].
-    final int count = bytecodes.size();
-    if (count > 0) {
-      final byte[][] result = new byte[count][1];
-      for (int i = 0; i < count; i++) {
-        result[i] = (byte[]) bytecodes.get(i);
-      }
-
-      return result;
-    } else
-      return null;
   }
 
   /**
@@ -1362,7 +1357,7 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
   /**
    * Returns the Class object the provides the XSLTC DTM Manager service.
    */
-  protected Class getDTMManagerClass() {
+  protected Class<?> getDTMManagerClass() {
     return m_DTMManagerClass;
   }
 }

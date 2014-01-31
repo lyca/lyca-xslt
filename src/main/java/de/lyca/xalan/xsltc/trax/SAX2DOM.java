@@ -21,8 +21,10 @@
 
 package de.lyca.xalan.xsltc.trax;
 
-import java.util.Stack;
-import java.util.Vector;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -49,8 +51,8 @@ public class SAX2DOM implements ContentHandler, LexicalHandler, Constants {
   private Node _root = null;
   private Document _document = null;
   private Node _nextSibling = null;
-  private final Stack _nodeStk = new Stack();
-  private Vector _namespaceDecls = null;
+  private final Deque<Node> _nodeStk = new ArrayDeque<>();
+  private List<String> _namespaceDecls = null;
   private Node _lastSibling = null;
 
   public SAX2DOM() throws ParserConfigurationException {
@@ -84,7 +86,7 @@ public class SAX2DOM implements ContentHandler, LexicalHandler, Constants {
 
   @Override
   public void characters(char[] ch, int start, int length) {
-    final Node last = (Node) _nodeStk.peek();
+    final Node last = _nodeStk.peek();
 
     // No text nodes can be children of root (DOM006 exception)
     if (last != _document) {
@@ -118,12 +120,12 @@ public class SAX2DOM implements ContentHandler, LexicalHandler, Constants {
     if (_namespaceDecls != null) {
       final int nDecls = _namespaceDecls.size();
       for (int i = 0; i < nDecls; i++) {
-        final String prefix = (String) _namespaceDecls.elementAt(i++);
+        final String prefix = _namespaceDecls.get(i++);
 
         if (prefix == null || prefix.equals(EMPTYSTRING)) {
-          tmp.setAttributeNS(XMLNS_URI, XMLNS_PREFIX, (String) _namespaceDecls.elementAt(i));
+          tmp.setAttributeNS(XMLNS_URI, XMLNS_PREFIX, _namespaceDecls.get(i));
         } else {
-          tmp.setAttributeNS(XMLNS_URI, XMLNS_STRING + prefix, (String) _namespaceDecls.elementAt(i));
+          tmp.setAttributeNS(XMLNS_URI, XMLNS_STRING + prefix, _namespaceDecls.get(i));
         }
       }
       _namespaceDecls.clear();
@@ -140,7 +142,7 @@ public class SAX2DOM implements ContentHandler, LexicalHandler, Constants {
     }
 
     // Append this new node onto current stack node
-    final Node last = (Node) _nodeStk.peek();
+    final Node last = _nodeStk.peek();
 
     // If the SAX2DOM is created with a non-null next sibling node,
     // insert the result nodes before the next sibling under the root.
@@ -164,10 +166,10 @@ public class SAX2DOM implements ContentHandler, LexicalHandler, Constants {
   @Override
   public void startPrefixMapping(String prefix, String uri) {
     if (_namespaceDecls == null) {
-      _namespaceDecls = new Vector(2);
+      _namespaceDecls = new ArrayList<String>(2);
     }
-    _namespaceDecls.addElement(prefix);
-    _namespaceDecls.addElement(uri);
+    _namespaceDecls.add(prefix);
+    _namespaceDecls.add(uri);
   }
 
   @Override
@@ -187,7 +189,7 @@ public class SAX2DOM implements ContentHandler, LexicalHandler, Constants {
    */
   @Override
   public void processingInstruction(String target, String data) {
-    final Node last = (Node) _nodeStk.peek();
+    final Node last = _nodeStk.peek();
     final ProcessingInstruction pi = _document.createProcessingInstruction(target, data);
     if (pi != null) {
       if (last == _root && _nextSibling != null) {
@@ -219,7 +221,7 @@ public class SAX2DOM implements ContentHandler, LexicalHandler, Constants {
    */
   @Override
   public void comment(char[] ch, int start, int length) {
-    final Node last = (Node) _nodeStk.peek();
+    final Node last = _nodeStk.peek();
     final Comment comment = _document.createComment(new String(ch, start, length));
     if (comment != null) {
       if (last == _root && _nextSibling != null) {

@@ -134,6 +134,40 @@ public class TrAXFilter extends XMLFilterImpl {
     getParent().setContentHandler(_transformerHandler);
   }
 
+  /**
+   * Set the parent reader.
+   * 
+   * <p>
+   * This is the {@link org.xml.sax.XMLReader XMLReader} from which this filter
+   * will obtain its events and to which it will pass its configuration
+   * requests. The parent may itself be another filter.
+   * </p>
+   * 
+   * <p>
+   * If there is no parent reader set, any attempt to parse or to set or get a
+   * feature or property will fail.
+   * </p>
+   * 
+   * @param parent
+   *          The parent XML reader.
+   * @throws java.lang.NullPointerException
+   *           If the parent is null.
+   */
+  @Override
+  public void setParent(XMLReader parent) {
+    super.setParent(parent);
+
+    if (null != parent.getContentHandler()) {
+      this.setContentHandler(parent.getContentHandler());
+    }
+
+    // Not really sure if we should do this here, but
+    // it seems safer in case someone calls parse() on
+    // the parent.
+    // setupParse ();
+  }
+
   public void setErrorListener(ErrorListener handler) {
+    _transformer.setErrorListener(handler);
   }
 }

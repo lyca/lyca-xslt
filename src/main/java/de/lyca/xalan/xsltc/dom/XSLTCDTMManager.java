@@ -87,8 +87,8 @@ public class XSLTCDTMManager extends DTMManagerDefault {
    * </ol>
    * The default is <code>de.lyca.xalan.xsltc.dom.XSLTCDTMManager</code>.
    */
-  public static Class getDTMManagerClass() {
-    final Class mgrClass = ObjectFactory.lookUpFactoryClass(DEFAULT_PROP_NAME, null, DEFAULT_CLASS_NAME);
+  public static Class<?> getDTMManagerClass() {
+    final Class<?> mgrClass = ObjectFactory.lookUpFactoryClass(DEFAULT_PROP_NAME, null, DEFAULT_CLASS_NAME);
     // If no class found, default to this one. (This should never happen -
     // the ObjectFactory has already been told that the current class is
     // the default).

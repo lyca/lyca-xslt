@@ -23,7 +23,8 @@ package de.lyca.xalan.xsltc.cmdline;
 
 import java.io.File;
 import java.net.URL;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import de.lyca.xalan.xsltc.cmdline.getopt.GetOpt;
 import de.lyca.xalan.xsltc.cmdline.getopt.GetOptsException;
@@ -44,7 +45,7 @@ public final class Compile {
   private static int VERSION_DELTA = 0;
 
   public static void printUsage() {
-    final StringBuffer vers = new StringBuffer("XSLTC version " + VERSION_MAJOR + "." + VERSION_MINOR
+    final StringBuilder vers = new StringBuilder("XSLTC version " + VERSION_MAJOR + "." + VERSION_MINOR
             + (VERSION_DELTA > 0 ? "." + VERSION_DELTA : ""));
     System.err.println(vers + "\n" + new ErrorMsg(ErrorMsg.COMPILE_USAGE_STR));
   }
@@ -114,20 +115,20 @@ public final class Compile {
         }
         compileOK = xsltc.compile(System.in, xsltc.getClassName());
       } else {
-        // Generate a vector containg URLs for all stylesheets specified
+        // Generate a list containg URLs for all stylesheets specified
         final String[] stylesheetNames = getopt.getCmdArgs();
-        final Vector stylesheetVector = new Vector();
+        final List<URL> stylesheetURLs = new ArrayList<URL>();
         for (int i = 0; i < stylesheetNames.length; i++) {
           final String name = stylesheetNames[i];
           URL url;
           if (inputIsURL) {
             url = new URL(name);
           } else {
-            url = new File(name).toURL();
+            url = new File(name).toURI().toURL();
           }
-          stylesheetVector.addElement(url);
+          stylesheetURLs.add(url);
         }
-        compileOK = xsltc.compile(stylesheetVector);
+        compileOK = xsltc.compile(stylesheetURLs);
       }
 
       // Compile the stylesheet and output class/jar file(s)

@@ -79,6 +79,7 @@ public interface Constants extends InstructionConstants {
 
   public static final String STRING_SIG = "Ljava/lang/String;";
   public static final String STRING_BUFFER_SIG = "Ljava/lang/StringBuffer;";
+  public static final String STRING_BUILDER_SIG = "Ljava/lang/StringBuilder;";
   public static final String OBJECT_SIG = "Ljava/lang/Object;";
   public static final String DOUBLE_SIG = "Ljava/lang/Double;";
   public static final String INTEGER_SIG = "Ljava/lang/Integer;";
@@ -89,7 +90,7 @@ public interface Constants extends InstructionConstants {
   public static final String NODE_ITERATOR = "de.lyca.xml.dtm.DTMAxisIterator";
   public static final String NODE_ITERATOR_BASE = "de.lyca.xml.dtm.ref.DTMAxisIteratorBase";
   public static final String SORT_ITERATOR = "de.lyca.xalan.xsltc.dom.SortingIterator";
-  public static final String SORT_ITERATOR_SIG = "Lorg.apache.xalan.xsltc.dom.SortingIterator;";
+  public static final String SORT_ITERATOR_SIG = "Lde.lyca.xalan.xsltc.dom.SortingIterator;";
   public static final String NODE_SORT_RECORD = "de.lyca.xalan.xsltc.dom.NodeSortRecord";
   public static final String NODE_SORT_FACTORY = "de/lyca/xalan/xsltc/dom/NodeSortRecordFactory";
   public static final String NODE_SORT_RECORD_SIG = "Lde/lyca/xalan/xsltc/dom/NodeSortRecord;";
@@ -160,6 +161,7 @@ public interface Constants extends InstructionConstants {
   public static final String OBJECT_CLASS = "java.lang.Object";
   public static final String BOOLEAN_CLASS = "java.lang.Boolean";
   public static final String STRING_BUFFER_CLASS = "java.lang.StringBuffer";
+  public static final String STRING_BUILDER_CLASS = "java.lang.StringBuilder";
   public static final String STRING_WRITER = "java.io.StringWriter";
   public static final String WRITER_SIG = "Ljava/io/Writer;";
 

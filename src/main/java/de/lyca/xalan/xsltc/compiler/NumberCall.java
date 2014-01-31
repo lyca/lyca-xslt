@@ -21,7 +21,7 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import java.util.Vector;
+import java.util.List;
 
 import org.apache.bcel.generic.InstructionList;
 
@@ -36,7 +36,7 @@ import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
  */
 final class NumberCall extends FunctionCall {
 
-  public NumberCall(QName fname, Vector arguments) {
+  public NumberCall(QName fname, List<Expression> arguments) {
     super(fname, arguments);
   }
 

@@ -21,13 +21,14 @@
 
 package de.lyca.xalan.xsltc.compiler.util;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
-import java.util.Stack;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Field;
@@ -82,7 +83,7 @@ public class MethodGenerator extends MethodGen implements de.lyca.xalan.xsltc.co
   private static final String START_ELEMENT_SIG = "(" + STRING_SIG + ")V";
   private static final String END_ELEMENT_SIG = START_ELEMENT_SIG;
 
-  private InstructionList _mapTypeSub;
+  // private InstructionList _mapTypeSub;
 
   private static final int DOM_INDEX = 1;
   private static final int ITERATOR_INDEX = 2;
@@ -125,7 +126,7 @@ public class MethodGenerator extends MethodGen implements de.lyca.xalan.xsltc.co
    * avoid compiling the same pattern multiple times. Note that patterns whose
    * kernels are "*", "node()" and "@*" can between shared by test sequences.
    */
-  private final Hashtable _preCompiled = new Hashtable();
+  private final Map<Pattern, InstructionList> _preCompiled = new HashMap<>();
 
   public MethodGenerator(int access_flags, Type return_type, Type[] arg_types, String[] arg_names, String method_name,
           String class_name, InstructionList il, ConstantPoolGen cpg) {
@@ -245,12 +246,12 @@ public class MethodGenerator extends MethodGen implements de.lyca.xalan.xsltc.co
      * entry contains all such <code>LocalVariableGen</code>s registered for the
      * same slot; and if none occurs, the entry will be <code>null</code>.
      */
-    protected ArrayList _variables = new ArrayList();
+    protected List<Object> _variables = new ArrayList<>();
 
     /**
      * Maps a name to a {@link LocalVariableGen}
      */
-    protected HashMap _nameToLVGMap = new HashMap();
+    protected Map<String, Object> _nameToLVGMap = new HashMap<>();
 
     /**
      * Registers a {@link org.apache.bcel.generic.LocalVariableGen} for this
@@ -290,12 +291,12 @@ public class MethodGenerator extends MethodGen implements de.lyca.xalan.xsltc.co
         final Object localsInSlot = _variables.get(slot);
         if (localsInSlot != null) {
           if (localsInSlot instanceof LocalVariableGen) {
-            final ArrayList listOfLocalsInSlot = new ArrayList();
-            listOfLocalsInSlot.add(localsInSlot);
+            final List<LocalVariableGen> listOfLocalsInSlot = new ArrayList<>();
+            listOfLocalsInSlot.add((LocalVariableGen) localsInSlot);
             listOfLocalsInSlot.add(lvg);
             _variables.set(slot, listOfLocalsInSlot);
           } else {
-            ((ArrayList) localsInSlot).add(lvg);
+            ((List<LocalVariableGen>) localsInSlot).add(lvg);
           }
         } else {
           _variables.set(slot, lvg);
@@ -342,11 +343,12 @@ public class MethodGenerator extends MethodGen implements de.lyca.xalan.xsltc.co
           if (offsetInLocalVariableGenRange(lvg, offset))
             return lvg;
         } else {
-          final ArrayList listOfLocalsInSlot = (ArrayList) localsInSlot;
+          @SuppressWarnings("unchecked")
+          final List<LocalVariableGen> listOfLocalsInSlot = (List<LocalVariableGen>) localsInSlot;
           final int size = listOfLocalsInSlot.size();
 
           for (int i = 0; i < size; i++) {
-            final LocalVariableGen lvg = (LocalVariableGen) listOfLocalsInSlot.get(i);
+            final LocalVariableGen lvg = listOfLocalsInSlot.get(i);
             if (offsetInLocalVariableGenRange(lvg, offset))
               return lvg;
           }
@@ -386,14 +388,14 @@ public class MethodGenerator extends MethodGen implements de.lyca.xalan.xsltc.co
       if (duplicateNameEntry == null) {
         _nameToLVGMap.put(lvg.getName(), lvg);
       } else {
-        ArrayList sameNameList;
+        List<LocalVariableGen> sameNameList;
 
-        if (duplicateNameEntry instanceof ArrayList) {
-          sameNameList = (ArrayList) duplicateNameEntry;
+        if (duplicateNameEntry instanceof List) {
+          sameNameList = (List<LocalVariableGen>) duplicateNameEntry;
           sameNameList.add(lvg);
         } else {
-          sameNameList = new ArrayList();
-          sameNameList.add(duplicateNameEntry);
+          sameNameList = new ArrayList<>();
+          sameNameList.add((LocalVariableGen) duplicateNameEntry);
           sameNameList.add(lvg);
         }
 
@@ -413,8 +415,9 @@ public class MethodGenerator extends MethodGen implements de.lyca.xalan.xsltc.co
     protected void removeByNameTracking(LocalVariableGen lvg) {
       final Object duplicateNameEntry = _nameToLVGMap.get(lvg.getName());
 
-      if (duplicateNameEntry instanceof ArrayList) {
-        final ArrayList sameNameList = (ArrayList) duplicateNameEntry;
+      if (duplicateNameEntry instanceof List) {
+        @SuppressWarnings("unchecked")
+        final List<LocalVariableGen> sameNameList = (List<LocalVariableGen>) duplicateNameEntry;
         for (int i = 0; i < sameNameList.size(); i++) {
           if (sameNameList.get(i) == lvg) {
             sameNameList.remove(i);
@@ -443,11 +446,11 @@ public class MethodGenerator extends MethodGen implements de.lyca.xalan.xsltc.co
       LocalVariableGen lvg = null;
       final Object duplicateNameEntry = _nameToLVGMap.get(name);
 
-      if (duplicateNameEntry instanceof ArrayList) {
-        final ArrayList sameNameList = (ArrayList) duplicateNameEntry;
-
+      if (duplicateNameEntry instanceof List) {
+        @SuppressWarnings("unchecked")
+        final List<LocalVariableGen> sameNameList = (List<LocalVariableGen>) duplicateNameEntry;
         for (int i = 0; i < sameNameList.size(); i++) {
-          lvg = (LocalVariableGen) sameNameList.get(i);
+          lvg = sameNameList.get(i);
           if (lvg.getName() == name) {
             break;
           }
@@ -480,7 +483,7 @@ public class MethodGenerator extends MethodGen implements de.lyca.xalan.xsltc.co
      */
     protected LocalVariableGen[] getLocals(boolean includeRemoved) {
       LocalVariableGen[] locals = null;
-      final ArrayList allVarsEverDeclared = new ArrayList();
+      final List<LocalVariableGen> allVarsEverDeclared = new ArrayList<>();
 
       if (includeRemoved) {
         final int slotCount = allVarsEverDeclared.size();
@@ -488,31 +491,33 @@ public class MethodGenerator extends MethodGen implements de.lyca.xalan.xsltc.co
         for (int i = 0; i < slotCount; i++) {
           final Object slotEntries = _variables.get(i);
           if (slotEntries != null) {
-            if (slotEntries instanceof ArrayList) {
-              final ArrayList slotList = (ArrayList) slotEntries;
+            if (slotEntries instanceof List) {
+              @SuppressWarnings("unchecked")
+              final List<LocalVariableGen> slotList = (List<LocalVariableGen>) slotEntries;
 
               for (int j = 0; j < slotList.size(); j++) {
                 allVarsEverDeclared.add(slotList.get(i));
               }
             } else {
-              allVarsEverDeclared.add(slotEntries);
+              allVarsEverDeclared.add((LocalVariableGen) slotEntries);
             }
           }
         }
       } else {
-        final Iterator nameVarsPairsIter = _nameToLVGMap.entrySet().iterator();
+        final Iterator<Map.Entry<String, Object>> nameVarsPairsIter = _nameToLVGMap.entrySet().iterator();
 
         while (nameVarsPairsIter.hasNext()) {
-          final Map.Entry nameVarsPair = (Map.Entry) nameVarsPairsIter.next();
+          final Map.Entry<String, Object> nameVarsPair = nameVarsPairsIter.next();
           final Object vars = nameVarsPair.getValue();
           if (vars != null) {
-            if (vars instanceof ArrayList) {
-              final ArrayList varsList = (ArrayList) vars;
+            if (vars instanceof List) {
+              @SuppressWarnings("unchecked")
+              final List<LocalVariableGen> varsList = (List<LocalVariableGen>) vars;
               for (int i = 0; i < varsList.size(); i++) {
                 allVarsEverDeclared.add(varsList.get(i));
               }
             } else {
-              allVarsEverDeclared.add(vars);
+              allVarsEverDeclared.add((LocalVariableGen) vars);
             }
           }
         }
@@ -706,7 +711,7 @@ public class MethodGenerator extends MethodGen implements de.lyca.xalan.xsltc.co
    * to avoid compiling patterns more than once.
    */
   public InstructionList getInstructionList(Pattern pattern) {
-    return (InstructionList) _preCompiled.get(pattern);
+    return _preCompiled.get(pattern);
   }
 
   /**
@@ -714,7 +719,7 @@ public class MethodGenerator extends MethodGen implements de.lyca.xalan.xsltc.co
    * method. See {@link OutlineableChunkStart} and {@link OutlineableChunkEnd}
    * for more information.
    */
-  private static class Chunk implements Comparable {
+  private static class Chunk implements Comparable<Chunk> {
     /**
      * {@link InstructionHandle} of the first instruction in the outlineable
      * chunk.
@@ -816,8 +821,8 @@ public class MethodGenerator extends MethodGen implements de.lyca.xalan.xsltc.co
      *         </ul>
      */
     @Override
-    public int compareTo(Object comparand) {
-      return getChunkSize() - ((Chunk) comparand).getChunkSize();
+    public int compareTo(Chunk comparand) {
+      return getChunkSize() - comparand.getChunkSize();
     }
   }
 
@@ -834,11 +839,12 @@ public class MethodGenerator extends MethodGen implements de.lyca.xalan.xsltc.co
    *         {@link MethodGenerator.Chunk}s that may be outlined from this
    *         method
    */
-  private ArrayList getCandidateChunks(ClassGenerator classGen, int totalMethodSize) {
-    final Iterator instructions = getInstructionList().iterator();
-    final ArrayList candidateChunks = new ArrayList();
-    ArrayList currLevelChunks = new ArrayList();
-    final Stack subChunkStack = new Stack();
+  private List<Chunk> getCandidateChunks(ClassGenerator classGen, int totalMethodSize) {
+    @SuppressWarnings("unchecked")
+    final Iterator<InstructionHandle> instructions = getInstructionList().iterator();
+    final List<Chunk> candidateChunks = new ArrayList<>();
+    List<InstructionHandle> currLevelChunks = new ArrayList<>();
+    final Deque<List<InstructionHandle>> subChunkStack = new ArrayDeque<>();
     boolean openChunkAtCurrLevel = false;
     boolean firstInstruction = true;
 
@@ -867,7 +873,7 @@ public class MethodGenerator extends MethodGen implements de.lyca.xalan.xsltc.co
       // Get the next instruction. The loop will perform one extra
       // iteration after it reaches the end of the InstructionList, with
       // currentHandle set to null.
-      currentHandle = instructions.hasNext() ? (InstructionHandle) instructions.next() : null;
+      currentHandle = instructions.hasNext() ? instructions.next() : null;
       final Instruction inst = currentHandle != null ? currentHandle.getInstruction() : null;
 
       // At the first iteration, create a chunk representing all the
@@ -887,14 +893,14 @@ public class MethodGenerator extends MethodGen implements de.lyca.xalan.xsltc.co
         // from the outer level onto the stack
         if (openChunkAtCurrLevel) {
           subChunkStack.push(currLevelChunks);
-          currLevelChunks = new ArrayList();
+          currLevelChunks = new ArrayList<>();
         }
 
         openChunkAtCurrLevel = true;
         currLevelChunks.add(currentHandle);
         // Close off an open chunk
       } else if (currentHandle == null || inst instanceof OutlineableChunkEnd) {
-        ArrayList nestedSubChunks = null;
+        List<InstructionHandle> nestedSubChunks = null;
 
         // If the last MarkerInstruction encountered was an
         // OutlineableChunkEnd, it means that the current instruction
@@ -903,12 +909,12 @@ public class MethodGenerator extends MethodGen implements de.lyca.xalan.xsltc.co
         // are better candidates for outlining than the current chunk.
         if (!openChunkAtCurrLevel) {
           nestedSubChunks = currLevelChunks;
-          currLevelChunks = (ArrayList) subChunkStack.pop();
+          currLevelChunks = subChunkStack.pop();
         }
 
         // Get the handle for the start of this chunk (the last entry
         // in currLevelChunks)
-        final InstructionHandle chunkStart = (InstructionHandle) currLevelChunks.get(currLevelChunks.size() - 1);
+        final InstructionHandle chunkStart = currLevelChunks.get(currLevelChunks.size() - 1);
 
         final int chunkEndPosition = currentHandle != null ? currentHandle.getPosition() : totalMethodSize;
         final int chunkSize = chunkEndPosition - chunkStart.getPosition();
@@ -935,19 +941,19 @@ public class MethodGenerator extends MethodGen implements de.lyca.xalan.xsltc.co
 
               // Gather all the child chunks of the current chunk
               for (int i = 0; i < childChunkCount; i++) {
-                final InstructionHandle start = (InstructionHandle) nestedSubChunks.get(i * 2);
-                final InstructionHandle end = (InstructionHandle) nestedSubChunks.get(i * 2 + 1);
+                final InstructionHandle start = nestedSubChunks.get(i * 2);
+                final InstructionHandle end = nestedSubChunks.get(i * 2 + 1);
 
                 childChunks[i] = new Chunk(start, end);
               }
 
               // Merge adjacent siblings
-              final ArrayList mergedChildChunks = mergeAdjacentChunks(childChunks);
+              final List<Chunk> mergedChildChunks = mergeAdjacentChunks(childChunks);
 
               // Add chunks that mean minimum size requirements
               // to the list of candidate chunks for outlining
               for (int i = 0; i < mergedChildChunks.size(); i++) {
-                final Chunk mergedChunk = (Chunk) mergedChildChunks.get(i);
+                final Chunk mergedChunk = mergedChildChunks.get(i);
                 final int mergedSize = mergedChunk.getChunkSize();
 
                 if (mergedSize >= MINIMUM_OUTLINEABLE_CHUNK_SIZE && mergedSize <= TARGET_METHOD_SIZE) {
@@ -983,7 +989,7 @@ public class MethodGenerator extends MethodGen implements de.lyca.xalan.xsltc.co
    * @return a <code>java.util.ArrayList</code> of
    *         <code>MethodGenerator.Chunk</code>s maximally merged
    */
-  private ArrayList mergeAdjacentChunks(Chunk[] chunks) {
+  private List<Chunk> mergeAdjacentChunks(Chunk[] chunks) {
     final int[] adjacencyRunStart = new int[chunks.length];
     final int[] adjacencyRunLength = new int[chunks.length];
     final boolean[] chunkWasMerged = new boolean[chunks.length];
@@ -992,7 +998,7 @@ public class MethodGenerator extends MethodGen implements de.lyca.xalan.xsltc.co
     int startOfCurrentRun;
     int numAdjacentRuns = 0;
 
-    final ArrayList mergedChunks = new ArrayList();
+    final List<Chunk> mergedChunks = new ArrayList<>();
 
     startOfCurrentRun = 0;
 
@@ -1121,7 +1127,7 @@ public class MethodGenerator extends MethodGen implements de.lyca.xalan.xsltc.co
    *         method itself
    */
   public Method[] outlineChunks(ClassGenerator classGen, int originalMethodSize) {
-    final ArrayList methodsOutlined = new ArrayList();
+    final List<Method> methodsOutlined = new ArrayList<>();
     int currentMethodSize = originalMethodSize;
 
     int outlinedCount = 0;
@@ -1142,7 +1148,7 @@ public class MethodGenerator extends MethodGen implements de.lyca.xalan.xsltc.co
     do {
       // Get all the best candidates for outlining, and sort them in
       // ascending order of size
-      final ArrayList candidateChunks = getCandidateChunks(classGen, currentMethodSize);
+      final List<Chunk> candidateChunks = getCandidateChunks(classGen, currentMethodSize);
       Collections.sort(candidateChunks);
 
       moreMethodsOutlined = false;
@@ -1152,7 +1158,7 @@ public class MethodGenerator extends MethodGen implements de.lyca.xalan.xsltc.co
       // outlined all or the original method comes in under the JVM
       // limit on the size of a method.
       for (int i = candidateChunks.size() - 1; i >= 0 && currentMethodSize > TARGET_METHOD_SIZE; i--) {
-        final Chunk chunkToOutline = (Chunk) candidateChunks.get(i);
+        final Chunk chunkToOutline = candidateChunks.get(i);
 
         methodsOutlined.add(outline(chunkToOutline.getChunkStart(), chunkToOutline.getChunkEnd(), originalMethodName
                 + "$outline$" + outlinedCount, classGen));
@@ -1319,14 +1325,14 @@ public class MethodGenerator extends MethodGen implements de.lyca.xalan.xsltc.co
     // method to instruction handles in the outlined method. Only need
     // to track instructions that are targeted by something else in the
     // generated BCEL
-    final HashMap targetMap = new HashMap();
+    final HashMap<InstructionHandle, InstructionHandle> targetMap = new HashMap<>();
 
     // Keeps track of the mapping from local variables in the old method
     // to local variables in the outlined method.
-    final HashMap localVarMap = new HashMap();
+    final HashMap<LocalVariableGen, LocalVariableGen> localVarMap = new HashMap<>();
 
-    final HashMap revisedLocalVarStart = new HashMap();
-    final HashMap revisedLocalVarEnd = new HashMap();
+    final HashMap<LocalVariableGen, InstructionHandle> revisedLocalVarStart = new HashMap<>();
+    final HashMap<LocalVariableGen, InstructionHandle> revisedLocalVarEnd = new HashMap<>();
 
     // Pass 1: Make copies of all instructions, append them to the new list
     // and associate old instruction references with the new ones, i.e.,
@@ -1379,7 +1385,7 @@ public class MethodGenerator extends MethodGen implements de.lyca.xalan.xsltc.co
           final int oldLocalVarIndex = lvi.getIndex();
           final LocalVariableGen oldLVG = getLocalVariableRegistry().lookupRegisteredLocalVariable(oldLocalVarIndex,
                   ih.getPosition());
-          LocalVariableGen newLVG = (LocalVariableGen) localVarMap.get(oldLVG);
+          LocalVariableGen newLVG = localVarMap.get(oldLVG);
 
           // Has the code already mapped this local variable to a
           // local in the new method?
@@ -1510,7 +1516,7 @@ public class MethodGenerator extends MethodGen implements de.lyca.xalan.xsltc.co
         final InstructionHandle itarget = bi.getTarget(); // old target
 
         // New target must be in targetMap
-        final InstructionHandle newTarget = (InstructionHandle) targetMap.get(itarget);
+        final InstructionHandle newTarget = targetMap.get(itarget);
 
         bc.setTarget(newTarget);
 
@@ -1522,7 +1528,7 @@ public class MethodGenerator extends MethodGen implements de.lyca.xalan.xsltc.co
 
           // Update all targets
           for (int j = 0; j < itargets.length; j++) {
-            ctargets[j] = (InstructionHandle) targetMap.get(itargets[j]);
+            ctargets[j] = targetMap.get(itargets[j]);
           }
         }
       } else if (i instanceof LocalVariableInstruction || i instanceof RET) {
@@ -1533,7 +1539,7 @@ public class MethodGenerator extends MethodGen implements de.lyca.xalan.xsltc.co
         final int oldLocalVarIndex = lvi.getIndex();
         final LocalVariableGen oldLVG = getLocalVariableRegistry().lookupRegisteredLocalVariable(oldLocalVarIndex,
                 ih.getPosition());
-        LocalVariableGen newLVG = (LocalVariableGen) localVarMap.get(oldLVG);
+        LocalVariableGen newLVG = localVarMap.get(oldLVG);
         int newLocalVarIndex;
 
         if (newLVG == null) {
@@ -1594,21 +1600,23 @@ public class MethodGenerator extends MethodGen implements de.lyca.xalan.xsltc.co
 
     // Now that the generation of the outlined code is complete, update
     // the old local variables with new start and end ranges, as required.
-    final Iterator revisedLocalVarStartPairIter = revisedLocalVarStart.entrySet().iterator();
+    final Iterator<Map.Entry<LocalVariableGen, InstructionHandle>> revisedLocalVarStartPairIter = revisedLocalVarStart
+            .entrySet().iterator();
     while (revisedLocalVarStartPairIter.hasNext()) {
-      final Map.Entry lvgRangeStartPair = (Map.Entry) revisedLocalVarStartPairIter.next();
-      final LocalVariableGen lvg = (LocalVariableGen) lvgRangeStartPair.getKey();
-      final InstructionHandle startInst = (InstructionHandle) lvgRangeStartPair.getValue();
+      final Map.Entry<LocalVariableGen, InstructionHandle> lvgRangeStartPair = revisedLocalVarStartPairIter.next();
+      final LocalVariableGen lvg = lvgRangeStartPair.getKey();
+      final InstructionHandle startInst = lvgRangeStartPair.getValue();
 
       lvg.setStart(startInst);
 
     }
 
-    final Iterator revisedLocalVarEndPairIter = revisedLocalVarEnd.entrySet().iterator();
+    final Iterator<Map.Entry<LocalVariableGen, InstructionHandle>> revisedLocalVarEndPairIter = revisedLocalVarEnd
+            .entrySet().iterator();
     while (revisedLocalVarEndPairIter.hasNext()) {
-      final Map.Entry lvgRangeEndPair = (Map.Entry) revisedLocalVarEndPairIter.next();
-      final LocalVariableGen lvg = (LocalVariableGen) lvgRangeEndPair.getKey();
-      final InstructionHandle endInst = (InstructionHandle) lvgRangeEndPair.getValue();
+      final Map.Entry<LocalVariableGen, InstructionHandle> lvgRangeEndPair = revisedLocalVarEndPairIter.next();
+      final LocalVariableGen lvg = lvgRangeEndPair.getKey();
+      final InstructionHandle endInst = lvgRangeEndPair.getValue();
 
       lvg.setEnd(endInst);
     }
@@ -1736,11 +1744,6 @@ public class MethodGenerator extends MethodGen implements de.lyca.xalan.xsltc.co
   }
 
   /**
-   * Track the number of outlineable chunks seen.
-   */
-  private int m_totalChunks = 0;
-
-  /**
    * Track the number of outlineable chunks started but not yet ended. Used to
    * detect imbalances in byte code generation.
    */
@@ -1757,7 +1760,6 @@ public class MethodGenerator extends MethodGen implements de.lyca.xalan.xsltc.co
   public void markChunkStart() {
     // m_chunkTree.markChunkStart();
     getInstructionList().append(OutlineableChunkStart.OUTLINEABLECHUNKSTART);
-    m_totalChunks++;
     m_openChunks++;
   }
 
@@ -1855,7 +1857,7 @@ public class MethodGenerator extends MethodGen implements de.lyca.xalan.xsltc.co
    * The <code>GOTO</code> and <code>JSR</code> instructions come in two forms,
    * one of which uses 16-bit relative offsets, and the other of which uses
    * 32-bit relative offsets. The BCEL library decides whether to use the wide
-   * form of <code>GOTO</code> or <code>JSR</code>instructions based on the
+   * form of <code>GOTO</code> or <code>JSR</code> instructions based on the
    * relative offset of the target of the instruction without any intervention
    * by the user of the library.
    * </p>

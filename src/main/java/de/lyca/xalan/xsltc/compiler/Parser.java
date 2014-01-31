@@ -24,13 +24,15 @@ package de.lyca.xalan.xsltc.compiler;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.Dictionary;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
 import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
-import java.util.Stack;
 import java.util.StringTokenizer;
-import java.util.Vector;
 
 import java_cup.runtime.Symbol;
 
@@ -69,17 +71,17 @@ public class Parser implements Constants, ContentHandler {
 
   private XSLTC _xsltc; // Reference to the compiler object.
   private XPathParser _xpathParser; // Reference to the XPath parser.
-  private Vector _errors; // Contains all compilation errors
-  private Vector _warnings; // Contains all compilation errors
+  private List<ErrorMsg> _errors; // Contains all compilation errors
+  private List<ErrorMsg> _warnings; // Contains all compilation errors
 
-  private Hashtable _instructionClasses; // Maps instructions to classes
-  private Hashtable _instructionAttrs;; // reqd and opt attrs
-  private Hashtable _qNames;
-  private Hashtable _namespaces;
+  private Map<QName, String> _instructionClasses; // Maps instructions to classes
+  private Map<QName, String[]> _instructionAttrs;; // reqd and opt attrs
+  private Map<String, QName> _qNames;
+  private Map<String, Map<String, QName>> _namespaces;
   private QName _useAttributeSets;
   private QName _excludeResultPrefixes;
   private QName _extensionElementPrefixes;
-  private Hashtable _variableScope;
+  private Map<QName, Deque<VariableBase>> _variableScope;
   private Stylesheet _currentStylesheet;
   private SymbolTable _symbolTable; // Maps QNames to syntax-tree nodes
   private Output _output;
@@ -98,14 +100,14 @@ public class Parser implements Constants, ContentHandler {
   }
 
   public void init() {
-    _qNames = new Hashtable(512);
-    _namespaces = new Hashtable();
-    _instructionClasses = new Hashtable();
-    _instructionAttrs = new Hashtable();
-    _variableScope = new Hashtable();
+    _qNames = new HashMap<>(512);
+    _namespaces = new HashMap<>();
+    _instructionClasses = new HashMap<>();
+    _instructionAttrs = new HashMap<>();
+    _variableScope = new HashMap<>();
     _template = null;
-    _errors = new Vector();
-    _warnings = new Vector();
+    _errors = new ArrayList<>();
+    _warnings = new ArrayList<>();
     _symbolTable = new SymbolTable();
     _xpathParser = new XPathParser(this);
     _currentStylesheet = null;
@@ -127,7 +129,6 @@ public class Parser implements Constants, ContentHandler {
   public void setOutput(Output output) {
     if (_output != null) {
       if (_output.getImportPrecedence() <= output.getImportPrecedence()) {
-        final String cdata = _output.getCdata();
         output.mergeOutput(_output);
         _output.disable();
         _output = output;
@@ -156,44 +157,31 @@ public class Parser implements Constants, ContentHandler {
   }
 
   private void addVariableOrParam(VariableBase var) {
-    final Object existing = _variableScope.get(var.getName());
-    if (existing != null) {
-      if (existing instanceof Stack) {
-        final Stack stack = (Stack) existing;
-        stack.push(var);
-      } else if (existing instanceof VariableBase) {
-        final Stack stack = new Stack();
-        stack.push(existing);
-        stack.push(var);
-        _variableScope.put(var.getName(), stack);
-      }
+    Deque<VariableBase> stack = _variableScope.get(var.getName());
+    if (stack == null) {
+      stack = new ArrayDeque<>();
+      stack.push(var);
+      _variableScope.put(var.getName(), stack);
     } else {
-      _variableScope.put(var.getName(), var);
+      stack.push(var);
     }
   }
 
   public void removeVariable(QName name) {
-    final Object existing = _variableScope.get(name);
-    if (existing instanceof Stack) {
-      final Stack stack = (Stack) existing;
+    final Deque<VariableBase> stack = _variableScope.get(name);
+    if (stack != null) {
       if (!stack.isEmpty()) {
         stack.pop();
       }
       if (!stack.isEmpty())
         return;
+      _variableScope.remove(name);
     }
-    _variableScope.remove(name);
   }
 
   public VariableBase lookupVariable(QName name) {
-    final Object existing = _variableScope.get(name);
-    if (existing instanceof VariableBase)
-      return (VariableBase) existing;
-    else if (existing instanceof Stack) {
-      final Stack stack = (Stack) existing;
-      return (VariableBase) stack.peek();
-    }
-    return null;
+    final Deque<VariableBase> existing = _variableScope.get(name);
+    return existing == null ? null : existing.peek();
   }
 
   public void setXSLTC(XSLTC xsltc) {
@@ -287,23 +275,23 @@ public class Parser implements Constants, ContentHandler {
 
   public QName getQName(String namespace, String prefix, String localname) {
     if (namespace == null || namespace.equals(EMPTYSTRING)) {
-      QName name = (QName) _qNames.get(localname);
+      QName name = _qNames.get(localname);
       if (name == null) {
         name = new QName(null, prefix, localname);
         _qNames.put(localname, name);
       }
       return name;
     } else {
-      Dictionary space = (Dictionary) _namespaces.get(namespace);
+      Map<String, QName> space = _namespaces.get(namespace);
       final String lexicalQName = prefix == null || prefix.length() == 0 ? localname : prefix + ':' + localname;
 
       if (space == null) {
         final QName name = new QName(namespace, prefix, localname);
-        _namespaces.put(namespace, space = new Hashtable());
+        _namespaces.put(namespace, space = new HashMap<>());
         space.put(lexicalQName, name);
         return name;
       } else {
-        QName name = (QName) space.get(lexicalQName);
+        QName name = space.get(lexicalQName);
 
         if (name == null) {
           name = new QName(namespace, prefix, localname);
@@ -372,7 +360,7 @@ public class Parser implements Constants, ContentHandler {
       if (stylesheet != null) {
         stylesheet.parseContents(this);
         final int precedence = stylesheet.getImportPrecedence();
-        final Enumeration elements = stylesheet.elements();
+        final Enumeration<SyntaxTreeNode> elements = stylesheet.elements();
         while (elements.hasMoreElements()) {
           final Object child = elements.nextElement();
           if (child instanceof Text) {
@@ -546,11 +534,11 @@ public class Parser implements Constants, ContentHandler {
       if (id.equals(href))
         return root;
     }
-    final Vector children = root.getContents();
+    final List<SyntaxTreeNode> children = root.getContents();
     if (children != null) {
       final int count = children.size();
       for (int i = 0; i < count; i++) {
-        final SyntaxTreeNode child = (SyntaxTreeNode) children.elementAt(i);
+        final SyntaxTreeNode child = children.get(i);
         final SyntaxTreeNode node = findStylesheet(child, href);
         if (node != null)
           return node;
@@ -625,8 +613,8 @@ public class Parser implements Constants, ContentHandler {
   }
 
   /**
-   * Initialize the _instructionClasses Hashtable, which maps XSL element names
-   * to Java classes in this package.
+   * Initialize the _instructionClasses Map, which maps XSL element names to
+   * Java classes in this package.
    */
   private void initStdClasses() {
     initStdClass("template", "Template");
@@ -875,11 +863,11 @@ public class Parser implements Constants, ContentHandler {
   public SyntaxTreeNode makeInstance(String uri, String prefix, String local, Attributes attributes) {
     SyntaxTreeNode node = null;
     final QName qname = getQName(uri, prefix, local);
-    final String className = (String) _instructionClasses.get(qname);
+    final String className = _instructionClasses.get(qname);
 
     if (className != null) {
       try {
-        final Class clazz = ObjectFactory.findProviderClass(className, ObjectFactory.findClassLoader(), true);
+        final Class<?> clazz = ObjectFactory.findProviderClass(className, ObjectFactory.findClassLoader(), true);
         node = (SyntaxTreeNode) clazz.newInstance();
         node.setQName(qname);
         node.setParser(this);
@@ -920,7 +908,7 @@ public class Parser implements Constants, ContentHandler {
         else {
           final Stylesheet sheet = _xsltc.getStylesheet();
           if (sheet != null && sheet.isExtension(uri)) {
-            if (sheet != (SyntaxTreeNode) _parentStack.peek()) {
+            if (sheet != _parentStack.peek()) {
               node = new UnsupportedElement(uri, prefix, local, true);
               final UnsupportedElement elem = (UnsupportedElement) node;
               final ErrorMsg msg = new ErrorMsg(ErrorMsg.UNSUPPORTED_EXT_ERR, getLineNumber(), prefix + ":" + local);
@@ -948,7 +936,7 @@ public class Parser implements Constants, ContentHandler {
   private void checkForSuperfluousAttributes(SyntaxTreeNode node, Attributes attrs) {
     final QName qname = node.getQName();
     final boolean isStylesheet = node instanceof Stylesheet;
-    final String[] legal = (String[]) _instructionAttrs.get(qname);
+    final String[] legal = _instructionAttrs.get(qname);
     if (versionIsOne && legal != null) {
       int j;
       final int n = attrs.getLength();
@@ -1096,7 +1084,7 @@ public class Parser implements Constants, ContentHandler {
     if (size > 0) {
       System.err.println(new ErrorMsg(ErrorMsg.COMPILER_ERROR_KEY));
       for (int i = 0; i < size; i++) {
-        System.err.println("  " + _errors.elementAt(i));
+        System.err.println("  " + _errors.get(i));
       }
     }
   }
@@ -1109,7 +1097,7 @@ public class Parser implements Constants, ContentHandler {
     if (size > 0) {
       System.err.println(new ErrorMsg(ErrorMsg.COMPILER_WARNING_KEY));
       for (int i = 0; i < size; i++) {
-        System.err.println("  " + _warnings.elementAt(i));
+        System.err.println("  " + _warnings.get(i));
       }
     }
   }
@@ -1122,43 +1110,43 @@ public class Parser implements Constants, ContentHandler {
       case Constants.INTERNAL:
         // Unexpected internal errors, such as null-ptr exceptions, etc.
         // Immediately terminates compilation, no translet produced
-        _errors.addElement(error);
+        _errors.add(error);
         break;
       case Constants.UNSUPPORTED:
         // XSLT elements that are not implemented and unsupported ext.
         // Immediately terminates compilation, no translet produced
-        _errors.addElement(error);
+        _errors.add(error);
         break;
       case Constants.FATAL:
         // Fatal error in the stylesheet input (parsing or content)
         // Immediately terminates compilation, no translet produced
-        _errors.addElement(error);
+        _errors.add(error);
         break;
       case Constants.ERROR:
         // Other error in the stylesheet input (parsing or content)
         // Does not terminate compilation, no translet produced
-        _errors.addElement(error);
+        _errors.add(error);
         break;
       case Constants.WARNING:
         // Other error in the stylesheet input (content errors only)
         // Does not terminate compilation, a translet is produced
-        _warnings.addElement(error);
+        _warnings.add(error);
         break;
     }
   }
 
-  public Vector getErrors() {
+  public List<ErrorMsg> getErrors() {
     return _errors;
   }
 
-  public Vector getWarnings() {
+  public List<ErrorMsg> getWarnings() {
     return _warnings;
   }
 
   /************************ SAX2 ContentHandler INTERFACE *****************/
 
-  private Stack _parentStack = null;
-  private Hashtable _prefixMapping = null;
+  private Deque<SyntaxTreeNode> _parentStack = null;
+  private Map<String, String> _prefixMapping = null;
 
   /**
    * SAX2: Receive notification of the beginning of a document.
@@ -1168,7 +1156,7 @@ public class Parser implements Constants, ContentHandler {
     _root = null;
     _target = null;
     _prefixMapping = null;
-    _parentStack = new Stack();
+    _parentStack = new ArrayDeque<>();
   }
 
   /**
@@ -1185,7 +1173,7 @@ public class Parser implements Constants, ContentHandler {
   @Override
   public void startPrefixMapping(String prefix, String uri) {
     if (_prefixMapping == null) {
-      _prefixMapping = new Hashtable();
+      _prefixMapping = new HashMap<>();
     }
     _prefixMapping.put(prefix, uri);
   }
@@ -1224,7 +1212,7 @@ public class Parser implements Constants, ContentHandler {
       }
       _root = element;
     } else {
-      final SyntaxTreeNode parent = (SyntaxTreeNode) _parentStack.peek();
+      final SyntaxTreeNode parent = _parentStack.peek();
       parent.addElement(element);
       element.setParent(parent);
     }
@@ -1257,7 +1245,7 @@ public class Parser implements Constants, ContentHandler {
   @Override
   public void characters(char[] ch, int start, int length) {
     final String string = new String(ch, start, length);
-    final SyntaxTreeNode parent = (SyntaxTreeNode) _parentStack.peek();
+    final SyntaxTreeNode parent = _parentStack.peek();
 
     if (string.length() == 0)
       return;

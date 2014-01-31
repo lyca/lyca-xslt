@@ -88,7 +88,7 @@ final class ProcessingInstructionPattern extends StepPattern {
       // Type check all the predicates (e -> position() = e)
       final int n = _predicates.size();
       for (int i = 0; i < n; i++) {
-        final Predicate pred = (Predicate) _predicates.elementAt(i);
+        final Predicate pred = _predicates.get(i);
         pred.typeCheck(stable);
       }
     }
@@ -136,7 +136,7 @@ final class ProcessingInstructionPattern extends StepPattern {
     if (hasPredicates()) {
       final int n = _predicates.size();
       for (int i = 0; i < n; i++) {
-        final Predicate pred = (Predicate) _predicates.elementAt(i);
+        final Predicate pred = _predicates.get(i);
         final Expression exp = pred.getExpr();
         exp.translateDesynthesized(classGen, methodGen);
         _trueList.append(exp._trueList);

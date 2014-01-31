@@ -21,7 +21,10 @@
 
 package de.lyca.xalan.xsltc.runtime;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Morten Jorgensen
@@ -31,21 +34,17 @@ public class AttributeList implements org.xml.sax.Attributes {
   private final static String EMPTYSTRING = "";
   private final static String CDATASTRING = "CDATA";
 
-  private Hashtable _attributes;
-  private Vector _names;
-  private Vector _qnames;
-  private Vector _values;
-  private Vector _uris;
+  private Map<String, Integer> _attributes;
+  private List<String> _names;
+  private List<String> _qnames;
+  private List<String> _values;
+  private List<String> _uris;
   private int _length;
 
   /**
    * AttributeList constructor
    */
   public AttributeList() {
-    /*
-     * _attributes = new Hashtable(); _names = new Vector(); _values = new
-     * Vector(); _qnames = new Vector(); _uris = new Vector();
-     */
     _length = 0;
   }
 
@@ -64,15 +63,15 @@ public class AttributeList implements org.xml.sax.Attributes {
 
   /**
    * Allocate memory for the AttributeList %OPT% Use on-demand allocation for
-   * the internal vectors. The memory is only allocated when there is an
+   * the internal lists. The memory is only allocated when there is an
    * attribute. This reduces the cost of creating many small RTFs.
    */
   private void alloc() {
-    _attributes = new Hashtable();
-    _names = new Vector();
-    _values = new Vector();
-    _qnames = new Vector();
-    _uris = new Vector();
+    _attributes = new HashMap<String, Integer>();
+    _names = new ArrayList<String>();
+    _values = new ArrayList<String>();
+    _qnames = new ArrayList<String>();
+    _uris = new ArrayList<String>();
   }
 
   /**
@@ -89,7 +88,7 @@ public class AttributeList implements org.xml.sax.Attributes {
   @Override
   public String getURI(int index) {
     if (index < _length)
-      return (String) _uris.elementAt(index);
+      return _uris.get(index);
     else
       return null;
   }
@@ -100,7 +99,7 @@ public class AttributeList implements org.xml.sax.Attributes {
   @Override
   public String getLocalName(int index) {
     if (index < _length)
-      return (String) _names.elementAt(index);
+      return _names.get(index);
     else
       return null;
   }
@@ -111,7 +110,7 @@ public class AttributeList implements org.xml.sax.Attributes {
   @Override
   public String getQName(int pos) {
     if (pos < _length)
-      return (String) _qnames.elementAt(pos);
+      return _qnames.get(pos);
     else
       return null;
   }
@@ -162,7 +161,7 @@ public class AttributeList implements org.xml.sax.Attributes {
   @Override
   public String getValue(int pos) {
     if (pos < _length)
-      return (String) _values.elementAt(pos);
+      return _values.get(pos);
     else
       return null;
   }
@@ -173,7 +172,7 @@ public class AttributeList implements org.xml.sax.Attributes {
   @Override
   public String getValue(String qname) {
     if (_attributes != null) {
-      final Integer obj = (Integer) _attributes.get(qname);
+      final Integer obj = _attributes.get(qname);
       if (obj == null)
         return null;
       return getValue(obj.intValue());
@@ -193,24 +192,24 @@ public class AttributeList implements org.xml.sax.Attributes {
    * Adds an attribute to the list
    */
   public void add(String qname, String value) {
-    // Initialize the internal vectors at the first usage.
+    // Initialize the internal lists at the first usage.
     if (_attributes == null) {
       alloc();
     }
 
-    // Stuff the QName into the names vector & hashtable
-    Integer obj = (Integer) _attributes.get(qname);
+    // Stuff the QName into the names list & map
+    Integer obj = _attributes.get(qname);
     if (obj == null) {
       _attributes.put(qname, obj = new Integer(_length++));
-      _qnames.addElement(qname);
-      _values.addElement(value);
+      _qnames.add(qname);
+      _values.add(value);
       final int col = qname.lastIndexOf(':');
       if (col > -1) {
-        _uris.addElement(qname.substring(0, col));
-        _names.addElement(qname.substring(col + 1));
+        _uris.add(qname.substring(0, col));
+        _names.add(qname.substring(col + 1));
       } else {
-        _uris.addElement(EMPTYSTRING);
-        _names.addElement(qname);
+        _uris.add(EMPTYSTRING);
+        _names.add(qname);
       }
     } else {
       final int index = obj.intValue();
@@ -225,10 +224,10 @@ public class AttributeList implements org.xml.sax.Attributes {
     _length = 0;
     if (_attributes != null) {
       _attributes.clear();
-      _names.removeAllElements();
-      _values.removeAllElements();
-      _qnames.removeAllElements();
-      _uris.removeAllElements();
+      _names.clear();
+      _values.clear();
+      _qnames.clear();
+      _uris.clear();
     }
   }
 

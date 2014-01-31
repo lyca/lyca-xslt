@@ -196,7 +196,7 @@ public final class ReferenceType extends Type {
    * Translates a reference into the Java type denoted by <code>clazz</code>.
    */
   @Override
-  public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, Class clazz) {
+  public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, Class<?> clazz) {
     final ConstantPoolGen cpg = classGen.getConstantPool();
     final InstructionList il = methodGen.getInstructionList();
 
@@ -264,7 +264,7 @@ public final class ReferenceType extends Type {
    * is from java.lang.Object.
    */
   @Override
-  public void translateFrom(ClassGenerator classGen, MethodGenerator methodGen, Class clazz) {
+  public void translateFrom(ClassGenerator classGen, MethodGenerator methodGen, Class<?> clazz) {
     if (clazz.getName().equals("java.lang.Object")) {
       methodGen.getInstructionList().append(NOP);
     } else {

@@ -181,9 +181,8 @@ final class DecimalFormatting extends TopLevelElement {
 
   /**
    * Creates the default, nameless, DecimalFormat object in AbstractTranslet's
-   * format_symbols hashtable. This should be called for every stylesheet, and
-   * the entry may be overridden by later nameless xsl:decimal-format
-   * instructions.
+   * format_symbols Map. This should be called for every stylesheet, and the
+   * entry may be overridden by later nameless xsl:decimal-format instructions.
    */
   public static void translateDefaultDFS(ClassGenerator classGen, MethodGenerator methodGen) {
 
