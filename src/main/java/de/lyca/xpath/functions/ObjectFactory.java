@@ -72,7 +72,7 @@ final class ObjectFactory {
   private static long fLastModified = -1;
 
   //
-  // Public static methods
+  // static methods
   //
 
   /**
@@ -96,7 +96,7 @@ final class ObjectFactory {
    */
   static Object createObject(String factoryId, String fallbackClassName) throws ConfigurationError {
     return createObject(factoryId, null, fallbackClassName);
-  } // createObject(String,String):Object
+  }
 
   /**
    * Finds the implementation Class object in the specified order. The specified
@@ -124,7 +124,7 @@ final class ObjectFactory {
    */
   static Object createObject(String factoryId, String propertiesFilename, String fallbackClassName)
           throws ConfigurationError {
-    final Class factoryClass = lookUpFactoryClass(factoryId, propertiesFilename, fallbackClassName);
+    final Class<?> factoryClass = lookUpFactoryClass(factoryId, propertiesFilename, fallbackClassName);
 
     if (factoryClass == null)
       throw new ConfigurationError("Provider for " + factoryId + " cannot be found", null);
@@ -136,7 +136,7 @@ final class ObjectFactory {
     } catch (final Exception x) {
       throw new ConfigurationError("Provider for factory " + factoryId + " could not be instantiated: " + x, x);
     }
-  } // createObject(String,String,String):Object
+  }
 
   /**
    * Finds the implementation Class object in the specified order. The specified
@@ -162,9 +162,9 @@ final class ObjectFactory {
    * 
    * @exception ObjectFactory.ConfigurationError
    */
-  static Class lookUpFactoryClass(String factoryId) throws ConfigurationError {
+  static Class<?> lookUpFactoryClass(String factoryId) throws ConfigurationError {
     return lookUpFactoryClass(factoryId, null, null);
-  } // lookUpFactoryClass(String):Class
+  }
 
   /**
    * Finds the implementation Class object in the specified order. The specified
@@ -190,7 +190,7 @@ final class ObjectFactory {
    * 
    * @exception ObjectFactory.ConfigurationError
    */
-  static Class lookUpFactoryClass(String factoryId, String propertiesFilename, String fallbackClassName)
+  static Class<?> lookUpFactoryClass(String factoryId, String propertiesFilename, String fallbackClassName)
           throws ConfigurationError {
     String factoryClassName = lookUpFactoryClassName(factoryId, propertiesFilename, fallbackClassName);
     final ClassLoader cl = findClassLoader();
@@ -201,7 +201,7 @@ final class ObjectFactory {
 
     // assert(className != null);
     try {
-      final Class providerClass = findProviderClass(factoryClassName, cl, true);
+      final Class<?> providerClass = findProviderClass(factoryClassName, cl, true);
       debugPrintln("created new instance of " + providerClass + " using ClassLoader: " + cl);
       return providerClass;
     } catch (final ClassNotFoundException x) {
@@ -422,7 +422,7 @@ final class ObjectFactory {
   static Object newInstance(String className, ClassLoader cl, boolean doFallback) throws ConfigurationError {
     // assert(className != null);
     try {
-      final Class providerClass = findProviderClass(className, cl, doFallback);
+      final Class<?> providerClass = findProviderClass(className, cl, doFallback);
       final Object instance = providerClass.newInstance();
       debugPrintln("created new instance of " + providerClass + " using ClassLoader: " + cl);
       return instance;
@@ -436,8 +436,8 @@ final class ObjectFactory {
   /**
    * Find a Class using the specified ClassLoader
    */
-  static Class findProviderClass(String className, ClassLoader cl, boolean doFallback) throws ClassNotFoundException,
-          ConfigurationError {
+  static Class<?> findProviderClass(String className, ClassLoader cl, boolean doFallback)
+          throws ClassNotFoundException, ConfigurationError {
     // throw security exception if the calling thread is not allowed to access
     // the
     // class. Restrict the access to the package classes as specified in
@@ -456,7 +456,7 @@ final class ObjectFactory {
       throw e;
     }
 
-    Class providerClass;
+    Class<?> providerClass;
     if (cl == null) {
       // XXX Use the bootstrap ClassLoader. There is no way to
       // load a class using the bootstrap ClassLoader that works
@@ -582,7 +582,7 @@ final class ObjectFactory {
    * A configuration error.
    */
   static class ConfigurationError extends Error {
-    static final long serialVersionUID = -5782303800588797207L;
+    static final long serialVersionUID = 8564305128443551853L;
     //
     // Data
     //
@@ -607,7 +607,7 @@ final class ObjectFactory {
     //
 
     /** Returns the exception associated to this error. */
-    Exception getException() {
+    public Exception getException() {
       return exception;
     } // getException():Exception
 
