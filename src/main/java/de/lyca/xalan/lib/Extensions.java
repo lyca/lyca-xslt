@@ -21,6 +21,7 @@
 package de.lyca.xalan.lib;
 
 import java.util.Hashtable;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -318,7 +319,7 @@ public class Extensions {
 
       // If reflection failed, fallback to our internal EnvironmentCheck
       EnvironmentCheck envChecker = new EnvironmentCheck();
-      final Hashtable h = envChecker.getEnvironmentHash();
+      final Map<String, Object> h = envChecker.getEnvironmentHash();
       resultNode = factoryDocument.createElement("checkEnvironmentExtension");
       envChecker.appendEnvironmentReport(resultNode, factoryDocument, h);
       envChecker = null;
@@ -342,10 +343,10 @@ public class Extensions {
   private static Node checkEnvironmentUsingWhich(ExpressionContext myContext, Document factoryDocument) {
     final String WHICH_CLASSNAME = "org.apache.env.Which";
     final String WHICH_METHODNAME = "which";
-    final Class WHICH_METHOD_ARGS[] = { java.util.Hashtable.class, java.lang.String.class, java.lang.String.class };
+    final Class<?>[] WHICH_METHOD_ARGS = { java.util.Hashtable.class, java.lang.String.class, java.lang.String.class };
     try {
       // Use reflection to try to find xml-commons utility 'Which'
-      final Class clazz = ObjectFactory.findProviderClass(WHICH_CLASSNAME, ObjectFactory.findClassLoader(), true);
+      final Class<?> clazz = ObjectFactory.findProviderClass(WHICH_CLASSNAME, ObjectFactory.findClassLoader(), true);
       if (null == clazz)
         return null;
 

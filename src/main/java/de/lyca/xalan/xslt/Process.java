@@ -24,9 +24,10 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import java.util.ResourceBundle;
-import java.util.Vector;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
@@ -64,6 +65,7 @@ import de.lyca.xalan.res.XSLTErrorResources;
 import de.lyca.xalan.trace.PrintTraceListener;
 import de.lyca.xalan.trace.TraceManager;
 import de.lyca.xalan.transformer.XalanProperties;
+import de.lyca.xml.res.XMLMessages;
 import de.lyca.xml.utils.DefaultErrorHandler;
 
 /**
@@ -172,7 +174,7 @@ public class Process {
      */
     final java.io.PrintWriter diagnosticsWriter = new PrintWriter(System.err, true);
     java.io.PrintWriter dumpWriter = diagnosticsWriter;
-    final ResourceBundle resbundle = XSLMessages
+    final ResourceBundle resbundle = XMLMessages
             .loadResourceBundle(de.lyca.xml.utils.res.XResourceBundle.ERROR_RESOURCES);
     String flavor = "s2s";
 
@@ -219,7 +221,7 @@ public class Process {
       PrintTraceListener tracer = null;
       String outputType = null;
       String media = null;
-      final Vector params = new Vector();
+      final List<String> params = new ArrayList<>();
       boolean quietConflictWarnings = false;
       URIResolver uriResolver = null;
       EntityResolver entityResolver = null;
@@ -327,11 +329,11 @@ public class Process {
           if (i + 2 < argv.length) {
             final String name = argv[++i];
 
-            params.addElement(name);
+            params.add(name);
 
             final String expression = argv[++i];
 
-            params.addElement(expression);
+            params.add(expression);
           } else {
             System.err.println(XSLMessages.createMessage(XSLTErrorResources.ER_MISSING_ARG_FOR_OPTION,
                     new Object[] { "-PARAM" })); // "Missing argument for);
@@ -698,7 +700,7 @@ public class Process {
           final int nParams = params.size();
 
           for (int i = 0; i < nParams; i += 2) {
-            transformer.setParameter((String) params.elementAt(i), (String) params.elementAt(i + 1));
+            transformer.setParameter(params.get(i), params.get(i + 1));
           }
 
           if (uriResolver != null) {

@@ -25,10 +25,11 @@ import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
-import java.util.Vector;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -172,7 +173,7 @@ public class EnvironmentCheck {
     }
 
     // Setup a hash to store various environment information in
-    final Hashtable hash = getEnvironmentHash();
+    final Map<String, Object> hash = getEnvironmentHash();
 
     // Check for ERROR keys in the hashtable, and print report
     final boolean environmentHasErrors = writeEnvironmentReport(hash);
@@ -221,9 +222,9 @@ public class EnvironmentCheck {
    * @return Hashtable full of useful environment info about Xalan and related
    *         system properties, etc.
    */
-  public Hashtable getEnvironmentHash() {
+  public Map<String, Object> getEnvironmentHash() {
     // Setup a hash to store various environment information in
-    final Hashtable hash = new Hashtable();
+    final Map<String, Object> hash = new HashMap<>();
 
     // Call various worker methods to fill in the hash
     // These are explicitly separate for maintenance and so
@@ -256,7 +257,7 @@ public class EnvironmentCheck {
    * @see #appendEnvironmentReport(Node, Document, Hashtable) for an equivalent
    *      that appends to a Node instead
    */
-  protected boolean writeEnvironmentReport(Hashtable h) {
+  protected boolean writeEnvironmentReport(Map<String, Object> h) {
 
     if (null == h) {
       logMsg("# ERROR: writeEnvironmentReport called with null Hashtable");
@@ -268,16 +269,13 @@ public class EnvironmentCheck {
     logMsg("#---- BEGIN writeEnvironmentReport($Revision$): Useful stuff found: ----");
 
     // Fake the Properties-like output
-    for (final Enumeration keys = h.keys(); keys.hasMoreElements();
-    /* no increment portion */
-    ) {
-      final Object key = keys.nextElement();
-      final String keyStr = (String) key;
+    for (final String key : h.keySet()) {
       try {
         // Special processing for classes found..
-        if (keyStr.startsWith(FOUNDCLASSES)) {
-          final Vector v = (Vector) h.get(keyStr);
-          errors |= logFoundJars(v, keyStr);
+        if (key.startsWith(FOUNDCLASSES)) {
+          @SuppressWarnings("unchecked")
+          final List<Map<String, String>> v = (List<Map<String, String>>) h.get(key);
+          errors |= logFoundJars(v, key);
         }
         // ..normal processing for all other entries
         else {
@@ -285,10 +283,10 @@ public class EnvironmentCheck {
           // since we now set that, but since we have to go
           // through the whole hash anyway, do it this way,
           // which is safer for maintenance
-          if (keyStr.startsWith(ERROR)) {
+          if (key.startsWith(ERROR)) {
             errors = true;
           }
-          logMsg(keyStr + "=" + h.get(keyStr));
+          logMsg(key + "=" + h.get(key));
         }
       } catch (final Exception e) {
         logMsg("Reading-" + key + "= threw: " + e.toString());
@@ -322,7 +320,10 @@ public class EnvironmentCheck {
   public static final String CLASS_NOTPRESENT = "not-present";
 
   /** Listing of common .jar files that include Xalan-related classes. */
-  public String[] jarNames = { "xalan.jar", "xalansamples.jar", "xalanj1compat.jar",
+  public String[] jarNames = {
+          "xalan.jar",
+          "xalansamples.jar",
+          "xalanj1compat.jar",
           "xalanservlet.jar",
           "serializer.jar", // Serializer (shared between Xalan & Xerces)
           "xerces.jar", // Xerces-J 1.x
@@ -337,14 +338,14 @@ public class EnvironmentCheck {
    * out to our PrintWriter.
    * 
    * @param v
-   *          Vector of Hashtables of .jar file info
+   *          List of Hashtables of .jar file info
    * @param desc
    *          description to print out in header
    * 
    * @return false if OK, true if any .jars were reported as having errors
    * @see #checkPathForJars(String, String[])
    */
-  protected boolean logFoundJars(Vector v, String desc) {
+  protected boolean logFoundJars(List<Map<String, String>> v, String desc) {
 
     if (null == v || v.size() < 1)
       return false;
@@ -354,18 +355,13 @@ public class EnvironmentCheck {
     logMsg("#---- BEGIN Listing XML-related jars in: " + desc + " ----");
 
     for (int i = 0; i < v.size(); i++) {
-      final Hashtable subhash = (Hashtable) v.elementAt(i);
-
-      for (final Enumeration keys = subhash.keys(); keys.hasMoreElements();
-      /* no increment portion */
-      ) {
-        final Object key = keys.nextElement();
-        final String keyStr = (String) key;
+      final Map<String, String> subhash = v.get(i);
+      for (final String key : subhash.keySet()) {
         try {
-          if (keyStr.startsWith(ERROR)) {
+          if (key.startsWith(ERROR)) {
             errors = true;
           }
-          logMsg(keyStr + "=" + subhash.get(keyStr));
+          logMsg(key + "=" + subhash.get(key));
 
         } catch (final Exception e) {
           errors = true;
@@ -397,7 +393,7 @@ public class EnvironmentCheck {
    * @see #writeEnvironmentReport(Hashtable) for an equivalent that writes to a
    *      PrintWriter instead
    */
-  public void appendEnvironmentReport(Node container, Document factory, Hashtable h) {
+  public void appendEnvironmentReport(Node container, Document factory, Map<String, Object> h) {
     if (null == container || null == factory)
       return;
 
@@ -419,17 +415,14 @@ public class EnvironmentCheck {
       final Element hashNode = factory.createElement("environment");
       envCheckNode.appendChild(hashNode);
 
-      for (final Enumeration keys = h.keys(); keys.hasMoreElements();
-      /* no increment portion */
-      ) {
-        final Object key = keys.nextElement();
-        final String keyStr = (String) key;
+      for (final String key : h.keySet()) {
         try {
           // Special processing for classes found..
-          if (keyStr.startsWith(FOUNDCLASSES)) {
-            final Vector v = (Vector) h.get(keyStr);
-            // errors |= logFoundJars(v, keyStr);
-            errors |= appendFoundJars(hashNode, factory, v, keyStr);
+          if (key.startsWith(FOUNDCLASSES)) {
+            @SuppressWarnings("unchecked")
+            final List<Map<String, String>> v = (List<Map<String, String>>) h.get(key);
+            // errors |= logFoundJars(v, key);
+            errors |= appendFoundJars(hashNode, factory, v, key);
           }
           // ..normal processing for all other entries
           else {
@@ -437,18 +430,18 @@ public class EnvironmentCheck {
             // since we now set that, but since we have to go
             // through the whole hash anyway, do it this way,
             // which is safer for maintenance
-            if (keyStr.startsWith(ERROR)) {
+            if (key.startsWith(ERROR)) {
               errors = true;
             }
             final Element node = factory.createElement("item");
-            node.setAttribute("key", keyStr);
-            node.appendChild(factory.createTextNode((String) h.get(keyStr)));
+            node.setAttribute("key", key);
+            node.appendChild(factory.createTextNode((String) h.get(key)));
             hashNode.appendChild(node);
           }
         } catch (final Exception e) {
           errors = true;
           final Element node = factory.createElement("item");
-          node.setAttribute("key", keyStr);
+          node.setAttribute("key", key);
           node.appendChild(factory.createTextNode(ERROR + " Reading " + key + " threw: " + e.toString()));
           hashNode.appendChild(node);
         }
@@ -474,14 +467,14 @@ public class EnvironmentCheck {
    * @param factory
    *          Document providing createElement, etc. services
    * @param v
-   *          Vector of Hashtables of .jar file info
+   *          List of Hashtables of .jar file info
    * @param desc
    *          description to print out in header
    * 
    * @return false if OK, true if any .jars were reported as having errors
    * @see #checkPathForJars(String, String[])
    */
-  protected boolean appendFoundJars(Node container, Document factory, Vector v, String desc) {
+  protected boolean appendFoundJars(Node container, Document factory, List<Map<String, String>> v, String desc) {
 
     if (null == v || v.size() < 1)
       return false;
@@ -489,21 +482,16 @@ public class EnvironmentCheck {
     boolean errors = false;
 
     for (int i = 0; i < v.size(); i++) {
-      final Hashtable subhash = (Hashtable) v.elementAt(i);
-
-      for (final Enumeration keys = subhash.keys(); keys.hasMoreElements();
-      /* no increment portion */
-      ) {
-        final Object key = keys.nextElement();
+      final Map<String, String> subhash = v.get(i);
+      for (final String key : subhash.keySet()) {
         try {
-          final String keyStr = (String) key;
-          if (keyStr.startsWith(ERROR)) {
+          if (key.startsWith(ERROR)) {
             errors = true;
           }
           final Element node = factory.createElement("foundJar");
-          node.setAttribute("name", keyStr.substring(0, keyStr.indexOf("-")));
-          node.setAttribute("desc", keyStr.substring(keyStr.indexOf("-") + 1));
-          node.appendChild(factory.createTextNode((String) subhash.get(keyStr)));
+          node.setAttribute("name", key.substring(0, key.indexOf("-")));
+          node.setAttribute("desc", key.substring(key.indexOf("-") + 1));
+          node.appendChild(factory.createTextNode(subhash.get(key)));
           container.appendChild(node);
         } catch (final Exception e) {
           errors = true;
@@ -530,10 +518,10 @@ public class EnvironmentCheck {
    * @see #jarNames
    * @see #checkPathForJars(String, String[])
    */
-  protected void checkSystemProperties(Hashtable h) {
+  protected void checkSystemProperties(Map<String, Object> h) {
 
     if (null == h) {
-      h = new Hashtable();
+      h = new HashMap<>();
     }
 
     // Grab java version for later use
@@ -556,7 +544,7 @@ public class EnvironmentCheck {
 
       h.put("java.class.path", cp);
 
-      Vector classpathJars = checkPathForJars(cp, jarNames);
+      List<Map<String, String>> classpathJars = checkPathForJars(cp, jarNames);
 
       if (null != classpathJars) {
         h.put(FOUNDCLASSES + "java.class.path", classpathJars);
@@ -612,18 +600,18 @@ public class EnvironmentCheck {
    * @param jars
    *          array of .jar base filenames to look for
    * 
-   * @return Vector of Hashtables filled with info about found .jars
+   * @return List of Hashtables filled with info about found .jars
    * @see #jarNames
-   * @see #logFoundJars(Vector, String)
-   * @see #appendFoundJars(Node, Document, Vector, String )
+   * @see #logFoundJars(List, String)
+   * @see #appendFoundJars(Node, Document, List, String )
    * @see #getApparentVersion(String, long)
    */
-  protected Vector checkPathForJars(String cp, String[] jars) {
+  protected List<Map<String, String>> checkPathForJars(String cp, String[] jars) {
 
     if (null == cp || null == jars || 0 == cp.length() || 0 == jars.length)
       return null;
 
-    final Vector v = new Vector();
+    final List<Map<String, String>> v = new ArrayList<>();
     final StringTokenizer st = new StringTokenizer(cp, File.pathSeparator);
 
     while (st.hasMoreTokens()) {
@@ -640,7 +628,7 @@ public class EnvironmentCheck {
             // If any requested jarName exists, report on
             // the details of that .jar file
             try {
-              final Hashtable h = new Hashtable(2);
+              final Map<String, String> h = new HashMap<>(2);
               // Note "-" char is looked for in appendFoundJars
               h.put(jars[i] + "-path", f.getAbsolutePath());
 
@@ -652,17 +640,17 @@ public class EnvironmentCheck {
               if (!"xalan.jar".equalsIgnoreCase(jars[i])) {
                 h.put(jars[i] + "-apparent.version", getApparentVersion(jars[i], f.length()));
               }
-              v.addElement(h);
+              v.add(h);
             } catch (final Exception e) {
 
               /* no-op, don't add it */
             }
           } else {
-            final Hashtable h = new Hashtable(2);
+            final Map<String, String> h = new HashMap<>(2);
             // Note "-" char is looked for in appendFoundJars
             h.put(jars[i] + "-path", WARNING + " Classpath entry: " + filename + " does not exist");
             h.put(jars[i] + "-apparent.version", CLASS_NOTPRESENT);
-            v.addElement(h);
+            v.add(h);
           }
         }
       }
@@ -693,7 +681,7 @@ public class EnvironmentCheck {
     // If we found a matching size and it's for our
     // jar, then return it's description
     // Lookup in static jarVersions Hashtable
-    final String foundSize = (String) jarVersions.get(new Long(jarSize));
+    final String foundSize = jarVersions.get(new Long(jarSize));
 
     if (null != foundSize && foundSize.startsWith(jarName))
       return foundSize;
@@ -720,14 +708,14 @@ public class EnvironmentCheck {
    * @param h
    *          Hashtable to put information in
    */
-  protected void checkJAXPVersion(Hashtable h) {
+  protected void checkJAXPVersion(Map<String, Object> h) {
 
     if (null == h) {
-      h = new Hashtable();
+      h = new HashMap<>();
     }
 
-    final Class noArgs[] = new Class[0];
-    Class clazz = null;
+    final Class<?> noArgs[] = new Class[0];
+    Class<?> clazz = null;
 
     try {
       final String JAXP1_CLASS = "javax.xml.parsers.DocumentBuilder";
@@ -735,7 +723,7 @@ public class EnvironmentCheck {
 
       clazz = ObjectFactory.findProviderClass(JAXP1_CLASS, ObjectFactory.findClassLoader(), true);
 
-      final Method method = clazz.getMethod(JAXP11_METHOD, noArgs);
+      clazz.getMethod(JAXP11_METHOD, noArgs);
 
       // If we succeeded, we at least have JAXP 1.1 available
       h.put(VERSION + "JAXP", "1.1 or higher");
@@ -764,19 +752,20 @@ public class EnvironmentCheck {
    * @param h
    *          Hashtable to put information in
    */
-  protected void checkProcessorVersion(Hashtable h) {
+  protected void checkProcessorVersion(Map<String, Object> h) {
 
     if (null == h) {
-      h = new Hashtable();
+      h = new HashMap<>();
     }
 
     try {
       final String XALAN1_VERSION_CLASS = "de.lyca.xalan.xslt.XSLProcessorVersion";
 
-      final Class clazz = ObjectFactory.findProviderClass(XALAN1_VERSION_CLASS, ObjectFactory.findClassLoader(), true);
+      final Class<?> clazz = ObjectFactory.findProviderClass(XALAN1_VERSION_CLASS, ObjectFactory.findClassLoader(),
+              true);
 
       // Found Xalan-J 1.x, grab it's version fields
-      final StringBuffer buf = new StringBuffer();
+      final StringBuilder buf = new StringBuilder();
       Field f = clazz.getField("PRODUCT");
 
       buf.append(f.get(null));
@@ -801,10 +790,11 @@ public class EnvironmentCheck {
       // is being replaced by class below
       final String XALAN2_VERSION_CLASS = "de.lyca.xalan.processor.XSLProcessorVersion";
 
-      final Class clazz = ObjectFactory.findProviderClass(XALAN2_VERSION_CLASS, ObjectFactory.findClassLoader(), true);
+      final Class<?> clazz = ObjectFactory.findProviderClass(XALAN2_VERSION_CLASS, ObjectFactory.findClassLoader(),
+              true);
 
       // Found Xalan-J 2.x, grab it's version fields
-      final StringBuffer buf = new StringBuffer();
+      final StringBuilder buf = new StringBuilder();
       final Field f = clazz.getField("S_VERSION");
       buf.append(f.get(null));
 
@@ -816,10 +806,10 @@ public class EnvironmentCheck {
       // NOTE: This is the new Xalan 2.2+ version class
       final String XALAN2_2_VERSION_CLASS = "de.lyca.xalan.Version";
       final String XALAN2_2_VERSION_METHOD = "getVersion";
-      final Class noArgs[] = new Class[0];
+      final Class<?> noArgs[] = new Class[0];
 
-      final Class clazz = ObjectFactory
-              .findProviderClass(XALAN2_2_VERSION_CLASS, ObjectFactory.findClassLoader(), true);
+      final Class<?> clazz = ObjectFactory.findProviderClass(XALAN2_2_VERSION_CLASS, ObjectFactory.findClassLoader(),
+              true);
 
       final Method method = clazz.getMethod(XALAN2_2_VERSION_METHOD, noArgs);
       final Object returnValue = method.invoke(null, new Object[0]);
@@ -840,16 +830,17 @@ public class EnvironmentCheck {
    * @param h
    *          Hashtable to put information in
    */
-  protected void checkParserVersion(Hashtable h) {
+  protected void checkParserVersion(Map<String, Object> h) {
 
     if (null == h) {
-      h = new Hashtable();
+      h = new HashMap<>();
     }
 
     try {
       final String XERCES1_VERSION_CLASS = "org.apache.xerces.framework.Version";
 
-      final Class clazz = ObjectFactory.findProviderClass(XERCES1_VERSION_CLASS, ObjectFactory.findClassLoader(), true);
+      final Class<?> clazz = ObjectFactory.findProviderClass(XERCES1_VERSION_CLASS, ObjectFactory.findClassLoader(),
+              true);
 
       // Found Xerces-J 1.x, grab it's version fields
       final Field f = clazz.getField("fVersion");
@@ -864,7 +855,8 @@ public class EnvironmentCheck {
     try {
       final String XERCES2_VERSION_CLASS = "org.apache.xerces.impl.Version";
 
-      final Class clazz = ObjectFactory.findProviderClass(XERCES2_VERSION_CLASS, ObjectFactory.findClassLoader(), true);
+      final Class<?> clazz = ObjectFactory.findProviderClass(XERCES2_VERSION_CLASS, ObjectFactory.findClassLoader(),
+              true);
 
       // Found Xerces-J 2.x, grab it's version fields
       final Field f = clazz.getField("fVersion");
@@ -878,7 +870,7 @@ public class EnvironmentCheck {
     try {
       final String CRIMSON_CLASS = "org.apache.crimson.parser.Parser2";
 
-      final Class clazz = ObjectFactory.findProviderClass(CRIMSON_CLASS, ObjectFactory.findClassLoader(), true);
+      ObjectFactory.findProviderClass(CRIMSON_CLASS, ObjectFactory.findClassLoader(), true);
 
       // @todo determine specific crimson version
       h.put(VERSION + "crimson", CLASS_PRESENT);
@@ -893,18 +885,18 @@ public class EnvironmentCheck {
    * @param h
    *          Hashtable to put information in
    */
-  protected void checkAntVersion(Hashtable h) {
+  protected void checkAntVersion(Map<String, Object> h) {
 
     if (null == h) {
-      h = new Hashtable();
+      h = new HashMap<>();
     }
 
     try {
       final String ANT_VERSION_CLASS = "org.apache.tools.ant.Main";
       final String ANT_VERSION_METHOD = "getAntVersion"; // noArgs
-      final Class noArgs[] = new Class[0];
+      final Class<?> noArgs[] = new Class[0];
 
-      final Class clazz = ObjectFactory.findProviderClass(ANT_VERSION_CLASS, ObjectFactory.findClassLoader(), true);
+      final Class<?> clazz = ObjectFactory.findProviderClass(ANT_VERSION_CLASS, ObjectFactory.findClassLoader(), true);
 
       final Method method = clazz.getMethod(ANT_VERSION_METHOD, noArgs);
       final Object returnValue = method.invoke(null, new Object[0]);
@@ -924,10 +916,10 @@ public class EnvironmentCheck {
    * @param h
    *          Hashtable to put information in
    */
-  protected void checkDOMVersion(Hashtable h) {
+  protected void checkDOMVersion(Map<String, Object> h) {
 
     if (null == h) {
-      h = new Hashtable();
+      h = new HashMap<>();
     }
 
     final String DOM_LEVEL2_CLASS = "org.w3c.dom.Document";
@@ -936,12 +928,12 @@ public class EnvironmentCheck {
     final String DOM_LEVEL2WD_METHOD = "supported"; // String, String
     final String DOM_LEVEL2FD_CLASS = "org.w3c.dom.Node";
     final String DOM_LEVEL2FD_METHOD = "isSupported"; // String, String
-    final Class twoStringArgs[] = { java.lang.String.class, java.lang.String.class };
+    final Class<?>[] twoStringArgs = { java.lang.String.class, java.lang.String.class };
 
     try {
-      Class clazz = ObjectFactory.findProviderClass(DOM_LEVEL2_CLASS, ObjectFactory.findClassLoader(), true);
+      Class<?> clazz = ObjectFactory.findProviderClass(DOM_LEVEL2_CLASS, ObjectFactory.findClassLoader(), true);
 
-      Method method = clazz.getMethod(DOM_LEVEL2_METHOD, twoStringArgs);
+      clazz.getMethod(DOM_LEVEL2_METHOD, twoStringArgs);
 
       // If we succeeded, we have loaded interfaces from a
       // level 2 DOM somewhere
@@ -952,7 +944,7 @@ public class EnvironmentCheck {
         // commonly found, but won't work anymore
         clazz = ObjectFactory.findProviderClass(DOM_LEVEL2WD_CLASS, ObjectFactory.findClassLoader(), true);
 
-        method = clazz.getMethod(DOM_LEVEL2WD_METHOD, twoStringArgs);
+        clazz.getMethod(DOM_LEVEL2WD_METHOD, twoStringArgs);
 
         h.put(ERROR + VERSION + "DOM.draftlevel", "2.0wd");
         h.put(ERROR, ERROR_FOUND);
@@ -961,7 +953,7 @@ public class EnvironmentCheck {
           // Check for the final draft version as well
           clazz = ObjectFactory.findProviderClass(DOM_LEVEL2FD_CLASS, ObjectFactory.findClassLoader(), true);
 
-          method = clazz.getMethod(DOM_LEVEL2FD_METHOD, twoStringArgs);
+          clazz.getMethod(DOM_LEVEL2FD_METHOD, twoStringArgs);
 
           h.put(VERSION + "DOM.draftlevel", "2.0fd");
         } catch (final Exception e3) {
@@ -988,10 +980,10 @@ public class EnvironmentCheck {
    * @param h
    *          Hashtable to put information in
    */
-  protected void checkSAXVersion(Hashtable h) {
+  protected void checkSAXVersion(Map<String, Object> h) {
 
     if (null == h) {
-      h = new Hashtable();
+      h = new HashMap<>();
     }
 
     final String SAX_VERSION1_CLASS = "org.xml.sax.Parser";
@@ -1000,17 +992,17 @@ public class EnvironmentCheck {
     final String SAX_VERSION2_METHOD = "parse"; // String
     final String SAX_VERSION2BETA_CLASSNF = "org.xml.sax.helpers.AttributesImpl";
     final String SAX_VERSION2BETA_METHODNF = "setAttributes"; // Attributes
-    final Class oneStringArg[] = { java.lang.String.class };
+    final Class<?> oneStringArg[] = { java.lang.String.class };
     // Note this introduces a minor compile dependency on SAX...
-    final Class attributesArg[] = { org.xml.sax.Attributes.class };
+    final Class<?>[] attributesArg = { org.xml.sax.Attributes.class };
 
     try {
       // This method was only added in the final SAX 2.0 release;
       // see changes.html "Changes from SAX 2.0beta2 to SAX 2.0prerelease"
-      final Class clazz = ObjectFactory.findProviderClass(SAX_VERSION2BETA_CLASSNF, ObjectFactory.findClassLoader(),
+      final Class<?> clazz = ObjectFactory.findProviderClass(SAX_VERSION2BETA_CLASSNF, ObjectFactory.findClassLoader(),
               true);
 
-      final Method method = clazz.getMethod(SAX_VERSION2BETA_METHODNF, attributesArg);
+      clazz.getMethod(SAX_VERSION2BETA_METHODNF, attributesArg);
 
       // If we succeeded, we have loaded interfaces from a
       // real, final SAX version 2.0 somewhere
@@ -1021,9 +1013,10 @@ public class EnvironmentCheck {
       h.put(ERROR, ERROR_FOUND);
 
       try {
-        final Class clazz = ObjectFactory.findProviderClass(SAX_VERSION2_CLASS, ObjectFactory.findClassLoader(), true);
+        final Class<?> clazz = ObjectFactory.findProviderClass(SAX_VERSION2_CLASS, ObjectFactory.findClassLoader(),
+                true);
 
-        final Method method = clazz.getMethod(SAX_VERSION2_METHOD, oneStringArg);
+        clazz.getMethod(SAX_VERSION2_METHOD, oneStringArg);
 
         // If we succeeded, we have loaded interfaces from a
         // SAX version 2.0beta2 or earlier; these might work but
@@ -1035,10 +1028,10 @@ public class EnvironmentCheck {
         h.put(ERROR, ERROR_FOUND);
 
         try {
-          final Class clazz = ObjectFactory
-                  .findProviderClass(SAX_VERSION1_CLASS, ObjectFactory.findClassLoader(), true);
+          final Class<?> clazz = ObjectFactory.findProviderClass(SAX_VERSION1_CLASS, ObjectFactory.findClassLoader(),
+                  true);
 
-          final Method method = clazz.getMethod(SAX_VERSION1_METHOD, oneStringArg);
+          clazz.getMethod(SAX_VERSION1_METHOD, oneStringArg);
 
           // If we succeeded, we have loaded interfaces from a
           // SAX version 1.0 somewhere; which won't work very
@@ -1061,7 +1054,7 @@ public class EnvironmentCheck {
    * 
    * @see #getApparentVersion(String, long)
    */
-  private static Hashtable jarVersions = new Hashtable();
+  private static Map<Long, String> jarVersions = new HashMap<>();
 
   /**
    * Static initializer for jarVersions table. Doing this just once saves time
