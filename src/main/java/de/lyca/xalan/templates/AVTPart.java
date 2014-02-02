@@ -20,7 +20,10 @@
  */
 package de.lyca.xalan.templates;
 
+import java.util.List;
+
 import de.lyca.xml.utils.FastStringBuffer;
+import de.lyca.xml.utils.QName;
 import de.lyca.xpath.XPathContext;
 
 /**
@@ -93,6 +96,6 @@ public abstract class AVTPart implements java.io.Serializable, XSLTVisitable {
    *          stack frame (but variables above the globalsTop value will need to
    *          be offset to the current stack frame).
    */
-  public abstract void fixupVariables(java.util.Vector vars, int globalsSize);
+  public abstract void fixupVariables(List<QName> vars, int globalsSize);
 
 }

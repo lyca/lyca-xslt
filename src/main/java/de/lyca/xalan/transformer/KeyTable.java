@@ -20,8 +20,10 @@
  */
 package de.lyca.xalan.transformer;
 
-import java.util.Hashtable;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.xml.transform.TransformerException;
 
@@ -53,14 +55,14 @@ public class KeyTable {
   /**
    * Vector of KeyDeclaration instances holding the key declarations.
    */
-  private final Vector m_keyDeclarations;
+  private final List<KeyDeclaration> m_keyDeclarations;
 
   /**
    * Hold a cache of key() function result for each ref. Key is XMLString, the
    * ref value Value is XNodeSet, the key() function result for the given ref
    * value.
    */
-  private Hashtable m_refsTable = null;
+  private Map<XMLString, XNodeSet> m_refsTable = null;
 
   /**
    * Get the document root matching this key.
@@ -94,8 +96,8 @@ public class KeyTable {
    * 
    * @throws javax.xml.transform.TransformerException
    */
-  public KeyTable(int doc, PrefixResolver nscontext, QName name, Vector keyDeclarations, XPathContext xctxt)
-          throws javax.xml.transform.TransformerException {
+  public KeyTable(int doc, PrefixResolver nscontext, QName name, List<KeyDeclaration> keyDeclarations, XPathContext xctxt)
+          throws TransformerException {
     m_docKey = doc;
     m_keyDeclarations = keyDeclarations;
     final KeyIterator ki = new KeyIterator(name, keyDeclarations);
@@ -121,7 +123,7 @@ public class KeyTable {
   public XNodeSet getNodeSetDTMByKey(QName name, XMLString ref)
 
   {
-    XNodeSet refNodes = (XNodeSet) getRefsTable().get(ref);
+    XNodeSet refNodes = getRefsTable().get(ref);
     // clone wiht reset the node set
     try {
       if (refNodes != null) {
@@ -159,13 +161,13 @@ public class KeyTable {
   /**
    * @return key declarations for the key associated to this KeyTable
    */
-  private Vector getKeyDeclarations() {
+  private List<KeyDeclaration> getKeyDeclarations() {
     final int nDeclarations = m_keyDeclarations.size();
-    final Vector keyDecls = new Vector(nDeclarations);
+    final List<KeyDeclaration> keyDecls = new ArrayList<>(nDeclarations);
 
     // Walk through each of the declarations made with xsl:key
     for (int i = 0; i < nDeclarations; i++) {
-      final KeyDeclaration kd = (KeyDeclaration) m_keyDeclarations.elementAt(i);
+      final KeyDeclaration kd = m_keyDeclarations.get(i);
 
       // Add the declaration if the name on this key declaration
       // matches the name on the iterator for this walker.
@@ -181,15 +183,15 @@ public class KeyTable {
    * @return lazy initialized refs table associating evaluation of key function
    *         with a XNodeSet
    */
-  private Hashtable getRefsTable() {
+  private Map<XMLString, XNodeSet> getRefsTable() {
     if (m_refsTable == null) {
       // initial capacity set to a prime number to improve hash performance
-      m_refsTable = new Hashtable(89);
+      m_refsTable = new HashMap<>(89);
 
       final KeyIterator ki = (KeyIterator) m_keyNodes.getContainedIter();
       final XPathContext xctxt = ki.getXPathContext();
 
-      final Vector keyDecls = getKeyDeclarations();
+      final List<KeyDeclaration> keyDecls = getKeyDeclarations();
       final int nKeyDecls = keyDecls.size();
 
       int currentNode;
@@ -197,7 +199,7 @@ public class KeyTable {
       while (DTM.NULL != (currentNode = m_keyNodes.nextNode())) {
         try {
           for (int keyDeclIdx = 0; keyDeclIdx < nKeyDecls; keyDeclIdx++) {
-            final KeyDeclaration keyDeclaration = (KeyDeclaration) keyDecls.elementAt(keyDeclIdx);
+            final KeyDeclaration keyDeclaration = keyDecls.get(keyDeclIdx);
             final XObject xuse = keyDeclaration.getUse().execute(xctxt, currentNode, ki.getPrefixResolver());
 
             if (xuse.getType() != XObject.CLASS_NODESET) {
@@ -235,7 +237,7 @@ public class KeyTable {
    */
   private void addValueInRefsTable(XPathContext xctxt, XMLString ref, int node) {
 
-    XNodeSet nodes = (XNodeSet) m_refsTable.get(ref);
+    XNodeSet nodes = m_refsTable.get(ref);
     if (nodes == null) {
       nodes = new XNodeSet(node, xctxt.getDTMManager());
       nodes.nextNode();

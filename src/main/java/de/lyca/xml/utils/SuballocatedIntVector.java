@@ -181,183 +181,12 @@ public class SuballocatedIntVector {
   }
 
   /**
-   * Append several int values onto the vector.
-   * 
-   * @param value
-   *          Int to add to the list
-   */
-  private void addElements(int value, int numberOfElements) {
-    if (m_firstFree + numberOfElements < m_blocksize) {
-      for (int i = 0; i < numberOfElements; i++) {
-        m_map0[m_firstFree++] = value;
-      }
-    } else {
-      int index = m_firstFree >>> m_SHIFT;
-      int offset = m_firstFree & m_MASK;
-      m_firstFree += numberOfElements;
-      while (numberOfElements > 0) {
-        if (index >= m_map.length) {
-          final int newsize = index + m_numblocks;
-          final int[][] newMap = new int[newsize][];
-          System.arraycopy(m_map, 0, newMap, 0, m_map.length);
-          m_map = newMap;
-        }
-        int[] block = m_map[index];
-        if (null == block) {
-          block = m_map[index] = new int[m_blocksize];
-        }
-        int copied = m_blocksize - offset < numberOfElements ? m_blocksize - offset : numberOfElements;
-        numberOfElements -= copied;
-        while (copied-- > 0) {
-          block[offset++] = value;
-        }
-
-        ++index;
-        offset = 0;
-      }
-    }
-  }
-
-  /**
-   * Append several slots onto the vector, but do not set the values. Note:
-   * "Not Set" means the value is unspecified.
-   * 
-   * @param numberOfElements
-   *          Int to add to the list
-   */
-  private void addElements(int numberOfElements) {
-    final int newlen = m_firstFree + numberOfElements;
-    if (newlen > m_blocksize) {
-      final int index = m_firstFree >>> m_SHIFT;
-      final int newindex = m_firstFree + numberOfElements >>> m_SHIFT;
-      for (int i = index + 1; i <= newindex; ++i) {
-        m_map[i] = new int[m_blocksize];
-      }
-    }
-    m_firstFree = newlen;
-  }
-
-  /**
-   * Inserts the specified node in this vector at the specified index. Each
-   * component in this vector with an index greater or equal to the specified
-   * index is shifted upward to have an index one greater than the value it had
-   * previously.
-   * 
-   * Insertion may be an EXPENSIVE operation!
-   * 
-   * @param value
-   *          Int to insert
-   * @param at
-   *          Index of where to insert
-   */
-  private void insertElementAt(int value, int at) {
-    if (at == m_firstFree) {
-      addElement(value);
-    } else if (at > m_firstFree) {
-      final int index = at >>> m_SHIFT;
-      if (index >= m_map.length) {
-        final int newsize = index + m_numblocks;
-        final int[][] newMap = new int[newsize][];
-        System.arraycopy(m_map, 0, newMap, 0, m_map.length);
-        m_map = newMap;
-      }
-      int[] block = m_map[index];
-      if (null == block) {
-        block = m_map[index] = new int[m_blocksize];
-      }
-      final int offset = at & m_MASK;
-      block[offset] = value;
-      m_firstFree = offset + 1;
-    } else {
-      int index = at >>> m_SHIFT;
-      final int maxindex = m_firstFree >>> m_SHIFT; // %REVIEW% (m_firstFree+1?)
-      ++m_firstFree;
-      int offset = at & m_MASK;
-      int push;
-
-      // ***** Easier to work down from top?
-      while (index <= maxindex) {
-        final int copylen = m_blocksize - offset - 1;
-        int[] block = m_map[index];
-        if (null == block) {
-          push = 0;
-          block = m_map[index] = new int[m_blocksize];
-        } else {
-          push = block[m_blocksize - 1];
-          System.arraycopy(block, offset, block, offset + 1, copylen);
-        }
-        block[offset] = value;
-        value = push;
-        offset = 0;
-        ++index;
-      }
-    }
-  }
-
-  /**
    * Wipe it out. Currently defined as equivalent to setSize(0).
    */
   public void removeAllElements() {
     m_firstFree = 0;
     m_buildCache = m_map0;
     m_buildCacheStartIndex = 0;
-  }
-
-  /**
-   * Removes the first occurrence of the argument from this vector. If the
-   * object is found in this vector, each component in the vector with an index
-   * greater or equal to the object's index is shifted downward to have an index
-   * one smaller than the value it had previously.
-   * 
-   * @param s
-   *          Int to remove from array
-   * 
-   * @return True if the int was removed, false if it was not found
-   */
-  private boolean removeElement(int s) {
-    final int at = indexOf(s, 0);
-    if (at < 0)
-      return false;
-    removeElementAt(at);
-    return true;
-  }
-
-  /**
-   * Deletes the component at the specified index. Each component in this vector
-   * with an index greater or equal to the specified index is shifted downward
-   * to have an index one smaller than the value it had previously.
-   * 
-   * @param i
-   *          index of where to remove and int
-   */
-  private void removeElementAt(int at) {
-    // No point in removing elements that "don't exist"...
-    if (at < m_firstFree) {
-      int index = at >>> m_SHIFT;
-      final int maxindex = m_firstFree >>> m_SHIFT;
-      int offset = at & m_MASK;
-
-      while (index <= maxindex) {
-        final int copylen = m_blocksize - offset - 1;
-        int[] block = m_map[index];
-        if (null == block) {
-          block = m_map[index] = new int[m_blocksize];
-        } else {
-          System.arraycopy(block, offset + 1, block, offset, copylen);
-        }
-        if (index < maxindex) {
-          final int[] next = m_map[index + 1];
-          if (next != null) {
-            block[m_blocksize - 1] = next != null ? next[0] : 0;
-          }
-        } else {
-          block[m_blocksize - 1] = 0;
-        }
-        offset = 0;
-        ++index;
-      }
-    }
-    --m_firstFree;
   }
 
   /**
@@ -431,18 +260,6 @@ public class SuballocatedIntVector {
   }
 
   /**
-   * Tell if the table contains the given node.
-   * 
-   * @param s
-   *          object to look for
-   * 
-   * @return true if the object is in the list
-   */
-  private boolean contains(int s) {
-    return indexOf(s, 0) >= 0;
-  }
-
-  /**
    * Searches for the first occurence of the given argument, beginning the
    * search at index, and testing for equality using the equals method.
    * 
@@ -494,30 +311,6 @@ public class SuballocatedIntVector {
    */
   public int indexOf(int elem) {
     return indexOf(elem, 0);
-  }
-
-  /**
-   * Searches for the first occurence of the given argument, beginning the
-   * search at index, and testing for equality using the equals method.
-   * 
-   * @param elem
-   *          Object to look for
-   * @return the index of the first occurrence of the object argument in this
-   *         vector at position index or later in the vector; returns -1 if the
-   *         object is not found.
-   */
-  private int lastIndexOf(int elem) {
-    int boffset = m_firstFree & m_MASK;
-    for (int index = m_firstFree >>> m_SHIFT; index >= 0; --index) {
-      final int[] block = m_map[index];
-      if (block != null) {
-        for (int offset = boffset; offset >= 0; --offset)
-          if (block[offset] == elem)
-            return offset + index * m_blocksize;
-      }
-      boffset = 0; // after first
-    }
-    return -1;
   }
 
   /**

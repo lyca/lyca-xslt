@@ -798,7 +798,7 @@ public class ElemTemplateElement extends UnImplNode implements PrefixResolver, S
    * 
    * @serial
    */
-  private List m_declaredPrefixes;
+  private List<XMLNSDecl> m_declaredPrefixes;
 
   /**
    * Return a table that contains all prefixes available within this element
@@ -807,7 +807,7 @@ public class ElemTemplateElement extends UnImplNode implements PrefixResolver, S
    * @return Vector containing the prefixes available within this element
    *         context
    */
-  public List getDeclaredPrefixes() {
+  public List<XMLNSDecl> getDeclaredPrefixes() {
     return m_declaredPrefixes;
   }
 
@@ -845,7 +845,7 @@ public class ElemTemplateElement extends UnImplNode implements PrefixResolver, S
       final String prefix = (String) decls.nextElement();
 
       if (null == m_declaredPrefixes) {
-        m_declaredPrefixes = new ArrayList();
+        m_declaredPrefixes = new ArrayList<>();
       }
 
       final String uri = nsSupport.getURI(prefix);
@@ -901,7 +901,7 @@ public class ElemTemplateElement extends UnImplNode implements PrefixResolver, S
     // return Constants.S_XMLNAMESPACEURI;
     // }
 
-    final List nsDecls = m_declaredPrefixes;
+    final List<XMLNSDecl> nsDecls = m_declaredPrefixes;
 
     if (null != nsDecls) {
       final int n = nsDecls.size();
@@ -910,7 +910,7 @@ public class ElemTemplateElement extends UnImplNode implements PrefixResolver, S
       }
 
       for (int i = 0; i < n; i++) {
-        final XMLNSDecl decl = (XMLNSDecl) nsDecls.get(i);
+        final XMLNSDecl decl = nsDecls.get(i);
 
         if (prefix.equals(decl.getPrefix()))
           return decl.getURI();
@@ -937,7 +937,7 @@ public class ElemTemplateElement extends UnImplNode implements PrefixResolver, S
    * 
    * @serial
    */
-  private List m_prefixTable;
+  private List<XMLNSDecl> m_prefixTable;
 
   /**
    * Return a table that contains all prefixes available within this element
@@ -945,11 +945,11 @@ public class ElemTemplateElement extends UnImplNode implements PrefixResolver, S
    * 
    * @return reference to vector of {@link XMLNSDecl}s, which may be null.
    */
-  List getPrefixTable() {
+  List<XMLNSDecl> getPrefixTable() {
     return m_prefixTable;
   }
 
-  void setPrefixTable(List list) {
+  void setPrefixTable(List<XMLNSDecl> list) {
     m_prefixTable = list;
   }
 
@@ -1027,7 +1027,7 @@ public class ElemTemplateElement extends UnImplNode implements PrefixResolver, S
       final int n = m_declaredPrefixes.size();
 
       for (int i = 0; i < n; i++) {
-        XMLNSDecl decl = (XMLNSDecl) m_declaredPrefixes.get(i);
+        XMLNSDecl decl = m_declaredPrefixes.get(i);
         final String prefix = decl.getPrefix();
         String uri = decl.getURI();
         if (null == uri) {
@@ -1037,7 +1037,7 @@ public class ElemTemplateElement extends UnImplNode implements PrefixResolver, S
 
         // Create a new prefix table if one has not already been created.
         if (null == m_prefixTable) {
-          setPrefixTable(new ArrayList());
+          setPrefixTable(new ArrayList<XMLNSDecl>());
         }
 
         final NamespaceAlias nsAlias = stylesheet.getNamespaceAliasComposed(uri);
@@ -1063,7 +1063,7 @@ public class ElemTemplateElement extends UnImplNode implements PrefixResolver, S
     if (null != parent) {
 
       // The prefix table of the parent should never be null!
-      final List prefixes = parent.m_prefixTable;
+      final List<XMLNSDecl> prefixes = parent.m_prefixTable;
 
       if (null == m_prefixTable && !needToCheckExclude()) {
 
@@ -1075,7 +1075,7 @@ public class ElemTemplateElement extends UnImplNode implements PrefixResolver, S
         final int n = prefixes.size();
 
         for (int i = 0; i < n; i++) {
-          XMLNSDecl decl = (XMLNSDecl) prefixes.get(i);
+          XMLNSDecl decl = prefixes.get(i);
           final boolean shouldExclude = excludeResultNSDecl(decl.getPrefix(), decl.getURI());
 
           if (shouldExclude != decl.getIsExcluded()) {
@@ -1089,7 +1089,7 @@ public class ElemTemplateElement extends UnImplNode implements PrefixResolver, S
     } else if (null == m_prefixTable) {
 
       // Must be stylesheet element without any result prefixes!
-      setPrefixTable(new ArrayList());
+      setPrefixTable(new ArrayList<XMLNSDecl>());
     }
   }
 
@@ -1104,7 +1104,7 @@ public class ElemTemplateElement extends UnImplNode implements PrefixResolver, S
     final int n = m_prefixTable.size();
 
     for (int i = n - 1; i >= 0; i--) {
-      final XMLNSDecl decl = (XMLNSDecl) m_prefixTable.get(i);
+      final XMLNSDecl decl = m_prefixTable.get(i);
 
       if (decl.getPrefix().equals(newDecl.getPrefix()))
         return;
@@ -1152,7 +1152,7 @@ public class ElemTemplateElement extends UnImplNode implements PrefixResolver, S
         final int n = m_prefixTable.size();
 
         for (int i = n - 1; i >= 0; i--) {
-          final XMLNSDecl decl = (XMLNSDecl) m_prefixTable.get(i);
+          final XMLNSDecl decl = m_prefixTable.get(i);
 
           if (!decl.getIsExcluded() && !(null != ignorePrefix && decl.getPrefix().equals(ignorePrefix))) {
             rhandler.startPrefixMapping(decl.getPrefix(), decl.getURI(), true);
@@ -1196,7 +1196,7 @@ public class ElemTemplateElement extends UnImplNode implements PrefixResolver, S
         final int n = m_prefixTable.size();
 
         for (int i = 0; i < n; i++) {
-          final XMLNSDecl decl = (XMLNSDecl) m_prefixTable.get(i);
+          final XMLNSDecl decl = m_prefixTable.get(i);
 
           if (!decl.getIsExcluded() && !(null != ignorePrefix && decl.getPrefix().equals(ignorePrefix))) {
             rhandler.endPrefixMapping(decl.getPrefix());

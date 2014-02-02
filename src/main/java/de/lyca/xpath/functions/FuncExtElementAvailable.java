@@ -70,7 +70,7 @@ public class FuncExtElementAvailable extends FunctionOneArg {
             || namespace.equals(de.lyca.xml.utils.Constants.S_BUILTIN_EXTENSIONS_URL)) {
       try {
         final TransformerImpl transformer = (TransformerImpl) xctxt.getOwnerObject();
-        return transformer.getStylesheet().getAvailableElements().containsKey(new QName(namespace, methName)) ? XBoolean.S_TRUE
+        return transformer.getStylesheet().getAvailableElements().contains(new QName(namespace, methName)) ? XBoolean.S_TRUE
                 : XBoolean.S_FALSE;
       } catch (final Exception e) {
         return XBoolean.S_FALSE;

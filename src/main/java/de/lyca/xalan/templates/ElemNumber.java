@@ -23,6 +23,7 @@ package de.lyca.xalan.templates;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
+import java.util.List;
 import java.util.Locale;
 import java.util.NoSuchElementException;
 
@@ -40,6 +41,7 @@ import de.lyca.xml.dtm.DTM;
 import de.lyca.xml.utils.FastStringBuffer;
 import de.lyca.xml.utils.NodeVector;
 import de.lyca.xml.utils.PrefixResolver;
+import de.lyca.xml.utils.QName;
 import de.lyca.xml.utils.StringBufferPool;
 import de.lyca.xml.utils.res.CharArrayWrapper;
 import de.lyca.xml.utils.res.IntArrayWrapper;
@@ -505,7 +507,7 @@ public class ElemNumber extends ElemTemplateElement {
   public void compose(StylesheetRoot sroot) throws TransformerException {
     super.compose(sroot);
     final StylesheetRoot.ComposeState cstate = sroot.getComposeState();
-    final java.util.Vector vnames = cstate.getVariableNames();
+    final List<QName> vnames = cstate.getVariableNames();
     if (null != m_countMatchPattern) {
       m_countMatchPattern.fixupVariables(vnames, cstate.getGlobalsSize());
     }

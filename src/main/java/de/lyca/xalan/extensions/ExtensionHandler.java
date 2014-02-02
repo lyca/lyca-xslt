@@ -55,7 +55,7 @@ public abstract class ExtensionHandler {
    * @param className
    *          Name of the class to load
    */
-  static Class getClassForName(String className) throws ClassNotFoundException {
+  static Class<?> getClassForName(String className) throws ClassNotFoundException {
     // Hack for backwards compatibility with XalanJ1 stylesheets
     if (className.equals("de.lyca.xalan.xslt.extensions.Redirect")) {
       className = "de.lyca.xalan.lib.Redirect";
@@ -113,7 +113,7 @@ public abstract class ExtensionHandler {
    * @throws TransformerException
    *           if parsing trouble
    */
-  public abstract Object callFunction(String funcName, List args, Object methodKey, ExpressionContext exprContext)
+  public abstract Object callFunction(String funcName, List<?> args, Object methodKey, ExpressionContext exprContext)
           throws TransformerException;
 
   /**
@@ -131,7 +131,7 @@ public abstract class ExtensionHandler {
    * @throws TransformerException
    *           if parsing trouble
    */
-  public abstract Object callFunction(FuncExtFunction extFunction, List args, ExpressionContext exprContext)
+  public abstract Object callFunction(FuncExtFunction extFunction, List<?> args, ExpressionContext exprContext)
           throws TransformerException;
 
   /**

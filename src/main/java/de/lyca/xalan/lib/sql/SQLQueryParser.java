@@ -31,7 +31,8 @@ package de.lyca.xalan.lib.sql;
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import de.lyca.xalan.extensions.ExpressionContext;
 import de.lyca.xml.utils.QName;
@@ -62,7 +63,7 @@ public class SQLQueryParser {
   /**
    *
    */
-  private Vector m_Parameters = null;
+  private List<QueryParameter> m_Parameters = null;
 
   /**
    *
@@ -182,7 +183,7 @@ public class SQLQueryParser {
   /**
    *
    */
-  public Vector getParameters() {
+  public List<QueryParameter> getParameters() {
     return m_Parameters;
   }
 
@@ -191,7 +192,7 @@ public class SQLQueryParser {
    * supplied by the style sheet in the case where the inline parser was not
    * used
    */
-  public void setParameters(Vector p) {
+  public void setParameters(List<QueryParameter> p) {
     m_HasParameters = true;
     m_Parameters = p;
   }
@@ -222,7 +223,7 @@ public class SQLQueryParser {
     // )
 
     for (int indx = 0; indx < m_Parameters.size(); indx++) {
-      final QueryParameter parm = (QueryParameter) m_Parameters.elementAt(indx);
+      final QueryParameter parm = m_Parameters.get(indx);
 
       try {
 
@@ -265,7 +266,7 @@ public class SQLQueryParser {
     // Register output parameters if call.
     if (m_IsCallable && m_hasOutput) {
       for (int indx = 0; indx < m_Parameters.size(); indx++) {
-        final QueryParameter parm = (QueryParameter) m_Parameters.elementAt(indx);
+        final QueryParameter parm = m_Parameters.get(indx);
         if (parm.isOutput()) {
           // System.out.println("chrysalisSQLStatement() Registering output parameter for parm "
           // + indx);
@@ -285,7 +286,7 @@ public class SQLQueryParser {
     boolean firstword = true;
 
     if (m_Parameters == null) {
-      m_Parameters = new Vector();
+      m_Parameters = new ArrayList<>();
     }
 
     if (m_ParsedQuery == null) {
@@ -365,7 +366,7 @@ public class SQLQueryParser {
 
             curParm.setTypeName(tok.toString());
             // curParm.type = map_type(curParm.typeName);
-            m_Parameters.addElement(curParm);
+            m_Parameters.add(curParm);
             tok = new StringBuffer();
             if (ch == '=') {
               state = 7;

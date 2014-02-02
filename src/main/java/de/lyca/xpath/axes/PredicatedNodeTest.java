@@ -24,7 +24,6 @@ import java.util.List;
 
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xml.dtm.DTMIterator;
-import de.lyca.xml.utils.PrefixResolver;
 import de.lyca.xml.utils.QName;
 import de.lyca.xpath.Expression;
 import de.lyca.xpath.ExpressionOwner;
@@ -312,8 +311,6 @@ public abstract class PredicatedNodeTest extends NodeTest implements SubContextL
     // System.out.println("nPredicates: "+nPredicates);
     if (nPredicates == 0)
       return true;
-
-    final PrefixResolver savedResolver = xctxt.getNamespaceContext();
 
     try {
       m_predicateIndex = 0;

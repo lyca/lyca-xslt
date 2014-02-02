@@ -150,24 +150,6 @@ public class NodeSequence extends XObject implements DTMIterator, Cloneable, Pat
   /**
    * Create a new NodeSequence from a (already cloned) iterator.
    * 
-   * @param iter
-   *          Cloned (not static) DTMIterator.
-   * @param context
-   *          The initial context node.
-   * @param xctxt
-   *          The execution context.
-   * @param shouldCacheNodes
-   *          True if this sequence can random access.
-   */
-  private NodeSequence(DTMIterator iter, int context, XPathContext xctxt, boolean shouldCacheNodes) {
-    setIter(iter);
-    setRoot(context, xctxt);
-    setShouldCacheNodes(shouldCacheNodes);
-  }
-
-  /**
-   * Create a new NodeSequence from a (already cloned) iterator.
-   * 
    * @param nodeVector
    */
   public NodeSequence(Object nodeVector) {
@@ -183,16 +165,6 @@ public class NodeSequence extends XObject implements DTMIterator, Cloneable, Pat
       }
 
     }
-  }
-
-  /**
-   * Construct an empty XNodeSet object. This is used to create a mutable
-   * nodeset to which random nodes may be added.
-   */
-  private NodeSequence(DTMManager dtmMgr) {
-    super(new NodeVector());
-    m_last = 0;
-    m_dtmMgr = dtmMgr;
   }
 
   /**
@@ -353,7 +325,7 @@ public class NodeSequence extends XObject implements DTMIterator, Cloneable, Pat
         return item(m_next);
       }
     } else {
-      final int n = m_iter.previousNode();
+      m_iter.previousNode();
       m_next = m_iter.getCurrentPos();
       return m_next;
     }
@@ -452,11 +424,9 @@ public class NodeSequence extends XObject implements DTMIterator, Cloneable, Pat
    */
   @Override
   public void runTo(int index) {
-    int n;
-
     if (-1 == index) {
       final int pos = m_next;
-      while (DTM.NULL != (n = nextNode())) {
+      while (DTM.NULL != nextNode()) {
         ;
       }
       m_next = pos;
@@ -465,11 +435,11 @@ public class NodeSequence extends XObject implements DTMIterator, Cloneable, Pat
     else if (hasCache() && m_next < getVector().size()) {
       m_next = index;
     } else if (null == getVector() && index < m_next) {
-      while (m_next >= index && DTM.NULL != (n = previousNode())) {
+      while (m_next >= index && DTM.NULL != previousNode()) {
         ;
       }
     } else {
-      while (m_next < index && DTM.NULL != (n = nextNode())) {
+      while (m_next < index && DTM.NULL != nextNode()) {
         ;
       }
     }

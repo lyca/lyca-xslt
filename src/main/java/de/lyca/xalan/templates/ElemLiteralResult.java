@@ -41,6 +41,7 @@ import de.lyca.xalan.res.XSLMessages;
 import de.lyca.xalan.res.XSLTErrorResources;
 import de.lyca.xalan.transformer.TransformerImpl;
 import de.lyca.xml.serializer.SerializationHandler;
+import de.lyca.xml.utils.QName;
 import de.lyca.xml.utils.StringVector;
 import de.lyca.xpath.XPathContext;
 
@@ -100,12 +101,12 @@ public class ElemLiteralResult extends ElemUse {
   public void compose(StylesheetRoot sroot) throws TransformerException {
     super.compose(sroot);
     final StylesheetRoot.ComposeState cstate = sroot.getComposeState();
-    final java.util.Vector vnames = cstate.getVariableNames();
+    final List<QName> vnames = cstate.getVariableNames();
     if (null != m_avts) {
       final int nAttrs = m_avts.size();
 
       for (int i = nAttrs - 1; i >= 0; i--) {
-        final AVT avt = (AVT) m_avts.get(i);
+        final AVT avt = m_avts.get(i);
         avt.fixupVariables(vnames, cstate.getGlobalsSize());
       }
     }
@@ -118,14 +119,14 @@ public class ElemLiteralResult extends ElemUse {
    * 
    * @serial
    */
-  private List m_avts = null;
+  private List<AVT> m_avts = null;
 
   /**
    * List of attributes with the XSLT namespace.
    * 
    * @serial
    */
-  private List m_xslAttr = null;
+  private List<String> m_xslAttr = null;
 
   /**
    * Set a literal result attribute (AVTs only).
@@ -136,7 +137,7 @@ public class ElemLiteralResult extends ElemUse {
   public void addLiteralResultAttribute(AVT avt) {
 
     if (null == m_avts) {
-      m_avts = new ArrayList();
+      m_avts = new ArrayList<>();
     }
 
     m_avts.add(avt);
@@ -151,7 +152,7 @@ public class ElemLiteralResult extends ElemUse {
   public void addLiteralResultAttribute(String att) {
 
     if (null == m_xslAttr) {
-      m_xslAttr = new ArrayList();
+      m_xslAttr = new ArrayList<>();
     }
 
     m_xslAttr.add(att);
@@ -201,7 +202,7 @@ public class ElemLiteralResult extends ElemUse {
       final int nAttrs = m_avts.size();
 
       for (int i = nAttrs - 1; i >= 0; i--) {
-        final AVT avt = (AVT) m_avts.get(i);
+        final AVT avt = m_avts.get(i);
 
         if (avt.getName().equals(localName) && avt.getURI().equals(namespaceURI))
           return avt;
@@ -248,7 +249,7 @@ public class ElemLiteralResult extends ElemUse {
       final int nAttrs = m_avts.size();
       String namespace = null;
       for (int i = nAttrs - 1; i >= 0; i--) {
-        final AVT avt = (AVT) m_avts.get(i);
+        final AVT avt = m_avts.get(i);
         namespace = avt.getURI();
 
         if (namespace != null && namespace.length() != 0 && (namespace + ":" + avt.getName()).equals(name)
@@ -357,7 +358,7 @@ public class ElemLiteralResult extends ElemUse {
       final int n = m_avts.size();
 
       for (int i = 0; i < n; i++) {
-        final AVT avt = (AVT) m_avts.get(i);
+        final AVT avt = m_avts.get(i);
 
         // Should this stuff be a method on AVT?
         final String ns = avt.getURI();
@@ -404,7 +405,7 @@ public class ElemLiteralResult extends ElemUse {
 
       // Create a new prefix table if one has not already been created.
       if (null == getPrefixTable()) {
-        setPrefixTable(new java.util.ArrayList());
+        setPrefixTable(new ArrayList<XMLNSDecl>());
       }
 
       return true;
@@ -598,9 +599,9 @@ public class ElemLiteralResult extends ElemUse {
         localName = name.substring(index + 1);
       }
       Node retNode = null;
-      final Iterator eum = m_avts.iterator();
+      final Iterator<AVT> eum = m_avts.iterator();
       while (eum.hasNext()) {
-        final AVT avt = (AVT) eum.next();
+        final AVT avt = eum.next();
         if (localName.equals(avt.getName())) {
           final String nsURI = avt.getURI();
           if (uri == null && nsURI == null || uri != null && uri.equals(nsURI)) {
@@ -628,9 +629,9 @@ public class ElemLiteralResult extends ElemUse {
       if (getLength() == 0)
         return null;
       Node retNode = null;
-      final Iterator eum = m_avts.iterator();
+      final Iterator<AVT> eum = m_avts.iterator();
       while (eum.hasNext()) {
-        final AVT avt = (AVT) eum.next();
+        final AVT avt = eum.next();
         if (localName.equals(avt.getName())) {
           final String nsURI = avt.getURI();
           if (namespaceURI == null && nsURI == null || namespaceURI != null && namespaceURI.equals(nsURI)) {
@@ -657,7 +658,7 @@ public class ElemLiteralResult extends ElemUse {
       if (getLength() == 0 || i >= m_avts.size())
         return null;
       else
-        return new Attribute((AVT) m_avts.get(i), ElemLiteralResult.this);
+        return new Attribute(m_avts.get(i), ElemLiteralResult.this);
     }
 
     /**
@@ -1378,7 +1379,7 @@ public class ElemLiteralResult extends ElemUse {
         final int nAttrs = m_avts.size();
 
         for (int i = nAttrs - 1; i >= 0; i--) {
-          final AVT avt = (AVT) m_avts.get(i);
+          final AVT avt = m_avts.get(i);
           final XPathContext xctxt = transformer.getXPathContext();
           final int sourceNode = xctxt.getCurrentNode();
           final String stringedValue = avt.evaluate(xctxt, sourceNode, this);
@@ -1455,7 +1456,7 @@ public class ElemLiteralResult extends ElemUse {
    * @return an Enumeration of the literal result attributes associated with
    *         this element.
    */
-  public Iterator enumerateLiteralResultAttributes() {
+  public Iterator<AVT> enumerateLiteralResultAttributes() {
     return null == m_avts ? null : m_avts.iterator();
   }
 
@@ -1483,7 +1484,7 @@ public class ElemLiteralResult extends ElemUse {
       final int nAttrs = m_avts.size();
 
       for (int i = nAttrs - 1; i >= 0; i--) {
-        final AVT avt = (AVT) m_avts.get(i);
+        final AVT avt = m_avts.get(i);
         avt.callVisitors(visitor);
       }
     }

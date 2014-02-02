@@ -53,7 +53,7 @@ public class ObjectPool implements java.io.Serializable {
    * @param type
    *          Type of objects for this pool
    */
-  public ObjectPool(Class type) {
+  public ObjectPool(Class<?> type) {
     objectType = type;
     freeStack = new ArrayList();
   }
@@ -82,7 +82,7 @@ public class ObjectPool implements java.io.Serializable {
    * @param size
    *          Size of vector to allocate
    */
-  public ObjectPool(Class type, int size) {
+  public ObjectPool(Class<?> type, int size) {
     objectType = type;
     freeStack = new ArrayList(size);
   }

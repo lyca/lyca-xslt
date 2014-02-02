@@ -20,7 +20,7 @@
  */
 package de.lyca.xalan.templates;
 
-import java.util.Vector;
+import java.util.List;
 
 import javax.xml.transform.TransformerException;
 
@@ -59,14 +59,11 @@ public class ElemUse extends ElemTemplateElement {
    * @param v
    *          The value to set for the "use-attribute-sets" attribute.
    */
-  public void setUseAttributeSets(Vector v) {
-
+  public void setUseAttributeSets(List<QName> v) {
     final int n = v.size();
-
     m_attributeSetsNames = new QName[n];
-
     for (int i = 0; i < n; i++) {
-      m_attributeSetsNames[i] = (QName) v.elementAt(i);
+      m_attributeSetsNames[i] = v.get(i);
     }
   }
 
@@ -142,7 +139,7 @@ public class ElemUse extends ElemTemplateElement {
 
       for (int i = 0; i < nNames; i++) {
         final QName qname = attributeSetsNames[i];
-        final java.util.List attrSets = stylesheet.getAttributeSetComposed(qname);
+        final List<ElemAttributeSet> attrSets = stylesheet.getAttributeSetComposed(qname);
 
         if (null != attrSets) {
           final int nSets = attrSets.size();
@@ -150,7 +147,7 @@ public class ElemUse extends ElemTemplateElement {
           // Highest priority attribute set will be at the top,
           // so process it last.
           for (int k = nSets - 1; k >= 0; k--) {
-            final ElemAttributeSet attrSet = (ElemAttributeSet) attrSets.get(k);
+            final ElemAttributeSet attrSet = attrSets.get(k);
 
             attrSet.execute(transformer);
           }

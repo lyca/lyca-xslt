@@ -146,9 +146,7 @@ public class ReverseAxesWalker extends AxesWalker {
 
         // Count 'em all
         count++;
-        int next;
-
-        while (DTM.NULL != (next = clone.nextNode())) {
+        while (DTM.NULL != clone.nextNode()) {
           count++;
         }
 
@@ -204,11 +202,7 @@ public class ReverseAxesWalker extends AxesWalker {
       clone.setNextWalker(null);
       wi().setLastUsedWalker(clone);
 
-      // Count 'em all
-      // count = 1;
-      int next;
-
-      while (DTM.NULL != (next = clone.nextNode())) {
+      while (DTM.NULL != clone.nextNode()) {
         count++;
       }
     } catch (final CloneNotSupportedException cnse) {

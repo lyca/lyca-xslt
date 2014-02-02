@@ -20,7 +20,7 @@
  */
 package de.lyca.xalan.processor;
 
-import java.util.Vector;
+import java.util.List;
 
 import org.xml.sax.Attributes;
 
@@ -64,10 +64,10 @@ class ProcessorPreserveSpace extends XSLTElementProcessor {
     final WhitespaceInfoPaths paths = new WhitespaceInfoPaths(thisSheet);
     setPropertiesFromAttributes(handler, rawName, attributes, paths);
 
-    final Vector xpaths = paths.getElements();
+    final List<XPath> xpaths = paths.getElements();
 
     for (int i = 0; i < xpaths.size(); i++) {
-      final WhiteSpaceInfo wsi = new WhiteSpaceInfo((XPath) xpaths.elementAt(i), false, thisSheet);
+      final WhiteSpaceInfo wsi = new WhiteSpaceInfo(xpaths.get(i), false, thisSheet);
       wsi.setUid(handler.nextUid());
 
       thisSheet.setPreserveSpaces(wsi);

@@ -20,12 +20,13 @@
  */
 package de.lyca.xalan.templates;
 
-import java.util.Vector;
+import java.util.List;
 
 import javax.xml.transform.TransformerException;
 
 import org.xml.sax.SAXException;
 
+import de.lyca.xalan.transformer.NodeSortKey;
 import de.lyca.xalan.transformer.StackGuard;
 import de.lyca.xalan.transformer.TransformerImpl;
 import de.lyca.xml.dtm.DTM;
@@ -227,7 +228,7 @@ public class ElemApplyTemplates extends ElemCallTemplate {
       xctxt.pushCurrentExpressionNode(DTM.NULL);
       xctxt.pushSAXLocatorNull();
       transformer.pushElemTemplateElement(null);
-      final Vector keys = m_sortElems == null ? null : transformer.processSortKeys(this, sourceNode);
+      final List<NodeSortKey> keys = m_sortElems == null ? null : transformer.processSortKeys(this, sourceNode);
 
       // Sort if we need to.
       if (null != keys) {

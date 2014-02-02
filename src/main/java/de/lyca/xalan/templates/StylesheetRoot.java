@@ -23,8 +23,10 @@ package de.lyca.xalan.templates;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.xml.transform.ErrorListener;
@@ -33,6 +35,7 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 
+import de.lyca.xalan.extensions.ExtensionNamespaceSupport;
 import de.lyca.xalan.extensions.ExtensionNamespacesManager;
 import de.lyca.xalan.processor.XSLTSchema;
 import de.lyca.xalan.res.XSLMessages;
@@ -101,7 +104,7 @@ public class StylesheetRoot extends StylesheetComposed implements java.io.Serial
    * 
    * @serial
    */
-  private HashMap m_availElems;
+  private Set<QName> m_availElems;
 
   /**
    * Creates a StylesheetRoot and retains a pointer to the schema used to create
@@ -149,7 +152,7 @@ public class StylesheetRoot extends StylesheetComposed implements java.io.Serial
    * @return table of available elements, keyed by qualified names, and with
    *         values of the same qualified names.
    */
-  public HashMap getAvailableElements() {
+  public Set<QName> getAvailableElements() {
     return m_availElems;
   }
 
@@ -171,7 +174,7 @@ public class StylesheetRoot extends StylesheetComposed implements java.io.Serial
    * table access to a list of extension namespaces encountered during
    * composition of a stylesheet.
    */
-  public Vector getExtensions() {
+  public List<ExtensionNamespaceSupport> getExtensions() {
     return m_extNsMgr != null ? m_extNsMgr.getExtensions() : null;
   }
 
@@ -234,13 +237,13 @@ public class StylesheetRoot extends StylesheetComposed implements java.io.Serial
     // Now we make a Vector that is going to hold all of the recomposable
     // elements
 
-    final Vector recomposableElements = new Vector();
+    final List<ElemTemplateElement> recomposableElements = new ArrayList<>();
 
     // First, we build the global import tree.
 
     if (null == m_globalImportList) {
 
-      final Vector importList = new Vector();
+      final List<Stylesheet> importList = new ArrayList<>();
 
       addImports(this, true, importList);
 
@@ -254,7 +257,7 @@ public class StylesheetRoot extends StylesheetComposed implements java.io.Serial
       m_globalImportList = new StylesheetComposed[importList.size()];
 
       for (int i = 0, j = importList.size() - 1; i < importList.size(); i++) {
-        m_globalImportList[j] = (StylesheetComposed) importList.elementAt(i);
+        m_globalImportList[j] = (StylesheetComposed) importList.get(i);
         // Build the global include list for this stylesheet.
         // This needs to be done ahead of the recomposeImports
         // because we need the info from the composed includes.
@@ -281,12 +284,12 @@ public class StylesheetRoot extends StylesheetComposed implements java.io.Serial
     m_outputProperties = new OutputProperties(de.lyca.xml.serializer.Method.UNKNOWN);
     // m_outputProperties = new OutputProperties(Method.XML);
 
-    m_attrSets = new HashMap();
-    m_decimalFormatSymbols = new Hashtable();
-    m_keyDecls = new Vector();
-    m_namespaceAliasComposed = new Hashtable();
+    m_attrSets = new HashMap<>();
+    m_decimalFormatSymbols = new HashMap<>();
+    m_keyDecls = new Vector<>();
+    m_namespaceAliasComposed = new HashMap<>();
     m_templateList = new TemplateList();
-    m_variables = new Vector();
+    m_variables = new Vector<>();
 
     // Now we sequence through the sorted elements,
     // calling the recompose() function on each one. This will call back into
@@ -295,7 +298,7 @@ public class StylesheetRoot extends StylesheetComposed implements java.io.Serial
     // Note that we're going backwards, encountering the highest precedence
     // items first.
     for (int i = recomposableElements.size() - 1; i >= 0; i--) {
-      ((ElemTemplateElement) recomposableElements.elementAt(i)).recompose(this);
+      recomposableElements.get(i).recompose(this);
     }
 
     /*
@@ -406,7 +409,7 @@ public class StylesheetRoot extends StylesheetComposed implements java.io.Serial
    *          order of priority. When we're all done, we'll reverse this to the
    *          correct priority in an array.
    */
-  protected void addImports(Stylesheet stylesheet, boolean addToList, Vector importList) {
+  protected void addImports(Stylesheet stylesheet, boolean addToList, List<Stylesheet> importList) {
 
     // Get the direct imports of this sheet.
 
@@ -431,7 +434,7 @@ public class StylesheetRoot extends StylesheetComposed implements java.io.Serial
     }
 
     if (addToList) {
-      importList.addElement(stylesheet);
+      importList.add(stylesheet);
     }
 
   }
@@ -546,7 +549,7 @@ public class StylesheetRoot extends StylesheetComposed implements java.io.Serial
    * 
    * @serial
    */
-  private HashMap m_attrSets;
+  private HashMap<QName, List<ElemAttributeSet>> m_attrSets;
 
   /**
    * Recompose the attribute-set declarations.
@@ -555,14 +558,11 @@ public class StylesheetRoot extends StylesheetComposed implements java.io.Serial
    *          An attribute-set to add to the hashtable of attribute sets.
    */
   void recomposeAttributeSets(ElemAttributeSet attrSet) {
-    ArrayList attrSetList = (ArrayList) m_attrSets.get(attrSet.getName());
-
+    List<ElemAttributeSet> attrSetList =  m_attrSets.get(attrSet.getName());
     if (null == attrSetList) {
-      attrSetList = new ArrayList();
-
+      attrSetList = new ArrayList<>();
       m_attrSets.put(attrSet.getName(), attrSetList);
     }
-
     attrSetList.add(attrSet);
   }
 
@@ -579,8 +579,8 @@ public class StylesheetRoot extends StylesheetComposed implements java.io.Serial
    * 
    * @throws ArrayIndexOutOfBoundsException
    */
-  public ArrayList getAttributeSetComposed(QName name) throws ArrayIndexOutOfBoundsException {
-    return (ArrayList) m_attrSets.get(name);
+  public List<ElemAttributeSet> getAttributeSetComposed(QName name) throws ArrayIndexOutOfBoundsException {
+    return m_attrSets.get(name);
   }
 
   /**
@@ -588,7 +588,7 @@ public class StylesheetRoot extends StylesheetComposed implements java.io.Serial
    * 
    * @serial
    */
-  private Hashtable m_decimalFormatSymbols;
+  private Map<QName, DecimalFormatSymbols> m_decimalFormatSymbols;
 
   /**
    * Recompose the decimal-format declarations.
@@ -598,7 +598,7 @@ public class StylesheetRoot extends StylesheetComposed implements java.io.Serial
    *          formats.
    */
   void recomposeDecimalFormats(DecimalFormatProperties dfp) {
-    final DecimalFormatSymbols oldDfs = (DecimalFormatSymbols) m_decimalFormatSymbols.get(dfp.getName());
+    final DecimalFormatSymbols oldDfs = m_decimalFormatSymbols.get(dfp.getName());
     if (null == oldDfs) {
       m_decimalFormatSymbols.put(dfp.getName(), dfp.getDecimalFormatSymbols());
     } else if (!dfp.getDecimalFormatSymbols().equals(oldDfs)) {
@@ -637,7 +637,7 @@ public class StylesheetRoot extends StylesheetComposed implements java.io.Serial
    *         is not found.
    */
   public DecimalFormatSymbols getDecimalFormatComposed(QName name) {
-    return (DecimalFormatSymbols) m_decimalFormatSymbols.get(name);
+    return m_decimalFormatSymbols.get(name);
   }
 
   /**
@@ -646,7 +646,7 @@ public class StylesheetRoot extends StylesheetComposed implements java.io.Serial
    * 
    * @serial
    */
-  private Vector m_keyDecls;
+  private List<KeyDeclaration> m_keyDecls;
 
   /**
    * Recompose the key declarations.
@@ -655,7 +655,7 @@ public class StylesheetRoot extends StylesheetComposed implements java.io.Serial
    *          A KeyDeclaration to be added to the vector of key declarations.
    */
   void recomposeKeys(KeyDeclaration keyDecl) {
-    m_keyDecls.addElement(keyDecl);
+    m_keyDecls.add(keyDecl);
   }
 
   /**
@@ -665,7 +665,7 @@ public class StylesheetRoot extends StylesheetComposed implements java.io.Serial
    * 
    * @return A vector of the composed "xsl:key" properties.
    */
-  public Vector getKeysComposed() {
+  public List<KeyDeclaration> getKeysComposed() {
     return m_keyDecls;
   }
 
@@ -674,7 +674,7 @@ public class StylesheetRoot extends StylesheetComposed implements java.io.Serial
    * 
    * @serial
    */
-  private Hashtable m_namespaceAliasComposed;
+  private Map<String, NamespaceAlias> m_namespaceAliasComposed;
 
   /**
    * Recompose the namespace-alias declarations.
@@ -701,7 +701,7 @@ public class StylesheetRoot extends StylesheetComposed implements java.io.Serial
    * @return NamespaceAlias that matches uri, or null if no match.
    */
   public NamespaceAlias getNamespaceAliasComposed(String uri) {
-    return (NamespaceAlias) (null == m_namespaceAliasComposed ? null : m_namespaceAliasComposed.get(uri));
+    return null == m_namespaceAliasComposed ? null : m_namespaceAliasComposed.get(uri);
   }
 
   /**
@@ -827,7 +827,7 @@ public class StylesheetRoot extends StylesheetComposed implements java.io.Serial
    * 
    * @serial
    */
-  private Vector m_variables;
+  private List<ElemVariable> m_variables;
 
   /**
    * Recompose the top level variable and parameter declarations.
@@ -840,7 +840,7 @@ public class StylesheetRoot extends StylesheetComposed implements java.io.Serial
     if (getVariableOrParamComposed(elemVar.getName()) == null) {
       elemVar.setIsTopLevel(true); // Mark as a top-level variable or param
       elemVar.setIndex(m_variables.size());
-      m_variables.addElement(elemVar);
+      m_variables.add(elemVar);
     }
   }
 
@@ -861,7 +861,7 @@ public class StylesheetRoot extends StylesheetComposed implements java.io.Serial
       final int n = m_variables.size();
 
       for (int i = 0; i < n; i++) {
-        final ElemVariable var = (ElemVariable) m_variables.elementAt(i);
+        final ElemVariable var = m_variables.get(i);
         if (var.getName().equals(qname))
           return var;
       }
@@ -879,7 +879,7 @@ public class StylesheetRoot extends StylesheetComposed implements java.io.Serial
    * 
    * @return Vector of all variables and params in scope
    */
-  public Vector getVariablesAndParamsComposed() {
+  public List<ElemVariable> getVariablesAndParamsComposed() {
     return m_variables;
   }
 
@@ -1148,34 +1148,34 @@ public class StylesheetRoot extends StylesheetComposed implements java.io.Serial
    * 
    */
 
-  private void QuickSort2(Vector v, int lo0, int hi0) {
+  private void QuickSort2(List<ElemTemplateElement> v, int lo0, int hi0) {
     int lo = lo0;
     int hi = hi0;
 
     if (hi0 > lo0) {
       // Arbitrarily establishing partition element as the midpoint of
       // the array.
-      final ElemTemplateElement midNode = (ElemTemplateElement) v.elementAt((lo0 + hi0) / 2);
+      final ElemTemplateElement midNode = v.get((lo0 + hi0) / 2);
 
       // loop through the array until indices cross
       while (lo <= hi) {
         // find the first element that is greater than or equal to
         // the partition element starting from the left Index.
-        while (lo < hi0 && ((ElemTemplateElement) v.elementAt(lo)).compareTo(midNode) < 0) {
+        while (lo < hi0 && v.get(lo).compareTo(midNode) < 0) {
           ++lo;
         } // end while
 
         // find an element that is smaller than or equal to
         // the partition element starting from the right Index.
-        while (hi > lo0 && ((ElemTemplateElement) v.elementAt(hi)).compareTo(midNode) > 0) {
+        while (hi > lo0 && v.get(hi).compareTo(midNode) > 0) {
           --hi;
         }
 
         // if the indexes have not crossed, swap
         if (lo <= hi) {
-          final ElemTemplateElement node = (ElemTemplateElement) v.elementAt(lo);
-          v.setElementAt(v.elementAt(hi), lo);
-          v.setElementAt(node, hi);
+          final ElemTemplateElement node = v.get(lo);
+          v.set(lo, v.get(hi));
+          v.set(hi, node);
 
           ++lo;
           --hi;
@@ -1250,8 +1250,8 @@ public class StylesheetRoot extends StylesheetComposed implements java.io.Serial
     ComposeState() {
       final int size = m_variables.size();
       for (int i = 0; i < size; i++) {
-        final ElemVariable ev = (ElemVariable) m_variables.elementAt(i);
-        m_variableNames.addElement(ev.getName());
+        final ElemVariable ev = m_variables.get(i);
+        m_variableNames.add(ev.getName());
       }
 
     }
@@ -1279,7 +1279,7 @@ public class StylesheetRoot extends StylesheetComposed implements java.io.Serial
      * A Vector of the current params and QNames within the current template.
      * Set by ElemTemplate and used by ProcessorVariable.
      */
-    private final java.util.Vector m_variableNames = new java.util.Vector();
+    private List<QName> m_variableNames = new ArrayList<>();
 
     /**
      * Add the name of a qualified name within the template. The position in the
@@ -1289,9 +1289,9 @@ public class StylesheetRoot extends StylesheetComposed implements java.io.Serial
      *          A qualified name of a param or variable, should be non-null.
      * @return the index where the variable was added.
      */
-    int addVariableName(final de.lyca.xml.utils.QName qname) {
+    int addVariableName(final QName qname) {
       final int pos = m_variableNames.size();
-      m_variableNames.addElement(qname);
+      m_variableNames.add(qname);
       final int frameSize = m_variableNames.size() - getGlobalsSize();
       if (frameSize > m_maxStackFrameSize) {
         m_maxStackFrameSize++;
@@ -1320,7 +1320,7 @@ public class StylesheetRoot extends StylesheetComposed implements java.io.Serial
      * Set the current size of the stack frame.
      */
     void setCurrentStackFrameSize(int sz) {
-      m_variableNames.setSize(sz);
+      m_variableNames = new ArrayList<>(m_variableNames.subList(0, sz));
     }
 
     int getGlobalsSize() {
@@ -1346,7 +1346,7 @@ public class StylesheetRoot extends StylesheetComposed implements java.io.Serial
      *         returned is owned by this class, and so should not really be
      *         mutated, or stored anywhere.
      */
-    java.util.Vector getVariableNames() {
+    List<QName> getVariableNames() {
       return m_variableNames;
     }
 

@@ -35,21 +35,21 @@ public interface ExtensionsProvider {
    * Is the extension function available?
    */
 
-  public boolean functionAvailable(String ns, String funcName) throws TransformerException;
+  boolean functionAvailable(String ns, String funcName) throws TransformerException;
 
   /**
    * Is the extension element available?
    */
-  public boolean elementAvailable(String ns, String elemName) throws TransformerException;
+  boolean elementAvailable(String ns, String elemName) throws TransformerException;
 
   /**
    * Execute the extension function.
    */
-  public Object extFunction(String ns, String funcName, List argVec, Object methodKey) throws TransformerException;
+  Object extFunction(String ns, String funcName, List<?> argVec, Object methodKey) throws TransformerException;
 
   /**
    * Execute the extension function.
    */
-  public Object extFunction(FuncExtFunction extFunction, List argVec) throws TransformerException;
+  Object extFunction(FuncExtFunction extFunction, List<?> argVec) throws TransformerException;
 
 }

@@ -23,8 +23,9 @@ package de.lyca.xalan.lib;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
-import java.util.Vector;
 
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
@@ -143,7 +144,7 @@ public class PipeDocument {
     if (elem.hasChildNodes()) {
       ssNodes = elem.getChildNodes();
       // Vector to contain TransformerHandler for each stylesheet.
-      final Vector vTHandler = new Vector(ssNodes.getLength());
+      final List<TransformerHandler> vTHandler = new ArrayList<>(ssNodes.getLength());
 
       // The child nodes of an extension element node are instances of
       // ElemLiteralResult, which requires does not fully support the standard
@@ -162,7 +163,7 @@ public class PipeDocument {
           final Transformer trans = tHandler.getTransformer();
 
           // AddTransformerHandler to vector
-          vTHandler.addElement(tHandler);
+          vTHandler.add(tHandler);
 
           paramNodes = ssNode.getChildNodes();
           for (int j = 0; j < paramNodes.getLength(); j++) {
@@ -193,19 +194,19 @@ public class PipeDocument {
    * @param target
    *          absolute path to transformation output.
    */
-  public void usePipe(Vector vTHandler, String source, String target) throws TransformerException,
+  public void usePipe(List<TransformerHandler> vTHandler, String source, String target) throws TransformerException,
           TransformerConfigurationException, FileNotFoundException, IOException, SAXException,
           SAXNotRecognizedException {
     final XMLReader reader = XMLReaderFactory.createXMLReader();
-    final TransformerHandler tHFirst = (TransformerHandler) vTHandler.firstElement();
+    final TransformerHandler tHFirst = vTHandler.get(0);
     reader.setContentHandler(tHFirst);
     reader.setProperty("http://xml.org/sax/properties/lexical-handler", tHFirst);
     for (int i = 1; i < vTHandler.size(); i++) {
-      final TransformerHandler tHFrom = (TransformerHandler) vTHandler.elementAt(i - 1);
-      final TransformerHandler tHTo = (TransformerHandler) vTHandler.elementAt(i);
+      final TransformerHandler tHFrom = vTHandler.get(i - 1);
+      final TransformerHandler tHTo = vTHandler.get(i);
       tHFrom.setResult(new SAXResult(tHTo));
     }
-    final TransformerHandler tHLast = (TransformerHandler) vTHandler.lastElement();
+    final TransformerHandler tHLast = vTHandler.get(vTHandler.size() - 1);
     final Transformer trans = tHLast.getTransformer();
     final Properties outputProps = trans.getOutputProperties();
     final Serializer serializer = SerializerFactory.getSerializer(outputProps);

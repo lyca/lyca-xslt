@@ -57,7 +57,7 @@ import de.lyca.xpath.objects.XObject;
 
 public class ExtensionHandlerJavaClass extends ExtensionHandlerJava {
 
-  private Class m_classObj = null;
+  private Class<?> m_classObj = null;
 
   /**
    * Provides a default Instance for use by elements that need to call an
@@ -125,7 +125,7 @@ public class ExtensionHandlerJavaClass extends ExtensionHandlerJava {
     final int nMethods = methods.length;
     for (int i = 0; i < nMethods; i++) {
       if (methods[i].getName().equals(element)) {
-        final Class[] paramTypes = methods[i].getParameterTypes();
+        final Class<?>[] paramTypes = methods[i].getParameterTypes();
         if (paramTypes.length == 2
                 && paramTypes[0].isAssignableFrom(de.lyca.xalan.extensions.XSLProcessorContext.class)
                 && paramTypes[1].isAssignableFrom(de.lyca.xalan.templates.ElemExtensionCall.class))
@@ -177,12 +177,12 @@ public class ExtensionHandlerJavaClass extends ExtensionHandlerJava {
    */
 
   @Override
-  public Object callFunction(String funcName, List args, Object methodKey, ExpressionContext exprContext)
+  public Object callFunction(String funcName, List<?> args, Object methodKey, ExpressionContext exprContext)
           throws TransformerException {
 
     Object[] methodArgs;
     Object[][] convertedArgs;
-    Class[] paramTypes;
+    Class<?>[] paramTypes;
 
     try {
       final TransformerImpl trans = exprContext != null ? (TransformerImpl) exprContext.getXPathContext()
@@ -194,9 +194,9 @@ public class ExtensionHandlerJavaClass extends ExtensionHandlerJava {
         for (int i = 0; i < methodArgs.length; i++) {
           methodArgs[i] = args.get(i);
         }
-        Constructor c = null;
+        Constructor<?> c = null;
         if (methodKey != null) {
-          c = (Constructor) getFromCache(methodKey, null, methodArgs);
+          c = (Constructor<?>) getFromCache(methodKey, null, methodArgs);
         }
 
         if (c != null && !trans.getDebug()) {
@@ -393,7 +393,7 @@ public class ExtensionHandlerJavaClass extends ExtensionHandlerJava {
    * @throws TransformerException
    */
   @Override
-  public Object callFunction(FuncExtFunction extFunction, List args, ExpressionContext exprContext)
+  public Object callFunction(FuncExtFunction extFunction, List<?> args, ExpressionContext exprContext)
           throws TransformerException {
     return callFunction(extFunction.getFunctionName(), args, extFunction.getMethodKey(), exprContext);
   }

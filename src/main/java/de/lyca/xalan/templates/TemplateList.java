@@ -20,9 +20,9 @@
  */
 package de.lyca.xalan.templates;
 
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Vector;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import javax.xml.transform.TransformerException;
 
@@ -68,7 +68,7 @@ public class TemplateList implements java.io.Serializable {
     }
 
     if (null != template.getName()) {
-      final ElemTemplate existingTemplate = (ElemTemplate) m_namedTemplates.get(template.getName());
+      final ElemTemplate existingTemplate = m_namedTemplates.get(template.getName());
       if (null == existingTemplate) {
         m_namedTemplates.put(template.getName(), template);
       } else {
@@ -111,31 +111,20 @@ public class TemplateList implements java.io.Serializable {
    * 
    */
   void dumpAssociationTables() {
-
-    final Enumeration associations = m_patternTable.elements();
-
-    while (associations.hasMoreElements()) {
-      TemplateSubPatternAssociation head = (TemplateSubPatternAssociation) associations.nextElement();
-
+    for (TemplateSubPatternAssociation head : m_patternTable.values()) {
       while (null != head) {
         System.out.print("(" + head.getTargetString() + ", " + head.getPattern() + ")");
-
         head = head.getNext();
       }
-
       System.out.println("\n.....");
     }
 
     TemplateSubPatternAssociation head = m_wildCardPatterns;
-
     System.out.print("wild card list: ");
-
     while (null != head) {
       System.out.print("(" + head.getTargetString() + ", " + head.getPattern() + ")");
-
       head = head.getNext();
     }
-
     System.out.println("\n.....");
   }
 
@@ -150,18 +139,13 @@ public class TemplateList implements java.io.Serializable {
     }
 
     if (null != m_wildCardPatterns) {
-      final Enumeration associations = m_patternTable.elements();
-
-      while (associations.hasMoreElements()) {
-        TemplateSubPatternAssociation head = (TemplateSubPatternAssociation) associations.nextElement();
+      for (TemplateSubPatternAssociation head : m_patternTable.values()) {
         TemplateSubPatternAssociation wild = m_wildCardPatterns;
-
         while (null != wild) {
           try {
             head = insertAssociationIntoList(head, (TemplateSubPatternAssociation) wild.clone(), true);
           } catch (final CloneNotSupportedException cnse) {
           }
-
           wild = wild.getNext();
         }
       }
@@ -363,7 +347,7 @@ public class TemplateList implements java.io.Serializable {
    * @return Template argument with the requested name, or null if not found.
    */
   public ElemTemplate getTemplate(QName qname) {
-    return (ElemTemplate) m_namedTemplates.get(qname);
+    return m_namedTemplates.get(qname);
   }
 
   /**
@@ -387,7 +371,7 @@ public class TemplateList implements java.io.Serializable {
     switch (targetNodeType) {
       case DTM.ELEMENT_NODE:
       case DTM.ATTRIBUTE_NODE:
-        head = (TemplateSubPatternAssociation) m_patternTable.get(dtm.getLocalName(targetNode));
+        head = m_patternTable.get(dtm.getLocalName(targetNode));
         break;
       case DTM.TEXT_NODE:
       case DTM.CDATA_SECTION_NODE:
@@ -395,15 +379,15 @@ public class TemplateList implements java.io.Serializable {
         break;
       case DTM.ENTITY_REFERENCE_NODE:
       case DTM.ENTITY_NODE:
-        head = (TemplateSubPatternAssociation) m_patternTable.get(dtm.getNodeName(targetNode)); // %REVIEW%
-                                                                                                // I
-                                                                                                // think
-                                                                                                // this
-                                                                                                // is
-                                                                                                // right
+        head = m_patternTable.get(dtm.getNodeName(targetNode)); // %REVIEW%
+                                                                // I
+                                                                // think
+                                                                // this
+                                                                // is
+                                                                // right
         break;
       case DTM.PROCESSING_INSTRUCTION_NODE:
-        head = (TemplateSubPatternAssociation) m_patternTable.get(dtm.getLocalName(targetNode));
+        head = m_patternTable.get(dtm.getLocalName(targetNode));
         break;
       case DTM.COMMENT_NODE:
         head = m_commentPatterns;
@@ -414,12 +398,12 @@ public class TemplateList implements java.io.Serializable {
         break;
       case DTM.NOTATION_NODE:
       default:
-        head = (TemplateSubPatternAssociation) m_patternTable.get(dtm.getNodeName(targetNode)); // %REVIEW%
-                                                                                                // I
-                                                                                                // think
-                                                                                                // this
-                                                                                                // is
-                                                                                                // right
+        head = m_patternTable.get(dtm.getNodeName(targetNode)); // %REVIEW%
+                                                                // I
+                                                                // think
+                                                                // this
+                                                                // is
+                                                                // right
     }
 
     return null == head ? m_wildCardPatterns : head;
@@ -455,7 +439,7 @@ public class TemplateList implements java.io.Serializable {
     switch (dtm.getNodeType(targetNode)) {
       case DTM.ELEMENT_NODE:
       case DTM.ATTRIBUTE_NODE:
-        head = (TemplateSubPatternAssociation) m_patternTable.get(dtm.getLocalNameFromExpandedNameID(expTypeID));
+        head = m_patternTable.get(dtm.getLocalNameFromExpandedNameID(expTypeID));
         break;
       case DTM.TEXT_NODE:
       case DTM.CDATA_SECTION_NODE:
@@ -463,15 +447,15 @@ public class TemplateList implements java.io.Serializable {
         break;
       case DTM.ENTITY_REFERENCE_NODE:
       case DTM.ENTITY_NODE:
-        head = (TemplateSubPatternAssociation) m_patternTable.get(dtm.getNodeName(targetNode)); // %REVIEW%
-                                                                                                // I
-                                                                                                // think
-                                                                                                // this
-                                                                                                // is
-                                                                                                // right
+        head = m_patternTable.get(dtm.getNodeName(targetNode)); // %REVIEW%
+                                                                // I
+                                                                // think
+                                                                // this
+                                                                // is
+                                                                // right
         break;
       case DTM.PROCESSING_INSTRUCTION_NODE:
-        head = (TemplateSubPatternAssociation) m_patternTable.get(dtm.getLocalName(targetNode));
+        head = m_patternTable.get(dtm.getLocalName(targetNode));
         break;
       case DTM.COMMENT_NODE:
         head = m_commentPatterns;
@@ -482,12 +466,12 @@ public class TemplateList implements java.io.Serializable {
         break;
       case DTM.NOTATION_NODE:
       default:
-        head = (TemplateSubPatternAssociation) m_patternTable.get(dtm.getNodeName(targetNode)); // %REVIEW%
-                                                                                                // I
-                                                                                                // think
-                                                                                                // this
-                                                                                                // is
-                                                                                                // right
+        head = m_patternTable.get(dtm.getNodeName(targetNode)); // %REVIEW%
+                                                                // I
+                                                                // think
+                                                                // this
+                                                                // is
+                                                                // right
     }
 
     if (null == head) {
@@ -660,37 +644,13 @@ public class TemplateList implements java.io.Serializable {
   }
 
   /**
-   * Add object to vector if not already there.
-   * 
-   * @param obj
-   * @param v
-   */
-  private void addObjectIfNotFound(Object obj, Vector v) {
-
-    final int n = v.size();
-    boolean addIt = true;
-
-    for (int i = 0; i < n; i++) {
-      if (v.elementAt(i) == obj) {
-        addIt = false;
-
-        break;
-      }
-    }
-
-    if (addIt) {
-      v.addElement(obj);
-    }
-  }
-
-  /**
    * Keyed on string macro names, and holding values that are macro elements in
    * the XSL DOM tree. Initialized in initMacroLookupTable, and used in
    * findNamedTemplate.
    * 
    * @serial
    */
-  private Hashtable m_namedTemplates = new Hashtable(89);
+  private final Map<QName, ElemTemplate> m_namedTemplates = new HashMap<>(89);
 
   /**
    * This table is keyed on the target elements of patterns, and contains linked
@@ -699,7 +659,7 @@ public class TemplateList implements java.io.Serializable {
    * 
    * @serial
    */
-  private final Hashtable m_patternTable = new Hashtable(89);
+  private final Map<String, TemplateSubPatternAssociation> m_patternTable = new HashMap<>(89);
 
   /**
    * Wildcard patterns.
@@ -730,31 +690,6 @@ public class TemplateList implements java.io.Serializable {
   private TemplateSubPatternAssociation m_commentPatterns = null;
 
   /**
-   * Get table of named Templates. These are keyed on template names, and
-   * holding values that are template elements.
-   * 
-   * @return A Hashtable dictionary that contains {@link java.lang.String}s as
-   *         the keys, and {@link de.lyca.xalan.templates.ElemTemplate}s as the
-   *         values.
-   */
-  private Hashtable getNamedTemplates() {
-    return m_namedTemplates;
-  }
-
-  /**
-   * Set table of named Templates. These are keyed on string macro names, and
-   * holding values that are template elements in the XSL DOM tree.
-   * 
-   * @param v
-   *          Hashtable dictionary that contains {@link java.lang.String}s as
-   *          the keys, and {@link de.lyca.xalan.templates.ElemTemplate}s as the
-   *          values.
-   */
-  private void setNamedTemplates(Hashtable v) {
-    m_namedTemplates = v;
-  }
-
-  /**
    * Get the head of the assocation list that is keyed by target.
    * 
    * @param key
@@ -764,7 +699,7 @@ public class TemplateList implements java.io.Serializable {
    *         to template associations for the given key.
    */
   private TemplateSubPatternAssociation getHead(String key) {
-    return (TemplateSubPatternAssociation) m_patternTable.get(key);
+    return m_patternTable.get(key);
   }
 
   /**
@@ -792,14 +727,15 @@ public class TemplateList implements java.io.Serializable {
    * with their compiled equivalent.
    */
   public class TemplateWalker {
-    private Enumeration hashIterator;
+    private final Iterator<TemplateSubPatternAssociation> tspaIterator;
+    private Iterator<ElemTemplate> etIterator;
     private boolean inPatterns;
     private TemplateSubPatternAssociation curPattern;
 
-    private final Hashtable m_compilerCache = new Hashtable();
+    private final Map<Integer,ElemTemplate> m_compilerCache = new HashMap<>();
 
     private TemplateWalker() {
-      hashIterator = m_patternTable.elements();
+      tspaIterator = m_patternTable.values().iterator();
       inPatterns = true;
       curPattern = null;
     }
@@ -818,26 +754,26 @@ public class TemplateList implements java.io.Serializable {
           if (null != curPattern) {
             retValue = curPattern.getTemplate();
           } else {
-            if (hashIterator.hasMoreElements()) {
-              curPattern = (TemplateSubPatternAssociation) hashIterator.nextElement();
+            if (tspaIterator.hasNext()) {
+              curPattern = tspaIterator.next();
               retValue = curPattern.getTemplate();
             } else {
               inPatterns = false;
-              hashIterator = m_namedTemplates.elements();
+              etIterator = m_namedTemplates.values().iterator();
             }
           }
         }
 
         if (!inPatterns) {
-          if (hashIterator.hasMoreElements()) {
-            retValue = (ElemTemplate) hashIterator.nextElement();
+          if (etIterator.hasNext()) {
+            retValue = etIterator.next();
           } else
             return null;
         }
 
-        ct = (ElemTemplate) m_compilerCache.get(new Integer(retValue.getUid()));
+        ct = m_compilerCache.get(retValue.getUid());
         if (null == ct) {
-          m_compilerCache.put(new Integer(retValue.getUid()), retValue);
+          m_compilerCache.put(retValue.getUid(), retValue);
           return retValue;
         }
       }

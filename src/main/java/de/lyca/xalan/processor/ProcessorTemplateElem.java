@@ -62,7 +62,7 @@ public class ProcessorTemplateElem extends XSLTElementProcessor {
     try {
       // ElemTemplateElement parent = handler.getElemTemplateElement();
       final XSLTElementDef def = getElemDef();
-      final Class classObject = def.getClassObject();
+      final Class<?> classObject = def.getClassObject();
       ElemTemplateElement elem = null;
 
       try {

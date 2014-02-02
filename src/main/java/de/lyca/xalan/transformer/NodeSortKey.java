@@ -31,7 +31,7 @@ import de.lyca.xpath.XPath;
  * 
  * @xsl.usage internal
  */
-class NodeSortKey {
+public class NodeSortKey {
 
   /** Select pattern for this sort key */
   XPath m_selectPat;

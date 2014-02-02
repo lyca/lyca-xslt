@@ -289,20 +289,6 @@ public class AxesWalker extends PredicatedNodeTest implements Cloneable, PathCom
   }
 
   /**
-   * This is simply a way to bottle-neck the return of the next node, for
-   * diagnostic purposes.
-   * 
-   * @param n
-   *          Node to return, or null.
-   * 
-   * @return The argument.
-   */
-  private int returnNextNode(int n) {
-
-    return n;
-  }
-
-  /**
    * Get the next node in document order on the axes.
    * 
    * @return the next node in document order on the axes, or null.
@@ -414,9 +400,7 @@ public class AxesWalker extends PredicatedNodeTest implements Cloneable, PathCom
     try {
       lpi.setLastUsedWalker(walker);
 
-      int next;
-
-      while (DTM.NULL != (next = walker.nextNode())) {
+      while (DTM.NULL != walker.nextNode()) {
         pos++;
       }
 

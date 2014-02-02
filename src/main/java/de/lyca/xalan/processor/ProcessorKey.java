@@ -97,7 +97,7 @@ class ProcessorKey extends XSLTElementProcessor {
 
     // Keep track of which XSLTAttributeDefs have been processed, so
     // I can see which default values need to be set.
-    final List processedDefs = new ArrayList();
+    final List<XSLTAttributeDef> processedDefs = new ArrayList<>();
     final int nAttrs = attributes.getLength();
 
     for (int i = 0; i < nAttrs; i++) {

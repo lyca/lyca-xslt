@@ -20,7 +20,8 @@
  */
 package de.lyca.xalan.lib.sql;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Provide a simple Array storage mechinsim where native Arrays will be use as
@@ -36,7 +37,7 @@ public class ObjectArray {
   /**
    * The container of all the sub arrays
    */
-  private final Vector m_Arrays = new Vector(200);
+  private final List<_ObjectArray> m_Arrays = new ArrayList<>(200);
 
   /**
    * An index that porvides the Vector entry for the current Array that is being
@@ -88,7 +89,7 @@ public class ObjectArray {
     // If the array has been off loaded to the Vector Storage them
     // grab it from there.
     if (arrayIndx < m_Arrays.size()) {
-      final _ObjectArray a = (_ObjectArray) m_Arrays.elementAt(arrayIndx);
+      final _ObjectArray a = m_Arrays.get(arrayIndx);
       return a.objects[arrayOffset];
     } else
       // %REVIEW% We may want to check to see if arrayIndx is only
@@ -112,7 +113,7 @@ public class ObjectArray {
     // If the array has been off loaded to the Vector Storage them
     // grab it from there.
     if (arrayIndx < m_Arrays.size()) {
-      final _ObjectArray a = (_ObjectArray) m_Arrays.elementAt(arrayIndx);
+      final _ObjectArray a = m_Arrays.get(arrayIndx);
       a.objects[arrayOffset] = obj;
     } else {
       // We must be in the current array, so pull it from there
@@ -131,7 +132,7 @@ public class ObjectArray {
    */
   public int append(Object o) {
     if (m_nextSlot >= m_minArraySize) {
-      m_Arrays.addElement(m_currentArray);
+      m_Arrays.add(m_currentArray);
       m_nextSlot = 0;
       m_currentArray = new _ObjectArray(m_minArraySize);
     }

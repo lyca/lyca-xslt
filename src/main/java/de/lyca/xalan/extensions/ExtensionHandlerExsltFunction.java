@@ -159,7 +159,7 @@ public class ExtensionHandlerExsltFunction extends ExtensionHandler {
    * @throws TransformerException
    */
   @Override
-  public Object callFunction(String funcName, List args, Object methodKey, ExpressionContext exprContext)
+  public Object callFunction(String funcName, List<?> args, Object methodKey, ExpressionContext exprContext)
           throws TransformerException {
     throw new TransformerException("This method should not be called.");
   }
@@ -177,7 +177,7 @@ public class ExtensionHandlerExsltFunction extends ExtensionHandler {
    * @throws TransformerException
    */
   @Override
-  public Object callFunction(FuncExtFunction extFunction, List args, ExpressionContext exprContext)
+  public Object callFunction(FuncExtFunction extFunction, List<?> args, ExpressionContext exprContext)
           throws TransformerException {
     // Find the template which invokes this EXSLT function.
     ExpressionNode parent = extFunction.exprGetParent();

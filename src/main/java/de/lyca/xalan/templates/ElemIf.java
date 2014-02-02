@@ -20,9 +20,12 @@
  */
 package de.lyca.xalan.templates;
 
+import java.util.List;
+
 import javax.xml.transform.TransformerException;
 
 import de.lyca.xalan.transformer.TransformerImpl;
+import de.lyca.xml.utils.QName;
 import de.lyca.xpath.XPath;
 import de.lyca.xpath.XPathContext;
 import de.lyca.xpath.objects.XObject;
@@ -90,7 +93,7 @@ public class ElemIf extends ElemTemplateElement {
 
     super.compose(sroot);
 
-    final java.util.Vector vnames = sroot.getComposeState().getVariableNames();
+    final List<QName> vnames = sroot.getComposeState().getVariableNames();
 
     if (null != m_test) {
       m_test.fixupVariables(vnames, sroot.getComposeState().getGlobalsSize());

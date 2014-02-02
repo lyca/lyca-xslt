@@ -49,7 +49,7 @@ public class ExtensionEvent {
     m_callType = METHOD;
   }
 
-  public ExtensionEvent(TransformerImpl transformer, Constructor constructor, Object[] arguments) {
+  public ExtensionEvent(TransformerImpl transformer, Constructor<?> constructor, Object[] arguments) {
     m_transformer = transformer;
     m_instance = null;
     m_arguments = arguments;
@@ -57,7 +57,7 @@ public class ExtensionEvent {
     m_callType = CONSTRUCTOR;
   }
 
-  public ExtensionEvent(TransformerImpl transformer, Class clazz) {
+  public ExtensionEvent(TransformerImpl transformer, Class<?> clazz) {
     m_transformer = transformer;
     m_instance = null;
     m_arguments = null;

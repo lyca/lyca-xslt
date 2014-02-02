@@ -788,9 +788,6 @@ public class StepPattern extends NodeTest implements SubContextList, ExpressionO
     return buf.toString();
   }
 
-  /** Set to true to send diagnostics about pattern matches to the consol. */
-  private static final boolean DEBUG_MATCHES = false;
-
   /**
    * Get the match score of the given node.
    * 

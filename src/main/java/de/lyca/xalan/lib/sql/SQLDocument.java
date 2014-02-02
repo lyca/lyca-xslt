@@ -29,7 +29,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
-import java.util.Vector;
+import java.util.List;
 
 import de.lyca.xalan.extensions.ExpressionContext;
 import de.lyca.xml.dtm.DTM;
@@ -669,13 +669,13 @@ public class SQLDocument extends DTMDocument {
           m_FirstRowIdx = DTM.NULL;
           addRowToDTMFromResultSet();
         } else {
-          final Vector parameters = m_QueryParser.getParameters();
+          final List<QueryParameter> parameters = m_QueryParser.getParameters();
           // Get output parameters.
           if (parameters != null) {
             final int outParamIdx = addElement(1, m_OutParameter_TypeID, m_SQLIdx, m_RowSetIdx);
             int lastColID = DTM.NULL;
             for (int indx = 0; indx < parameters.size(); indx++) {
-              final QueryParameter parm = (QueryParameter) parameters.elementAt(indx);
+              final QueryParameter parm = parameters.get(indx);
               if (parm.isOutput()) {
                 final Object rawobj = ((CallableStatement) m_Statement).getObject(indx + 1);
                 lastColID = addElementWithData(rawobj, 2, m_Col_TypeID, outParamIdx, lastColID);

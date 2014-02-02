@@ -22,16 +22,19 @@ package de.lyca.xalan.templates;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.transform.TransformerException;
 
+import de.lyca.xalan.transformer.NodeSortKey;
 import de.lyca.xalan.transformer.NodeSorter;
 import de.lyca.xalan.transformer.TransformerImpl;
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xml.dtm.DTMIterator;
 import de.lyca.xml.dtm.DTMManager;
 import de.lyca.xml.utils.IntStack;
+import de.lyca.xml.utils.QName;
 import de.lyca.xpath.Expression;
 import de.lyca.xpath.ExpressionOwner;
 import de.lyca.xpath.XPath;
@@ -135,7 +138,7 @@ public class ElemForEach extends ElemTemplateElement implements ExpressionOwner 
       getSortElem(i).compose(sroot);
     }
 
-    final java.util.Vector vnames = sroot.getComposeState().getVariableNames();
+    final List<QName> vnames = sroot.getComposeState().getVariableNames();
 
     if (null != m_selectExpression) {
       m_selectExpression.fixupVariables(vnames, sroot.getComposeState().getGlobalsSize());
@@ -181,7 +184,7 @@ public class ElemForEach extends ElemTemplateElement implements ExpressionOwner 
    * 
    * @serial
    */
-  protected Vector m_sortElems = null;
+  protected List<ElemSort> m_sortElems = null;
 
   /**
    * Get the count xsl:sort elements associated with this element.
@@ -201,7 +204,7 @@ public class ElemForEach extends ElemTemplateElement implements ExpressionOwner 
    * @return xsl:sort element at given index
    */
   public ElemSort getSortElem(int i) {
-    return (ElemSort) m_sortElems.elementAt(i);
+    return m_sortElems.get(i);
   }
 
   /**
@@ -213,10 +216,10 @@ public class ElemForEach extends ElemTemplateElement implements ExpressionOwner 
   public void setSortElem(ElemSort sortElem) {
 
     if (null == m_sortElems) {
-      m_sortElems = new Vector();
+      m_sortElems = new ArrayList<>();
     }
 
-    m_sortElems.addElement(sortElem);
+    m_sortElems.add(sortElem);
   }
 
   /**
@@ -293,7 +296,7 @@ public class ElemForEach extends ElemTemplateElement implements ExpressionOwner 
    * 
    * @throws TransformerException
    */
-  public DTMIterator sortNodes(XPathContext xctxt, Vector keys, DTMIterator sourceNodes) throws TransformerException {
+  public DTMIterator sortNodes(XPathContext xctxt, List<NodeSortKey> keys, DTMIterator sourceNodes) throws TransformerException {
 
     final NodeSorter sorter = new NodeSorter(xctxt);
     sourceNodes.setShouldCacheNodes(true);
@@ -328,7 +331,7 @@ public class ElemForEach extends ElemTemplateElement implements ExpressionOwner 
 
     try {
 
-      final Vector keys = m_sortElems == null ? null : transformer.processSortKeys(this, sourceNode);
+      final List<NodeSortKey> keys = m_sortElems == null ? null : transformer.processSortKeys(this, sourceNode);
 
       // Sort if we need to.
       if (null != keys) {

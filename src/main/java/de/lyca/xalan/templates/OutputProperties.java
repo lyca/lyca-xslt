@@ -20,9 +20,10 @@
  */
 package de.lyca.xalan.templates;
 
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Properties;
-import java.util.Vector;
 
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.TransformerException;
@@ -408,7 +409,7 @@ public class OutputProperties extends ElemTemplateElement implements Cloneable {
    *          non-null list of QNames corresponding to <tt>key</tt>.
    * @see javax.xml.transform.OutputKeys
    */
-  public void setQNameProperties(QName key, Vector v) {
+  public void setQNameProperties(QName key, List<QName> v) {
     setQNameProperties(key.toNamespacedString(), v);
   }
 
@@ -422,7 +423,7 @@ public class OutputProperties extends ElemTemplateElement implements Cloneable {
    *          non-null list of QNames corresponding to <tt>key</tt>.
    * @see javax.xml.transform.OutputKeys
    */
-  public void setQNameProperties(String key, Vector v) {
+  public void setQNameProperties(String key, List<QName> v) {
 
     final int s = v.size();
 
@@ -430,7 +431,7 @@ public class OutputProperties extends ElemTemplateElement implements Cloneable {
     final FastStringBuffer fsb = new FastStringBuffer(9, 9);
 
     for (int i = 0; i < s; i++) {
-      final QName qname = (QName) v.elementAt(i);
+      final QName qname = v.get(i);
 
       fsb.append(qname.toNamespacedString());
       // Don't append space after last value
@@ -453,7 +454,7 @@ public class OutputProperties extends ElemTemplateElement implements Cloneable {
    * @return the value in this property list as a vector of QNames, or false if
    *         null or not "yes".
    */
-  public Vector getQNameProperties(QName key) {
+  public List<QName> getQNameProperties(QName key) {
     return getQNameProperties(key.toNamespacedString());
   }
 
@@ -468,7 +469,7 @@ public class OutputProperties extends ElemTemplateElement implements Cloneable {
    * @return the value in this property list as a vector of QNames, or false if
    *         null or not "yes".
    */
-  public Vector getQNameProperties(String key) {
+  public List<QName> getQNameProperties(String key) {
     return getQNameProperties(key, m_properties);
   }
 
@@ -485,12 +486,12 @@ public class OutputProperties extends ElemTemplateElement implements Cloneable {
    * @return the value in this property list as a vector of QNames, or false if
    *         null or not "yes".
    */
-  public static Vector getQNameProperties(String key, Properties props) {
+  public static List<QName> getQNameProperties(String key, Properties props) {
 
     final String s = props.getProperty(key);
 
     if (null != s) {
-      final Vector v = new Vector();
+      final List<QName> v = new ArrayList<>();
       final int l = s.length();
       boolean inCurly = false;
       final FastStringBuffer buf = new FastStringBuffer();
@@ -505,7 +506,7 @@ public class OutputProperties extends ElemTemplateElement implements Cloneable {
           if (!inCurly) {
             if (buf.length() > 0) {
               final QName qname = QName.getQNameFromString(buf.toString());
-              v.addElement(qname);
+              v.add(qname);
               buf.reset();
             }
             continue;
@@ -521,7 +522,7 @@ public class OutputProperties extends ElemTemplateElement implements Cloneable {
 
       if (buf.length() > 0) {
         final QName qname = QName.getQNameFromString(buf.toString());
-        v.addElement(qname);
+        v.add(qname);
         buf.reset();
       }
 

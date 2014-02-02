@@ -20,8 +20,9 @@
  */
 package de.lyca.xalan.templates;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
-import java.util.Vector;
 
 import javax.xml.transform.TransformerException;
 
@@ -29,6 +30,7 @@ import de.lyca.xalan.processor.StylesheetHandler;
 import de.lyca.xalan.res.XSLMessages;
 import de.lyca.xalan.res.XSLTErrorResources;
 import de.lyca.xml.utils.FastStringBuffer;
+import de.lyca.xml.utils.QName;
 import de.lyca.xml.utils.StringBufferPool;
 import de.lyca.xpath.XPath;
 import de.lyca.xpath.XPathContext;
@@ -65,7 +67,7 @@ public class AVT implements java.io.Serializable, XSLTVisitable {
    * 
    * @serial
    */
-  private Vector m_parts = null;
+  private List<AVTPart> m_parts = null;
 
   /**
    * The name of the attribute.
@@ -185,7 +187,7 @@ public class AVT implements java.io.Serializable, XSLTVisitable {
         exprBuffer = new FastStringBuffer(6);
       }
       try {
-        m_parts = new Vector(nTokens + 1);
+        m_parts = new ArrayList<>(nTokens + 1);
 
         String t = null; // base token
         String lookahead = null; // next token
@@ -233,7 +235,7 @@ public class AVT implements java.io.Serializable, XSLTVisitable {
                    */
                   else {
                     if (buffer.length() > 0) {
-                      m_parts.addElement(new AVTPartSimple(buffer.toString()));
+                      m_parts.add(new AVTPartSimple(buffer.toString()));
                       buffer.setLength(0);
                     }
 
@@ -282,7 +284,7 @@ public class AVT implements java.io.Serializable, XSLTVisitable {
 
                             final XPath xpath = handler.createXPath(exprBuffer.toString(), owner);
 
-                            m_parts.addElement(new AVTPartXPath(xpath));
+                            m_parts.add(new AVTPartXPath(xpath));
 
                             lookahead = null; // breaks out of inner while loop
 
@@ -368,7 +370,7 @@ public class AVT implements java.io.Serializable, XSLTVisitable {
         } // end while(tokenizer.hasMoreTokens())
 
         if (buffer.length() > 0) {
-          m_parts.addElement(new AVTPartSimple(buffer.toString()));
+          m_parts.add(new AVTPartSimple(buffer.toString()));
           buffer.setLength(0);
         }
       } finally {
@@ -406,7 +408,7 @@ public class AVT implements java.io.Serializable, XSLTVisitable {
       final int n = m_parts.size();
       try {
         for (int i = 0; i < n; i++) {
-          final AVTPart part = (AVTPart) m_parts.elementAt(i);
+          final AVTPart part = m_parts.get(i);
           buf.append(part.getSimpleString());
         }
         out = buf.toString();
@@ -447,7 +449,7 @@ public class AVT implements java.io.Serializable, XSLTVisitable {
       final int n = m_parts.size();
       try {
         for (int i = 0; i < n; i++) {
-          final AVTPart part = (AVTPart) m_parts.elementAt(i);
+          final AVTPart part = m_parts.get(i);
           part.evaluate(xctxt, buf, context, nsNode);
         }
         out = buf.toString();
@@ -489,7 +491,7 @@ public class AVT implements java.io.Serializable, XSLTVisitable {
       final int n = m_parts.size();
 
       for (int i = 0; i < n; i++) {
-        final AVTPart part = (AVTPart) m_parts.elementAt(i);
+        final AVTPart part = m_parts.get(i);
 
         if (part.canTraverseOutsideSubtree())
           return true;
@@ -511,12 +513,12 @@ public class AVT implements java.io.Serializable, XSLTVisitable {
    *          stack frame (but variables above the globalsTop value will need to
    *          be offset to the current stack frame).
    */
-  public void fixupVariables(java.util.Vector vars, int globalsSize) {
+  public void fixupVariables(List<QName> vars, int globalsSize) {
     if (null != m_parts) {
       final int n = m_parts.size();
 
       for (int i = 0; i < n; i++) {
-        final AVTPart part = (AVTPart) m_parts.elementAt(i);
+        final AVTPart part = m_parts.get(i);
 
         part.fixupVariables(vars, globalsSize);
       }
@@ -532,7 +534,7 @@ public class AVT implements java.io.Serializable, XSLTVisitable {
       final int n = m_parts.size();
 
       for (int i = 0; i < n; i++) {
-        final AVTPart part = (AVTPart) m_parts.elementAt(i);
+        final AVTPart part = m_parts.get(i);
 
         part.callVisitors(visitor);
       }

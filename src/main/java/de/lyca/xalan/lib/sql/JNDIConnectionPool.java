@@ -243,10 +243,10 @@ public class JNDIConnectionPool implements ConnectionPool {
       final InitialContext context = new InitialContext();
       jdbcSource = context.lookup(jndiPath);
 
-      final Class withArgs[] = { String.class, String.class };
+      final Class<?>[] withArgs = { String.class, String.class };
       getConnectionWithArgs = jdbcSource.getClass().getDeclaredMethod("getConnection", withArgs);
 
-      final Class noArgs[] = {};
+      final Class<?>[] noArgs = {};
       getConnection = jdbcSource.getClass().getDeclaredMethod("getConnection", noArgs);
 
     } catch (final NamingException e) {

@@ -20,6 +20,8 @@
  */
 package de.lyca.xalan.templates;
 
+import java.util.List;
+
 import javax.xml.transform.TransformerException;
 
 import de.lyca.xalan.res.XSLTErrorResources;
@@ -348,7 +350,7 @@ public class ElemVariable extends ElemTemplateElement {
 
     // This should be done before addVariableName, so we don't have visibility
     // to the variable now being defined.
-    final java.util.Vector vnames = cstate.getVariableNames();
+    final List<QName> vnames = cstate.getVariableNames();
     if (null != m_selectPattern) {
       m_selectPattern.fixupVariables(vnames, cstate.getGlobalsSize());
     }

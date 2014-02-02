@@ -111,10 +111,10 @@ public class ExtensionNamespaceContext implements NamespaceContext {
   }
 
   @Override
-  public Iterator getPrefixes(String namespace) {
+  public Iterator<String> getPrefixes(String namespace) {
     final String result = getPrefix(namespace);
 
-    return new Iterator() {
+    return new Iterator<String>() {
 
       private boolean isFirstIteration = result != null;
 
@@ -124,7 +124,7 @@ public class ExtensionNamespaceContext implements NamespaceContext {
       }
 
       @Override
-      public Object next() {
+      public String next() {
         if (isFirstIteration) {
           isFirstIteration = false;
           return result;

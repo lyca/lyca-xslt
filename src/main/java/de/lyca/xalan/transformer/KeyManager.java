@@ -20,7 +20,8 @@
  */
 package de.lyca.xalan.transformer;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import de.lyca.xalan.templates.ElemTemplateElement;
 import de.lyca.xml.utils.PrefixResolver;
@@ -39,7 +40,7 @@ public class KeyManager {
    * 
    * @see de.lyca.xalan.transformer.KeyTable
    */
-  private transient Vector m_key_tables = null;
+  private transient List<KeyTable> m_key_tables = null;
 
   /**
    * Given a valid element key, return the corresponding node list.
@@ -70,12 +71,12 @@ public class KeyManager {
       boolean foundDoc = false;
 
       if (null == m_key_tables) {
-        m_key_tables = new Vector(4);
+        m_key_tables = new ArrayList<>(4);
       } else {
         final int nKeyTables = m_key_tables.size();
 
         for (int i = 0; i < nKeyTables; i++) {
-          final KeyTable kt = (KeyTable) m_key_tables.elementAt(i);
+          final KeyTable kt = m_key_tables.get(i);
 
           if (kt.getKeyTableName().equals(name) && doc == kt.getDocKey()) {
             nl = kt.getNodeSetDTMByKey(name, ref);
@@ -92,7 +93,7 @@ public class KeyManager {
       if (null == nl && !foundDoc /* && m_needToBuildKeysTable */) {
         final KeyTable kt = new KeyTable(doc, nscontext, name, template.getStylesheetRoot().getKeysComposed(), xctxt);
 
-        m_key_tables.addElement(kt);
+        m_key_tables.add(kt);
 
         if (doc == kt.getDocKey()) {
           foundDoc = true;

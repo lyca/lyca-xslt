@@ -20,7 +20,7 @@
  */
 package de.lyca.xalan.transformer;
 
-import java.util.Vector;
+import java.util.List;
 
 import javax.xml.transform.TransformerException;
 
@@ -64,7 +64,7 @@ public class KeyIterator extends OneStepIteratorForward {
    * 
    * @serial
    */
-  private final Vector m_keyDeclarations;
+  private final List<KeyDeclaration> m_keyDeclarations;
 
   /**
    * Get the key declarations from the stylesheet
@@ -72,7 +72,7 @@ public class KeyIterator extends OneStepIteratorForward {
    * 
    * @return Vector containing the key declarations from the stylesheet
    */
-  public Vector getKeyDeclarations() {
+  public List<KeyDeclaration> getKeyDeclarations() {
     return m_keyDeclarations;
   }
 
@@ -81,7 +81,7 @@ public class KeyIterator extends OneStepIteratorForward {
    * 
    * @throws javax.xml.transform.TransformerException
    */
-  KeyIterator(QName name, Vector keyDeclarations) {
+  KeyIterator(QName name, List<KeyDeclaration> keyDeclarations) {
     super(Axis.ALL);
     m_keyDeclarations = keyDeclarations;
     // m_prefixResolver = nscontext;
@@ -105,7 +105,7 @@ public class KeyIterator extends OneStepIteratorForward {
     boolean foundKey = false;
     final KeyIterator ki = (KeyIterator) m_lpi;
     final de.lyca.xpath.XPathContext xctxt = ki.getXPathContext();
-    final Vector keys = ki.getKeyDeclarations();
+    final List<KeyDeclaration> keys = ki.getKeyDeclarations();
 
     final QName name = ki.getName();
     try {
@@ -114,7 +114,7 @@ public class KeyIterator extends OneStepIteratorForward {
 
       // Walk through each of the declarations made with xsl:key
       for (int i = 0; i < nDeclarations; i++) {
-        final KeyDeclaration kd = (KeyDeclaration) keys.elementAt(i);
+        final KeyDeclaration kd = keys.get(i);
 
         // Only continue if the name on this key declaration
         // matches the name on the iterator for this walker.

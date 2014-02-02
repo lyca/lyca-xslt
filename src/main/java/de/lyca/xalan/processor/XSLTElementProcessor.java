@@ -325,10 +325,10 @@ public class XSLTElementProcessor extends ElemTemplateElement {
 
     // Keep track of which XSLTAttributeDefs have been processed, so
     // I can see which default values need to be set.
-    final List processedDefs = new ArrayList();
+    final List<XSLTAttributeDef> processedDefs = new ArrayList<>();
 
     // Keep track of XSLTAttributeDefs that were invalid
-    final List errorDefs = new ArrayList();
+    final List<XSLTAttributeDef> errorDefs = new ArrayList<>();
     final int nAttrs = attributes.getLength();
 
     for (int i = 0; i < nAttrs; i++) {

@@ -20,7 +20,8 @@
  */
 package de.lyca.xalan.processor;
 
-import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 import de.lyca.xalan.templates.Constants;
 import de.lyca.xalan.templates.ElemApplyImport;
@@ -660,7 +661,7 @@ public class XSLTSchema extends XSLTElementDef {
    * element-available function. TODO: When we convert to Java2, this should be
    * a Set.
    */
-  private final HashMap m_availElems = new HashMap();
+  private final Set<QName> m_availElems = new HashSet<>();
 
   /**
    * Get the table of available elements.
@@ -668,7 +669,7 @@ public class XSLTSchema extends XSLTElementDef {
    * @return table of available elements, keyed by qualified names, and with
    *         values of the same qualified names.
    */
-  public HashMap getElemsAvailable() {
+  public Set<QName> getElemsAvailable() {
     return m_availElems;
   }
 
@@ -680,7 +681,7 @@ public class XSLTSchema extends XSLTElementDef {
    *          elements.
    */
   void addAvailableElement(QName elemName) {
-    m_availElems.put(elemName, elemName);
+    m_availElems.add(elemName);
   }
 
   /**
@@ -693,6 +694,6 @@ public class XSLTSchema extends XSLTElementDef {
    * @return true if an element corresponding to elemName is available.
    */
   public boolean elementAvailable(QName elemName) {
-    return m_availElems.containsKey(elemName);
+    return m_availElems.contains(elemName);
   }
 }

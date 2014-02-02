@@ -197,8 +197,6 @@ public class Variable extends Expression implements PathComponent {
    */
   @Override
   public XObject execute(XPathContext xctxt, boolean destructiveOK) throws javax.xml.transform.TransformerException {
-    final de.lyca.xml.utils.PrefixResolver xprefixResolver = xctxt.getNamespaceContext();
-
     XObject result;
     // Is the variable fetched always the same?
     // XObject result = xctxt.getVariable(m_qname);

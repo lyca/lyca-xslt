@@ -89,7 +89,6 @@ public class ContextMatchStepPattern extends StepPattern {
     final DTM dtm = xctxt.getDTM(context);
 
     if (null != dtm) {
-      final int predContext = xctxt.getCurrentNode();
       DTMAxisTraverser traverser;
 
       int axis = m_axis;

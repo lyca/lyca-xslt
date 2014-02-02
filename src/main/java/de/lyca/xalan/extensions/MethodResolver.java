@@ -82,17 +82,17 @@ public class MethodResolver {
    * @throws TransformerException
    *           may be thrown for Xalan conversion exceptions.
    */
-  public static Constructor getConstructor(Class classObj, Object[] argsIn, Object[][] argsOut,
+  public static Constructor<?> getConstructor(Class<?> classObj, Object[] argsIn, Object[][] argsOut,
           ExpressionContext exprContext) throws NoSuchMethodException, SecurityException, TransformerException {
-    Constructor bestConstructor = null;
-    Class[] bestParamTypes = null;
-    final Constructor[] constructors = classObj.getConstructors();
+    Constructor<?> bestConstructor = null;
+    Class<?>[] bestParamTypes = null;
+    final Constructor<?>[] constructors = classObj.getConstructors();
     final int nMethods = constructors.length;
     int bestScore = Integer.MAX_VALUE;
     int bestScoreCount = 0;
     for (int i = 0; i < nMethods; i++) {
-      final Constructor ctor = constructors[i];
-      final Class[] paramTypes = ctor.getParameterTypes();
+      final Constructor<?> ctor = constructors[i];
+      final Class<?>[] paramTypes = ctor.getParameterTypes();
       final int numberMethodParams = paramTypes.length;
       int paramStart = 0;
       boolean isFirstExpressionContext = false;
@@ -101,7 +101,7 @@ public class MethodResolver {
       // System.out.println("argsIn.length: "+argsIn.length);
       // System.out.println("exprContext: "+exprContext);
       if (numberMethodParams == argsIn.length + 1) {
-        final Class javaClass = paramTypes[0];
+        final Class<?> javaClass = paramTypes[0];
         // System.out.println("first javaClass: "+javaClass.getName());
         if (ExpressionContext.class.isAssignableFrom(javaClass)) {
           isFirstExpressionContext = true;
@@ -160,7 +160,7 @@ public class MethodResolver {
    * @throws TransformerException
    *           may be thrown for Xalan conversion exceptions.
    */
-  public static Method getMethod(Class classObj, String name, Object[] argsIn, Object[][] argsOut,
+  public static Method getMethod(Class<?> classObj, String name, Object[] argsIn, Object[][] argsOut,
           ExpressionContext exprContext, int searchMethod) throws NoSuchMethodException, SecurityException,
           TransformerException {
     // System.out.println("---> Looking for method: "+name);
@@ -169,7 +169,7 @@ public class MethodResolver {
       name = replaceDash(name);
     }
     Method bestMethod = null;
-    Class[] bestParamTypes = null;
+    Class<?>[] bestParamTypes = null;
     final Method[] methods = classObj.getMethods();
     final int nMethods = methods.length;
     int bestScore = Integer.MAX_VALUE;
@@ -203,7 +203,7 @@ public class MethodResolver {
             }
         }
         int javaParamStart = 0;
-        final Class[] paramTypes = method.getParameterTypes();
+        final Class<?>[] paramTypes = method.getParameterTypes();
         final int numberMethodParams = paramTypes.length;
         boolean isFirstExpressionContext = false;
         int scoreStart;
@@ -212,7 +212,7 @@ public class MethodResolver {
         // System.out.println("exprContext: "+exprContext);
         final int argsLen = null != argsIn ? argsIn.length : 0;
         if (numberMethodParams == argsLen - xsltParamStart + 1) {
-          final Class javaClass = paramTypes[0];
+          final Class<?> javaClass = paramTypes[0];
           if (ExpressionContext.class.isAssignableFrom(javaClass)) {
             isFirstExpressionContext = true;
             scoreStart = 0;
@@ -283,7 +283,7 @@ public class MethodResolver {
    * @throws TransformerException
    *           may be thrown for Xalan conversion exceptions.
    */
-  public static Method getElementMethod(Class classObj, String name) throws NoSuchMethodException, SecurityException,
+  public static Method getElementMethod(Class<?> classObj, String name) throws NoSuchMethodException, SecurityException,
           TransformerException {
     // System.out.println("---> Looking for element method: "+name);
     // System.out.println("---> classObj: "+classObj);
@@ -295,7 +295,7 @@ public class MethodResolver {
       final Method method = methods[i];
       // System.out.println("looking at method: "+method);
       if (method.getName().equals(name)) {
-        final Class[] paramTypes = method.getParameterTypes();
+        final Class<?>[] paramTypes = method.getParameterTypes();
         if (paramTypes.length == 2 && paramTypes[1].isAssignableFrom(de.lyca.xalan.templates.ElemExtensionCall.class)
                 && paramTypes[0].isAssignableFrom(de.lyca.xalan.extensions.XSLProcessorContext.class)) {
           if (++bestScoreCount == 1) {
@@ -331,8 +331,8 @@ public class MethodResolver {
    * @throws TransformerException
    *           may be thrown for Xalan conversion exceptions.
    */
-  public static void convertParams(Object[] argsIn, Object[][] argsOut, Class[] paramTypes,
-          ExpressionContext exprContext) throws javax.xml.transform.TransformerException {
+  public static void convertParams(Object[] argsIn, Object[][] argsOut, Class<?>[] paramTypes,
+          ExpressionContext exprContext) throws TransformerException {
     // System.out.println("In convertParams");
     if (paramTypes == null) {
       argsOut[0] = null;
@@ -360,12 +360,12 @@ public class MethodResolver {
    * relative scores, for use by the table below.
    */
   static class ConversionInfo {
-    ConversionInfo(Class cl, int score) {
+    ConversionInfo(Class<?> cl, int score) {
       m_class = cl;
       m_score = score;
     }
 
-    Class m_class; // Java class to convert to.
+    Class<?> m_class; // Java class to convert to.
     int m_score; // Match score, closer to zero is more matched.
   }
 
@@ -460,14 +460,14 @@ public class MethodResolver {
    * @return -1 for no allowed conversion, or a positive score that is closer to
    *         zero for more preferred, or further from zero for less preferred.
    */
-  public static int scoreMatch(Class[] javaParamTypes, int javaParamsStart, Object[] xsltArgs, int score) {
+  public static int scoreMatch(Class<?>[] javaParamTypes, int javaParamsStart, Object[] xsltArgs, int score) {
     if (xsltArgs == null || javaParamTypes == null)
       return score;
     final int nParams = xsltArgs.length;
     for (int i = nParams - javaParamTypes.length + javaParamsStart, javaParamTypesIndex = javaParamsStart; i < nParams; i++, javaParamTypesIndex++) {
       final Object xsltObj = xsltArgs[i];
       final int xsltClassType = xsltObj instanceof XObject ? ((XObject) xsltObj).getType() : XObject.CLASS_UNKNOWN;
-      final Class javaClass = javaParamTypes[javaParamTypesIndex];
+      final Class<?> javaClass = javaParamTypes[javaParamTypesIndex];
 
       // System.out.println("Checking xslt: "+xsltObj.getClass().getName()+
       // " against java: "+javaClass.getName());
@@ -536,7 +536,7 @@ public class MethodResolver {
         // etc.
 
         if (XObject.CLASS_UNKNOWN == xsltClassType) {
-          Class realClass = null;
+          Class<?> realClass = null;
 
           if (xsltObj instanceof XObject) {
             final Object realObj = ((XObject) xsltObj).object();
@@ -574,7 +574,7 @@ public class MethodResolver {
    * @throws TransformerException
    *           may be thrown for Xalan conversion exceptions.
    */
-  static Object convert(Object xsltObj, Class javaClass) throws javax.xml.transform.TransformerException {
+  static Object convert(Object xsltObj, Class<?> javaClass) throws TransformerException {
     if (xsltObj instanceof XObject) {
       final XObject xobj = (XObject) xsltObj;
       final int xsltClassType = xobj.getType();
@@ -584,14 +584,14 @@ public class MethodResolver {
           return null;
 
         case XObject.CLASS_BOOLEAN: {
-          if (javaClass == java.lang.String.class)
+          if (javaClass == String.class)
             return xobj.str();
           else
             return xobj.bool() ? Boolean.TRUE : Boolean.FALSE;
         }
         // break; Unreachable
         case XObject.CLASS_NUMBER: {
-          if (javaClass == java.lang.String.class)
+          if (javaClass == String.class)
             return xobj.str();
           else if (javaClass == Boolean.TYPE)
             return xobj.bool() ? Boolean.TRUE : Boolean.FALSE;
@@ -601,7 +601,7 @@ public class MethodResolver {
         // break; Unreachable
 
         case XObject.CLASS_STRING: {
-          if (javaClass == java.lang.String.class || javaClass == java.lang.Object.class)
+          if (javaClass == String.class || javaClass == Object.class)
             return xobj.str();
           else if (javaClass == Character.TYPE) {
             final String str = xobj.str();
@@ -623,7 +623,7 @@ public class MethodResolver {
           // the condition will be true and we'll create a NodeIterator
           // which may not match the javaClass, causing a RuntimeException.
           // if((NodeIterator.class.isAssignableFrom(javaClass)) ||
-          if (javaClass == NodeIterator.class || javaClass == java.lang.Object.class) {
+          if (javaClass == NodeIterator.class || javaClass == Object.class) {
             final DTMIterator dtmIter = ((XRTreeFrag) xobj).asNodeIterator();
             return new DTMNodeIterator(dtmIter);
           } else if (javaClass == NodeList.class)
@@ -633,7 +633,7 @@ public class MethodResolver {
             final int rootHandle = iter.nextNode();
             final DTM dtm = iter.getDTM(rootHandle);
             return dtm.getNode(dtm.getFirstChild(rootHandle));
-          } else if (javaClass == java.lang.String.class)
+          } else if (javaClass == String.class)
             return xobj.str();
           else if (javaClass == Boolean.TYPE)
             return xobj.bool() ? Boolean.TRUE : Boolean.FALSE;
@@ -660,7 +660,7 @@ public class MethodResolver {
           // the condition will be true and we'll create a NodeIterator
           // which may not match the javaClass, causing a RuntimeException.
           // if((NodeIterator.class.isAssignableFrom(javaClass)) ||
-          if (javaClass == NodeIterator.class || javaClass == java.lang.Object.class)
+          if (javaClass == NodeIterator.class || javaClass == Object.class)
             return xobj.nodeset();
           else if (javaClass == NodeList.class)
             return xobj.nodelist();
@@ -673,7 +673,7 @@ public class MethodResolver {
               return ni.getDTM(handle).getNode(handle); // may be null.
             else
               return null;
-          } else if (javaClass == java.lang.String.class)
+          } else if (javaClass == String.class)
             return xobj.str();
           else if (javaClass == Boolean.TYPE)
             return xobj.bool() ? Boolean.TRUE : Boolean.FALSE;
@@ -707,7 +707,7 @@ public class MethodResolver {
         final XString xstr = new XString(xsltObj.toString());
         final double num = xstr.num();
         return convertDoubleToNumber(num, javaClass);
-      } else if (javaClass == java.lang.Class.class)
+      } else if (javaClass == Class.class)
         return xsltObj.getClass();
       else
         // Just pass the object directly, and hope for the best.
@@ -726,11 +726,11 @@ public class MethodResolver {
    *          The class type to be converted to.
    * @return An object specified by javaClass, or a Double instance.
    */
-  static Object convertDoubleToNumber(double num, Class javaClass) {
+  static Object convertDoubleToNumber(double num, Class<?> javaClass) {
     // In the code below, I don't check for NaN, etc., instead
     // using the standard Java conversion, as I think we should
     // specify. See issue-runtime-errors.
-    if (javaClass == Double.TYPE || javaClass == java.lang.Double.class)
+    if (javaClass == Double.TYPE || javaClass == Double.class)
       return new Double(num);
     else if (javaClass == Float.TYPE)
       return new Float(num);
@@ -764,7 +764,7 @@ public class MethodResolver {
    */
   private static String errString(String callType, // "function" or "element"
           String searchType, // "method" or "constructor"
-          Class classObj, String funcName, int searchMethod, Object[] xsltArgs) {
+          Class<?> classObj, String funcName, int searchMethod, Object[] xsltArgs) {
     final String resultString = "For extension " + callType + ", could not find " + searchType + " ";
     switch (searchMethod) {
       case STATIC_ONLY:
@@ -795,7 +795,7 @@ public class MethodResolver {
   }
 
   private static String errArgs(Object[] xsltArgs, int startingArg) {
-    final StringBuffer returnArgs = new StringBuffer();
+    final StringBuilder returnArgs = new StringBuilder();
     for (int i = startingArg; i < xsltArgs.length; i++) {
       if (i != startingArg) {
         returnArgs.append(", ");

@@ -556,15 +556,6 @@ final class CharInfo {
   }
 
   /**
-   * For a given integer in the set it returns the single bit value used within
-   * a given word that represents whether the integer is in the set or not.
-   */
-  private static int bit(int i) {
-    final int ret = 1 << (i & LOW_ORDER_BITMASK);
-    return ret;
-  }
-
-  /**
    * Creates a new empty set of integers (characters)
    * 
    * @param max

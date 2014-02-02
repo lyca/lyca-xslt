@@ -20,6 +20,8 @@
  */
 package de.lyca.xalan.templates;
 
+import java.util.List;
+
 import javax.xml.transform.TransformerException;
 
 import org.xml.sax.SAXException;
@@ -131,7 +133,7 @@ public class ElemElement extends ElemUse {
     super.compose(sroot);
 
     final StylesheetRoot.ComposeState cstate = sroot.getComposeState();
-    final java.util.Vector vnames = cstate.getVariableNames();
+    final List<QName> vnames = cstate.getVariableNames();
     if (null != m_name_avt) {
       m_name_avt.fixupVariables(vnames, cstate.getGlobalsSize());
     }

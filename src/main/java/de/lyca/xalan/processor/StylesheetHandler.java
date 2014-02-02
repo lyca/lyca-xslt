@@ -20,7 +20,10 @@
  */
 package de.lyca.xalan.processor;
 
-import java.util.Stack;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.List;
 
 import javax.xml.transform.ErrorListener;
 import javax.xml.transform.Source;
@@ -43,6 +46,8 @@ import de.lyca.xalan.res.XSLTErrorResources;
 import de.lyca.xalan.templates.Constants;
 import de.lyca.xalan.templates.ElemForEach;
 import de.lyca.xalan.templates.ElemTemplateElement;
+import de.lyca.xalan.templates.FuncDocument;
+import de.lyca.xalan.templates.FuncFormatNumb;
 import de.lyca.xalan.templates.Stylesheet;
 import de.lyca.xalan.templates.StylesheetRoot;
 import de.lyca.xml.utils.BoolStack;
@@ -95,12 +100,12 @@ public class StylesheetHandler extends DefaultHandler implements TemplatesHandle
    *           if a StylesheetRoot can not be constructed for some reason.
    */
   public StylesheetHandler(TransformerFactoryImpl processor) throws TransformerConfigurationException {
-    Class func = de.lyca.xalan.templates.FuncDocument.class;
+    Class<?> func = FuncDocument.class;
     m_funcTable.installFunction("document", func);
 
     // func = new de.lyca.xalan.templates.FuncKey();
     // FunctionTable.installFunction("key", func);
-    func = de.lyca.xalan.templates.FuncFormatNumb.class;
+    func = FuncFormatNumb.class;
 
     m_funcTable.installFunction("format-number", func);
 
@@ -232,22 +237,8 @@ public class StylesheetHandler extends DefaultHandler implements TemplatesHandle
    * 
    * @return true if the stack contains the url argument.
    */
-  private boolean stackContains(Stack stack, String url) {
-
-    final int n = stack.size();
-    boolean contains = false;
-
-    for (int i = 0; i < n; i++) {
-      final String url2 = (String) stack.elementAt(i);
-
-      if (url2.equals(url)) {
-        contains = true;
-
-        break;
-      }
-    }
-
-    return contains;
+  private boolean stackContains(Deque<String> stack, String url) {
+    return stack.contains(url);
   }
 
   // //////////////////////////////////////////////////////////////////
@@ -503,7 +494,7 @@ public class StylesheetHandler extends DefaultHandler implements TemplatesHandle
     }
   }
 
-  private final java.util.Vector m_prefixMappings = new java.util.Vector();
+  private final List<String> m_prefixMappings = new ArrayList<>();
 
   /**
    * Receive notification of the start of a Namespace mapping.
@@ -530,8 +521,8 @@ public class StylesheetHandler extends DefaultHandler implements TemplatesHandle
     // this.getNamespaceSupport().declarePrefix(prefix, uri);
     // m_prefixMappings.add(prefix); // JDK 1.2+ only -sc
     // m_prefixMappings.add(uri); // JDK 1.2+ only -sc
-    m_prefixMappings.addElement(prefix); // JDK 1.1.x compat -sc
-    m_prefixMappings.addElement(uri); // JDK 1.1.x compat -sc
+    m_prefixMappings.add(prefix); // JDK 1.1.x compat -sc
+    m_prefixMappings.add(uri); // JDK 1.1.x compat -sc
   }
 
   /**
@@ -594,12 +585,12 @@ public class StylesheetHandler extends DefaultHandler implements TemplatesHandle
     final int n = m_prefixMappings.size();
 
     for (int i = 0; i < n; i++) {
-      final String prefix = (String) m_prefixMappings.elementAt(i++);
-      final String nsURI = (String) m_prefixMappings.elementAt(i);
+      final String prefix = m_prefixMappings.get(i++);
+      final String nsURI = m_prefixMappings.get(i);
       nssupport.declarePrefix(prefix, nsURI);
     }
     // m_prefixMappings.clear(); // JDK 1.2+ only -sc
-    m_prefixMappings.removeAllElements(); // JDK 1.1.x compat -sc
+    m_prefixMappings.clear(); // JDK 1.1.x compat -sc
 
     m_elementID++;
 
@@ -1151,7 +1142,7 @@ public class StylesheetHandler extends DefaultHandler implements TemplatesHandle
   /**
    * The stack of stylesheets being processed.
    */
-  private final Stack m_stylesheets = new Stack();
+  private final Deque<Stylesheet> m_stylesheets = new ArrayDeque<>();
 
   /**
    * Return the stylesheet that this handler is constructing.
@@ -1226,7 +1217,7 @@ public class StylesheetHandler extends DefaultHandler implements TemplatesHandle
     }
 
     if (!m_stylesheets.isEmpty()) {
-      m_lastPoppedStylesheet = (Stylesheet) m_stylesheets.pop();
+      m_lastPoppedStylesheet = m_stylesheets.pop();
     }
 
     // Shouldn't this be null if stylesheets is empty? -sb
@@ -1236,7 +1227,7 @@ public class StylesheetHandler extends DefaultHandler implements TemplatesHandle
   /**
    * The stack of current processors.
    */
-  private final Stack m_processors = new Stack();
+  private final Deque<XSLTElementProcessor> m_processors = new ArrayDeque<>();
 
   /**
    * Get the current XSLTElementProcessor at the top of the stack.
@@ -1244,7 +1235,7 @@ public class StylesheetHandler extends DefaultHandler implements TemplatesHandle
    * @return Valid XSLTElementProcessor, which should never be null.
    */
   XSLTElementProcessor getCurrentProcessor() {
-    return (XSLTElementProcessor) m_processors.peek();
+    return m_processors.peek();
   }
 
   /**
@@ -1263,7 +1254,7 @@ public class StylesheetHandler extends DefaultHandler implements TemplatesHandle
    * @return the XSLTElementProcessor which was popped.
    */
   XSLTElementProcessor popProcessor() {
-    return (XSLTElementProcessor) m_processors.pop();
+    return m_processors.pop();
   }
 
   /**
@@ -1287,7 +1278,7 @@ public class StylesheetHandler extends DefaultHandler implements TemplatesHandle
   /**
    * The stack of elements, pushed and popped as events occur.
    */
-  private final Stack m_elems = new Stack();
+  private final Deque<ElemTemplateElement> m_elems = new ArrayDeque<>();
 
   /**
    * Get the current ElemTemplateElement at the top of the stack.
@@ -1297,7 +1288,7 @@ public class StylesheetHandler extends DefaultHandler implements TemplatesHandle
   ElemTemplateElement getElemTemplateElement() {
 
     try {
-      return (ElemTemplateElement) m_elems.peek();
+      return m_elems.peek();
     } catch (final java.util.EmptyStackException ese) {
       return null;
     }
@@ -1341,13 +1332,13 @@ public class StylesheetHandler extends DefaultHandler implements TemplatesHandle
    * @return the ElemTemplateElement which was popped.
    */
   ElemTemplateElement popElemTemplateElement() {
-    return (ElemTemplateElement) m_elems.pop();
+    return m_elems.pop();
   }
 
   /**
    * This will act as a stack to keep track of the current include base.
    */
-  Stack m_baseIdentifiers = new Stack();
+  Deque<String> m_baseIdentifiers = new ArrayDeque<>();
 
   /**
    * Push a base identifier onto the base URI stack.
@@ -1382,7 +1373,7 @@ public class StylesheetHandler extends DefaultHandler implements TemplatesHandle
    * @return baseIdentifier.
    */
   String popBaseIndentifier() {
-    return (String) m_baseIdentifiers.pop();
+    return m_baseIdentifiers.pop();
   }
 
   /**
@@ -1396,7 +1387,7 @@ public class StylesheetHandler extends DefaultHandler implements TemplatesHandle
     // Try to get the baseIdentifier from the baseIdentifier's stack,
     // which may not be the same thing as the value found in the
     // SourceLocators stack.
-    String base = (String) (m_baseIdentifiers.isEmpty() ? null : m_baseIdentifiers.peek());
+    String base = m_baseIdentifiers.isEmpty() ? null : m_baseIdentifiers.peek();
 
     // Otherwise try the stylesheet.
     if (null == base) {
@@ -1412,7 +1403,7 @@ public class StylesheetHandler extends DefaultHandler implements TemplatesHandle
    * The top of this stack should contain the currently processed stylesheet SAX
    * locator object.
    */
-  private final Stack m_stylesheetLocatorStack = new Stack();
+  private final Deque<SAXSourceLocator> m_stylesheetLocatorStack = new ArrayDeque<>();
 
   /**
    * Get the current stylesheet Locator object.
@@ -1431,21 +1422,21 @@ public class StylesheetHandler extends DefaultHandler implements TemplatesHandle
       // m_stylesheetLocatorStack.push(locator);
     }
 
-    return (SAXSourceLocator) m_stylesheetLocatorStack.peek();
+    return m_stylesheetLocatorStack.peek();
   }
 
   /**
    * A stack of URL hrefs for imported stylesheets. This is used to diagnose
    * circular imports.
    */
-  private final Stack m_importStack = new Stack();
+  private final Deque<String> m_importStack = new ArrayDeque<>();
 
   /**
    * A stack of Source objects obtained from a URIResolver, for each element in
    * this stack there is a 1-1 correspondence with an element in the
    * m_importStack.
    */
-  private final Stack m_importSourceStack = new Stack();
+  private final Deque<Source> m_importSourceStack = new ArrayDeque<>();
 
   /**
    * Push an import href onto the stylesheet stack.
@@ -1485,15 +1476,15 @@ public class StylesheetHandler extends DefaultHandler implements TemplatesHandle
    * @return non-null reference to the import URL that was popped.
    */
   String popImportURL() {
-    return (String) m_importStack.pop();
+    return m_importStack.pop();
   }
 
   String peekImportURL() {
-    return (String) m_importStack.peek();
+    return m_importStack.peek();
   }
 
   Source peekSourceFromURIResolver() {
-    return (Source) m_importSourceStack.peek();
+    return m_importSourceStack.peek();
   }
 
   /**
@@ -1501,7 +1492,7 @@ public class StylesheetHandler extends DefaultHandler implements TemplatesHandle
    * popped from the m_importStack.
    */
   Source popImportSource() {
-    return (Source) m_importSourceStack.pop();
+    return m_importSourceStack.pop();
   }
 
   /**
@@ -1511,7 +1502,7 @@ public class StylesheetHandler extends DefaultHandler implements TemplatesHandle
   private final boolean warnedAboutOldXSLTNamespace = false;
 
   /** Stack of NamespaceSupport objects. */
-  Stack m_nsSupportStack = new Stack();
+  Deque<NamespaceSupport2> m_nsSupportStack = new ArrayDeque<>();
 
   /**
    * Push a new NamespaceSupport instance.
@@ -1535,7 +1526,7 @@ public class StylesheetHandler extends DefaultHandler implements TemplatesHandle
    *         is the top of the namespace support stack.
    */
   NamespaceSupport getNamespaceSupport() {
-    return (NamespaceSupport) m_nsSupportStack.peek();
+    return m_nsSupportStack.peek();
   }
 
   /**

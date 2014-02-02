@@ -320,7 +320,7 @@ public class SAX2RTFDTM extends SAX2DTM {
 
     final int ds = top ? m_emptyNSDeclSetCount : mark_nsdeclset_size.pop();
     if (m_namespaceDeclSets != null) {
-      m_namespaceDeclSets = new ArrayList(m_namespaceDeclSets.subList(0, ds));
+      m_namespaceDeclSets = new ArrayList<>(m_namespaceDeclSets.subList(0, ds));
       // TODO m_namespaceDeclSets.setSize(ds);
     }
 

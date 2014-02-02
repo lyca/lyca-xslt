@@ -133,16 +133,6 @@ public final class Messages {
   }
 
   /**
-   * Get the ListResourceBundle being used by this Messages instance which was
-   * previously set by a call to loadResourceBundle(className)
-   * 
-   * @xsl.usage internal
-   */
-  private ListResourceBundle getResourceBundle() {
-    return m_resourceBundle;
-  }
-
-  /**
    * Creates a message from the specified key and replacement arguments,
    * localized to the given locale.
    * 
@@ -289,27 +279,5 @@ public final class Messages {
     }
     m_resourceBundle = lrb;
     return lrb;
-  }
-
-  /**
-   * Return the resource file suffic for the indicated locale For most locales,
-   * this will be based the language code. However for Chinese, we do
-   * distinguish between Taiwan and PRC
-   * 
-   * @param locale
-   *          the locale
-   * @return an String suffix which can be appended to a resource name
-   * @xsl.usage internal
-   */
-  private static String getResourceSuffix(Locale locale) {
-
-    String suffix = "_" + locale.getLanguage();
-    final String country = locale.getCountry();
-
-    if (country.equals("TW")) {
-      suffix += "_" + country;
-    }
-
-    return suffix;
   }
 }

@@ -20,8 +20,8 @@
  */
 package de.lyca.xalan.processor;
 
-import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 
 import de.lyca.xml.utils.QName;
 
@@ -59,7 +59,7 @@ public class XSLTElementDef {
    *          The class of the object that this element def should produce.
    */
   XSLTElementDef(XSLTSchema schema, String namespace, String name, String nameAlias, XSLTElementDef[] elements,
-          XSLTAttributeDef[] attributes, XSLTElementProcessor contentHandler, Class classObject) {
+          XSLTAttributeDef[] attributes, XSLTElementProcessor contentHandler, Class<?> classObject) {
     build(namespace, name, nameAlias, elements, attributes, contentHandler, classObject);
     if (null != namespace
             && (namespace.equals(de.lyca.xml.utils.Constants.S_XSLNAMESPACEURL)
@@ -94,7 +94,7 @@ public class XSLTElementDef {
    *          specification.
    */
   XSLTElementDef(XSLTSchema schema, String namespace, String name, String nameAlias, XSLTElementDef[] elements,
-          XSLTAttributeDef[] attributes, XSLTElementProcessor contentHandler, Class classObject, boolean has_required) {
+          XSLTAttributeDef[] attributes, XSLTElementProcessor contentHandler, Class<?> classObject, boolean has_required) {
     m_has_required = has_required;
     build(namespace, name, nameAlias, elements, attributes, contentHandler, classObject);
     if (null != namespace
@@ -133,8 +133,8 @@ public class XSLTElementDef {
    *          true if this element is required by the XSLT specification.
    */
   XSLTElementDef(XSLTSchema schema, String namespace, String name, String nameAlias, XSLTElementDef[] elements,
-          XSLTAttributeDef[] attributes, XSLTElementProcessor contentHandler, Class classObject, boolean has_required,
-          boolean required) {
+          XSLTAttributeDef[] attributes, XSLTElementProcessor contentHandler, Class<?> classObject,
+          boolean has_required, boolean required) {
     this(schema, namespace, name, nameAlias, elements, attributes, contentHandler, classObject, has_required);
     m_required = required;
   }
@@ -168,8 +168,8 @@ public class XSLTElementDef {
    *          whether this element is allowed more than once
    */
   XSLTElementDef(XSLTSchema schema, String namespace, String name, String nameAlias, XSLTElementDef[] elements,
-          XSLTAttributeDef[] attributes, XSLTElementProcessor contentHandler, Class classObject, boolean has_required,
-          boolean required, int order, boolean multiAllowed) {
+          XSLTAttributeDef[] attributes, XSLTElementProcessor contentHandler, Class<?> classObject,
+          boolean has_required, boolean required, int order, boolean multiAllowed) {
     this(schema, namespace, name, nameAlias, elements, attributes, contentHandler, classObject, has_required, required);
     m_order = order;
     m_multiAllowed = multiAllowed;
@@ -206,8 +206,8 @@ public class XSLTElementDef {
    *          whether this element is allowed more than once
    */
   XSLTElementDef(XSLTSchema schema, String namespace, String name, String nameAlias, XSLTElementDef[] elements,
-          XSLTAttributeDef[] attributes, XSLTElementProcessor contentHandler, Class classObject, boolean has_required,
-          boolean required, boolean has_order, int order, boolean multiAllowed) {
+          XSLTAttributeDef[] attributes, XSLTElementProcessor contentHandler, Class<?> classObject,
+          boolean has_required, boolean required, boolean has_order, int order, boolean multiAllowed) {
     this(schema, namespace, name, nameAlias, elements, attributes, contentHandler, classObject, has_required, required);
     m_order = order;
     m_multiAllowed = multiAllowed;
@@ -240,7 +240,7 @@ public class XSLTElementDef {
    *          whether this element is allowed more than once
    */
   XSLTElementDef(XSLTSchema schema, String namespace, String name, String nameAlias, XSLTElementDef[] elements,
-          XSLTAttributeDef[] attributes, XSLTElementProcessor contentHandler, Class classObject, boolean has_order,
+          XSLTAttributeDef[] attributes, XSLTElementProcessor contentHandler, Class<?> classObject, boolean has_order,
           int order, boolean multiAllowed) {
     this(schema, namespace, name, nameAlias, elements, attributes, contentHandler, classObject, order, multiAllowed);
     m_isOrdered = has_order;
@@ -270,7 +270,7 @@ public class XSLTElementDef {
    *          whether this element is allowed more than once
    */
   XSLTElementDef(XSLTSchema schema, String namespace, String name, String nameAlias, XSLTElementDef[] elements,
-          XSLTAttributeDef[] attributes, XSLTElementProcessor contentHandler, Class classObject, int order,
+          XSLTAttributeDef[] attributes, XSLTElementProcessor contentHandler, Class<?> classObject, int order,
           boolean multiAllowed) {
     this(schema, namespace, name, nameAlias, elements, attributes, contentHandler, classObject);
     m_order = order;
@@ -287,7 +287,7 @@ public class XSLTElementDef {
    * @param type
    *          Content type, one of T_ELEMENT, T_PCDATA, or T_ANY.
    */
-  XSLTElementDef(Class classObject, XSLTElementProcessor contentHandler, int type) {
+  XSLTElementDef(Class<?> classObject, XSLTElementProcessor contentHandler, int type) {
 
     m_classObject = classObject;
     m_type = type;
@@ -314,7 +314,7 @@ public class XSLTElementDef {
    *          The class of the object that this element def should produce.
    */
   void build(String namespace, String name, String nameAlias, XSLTElementDef[] elements, XSLTAttributeDef[] attributes,
-          XSLTElementProcessor contentHandler, Class classObject) {
+          XSLTElementProcessor contentHandler, Class<?> classObject) {
 
     m_namespace = namespace;
     m_name = name;
@@ -333,7 +333,7 @@ public class XSLTElementDef {
 
         if (def != null && def.getRequired()) {
           if (m_requiredFound == null) {
-            m_requiredFound = new Hashtable();
+            m_requiredFound = new HashMap<>();
           }
           m_requiredFound.put(def.getName(), "xsl:" + def.getName());
         }
@@ -673,7 +673,7 @@ public class XSLTElementDef {
    * If non-null, the class object that should in instantiated for a Xalan
    * instance of this element.
    */
-  private Class m_classObject;
+  private Class<?> m_classObject;
 
   /**
    * Return the class object that should in instantiated for a Xalan instance of
@@ -682,7 +682,7 @@ public class XSLTElementDef {
    * @return The class of the object that this element def should produce, or
    *         null.
    */
-  Class getClassObject() {
+  Class<?> getClassObject() {
     return m_classObject;
   }
 
@@ -714,7 +714,7 @@ public class XSLTElementDef {
     return m_required;
   }
 
-  Hashtable m_requiredFound;
+  Map<String, String> m_requiredFound;
 
   /**
    * Set this required element found.
@@ -745,18 +745,17 @@ public class XSLTElementDef {
   String getRequiredElem() {
     if (m_requiredFound == null)
       return null;
-    final Enumeration elems = m_requiredFound.elements();
-    String s = "";
+    StringBuilder sb = new StringBuilder();
     boolean first = true;
-    while (elems.hasMoreElements()) {
+    for (String value : m_requiredFound.values()) {
       if (first) {
         first = false;
       } else {
-        s = s + ", ";
+        sb.append(", ");
       }
-      s = s + (String) elems.nextElement();
+      sb.append(value);
     }
-    return s;
+    return sb.toString();
   }
 
   boolean m_isOrdered = false;

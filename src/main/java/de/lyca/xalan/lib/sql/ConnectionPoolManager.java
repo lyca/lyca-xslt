@@ -21,7 +21,8 @@
 
 package de.lyca.xalan.lib.sql;
 
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 
 import de.lyca.xalan.res.XSLMessages;
 import de.lyca.xalan.res.XSLTErrorResources;
@@ -31,7 +32,7 @@ import de.lyca.xalan.res.XSLTErrorResources;
 public class ConnectionPoolManager {
   /**
    */
-  private static Hashtable m_poolTable = null;
+  private static Map<String, ConnectionPool> m_poolTable = null;
 
   /**
    */
@@ -48,7 +49,7 @@ public class ConnectionPoolManager {
      * Only do this process once Initialize the pool table
      */
     if (m_poolTable == null) {
-      m_poolTable = new Hashtable();
+      m_poolTable = new HashMap<>();
     }
   }
 
@@ -111,7 +112,7 @@ public class ConnectionPoolManager {
    *         return null
    */
   public synchronized ConnectionPool getPool(String name) {
-    return (ConnectionPool) m_poolTable.get(name);
+    return m_poolTable.get(name);
   }
 
 }

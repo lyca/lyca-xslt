@@ -27,9 +27,10 @@ import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.Hashtable;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Vector;
+import java.util.Map;
 
 import javax.xml.transform.TransformerException;
 
@@ -62,10 +63,10 @@ public class ExtensionHandlerGeneral extends ExtensionHandler {
   private final String m_scriptSrcURL;
 
   /** functions of namespace */
-  private final Hashtable m_functions = new Hashtable();
+  private final Map<String, Object> m_functions = new HashMap<>();
 
   /** elements of namespace */
-  private final Hashtable m_elements = new Hashtable();
+  private final Map<String, Object> m_elements = new HashMap<>();
 
   // BSF objects used to invoke BSF by reflection. Do not import the BSF classes
   // since we don't want a compile dependency on BSF.
@@ -260,7 +261,7 @@ public class ExtensionHandlerGeneral extends ExtensionHandler {
    *           if parsing trouble
    */
   @Override
-  public Object callFunction(String funcName, List args, Object methodKey, ExpressionContext exprContext)
+  public Object callFunction(String funcName, List<?> args, Object methodKey, ExpressionContext exprContext)
           throws TransformerException {
 
     Object[] argArray;
@@ -273,7 +274,7 @@ public class ExtensionHandlerGeneral extends ExtensionHandler {
 
         argArray[i] = o instanceof XObject ? ((XObject) o).object() : o;
         o = argArray[i];
-        if (null != o && o instanceof DTMIterator) {
+        if (o instanceof DTMIterator) {
           argArray[i] = new DTMNodeList((DTMIterator) o);
         }
       }
@@ -318,7 +319,7 @@ public class ExtensionHandlerGeneral extends ExtensionHandler {
    * @throws TransformerException
    */
   @Override
-  public Object callFunction(FuncExtFunction extFunction, List args, ExpressionContext exprContext)
+  public Object callFunction(FuncExtFunction extFunction, List<?> args, ExpressionContext exprContext)
           throws TransformerException {
     return callFunction(extFunction.getFunctionName(), args, extFunction.getMethodKey(), exprContext);
   }
@@ -358,7 +359,7 @@ public class ExtensionHandlerGeneral extends ExtensionHandler {
     final XSLProcessorContext xpc = new XSLProcessorContext(transformer, stylesheetTree);
 
     try {
-      final Vector argv = new Vector(2);
+      final List<Object> argv = new ArrayList<>(2);
 
       argv.add(xpc);
       argv.add(element);

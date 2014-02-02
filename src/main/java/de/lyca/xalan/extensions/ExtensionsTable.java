@@ -20,9 +20,11 @@
  */
 package de.lyca.xalan.extensions;
 
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Vector;
+import java.util.Map;
+
+import javax.xml.transform.TransformerException;
 
 import de.lyca.xalan.res.XSLMessages;
 import de.lyca.xalan.res.XSLTErrorResources;
@@ -42,7 +44,7 @@ public class ExtensionsTable {
    * 
    * @xsl.usage internal
    */
-  public Hashtable m_extensionFunctionNamespaces = new Hashtable();
+  public Map<String, ExtensionHandler> m_extensionFunctionNamespaces = new HashMap<>();
 
   /**
    * The StylesheetRoot associated with this extensions table.
@@ -56,11 +58,11 @@ public class ExtensionsTable {
    * 
    * @xsl.usage advanced
    */
-  public ExtensionsTable(StylesheetRoot sroot) throws javax.xml.transform.TransformerException {
+  public ExtensionsTable(StylesheetRoot sroot) throws TransformerException {
     m_sroot = sroot;
-    final Vector extensions = m_sroot.getExtensions();
+    final List<ExtensionNamespaceSupport> extensions = m_sroot.getExtensions();
     for (int i = 0; i < extensions.size(); i++) {
-      final ExtensionNamespaceSupport extNamespaceSpt = (ExtensionNamespaceSupport) extensions.get(i);
+      final ExtensionNamespaceSupport extNamespaceSpt = extensions.get(i);
       final ExtensionHandler extHandler = extNamespaceSpt.launch();
       if (extHandler != null) {
         addExtensionNamespace(extNamespaceSpt.getNamespace(), extHandler);
@@ -77,7 +79,7 @@ public class ExtensionsTable {
    * @return ExtensionHandler object that represents the given namespace.
    */
   public ExtensionHandler get(String extns) {
-    return (ExtensionHandler) m_extensionFunctionNamespaces.get(extns);
+    return m_extensionFunctionNamespaces.get(extns);
   }
 
   /**
@@ -105,13 +107,13 @@ public class ExtensionsTable {
    * 
    * @return whether the given function is available or not.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException
    */
-  public boolean functionAvailable(String ns, String funcName) throws javax.xml.transform.TransformerException {
+  public boolean functionAvailable(String ns, String funcName) throws TransformerException {
     boolean isAvailable = false;
 
     if (null != ns) {
-      final ExtensionHandler extNS = (ExtensionHandler) m_extensionFunctionNamespaces.get(ns);
+      final ExtensionHandler extNS = m_extensionFunctionNamespaces.get(ns);
       if (extNS != null) {
         isAvailable = extNS.isFunctionAvailable(funcName);
       }
@@ -129,12 +131,12 @@ public class ExtensionsTable {
    * 
    * @return whether the given element is available or not.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException
    */
-  public boolean elementAvailable(String ns, String elemName) throws javax.xml.transform.TransformerException {
+  public boolean elementAvailable(String ns, String elemName) throws TransformerException {
     boolean isAvailable = false;
     if (null != ns) {
-      final ExtensionHandler extNS = (ExtensionHandler) m_extensionFunctionNamespaces.get(ns);
+      final ExtensionHandler extNS = m_extensionFunctionNamespaces.get(ns);
       if (extNS != null) {
         isAvailable = extNS.isElementAvailable(elemName);
       }
@@ -160,20 +162,20 @@ public class ExtensionsTable {
    * 
    * @return result of executing the function
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException
    */
-  public Object extFunction(String ns, String funcName, List argVec, Object methodKey, ExpressionContext exprContext)
-          throws javax.xml.transform.TransformerException {
+  public Object extFunction(String ns, String funcName, List<?> argVec, Object methodKey, ExpressionContext exprContext)
+          throws TransformerException {
     Object result = null;
     if (null != ns) {
-      final ExtensionHandler extNS = (ExtensionHandler) m_extensionFunctionNamespaces.get(ns);
+      final ExtensionHandler extNS = m_extensionFunctionNamespaces.get(ns);
       if (null != extNS) {
         try {
           result = extNS.callFunction(funcName, argVec, methodKey, exprContext);
-        } catch (final javax.xml.transform.TransformerException e) {
+        } catch (final TransformerException e) {
           throw e;
         } catch (final Exception e) {
-          throw new javax.xml.transform.TransformerException(e);
+          throw new TransformerException(e);
         }
       } else
         throw new XPathProcessorException(XSLMessages.createMessage(XSLTErrorResources.ER_EXTENSION_FUNC_UNKNOWN,
@@ -197,21 +199,21 @@ public class ExtensionsTable {
    * 
    * @return result of executing the function
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException
    */
-  public Object extFunction(FuncExtFunction extFunction, List argVec, ExpressionContext exprContext)
-          throws javax.xml.transform.TransformerException {
+  public Object extFunction(FuncExtFunction extFunction, List<?> argVec, ExpressionContext exprContext)
+          throws TransformerException {
     Object result = null;
     final String ns = extFunction.getNamespace();
     if (null != ns) {
-      final ExtensionHandler extNS = (ExtensionHandler) m_extensionFunctionNamespaces.get(ns);
+      final ExtensionHandler extNS = m_extensionFunctionNamespaces.get(ns);
       if (null != extNS) {
         try {
           result = extNS.callFunction(extFunction, argVec, exprContext);
-        } catch (final javax.xml.transform.TransformerException e) {
+        } catch (final TransformerException e) {
           throw e;
         } catch (final Exception e) {
-          throw new javax.xml.transform.TransformerException(e);
+          throw new TransformerException(e);
         }
       } else
         throw new XPathProcessorException(XSLMessages.createMessage(XSLTErrorResources.ER_EXTENSION_FUNC_UNKNOWN,

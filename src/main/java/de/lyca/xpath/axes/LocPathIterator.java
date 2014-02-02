@@ -545,9 +545,7 @@ public abstract class LocPathIterator extends PredicatedNodeTest implements Clon
       // ...which looks like a dumb bug to me. -sb
     }
 
-    int next;
-
-    while (DTM.NULL != (next = clone.nextNode())) {
+    while (DTM.NULL != clone.nextNode()) {
       pos++;
     }
 
@@ -789,14 +787,12 @@ public abstract class LocPathIterator extends PredicatedNodeTest implements Clon
     if (m_foundLast || index >= 0 && index <= getCurrentPos())
       return;
 
-    int n;
-
     if (-1 == index) {
-      while (DTM.NULL != (n = nextNode())) {
+      while (DTM.NULL != nextNode()) {
         ;
       }
     } else {
-      while (DTM.NULL != (n = nextNode())) {
+      while (DTM.NULL != nextNode()) {
         if (getCurrentPos() >= index) {
           break;
         }

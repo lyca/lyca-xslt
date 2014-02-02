@@ -20,10 +20,11 @@
  */
 package de.lyca.xalan.processor;
 
-import java.util.Vector;
+import java.util.List;
 
 import de.lyca.xalan.templates.Stylesheet;
 import de.lyca.xalan.templates.WhiteSpaceInfo;
+import de.lyca.xpath.XPath;
 
 public class WhitespaceInfoPaths extends WhiteSpaceInfo {
   static final long serialVersionUID = 5954766719577516723L;
@@ -32,7 +33,7 @@ public class WhitespaceInfoPaths extends WhiteSpaceInfo {
    * Bean property to allow setPropertiesFromAttributes to get the elements
    * attribute.
    */
-  private Vector m_elements;
+  private List<XPath> m_elements;
 
   /**
    * Set from the elements attribute. This is a list of whitespace delimited
@@ -42,7 +43,7 @@ public class WhitespaceInfoPaths extends WhiteSpaceInfo {
    *          Should be a non-null reference to a list of
    *          {@link de.lyca.xpath.XPath} objects.
    */
-  public void setElements(Vector elems) {
+  public void setElements(List<XPath> elems) {
     m_elements = elems;
   }
 
@@ -53,7 +54,7 @@ public class WhitespaceInfoPaths extends WhiteSpaceInfo {
    * @return A reference to a list of {@link de.lyca.xpath.XPath} objects, or
    *         null.
    */
-  Vector getElements() {
+  List<XPath> getElements() {
     return m_elements;
   }
 

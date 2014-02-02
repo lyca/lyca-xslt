@@ -20,6 +20,8 @@
  */
 package de.lyca.xalan.templates;
 
+import java.util.List;
+
 import javax.xml.transform.TransformerException;
 
 import de.lyca.xalan.res.XSLTErrorResources;
@@ -155,7 +157,7 @@ public class ElemWithParam extends ElemTemplateElement {
     m_qnameID = sroot.getComposeState().getQNameID(m_qname);
     super.compose(sroot);
 
-    final java.util.Vector vnames = sroot.getComposeState().getVariableNames();
+    final List<QName> vnames = sroot.getComposeState().getVariableNames();
     if (null != m_selectPattern) {
       m_selectPattern.fixupVariables(vnames, sroot.getComposeState().getGlobalsSize());
     }

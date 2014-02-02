@@ -21,7 +21,8 @@
 package de.lyca.xalan.transformer;
 
 import java.text.CollationKey;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.transform.TransformerException;
 
@@ -42,7 +43,7 @@ public class NodeSorter {
   XPathContext m_execContext;
 
   /** Vector of NodeSortKeys */
-  Vector m_keys; // vector of NodeSortKeys
+  List<NodeSortKey> m_keys; // list of NodeSortKeys
 
   // /**
   // * TODO: Adjust this for locale.
@@ -73,7 +74,7 @@ public class NodeSorter {
    * 
    * @throws javax.xml.transform.TransformerException
    */
-  public void sort(DTMIterator v, Vector keys, XPathContext support) throws javax.xml.transform.TransformerException {
+  public void sort(DTMIterator v, List<NodeSortKey> keys, XPathContext support) throws javax.xml.transform.TransformerException {
 
     m_keys = keys;
 
@@ -86,21 +87,21 @@ public class NodeSorter {
 
     // Create a vector of node compare elements
     // based on the input vector of nodes
-    final Vector nodes = new Vector();
+    final List<NodeCompareElem> nodes = new ArrayList<>();
 
     for (int i = 0; i < n; i++) {
       final NodeCompareElem elem = new NodeCompareElem(v.item(i));
 
-      nodes.addElement(elem);
+      nodes.add(elem);
     }
 
-    final Vector scratchVector = new Vector();
+    final List<NodeCompareElem> scratchVector = new ArrayList<>();
 
     mergesort(nodes, scratchVector, 0, n - 1, support);
 
     // return sorted vector of nodes
     for (int i = 0; i < n; i++) {
-      v.setItem(((NodeCompareElem) nodes.elementAt(i)).m_node, i);
+      v.setItem(nodes.get(i).m_node, i);
     }
     v.setCurrentPos(0);
 
@@ -129,7 +130,7 @@ public class NodeSorter {
   int compare(NodeCompareElem n1, NodeCompareElem n2, int kIndex, XPathContext support) throws TransformerException {
 
     int result = 0;
-    final NodeSortKey k = (NodeSortKey) m_keys.elementAt(kIndex);
+    final NodeSortKey k = m_keys.get(kIndex);
 
     if (k.m_treatAsNumbers) {
       double n1Num, n2Num;
@@ -269,7 +270,7 @@ public class NodeSorter {
    * 
    * @throws TransformerException
    */
-  void mergesort(Vector a, Vector b, int l, int r, XPathContext support) throws TransformerException {
+  void mergesort(List<NodeCompareElem> a, List<NodeCompareElem> b, int l, int r, XPathContext support) throws TransformerException {
 
     if (r - l > 0) {
       final int m = (r + l) / 2;
@@ -284,9 +285,9 @@ public class NodeSorter {
         // b[i] = a[i];
         // Use insert if we need to increment vector size.
         if (i >= b.size()) {
-          b.insertElementAt(a.elementAt(i), i);
+          b.add(i, a.get(i));
         } else {
-          b.setElementAt(a.elementAt(i), i);
+          b.set(i, a.get(i));
         }
       }
 
@@ -296,9 +297,9 @@ public class NodeSorter {
 
         // b[r+m+1-j] = a[j];
         if (r + m + 1 - j >= b.size()) {
-          b.insertElementAt(a.elementAt(j), r + m + 1 - j);
+          b.add(r + m + 1 - j, a.get(j));
         } else {
-          b.setElementAt(a.elementAt(j), r + m + 1 - j);
+          b.set(r + m + 1 - j, a.get(j));
         }
       }
 
@@ -312,19 +313,19 @@ public class NodeSorter {
         if (i == j) {
           compVal = -1;
         } else {
-          compVal = compare((NodeCompareElem) b.elementAt(i), (NodeCompareElem) b.elementAt(j), 0, support);
+          compVal = compare(b.get(i), b.get(j), 0, support);
         }
 
         if (compVal < 0) {
 
           // a[k]=b[i];
-          a.setElementAt(b.elementAt(i), k);
+          a.set(k, b.get(i));
 
           i++;
         } else if (compVal > 0) {
 
           // a[k]=b[j];
-          a.setElementAt(b.elementAt(j), k);
+          a.set(k, b.get(j));
 
           j--;
         }
@@ -436,11 +437,11 @@ public class NodeSorter {
      * 
      * @throws javax.xml.transform.TransformerException
      */
-    NodeCompareElem(int node) throws javax.xml.transform.TransformerException {
+    NodeCompareElem(int node) throws TransformerException {
       m_node = node;
 
       if (!m_keys.isEmpty()) {
-        final NodeSortKey k1 = (NodeSortKey) m_keys.elementAt(0);
+        final NodeSortKey k1 = m_keys.get(0);
         final XObject r = k1.m_selectPat.execute(m_execContext, node, k1.m_namespaceContext);
 
         double d;
@@ -469,7 +470,7 @@ public class NodeSorter {
         }
 
         if (m_keys.size() > 1) {
-          final NodeSortKey k2 = (NodeSortKey) m_keys.elementAt(1);
+          final NodeSortKey k2 = m_keys.get(1);
 
           final XObject r2 = k2.m_selectPat.execute(m_execContext, node, k2.m_namespaceContext);
 

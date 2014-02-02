@@ -46,7 +46,6 @@ public class FuncUnparsedEntityURI extends FunctionOneArg {
     final String name = m_arg0.execute(xctxt).str();
     final int context = xctxt.getCurrentNode();
     final DTM dtm = xctxt.getDTM(context);
-    final int doc = dtm.getDocument();
 
     final String uri = dtm.getUnparsedEntityURI(name);
 

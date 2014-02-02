@@ -352,14 +352,14 @@ public class PrintTraceListener implements TraceListenerEx3 {
     if (m_traceExtension) {
       switch (ev.m_callType) {
         case ExtensionEvent.DEFAULT_CONSTRUCTOR:
-          m_pw.println("EXTENSION: " + ((Class) ev.m_method).getName() + "#<init>");
+          m_pw.println("EXTENSION: " + ((Class<?>) ev.m_method).getName() + "#<init>");
           break;
         case ExtensionEvent.METHOD:
           m_pw.println("EXTENSION: " + ((Method) ev.m_method).getDeclaringClass().getName() + "#"
                   + ((Method) ev.m_method).getName());
           break;
         case ExtensionEvent.CONSTRUCTOR:
-          m_pw.println("EXTENSION: " + ((Constructor) ev.m_method).getDeclaringClass().getName() + "#<init>");
+          m_pw.println("EXTENSION: " + ((Constructor<?>) ev.m_method).getDeclaringClass().getName() + "#<init>");
           break;
       }
     }

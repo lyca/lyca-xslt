@@ -20,7 +20,8 @@
  */
 package de.lyca.xalan.templates;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import de.lyca.xml.utils.QName;
 import de.lyca.xpath.ExpressionOwner;
@@ -31,13 +32,13 @@ import de.lyca.xpath.operations.Variable;
  * This class visits variable refs in an XPath and collects their QNames.
  */
 public class VarNameCollector extends XPathVisitor {
-  Vector m_refs = new Vector();
+  List<QName> m_refs = new ArrayList<>();
 
   /**
    * Reset the list for a fresh visitation and collection.
    */
   public void reset() {
-    m_refs.removeAllElements(); // .clear();
+    m_refs.clear();
   }
 
   /**
@@ -73,7 +74,7 @@ public class VarNameCollector extends XPathVisitor {
    */
   @Override
   public boolean visitVariableRef(ExpressionOwner owner, Variable var) {
-    m_refs.addElement(var.getQName());
+    m_refs.add(var.getQName());
     return true;
   }
 

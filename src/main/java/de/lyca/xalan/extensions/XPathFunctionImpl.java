@@ -19,7 +19,6 @@
 package de.lyca.xalan.extensions;
 
 import java.util.List;
-import java.util.Vector;
 
 import javax.xml.transform.TransformerException;
 import javax.xml.xpath.XPathFunction;
@@ -45,31 +44,15 @@ public class XPathFunctionImpl implements XPathFunction {
   /**
    * @see javax.xml.xpath.XPathFunction#evaluate(java.util.List)
    */
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   @Override
   public Object evaluate(List args) throws XPathFunctionException {
-    final Vector argsVec = listToVector(args);
-
     try {
       // The method key and ExpressionContext are set to null.
-      return m_handler.callFunction(m_funcName, argsVec, null, null);
+      return m_handler.callFunction(m_funcName, args, null, null);
     } catch (final TransformerException e) {
       throw new XPathFunctionException(e);
     }
   }
 
-  /**
-   * Convert a java.util.List to a java.util.Vector. No conversion is done if
-   * the List is already a Vector.
-   */
-  private static Vector listToVector(List args) {
-    if (args == null)
-      return null;
-    else if (args instanceof Vector)
-      return (Vector) args;
-    else {
-      final Vector result = new Vector();
-      result.addAll(args);
-      return result;
-    }
-  }
 }

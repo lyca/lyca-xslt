@@ -20,6 +20,8 @@
  */
 package de.lyca.xalan.templates;
 
+import java.util.List;
+
 import javax.xml.transform.SourceLocator;
 import javax.xml.transform.TransformerException;
 
@@ -368,7 +370,7 @@ public class ElemTemplate extends ElemTemplateElement {
   public void compose(StylesheetRoot sroot) throws TransformerException {
     super.compose(sroot);
     final StylesheetRoot.ComposeState cstate = sroot.getComposeState();
-    final java.util.Vector vnames = cstate.getVariableNames();
+    final List<QName> vnames = cstate.getVariableNames();
     if (null != m_matchPattern) {
       m_matchPattern.fixupVariables(vnames, sroot.getComposeState().getGlobalsSize());
     }

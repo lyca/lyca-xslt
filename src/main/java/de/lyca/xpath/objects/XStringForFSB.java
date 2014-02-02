@@ -590,7 +590,6 @@ public class XStringForFSB extends XString {
 
     final FastStringBuffer fsb = fsb();
     int to = m_start + toffset;
-    final int tlim = m_start + m_length;
     int po = 0;
     int pc = prefix.length();
 

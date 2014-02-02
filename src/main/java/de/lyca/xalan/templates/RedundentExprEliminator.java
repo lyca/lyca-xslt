@@ -20,7 +20,10 @@
  */
 package de.lyca.xalan.templates;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.w3c.dom.DOMException;
 
 import de.lyca.xalan.res.XSLMessages;
 import de.lyca.xalan.res.XSLTErrorResources;
@@ -46,8 +49,8 @@ import de.lyca.xpath.operations.VariableSafeAbsRef;
  * visitor to the subtree, and then eleminateRedundent must be called.
  */
 public class RedundentExprEliminator extends XSLTVisitor {
-  Vector m_paths;
-  Vector m_absPaths;
+  List<ExpressionOwner> m_paths;
+  List<ExpressionOwner> m_absPaths;
   boolean m_isSameContext;
   AbsPathChecker m_absPathChecker = new AbsPathChecker();
 
@@ -68,7 +71,7 @@ public class RedundentExprEliminator extends XSLTVisitor {
    */
   public RedundentExprEliminator() {
     m_isSameContext = true;
-    m_absPaths = new Vector();
+    m_absPaths = new ArrayList<>();
     m_paths = null;
   }
 
@@ -109,12 +112,12 @@ public class RedundentExprEliminator extends XSLTVisitor {
    *          A vector of paths that hold ExpressionOwner objects, which must
    *          yield LocationPathIterators.
    */
-  protected void eleminateRedundent(ElemTemplateElement psuedoVarRecipient, Vector paths) {
+  protected void eleminateRedundent(ElemTemplateElement psuedoVarRecipient, List<ExpressionOwner> paths) {
     final int n = paths.size();
     int numPathsEliminated = 0;
     int numUniquePathsEliminated = 0;
     for (int i = 0; i < n; i++) {
-      final ExpressionOwner owner = (ExpressionOwner) paths.elementAt(i);
+      final ExpressionOwner owner = paths.get(i);
       if (null != owner) {
         final int found = findAndEliminateRedundant(i + 1, i, owner, psuedoVarRecipient, paths);
         if (found > 0) {
@@ -141,7 +144,7 @@ public class RedundentExprEliminator extends XSLTVisitor {
    *          A vector of paths that hold ExpressionOwner objects, which must
    *          yield LocationPathIterators.
    */
-  protected void eleminateSharedPartialPaths(ElemTemplateElement psuedoVarRecipient, Vector paths) {
+  protected void eleminateSharedPartialPaths(ElemTemplateElement psuedoVarRecipient, List<ExpressionOwner> paths) {
     MultistepExprHolder list = createMultistepExprList(paths);
     if (null != list) {
       if (DIAGNOSE_MULTISTEPLIST) {
@@ -408,7 +411,7 @@ public class RedundentExprEliminator extends XSLTVisitor {
     if (isGlobal) {
       final ElemTemplateElement elem = getElemFromExpression(wi);
       final StylesheetRoot root = elem.getStylesheetRoot();
-      final Vector vars = root.getVariablesAndParamsComposed();
+      final List<ElemVariable> vars = root.getVariablesAndParamsComposed();
       var.setIndex(vars.size() - 1);
     }
 
@@ -509,11 +512,11 @@ public class RedundentExprEliminator extends XSLTVisitor {
    *         1, otherwise the first MultistepExprHolder in a linked list of
    *         these objects.
    */
-  protected MultistepExprHolder createMultistepExprList(Vector paths) {
+  protected MultistepExprHolder createMultistepExprList(List<ExpressionOwner> paths) {
     MultistepExprHolder first = null;
     final int n = paths.size();
     for (int i = 0; i < n; i++) {
-      final ExpressionOwner eo = (ExpressionOwner) paths.elementAt(i);
+      final ExpressionOwner eo = paths.get(i);
       if (null == eo) {
         continue;
       }
@@ -555,7 +558,7 @@ public class RedundentExprEliminator extends XSLTVisitor {
    * @return The number of expression occurances that were modified.
    */
   protected int findAndEliminateRedundant(int start, int firstOccuranceIndex, ExpressionOwner firstOccuranceOwner,
-          ElemTemplateElement psuedoVarRecipient, Vector paths) throws org.w3c.dom.DOMException {
+          ElemTemplateElement psuedoVarRecipient, List<ExpressionOwner> paths) throws DOMException {
     MultistepExprHolder head = null;
     MultistepExprHolder tail = null;
     int numPathsFound = 0;
@@ -569,7 +572,7 @@ public class RedundentExprEliminator extends XSLTVisitor {
     final LocPathIterator lpi = (LocPathIterator) expr1;
     final int stepCount = countSteps(lpi);
     for (int j = start; j < n; j++) {
-      final ExpressionOwner owner2 = (ExpressionOwner) paths.elementAt(j);
+      final ExpressionOwner owner2 = paths.get(j);
       if (null != owner2) {
         final Expression expr2 = owner2.getExpression();
         final boolean isEqual = expr2.deepEquals(lpi);
@@ -584,7 +587,7 @@ public class RedundentExprEliminator extends XSLTVisitor {
           tail = tail.m_next;
 
           // Null out the occurance, so we don't have to test it again.
-          paths.setElementAt(null, j);
+          paths.set(j, null);
 
           // foundFirst = true;
           numPathsFound++;
@@ -616,7 +619,7 @@ public class RedundentExprEliminator extends XSLTVisitor {
       }
       // Replace the first occurance with the variable's XPath, so
       // that further reduction may take place if needed.
-      paths.setElementAt(var.getSelect(), firstOccuranceIndex);
+      paths.set(firstOccuranceIndex, var.getSelect());
     }
 
     return numPathsFound;
@@ -626,7 +629,7 @@ public class RedundentExprEliminator extends XSLTVisitor {
    * To be removed.
    */
   protected int oldFindAndEliminateRedundant(int start, int firstOccuranceIndex, ExpressionOwner firstOccuranceOwner,
-          ElemTemplateElement psuedoVarRecipient, Vector paths) throws org.w3c.dom.DOMException {
+          ElemTemplateElement psuedoVarRecipient, List<ExpressionOwner> paths) throws DOMException {
     QName uniquePseudoVarName = null;
     boolean foundFirst = false;
     int numPathsFound = 0;
@@ -638,7 +641,7 @@ public class RedundentExprEliminator extends XSLTVisitor {
     final boolean isGlobal = paths == m_absPaths;
     final LocPathIterator lpi = (LocPathIterator) expr1;
     for (int j = start; j < n; j++) {
-      final ExpressionOwner owner2 = (ExpressionOwner) paths.elementAt(j);
+      final ExpressionOwner owner2 = paths.get(j);
       if (null != owner2) {
         final Expression expr2 = owner2.getExpression();
         final boolean isEqual = expr2.deepEquals(lpi);
@@ -658,14 +661,14 @@ public class RedundentExprEliminator extends XSLTVisitor {
 
             // Replace the first occurance with the variable's XPath, so
             // that further reduction may take place if needed.
-            paths.setElementAt(var.getSelect(), firstOccuranceIndex);
+            paths.set(firstOccuranceIndex, var.getSelect());
             numPathsFound++;
           }
 
           changeToVarRef(uniquePseudoVarName, owner2, paths, psuedoVarRecipient);
 
           // Null out the occurance, so we don't have to test it again.
-          paths.setElementAt(null, j);
+          paths.set(j, null);
 
           // foundFirst = true;
           numPathsFound++;
@@ -680,7 +683,7 @@ public class RedundentExprEliminator extends XSLTVisitor {
         return 0;
       uniquePseudoVarName = var.getName();
       changeToVarRef(uniquePseudoVarName, firstOccuranceOwner, paths, psuedoVarRecipient);
-      paths.setElementAt(var.getSelect(), firstOccuranceIndex);
+      paths.set(firstOccuranceIndex, var.getSelect());
       numPathsFound++;
     }
     return numPathsFound;
@@ -728,13 +731,13 @@ public class RedundentExprEliminator extends XSLTVisitor {
    *          The element within whose scope the variable is being inserted,
    *          possibly a StylesheetRoot.
    */
-  protected void changeToVarRef(QName varName, ExpressionOwner owner, Vector paths,
+  protected void changeToVarRef(QName varName, ExpressionOwner owner, List<ExpressionOwner> paths,
           ElemTemplateElement psuedoVarRecipient) {
     final Variable varRef = paths == m_absPaths ? new VariableSafeAbsRef() : new Variable();
     varRef.setQName(varName);
     if (paths == m_absPaths) {
       final StylesheetRoot root = (StylesheetRoot) psuedoVarRecipient;
-      final Vector globalVars = root.getVariablesAndParamsComposed();
+      final List<ElemVariable> globalVars = root.getVariablesAndParamsComposed();
       // Assume this operation is occuring just after the decl has
       // been added.
       varRef.setIndex(globalVars.size() - 1);
@@ -792,9 +795,9 @@ public class RedundentExprEliminator extends XSLTVisitor {
     psuedoVar.setSelect(xpath);
     psuedoVar.setName(uniquePseudoVarName);
 
-    final Vector globalVars = stylesheetRoot.getVariablesAndParamsComposed();
+    final List<ElemVariable> globalVars = stylesheetRoot.getVariablesAndParamsComposed();
     psuedoVar.setIndex(globalVars.size());
-    globalVars.addElement(psuedoVar);
+    globalVars.add(psuedoVar);
     return psuedoVar;
   }
 
@@ -1011,12 +1014,12 @@ public class RedundentExprEliminator extends XSLTVisitor {
       if (DEBUG) {
         validateNewAddition(m_absPaths, owner, path);
       }
-      m_absPaths.addElement(owner);
+      m_absPaths.add(owner);
     } else if (m_isSameContext && null != m_paths) {
       if (DEBUG) {
         validateNewAddition(m_paths, owner, path);
       }
-      m_paths.addElement(owner);
+      m_paths.add(owner);
     }
 
     return true;
@@ -1091,8 +1094,8 @@ public class RedundentExprEliminator extends XSLTVisitor {
           select.callVisitors(efe, this);
         }
 
-        final Vector savedPaths = m_paths;
-        m_paths = new Vector();
+        final List<ExpressionOwner> savedPaths = m_paths;
+        m_paths = new ArrayList<>();
 
         // Visit children. Call the superclass callChildVisitors, because
         // we don't want to visit the xsl:for-each select attribute, or, for
@@ -1125,7 +1128,7 @@ public class RedundentExprEliminator extends XSLTVisitor {
   /**
    * Print out to std err the number of paths reduced.
    */
-  protected void diagnoseNumPaths(Vector paths, int numPathsEliminated, int numUniquePathsEliminated) {
+  protected void diagnoseNumPaths(List<ExpressionOwner> paths, int numPathsEliminated, int numUniquePathsEliminated) {
     if (numPathsEliminated > 0) {
       if (paths == m_paths) {
         System.err.println("Eliminated " + numPathsEliminated + " total paths!");
@@ -1157,13 +1160,13 @@ public class RedundentExprEliminator extends XSLTVisitor {
    * Validate some assumptions about the new LocPathIterator and it's owner and
    * the state of the list.
    */
-  private static void validateNewAddition(Vector paths, ExpressionOwner owner, LocPathIterator path)
+  private static void validateNewAddition(List<ExpressionOwner> paths, ExpressionOwner owner, LocPathIterator path)
           throws RuntimeException {
     assertion(owner.getExpression() == path, "owner.getExpression() != path!!!");
     final int n = paths.size();
     // There should never be any duplicates in the list!
     for (int i = 0; i < n; i++) {
-      final ExpressionOwner ew = (ExpressionOwner) paths.elementAt(i);
+      final ExpressionOwner ew = paths.get(i);
       assertion(ew != owner, "duplicate owner on the list!!!");
       assertion(ew.getExpression() != path, "duplicate expression on the list!!!");
     }

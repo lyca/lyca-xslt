@@ -237,7 +237,7 @@ public class NamespaceSupport {
   /**
    * @see org.apache.xerces.xni.NamespaceContext#getAllPrefixes()
    */
-  public Enumeration getAllPrefixes() {
+  public Enumeration<String> getAllPrefixes() {
     int count = 0;
     if (fPrefixes.length < fNamespace.length / 2) {
       // resize prefix array
@@ -262,7 +262,7 @@ public class NamespaceSupport {
     return new Prefixes(fPrefixes, count);
   }
 
-  protected final class Prefixes implements Enumeration {
+  protected final class Prefixes implements Enumeration<String> {
     private final String[] prefixes;
     private int counter = 0;
     private int size = 0;
@@ -287,7 +287,7 @@ public class NamespaceSupport {
      * @see java.util.Enumeration#nextElement()
      */
     @Override
-    public Object nextElement() {
+    public String nextElement() {
       if (counter < size)
         return fPrefixes[counter++];
       throw new NoSuchElementException("Illegal access to Namespace prefixes enumeration.");

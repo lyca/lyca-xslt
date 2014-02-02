@@ -21,8 +21,9 @@
 package de.lyca.xalan.trace;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.TooManyListenersException;
-import java.util.Vector;
 
 import org.w3c.dom.Node;
 
@@ -53,7 +54,7 @@ public class TraceManager {
   /**
    * List of listeners who are interested in tracing what's being generated.
    */
-  private Vector m_traceListeners = null;
+  private List<TraceListener> m_traceListeners = null;
 
   /**
    * Add a trace listener for the purposes of debugging and diagnosis.
@@ -68,10 +69,10 @@ public class TraceManager {
     m_transformer.setDebug(true);
 
     if (null == m_traceListeners) {
-      m_traceListeners = new Vector();
+      m_traceListeners = new ArrayList<>();
     }
 
-    m_traceListeners.addElement(tl);
+    m_traceListeners.add(tl);
   }
 
   /**
@@ -83,7 +84,7 @@ public class TraceManager {
   public void removeTraceListener(TraceListener tl) {
 
     if (null != m_traceListeners) {
-      m_traceListeners.removeElement(tl);
+      m_traceListeners.remove(tl);
 
       // The following line added to fix the bug#5140: hasTraceListeners()
       // returns true
@@ -107,7 +108,7 @@ public class TraceManager {
       final int nListeners = m_traceListeners.size();
 
       for (int i = 0; i < nListeners; i++) {
-        final TraceListener tl = (TraceListener) m_traceListeners.elementAt(i);
+        final TraceListener tl = m_traceListeners.get(i);
 
         tl.generated(te);
       }
@@ -180,7 +181,7 @@ public class TraceManager {
       final int nListeners = m_traceListeners.size();
 
       for (int i = 0; i < nListeners; i++) {
-        final TraceListener tl = (TraceListener) m_traceListeners.elementAt(i);
+        final TraceListener tl = m_traceListeners.get(i);
         if (tl instanceof TraceListenerEx2) {
           ((TraceListenerEx2) tl).traceEnd(te);
         }
@@ -200,7 +201,7 @@ public class TraceManager {
       final int nListeners = m_traceListeners.size();
 
       for (int i = 0; i < nListeners; i++) {
-        final TraceListener tl = (TraceListener) m_traceListeners.elementAt(i);
+        final TraceListener tl = m_traceListeners.get(i);
 
         tl.trace(te);
       }
@@ -273,7 +274,7 @@ public class TraceManager {
       final int nListeners = m_traceListeners.size();
 
       for (int i = 0; i < nListeners; i++) {
-        final TraceListener tl = (TraceListener) m_traceListeners.elementAt(i);
+        final TraceListener tl = m_traceListeners.get(i);
 
         if (tl instanceof TraceListenerEx) {
           ((TraceListenerEx) tl).selectEnd(se);
@@ -296,7 +297,7 @@ public class TraceManager {
       final int nListeners = m_traceListeners.size();
 
       for (int i = 0; i < nListeners; i++) {
-        final TraceListener tl = (TraceListener) m_traceListeners.elementAt(i);
+        final TraceListener tl = m_traceListeners.get(i);
 
         tl.selected(se);
       }
@@ -322,7 +323,7 @@ public class TraceManager {
       final int nListeners = m_traceListeners.size();
 
       for (int i = 0; i < nListeners; i++) {
-        final TraceListener tl = (TraceListener) m_traceListeners.elementAt(i);
+        final TraceListener tl = m_traceListeners.get(i);
         if (tl instanceof TraceListenerEx3) {
           ((TraceListenerEx3) tl).extensionEnd(ee);
         }
@@ -349,7 +350,7 @@ public class TraceManager {
       final int nListeners = m_traceListeners.size();
 
       for (int i = 0; i < nListeners; i++) {
-        final TraceListener tl = (TraceListener) m_traceListeners.elementAt(i);
+        final TraceListener tl = m_traceListeners.get(i);
         if (tl instanceof TraceListenerEx3) {
           ((TraceListenerEx3) tl).extension(ee);
         }
@@ -370,7 +371,7 @@ public class TraceManager {
       final int nListeners = m_traceListeners.size();
 
       for (int i = 0; i < nListeners; i++) {
-        final TraceListener tl = (TraceListener) m_traceListeners.elementAt(i);
+        final TraceListener tl = m_traceListeners.get(i);
         if (tl instanceof TraceListenerEx3) {
           ((TraceListenerEx3) tl).extensionEnd(ee);
         }
@@ -392,7 +393,7 @@ public class TraceManager {
       final int nListeners = m_traceListeners.size();
 
       for (int i = 0; i < nListeners; i++) {
-        final TraceListener tl = (TraceListener) m_traceListeners.elementAt(i);
+        final TraceListener tl = m_traceListeners.get(i);
         if (tl instanceof TraceListenerEx3) {
           ((TraceListenerEx3) tl).extension(ee);
         }

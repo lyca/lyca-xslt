@@ -454,11 +454,10 @@ public class DTMDocument extends DTMDefaultBaseIterators {
    *
    */
   public void dumpDTM() {
-    try {
-      // File f = new File("DTMDump"+((Object)this).hashCode()+".txt");
-      final File f = new File("DTMDump.txt");
-      System.err.println("Dumping... " + f.getAbsolutePath());
-      final PrintStream ps = new PrintStream(new FileOutputStream(f));
+    // File f = new File("DTMDump"+((Object)this).hashCode()+".txt");
+    final File f = new File("DTMDump.txt");
+    System.err.println("Dumping... " + f.getAbsolutePath());
+    try (final PrintStream ps = new PrintStream(new FileOutputStream(f))) {
 
       while (nextNode()) {
       }

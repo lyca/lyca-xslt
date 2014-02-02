@@ -20,7 +20,8 @@
  */
 package de.lyca.xalan.extensions;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Used during assembly of a stylesheet to collect the information for each
@@ -33,18 +34,18 @@ public class ExtensionNamespacesManager {
    * Vector of ExtensionNamespaceSupport objects to be used to generate
    * ExtensionHandlers.
    */
-  private final Vector m_extensions = new Vector();
+  private final List<ExtensionNamespaceSupport> m_extensions = new ArrayList<>();
   /**
    * Vector of ExtensionNamespaceSupport objects for predefined
    * ExtensionNamespaces. Elements from this vector are added to the
    * m_extensions vector when encountered in the stylesheet.
    */
-  private final Vector m_predefExtensions = new Vector(7);
+  private final List<ExtensionNamespaceSupport> m_predefExtensions = new ArrayList<>(7);
   /**
    * Vector of extension namespaces for which sufficient information is not yet
    * available to complete the registration process.
    */
-  private final Vector m_unregisteredExtensions = new Vector();
+  private final List<String> m_unregisteredExtensions = new ArrayList<>();
 
   /**
    * An ExtensionNamespacesManager is instantiated the first time an extension
@@ -97,9 +98,9 @@ public class ExtensionNamespacesManager {
    * Get the index for a namespace entry in the extension namespace Vector, -1
    * if no such entry yet exists.
    */
-  public int namespaceIndex(String namespace, Vector extensions) {
+  public int namespaceIndex(String namespace, List<ExtensionNamespaceSupport> extensions) {
     for (int i = 0; i < extensions.size(); i++) {
-      if (((ExtensionNamespaceSupport) extensions.get(i)).getNamespace().equals(namespace))
+      if (extensions.get(i).getNamespace().equals(namespace))
         return i;
     }
     return -1;
@@ -110,7 +111,7 @@ public class ExtensionNamespacesManager {
    * table access to a list of extension namespaces encountered during
    * composition of a stylesheet.
    */
-  public Vector getExtensions() {
+  public List<ExtensionNamespaceSupport> getExtensions() {
     return m_extensions;
   }
 
@@ -119,7 +120,7 @@ public class ExtensionNamespacesManager {
    */
   public void registerUnregisteredNamespaces() {
     for (int i = 0; i < m_unregisteredExtensions.size(); i++) {
-      final String ns = (String) m_unregisteredExtensions.get(i);
+      final String ns = m_unregisteredExtensions.get(i);
       final ExtensionNamespaceSupport extNsSpt = defineJavaNamespace(ns);
       if (extNsSpt != null) {
         m_extensions.add(extNsSpt);

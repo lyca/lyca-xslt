@@ -27,13 +27,11 @@ import java.util.Map;
 
 import javax.xml.transform.ErrorListener;
 import javax.xml.transform.SourceLocator;
-import javax.xml.transform.TransformerException;
 import javax.xml.transform.URIResolver;
 
 import org.xml.sax.XMLReader;
 
 import de.lyca.xalan.extensions.ExpressionContext;
-import de.lyca.xalan.res.XSLMessages;
 import de.lyca.xml.dtm.Axis;
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xml.dtm.DTMFilter;
@@ -640,27 +638,7 @@ public class XPathContext extends DTMManager // implements ExpressionContext
   /** Misnamed string manager for XPath messages. */
   // private static XSLMessages m_XSLMessages = new XSLMessages();
 
-  /**
-   * Tell the user of an assertion error, and probably throw an exception.
-   * 
-   * @param b
-   *          If false, a TransformerException will be thrown.
-   * @param msg
-   *          The assertion message, which should be informative.
-   * 
-   * @throws javax.xml.transform.TransformerException
-   *           if b is false.
-   */
-  private void assertion(boolean b, String msg) throws javax.xml.transform.TransformerException {
-    if (!b) {
-      final ErrorListener errorHandler = getErrorListener();
-
-      if (errorHandler != null) {
-        errorHandler.fatalError(new TransformerException(XSLMessages.createMessage(
-                XPATHErrorResources.ER_INCORRECT_PROGRAMMER_ASSERTION, new Object[] { msg }), this.getSAXLocator()));
-      }
-    }
-  }
+  
 
   // ==========================================================
   // SECTION: Execution context state tracking

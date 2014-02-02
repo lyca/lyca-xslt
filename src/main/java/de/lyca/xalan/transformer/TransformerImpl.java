@@ -22,12 +22,13 @@ package de.lyca.xalan.transformer;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
-import java.util.Stack;
 import java.util.StringTokenizer;
-import java.util.Vector;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -83,6 +84,7 @@ import de.lyca.xml.serializer.Method;
 import de.lyca.xml.serializer.SerializationHandler;
 import de.lyca.xml.serializer.Serializer;
 import de.lyca.xml.serializer.SerializerFactory;
+import de.lyca.xml.serializer.SerializerTrace;
 import de.lyca.xml.serializer.ToSAXHandler;
 import de.lyca.xml.serializer.ToTextStream;
 import de.lyca.xml.serializer.ToXMLSAXHandler;
@@ -107,8 +109,7 @@ import de.lyca.xpath.objects.XObject;
  * 
  * @xsl.usage advanced
  */
-public class TransformerImpl extends Transformer implements Runnable, DTMWSFilter, ExtensionsProvider,
-        de.lyca.xml.serializer.SerializerTrace {
+public class TransformerImpl extends Transformer implements Runnable, DTMWSFilter, ExtensionsProvider, SerializerTrace {
 
   // Synch object to gaurd against setting values from the TrAX interface
   // or reentry while the transform is going on.
@@ -209,7 +210,7 @@ public class TransformerImpl extends Transformer implements Runnable, DTMWSFilte
    * matched. Needed for the de.lyca.xalan.transformer.TransformState interface,
    * so a tool can discover the matched template
    */
-  Stack m_currentMatchTemplates = new Stack();
+  Deque<ElemTemplateElement> m_currentMatchTemplates = new ArrayDeque<>();
 
   /**
    * A node vector used as a stack to track the current node that was matched.
@@ -250,7 +251,7 @@ public class TransformerImpl extends Transformer implements Runnable, DTMWSFilte
   /**
    * Stack for the purposes of flagging infinite recursion with attribute sets.
    */
-  Stack m_attrSetStack = null;
+  Deque<ElemAttributeSet> m_attrSetStack = null;
 
   /**
    * The table of counters for xsl:number support.
@@ -359,7 +360,7 @@ public class TransformerImpl extends Transformer implements Runnable, DTMWSFilte
   /**
    * A stack of current template modes.
    */
-  private final Stack m_modes = new Stack();
+  private final Deque<QName> m_modes = new ArrayDeque<>();
 
   // ==========================================================
   // SECTION: Constructor
@@ -422,7 +423,7 @@ public class TransformerImpl extends Transformer implements Runnable, DTMWSFilte
       if (sroot.getExtensions() != null) {
         m_extensionsTable = new ExtensionsTable(sroot);
       }
-    } catch (final javax.xml.transform.TransformerException te) {
+    } catch (final TransformerException te) {
       te.printStackTrace();
     }
   }
@@ -440,16 +441,14 @@ public class TransformerImpl extends Transformer implements Runnable, DTMWSFilte
   }
 
   @Override
-  public Object extFunction(String ns, String funcName, List argVec, Object methodKey)
-          throws javax.xml.transform.TransformerException {// System.out.println("TransImpl.extFunction() "
-                                                           // + ns + " " +
-                                                           // funcName +" " +
-                                                           // getExtensionsTable());
+  public Object extFunction(String ns, String funcName, List<?> argVec, Object methodKey) throws TransformerException {
+    // System.out.println("TransImpl.extFunction() " + ns + " " + funcName +" "
+    // + getExtensionsTable());
     return getExtensionsTable().extFunction(ns, funcName, argVec, methodKey, getXPathContext().getExpressionContext());
   }
 
   @Override
-  public Object extFunction(FuncExtFunction extFunction, List argVec) throws javax.xml.transform.TransformerException {
+  public Object extFunction(FuncExtFunction extFunction, List<?> argVec) throws TransformerException {
     return getExtensionsTable().extFunction(extFunction, argVec, getXPathContext().getExpressionContext());
   }
 
@@ -484,7 +483,7 @@ public class TransformerImpl extends Transformer implements Runnable, DTMWSFilte
       resetUserParameters();
 
       m_currentTemplateElements.removeAllElements();
-      m_currentMatchTemplates.removeAllElements();
+      m_currentMatchTemplates.clear();
       m_currentMatchedNodes.removeAllElements();
 
       m_serializationHandler = null;
@@ -1434,10 +1433,10 @@ public class TransformerImpl extends Transformer implements Runnable, DTMWSFilte
     final XObject xobject = XObject.create(value, getXPathContext());
 
     final StylesheetRoot sroot = m_stylesheetRoot;
-    final Vector vars = sroot.getVariablesAndParamsComposed();
+    final List<ElemVariable> vars = sroot.getVariablesAndParamsComposed();
     int i = vars.size();
     while (--i >= 0) {
-      final ElemVariable variable = (ElemVariable) vars.elementAt(i);
+      final ElemVariable variable = vars.get(i);
       if (variable.getXSLToken() == Constants.ELEMNAME_PARAMVARIABLE && variable.getName().equals(qname)) {
         varstack.setGlobalVariable(i, xobject);
       }
@@ -1445,7 +1444,7 @@ public class TransformerImpl extends Transformer implements Runnable, DTMWSFilte
   }
 
   /** NEEDSDOC Field m_userParams */
-  Vector m_userParams;
+  List<Arg> m_userParams;
 
   /**
    * Set a parameter for the transformation.
@@ -1474,7 +1473,7 @@ public class TransformerImpl extends Transformer implements Runnable, DTMWSFilte
       final String s2 = tokenizer.hasMoreTokens() ? tokenizer.nextToken() : null;
 
       if (null == m_userParams) {
-        m_userParams = new Vector();
+        m_userParams = new ArrayList<>();
       }
 
       if (null == s2) {
@@ -1501,16 +1500,16 @@ public class TransformerImpl extends Transformer implements Runnable, DTMWSFilte
     final int n = m_userParams.size();
 
     for (int i = n - 1; i >= 0; i--) {
-      final Arg arg = (Arg) m_userParams.elementAt(i);
+      final Arg arg = m_userParams.get(i);
 
       if (arg.getQName().equals(qname)) {
-        m_userParams.setElementAt(new Arg(qname, xval, true), i);
+        m_userParams.set(i, new Arg(qname, xval, true));
 
         return;
       }
     }
 
-    m_userParams.addElement(new Arg(qname, xval, true));
+    m_userParams.add(new Arg(qname, xval, true));
   }
 
   /**
@@ -1539,7 +1538,7 @@ public class TransformerImpl extends Transformer implements Runnable, DTMWSFilte
       final int n = m_userParams.size();
 
       for (int i = n - 1; i >= 0; i--) {
-        final Arg arg = (Arg) m_userParams.elementAt(i);
+        final Arg arg = m_userParams.get(i);
 
         if (arg.getQName().equals(qname))
           return arg.getVal().object();
@@ -1568,7 +1567,7 @@ public class TransformerImpl extends Transformer implements Runnable, DTMWSFilte
 
       final int n = m_userParams.size();
       for (int i = n - 1; i >= 0; i--) {
-        final Arg arg = (Arg) m_userParams.elementAt(i);
+        final Arg arg = m_userParams.get(i);
         final QName name = arg.getQName();
         // The first string might be the namespace, or it might be
         // the local name, if the namespace is null.
@@ -1662,13 +1661,13 @@ public class TransformerImpl extends Transformer implements Runnable, DTMWSFilte
     final XPathContext xctxt = m_xcontext;
     final VariableStack vs = xctxt.getVarStack();
     final StylesheetRoot sr = getStylesheet();
-    final Vector vars = sr.getVariablesAndParamsComposed();
+    final List<ElemVariable> vars = sr.getVariablesAndParamsComposed();
 
     int i = vars.size();
     vs.link(i);
 
     while (--i >= 0) {
-      final ElemVariable v = (ElemVariable) vars.elementAt(i);
+      final ElemVariable v = vars.get(i);
 
       // XObject xobj = v.getValue(this, contextNode);
       final XObject xobj = new XUnresolvedVariable(v, contextNode, this, vs.getStackFrame(), 0, true);
@@ -2268,14 +2267,14 @@ public class TransformerImpl extends Transformer implements Runnable, DTMWSFilte
    * @throws TransformerException
    * @xsl.usage advanced
    */
-  public Vector processSortKeys(ElemForEach foreach, int sourceNodeContext) throws TransformerException {
+  public List<NodeSortKey> processSortKeys(ElemForEach foreach, int sourceNodeContext) throws TransformerException {
 
-    Vector keys = null;
+    List<NodeSortKey> keys = null;
     final XPathContext xctxt = m_xcontext;
     final int nElems = foreach.getSortElemCount();
 
     if (nElems > 0) {
-      keys = new Vector();
+      keys = new ArrayList<>();
     }
 
     // March backwards, collecting the sort keys.
@@ -2328,8 +2327,7 @@ public class TransformerImpl extends Transformer implements Runnable, DTMWSFilte
         caseOrderUpper = false;
       }
 
-      keys.addElement(new NodeSortKey(this, sort.getSelect(), treatAsNumbers, descending, langString, caseOrderUpper,
-              foreach));
+      keys.add(new NodeSortKey(this, sort.getSelect(), treatAsNumbers, descending, langString, caseOrderUpper, foreach));
       if (m_debug) {
         getTraceManager().fireTraceEndEvent(sort);
       }
@@ -2349,13 +2347,13 @@ public class TransformerImpl extends Transformer implements Runnable, DTMWSFilte
    *         earliest called in index zero, and the latest called in index
    *         size()-1.
    */
-  public Vector getElementCallstack() {
-    final Vector elems = new Vector();
+  public List<ElemTemplateElement> getElementCallstack() {
+    final List<ElemTemplateElement> elems = new ArrayList<>();
     final int nStackSize = m_currentTemplateElements.size();
     for (int i = 0; i < nStackSize; i++) {
       final ElemTemplateElement elem = (ElemTemplateElement) m_currentTemplateElements.elementAt(i);
       if (null != elem) {
-        elems.addElement(elem);
+        elems.add(elem);
       }
     }
     return elems;
@@ -2433,13 +2431,13 @@ public class TransformerImpl extends Transformer implements Runnable, DTMWSFilte
    *         instructions, the earliest called in index zero, and the latest
    *         called in index size()-1.
    */
-  public Vector getTemplateCallstack() {
-    final Vector elems = new Vector();
+  public List<ElemTemplateElement> getTemplateCallstack() {
+    final List<ElemTemplateElement> elems = new ArrayList<>();
     final int nStackSize = m_currentTemplateElements.size();
     for (int i = 0; i < nStackSize; i++) {
       final ElemTemplateElement elem = (ElemTemplateElement) m_currentTemplateElements.elementAt(i);
       if (null != elem && elem.getXSLToken() != Constants.ELEMNAME_TEMPLATE) {
-        elems.addElement(elem);
+        elems.add(elem);
       }
     }
     return elems;
@@ -2689,19 +2687,10 @@ public class TransformerImpl extends Transformer implements Runnable, DTMWSFilte
    * @return true if the attribute set is recursive.
    */
   public boolean isRecursiveAttrSet(ElemAttributeSet attrSet) {
-
     if (null == m_attrSetStack) {
-      m_attrSetStack = new Stack();
+      m_attrSetStack = new ArrayDeque<>();
     }
-
-    if (!m_attrSetStack.empty()) {
-      final int loc = m_attrSetStack.search(attrSet);
-
-      if (loc > -1)
-        return true;
-    }
-
-    return false;
+    return m_attrSetStack.contains(attrSet);
   }
 
   /**

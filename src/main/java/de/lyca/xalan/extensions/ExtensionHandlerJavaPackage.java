@@ -97,7 +97,7 @@ public class ExtensionHandlerJavaPackage extends ExtensionHandlerJava {
       final String fullName = m_className + function;
       final int lastDot = fullName.lastIndexOf('.');
       if (lastDot >= 0) {
-        final Class myClass = getClassForName(fullName.substring(0, lastDot));
+        final Class<?> myClass = getClassForName(fullName.substring(0, lastDot));
         final Method[] methods = myClass.getMethods();
         final int nMethods = methods.length;
         function = fullName.substring(lastDot + 1);
@@ -128,13 +128,13 @@ public class ExtensionHandlerJavaPackage extends ExtensionHandlerJava {
       final String fullName = m_className + element;
       final int lastDot = fullName.lastIndexOf('.');
       if (lastDot >= 0) {
-        final Class myClass = getClassForName(fullName.substring(0, lastDot));
+        final Class<?> myClass = getClassForName(fullName.substring(0, lastDot));
         final Method[] methods = myClass.getMethods();
         final int nMethods = methods.length;
         element = fullName.substring(lastDot + 1);
         for (int i = 0; i < nMethods; i++) {
           if (methods[i].getName().equals(element)) {
-            final Class[] paramTypes = methods[i].getParameterTypes();
+            final Class<?>[] paramTypes = methods[i].getParameterTypes();
             if (paramTypes.length == 2
                     && paramTypes[0].isAssignableFrom(de.lyca.xalan.extensions.XSLProcessorContext.class)
                     && paramTypes[1].isAssignableFrom(de.lyca.xalan.templates.ElemExtensionCall.class))
@@ -196,17 +196,17 @@ public class ExtensionHandlerJavaPackage extends ExtensionHandlerJava {
    */
 
   @Override
-  public Object callFunction(String funcName, List args, Object methodKey, ExpressionContext exprContext)
+  public Object callFunction(String funcName, List<?> args, Object methodKey, ExpressionContext exprContext)
           throws TransformerException {
 
     String className;
     String methodName;
-    Class classObj;
+    Class<?> classObj;
     Object targetObject;
     final int lastDot = funcName.lastIndexOf('.');
     Object[] methodArgs;
     Object[][] convertedArgs;
-    Class[] paramTypes;
+    Class<?>[] paramTypes;
 
     try {
       final TransformerImpl trans = exprContext != null ? (TransformerImpl) exprContext.getXPathContext()
@@ -219,7 +219,7 @@ public class ExtensionHandlerJavaPackage extends ExtensionHandlerJava {
           methodArgs[i] = args.get(i);
         }
 
-        Constructor c = methodKey != null ? (Constructor) getFromCache(methodKey, null, methodArgs) : null;
+        Constructor<?> c = methodKey != null ? (Constructor<?>) getFromCache(methodKey, null, methodArgs) : null;
 
         if (c != null) {
           try {
@@ -386,7 +386,7 @@ public class ExtensionHandlerJavaPackage extends ExtensionHandlerJava {
    * @throws TransformerException
    */
   @Override
-  public Object callFunction(FuncExtFunction extFunction, List args, ExpressionContext exprContext)
+  public Object callFunction(FuncExtFunction extFunction, List<?> args, ExpressionContext exprContext)
           throws TransformerException {
     return callFunction(extFunction.getFunctionName(), args, extFunction.getMethodKey(), exprContext);
   }
@@ -417,7 +417,7 @@ public class ExtensionHandlerJavaPackage extends ExtensionHandlerJava {
   public void processElement(String localPart, ElemTemplateElement element, TransformerImpl transformer,
           Stylesheet stylesheetTree, Object methodKey) throws TransformerException, IOException {
     Object result = null;
-    Class classObj;
+    Class<?> classObj;
 
     Method m = (Method) getFromCache(methodKey, null, null);
     if (null == m) {

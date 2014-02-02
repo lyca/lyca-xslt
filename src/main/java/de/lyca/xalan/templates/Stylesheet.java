@@ -23,9 +23,13 @@ package de.lyca.xalan.templates;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.Hashtable;
-import java.util.Stack;
-import java.util.Vector;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import javax.xml.transform.SourceLocator;
 import javax.xml.transform.TransformerException;
@@ -85,10 +89,7 @@ import de.lyca.xml.utils.SystemIDResolver;
  *      href="http://www.w3.org/TR/xslt#section-Stylesheet-Structure">section-Stylesheet-Structure
  *      in XSLT Specification</a>
  */
-public class Stylesheet extends ElemTemplateElement implements java.io.Serializable /*
-                                                                                     * ,
-                                                                                     * Document
-                                                                                     */
+public class Stylesheet extends ElemTemplateElement implements java.io.Serializable //, Document
 {
   static final long serialVersionUID = 2085337282743043776L;
 
@@ -481,7 +482,7 @@ public class Stylesheet extends ElemTemplateElement implements java.io.Serializa
    * 
    * @serial
    */
-  private Vector m_imports;
+  private List<StylesheetComposed> m_imports;
 
   /**
    * Add a stylesheet to the "import" list.
@@ -495,12 +496,12 @@ public class Stylesheet extends ElemTemplateElement implements java.io.Serializa
   public void setImport(StylesheetComposed v) {
 
     if (null == m_imports) {
-      m_imports = new Vector();
+      m_imports = new ArrayList<>();
     }
 
     // I'm going to insert the elements in backwards order,
     // so I can walk them 0 to n.
-    m_imports.addElement(v);
+    m_imports.add(v);
   }
 
   /**
@@ -517,11 +518,9 @@ public class Stylesheet extends ElemTemplateElement implements java.io.Serializa
    * @throws ArrayIndexOutOfBoundsException
    */
   public StylesheetComposed getImport(int i) throws ArrayIndexOutOfBoundsException {
-
     if (null == m_imports)
       throw new ArrayIndexOutOfBoundsException();
-
-    return (StylesheetComposed) m_imports.elementAt(i);
+    return m_imports.get(i);
   }
 
   /**
@@ -541,7 +540,7 @@ public class Stylesheet extends ElemTemplateElement implements java.io.Serializa
    * 
    * @serial
    */
-  private Vector m_includes;
+  private List<Stylesheet> m_includes;
 
   /**
    * Add a stylesheet to the "include" list.
@@ -553,12 +552,10 @@ public class Stylesheet extends ElemTemplateElement implements java.io.Serializa
    *          Stylesheet to add to the "include" list
    */
   public void setInclude(Stylesheet v) {
-
     if (null == m_includes) {
-      m_includes = new Vector();
+      m_includes = new ArrayList<>();
     }
-
-    m_includes.addElement(v);
+    m_includes.add(v);
   }
 
   /**
@@ -575,11 +572,9 @@ public class Stylesheet extends ElemTemplateElement implements java.io.Serializa
    * @throws ArrayIndexOutOfBoundsException
    */
   public Stylesheet getInclude(int i) throws ArrayIndexOutOfBoundsException {
-
     if (null == m_includes)
       throw new ArrayIndexOutOfBoundsException();
-
-    return (Stylesheet) m_includes.elementAt(i);
+    return m_includes.get(i);
   }
 
   /**
@@ -595,12 +590,13 @@ public class Stylesheet extends ElemTemplateElement implements java.io.Serializa
   }
 
   /**
+   * TODO fixup logic
    * Table of tables of element decimal-format.
    * 
    * @see DecimalFormatProperties
    * @serial
    */
-  Stack m_DecimalFormatDeclarations;
+  Deque<DecimalFormatProperties> m_DecimalFormatDeclarations;
 
   /**
    * Process the xsl:decimal-format element.
@@ -609,11 +605,9 @@ public class Stylesheet extends ElemTemplateElement implements java.io.Serializa
    *          Decimal-format element to push into stack
    */
   public void setDecimalFormat(DecimalFormatProperties edf) {
-
     if (null == m_DecimalFormatDeclarations) {
-      m_DecimalFormatDeclarations = new Stack();
+      m_DecimalFormatDeclarations = new ArrayDeque<>();
     }
-
     // Elements are pushed in by order of importance
     // so that when recomposed, they get overiden properly.
     m_DecimalFormatDeclarations.push(edf);
@@ -632,19 +626,15 @@ public class Stylesheet extends ElemTemplateElement implements java.io.Serializa
    *         which you can get a DecimalFormatSymbols object.
    */
   public DecimalFormatProperties getDecimalFormat(QName name) {
-
     if (null == m_DecimalFormatDeclarations)
       return null;
 
     final int n = getDecimalFormatCount();
-
     for (int i = n - 1; i >= 0; i++) {
       final DecimalFormatProperties dfp = getDecimalFormat(i);
-
       if (dfp.getName().equals(name))
         return dfp;
     }
-
     return null;
   }
 
@@ -663,11 +653,16 @@ public class Stylesheet extends ElemTemplateElement implements java.io.Serializa
    * @throws ArrayIndexOutOfBoundsException
    */
   public DecimalFormatProperties getDecimalFormat(int i) throws ArrayIndexOutOfBoundsException {
-
-    if (null == m_DecimalFormatDeclarations)
+    if (m_DecimalFormatDeclarations == null)
       throw new ArrayIndexOutOfBoundsException();
-
-    return (DecimalFormatProperties) m_DecimalFormatDeclarations.elementAt(i);
+    int size = m_DecimalFormatDeclarations.size();
+    if (i >= size)
+      throw new ArrayIndexOutOfBoundsException(i + " >= " + size);
+    Iterator<DecimalFormatProperties> iterator = m_DecimalFormatDeclarations.iterator();
+    for (int j = 0; j < i; j++) {
+      iterator.next();
+    }
+    return iterator.next();
   }
 
   /**
@@ -678,7 +673,7 @@ public class Stylesheet extends ElemTemplateElement implements java.io.Serializa
    * @return the number of xsl:decimal-format declarations.
    */
   public int getDecimalFormatCount() {
-    return null != m_DecimalFormatDeclarations ? m_DecimalFormatDeclarations.size() : 0;
+    return m_DecimalFormatDeclarations == null ? 0 : m_DecimalFormatDeclarations.size();
   }
 
   /**
@@ -687,7 +682,7 @@ public class Stylesheet extends ElemTemplateElement implements java.io.Serializa
    * 
    * @serial
    */
-  private Vector m_whitespaceStrippingElements;
+  private List<WhiteSpaceInfo> m_whitespaceStrippingElements;
 
   /**
    * Set the "xsl:strip-space" properties.
@@ -699,12 +694,10 @@ public class Stylesheet extends ElemTemplateElement implements java.io.Serializa
    *          WhiteSpaceInfo element to add to list
    */
   public void setStripSpaces(WhiteSpaceInfo wsi) {
-
     if (null == m_whitespaceStrippingElements) {
-      m_whitespaceStrippingElements = new Vector();
+      m_whitespaceStrippingElements = new ArrayList<>();
     }
-
-    m_whitespaceStrippingElements.addElement(wsi);
+    m_whitespaceStrippingElements.add(wsi);
   }
 
   /**
@@ -721,11 +714,9 @@ public class Stylesheet extends ElemTemplateElement implements java.io.Serializa
    * @throws ArrayIndexOutOfBoundsException
    */
   public WhiteSpaceInfo getStripSpace(int i) throws ArrayIndexOutOfBoundsException {
-
     if (null == m_whitespaceStrippingElements)
       throw new ArrayIndexOutOfBoundsException();
-
-    return (WhiteSpaceInfo) m_whitespaceStrippingElements.elementAt(i);
+    return m_whitespaceStrippingElements.get(i);
   }
 
   /**
@@ -746,7 +737,7 @@ public class Stylesheet extends ElemTemplateElement implements java.io.Serializa
    * 
    * @serial
    */
-  private Vector m_whitespacePreservingElements;
+  private List<WhiteSpaceInfo> m_whitespacePreservingElements;
 
   /**
    * Set the "xsl:preserve-space" property.
@@ -758,12 +749,10 @@ public class Stylesheet extends ElemTemplateElement implements java.io.Serializa
    *          WhiteSpaceInfo element to add to list
    */
   public void setPreserveSpaces(WhiteSpaceInfo wsi) {
-
-    if (null == m_whitespacePreservingElements) {
-      m_whitespacePreservingElements = new Vector();
+    if (m_whitespacePreservingElements == null) {
+      m_whitespacePreservingElements = new ArrayList<>();
     }
-
-    m_whitespacePreservingElements.addElement(wsi);
+    m_whitespacePreservingElements.add(wsi);
   }
 
   /**
@@ -780,11 +769,9 @@ public class Stylesheet extends ElemTemplateElement implements java.io.Serializa
    * @throws ArrayIndexOutOfBoundsException
    */
   public WhiteSpaceInfo getPreserveSpace(int i) throws ArrayIndexOutOfBoundsException {
-
     if (null == m_whitespacePreservingElements)
       throw new ArrayIndexOutOfBoundsException();
-
-    return (WhiteSpaceInfo) m_whitespacePreservingElements.elementAt(i);
+    return m_whitespacePreservingElements.get(i);
   }
 
   /**
@@ -796,7 +783,7 @@ public class Stylesheet extends ElemTemplateElement implements java.io.Serializa
    * @return the number of "xsl:preserve-space" properties.
    */
   public int getPreserveSpaceCount() {
-    return null != m_whitespacePreservingElements ? m_whitespacePreservingElements.size() : 0;
+    return m_whitespacePreservingElements == null ? 0 : m_whitespacePreservingElements.size();
   }
 
   /**
@@ -804,7 +791,7 @@ public class Stylesheet extends ElemTemplateElement implements java.io.Serializa
    * 
    * @serial
    */
-  private Vector m_output;
+  private List<OutputProperties> m_output;
 
   /**
    * Set the "xsl:output" property.
@@ -818,10 +805,9 @@ public class Stylesheet extends ElemTemplateElement implements java.io.Serializa
    */
   public void setOutput(OutputProperties v) {
     if (null == m_output) {
-      m_output = new Vector();
+      m_output = new ArrayList<>();
     }
-
-    m_output.addElement(v);
+    m_output.add(v);
   }
 
   /**
@@ -838,11 +824,9 @@ public class Stylesheet extends ElemTemplateElement implements java.io.Serializa
    * @throws ArrayIndexOutOfBoundsException
    */
   public OutputProperties getOutput(int i) throws ArrayIndexOutOfBoundsException {
-
     if (null == m_output)
       throw new ArrayIndexOutOfBoundsException();
-
-    return (OutputProperties) m_output.elementAt(i);
+    return m_output.get(i);
   }
 
   /**
@@ -855,7 +839,7 @@ public class Stylesheet extends ElemTemplateElement implements java.io.Serializa
    *         stylesheet.
    */
   public int getOutputCount() {
-    return null != m_output ? m_output.size() : 0;
+    return m_output == null ? 0 : m_output.size();
   }
 
   /**
@@ -863,7 +847,7 @@ public class Stylesheet extends ElemTemplateElement implements java.io.Serializa
    * 
    * @serial
    */
-  private Vector m_keyDeclarations;
+  private List<KeyDeclaration> m_keyDeclarations;
 
   /**
    * Set the "xsl:key" property.
@@ -874,12 +858,10 @@ public class Stylesheet extends ElemTemplateElement implements java.io.Serializa
    *          KeyDeclaration element to add to the list of key declarations
    */
   public void setKey(KeyDeclaration v) {
-
     if (null == m_keyDeclarations) {
-      m_keyDeclarations = new Vector();
+      m_keyDeclarations = new ArrayList<>();
     }
-
-    m_keyDeclarations.addElement(v);
+    m_keyDeclarations.add(v);
   }
 
   /**
@@ -895,11 +877,9 @@ public class Stylesheet extends ElemTemplateElement implements java.io.Serializa
    * @throws ArrayIndexOutOfBoundsException
    */
   public KeyDeclaration getKey(int i) throws ArrayIndexOutOfBoundsException {
-
     if (null == m_keyDeclarations)
       throw new ArrayIndexOutOfBoundsException();
-
-    return (KeyDeclaration) m_keyDeclarations.elementAt(i);
+    return m_keyDeclarations.get(i);
   }
 
   /**
@@ -918,7 +898,7 @@ public class Stylesheet extends ElemTemplateElement implements java.io.Serializa
    * 
    * @serial
    */
-  private Vector m_attributeSets;
+  private List<ElemAttributeSet> m_attributeSets;
 
   /**
    * Set the "xsl:attribute-set" property.
@@ -930,12 +910,10 @@ public class Stylesheet extends ElemTemplateElement implements java.io.Serializa
    *          ElemAttributeSet to add to the list of attribute sets
    */
   public void setAttributeSet(ElemAttributeSet attrSet) {
-
     if (null == m_attributeSets) {
-      m_attributeSets = new Vector();
+      m_attributeSets = new ArrayList<>();
     }
-
-    m_attributeSets.addElement(attrSet);
+    m_attributeSets.add(attrSet);
   }
 
   /**
@@ -952,11 +930,9 @@ public class Stylesheet extends ElemTemplateElement implements java.io.Serializa
    * @throws ArrayIndexOutOfBoundsException
    */
   public ElemAttributeSet getAttributeSet(int i) throws ArrayIndexOutOfBoundsException {
-
     if (null == m_attributeSets)
       throw new ArrayIndexOutOfBoundsException();
-
-    return (ElemAttributeSet) m_attributeSets.elementAt(i);
+    return m_attributeSets.get(i);
   }
 
   /**
@@ -968,7 +944,7 @@ public class Stylesheet extends ElemTemplateElement implements java.io.Serializa
    * @return the number of "xsl:attribute-set" properties.
    */
   public int getAttributeSetCount() {
-    return null != m_attributeSets ? m_attributeSets.size() : 0;
+    return m_attributeSets == null ? 0 : m_attributeSets.size();
   }
 
   /**
@@ -976,7 +952,7 @@ public class Stylesheet extends ElemTemplateElement implements java.io.Serializa
    * 
    * @serial
    */
-  private Vector m_topLevelVariables;
+  private List<ElemVariable> m_topLevelVariables;
 
   /**
    * Set the "xsl:variable" property.
@@ -989,12 +965,10 @@ public class Stylesheet extends ElemTemplateElement implements java.io.Serializa
    *          ElemVariable object to add to list of top level variables
    */
   public void setVariable(ElemVariable v) {
-
     if (null == m_topLevelVariables) {
-      m_topLevelVariables = new Vector();
+      m_topLevelVariables = new ArrayList<>();
     }
-
-    m_topLevelVariables.addElement(v);
+    m_topLevelVariables.add(v);
   }
 
   /**
@@ -1010,18 +984,14 @@ public class Stylesheet extends ElemTemplateElement implements java.io.Serializa
    * @return The ElemVariable with the given name in the list or null
    */
   public ElemVariable getVariableOrParam(QName qname) {
-
     if (null != m_topLevelVariables) {
       final int n = getVariableOrParamCount();
-
       for (int i = 0; i < n; i++) {
         final ElemVariable var = getVariableOrParam(i);
-
         if (var.getName().equals(qname))
           return var;
       }
     }
-
     return null;
   }
 
@@ -1039,9 +1009,8 @@ public class Stylesheet extends ElemTemplateElement implements java.io.Serializa
    */
   public ElemVariable getVariable(QName qname) {
 
-    if (null != m_topLevelVariables) {
+    if (m_topLevelVariables != null) {
       final int n = getVariableOrParamCount();
-
       for (int i = 0; i < n; i++) {
         final ElemVariable var = getVariableOrParam(i);
         if (var.getXSLToken() == Constants.ELEMNAME_VARIABLE && var.getName().equals(qname))
@@ -1067,11 +1036,9 @@ public class Stylesheet extends ElemTemplateElement implements java.io.Serializa
    * @throws ArrayIndexOutOfBoundsException
    */
   public ElemVariable getVariableOrParam(int i) throws ArrayIndexOutOfBoundsException {
-
     if (null == m_topLevelVariables)
       throw new ArrayIndexOutOfBoundsException();
-
-    return (ElemVariable) m_topLevelVariables.elementAt(i);
+    return m_topLevelVariables.get(i);
   }
 
   /**
@@ -1133,7 +1100,7 @@ public class Stylesheet extends ElemTemplateElement implements java.io.Serializa
    * 
    * @serial
    */
-  private Vector m_templates;
+  private List<ElemTemplate> m_templates;
 
   /**
    * Set an "xsl:template" property.
@@ -1146,12 +1113,10 @@ public class Stylesheet extends ElemTemplateElement implements java.io.Serializa
    *          ElemTemplate to add to list of templates
    */
   public void setTemplate(ElemTemplate v) {
-
     if (null == m_templates) {
-      m_templates = new Vector();
+      m_templates = new ArrayList<>();
     }
-
-    m_templates.addElement(v);
+    m_templates.add(v);
     v.setStylesheet(this);
   }
 
@@ -1170,11 +1135,9 @@ public class Stylesheet extends ElemTemplateElement implements java.io.Serializa
    * @throws TransformerException
    */
   public ElemTemplate getTemplate(int i) throws TransformerException {
-
     if (null == m_templates)
       throw new ArrayIndexOutOfBoundsException();
-
-    return (ElemTemplate) m_templates.elementAt(i);
+    return m_templates.get(i);
   }
 
   /**
@@ -1187,7 +1150,7 @@ public class Stylesheet extends ElemTemplateElement implements java.io.Serializa
    * @return the number of "xsl:template" properties.
    */
   public int getTemplateCount() {
-    return null != m_templates ? m_templates.size() : 0;
+    return m_templates == null ? 0 : m_templates.size();
   }
 
   /**
@@ -1195,7 +1158,7 @@ public class Stylesheet extends ElemTemplateElement implements java.io.Serializa
    * 
    * @serial
    */
-  private Vector m_prefix_aliases;
+  private List<NamespaceAlias> m_prefix_aliases;
 
   /**
    * Set the "xsl:namespace-alias" property.
@@ -1208,12 +1171,10 @@ public class Stylesheet extends ElemTemplateElement implements java.io.Serializa
    *          NamespaceAlias elemeent to add to the list
    */
   public void setNamespaceAlias(NamespaceAlias na) {
-
     if (m_prefix_aliases == null) {
-      m_prefix_aliases = new Vector();
+      m_prefix_aliases = new ArrayList<>();
     }
-
-    m_prefix_aliases.addElement(na);
+    m_prefix_aliases.add(na);
   }
 
   /**
@@ -1231,11 +1192,9 @@ public class Stylesheet extends ElemTemplateElement implements java.io.Serializa
    * @throws ArrayIndexOutOfBoundsException
    */
   public NamespaceAlias getNamespaceAlias(int i) throws ArrayIndexOutOfBoundsException {
-
     if (null == m_prefix_aliases)
       throw new ArrayIndexOutOfBoundsException();
-
-    return (NamespaceAlias) m_prefix_aliases.elementAt(i);
+    return m_prefix_aliases.get(i);
   }
 
   /**
@@ -1256,7 +1215,7 @@ public class Stylesheet extends ElemTemplateElement implements java.io.Serializa
    * 
    * @serial
    */
-  private Hashtable m_NonXslTopLevel;
+  private Map<QName, ElemTemplateElement> m_NonXslTopLevel;
 
   /**
    * Set found a non-xslt element.
@@ -1270,12 +1229,10 @@ public class Stylesheet extends ElemTemplateElement implements java.io.Serializa
    * @param obj
    *          The element object
    */
-  public void setNonXslTopLevel(QName name, Object obj) {
-
+  public void setNonXslTopLevel(QName name, ElemTemplateElement obj) {
     if (null == m_NonXslTopLevel) {
-      m_NonXslTopLevel = new Hashtable();
+      m_NonXslTopLevel = new HashMap<>();
     }
-
     m_NonXslTopLevel.put(name, obj);
   }
 
@@ -1486,12 +1443,10 @@ public class Stylesheet extends ElemTemplateElement implements java.io.Serializa
    * @throws TransformerException
    */
   public void replaceTemplate(ElemTemplate v, int i) throws TransformerException {
-
     if (null == m_templates)
       throw new ArrayIndexOutOfBoundsException();
-
-    replaceChild(v, (ElemTemplateElement) m_templates.elementAt(i));
-    m_templates.setElementAt(v, i);
+    replaceChild(v, m_templates.get(i));
+    m_templates.set(i, v);
     v.setStylesheet(this);
   }
 
@@ -1585,13 +1540,10 @@ public class Stylesheet extends ElemTemplateElement implements java.io.Serializa
     }
 
     if (null != m_NonXslTopLevel) {
-      final java.util.Enumeration elements = m_NonXslTopLevel.elements();
-      while (elements.hasMoreElements()) {
-        final ElemTemplateElement elem = (ElemTemplateElement) elements.nextElement();
+      for (ElemTemplateElement elem : m_NonXslTopLevel.values()) {
         if (visitor.visitTopLevelInstruction(elem)) {
           elem.callChildVisitors(visitor);
         }
-
       }
     }
   }

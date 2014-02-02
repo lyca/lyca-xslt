@@ -23,7 +23,9 @@
 
 package de.lyca.xalan.lib.sql;
 
-import java.util.Hashtable;
+import java.sql.Types;
+import java.util.HashMap;
+import java.util.Map;
 
 public class QueryParameter {
   private int m_type;
@@ -31,7 +33,7 @@ public class QueryParameter {
   private String m_value;
   private boolean m_output;
   private String m_typeName;
-  private static Hashtable m_Typetable = null;
+  private static Map<String, Integer> m_Typetable = null;
 
   public QueryParameter() {
     m_type = -1;
@@ -138,42 +140,42 @@ public class QueryParameter {
   private static int map_type(String typename) {
     if (m_Typetable == null) {
       // Load up the type mapping table.
-      m_Typetable = new Hashtable();
-      m_Typetable.put("BIGINT", new Integer(java.sql.Types.BIGINT));
-      m_Typetable.put("BINARY", new Integer(java.sql.Types.BINARY));
-      m_Typetable.put("BIT", new Integer(java.sql.Types.BIT));
-      m_Typetable.put("CHAR", new Integer(java.sql.Types.CHAR));
-      m_Typetable.put("DATE", new Integer(java.sql.Types.DATE));
-      m_Typetable.put("DECIMAL", new Integer(java.sql.Types.DECIMAL));
-      m_Typetable.put("DOUBLE", new Integer(java.sql.Types.DOUBLE));
-      m_Typetable.put("FLOAT", new Integer(java.sql.Types.FLOAT));
-      m_Typetable.put("INTEGER", new Integer(java.sql.Types.INTEGER));
-      m_Typetable.put("LONGVARBINARY", new Integer(java.sql.Types.LONGVARBINARY));
-      m_Typetable.put("LONGVARCHAR", new Integer(java.sql.Types.LONGVARCHAR));
-      m_Typetable.put("NULL", new Integer(java.sql.Types.NULL));
-      m_Typetable.put("NUMERIC", new Integer(java.sql.Types.NUMERIC));
-      m_Typetable.put("OTHER", new Integer(java.sql.Types.OTHER));
-      m_Typetable.put("REAL", new Integer(java.sql.Types.REAL));
-      m_Typetable.put("SMALLINT", new Integer(java.sql.Types.SMALLINT));
-      m_Typetable.put("TIME", new Integer(java.sql.Types.TIME));
-      m_Typetable.put("TIMESTAMP", new Integer(java.sql.Types.TIMESTAMP));
-      m_Typetable.put("TINYINT", new Integer(java.sql.Types.TINYINT));
-      m_Typetable.put("VARBINARY", new Integer(java.sql.Types.VARBINARY));
-      m_Typetable.put("VARCHAR", new Integer(java.sql.Types.VARCHAR));
+      m_Typetable = new HashMap<>();
+      m_Typetable.put("BIGINT", Types.BIGINT);
+      m_Typetable.put("BINARY", Types.BINARY);
+      m_Typetable.put("BIT", Types.BIT);
+      m_Typetable.put("CHAR", Types.CHAR);
+      m_Typetable.put("DATE", Types.DATE);
+      m_Typetable.put("DECIMAL", Types.DECIMAL);
+      m_Typetable.put("DOUBLE", Types.DOUBLE);
+      m_Typetable.put("FLOAT", Types.FLOAT);
+      m_Typetable.put("INTEGER", Types.INTEGER);
+      m_Typetable.put("LONGVARBINARY", Types.LONGVARBINARY);
+      m_Typetable.put("LONGVARCHAR", Types.LONGVARCHAR);
+      m_Typetable.put("NULL", Types.NULL);
+      m_Typetable.put("NUMERIC", Types.NUMERIC);
+      m_Typetable.put("OTHER", Types.OTHER);
+      m_Typetable.put("REAL", Types.REAL);
+      m_Typetable.put("SMALLINT", Types.SMALLINT);
+      m_Typetable.put("TIME", Types.TIME);
+      m_Typetable.put("TIMESTAMP", Types.TIMESTAMP);
+      m_Typetable.put("TINYINT", Types.TINYINT);
+      m_Typetable.put("VARBINARY", Types.VARBINARY);
+      m_Typetable.put("VARCHAR", Types.VARCHAR);
 
       // Aliases from Xalan SQL extension.
-      m_Typetable.put("STRING", new Integer(java.sql.Types.VARCHAR));
-      m_Typetable.put("BIGDECIMAL", new Integer(java.sql.Types.NUMERIC));
-      m_Typetable.put("BOOLEAN", new Integer(java.sql.Types.BIT));
-      m_Typetable.put("BYTES", new Integer(java.sql.Types.LONGVARBINARY));
-      m_Typetable.put("LONG", new Integer(java.sql.Types.BIGINT));
-      m_Typetable.put("SHORT", new Integer(java.sql.Types.SMALLINT));
+      m_Typetable.put("STRING", Types.VARCHAR);
+      m_Typetable.put("BIGDECIMAL", Types.NUMERIC);
+      m_Typetable.put("BOOLEAN", Types.BIT);
+      m_Typetable.put("BYTES", Types.LONGVARBINARY);
+      m_Typetable.put("LONG", Types.BIGINT);
+      m_Typetable.put("SHORT", Types.SMALLINT);
     }
 
-    final Integer type = (Integer) m_Typetable.get(typename.toUpperCase());
+    final Integer type = m_Typetable.get(typename.toUpperCase());
     int rtype;
     if (type == null) {
-      rtype = java.sql.Types.OTHER;
+      rtype = Types.OTHER;
     } else {
       rtype = type.intValue();
     }

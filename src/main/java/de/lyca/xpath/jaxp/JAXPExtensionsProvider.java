@@ -24,10 +24,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.namespace.QName;
+import javax.xml.transform.TransformerException;
 import javax.xml.xpath.XPathFunction;
 import javax.xml.xpath.XPathFunctionException;
 import javax.xml.xpath.XPathFunctionResolver;
 
+import de.lyca.xml.utils.WrappedRuntimeException;
 import de.lyca.xpath.ExtensionsProvider;
 import de.lyca.xpath.functions.FuncExtFunction;
 import de.lyca.xpath.objects.XNodeSet;
@@ -59,7 +61,7 @@ public class JAXPExtensionsProvider implements ExtensionsProvider {
    */
 
   @Override
-  public boolean functionAvailable(String ns, String funcName) throws javax.xml.transform.TransformerException {
+  public boolean functionAvailable(String ns, String funcName) throws TransformerException {
     try {
       if (funcName == null) {
         final String fmsg = XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_ARG_CANNOT_BE_NULL,
@@ -67,8 +69,8 @@ public class JAXPExtensionsProvider implements ExtensionsProvider {
         throw new NullPointerException(fmsg);
       }
       // Find the XPathFunction corresponding to namespace and funcName
-      final javax.xml.namespace.QName myQName = new QName(ns, funcName);
-      final javax.xml.xpath.XPathFunction xpathFunction = resolver.resolveFunction(myQName, 0);
+      final QName myQName = new QName(ns, funcName);
+      final XPathFunction xpathFunction = resolver.resolveFunction(myQName, 0);
       if (xpathFunction == null)
         return false;
       return true;
@@ -82,7 +84,7 @@ public class JAXPExtensionsProvider implements ExtensionsProvider {
    * Is the extension element available?
    */
   @Override
-  public boolean elementAvailable(String ns, String elemName) throws javax.xml.transform.TransformerException {
+  public boolean elementAvailable(String ns, String elemName) throws TransformerException {
     return false;
   }
 
@@ -90,8 +92,7 @@ public class JAXPExtensionsProvider implements ExtensionsProvider {
    * Execute the extension function.
    */
   @Override
-  public Object extFunction(String ns, String funcName, List argVec, Object methodKey)
-          throws javax.xml.transform.TransformerException {
+  public Object extFunction(String ns, String funcName, List<?> argVec, Object methodKey) throws TransformerException {
     try {
 
       if (funcName == null) {
@@ -100,7 +101,7 @@ public class JAXPExtensionsProvider implements ExtensionsProvider {
         throw new NullPointerException(fmsg);
       }
       // Find the XPathFunction corresponding to namespace and funcName
-      final javax.xml.namespace.QName myQName = new QName(ns, funcName);
+      final QName myQName = new QName(ns, funcName);
 
       // JAXP 1.3 spec says When XMLConstants.FEATURE_SECURE_PROCESSING
       // feature is set then invocation of extension functions need to
@@ -115,10 +116,10 @@ public class JAXPExtensionsProvider implements ExtensionsProvider {
       // default values )
       final int arity = argVec.size();
 
-      final javax.xml.xpath.XPathFunction xpathFunction = resolver.resolveFunction(myQName, arity);
+      final XPathFunction xpathFunction = resolver.resolveFunction(myQName, arity);
 
       // not using methodKey
-      final ArrayList argList = new ArrayList(arity);
+      final List<Object> argList = new ArrayList<>(arity);
       for (int i = 0; i < arity; i++) {
         final Object argument = argVec.get(i);
         // XNodeSet object() returns NodeVector and not NodeList
@@ -137,9 +138,9 @@ public class JAXPExtensionsProvider implements ExtensionsProvider {
     } catch (final XPathFunctionException xfe) {
       // If we get XPathFunctionException then we want to terminate
       // further execution by throwing WrappedRuntimeException
-      throw new de.lyca.xml.utils.WrappedRuntimeException(xfe);
+      throw new WrappedRuntimeException(xfe);
     } catch (final Exception e) {
-      throw new javax.xml.transform.TransformerException(e);
+      throw new TransformerException(e);
     }
 
   }
@@ -148,12 +149,12 @@ public class JAXPExtensionsProvider implements ExtensionsProvider {
    * Execute the extension function.
    */
   @Override
-  public Object extFunction(FuncExtFunction extFunction, List argVec) throws javax.xml.transform.TransformerException {
+  public Object extFunction(FuncExtFunction extFunction, List<?> argVec) throws TransformerException {
     try {
       final String namespace = extFunction.getNamespace();
       final String functionName = extFunction.getFunctionName();
       final int arity = extFunction.getArgCount();
-      final javax.xml.namespace.QName myQName = new javax.xml.namespace.QName(namespace, functionName);
+      final QName myQName = new QName(namespace, functionName);
 
       // JAXP 1.3 spec says When XMLConstants.FEATURE_SECURE_PROCESSING
       // feature is set then invocation of extension functions need to
@@ -166,7 +167,7 @@ public class JAXPExtensionsProvider implements ExtensionsProvider {
 
       final XPathFunction xpathFunction = resolver.resolveFunction(myQName, arity);
 
-      final ArrayList argList = new ArrayList(arity);
+      final List<Object> argList = new ArrayList<>(arity);
       for (int i = 0; i < arity; i++) {
         final Object argument = argVec.get(i);
         // XNodeSet object() returns NodeVector and not NodeList
@@ -186,9 +187,9 @@ public class JAXPExtensionsProvider implements ExtensionsProvider {
     } catch (final XPathFunctionException xfe) {
       // If we get XPathFunctionException then we want to terminate
       // further execution by throwing WrappedRuntimeException
-      throw new de.lyca.xml.utils.WrappedRuntimeException(xfe);
+      throw new WrappedRuntimeException(xfe);
     } catch (final Exception e) {
-      throw new javax.xml.transform.TransformerException(e);
+      throw new TransformerException(e);
     }
   }
 

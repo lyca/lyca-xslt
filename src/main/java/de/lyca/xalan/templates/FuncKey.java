@@ -20,7 +20,8 @@
  */
 package de.lyca.xalan.templates;
 
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 
 import de.lyca.xalan.transformer.KeyManager;
 import de.lyca.xalan.transformer.TransformerImpl;
@@ -43,7 +44,7 @@ public class FuncKey extends Function2Args {
   static final long serialVersionUID = 9089293100115347340L;
 
   /** Dummy value to be used in usedrefs hashtable */
-  static private Boolean ISTRUE = new Boolean(true);
+  static private Boolean ISTRUE = Boolean.TRUE;
 
   /**
    * Execute the function. The function must return a valid object.
@@ -87,7 +88,7 @@ public class FuncKey extends Function2Args {
     }
 
     if (argIsNodeSetDTM) {
-      Hashtable usedrefs = null;
+      Map<XMLString,Boolean> usedrefs = null;
       final DTMIterator ni = arg.iter();
       int pos;
       final UnionPathIterator upi = new UnionPathIterator();
@@ -102,7 +103,7 @@ public class FuncKey extends Function2Args {
         }
 
         if (null == usedrefs) {
-          usedrefs = new Hashtable();
+          usedrefs = new HashMap<>();
         }
 
         if (usedrefs.get(ref) != null) {

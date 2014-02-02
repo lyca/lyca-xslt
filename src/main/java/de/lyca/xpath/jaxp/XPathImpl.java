@@ -33,7 +33,6 @@ import javax.xml.xpath.XPathFunction;
 import javax.xml.xpath.XPathFunctionResolver;
 import javax.xml.xpath.XPathVariableResolver;
 
-import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.traversal.NodeIterator;
@@ -171,8 +170,6 @@ public class XPathImpl implements javax.xml.xpath.XPath {
     return namespaceContext;
   }
 
-  private static Document d = null;
-
   private static DocumentBuilder getParser() {
     try {
       // we'd really like to cache those DocumentBuilders, but we can't because:
@@ -195,16 +192,6 @@ public class XPathImpl implements javax.xml.xpath.XPath {
       // this should never happen with a well-behaving JAXP implementation.
       throw new Error(e.toString());
     }
-  }
-
-  private static Document getDummyDocument() {
-    // we don't need synchronization here; even if two threads
-    // enter this code at the same time, we just waste a little time
-    if (d == null) {
-      final DOMImplementation dim = getParser().getDOMImplementation();
-      d = dim.createDocument("http://java.sun.com/jaxp/xpath", "dummyroot", null);
-    }
-    return d;
   }
 
   private XObject eval(String expression, Object contextItem) throws javax.xml.transform.TransformerException {

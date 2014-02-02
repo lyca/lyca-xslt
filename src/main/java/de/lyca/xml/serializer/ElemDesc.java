@@ -126,21 +126,6 @@ public final class ElemDesc {
     m_flags = flags;
   }
 
-  /**
-   * Tell if this element type has the basic bit properties that are passed as
-   * an argument.
-   * 
-   * @param flags
-   *          Bit flags that describe the basic properties of interest.
-   * 
-   * @return true if any of the flag bits are true.
-   */
-  private boolean is(int flags) {
-
-    // int which = (m_flags & flags);
-    return (m_flags & flags) != 0;
-  }
-
   int getFlags() {
     return m_flags;
   }

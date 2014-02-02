@@ -151,9 +151,6 @@ public class URI implements Serializable {
    */
   private String m_fragment = null;
 
-  /** Indicate whether in DEBUG mode */
-  private static boolean DEBUG = false;
-
   /**
    * Construct a new and uninitialized URI.
    */

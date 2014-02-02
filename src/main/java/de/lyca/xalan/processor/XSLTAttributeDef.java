@@ -22,8 +22,9 @@ package de.lyca.xalan.processor;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
-import java.util.Vector;
 
 import javax.xml.transform.TransformerException;
 
@@ -1139,16 +1140,16 @@ public class XSLTAttributeDef {
    *           can not be resolved, or a qualified name contains syntax that is
    *           invalid for a qualified name.
    */
-  Vector processQNAMES(StylesheetHandler handler, String uri, String name, String rawName, String value)
+  List<QName> processQNAMES(StylesheetHandler handler, String uri, String name, String rawName, String value)
           throws org.xml.sax.SAXException {
 
     final StringTokenizer tokenizer = new StringTokenizer(value, " \t\n\r\f");
     final int nQNames = tokenizer.countTokens();
-    final Vector qnames = new Vector(nQNames);
+    final List<QName> qnames = new ArrayList<>(nQNames);
 
     for (int i = 0; i < nQNames; i++) {
       // Fix from Alexander Rudnev
-      qnames.addElement(new QName(tokenizer.nextToken(), handler));
+      qnames.add(new QName(tokenizer.nextToken(), handler));
     }
 
     return qnames;
@@ -1181,20 +1182,20 @@ public class XSLTAttributeDef {
    *           can not be resolved, or a qualified name contains syntax that is
    *           invalid for a qualified name.
    */
-  final Vector processQNAMESRNU(StylesheetHandler handler, String uri, String name, String rawName, String value)
+  final List<QName> processQNAMESRNU(StylesheetHandler handler, String uri, String name, String rawName, String value)
           throws org.xml.sax.SAXException {
 
     final StringTokenizer tokenizer = new StringTokenizer(value, " \t\n\r\f");
     final int nQNames = tokenizer.countTokens();
-    final Vector qnames = new Vector(nQNames);
+    final List<QName> qnames = new ArrayList<>(nQNames);
 
     final String defaultURI = handler.getNamespaceForPrefix("");
     for (int i = 0; i < nQNames; i++) {
       final String tok = tokenizer.nextToken();
       if (tok.indexOf(':') == -1) {
-        qnames.addElement(new QName(defaultURI, tok));
+        qnames.add(new QName(defaultURI, tok));
       } else {
-        qnames.addElement(new QName(tok, handler));
+        qnames.add(new QName(tok, handler));
       }
     }
     return qnames;
@@ -1223,18 +1224,18 @@ public class XSLTAttributeDef {
    *           that wraps a {@link javax.xml.transform.TransformerException} if
    *           one of the match pattern strings contains a syntax error.
    */
-  Vector processSIMPLEPATTERNLIST(StylesheetHandler handler, String uri, String name, String rawName, String value,
+  List<XPath> processSIMPLEPATTERNLIST(StylesheetHandler handler, String uri, String name, String rawName, String value,
           ElemTemplateElement owner) throws org.xml.sax.SAXException {
 
     try {
       final StringTokenizer tokenizer = new StringTokenizer(value, " \t\n\r\f");
       final int nPatterns = tokenizer.countTokens();
-      final Vector patterns = new Vector(nPatterns);
+      final List<XPath> patterns = new ArrayList<>(nPatterns);
 
       for (int i = 0; i < nPatterns; i++) {
         final XPath pattern = handler.createMatchPatternXPath(tokenizer.nextToken(), owner);
 
-        patterns.addElement(pattern);
+        patterns.add(pattern);
       }
 
       return patterns;
@@ -1562,12 +1563,12 @@ public class XSLTAttributeDef {
    * @return The most primative class representation possible for the object,
    *         never null.
    */
-  private Class getPrimativeClass(Object obj) {
+  private Class<?> getPrimativeClass(Object obj) {
 
     if (obj instanceof XPath)
       return XPath.class;
 
-    Class cl = obj.getClass();
+    Class<?> cl = obj.getClass();
 
     if (cl == Double.class) {
       cl = double.class;
@@ -1650,8 +1651,8 @@ public class XSLTAttributeDef {
             attrUri = "";
           }
           // First try to match with the primative value.
-          final Class sclass = attrUri.getClass();
-          final Class[] argTypes = new Class[] { sclass, sclass, sclass, sclass };
+          final Class<?> sclass = attrUri.getClass();
+          final Class<?>[] argTypes = new Class[] { sclass, sclass, sclass, sclass };
 
           meth = elem.getClass().getMethod(setterString, argTypes);
 
@@ -1664,12 +1665,12 @@ public class XSLTAttributeDef {
             return false;
 
           // First try to match with the primative value.
-          final Class[] argTypes = new Class[] { getPrimativeClass(value) };
+          final Class<?>[] argTypes = new Class[] { getPrimativeClass(value) };
 
           try {
             meth = elem.getClass().getMethod(setterString, argTypes);
           } catch (final NoSuchMethodException nsme) {
-            final Class cl = value.getClass();
+            final Class<?> cl = value.getClass();
 
             // If this doesn't work, try it with the non-primative value;
             argTypes[0] = cl;

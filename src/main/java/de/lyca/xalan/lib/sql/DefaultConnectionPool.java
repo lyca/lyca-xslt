@@ -25,10 +25,11 @@ import java.sql.DatabaseMetaData;
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Properties;
-import java.util.Vector;
 
 import de.lyca.xalan.res.XSLMessages;
 import de.lyca.xalan.res.XSLTErrorResources;
@@ -70,7 +71,7 @@ public class DefaultConnectionPool implements ConnectionPool {
   /**
    * Storage for the PooledConnections
    */
-  private final Vector m_pool = new Vector();
+  private final List<PooledConnection> m_pool = new ArrayList<>();
 
   /**
    * Are we active ??
@@ -122,9 +123,9 @@ public class DefaultConnectionPool implements ConnectionPool {
   public void freeUnused() {
     // Iterate over the entire pool closing the
     // JDBC Connections.
-    final Iterator i = m_pool.iterator();
+    final Iterator<PooledConnection> i = m_pool.iterator();
     while (i.hasNext()) {
-      final PooledConnection pcon = (PooledConnection) i.next();
+      final PooledConnection pcon = i.next();
 
       // If the PooledConnection is not in use, close it
       if (pcon.inUse() == false) {
@@ -265,7 +266,7 @@ public class DefaultConnectionPool implements ConnectionPool {
     // find a connection not in use
     for (int x = 0; x < m_pool.size(); x++) {
 
-      pcon = (PooledConnection) m_pool.elementAt(x);
+      pcon = m_pool.get(x);
 
       // Check to see if the Connection is in use
       if (pcon.inUse() == false) {
@@ -291,7 +292,7 @@ public class DefaultConnectionPool implements ConnectionPool {
     pcon.setInUse(true);
 
     // Add the new PooledConnection object to the pool
-    m_pool.addElement(pcon);
+    m_pool.add(pcon);
 
     // return the new Connection
     return pcon.getConnection();
@@ -308,7 +309,7 @@ public class DefaultConnectionPool implements ConnectionPool {
     // find the PooledConnection Object
     for (int x = 0; x < m_pool.size(); x++) {
 
-      final PooledConnection pcon = (PooledConnection) m_pool.elementAt(x);
+      final PooledConnection pcon = m_pool.get(x);
 
       // Check for correct Connection
       if (pcon.getConnection() == con) {
@@ -318,7 +319,7 @@ public class DefaultConnectionPool implements ConnectionPool {
 
         if (!isEnabled()) {
           con.close();
-          m_pool.removeElementAt(x);
+          m_pool.remove(x);
           if (DEBUG) {
             System.out.println("-->Inactive Pool, Closing connection");
           }
@@ -345,7 +346,7 @@ public class DefaultConnectionPool implements ConnectionPool {
     // find the PooledConnection Object
     for (int x = 0; x < m_pool.size(); x++) {
 
-      final PooledConnection pcon = (PooledConnection) m_pool.elementAt(x);
+      final PooledConnection pcon = m_pool.get(x);
 
       // Check for correct Connection
       if (pcon.getConnection() == con) {
@@ -354,7 +355,7 @@ public class DefaultConnectionPool implements ConnectionPool {
         }
 
         con.close();
-        m_pool.removeElementAt(x);
+        m_pool.remove(x);
         if (DEBUG) {
           System.out.println("-->Inactive Pool, Closing connection");
         }
@@ -451,7 +452,7 @@ public class DefaultConnectionPool implements ConnectionPool {
    */
   private void addConnection(PooledConnection value) {
     // Add the PooledConnection Object to the vector
-    m_pool.addElement(value);
+    m_pool.add(value);
   }
 
   /**
@@ -472,7 +473,7 @@ public class DefaultConnectionPool implements ConnectionPool {
         System.out.println("Closing JDBC Connection " + x);
       }
 
-      final PooledConnection pcon = (PooledConnection) m_pool.elementAt(x);
+      final PooledConnection pcon = m_pool.get(x);
 
       // If the PooledConnection is not in use, close it
       if (pcon.inUse() == false) {

@@ -20,6 +20,8 @@
  */
 package de.lyca.xalan.processor;
 
+import java.util.List;
+
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.TransformerException;
 
@@ -54,7 +56,7 @@ class ProcessorOutputElem extends XSLTElementProcessor {
    * @param newValue
    *          non-null reference to processed attribute value.
    */
-  public void setCdataSectionElements(java.util.Vector newValue) {
+  public void setCdataSectionElements(List<QName> newValue) {
     m_outputProperties.setQNameProperties(OutputKeys.CDATA_SECTION_ELEMENTS, newValue);
   }
 

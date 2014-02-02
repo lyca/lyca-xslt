@@ -23,9 +23,10 @@ package de.lyca.xalan.lib.sql;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import java.util.StringTokenizer;
-import java.util.Vector;
 
 import javax.xml.transform.ErrorListener;
 import javax.xml.transform.TransformerException;
@@ -102,7 +103,7 @@ public class XConnection {
    * created. As Documents are closed, they will be removed from the collection
    * and told to free all the used resources.
    */
-  private final Vector m_OpenSQLDocuments = new Vector();
+  private final List<SQLDocument> m_OpenSQLDocuments = new ArrayList<>();
 
   /**
    * Let's keep a copy of the ConnectionPoolMgr in alive here so we are keeping
@@ -115,7 +116,7 @@ public class XConnection {
    * For PreparedStatements, we need a place to to store the parameters in a
    * vector.
    */
-  private final Vector m_ParameterList = new Vector();
+  private final List<QueryParameter> m_ParameterList = new ArrayList<>();
 
   /**
    * Allow the SQL Extensions to return null on error. The Error information
@@ -623,7 +624,7 @@ public class XConnection {
       doc.execute(this, query);
 
       // also keep a local reference
-      m_OpenSQLDocuments.addElement(doc);
+      m_OpenSQLDocuments.add(doc);
     } catch (final Exception e) {
       // OK We had an error building the document, let try and grab the
       // error information and clean up our connections.
@@ -708,7 +709,7 @@ public class XConnection {
       doc.execute(this, query);
 
       // also keep a local reference
-      m_OpenSQLDocuments.addElement(doc);
+      m_OpenSQLDocuments.add(doc);
     } catch (final Exception e) {
       // OK We had an error building the document, let try and grab the
       // error information and clean up our connections.
@@ -772,7 +773,7 @@ public class XConnection {
       indx = 0;
       while (plist.hasMoreTokens()) {
         final String value = plist.nextToken();
-        final QueryParameter qp = (QueryParameter) m_ParameterList.elementAt(indx);
+        final QueryParameter qp = m_ParameterList.get(indx);
         if (null != qp) {
           qp.setTypeName(value);
         }
@@ -800,7 +801,7 @@ public class XConnection {
    * 
    */
   public void addParameterWithType(String value, String Type) {
-    m_ParameterList.addElement(new QueryParameter(value, Type));
+    m_ParameterList.add(new QueryParameter(value, Type));
   }
 
   /**
@@ -818,7 +819,7 @@ public class XConnection {
       if (value == null) {
         value = "";
       }
-      m_ParameterList.addElement(new QueryParameter(value, Type.getNodeValue()));
+      m_ParameterList.add(new QueryParameter(value, Type.getNodeValue()));
     }
   }
 
@@ -892,7 +893,7 @@ public class XConnection {
             value = "";
           }
 
-          m_ParameterList.addElement(new QueryParameter(value, TypeStr));
+          m_ParameterList.add(new QueryParameter(value, TypeStr));
         }
       }
     } while ((n = n.getNextSibling()) != null);
@@ -902,7 +903,7 @@ public class XConnection {
    *
    */
   public void clearParameters() {
-    m_ParameterList.removeAllElements();
+    m_ParameterList.clear();
   }
 
   /**
@@ -997,7 +998,7 @@ public class XConnection {
   public DTM getError() {
     if (m_FullErrors) {
       for (int idx = 0; idx < m_OpenSQLDocuments.size(); idx++) {
-        final SQLDocument doc = (SQLDocument) m_OpenSQLDocuments.elementAt(idx);
+        final SQLDocument doc = m_OpenSQLDocuments.get(idx);
         final SQLWarning warn = doc.checkWarnings();
         if (warn != null) {
           setError(null, doc, warn);
@@ -1024,7 +1025,7 @@ public class XConnection {
     // document interface, so close all open documents.
 
     while (m_OpenSQLDocuments.size() != 0) {
-      final SQLDocument d = (SQLDocument) m_OpenSQLDocuments.elementAt(0);
+      final SQLDocument d = m_OpenSQLDocuments.get(0);
       try {
         // If we are using the Default Connection Pool, then
         // force the connection pool to flush unused connections.
@@ -1032,7 +1033,7 @@ public class XConnection {
       } catch (final Exception se) {
       }
 
-      m_OpenSQLDocuments.removeElementAt(0);
+      m_OpenSQLDocuments.remove(0);
     }
 
     if (null != m_Connection) {

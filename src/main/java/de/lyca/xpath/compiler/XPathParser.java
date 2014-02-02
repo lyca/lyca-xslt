@@ -295,70 +295,6 @@ public class XPathParser {
   }
 
   /**
-   * Look behind the first character of the current token in order to make a
-   * branching decision.
-   * 
-   * @param c
-   *          the character to compare it to.
-   * @param n
-   *          number of tokens to look behind. Must be greater than 1. Note that
-   *          the look behind terminates at either the beginning of the string
-   *          or on a '|' character. Because of this, this method should only be
-   *          used for pattern matching.
-   * 
-   * @return true if the token behind the current token matches the character
-   *         argument.
-   */
-  private final boolean lookbehind(char c, int n) {
-
-    boolean isToken;
-    final int lookBehindPos = m_queueMark - (n + 1);
-
-    if (lookBehindPos >= 0) {
-      final String lookbehind = (String) m_ops.m_tokenQueue.elementAt(lookBehindPos);
-
-      if (lookbehind.length() == 1) {
-        final char c0 = lookbehind == null ? '|' : lookbehind.charAt(0);
-
-        isToken = c0 == '|' ? false : c0 == c;
-      } else {
-        isToken = false;
-      }
-    } else {
-      isToken = false;
-    }
-
-    return isToken;
-  }
-
-  /**
-   * look behind the current token in order to see if there is a useable token.
-   * 
-   * @param n
-   *          number of tokens to look behind. Must be greater than 1. Note that
-   *          the look behind terminates at either the beginning of the string
-   *          or on a '|' character. Because of this, this method should only be
-   *          used for pattern matching.
-   * 
-   * @return true if look behind has a token, false otherwise.
-   */
-  private final boolean lookbehindHasToken(int n) {
-
-    boolean hasToken;
-
-    if (m_queueMark - n > 0) {
-      final String lookbehind = (String) m_ops.m_tokenQueue.elementAt(m_queueMark - (n - 1));
-      final char c0 = lookbehind == null ? '|' : lookbehind.charAt(0);
-
-      hasToken = c0 == '|' ? false : true;
-    } else {
-      hasToken = false;
-    }
-
-    return hasToken;
-  }
-
-  /**
    * Look ahead of the current token in order to make a branching decision.
    * 
    * @param s
@@ -395,69 +331,6 @@ public class XPathParser {
     } else {
       m_token = null;
       m_tokenChar = 0;
-    }
-  }
-
-  /**
-   * Retrieve a token relative to the current token.
-   * 
-   * @param i
-   *          Position relative to current token.
-   * 
-   * @return The string at the given index, or null if the index is out of
-   *         range.
-   */
-  private final String getTokenRelative(int i) {
-
-    String tok;
-    final int relative = m_queueMark + i;
-
-    if (relative > 0 && relative < m_ops.getTokenQueueSize()) {
-      tok = (String) m_ops.m_tokenQueue.elementAt(relative);
-    } else {
-      tok = null;
-    }
-
-    return tok;
-  }
-
-  /**
-   * Retrieve the previous token from the command and store it in m_token
-   * string.
-   */
-  private final void prevToken() {
-
-    if (m_queueMark > 0) {
-      m_queueMark--;
-
-      m_token = (String) m_ops.m_tokenQueue.elementAt(m_queueMark);
-      m_tokenChar = m_token.charAt(0);
-    } else {
-      m_token = null;
-      m_tokenChar = 0;
-    }
-  }
-
-  /**
-   * Consume an expected token, throwing an exception if it isn't there.
-   * 
-   * @param expected
-   *          The string to be expected.
-   * 
-   * @throws javax.xml.transform.TransformerException
-   */
-  private final void consumeExpected(String expected) throws javax.xml.transform.TransformerException {
-
-    if (tokenIs(expected)) {
-      nextToken();
-    } else {
-      error(XPATHErrorResources.ER_EXPECTED_BUT_FOUND, new Object[] { expected, m_token }); // "Expected "+expected+", but found: "+m_token);
-
-      // Patch for Christina's gripe. She wants her errorHandler to return from
-      // this error and continue trying to parse, rather than throwing an
-      // exception.
-      // Without the patch, that put us into an endless loop.
-      throw new XPathProcessorException(CONTINUE_AFTER_FATAL_ERROR);
     }
   }
 
@@ -509,27 +382,6 @@ public class XPathParser {
     } else {
       // Should never happen.
       System.err.println(fmsg);
-    }
-  }
-
-  /**
-   * Notify the user of an assertion error, and probably throw an exception.
-   * 
-   * @param b
-   *          If false, a runtime exception will be thrown.
-   * @param msg
-   *          The assertion message, which should be informative.
-   * 
-   * @throws RuntimeException
-   *           if the b argument is false.
-   */
-  private void assertion(boolean b, String msg) {
-
-    if (!b) {
-      final String fMsg = XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_INCORRECT_PROGRAMMER_ASSERTION,
-              new Object[] { msg });
-
-      throw new RuntimeException(fMsg);
     }
   }
 

@@ -20,7 +20,10 @@
  */
 package de.lyca.xalan.templates;
 
+import java.util.List;
+
 import de.lyca.xml.utils.FastStringBuffer;
+import de.lyca.xml.utils.QName;
 import de.lyca.xpath.XPath;
 import de.lyca.xpath.XPathContext;
 import de.lyca.xpath.XPathFactory;
@@ -55,7 +58,7 @@ public class AVTPartXPath extends AVTPart {
    *          be offset to the current stack frame).
    */
   @Override
-  public void fixupVariables(java.util.Vector vars, int globalsSize) {
+  public void fixupVariables(List<QName> vars, int globalsSize) {
     m_xpath.fixupVariables(vars, globalsSize);
   }
 

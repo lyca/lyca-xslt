@@ -23,7 +23,8 @@ package de.lyca.xalan.lib;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.xml.transform.Result;
 import javax.xml.transform.TransformerException;
@@ -131,12 +132,12 @@ public class Redirect {
   /**
    * List of formatter listeners indexed by filename.
    */
-  protected Hashtable m_formatterListeners = new Hashtable();
+  protected Map<String, SerializationHandler> m_formatterListeners = new HashMap<>();
 
   /**
    * List of output streams indexed by filename.
    */
-  protected Hashtable m_outputStreams = new Hashtable();
+  protected Map<String, FileOutputStream> m_outputStreams = new HashMap<>();
 
   /**
    * Default append mode for bare open calls. False for backwards compatibility
@@ -206,7 +207,7 @@ public class Redirect {
     endRedirection(transf); // for tracing only
 
     if (!inTable) {
-      final OutputStream ostream = (OutputStream) m_outputStreams.get(fileName);
+      final OutputStream ostream = m_outputStreams.get(fileName);
       if (null != ostream) {
         try {
           formatter.endDocument();
@@ -234,7 +235,7 @@ public class Redirect {
       } catch (final org.xml.sax.SAXException se) {
         throw new TransformerException(se);
       }
-      final OutputStream ostream = (OutputStream) m_outputStreams.get(fileName);
+      final OutputStream ostream = m_outputStreams.get(fileName);
       if (null != ostream) {
         ostream.close();
         m_outputStreams.remove(fileName);

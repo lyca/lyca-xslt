@@ -20,12 +20,15 @@
  */
 package de.lyca.xalan.templates;
 
+import java.util.List;
+
 import javax.xml.transform.TransformerException;
 
 import org.w3c.dom.DOMException;
 
 import de.lyca.xalan.res.XSLTErrorResources;
 import de.lyca.xalan.transformer.TransformerImpl;
+import de.lyca.xml.utils.QName;
 import de.lyca.xml.utils.XML11Char;
 import de.lyca.xpath.XPathContext;
 
@@ -84,7 +87,7 @@ public class ElemPI extends ElemTemplateElement {
   @Override
   public void compose(StylesheetRoot sroot) throws TransformerException {
     super.compose(sroot);
-    final java.util.Vector vnames = sroot.getComposeState().getVariableNames();
+    final List<QName> vnames = sroot.getComposeState().getVariableNames();
     if (null != m_name_atv) {
       m_name_atv.fixupVariables(vnames, sroot.getComposeState().getGlobalsSize());
     }

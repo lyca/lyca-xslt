@@ -20,10 +20,13 @@
  */
 package de.lyca.xalan.templates;
 
+import java.util.List;
+
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Node;
 
 import de.lyca.xalan.res.XSLTErrorResources;
+import de.lyca.xml.utils.QName;
 import de.lyca.xpath.XPath;
 
 /**
@@ -324,7 +327,7 @@ public class ElemSort extends ElemTemplateElement {
   public void compose(StylesheetRoot sroot) throws javax.xml.transform.TransformerException {
     super.compose(sroot);
     final StylesheetRoot.ComposeState cstate = sroot.getComposeState();
-    final java.util.Vector vnames = cstate.getVariableNames();
+    final List<QName> vnames = cstate.getVariableNames();
     if (null != m_caseorder_avt) {
       m_caseorder_avt.fixupVariables(vnames, cstate.getGlobalsSize());
     }

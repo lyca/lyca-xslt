@@ -41,9 +41,6 @@ public class FilterExprIterator extends BasicTestIterator {
   /** The result of executing m_expr. Needs to be deep cloned on clone op. */
   transient private XNodeSet m_exprObj;
 
-  private final boolean m_mustHardReset = false;
-  private final boolean m_canDetachNodeset = true;
-
   /**
    * Create a FilterExprIterator object.
    * 

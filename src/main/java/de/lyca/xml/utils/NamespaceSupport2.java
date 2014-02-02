@@ -24,8 +24,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EmptyStackException;
 import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Encapsulate Namespace tracking logic for use by SAX drivers.
@@ -300,7 +301,7 @@ public class NamespaceSupport2 extends org.xml.sax.helpers.NamespaceSupport {
    * @see #getURI
    */
   @Override
-  public Enumeration getPrefixes() {
+  public Enumeration<String> getPrefixes() {
     return currentContext.getPrefixes();
   }
 
@@ -356,7 +357,7 @@ public class NamespaceSupport2 extends org.xml.sax.helpers.NamespaceSupport {
    * @see #getURI
    */
   @Override
-  public Enumeration getPrefixes(String uri) {
+  public Enumeration<String> getPrefixes(String uri) {
     // JJK: The old code involved creating a vector, filling it
     // with all the matching prefixes, and then getting its
     // elements enumerator. Wastes storage, wastes cycles if we
@@ -384,7 +385,7 @@ public class NamespaceSupport2 extends org.xml.sax.helpers.NamespaceSupport {
    * @see #getURI
    */
   @Override
-  public Enumeration getDeclaredPrefixes() {
+  public Enumeration<String> getDeclaredPrefixes() {
     return currentContext.getDeclaredPrefixes();
   }
 
@@ -402,15 +403,15 @@ public class NamespaceSupport2 extends org.xml.sax.helpers.NamespaceSupport {
  * approach; finding the URI and then asking what prefixes apply to it might
  * make much more sense.
  */
-class PrefixForUriEnumerator implements Enumeration {
-  private final Enumeration allPrefixes;
+class PrefixForUriEnumerator implements Enumeration<String> {
+  private final Enumeration<String> allPrefixes;
   private final String uri;
   private String lookahead = null;
   private final NamespaceSupport2 nsup;
 
   // Kluge: Since one can't do a constructor on an
   // anonymous class (as far as I know)...
-  PrefixForUriEnumerator(NamespaceSupport2 nsup, String uri, Enumeration allPrefixes) {
+  PrefixForUriEnumerator(NamespaceSupport2 nsup, String uri, Enumeration<String> allPrefixes) {
     this.nsup = nsup;
     this.uri = uri;
     this.allPrefixes = allPrefixes;
@@ -422,7 +423,7 @@ class PrefixForUriEnumerator implements Enumeration {
       return true;
 
     while (allPrefixes.hasMoreElements()) {
-      final String prefix = (String) allPrefixes.nextElement();
+      final String prefix = allPrefixes.nextElement();
       if (uri.equals(nsup.getURI(prefix))) {
         lookahead = prefix;
         return true;
@@ -432,7 +433,7 @@ class PrefixForUriEnumerator implements Enumeration {
   }
 
   @Override
-  public Object nextElement() {
+  public String nextElement() {
     if (hasMoreElements()) {
       final String tmp = lookahead;
       lookahead = null;
@@ -457,26 +458,21 @@ final class Context2 {
   // Manefest Constants
   // //////////////////////////////////////////////////////////////
 
-  /**
-   * An empty enumeration.
-   */
-  private final static Enumeration EMPTY_ENUMERATION = Collections.emptyEnumeration();
-
   // //////////////////////////////////////////////////////////////
   // Protected state.
   // //////////////////////////////////////////////////////////////
 
-  Hashtable prefixTable;
-  Hashtable uriTable;
-  Hashtable elementNameTable;
-  Hashtable attributeNameTable;
+  Map<String, String> prefixTable;
+  Map<String, String> uriTable;
+  Map<String, String[]> elementNameTable;
+  Map<String, String[]> attributeNameTable;
   String defaultNS = null;
 
   // //////////////////////////////////////////////////////////////
   // Internal state.
   // //////////////////////////////////////////////////////////////
 
-  private List declarations = null;
+  private List<String> declarations = null;
   private boolean tablesDirty = false;
   private Context2 parent = null;
   private Context2 child = null;
@@ -486,8 +482,8 @@ final class Context2 {
    */
   Context2(Context2 parent) {
     if (parent == null) {
-      prefixTable = new Hashtable();
-      uriTable = new Hashtable();
+      prefixTable = new HashMap<>();
+      uriTable = new HashMap<>();
       elementNameTable = null;
       attributeNameTable = null;
     } else {
@@ -544,7 +540,7 @@ final class Context2 {
       copyTables();
     }
     if (declarations == null) {
-      declarations = new ArrayList();
+      declarations = new ArrayList<>();
     }
 
     prefix = prefix.intern();
@@ -576,17 +572,17 @@ final class Context2 {
    */
   String[] processName(String qName, boolean isAttribute) {
     String name[];
-    Hashtable table;
+    Map<String, String[]> table;
 
     // Select the appropriate table.
     if (isAttribute) {
       if (elementNameTable == null) {
-        elementNameTable = new Hashtable();
+        elementNameTable = new HashMap<>();
       }
       table = elementNameTable;
     } else {
       if (attributeNameTable == null) {
-        attributeNameTable = new Hashtable();
+        attributeNameTable = new HashMap<>();
       }
       table = attributeNameTable;
     }
@@ -594,7 +590,7 @@ final class Context2 {
     // Start by looking in the cache, and
     // return immediately if the name
     // is already known in this content
-    name = (String[]) table.get(qName);
+    name = table.get(qName);
     if (name != null)
       return name;
 
@@ -622,7 +618,7 @@ final class Context2 {
       if ("".equals(prefix)) {
         uri = defaultNS;
       } else {
-        uri = (String) prefixTable.get(prefix);
+        uri = prefixTable.get(prefix);
       }
       if (uri == null)
         return null;
@@ -651,7 +647,7 @@ final class Context2 {
     else if (prefixTable == null)
       return null;
     else
-      return (String) prefixTable.get(prefix);
+      return prefixTable.get(prefix);
   }
 
   /**
@@ -671,7 +667,7 @@ final class Context2 {
     if (uriTable == null)
       return null;
     else
-      return (String) uriTable.get(uri);
+      return uriTable.get(uri);
   }
 
   /**
@@ -680,9 +676,9 @@ final class Context2 {
    * @return An enumeration of prefixes (possibly empty).
    * @see org.xml.sax.helpers.NamespaceSupport2#getDeclaredPrefixes
    */
-  Enumeration getDeclaredPrefixes() {
+  Enumeration<String> getDeclaredPrefixes() {
     if (declarations == null)
-      return EMPTY_ENUMERATION;
+      return Collections.emptyEnumeration();
     else
       return Collections.enumeration(declarations);
   }
@@ -698,11 +694,11 @@ final class Context2 {
    * @return An enumeration of prefixes (never empty).
    * @see org.xml.sax.helpers.NamespaceSupport2#getPrefixes
    */
-  Enumeration getPrefixes() {
+  Enumeration<String> getPrefixes() {
     if (prefixTable == null)
-      return EMPTY_ENUMERATION;
+      return Collections.emptyEnumeration();
     else
-      return prefixTable.keys();
+      return Collections.enumeration(prefixTable.keySet());
   }
 
   // //////////////////////////////////////////////////////////////
@@ -726,8 +722,8 @@ final class Context2 {
    */
   private void copyTables() {
     // Start by copying our parent's bindings
-    prefixTable = (Hashtable) prefixTable.clone();
-    uriTable = (Hashtable) uriTable.clone();
+    prefixTable = new HashMap<>(prefixTable);
+    uriTable = new HashMap<>(uriTable);
 
     // Replace the caches with empty ones, rather than
     // trying to determine which bindings should be flushed.
@@ -735,10 +731,10 @@ final class Context2 {
     // used in Xalan... More efficient to remove the whole
     // cache system? ****
     if (elementNameTable != null) {
-      elementNameTable = new Hashtable();
+      elementNameTable = new HashMap<>();
     }
     if (attributeNameTable != null) {
-      attributeNameTable = new Hashtable();
+      attributeNameTable = new HashMap<>();
     }
     tablesDirty = true;
   }

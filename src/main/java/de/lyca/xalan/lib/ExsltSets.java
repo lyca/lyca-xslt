@@ -196,7 +196,7 @@ public class ExsltSets extends ExsltBase {
     final NodeSet dist = new NodeSet();
     dist.setShouldCacheNodes(true);
 
-    final Map stringTable = new HashMap();
+    final Map<String, Node> stringTable = new HashMap<>();
 
     for (int i = 0; i < nl.getLength(); i++) {
       final Node currNode = nl.item(i);

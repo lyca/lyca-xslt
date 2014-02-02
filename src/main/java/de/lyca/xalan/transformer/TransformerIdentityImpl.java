@@ -21,7 +21,8 @@
 package de.lyca.xalan.transformer;
 
 import java.io.IOException;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.xml.XMLConstants;
@@ -504,7 +505,7 @@ public class TransformerIdentityImpl extends Transformer implements TransformerH
               new Object[] { name }));
 
     if (null == m_params) {
-      m_params = new Hashtable();
+      m_params = new HashMap<>();
     }
 
     m_params.put(name, value);
@@ -1483,7 +1484,7 @@ public class TransformerIdentityImpl extends Transformer implements TransformerH
    * The parameters, which is unused, but must be returned to fullfill the
    * Transformer interface.
    */
-  private Hashtable m_params;
+  private Map<String, Object> m_params;
 
   /** The error listener for TrAX errors and warnings. */
   private ErrorListener m_errorListener = new de.lyca.xml.utils.DefaultErrorHandler(false);

@@ -20,7 +20,8 @@
  */
 package de.lyca.xalan.templates;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.transform.TransformerException;
 
@@ -75,7 +76,7 @@ public class StylesheetComposed extends Stylesheet {
    *          a Vector of ElemTemplateElement objects that we will add all of
    *          our recomposable objects to.
    */
-  public void recompose(Vector recomposableElements) throws TransformerException {
+  public void recompose(List<ElemTemplateElement> recomposableElements) throws TransformerException {
 
     // recomposeImports(); // Calculate the number of this import.
     // recomposeIncludes(this); // Build the global include list for this
@@ -92,61 +93,61 @@ public class StylesheetComposed extends Stylesheet {
 
       int s = included.getOutputCount();
       for (int j = 0; j < s; j++) {
-        recomposableElements.addElement(included.getOutput(j));
+        recomposableElements.add(included.getOutput(j));
       }
 
       // Next, add in the attribute-set elements
 
       s = included.getAttributeSetCount();
       for (int j = 0; j < s; j++) {
-        recomposableElements.addElement(included.getAttributeSet(j));
+        recomposableElements.add(included.getAttributeSet(j));
       }
 
       // Now the decimal-formats
 
       s = included.getDecimalFormatCount();
       for (int j = 0; j < s; j++) {
-        recomposableElements.addElement(included.getDecimalFormat(j));
+        recomposableElements.add(included.getDecimalFormat(j));
       }
 
       // Now the keys
 
       s = included.getKeyCount();
       for (int j = 0; j < s; j++) {
-        recomposableElements.addElement(included.getKey(j));
+        recomposableElements.add(included.getKey(j));
       }
 
       // And the namespace aliases
 
       s = included.getNamespaceAliasCount();
       for (int j = 0; j < s; j++) {
-        recomposableElements.addElement(included.getNamespaceAlias(j));
+        recomposableElements.add(included.getNamespaceAlias(j));
       }
 
       // Next comes the templates
 
       s = included.getTemplateCount();
       for (int j = 0; j < s; j++) {
-        recomposableElements.addElement(included.getTemplate(j));
+        recomposableElements.add(included.getTemplate(j));
       }
 
       // Then, the variables
 
       s = included.getVariableOrParamCount();
       for (int j = 0; j < s; j++) {
-        recomposableElements.addElement(included.getVariableOrParam(j));
+        recomposableElements.add(included.getVariableOrParam(j));
       }
 
       // And lastly the whitespace preserving and stripping elements
 
       s = included.getStripSpaceCount();
       for (int j = 0; j < s; j++) {
-        recomposableElements.addElement(included.getStripSpace(j));
+        recomposableElements.add(included.getStripSpace(j));
       }
 
       s = included.getPreserveSpaceCount();
       for (int j = 0; j < s; j++) {
-        recomposableElements.addElement(included.getPreserveSpace(j));
+        recomposableElements.add(included.getPreserveSpace(j));
       }
     }
   }
@@ -256,7 +257,7 @@ public class StylesheetComposed extends Stylesheet {
    * 
    * @serial
    */
-  private transient Vector m_includesComposed;
+  private transient List<Stylesheet> m_includesComposed;
 
   /**
    * Recompose the value of the composed include list. Builds a composite list
@@ -271,12 +272,12 @@ public class StylesheetComposed extends Stylesheet {
 
     if (n > 0) {
       if (null == m_includesComposed) {
-        m_includesComposed = new Vector();
+        m_includesComposed = new ArrayList<>();
       }
 
       for (int i = 0; i < n; i++) {
         final Stylesheet included = including.getInclude(i);
-        m_includesComposed.addElement(included);
+        m_includesComposed.add(included);
         recomposeIncludes(included);
       }
     }
@@ -303,7 +304,7 @@ public class StylesheetComposed extends Stylesheet {
     if (null == m_includesComposed)
       throw new ArrayIndexOutOfBoundsException();
 
-    return (Stylesheet) m_includesComposed.elementAt(i);
+    return m_includesComposed.get(i);
   }
 
   /**

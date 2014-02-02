@@ -35,7 +35,7 @@ public class ExtensionNamespaceSupport {
   // and arguments.
   String m_namespace = null;
   String m_handlerClass = null;
-  Class[] m_sig = null;
+  Class<?>[] m_sig = null;
   Object[] m_args = null;
 
   public ExtensionNamespaceSupport(String namespace, String handlerClass, Object[] constructorArgs) {
@@ -67,15 +67,15 @@ public class ExtensionNamespaceSupport {
   public ExtensionHandler launch() throws TransformerException {
     ExtensionHandler handler = null;
     try {
-      final Class cl = ExtensionHandler.getClassForName(m_handlerClass);
-      Constructor con = null;
+      final Class<?> cl = ExtensionHandler.getClassForName(m_handlerClass);
+      Constructor<?> con = null;
       // System.out.println("class " + cl + " " + m_args + " " + m_args.length +
       // " " + m_sig);
       if (m_sig != null) {
         con = cl.getConstructor(m_sig);
       } else // Pick the constructor based on number of args.
       {
-        final Constructor[] cons = cl.getConstructors();
+        final Constructor<?>[] cons = cl.getConstructors();
         for (int i = 0; i < cons.length; i++) {
           if (cons[i].getParameterTypes().length == m_args.length) {
             con = cons[i];

@@ -204,9 +204,7 @@ public class OneStepIterator extends ChildTestIterator {
 
         // Count 'em all
         int count = 1;
-        int next;
-
-        while (DTM.NULL != (next = clone.nextNode())) {
+        while (DTM.NULL != clone.nextNode()) {
           count++;
         }
 
@@ -236,9 +234,6 @@ public class OneStepIterator extends ChildTestIterator {
     // Tell if this is being called from within a predicate.
     final boolean isPredicateTest = this == m_execContext.getSubContextList();
 
-    // And get how many total predicates are part of this step.
-    final int predCount = getPredicateCount();
-
     // If we have already calculated the length, and the current predicate
     // is the first predicate, then return the length. We don't cache
     // the anything but the length of the list to the first predicate.
@@ -257,9 +252,7 @@ public class OneStepIterator extends ChildTestIterator {
 
       clone.m_predCount = m_predicateIndex;
 
-      int next;
-
-      while (DTM.NULL != (next = clone.nextNode())) {
+      while (DTM.NULL != clone.nextNode()) {
         count++;
       }
     } catch (final CloneNotSupportedException cnse) {

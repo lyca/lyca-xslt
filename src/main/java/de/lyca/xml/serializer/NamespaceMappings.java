@@ -254,7 +254,6 @@ public class NamespaceMappings {
       if (m_nodeStack.isEmpty())
         return;
       final MappingRecord map = m_nodeStack.peek();
-      final int depth = map.m_declarationDepth;
       if (elemDepth < 1 || map.m_declarationDepth < elemDepth) {
         break;
         /*

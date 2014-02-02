@@ -20,6 +20,8 @@
  */
 package de.lyca.xalan.templates;
 
+import java.util.List;
+
 import javax.xml.transform.TransformerException;
 
 import org.w3c.dom.DOMException;
@@ -29,6 +31,7 @@ import de.lyca.xalan.res.XSLTErrorResources;
 import de.lyca.xalan.transformer.TransformerImpl;
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xml.serializer.SerializationHandler;
+import de.lyca.xml.utils.QName;
 import de.lyca.xpath.Expression;
 import de.lyca.xpath.XPath;
 import de.lyca.xpath.XPathContext;
@@ -178,7 +181,7 @@ public class ElemValueOf extends ElemTemplateElement {
 
     super.compose(sroot);
 
-    final java.util.Vector vnames = sroot.getComposeState().getVariableNames();
+    final List<QName> vnames = sroot.getComposeState().getVariableNames();
 
     if (null != m_selectExpression) {
       m_selectExpression.fixupVariables(vnames, sroot.getComposeState().getGlobalsSize());

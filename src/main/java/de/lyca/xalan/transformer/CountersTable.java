@@ -20,8 +20,9 @@
  */
 package de.lyca.xalan.transformer;
 
+import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.Vector;
+import java.util.List;
 
 import javax.xml.transform.TransformerException;
 
@@ -37,7 +38,7 @@ import de.lyca.xpath.XPathContext;
  * 
  * @xsl.usage internal
  */
-public class CountersTable extends Hashtable {
+public class CountersTable extends Hashtable<ElemNumber, List<Counter>> {
   static final long serialVersionUID = 2159100770924179875L;
 
   /**
@@ -55,11 +56,9 @@ public class CountersTable extends Hashtable {
    * @return the list of counters that corresponds to the given ElemNumber
    *         object.
    */
-  Vector getCounters(ElemNumber numberElem) {
-
-    final Vector counters = (Vector) this.get(numberElem);
-
-    return null == counters ? putElemNumber(numberElem) : counters;
+  List<Counter> getCounters(ElemNumber numberElem) {
+    final List<Counter> counters = this.get(numberElem);
+    return counters == null ? putElemNumber(numberElem) : counters;
   }
 
   /**
@@ -70,12 +69,9 @@ public class CountersTable extends Hashtable {
    * 
    * @return an empty vector to be used to store counts for this number element.
    */
-  Vector putElemNumber(ElemNumber numberElem) {
-
-    final Vector counters = new Vector();
-
+  List<Counter> putElemNumber(ElemNumber numberElem) {
+    final List<Counter> counters = new ArrayList<>();
     this.put(numberElem, counters);
-
     return counters;
   }
 
@@ -125,7 +121,7 @@ public class CountersTable extends Hashtable {
   public int countNode(XPathContext support, ElemNumber numberElem, int node) throws TransformerException {
 
     int count = 0;
-    final Vector counters = getCounters(numberElem);
+    final List<Counter> counters = getCounters(numberElem);
     final int nCounters = counters.size();
 
     // XPath countMatchPattern = numberElem.getCountMatchPattern(support, node);
@@ -134,7 +130,7 @@ public class CountersTable extends Hashtable {
 
     if (DTM.NULL != target) {
       for (int i = 0; i < nCounters; i++) {
-        final Counter counter = (Counter) counters.elementAt(i);
+        final Counter counter = counters.get(i);
 
         count = counter.getPreviouslyCounted(support, target);
 
@@ -161,7 +157,7 @@ public class CountersTable extends Hashtable {
         // block above.
         if (0 != count) {
           for (int i = 0; i < nCounters; i++) {
-            final Counter counter = (Counter) counters.elementAt(i);
+            final Counter counter = counters.get(i);
             final int cacheLen = counter.m_countNodes.size();
 
             if (cacheLen > 0 && counter.m_countNodes.elementAt(cacheLen - 1) == target) {
@@ -191,7 +187,7 @@ public class CountersTable extends Hashtable {
 
       appendBtoFList(counter.m_countNodes, m_newFound);
       m_newFound.removeAllElements();
-      counters.addElement(counter);
+      counters.add(counter);
     }
 
     return count;

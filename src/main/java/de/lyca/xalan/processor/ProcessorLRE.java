@@ -178,7 +178,7 @@ public class ProcessorLRE extends ProcessorTemplateElem {
       }
 
       final XSLTElementDef def = getElemDef();
-      final Class classObject = def.getClassObject();
+      final Class<?> classObject = def.getClassObject();
       boolean isExtension = false;
       boolean isComponentDecl = false;
       boolean isUnknownTopLevel = false;
@@ -321,11 +321,11 @@ public class ProcessorLRE extends ProcessorTemplateElem {
   }
 
   private boolean declaredXSLNS(Stylesheet stylesheet) {
-    final List declaredPrefixes = stylesheet.getDeclaredPrefixes();
+    final List<XMLNSDecl> declaredPrefixes = stylesheet.getDeclaredPrefixes();
     final int n = declaredPrefixes.size();
 
     for (int i = 0; i < n; i++) {
-      final XMLNSDecl decl = (XMLNSDecl) declaredPrefixes.get(i);
+      final XMLNSDecl decl = declaredPrefixes.get(i);
       if (decl.getURI().equals(de.lyca.xml.utils.Constants.S_XSLNAMESPACEURL))
         return true;
     }

@@ -20,7 +20,7 @@
  */
 package de.lyca.xalan.transformer;
 
-import java.util.Vector;
+import java.util.List;
 
 import de.lyca.xalan.res.XSLMessages;
 import de.lyca.xalan.res.XSLTErrorResources;
@@ -50,7 +50,7 @@ public class KeyRefIterator extends de.lyca.xpath.axes.ChildTestIterator {
    * @param ki
    *          The main key iterator used to walk the source tree
    */
-  public KeyRefIterator(QName name, XMLString ref, Vector keyDecls, DTMIterator ki) {
+  public KeyRefIterator(QName name, XMLString ref, List<KeyDeclaration> keyDecls, DTMIterator ki) {
     super(null);
     m_name = name;
     m_ref = ref;
@@ -93,7 +93,7 @@ public class KeyRefIterator extends de.lyca.xpath.axes.ChildTestIterator {
    */
   public short filterNode(int testNode) {
     boolean foundKey = false;
-    final Vector keys = m_keyDeclarations;
+    final List<KeyDeclaration> keys = m_keyDeclarations;
 
     final QName name = m_name;
     final KeyIterator ki = (KeyIterator) ((XNodeSet) m_keysNodes).getContainedIter();
@@ -111,7 +111,7 @@ public class KeyRefIterator extends de.lyca.xpath.axes.ChildTestIterator {
 
       // Walk through each of the declarations made with xsl:key
       for (int i = 0; i < nDeclarations; i++) {
-        final KeyDeclaration kd = (KeyDeclaration) keys.elementAt(i);
+        final KeyDeclaration kd = keys.get(i);
 
         // Only continue if the name on this key declaration
         // matches the name on the iterator for this walker.
@@ -162,6 +162,6 @@ public class KeyRefIterator extends de.lyca.xpath.axes.ChildTestIterator {
    * 
    * @serial
    */
-  protected Vector m_keyDeclarations;
+  protected List<KeyDeclaration> m_keyDeclarations;
 
 }

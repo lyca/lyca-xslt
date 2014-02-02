@@ -20,7 +20,8 @@
  */
 package de.lyca.xalan.extensions;
 
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Abstract base class handling the java language extensions for XPath. This
@@ -35,7 +36,7 @@ public abstract class ExtensionHandlerJava extends ExtensionHandler {
   protected String m_className = "";
 
   /** Table of cached methods */
-  private final Hashtable m_cachedMethods = new Hashtable();
+  private final Map<Object, Object> m_cachedMethods = new HashMap<>();
 
   /**
    * Construct a new extension handler given all the information needed.
