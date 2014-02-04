@@ -180,7 +180,7 @@ public class FunctionTable {
     m_functions[FUNC_POSITION] = de.lyca.xpath.functions.FuncPosition.class;
     m_functions[FUNC_COUNT] = de.lyca.xpath.functions.FuncCount.class;
     m_functions[FUNC_ID] = de.lyca.xpath.functions.FuncId.class;
-    // m_functions[FUNC_KEY] = de.lyca.xalan.templates.FuncKey.class;
+    m_functions[FUNC_KEY] = de.lyca.xalan.templates.FuncKey.class;
     m_functions[FUNC_LOCAL_PART] = de.lyca.xpath.functions.FuncLocalPart.class;
     m_functions[FUNC_NAMESPACE] = de.lyca.xpath.functions.FuncNamespace.class;
     m_functions[FUNC_QNAME] = de.lyca.xpath.functions.FuncQname.class;

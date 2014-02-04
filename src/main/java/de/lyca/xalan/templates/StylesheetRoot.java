@@ -558,7 +558,7 @@ public class StylesheetRoot extends StylesheetComposed implements java.io.Serial
    *          An attribute-set to add to the hashtable of attribute sets.
    */
   void recomposeAttributeSets(ElemAttributeSet attrSet) {
-    List<ElemAttributeSet> attrSetList =  m_attrSets.get(attrSet.getName());
+    List<ElemAttributeSet> attrSetList = m_attrSets.get(attrSet.getName());
     if (null == attrSetList) {
       attrSetList = new ArrayList<>();
       m_attrSets.put(attrSet.getName(), attrSetList);
