@@ -32,7 +32,7 @@ import de.lyca.xml.utils.QName;
 import de.lyca.xpath.Expression;
 import de.lyca.xpath.XPath;
 import de.lyca.xpath.XPathContext;
-import de.lyca.xpath.compiler.PsuedoNames;
+import de.lyca.xpath.compiler.PseudoNames;
 import de.lyca.xpath.patterns.NodeTest;
 import de.lyca.xpath.patterns.StepPattern;
 import de.lyca.xpath.patterns.UnionPattern;
@@ -710,11 +710,11 @@ public class TemplateList implements java.io.Serializable {
    */
   private void putHead(String key, TemplateSubPatternAssociation assoc) {
 
-    if (key.equals(PsuedoNames.PSEUDONAME_TEXT)) {
+    if (key.equals(PseudoNames.PSEUDONAME_TEXT)) {
       m_textPatterns = assoc;
-    } else if (key.equals(PsuedoNames.PSEUDONAME_ROOT)) {
+    } else if (key.equals(PseudoNames.PSEUDONAME_ROOT)) {
       m_docPatterns = assoc;
-    } else if (key.equals(PsuedoNames.PSEUDONAME_COMMENT)) {
+    } else if (key.equals(PseudoNames.PSEUDONAME_COMMENT)) {
       m_commentPatterns = assoc;
     }
 
