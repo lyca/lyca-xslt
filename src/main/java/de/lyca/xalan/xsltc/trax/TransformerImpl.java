@@ -727,31 +727,18 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
       final ErrorMsg err = new ErrorMsg(ErrorMsg.JAXP_UNKNOWN_PROP_ERR, name);
       throw new IllegalArgumentException(err.toString());
     }
-    String result = userProperties.get(name);
-    if (result == null) {
-      result = stylesheetProperties.get(name);
-    }
-    if (result == null) {
-      result = defaultProperties.get(name);
-    }
     return getLayeredOutputProperty(name, userProperties, stylesheetProperties, defaultProperties);
   }
 
   private String getLayeredOutputProperty(String name, Map<String, String> first, Map<String, String> second) {
     String result = first.get(name);
-    if (result == null) {
-      result = second.get(name);
-    }
-    return result;
+    return result == null ? second.get(name) : result;
   }
 
   private String getLayeredOutputProperty(String name, Map<String, String> first, Map<String, String> second,
           Map<String, String> third) {
     String result = getLayeredOutputProperty(name, first, second);
-    if (result == null) {
-      result = third.get(name);
-    }
-    return result;
+    return result == null ? third.get(name) : result;
   }
 
   /**
@@ -945,7 +932,7 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
         }
 
         if (uriAndLocalNames == null) {
-          uriAndLocalNames = new ArrayList<String>();
+          uriAndLocalNames = new ArrayList<>();
         }
         // add the uri/localName as a pair, in that order
         uriAndLocalNames.add(uri);
@@ -979,7 +966,7 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
     }
   }
 
-  private static final Set<String> VALID_OUTPUT_PROPERTIES = new HashSet<String>(Arrays.asList(new String[] {
+  private static final Set<String> VALID_OUTPUT_PROPERTIES = new HashSet<>(Arrays.asList(new String[] {
           OutputKeys.ENCODING, OutputKeys.METHOD, OutputKeys.INDENT, OutputKeys.DOCTYPE_PUBLIC,
           OutputKeys.DOCTYPE_SYSTEM, OutputKeys.CDATA_SECTION_ELEMENTS, OutputKeys.MEDIA_TYPE,
           OutputKeys.OMIT_XML_DECLARATION, OutputKeys.STANDALONE, OutputKeys.VERSION }));
