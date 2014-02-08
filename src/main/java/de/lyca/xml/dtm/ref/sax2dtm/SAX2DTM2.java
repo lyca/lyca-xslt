@@ -1800,7 +1800,7 @@ public class SAX2DTM2 extends SAX2DTM {
     // Some documents do not have attribute nodes. That is why
     // we set the initial size of this List to be small and set
     // the increment to a bigger number.
-    m_values = new ArrayList<String>(32);// TODO (32, 512);
+    m_values = new ArrayList<>(32);// TODO (32, 512);
 
     m_maxNodeIndex = 1 << DTMManager.IDENT_DTM_NODE_BITS;
 
@@ -2144,7 +2144,7 @@ public class SAX2DTM2 extends SAX2DTM {
     // Do it again for this one (the one pushed by the last endElement).
     final int topContextIndex = m_contextIndexes.peek();
     if (topContextIndex != m_prefixMappings.size()) {
-      m_prefixMappings = new ArrayList<String>(m_prefixMappings.subList(0, topContextIndex));
+      m_prefixMappings = new ArrayList<>(m_prefixMappings.subList(0, topContextIndex));
       // TODO m_prefixMappings.setSize(topContextIndex);
     }
 

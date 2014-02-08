@@ -45,14 +45,14 @@ import de.lyca.xml.utils.SystemIDResolver;
 public class SourceTreeManager {
 
   /** List of SourceTree objects that this manager manages. */
-  private List<SourceTree> m_sourceTree = new ArrayList<SourceTree>();
+  private List<SourceTree> m_sourceTree = new ArrayList<>();
 
   /**
    * Reset the list of SourceTree objects that this manager manages.
    * 
    */
   public void reset() {
-    m_sourceTree = new ArrayList<SourceTree>();
+    m_sourceTree = new ArrayList<>();
   }
 
   /** The TrAX URI resolver used to obtain source trees. */

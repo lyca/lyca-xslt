@@ -90,7 +90,7 @@ final class UnsupportedElement extends SyntaxTreeNode {
           fallback.activate();
           fallback.parseContents(parser);
           if (_fallbacks == null) {
-            _fallbacks = new ArrayList<Fallback>();
+            _fallbacks = new ArrayList<>();
           }
           _fallbacks.add(fallback);
         }

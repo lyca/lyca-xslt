@@ -110,7 +110,7 @@ public class DOM2DTM extends DTMDefaultBaseIterators {
    * been coalesced into a single DTM Text node); this table points only to the
    * first in that sequence.
    */
-  protected List<Node> m_nodes = new ArrayList<Node>();
+  protected List<Node> m_nodes = new ArrayList<>();
 
   /**
    * Construct a DOM2DTM object from a DOM node.

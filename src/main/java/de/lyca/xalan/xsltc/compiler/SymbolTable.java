@@ -154,7 +154,7 @@ final class SymbolTable {
   public void addPrimop(String name, MethodType mtype) {
     List<MethodType> methods = _primops.get(name);
     if (methods == null) {
-      _primops.put(name, methods = new ArrayList<MethodType>());
+      _primops.put(name, methods = new ArrayList<>());
     }
     methods.add(mtype);
   }

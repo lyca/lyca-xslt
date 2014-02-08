@@ -479,7 +479,7 @@ public abstract class SyntaxTreeNode implements Constants {
       final QName varOrParamName = updateScope(parser, child);
       if (varOrParamName != null) {
         if (locals == null) {
-          locals = new ArrayList<QName>(2);
+          locals = new ArrayList<>(2);
         }
         locals.add(varOrParamName);
       }

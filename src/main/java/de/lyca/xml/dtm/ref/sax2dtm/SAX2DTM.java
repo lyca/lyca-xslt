@@ -122,7 +122,7 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
    * Namespace support, only relevent at construction time. Made protected
    * rather than private so SAX2RTFDTM can access it.
    */
-  transient protected List<String> m_prefixMappings = new ArrayList<String>();
+  transient protected List<String> m_prefixMappings = new ArrayList<>();
 
   /**
    * Namespace support, only relevent at construction time. Made protected
@@ -1975,7 +1975,7 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
     // Do it again for this one (the one pushed by the last endElement).
     final int topContextIndex = m_contextIndexes.peek();
     if (topContextIndex != m_prefixMappings.size()) {
-      m_prefixMappings = new ArrayList<String>(m_prefixMappings.subList(0, topContextIndex));
+      m_prefixMappings = new ArrayList<>(m_prefixMappings.subList(0, topContextIndex));
       // TODO m_prefixMappings.setSize(topContextIndex);
     }
 

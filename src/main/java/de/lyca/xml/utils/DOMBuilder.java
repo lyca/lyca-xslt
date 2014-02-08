@@ -63,10 +63,10 @@ public class DOMBuilder implements ContentHandler, LexicalHandler {
   public DocumentFragment m_docFrag = null;
 
   /** Deque of element nodes */
-  protected Deque<Node> m_elemStack = new ArrayDeque<Node>();
+  protected Deque<Node> m_elemStack = new ArrayDeque<>();
 
   /** Namespace support */
-  protected List<String> m_prefixMappings = new ArrayList<String>();
+  protected List<String> m_prefixMappings = new ArrayList<>();
 
   /**
    * DOMBuilder instance constructor... it will add the DOM nodes to the

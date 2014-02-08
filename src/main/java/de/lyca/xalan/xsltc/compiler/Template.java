@@ -60,7 +60,7 @@ public final class Template extends TopLevelElement {
 
   // The list of parameters in this template. This is only used
   // for simple named templates.
-  private final List<Param> _parameters = new ArrayList<Param>();
+  private final List<Param> _parameters = new ArrayList<>();
 
   public boolean hasParams() {
     return _parameters.size() > 0;

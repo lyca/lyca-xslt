@@ -105,7 +105,7 @@ final class LiteralElement extends Instruction {
 
     // Check if we have any declared namesaces
     if (_accessedPrefixes == null) {
-      _accessedPrefixes = new HashMap<String, String>();
+      _accessedPrefixes = new HashMap<>();
     } else {
       if (!declared) {
         // Check if this node has a declaration for this namespace
@@ -168,7 +168,7 @@ final class LiteralElement extends Instruction {
    */
   public void addAttribute(SyntaxTreeNode attribute) {
     if (_attributeElements == null) {
-      _attributeElements = new ArrayList<SyntaxTreeNode>(2);
+      _attributeElements = new ArrayList<>(2);
     }
     _attributeElements.add(attribute);
   }
@@ -178,7 +178,7 @@ final class LiteralElement extends Instruction {
    */
   public void setFirstAttribute(SyntaxTreeNode attribute) {
     if (_attributeElements == null) {
-      _attributeElements = new ArrayList<SyntaxTreeNode>(2);
+      _attributeElements = new ArrayList<>(2);
     }
     _attributeElements.add(0, attribute);
   }

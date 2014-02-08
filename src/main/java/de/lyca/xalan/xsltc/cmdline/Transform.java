@@ -254,7 +254,7 @@ final public class Transform {
         handler.setJarFileInputSrc(isJarFileSpecified, jarFile);
 
         // Parse stylesheet parameters
-        final List<Parameter> params = new ArrayList<Parameter>();
+        final List<Parameter> params = new ArrayList<>();
         for (i += 2; i < args.length; i++) {
           final int equal = args[i].indexOf('=');
           if (equal > 0) {

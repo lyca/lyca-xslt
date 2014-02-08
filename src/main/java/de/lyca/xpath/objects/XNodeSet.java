@@ -489,7 +489,7 @@ public class XNodeSet extends NodeSequence {
             }
 
             if (null == node2Strings) {
-              node2Strings = new ArrayList<XMLString>();
+              node2Strings = new ArrayList<>();
             }
 
             node2Strings.add(s2);

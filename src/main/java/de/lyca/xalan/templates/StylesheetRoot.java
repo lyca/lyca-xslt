@@ -549,7 +549,7 @@ public class StylesheetRoot extends StylesheetComposed implements java.io.Serial
    * 
    * @serial
    */
-  private HashMap<QName, List<ElemAttributeSet>> m_attrSets;
+  private Map<QName, List<ElemAttributeSet>> m_attrSets;
 
   /**
    * Recompose the attribute-set declarations.

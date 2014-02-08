@@ -40,7 +40,7 @@ final class DOMStringListImpl implements DOMStringList {
    * Construct an empty list of DOMStringListImpl
    */
   DOMStringListImpl() {
-    fStrings = new ArrayList<String>();
+    fStrings = new ArrayList<>();
   }
 
   /**
@@ -54,7 +54,7 @@ final class DOMStringListImpl implements DOMStringList {
    * Construct an empty list of DOMStringListImpl
    */
   DOMStringListImpl(String[] params) {
-    fStrings = new ArrayList<String>();
+    fStrings = new ArrayList<>();
     if (params != null) {
       for (int i = 0; i < params.length; i++) {
         fStrings.add(params[i]);

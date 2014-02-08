@@ -184,7 +184,7 @@ final class Whitespace extends TopLevelElement {
    * a set of strip/preserve rules.
    */
   public List<WhitespaceRule> getRules() {
-    final List<WhitespaceRule> rules = new ArrayList<WhitespaceRule>();
+    final List<WhitespaceRule> rules = new ArrayList<>();
     // Go through each element and instanciate strip/preserve-object
     final StringTokenizer list = new StringTokenizer(_elementList);
     while (list.hasMoreElements()) {

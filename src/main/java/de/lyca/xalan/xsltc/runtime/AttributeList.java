@@ -67,11 +67,11 @@ public class AttributeList implements org.xml.sax.Attributes {
    * attribute. This reduces the cost of creating many small RTFs.
    */
   private void alloc() {
-    _attributes = new HashMap<String, Integer>();
-    _names = new ArrayList<String>();
-    _values = new ArrayList<String>();
-    _qnames = new ArrayList<String>();
-    _uris = new ArrayList<String>();
+    _attributes = new HashMap<>();
+    _names = new ArrayList<>();
+    _values = new ArrayList<>();
+    _qnames = new ArrayList<>();
+    _uris = new ArrayList<>();
   }
 
   /**

@@ -420,7 +420,7 @@ public class NodeTest extends Expression {
    */
   public static void debugWhatToShow(int whatToShow) {
 
-    final List<String> v = new ArrayList<String>();
+    final List<String> v = new ArrayList<>();
 
     if (0 != (whatToShow & DTMFilter.SHOW_ATTRIBUTE)) {
       v.add("SHOW_ATTRIBUTE");

@@ -22,6 +22,7 @@
 package de.lyca.xalan.xsltc.compiler;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.generic.ALOAD;
@@ -83,7 +84,7 @@ final class Number extends Instruction implements Closure {
   private boolean _formatNeeded = false;
 
   private String _className = null;
-  private ArrayList<VariableRefBase> _closureVars = null;
+  private List<VariableRefBase> _closureVars = null;
 
   // -- Begin Closure interface --------------------
 

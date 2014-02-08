@@ -107,7 +107,7 @@ final class Sort extends Instruction implements Closure {
   @Override
   public void addVariable(VariableRefBase variableRef) {
     if (_closureVars == null) {
-      _closureVars = new ArrayList<VariableRefBase>();
+      _closureVars = new ArrayList<>();
     }
 
     // Only one reference per variable
@@ -378,7 +378,7 @@ final class Sort extends Instruction implements Closure {
             + TRANSLET_INTF_SIG + "[" + STRING_SIG + "[" + STRING_SIG + "[" + STRING_SIG + "[" + STRING_SIG + ")V")));
 
     // Initialize closure variables in sortRecordFactory
-    final ArrayList<VariableRefBase> dups = new ArrayList<>();
+    final List<VariableRefBase> dups = new ArrayList<>();
 
     for (int j = 0; j < nsorts; j++) {
       final Sort sort = sortObjects.get(j);
@@ -416,7 +416,7 @@ final class Sort extends Instruction implements Closure {
 
     // Add a new instance variable for each var in closure
     final int nsorts = sortObjects.size();
-    final ArrayList<VariableRefBase> dups = new ArrayList<>();
+    final List<VariableRefBase> dups = new ArrayList<>();
 
     for (int j = 0; j < nsorts; j++) {
       final Sort sort = sortObjects.get(j);
@@ -532,7 +532,7 @@ final class Sort extends Instruction implements Closure {
 
     // Add a new instance variable for each var in closure
     final int nsorts = sortObjects.size();
-    final ArrayList<VariableRefBase> dups = new ArrayList<>();
+    final List<VariableRefBase> dups = new ArrayList<>();
 
     for (int j = 0; j < nsorts; j++) {
       final Sort sort = sortObjects.get(j);

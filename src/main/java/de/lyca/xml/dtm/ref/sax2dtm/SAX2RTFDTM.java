@@ -216,7 +216,7 @@ public class SAX2RTFDTM extends SAX2DTM {
   public void startDocument() throws SAXException {
     // Re-initialize the tree append process
     m_endDocumentOccured = false;
-    m_prefixMappings = new ArrayList<String>();
+    m_prefixMappings = new ArrayList<>();
     m_contextIndexes = new IntStack();
     m_parents = new IntStack();
 

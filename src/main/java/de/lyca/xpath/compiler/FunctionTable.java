@@ -145,7 +145,7 @@ public class FunctionTable {
   private static Class<?>[] m_functions;
 
   /** Table of function name to function ID associations. */
-  private static Map<String, Integer> m_functionID = new HashMap<String, Integer>();
+  private static Map<String, Integer> m_functionID = new HashMap<>();
 
   /**
    * The function table contains customized functions
@@ -155,7 +155,7 @@ public class FunctionTable {
   /**
    * Table of function name to function ID associations for customized functions
    */
-  private final Map<String, Integer> m_functionID_customer = new HashMap<String, Integer>();
+  private final Map<String, Integer> m_functionID_customer = new HashMap<>();
 
   /**
    * Number of built in functions. Be sure to update this as built-in functions

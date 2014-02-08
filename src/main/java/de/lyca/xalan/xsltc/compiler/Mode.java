@@ -171,7 +171,7 @@ final class Mode implements Constants {
     _name = name;
     _stylesheet = stylesheet;
     _methodName = APPLY_TEMPLATES + suffix;
-    _templates = new ArrayList<Template>();
+    _templates = new ArrayList<>();
     _patternGroups = new ArrayList[32];
   }
 
@@ -1007,10 +1007,10 @@ final class Mode implements Constants {
     final List<String> names = xsltc.getNamesIndex();
 
     // Clear some datastructures
-    _namedTemplates = new HashMap<Template, Mode>();
-    _neededTemplates = new HashMap<Template, Mode>();
-    _templateIHs = new HashMap<Template, InstructionHandle>();
-    _templateILs = new HashMap<Template, InstructionList>();
+    _namedTemplates = new HashMap<>();
+    _neededTemplates = new HashMap<>();
+    _templateIHs = new HashMap<>();
+    _templateILs = new HashMap<>();
     _patternGroups = new ArrayList[32];
     _rootPattern = null;
 
@@ -1018,7 +1018,7 @@ final class Mode implements Constants {
     final List<Template> oldTemplates = _templates;
 
     // Gather templates that are within the scope of this import
-    _templates = new ArrayList<Template>();
+    _templates = new ArrayList<>();
     for (final Template template : oldTemplates) {
       final int prec = template.getImportPrecedence();
       if (prec >= min && prec < max) {

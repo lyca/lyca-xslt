@@ -166,7 +166,7 @@ public class SAX2DOM implements ContentHandler, LexicalHandler, Constants {
   @Override
   public void startPrefixMapping(String prefix, String uri) {
     if (_namespaceDecls == null) {
-      _namespaceDecls = new ArrayList<String>(2);
+      _namespaceDecls = new ArrayList<>(2);
     }
     _namespaceDecls.add(prefix);
     _namespaceDecls.add(uri);

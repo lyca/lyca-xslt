@@ -46,7 +46,7 @@ final class UseAttributeSets extends Instruction {
   private final static String ATTR_SET_NOT_FOUND = "";
 
   // Contains the names of all references attribute sets
-  private final List<QName> _sets = new ArrayList<QName>(2);
+  private final List<QName> _sets = new ArrayList<>(2);
 
   /**
    * Constructur - define initial attribute sets to use

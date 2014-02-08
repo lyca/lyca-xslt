@@ -647,7 +647,7 @@ public class XPathContext extends DTMManager // implements ExpressionContext
   /**
    * The current context node list.
    */
-  private Deque<DTMIterator> m_contextNodeLists = new ArrayDeque<DTMIterator>();
+  private Deque<DTMIterator> m_contextNodeLists = new ArrayDeque<>();
 
   public Deque<DTMIterator> getContextNodeListsStack() {
     return m_contextNodeLists;
@@ -957,7 +957,7 @@ public class XPathContext extends DTMManager // implements ExpressionContext
   /**
    * Stack of AxesIterators.
    */
-  private Deque<SubContextList> m_axesIteratorStack = new ArrayDeque<SubContextList>();
+  private Deque<SubContextList> m_axesIteratorStack = new ArrayDeque<>();
 
   public Deque<SubContextList> getAxesIteratorStackStacks() {
     return m_axesIteratorStack;
@@ -1217,7 +1217,7 @@ public class XPathContext extends DTMManager // implements ExpressionContext
     // specify the subclass here.)
 
     if (m_rtfdtm_stack == null) {
-      m_rtfdtm_stack = new ArrayList<SAX2RTFDTM>();
+      m_rtfdtm_stack = new ArrayList<>();
       rtfdtm = (SAX2RTFDTM) m_dtmManager.getDTM(null, true, null, false, false);
       m_rtfdtm_stack.add(rtfdtm);
       ++m_which_rtfdtm;
@@ -1301,7 +1301,7 @@ public class XPathContext extends DTMManager // implements ExpressionContext
    */
   public DTMXRTreeFrag getDTMXRTreeFrag(int dtmIdentity) {
     if (m_DTMXRTreeFrags == null) {
-      m_DTMXRTreeFrags = new HashMap<Integer, DTMXRTreeFrag>();
+      m_DTMXRTreeFrags = new HashMap<>();
     }
     DTMXRTreeFrag result = m_DTMXRTreeFrags.get(dtmIdentity);
     if (result == null) {

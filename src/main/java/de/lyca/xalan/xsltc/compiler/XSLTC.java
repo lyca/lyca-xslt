@@ -181,7 +181,7 @@ public final class XSLTC {
     reset();
     _reader = null;
     _classes = new ArrayList<>();
-    _bcelClasses = new ArrayList<JavaClass>();
+    _bcelClasses = new ArrayList<>();
   }
 
   /**
@@ -193,7 +193,7 @@ public final class XSLTC {
     _attributes = new HashMap<>();
     _namespaces = new HashMap<>();
     _namespaces.put("", new Integer(_nextNSType));
-    _namesIndex = new ArrayList<String>(128);
+    _namesIndex = new ArrayList<>(128);
     _namespaceIndex = new ArrayList<>(32);
     _namespacePrefixes = new HashMap<>();
     _stylesheet = null;

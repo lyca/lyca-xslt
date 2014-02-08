@@ -39,7 +39,7 @@ public final class MethodType extends Type {
 
   public MethodType(Type resultType, Type arg1) {
     if (arg1 != Type.Void) {
-      _argsType = new ArrayList<Type>();
+      _argsType = new ArrayList<>();
       _argsType.add(arg1);
     } else {
       _argsType = null;
@@ -48,14 +48,14 @@ public final class MethodType extends Type {
   }
 
   public MethodType(Type resultType, Type arg1, Type arg2) {
-    _argsType = new ArrayList<Type>(2);
+    _argsType = new ArrayList<>(2);
     _argsType.add(arg1);
     _argsType.add(arg2);
     _resultType = resultType;
   }
 
   public MethodType(Type resultType, Type arg1, Type arg2, Type arg3) {
-    _argsType = new ArrayList<Type>(3);
+    _argsType = new ArrayList<>(3);
     _argsType.add(arg1);
     _argsType.add(arg2);
     _argsType.add(arg3);

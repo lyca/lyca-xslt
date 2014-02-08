@@ -21,6 +21,7 @@
 package de.lyca.xpath.axes;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import de.lyca.xml.dtm.DTMIterator;
 import de.lyca.xml.utils.WrappedRuntimeException;
@@ -41,7 +42,7 @@ public final class IteratorPool implements java.io.Serializable {
   /**
    * Stack of given objects this points to.
    */
-  private final ArrayList<DTMIterator> m_freeStack;
+  private final List<DTMIterator> m_freeStack;
 
   /**
    * Constructor IteratorPool
@@ -51,7 +52,7 @@ public final class IteratorPool implements java.io.Serializable {
    */
   public IteratorPool(DTMIterator original) {
     m_orig = original;
-    m_freeStack = new ArrayList<DTMIterator>();
+    m_freeStack = new ArrayList<>();
   }
 
   /**

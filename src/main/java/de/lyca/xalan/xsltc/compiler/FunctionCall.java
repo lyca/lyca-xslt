@@ -622,7 +622,7 @@ class FunctionCall extends Expression {
    * Type check the actual arguments of this function call.
    */
   public List<Type> typeCheckArgs(SymbolTable stable) throws TypeCheckError {
-    final List<Type> result = new ArrayList<Type>();
+    final List<Type> result = new ArrayList<>();
     for (final Expression exp : _arguments) {
       result.add(exp.typeCheck(stable));
     }

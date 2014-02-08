@@ -82,7 +82,7 @@ public final class Stylesheet extends SyntaxTreeNode {
   /**
    * Contains global variables and parameters defined in the stylesheet.
    */
-  private final List<VariableBase> _globals = new ArrayList<VariableBase>();
+  private final List<VariableBase> _globals = new ArrayList<>();
 
   /**
    * Used to cache the result returned by <code>hasLocalParams()</code>.
@@ -97,7 +97,7 @@ public final class Stylesheet extends SyntaxTreeNode {
   /**
    * Contains all templates defined in this stylesheet
    */
-  private final List<Template> _templates = new ArrayList<Template>();
+  private final List<Template> _templates = new ArrayList<>();
 
   /**
    * Used to cache result of <code>getAllValidTemplates()</code>. Only set in
@@ -416,7 +416,7 @@ public final class Stylesheet extends SyntaxTreeNode {
 
   public void addIncludedStylesheet(Stylesheet child) {
     if (_includedStylesheets == null) {
-      _includedStylesheets = new ArrayList<Stylesheet>();
+      _includedStylesheets = new ArrayList<>();
     }
     _includedStylesheets.add(child);
   }
@@ -1128,7 +1128,7 @@ public final class Stylesheet extends SyntaxTreeNode {
     }
 
     // Compile code for other top-level elements
-    final List<WhitespaceRule> whitespaceRules = new ArrayList<WhitespaceRule>();
+    final List<WhitespaceRule> whitespaceRules = new ArrayList<>();
     elements = elements();
     while (elements.hasMoreElements()) {
       final Object element = elements.nextElement();
@@ -1422,7 +1422,7 @@ public final class Stylesheet extends SyntaxTreeNode {
 
     // Is returned value cached?
     if (_allValidTemplates == null) {
-      final List<Template> templates = new ArrayList<Template>();
+      final List<Template> templates = new ArrayList<>();
       final int size = _includedStylesheets.size();
       for (int i = 0; i < size; i++) {
         final Stylesheet included = _includedStylesheets.get(i);

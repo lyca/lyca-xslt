@@ -179,7 +179,7 @@ public abstract class AbstractTranslet implements Translet {
     // Local parameters need to be re-evaluated for each iteration
     List<Parameter> parameters;
     if (paramsStack.isEmpty()) {
-      parameters = new ArrayList<Parameter>();
+      parameters = new ArrayList<>();
       paramsStack.push(parameters);
     } else {
       parameters = paramsStack.peek();
@@ -624,7 +624,7 @@ public abstract class AbstractTranslet implements Translet {
    */
   public void addCdataElement(String name) {
     if (_cdata == null) {
-      _cdata = new ArrayList<String>();
+      _cdata = new ArrayList<>();
     }
 
     final int lastColon = name.lastIndexOf(':');

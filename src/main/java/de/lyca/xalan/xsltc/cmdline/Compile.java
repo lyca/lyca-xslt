@@ -117,7 +117,7 @@ public final class Compile {
       } else {
         // Generate a list containg URLs for all stylesheets specified
         final String[] stylesheetNames = getopt.getCmdArgs();
-        final List<URL> stylesheetURLs = new ArrayList<URL>();
+        final List<URL> stylesheetURLs = new ArrayList<>();
         for (int i = 0; i < stylesheetNames.length; i++) {
           final String name = stylesheetNames[i];
           URL url;

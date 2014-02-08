@@ -1325,14 +1325,14 @@ public class MethodGenerator extends MethodGen implements de.lyca.xalan.xsltc.co
     // method to instruction handles in the outlined method. Only need
     // to track instructions that are targeted by something else in the
     // generated BCEL
-    final HashMap<InstructionHandle, InstructionHandle> targetMap = new HashMap<>();
+    final Map<InstructionHandle, InstructionHandle> targetMap = new HashMap<>();
 
     // Keeps track of the mapping from local variables in the old method
     // to local variables in the outlined method.
-    final HashMap<LocalVariableGen, LocalVariableGen> localVarMap = new HashMap<>();
+    final Map<LocalVariableGen, LocalVariableGen> localVarMap = new HashMap<>();
 
-    final HashMap<LocalVariableGen, InstructionHandle> revisedLocalVarStart = new HashMap<>();
-    final HashMap<LocalVariableGen, InstructionHandle> revisedLocalVarEnd = new HashMap<>();
+    final Map<LocalVariableGen, InstructionHandle> revisedLocalVarStart = new HashMap<>();
+    final Map<LocalVariableGen, InstructionHandle> revisedLocalVarEnd = new HashMap<>();
 
     // Pass 1: Make copies of all instructions, append them to the new list
     // and associate old instruction references with the new ones, i.e.,

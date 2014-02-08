@@ -53,8 +53,8 @@ public abstract class NodeCounter {
 
   private boolean _separFirst = true;
   private boolean _separLast = false;
-  private final List<String> _separToks = new ArrayList<String>();
-  private final List<String> _formatToks = new ArrayList<String>();
+  private final List<String> _separToks = new ArrayList<>();
+  private final List<String> _formatToks = new ArrayList<>();
   private int _nSepars = 0;
   private int _nFormats = 0;
 

@@ -143,7 +143,7 @@ final class TestSeq {
    * and sets the default pattern if it finds a patterns that is fully reduced.
    */
   public void reduce() {
-    final List<LocationPathPattern> newPatterns = new ArrayList<LocationPathPattern>();
+    final List<LocationPathPattern> newPatterns = new ArrayList<>();
 
     final int count = _patterns.size();
     for (int i = 0; i < count; i++) {

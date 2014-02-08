@@ -53,7 +53,7 @@ public class StylesheetPIHandler extends DefaultHandler {
   String m_charset;
 
   /** A list of SAXSource objects that match the criteria. */
-  List<Source> m_stylesheets = new ArrayList<Source>();
+  List<Source> m_stylesheets = new ArrayList<>();
 
   // Add code to use a URIResolver. Patch from Dmitri Ilyin.
 

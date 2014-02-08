@@ -73,7 +73,7 @@ public class FuncExtFunction extends Function {
    * 
    * @serial
    */
-  List<Expression> m_argVec = new ArrayList<Expression>();
+  List<Expression> m_argVec = new ArrayList<>();
 
   /**
    * This function is used to fixup variables from QNames to stack frame indexes
@@ -190,7 +190,7 @@ public class FuncExtFunction extends Function {
 
     XObject result;
     final int nArgs = m_argVec.size();
-    final List<XObject> argVec = new ArrayList<XObject>(nArgs);
+    final List<XObject> argVec = new ArrayList<>(nArgs);
 
     for (int i = 0; i < nArgs; i++) {
       final Expression arg = m_argVec.get(i);

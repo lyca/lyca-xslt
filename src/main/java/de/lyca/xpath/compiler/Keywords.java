@@ -31,16 +31,16 @@ import java.util.Map;
 public class Keywords {
 
   /** Table of keywords to opcode associations. */
-  private static Map<String, Integer> m_keywords = new HashMap<String, Integer>();
+  private static Map<String, Integer> m_keywords = new HashMap<>();
 
   /** Table of axes names to opcode associations. */
-  private static Map<String, Integer> m_axisnames = new HashMap<String, Integer>();
+  private static Map<String, Integer> m_axisnames = new HashMap<>();
 
   /** Table of function name to function ID associations. */
-  private static Map<String, Integer> m_nodetests = new HashMap<String, Integer>();
+  private static Map<String, Integer> m_nodetests = new HashMap<>();
 
   /** Table of node type strings to opcode associations. */
-  private static Map<String, Integer> m_nodetypes = new HashMap<String, Integer>();
+  private static Map<String, Integer> m_nodetypes = new HashMap<>();
 
   /** ancestor axes string. */
   private static final String FROM_ANCESTORS_STRING = "ancestor";
