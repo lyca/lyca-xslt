@@ -27,32 +27,32 @@ package de.lyca.xpath.compiler;
 public class PseudoNames {
 
   /**
-   * Psuedo name for a wild card pattern ('*').
+   * Pseudo name for a wild card pattern ('*').
    */
   public static final String PSEUDONAME_ANY = "*";
 
   /**
-   * Psuedo name for the root node.
+   * Pseudo name for the root node.
    */
   public static final String PSEUDONAME_ROOT = "/";
 
   /**
-   * Psuedo name for a text node.
+   * Pseudo name for a text node.
    */
   public static final String PSEUDONAME_TEXT = "#text";
 
   /**
-   * Psuedo name for a comment node.
+   * Pseudo name for a comment node.
    */
   public static final String PSEUDONAME_COMMENT = "#comment";
 
   /**
-   * Psuedo name for a processing instruction node.
+   * Pseudo name for a processing instruction node.
    */
   public static final String PSEUDONAME_PI = "#pi";
 
   /**
-   * Psuedo name for an unknown type value.
+   * Pseudo name for an unknown type value.
    */
   public static final String PSEUDONAME_OTHER = "*";
 }
