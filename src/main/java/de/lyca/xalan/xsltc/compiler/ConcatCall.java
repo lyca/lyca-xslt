@@ -22,6 +22,7 @@
 package de.lyca.xalan.xsltc.compiler;
 
 import java.util.List;
+import java.util.ListIterator;
 
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.INVOKESPECIAL;
@@ -47,10 +48,11 @@ final class ConcatCall extends FunctionCall {
 
   @Override
   public Type typeCheck(SymbolTable stable) throws TypeCheckError {
-    for (int i = 0; i < argumentCount(); i++) {
-      final Expression exp = argument(i);
+    ListIterator<Expression> expressions = getArguments().listIterator();
+    while (expressions.hasNext()) {
+      Expression exp = expressions.next();
       if (!exp.typeCheck(stable).identicalTo(Type.String)) {
-        setArgument(i, new CastExpr(exp, Type.String));
+        expressions.set(new CastExpr(exp, Type.String));
       }
     }
     return _type = Type.String;

@@ -22,7 +22,6 @@
 package de.lyca.xalan.xsltc.compiler;
 
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
 
 import org.apache.bcel.generic.ConstantPoolGen;
@@ -124,9 +123,7 @@ final class ApplyTemplates extends Instruction {
 
     // check if sorting nodes is required
     final List<Sort> sortObjects = new ArrayList<>();
-    final Enumeration<SyntaxTreeNode> children = elements();
-    while (children.hasMoreElements()) {
-      final Object child = children.nextElement();
+    for (SyntaxTreeNode child : getContents()) {
       if (child instanceof Sort) {
         sortObjects.add((Sort) child);
       }

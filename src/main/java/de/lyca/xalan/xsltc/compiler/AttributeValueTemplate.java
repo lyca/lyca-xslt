@@ -21,8 +21,7 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import java.util.Enumeration;
-import java.util.List;
+import java.util.ListIterator;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
@@ -192,12 +191,11 @@ final class AttributeValueTemplate extends AttributeValue {
 
   @Override
   public Type typeCheck(SymbolTable stable) throws TypeCheckError {
-    final List<SyntaxTreeNode> contents = getContents();
-    final int n = contents.size();
-    for (int i = 0; i < n; i++) {
-      final Expression exp = (Expression) contents.get(i);
+    final ListIterator<SyntaxTreeNode> li = elements();
+    while (li.hasNext()) {
+      final Expression exp = (Expression) li.next();
       if (!exp.typeCheck(stable).identicalTo(Type.String)) {
-        contents.set(i, new CastExpr(exp, Type.String));
+        li.set(new CastExpr(exp, Type.String));
       }
     }
     return _type = Type.String;
@@ -233,9 +231,9 @@ final class AttributeValueTemplate extends AttributeValue {
       il.append(DUP);
       il.append(new INVOKESPECIAL(initBuffer));
       // StringBuilder is on the stack
-      final Enumeration<SyntaxTreeNode> elements = elements();
-      while (elements.hasMoreElements()) {
-        final Expression exp = (Expression) elements.nextElement();
+      final ListIterator<SyntaxTreeNode> elements = elements();
+      while (elements.hasNext()) {
+        final Expression exp = (Expression) elements.next();
         exp.translate(classGen, methodGen);
         il.append(append);
       }

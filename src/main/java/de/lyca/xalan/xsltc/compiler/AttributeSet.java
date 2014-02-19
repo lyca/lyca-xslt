@@ -21,8 +21,8 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import java.util.Enumeration;
 import java.util.List;
+import java.util.ListIterator;
 
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.INVOKESPECIAL;
@@ -183,12 +183,9 @@ final class AttributeSet extends TopLevelElement {
     }
 
     // Translate all local attributes
-    final Enumeration<SyntaxTreeNode> attributes = elements();
-    while (attributes.hasMoreElements()) {
-      final SyntaxTreeNode element = attributes.nextElement();
+    for (SyntaxTreeNode element : getContents()) {
       if (element instanceof XslAttribute) {
-        final XslAttribute attribute = (XslAttribute) element;
-        attribute.translate(classGen, methodGen);
+        element.translate(classGen, methodGen);
       }
     }
     final InstructionList il = methodGen.getInstructionList();
@@ -201,9 +198,9 @@ final class AttributeSet extends TopLevelElement {
   public String toString() {
     final StringBuilder sb = new StringBuilder("attribute-set: ");
     // Translate all local attributes
-    final Enumeration<SyntaxTreeNode> attributes = elements();
-    while (attributes.hasMoreElements()) {
-      final XslAttribute attribute = (XslAttribute) attributes.nextElement();
+    final ListIterator<SyntaxTreeNode> attributes = elements();
+    while (attributes.hasNext()) {
+      final XslAttribute attribute = (XslAttribute) attributes.next();
       sb.append(attribute);
     }
     return sb.toString();

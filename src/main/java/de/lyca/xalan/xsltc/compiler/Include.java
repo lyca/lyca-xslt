@@ -21,7 +21,7 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import java.util.Enumeration;
+import java.util.ListIterator;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
@@ -113,10 +113,10 @@ final class Include extends TopLevelElement {
       parser.setCurrentStylesheet(_included);
       _included.parseContents(parser);
 
-      final Enumeration<SyntaxTreeNode> elements = _included.elements();
+      final ListIterator<SyntaxTreeNode> elements = _included.elements();
       final Stylesheet topStylesheet = parser.getTopLevelStylesheet();
-      while (elements.hasMoreElements()) {
-        final SyntaxTreeNode element = elements.nextElement();
+      while (elements.hasNext()) {
+        final SyntaxTreeNode element = elements.next();
         if (element instanceof TopLevelElement) {
           if (element instanceof Variable) {
             topStylesheet.addVariable((Variable) element);

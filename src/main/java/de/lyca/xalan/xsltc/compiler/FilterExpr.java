@@ -76,9 +76,7 @@ class FilterExpr extends Expression {
     super.setParser(parser);
     _primary.setParser(parser);
     if (_predicates != null) {
-      final int n = _predicates.size();
-      for (int i = 0; i < n; i++) {
-        final Expression exp = _predicates.get(i);
+      for (Expression exp : _predicates) {
         exp.setParser(parser);
         exp.setParent(this);
       }
@@ -109,10 +107,8 @@ class FilterExpr extends Expression {
     }
 
     // Type check predicates and turn all optimizations off if appropriate
-    final int n = _predicates.size();
-    for (int i = 0; i < n; i++) {
-      final Predicate pred = (Predicate) _predicates.get(i);
-
+    for (Expression exp : _predicates) {
+      final Predicate pred = (Predicate) exp;
       if (!canOptimize) {
         pred.dontOptimize();
       }

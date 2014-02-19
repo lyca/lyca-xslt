@@ -22,10 +22,9 @@
 package de.lyca.xalan.xsltc.compiler;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 
 import org.apache.bcel.generic.ANEWARRAY;
@@ -68,7 +67,8 @@ public abstract class SyntaxTreeNode implements Constants {
   protected SyntaxTreeNode _parent; // Parent node
   private Stylesheet _stylesheet; // Stylesheet ancestor node
   private Template _template; // Template ancestor node
-  private final List<SyntaxTreeNode> _contents = new ArrayList<>(2); // Child nodes
+  private final List<SyntaxTreeNode> _contents = new ArrayList<>(2); // Child
+                                                                     // nodes
 
   // Element description data
   protected QName _qname; // The element QName
@@ -554,11 +554,8 @@ public abstract class SyntaxTreeNode implements Constants {
    */
   protected void translateContents(ClassGenerator classGen, MethodGenerator methodGen) {
     // Call translate() on all child nodes
-    final int n = elementCount();
-
-    for (int i = 0; i < n; i++) {
+    for (SyntaxTreeNode item : _contents) {
       methodGen.markChunkStart();
-      final SyntaxTreeNode item = _contents.get(i);
       item.translate(classGen, methodGen);
       methodGen.markChunkEnd();
     }
@@ -568,10 +565,9 @@ public abstract class SyntaxTreeNode implements Constants {
     // same AST scope as the declaration deals with the problems of
     // references falling out-of-scope inside the for-each element.
     // (the cause of which being 'lazy' register allocation for references)
-    for (int i = 0; i < n; i++) {
-      if (_contents.get(i) instanceof VariableBase) {
-        final VariableBase var = (VariableBase) _contents.get(i);
-        var.unmapRegister(methodGen);
+    for (SyntaxTreeNode item : _contents) {
+      if (item instanceof VariableBase) {
+        ((VariableBase) item).unmapRegister(methodGen);
       }
     }
   }
@@ -586,9 +582,7 @@ public abstract class SyntaxTreeNode implements Constants {
    * @return true if the node content can be considered as a simple RTF.
    */
   private boolean isSimpleRTF(SyntaxTreeNode node) {
-    final List<SyntaxTreeNode> contents = node.getContents();
-    for (int i = 0; i < contents.size(); i++) {
-      final SyntaxTreeNode item = contents.get(i);
+    for (SyntaxTreeNode item : node.getContents()) {
       if (!isTextElement(item, false))
         return false;
     }
@@ -606,9 +600,7 @@ public abstract class SyntaxTreeNode implements Constants {
    * @return true if the node content can be considered as an adaptive RTF.
    */
   private boolean isAdaptiveRTF(SyntaxTreeNode node) {
-    final List<SyntaxTreeNode> contents = node.getContents();
-    for (int i = 0; i < contents.size(); i++) {
-      final SyntaxTreeNode item = contents.get(i);
+    for (SyntaxTreeNode item : node.getContents()) {
       if (!isTextElement(item, true))
         return false;
     }
@@ -639,9 +631,7 @@ public abstract class SyntaxTreeNode implements Constants {
     else if (node instanceof If)
       return doExtendedCheck ? isAdaptiveRTF(node) : isSimpleRTF(node);
     else if (node instanceof Choose) {
-      final List<SyntaxTreeNode> contents = node.getContents();
-      for (int i = 0; i < contents.size(); i++) {
-        final SyntaxTreeNode item = contents.get(i);
+      for (SyntaxTreeNode item : node.getContents()) {
         if (item instanceof Text || (item instanceof When || item instanceof Otherwise)
                 && (doExtendedCheck && isAdaptiveRTF(item) || !doExtendedCheck && isSimpleRTF(item))) {
           continue;
@@ -881,12 +871,12 @@ public abstract class SyntaxTreeNode implements Constants {
   }
 
   /**
-   * Returns an Enumeration of all child nodes of this node.
+   * Returns an ListIterator of all child nodes of this node.
    * 
-   * @return An Enumeration of all child nodes of this node.
+   * @return An ListIterator of all child nodes of this node.
    */
-  protected final Enumeration<SyntaxTreeNode> elements() {
-    return Collections.enumeration(_contents);
+  protected final ListIterator<SyntaxTreeNode> elements() {
+    return _contents.listIterator();
   }
 
   /**

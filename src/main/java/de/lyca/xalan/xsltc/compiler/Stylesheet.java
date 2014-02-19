@@ -22,9 +22,9 @@
 package de.lyca.xalan.xsltc.compiler;
 
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
@@ -321,9 +321,7 @@ public final class Stylesheet extends SyntaxTreeNode {
     _importPrecedence = precedence;
 
     // Set import precedence for all included stylesheets
-    final Enumeration<SyntaxTreeNode> elements = elements();
-    while (elements.hasMoreElements()) {
-      final SyntaxTreeNode child = elements.nextElement();
+    for (SyntaxTreeNode child : getContents()) {
       if (child instanceof Include) {
         final Stylesheet included = ((Include) child).getIncludedStylesheet();
         if (included != null && included._includedFrom == this) {
@@ -690,9 +688,7 @@ public final class Stylesheet extends SyntaxTreeNode {
     compileTransform(classGen);
 
     // Translate all non-template elements and filter out all templates
-    final Enumeration<SyntaxTreeNode> elements = elements();
-    while (elements.hasMoreElements()) {
-      final SyntaxTreeNode element = elements.nextElement();
+    for (SyntaxTreeNode element : getContents()) {
       // xsl:template
       if (element instanceof Template) {
         // Separate templates by modes
@@ -1105,9 +1101,7 @@ public final class Stylesheet extends SyntaxTreeNode {
 
     // Create a new list containing variables/params + keys
     List<TopLevelElement> varDepElements = new ArrayList<TopLevelElement>(_globals);
-    Enumeration<SyntaxTreeNode> elements = elements();
-    while (elements.hasMoreElements()) {
-      final SyntaxTreeNode element = elements.nextElement();
+    for (SyntaxTreeNode element : getContents()) {
       if (element instanceof Key) {
         varDepElements.add((Key) element);
       }
@@ -1129,9 +1123,7 @@ public final class Stylesheet extends SyntaxTreeNode {
 
     // Compile code for other top-level elements
     final List<WhitespaceRule> whitespaceRules = new ArrayList<>();
-    elements = elements();
-    while (elements.hasMoreElements()) {
-      final Object element = elements.nextElement();
+    for (SyntaxTreeNode element : getContents()) {
       // xsl:decimal-format
       if (element instanceof DecimalFormatting) {
         ((DecimalFormatting) element).translate(classGen, toplevel);
@@ -1232,10 +1224,8 @@ public final class Stylesheet extends SyntaxTreeNode {
 
     buildKeys.addException("de.lyca.xalan.xsltc.TransletException");
 
-    final Enumeration<SyntaxTreeNode> elements = elements();
-    while (elements.hasMoreElements()) {
+    for (SyntaxTreeNode element : getContents()) {
       // xsl:key
-      final Object element = elements.nextElement();
       if (element instanceof Key) {
         final Key key = (Key) element;
         key.translate(classGen, buildKeys);
@@ -1330,8 +1320,8 @@ public final class Stylesheet extends SyntaxTreeNode {
     cpg.addMethodref(getClassName(), "buildKeys", keySig);
 
     // Look for top-level elements that need handling
-    final Enumeration<SyntaxTreeNode> toplevel = elements();
-    if (_globals.size() > 0 || toplevel.hasMoreElements()) {
+    final ListIterator<SyntaxTreeNode> toplevel = elements();
+    if (_globals.size() > 0 || toplevel.hasNext()) {
       // Compile method for handling top-level elements
       final String topLevelSig = compileTopLevel(classGen);
       // Get a reference to that method

@@ -286,9 +286,7 @@ class FunctionCall extends Expression {
   public void setParser(Parser parser) {
     super.setParser(parser);
     if (_arguments != null) {
-      final int n = _arguments.size();
-      for (int i = 0; i < n; i++) {
-        final Expression exp = _arguments.get(i);
+      for (Expression exp : _arguments) {
         exp.setParser(parser);
         exp.setParent(this);
       }
@@ -682,8 +680,7 @@ class FunctionCall extends Expression {
 
     // Translate calls to methods in the BasisLibrary
     if (isStandard() || isExtension()) {
-      for (int i = 0; i < n; i++) {
-        final Expression exp = argument(i);
+      for (Expression exp : _arguments) {
         exp.translate(classGen, methodGen);
         exp.startIterator(classGen, methodGen);
       }

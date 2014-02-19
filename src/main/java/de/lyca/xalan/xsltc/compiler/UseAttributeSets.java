@@ -90,9 +90,7 @@ final class UseAttributeSets extends Instruction {
     final SymbolTable symbolTable = getParser().getSymbolTable();
 
     // Go through each attribute set and generate a method call
-    for (int i = 0; i < _sets.size(); i++) {
-      // Get the attribute set name
-      final QName name = _sets.get(i);
+    for (QName name : _sets) {
       // Get the AttributeSet reference from the symbol table
       final AttributeSet attrs = symbolTable.lookupAttributeSet(name);
       // Compile the call to the set's method if the set exists

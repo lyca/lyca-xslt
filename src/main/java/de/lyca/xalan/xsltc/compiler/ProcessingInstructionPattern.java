@@ -86,9 +86,7 @@ final class ProcessingInstructionPattern extends StepPattern {
   public Type typeCheck(SymbolTable stable) throws TypeCheckError {
     if (hasPredicates()) {
       // Type check all the predicates (e -> position() = e)
-      final int n = _predicates.size();
-      for (int i = 0; i < n; i++) {
-        final Predicate pred = _predicates.get(i);
+      for (Predicate pred : _predicates) {
         pred.typeCheck(stable);
       }
     }
@@ -134,9 +132,7 @@ final class ProcessingInstructionPattern extends StepPattern {
 
     // Compile the expressions within the predicates
     if (hasPredicates()) {
-      final int n = _predicates.size();
-      for (int i = 0; i < n; i++) {
-        final Predicate pred = _predicates.get(i);
+      for (Predicate pred : _predicates) {
         final Expression exp = pred.getExpr();
         exp.translateDesynthesized(classGen, methodGen);
         _trueList.append(exp._trueList);

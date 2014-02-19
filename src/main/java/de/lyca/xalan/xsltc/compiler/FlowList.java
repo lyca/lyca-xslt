@@ -63,10 +63,7 @@ public final class FlowList {
     } else {
       final List<InstructionHandle> temp = right._elements;
       if (temp != null) {
-        final int n = temp.size();
-        for (int i = 0; i < n; i++) {
-          _elements.add(temp.get(i));
-        }
+        _elements.addAll(temp);
       }
     }
     return this;
@@ -77,9 +74,8 @@ public final class FlowList {
    */
   public void backPatch(InstructionHandle target) {
     if (_elements != null) {
-      final int n = _elements.size();
-      for (int i = 0; i < n; i++) {
-        final BranchHandle bh = (BranchHandle) _elements.get(i);
+      for (InstructionHandle ih : _elements) {
+        final BranchHandle bh = (BranchHandle) ih;
         bh.setTarget(target);
       }
       _elements.clear(); // avoid backpatching more than once
@@ -95,7 +91,6 @@ public final class FlowList {
     if (_elements == null)
       return result;
 
-    final int n = _elements.size();
     @SuppressWarnings("unchecked")
     final Iterator<InstructionHandle> oldIter = oldList.iterator();
     @SuppressWarnings("unchecked")
@@ -105,8 +100,8 @@ public final class FlowList {
       final InstructionHandle oldIh = oldIter.next();
       final InstructionHandle newIh = newIter.next();
 
-      for (int i = 0; i < n; i++) {
-        if (_elements.get(i) == oldIh) {
+      for (InstructionHandle ih : _elements) {
+        if (ih == oldIh) {
           result.add(newIh);
         }
       }

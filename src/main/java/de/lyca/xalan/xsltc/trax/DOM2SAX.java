@@ -283,9 +283,8 @@ public class DOM2SAX implements XMLReader, Locator {
         _sax.endElement(uri, localName, qname);
 
         // Generate endPrefixMapping() for all pushed prefixes
-        final int nPushedPrefixes = pushedPrefixes.size();
-        for (int i = 0; i < nPushedPrefixes; i++) {
-          endPrefixMapping(pushedPrefixes.get(i));
+        for (String pushedPrefix : pushedPrefixes) {
+          endPrefixMapping(pushedPrefix);
         }
         break;
 

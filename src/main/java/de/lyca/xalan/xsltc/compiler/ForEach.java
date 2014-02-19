@@ -22,7 +22,6 @@
 package de.lyca.xalan.xsltc.compiler;
 
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
 
 import org.apache.bcel.generic.BranchHandle;
@@ -99,9 +98,7 @@ final class ForEach extends Instruction {
 
     // Collect sort objects associated with this instruction
     final List<Sort> sortObjects = new ArrayList<>();
-    final Enumeration<SyntaxTreeNode> children = elements();
-    while (children.hasMoreElements()) {
-      final Object child = children.nextElement();
+    for (SyntaxTreeNode child : getContents()) {
       if (child instanceof Sort) {
         sortObjects.add((Sort) child);
       }
@@ -177,9 +174,7 @@ final class ForEach extends Instruction {
    * (node != END) goto Loop
    */
   public void initializeVariables(ClassGenerator classGen, MethodGenerator methodGen) {
-    final int n = elementCount();
-    for (int i = 0; i < n; i++) {
-      final Object child = getContents().get(i);
+    for (SyntaxTreeNode child : getContents()) {
       if (child instanceof Variable) {
         final Variable var = (Variable) child;
         var.initialize(classGen, methodGen);

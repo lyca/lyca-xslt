@@ -127,9 +127,7 @@ final public class Transform {
       translet.prepassDocument(dom);
 
       // Pass global parameters
-      final int n = _params.size();
-      for (int i = 0; i < n; i++) {
-        final Parameter param = _params.get(i);
+      for (Parameter param : _params) {
         translet.addParameter(param._name, param._value);
       }
 

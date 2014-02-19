@@ -27,9 +27,9 @@ import java.io.StringReader;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
@@ -360,9 +360,9 @@ public class Parser implements Constants, ContentHandler {
       if (stylesheet != null) {
         stylesheet.parseContents(this);
         final int precedence = stylesheet.getImportPrecedence();
-        final Enumeration<SyntaxTreeNode> elements = stylesheet.elements();
-        while (elements.hasMoreElements()) {
-          final Object child = elements.nextElement();
+        final ListIterator<SyntaxTreeNode> elements = stylesheet.elements();
+        while (elements.hasNext()) {
+          final Object child = elements.next();
           if (child instanceof Text) {
             final int l = getLineNumber();
             final ErrorMsg err = new ErrorMsg(ErrorMsg.ILLEGAL_TEXT_NODE_ERR, l, null);
@@ -536,9 +536,7 @@ public class Parser implements Constants, ContentHandler {
     }
     final List<SyntaxTreeNode> children = root.getContents();
     if (children != null) {
-      final int count = children.size();
-      for (int i = 0; i < count; i++) {
-        final SyntaxTreeNode child = children.get(i);
+      for (SyntaxTreeNode child : children) {
         final SyntaxTreeNode node = findStylesheet(child, href);
         if (node != null)
           return node;
@@ -1083,8 +1081,8 @@ public class Parser implements Constants, ContentHandler {
     final int size = _errors.size();
     if (size > 0) {
       System.err.println(new ErrorMsg(ErrorMsg.COMPILER_ERROR_KEY));
-      for (int i = 0; i < size; i++) {
-        System.err.println("  " + _errors.get(i));
+      for (ErrorMsg error : _errors) {
+        System.err.println("  " + error);
       }
     }
   }
@@ -1096,8 +1094,8 @@ public class Parser implements Constants, ContentHandler {
     final int size = _warnings.size();
     if (size > 0) {
       System.err.println(new ErrorMsg(ErrorMsg.COMPILER_WARNING_KEY));
-      for (int i = 0; i < size; i++) {
-        System.err.println("  " + _warnings.get(i));
+      for (ErrorMsg warning : _warnings) {
+        System.err.println("  " + warning);
       }
     }
   }

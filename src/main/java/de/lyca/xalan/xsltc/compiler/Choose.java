@@ -22,9 +22,9 @@
 package de.lyca.xalan.xsltc.compiler;
 
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 
 import org.apache.bcel.generic.BranchHandle;
 import org.apache.bcel.generic.GOTO;
@@ -65,14 +65,14 @@ final class Choose extends Instruction {
   public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
     final List<When> whenElements = new ArrayList<>();
     Otherwise otherwise = null;
-    final Enumeration<SyntaxTreeNode> elements = elements();
+    final ListIterator<SyntaxTreeNode> elements = elements();
 
     // This is for reporting errors only
     ErrorMsg error = null;
 
     // Traverse all child nodes - must be either When or Otherwise
-    while (elements.hasMoreElements()) {
-      final Object element = elements.nextElement();
+    while (elements.hasNext()) {
+      final Object element = elements.next();
       // Add a When child element
       if (element instanceof When) {
         whenElements.add((When) element);

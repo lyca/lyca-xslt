@@ -198,9 +198,8 @@ final class Whitespace extends TopLevelElement {
    * contradicts the current rule.
    */
   private static WhitespaceRule findContradictingRule(List<WhitespaceRule> rules, WhitespaceRule rule) {
-    for (int i = 0; i < rules.size(); i++) {
-      // Get the next rule in the prioritized list
-      final WhitespaceRule currentRule = rules.get(i);
+    // Get the next rule in the prioritized list
+    for (WhitespaceRule currentRule : rules) {
       // We only consider rules with higher priority
       if (currentRule == rule)
         return null;
