@@ -43,7 +43,7 @@ import de.lyca.xml.utils.XML11Char;
  * @author Morten Jorgensen
  * @author Erwin Bolwidt <ejb@klomp.org>
  */
-public final class Template extends TopLevelElement {
+public final class Template extends TopLevelElement implements Comparable<Template> {
 
   private QName _name; // The name of the template (if any)
   private QName _mode; // Mode in which this template is instantiated.
@@ -127,8 +127,8 @@ public final class Template extends TopLevelElement {
   /**
    * Compare this template to another. First checks priority, then position.
    */
-  public int compareTo(Object template) {
-    final Template other = (Template) template;
+  @Override
+  public int compareTo(Template other) {
     if (_priority > other._priority)
       return 1;
     else if (_priority < other._priority)

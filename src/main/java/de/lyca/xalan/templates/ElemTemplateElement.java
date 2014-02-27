@@ -54,7 +54,7 @@ import de.lyca.xpath.WhitespaceStrippingElementMatcher;
  * @xsl.usage advanced
  */
 public class ElemTemplateElement extends UnImplNode implements PrefixResolver, Serializable, ExpressionNode,
-        WhitespaceStrippingElementMatcher, XSLTVisitable {
+        WhitespaceStrippingElementMatcher, XSLTVisitable, Comparable<ElemTemplateElement> {
   static final long serialVersionUID = 4440018597841834447L;
 
   /**
@@ -1443,26 +1443,22 @@ public class ElemTemplateElement extends UnImplNode implements PrefixResolver, S
    * integer, zero, or a positive integer as this object is less than, equal to,
    * or greater than the specified object.
    * 
-   * @param o
+   * @param other
    *          The object to be compared to this object
    * @return a negative integer, zero, or a positive integer as this object is
    *         less than, equal to, or greater than the specified object.
-   * @throws ClassCastException
-   *           if the specified object's type prevents it from being compared to
-   *           this Object.
    */
-  public int compareTo(Object o) throws ClassCastException {
-
-    final ElemTemplateElement ro = (ElemTemplateElement) o;
-    final int roPrecedence = ro.getStylesheetComposed().getImportCountComposed();
+  @Override
+  public int compareTo(ElemTemplateElement other) {
+    final int otherPrecedence = other.getStylesheetComposed().getImportCountComposed();
     final int myPrecedence = this.getStylesheetComposed().getImportCountComposed();
 
-    if (myPrecedence < roPrecedence)
+    if (myPrecedence < otherPrecedence)
       return -1;
-    else if (myPrecedence > roPrecedence)
+    else if (myPrecedence > otherPrecedence)
       return 1;
     else
-      return this.getUid() - ro.getUid();
+      return this.getUid() - other.getUid();
   }
 
   /**

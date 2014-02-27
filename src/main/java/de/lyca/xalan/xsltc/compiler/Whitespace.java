@@ -65,7 +65,7 @@ final class Whitespace extends TopLevelElement {
   /**
    * Auxillary class for encapsulating a single strip/preserve rule
    */
-  protected final static class WhitespaceRule {
+  protected final static class WhitespaceRule implements Comparable<WhitespaceRule> {
     private final int _action;
     private String _namespace; // Should be replaced by NS type (int)
     private String _element; // Should be replaced by node type (int)
@@ -109,6 +109,7 @@ final class Whitespace extends TopLevelElement {
     /**
      * For sorting rules depending on priority
      */
+    @Override
     public int compareTo(WhitespaceRule other) {
       return _priority < other._priority ? -1 : _priority > other._priority ? 1 : 0;
     }
