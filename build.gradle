@@ -1,6 +1,7 @@
 apply plugin: 'java'
 apply plugin: 'jacoco'
 apply plugin: 'java-library-distribution'
+apply plugin: 'findbugs'
 
 sourceCompatibility = 1.7
 version = '1.0'
@@ -30,6 +31,7 @@ dependencies {
 
 test {
   //  systemProperties 'javax.xml.transform.TransformerFactory': 'com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl'
+  //  systemProperties 'javax.xml.transform.TransformerFactory': 'de.lyca.xalan.xsltc.trax.TransformerFactoryImpl'
 }
 
 task(createXPathParser, type: JavaExec) {
@@ -60,5 +62,16 @@ jacocoTestReport {
     reports {
         xml.enabled false
         csv.enabled false
+    }
+}
+
+findbugs {
+    ignoreFailures = true
+}
+
+tasks.withType(FindBugs) {
+    reports {
+        xml.enabled = false
+        html.enabled = true
     }
 }
