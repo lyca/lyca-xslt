@@ -79,7 +79,7 @@ public class ExsltDatetime {
     // Format for date and time.
     final SimpleDateFormat dateFormat = new SimpleDateFormat(dt);
 
-    final StringBuffer buff = new StringBuffer(dateFormat.format(datetime));
+    final StringBuilder buff = new StringBuilder(dateFormat.format(datetime));
     // Must also include offset from UTF.
     // Get the offset (in milliseconds).
     final int offset = cal.get(Calendar.ZONE_OFFSET) + cal.get(Calendar.DST_OFFSET);
@@ -735,7 +735,7 @@ public class ExsltDatetime {
       try {
         final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
         dateFormat.setLenient(false);
-        final Date d = dateFormat.parse(datetime.substring(datetime.length() - 5));
+        dateFormat.parse(datetime.substring(datetime.length() - 5));
         return datetime.length() - 6;
       } catch (final ParseException pe) {
         System.out.println("ParseException " + pe.getErrorOffset());
@@ -944,7 +944,7 @@ public class ExsltDatetime {
    */
   private static String strip(String symbols, String pattern) {
     int i = 0;
-    final StringBuffer result = new StringBuffer(pattern.length());
+    final StringBuilder result = new StringBuilder(pattern.length());
 
     while (i < pattern.length()) {
       final char ch = pattern.charAt(i);

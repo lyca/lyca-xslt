@@ -67,8 +67,7 @@ public abstract class SyntaxTreeNode implements Constants {
   protected SyntaxTreeNode _parent; // Parent node
   private Stylesheet _stylesheet; // Stylesheet ancestor node
   private Template _template; // Template ancestor node
-  private final List<SyntaxTreeNode> _contents = new ArrayList<>(2); // Child
-                                                                     // nodes
+  private final List<SyntaxTreeNode> _contents = new ArrayList<>(2); // Child nodes
 
   // Element description data
   protected QName _qname; // The element QName

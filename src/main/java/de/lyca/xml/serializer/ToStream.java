@@ -31,8 +31,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
-import java.util.StringTokenizer;
-import java.util.Vector;
 
 import javax.xml.transform.ErrorListener;
 import javax.xml.transform.OutputKeys;
@@ -1601,47 +1599,6 @@ abstract public class ToStream extends SerializerBase {
   }
 
   /**
-   * Process a dirty character and any preeceding clean characters that were not
-   * yet processed.
-   * 
-   * @param chars
-   *          array of characters being processed
-   * @param end
-   *          one (1) beyond the last character in chars to be processed
-   * @param i
-   *          the index of the dirty character
-   * @param ch
-   *          the character in chars[i]
-   * @param lastDirty
-   *          the last dirty character previous to i
-   * @param fromTextNode
-   *          true if the characters being processed are from a text node, false
-   *          if they are from an attribute value.
-   * @return the index of the last character processed
-   */
-  private int processDirty(char[] chars, int end, int i, char ch, int lastDirty, boolean fromTextNode)
-          throws IOException {
-    int startClean = lastDirty + 1;
-    // if we have some clean characters accumulated
-    // process them before the dirty one.
-    if (i > startClean) {
-      final int lengthClean = i - startClean;
-      m_writer.write(chars, startClean, lengthClean);
-    }
-
-    // process the "dirty" character
-    if (CharInfo.S_LINEFEED == ch && fromTextNode) {
-      m_writer.write(m_lineSep, 0, m_lineSepLen);
-    } else {
-      startClean = accumDefaultEscape(m_writer, ch, i, chars, end, fromTextNode, false);
-      i = startClean - 1;
-    }
-    // Return the index of the last character that we just processed
-    // which is a dirty character.
-    return i;
-  }
-
-  /**
    * Receive notification of character data.
    * 
    * @param s
@@ -2558,93 +2515,6 @@ abstract public class ToStream extends SerializerBase {
    */
   protected boolean shouldIndent() {
     return m_doIndent && !m_ispreserve && !m_isprevtext && m_elemContext.m_currentElemDepth > 0;
-  }
-
-  /**
-   * Searches for the list of qname properties with the specified key in the
-   * property list. If the key is not found in this property list, the default
-   * property list, and its defaults, recursively, are then checked. The method
-   * returns <code>null</code> if the property is not found.
-   * 
-   * @param key
-   *          the property key.
-   * @param props
-   *          the list of properties to search in.
-   * 
-   *          Sets the vector of local-name/URI pairs of the cdata section
-   *          elements specified in the cdata-section-elements property.
-   * 
-   *          This method is essentially a copy of getQNameProperties() from
-   *          OutputProperties. Eventually this method should go away and a call
-   *          to setCdataSectionElements(Vector v) should be made directly.
-   */
-  private void setCdataSectionElements(String key, Properties props) {
-
-    final String s = props.getProperty(key);
-
-    if (null != s) {
-      // Vector of URI/LocalName pairs
-      final Vector v = new Vector();
-      final int l = s.length();
-      boolean inCurly = false;
-      final StringBuffer buf = new StringBuffer();
-
-      // parse through string, breaking on whitespaces. I do this instead
-      // of a tokenizer so I can track whitespace inside of curly brackets,
-      // which theoretically shouldn't happen if they contain legal URLs.
-      for (int i = 0; i < l; i++) {
-        final char c = s.charAt(i);
-
-        if (Character.isWhitespace(c)) {
-          if (!inCurly) {
-            if (buf.length() > 0) {
-              addCdataSectionElement(buf.toString(), v);
-              buf.setLength(0);
-            }
-            continue;
-          }
-        } else if ('{' == c) {
-          inCurly = true;
-        } else if ('}' == c) {
-          inCurly = false;
-        }
-
-        buf.append(c);
-      }
-
-      if (buf.length() > 0) {
-        addCdataSectionElement(buf.toString(), v);
-        buf.setLength(0);
-      }
-      // call the official, public method to set the collected names
-      setCdataSectionElements(v);
-    }
-
-  }
-
-  /**
-   * Adds a URI/LocalName pair of strings to the list.
-   * 
-   * @param URI_and_localName
-   *          String of the form "{uri}local" or "local"
-   * 
-   * @return a QName object
-   */
-  private void addCdataSectionElement(String URI_and_localName, Vector v) {
-
-    final StringTokenizer tokenizer = new StringTokenizer(URI_and_localName, "{}", false);
-    final String s1 = tokenizer.nextToken();
-    final String s2 = tokenizer.hasMoreTokens() ? tokenizer.nextToken() : null;
-
-    if (null == s2) {
-      // add null URI and the local name
-      v.addElement(null);
-      v.addElement(s1);
-    } else {
-      // add URI, then local name
-      v.addElement(s1);
-      v.addElement(s2);
-    }
   }
 
   /**

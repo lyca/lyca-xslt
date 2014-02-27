@@ -495,42 +495,6 @@ public class VariableStack implements Cloneable {
    */
   public XObject getVariableOrParam(XPathContext xctxt, de.lyca.xml.utils.QName qname)
           throws javax.xml.transform.TransformerException {
-
-    final de.lyca.xml.utils.PrefixResolver prefixResolver = xctxt.getNamespaceContext();
-
-    // Get the current ElemTemplateElement, which must be pushed in as the
-    // prefix resolver, and then walk backwards in document order, searching
-    // for an xsl:param element or xsl:variable element that matches our
-    // qname. If we reach the top level, use the StylesheetRoot's composed
-    // list of top level variables and parameters.
-
-    if (prefixResolver instanceof de.lyca.xalan.templates.ElemTemplateElement) {
-
-      de.lyca.xalan.templates.ElemVariable vvar;
-
-      de.lyca.xalan.templates.ElemTemplateElement prev = (de.lyca.xalan.templates.ElemTemplateElement) prefixResolver;
-
-      if (!(prev instanceof de.lyca.xalan.templates.Stylesheet)) {
-        while (!(prev.getParentNode() instanceof de.lyca.xalan.templates.Stylesheet)) {
-          final de.lyca.xalan.templates.ElemTemplateElement savedprev = prev;
-
-          while (null != (prev = prev.getPreviousSiblingElem())) {
-            if (prev instanceof de.lyca.xalan.templates.ElemVariable) {
-              vvar = (de.lyca.xalan.templates.ElemVariable) prev;
-
-              if (vvar.getName().equals(qname))
-                return getLocalVariable(xctxt, vvar.getIndex());
-            }
-          }
-          prev = savedprev.getParentElem();
-        }
-      }
-
-      vvar = prev.getStylesheetRoot().getVariableOrParamComposed(qname);
-      if (null != vvar)
-        return getGlobalVariable(xctxt, vvar.getIndex());
-    }
-
     throw new javax.xml.transform.TransformerException(XPATHMessages.createXPATHMessage(
             XPATHErrorResources.ER_VAR_NOT_RESOLVABLE, new Object[] { qname.toString() })); // "Variable not resolvable: "
                                                                                             // +

@@ -20,7 +20,6 @@
  */
 package de.lyca.xpath.functions;
 
-import de.lyca.xalan.transformer.TransformerImpl;
 import de.lyca.xml.utils.QName;
 import de.lyca.xpath.ExtensionsProvider;
 import de.lyca.xpath.XPathContext;
@@ -67,15 +66,9 @@ public class FuncExtElementAvailable extends FunctionOneArg {
     }
 
     if (namespace.equals(de.lyca.xml.utils.Constants.S_XSLNAMESPACEURL)
-            || namespace.equals(de.lyca.xml.utils.Constants.S_BUILTIN_EXTENSIONS_URL)) {
-      try {
-        final TransformerImpl transformer = (TransformerImpl) xctxt.getOwnerObject();
-        return transformer.getStylesheet().getAvailableElements().contains(new QName(namespace, methName)) ? XBoolean.S_TRUE
-                : XBoolean.S_FALSE;
-      } catch (final Exception e) {
-        return XBoolean.S_FALSE;
-      }
-    } else {
+            || namespace.equals(de.lyca.xml.utils.Constants.S_BUILTIN_EXTENSIONS_URL))
+      return XBoolean.S_FALSE;
+    else {
       // dml
       final ExtensionsProvider extProvider = (ExtensionsProvider) xctxt.getOwnerObject();
       return extProvider.elementAvailable(namespace, methName) ? XBoolean.S_TRUE : XBoolean.S_FALSE;

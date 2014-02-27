@@ -463,4 +463,5 @@ public class TransformerHandlerImpl implements TransformerHandler, DeclHandler {
       _declHandler.internalEntityDecl(name, value);
     }
   }
+
 }

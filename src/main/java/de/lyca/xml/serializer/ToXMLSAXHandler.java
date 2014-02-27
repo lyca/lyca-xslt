@@ -198,10 +198,6 @@ public final class ToXMLSAXHandler extends ToSAXHandler {
     // we've sent the official SAX attributes on their way,
     // now we don't need them anymore.
     m_attributes.clear();
-
-    if (m_state != null) {
-      m_state.setCurrentNode(null);
-    }
   }
 
   /**

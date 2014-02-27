@@ -22,17 +22,16 @@
 package de.lyca.xml.utils;
 
 import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 /**
- * Simple static utility to convert Hashtable to a Node.
+ * Simple static utility to convert Map to a Node.
  * 
  * @see de.lyca.xalan.xslt.EnvironmentCheck
  * @see de.lyca.xalan.lib.Extensions
@@ -40,16 +39,15 @@ import org.w3c.dom.Node;
  * @version $Id$
  * @xsl.usage general
  */
-public abstract class Hashtree2Node {
+public abstract class Map2Node {
 
   /**
-   * Convert a Hashtable into a Node tree.
+   * Convert a Map into a Node tree.
    * 
    * <p>
-   * The hash may have either Hashtables as values (in which case we recurse) or
-   * other values, in which case we print them as &lt;item> elements, with a
-   * 'key' attribute with the value of the key, and the element contents as the
-   * value.
+   * The hash may have either Maps as values (in which case we recurse) or other
+   * values, in which case we print them as &lt;item> elements, with a 'key'
+   * attribute with the value of the key, and the element contents as the value.
    * </p>
    * 
    * <p>
@@ -59,8 +57,8 @@ public abstract class Hashtree2Node {
    * printStackTrace().
    * </p>
    * 
-   * @param hash
-   *          to get info from (may have sub-hashtables)
+   * @param map
+   *          to get info from (may have sub-maps)
    * @param name
    *          to use as parent element for appended node futurework could have
    *          namespace and prefix as well
@@ -69,9 +67,9 @@ public abstract class Hashtree2Node {
    * @param factory
    *          Document providing createElement, etc. services
    */
-  public static void appendHashToNode(Hashtable hash, String name, Node container, Document factory) {
+  public static void appendMapToNode(Map<String, Object> map, String name, Node container, Document factory) {
     // Required arguments must not be null
-    if (null == container || null == factory || null == hash)
+    if (null == container || null == factory || null == map)
       return;
 
     // name we will provide a default value for
@@ -86,30 +84,26 @@ public abstract class Hashtree2Node {
       final Element hashNode = factory.createElement(elemName);
       container.appendChild(hashNode);
 
-      final Enumeration keys = hash.keys();
-      final List v = new ArrayList();
+      final List<Object> v = new ArrayList<>();
+      for (final String key : map.keySet()) {
+        final Object item = map.get(key);
 
-      while (keys.hasMoreElements()) {
-        final Object key = keys.nextElement();
-        final String keyStr = key.toString();
-        final Object item = hash.get(key);
-
-        if (item instanceof Hashtable) {
+        if (item instanceof Map) {
           // Ensure a pre-order traversal; add this hashes
           // items before recursing to child hashes
           // Save name and hash in two steps
-          v.add(keyStr);
+          v.add(key);
           v.add(item);
         } else {
           try {
             // Add item to node
             final Element node = factory.createElement("item");
-            node.setAttribute("key", keyStr);
+            node.setAttribute("key", key);
             node.appendChild(factory.createTextNode((String) item));
             hashNode.appendChild(node);
           } catch (final Exception e) {
             final Element node = factory.createElement("item");
-            node.setAttribute("key", keyStr);
+            node.setAttribute("key", key);
             node.appendChild(factory.createTextNode("ERROR: Reading " + key + " threw: " + e.toString()));
             hashNode.appendChild(node);
           }
@@ -117,13 +111,13 @@ public abstract class Hashtree2Node {
       }
 
       // Now go back and do the saved hashes
-      final Iterator it = v.iterator();
+      final Iterator<Object> it = v.iterator();
       while (it.hasNext()) {
         // Retrieve name and hash in two steps
         final String n = (String) it.next();
-        final Hashtable h = (Hashtable) it.next();
-
-        appendHashToNode(h, n, hashNode, factory);
+        @SuppressWarnings("unchecked")
+        final Map<String, Object> h = (Map<String, Object>) it.next();
+        appendMapToNode(h, n, hashNode, factory);
       }
     } catch (final Exception e2) {
       // Ooops, just bail (suggestions for a safe thing

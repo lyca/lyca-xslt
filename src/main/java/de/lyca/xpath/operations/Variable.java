@@ -247,51 +247,6 @@ public class Variable extends Expression implements PathComponent {
   }
 
   /**
-   * Get the XSLT ElemVariable that this sub-expression references. In order for
-   * this to work, the SourceLocator must be the owning ElemTemplateElement.
-   * 
-   * @return The dereference to the ElemVariable, or null if not found.
-   */
-  public de.lyca.xalan.templates.ElemVariable getElemVariable() {
-
-    // Get the current ElemTemplateElement, and then walk backwards in
-    // document order, searching
-    // for an xsl:param element or xsl:variable element that matches our
-    // qname. If we reach the top level, use the StylesheetRoot's composed
-    // list of top level variables and parameters.
-
-    de.lyca.xalan.templates.ElemVariable vvar = null;
-    final de.lyca.xpath.ExpressionNode owner = getExpressionOwner();
-
-    if (null != owner && owner instanceof de.lyca.xalan.templates.ElemTemplateElement) {
-
-      de.lyca.xalan.templates.ElemTemplateElement prev = (de.lyca.xalan.templates.ElemTemplateElement) owner;
-
-      if (!(prev instanceof de.lyca.xalan.templates.Stylesheet)) {
-        while (prev != null && !(prev.getParentNode() instanceof de.lyca.xalan.templates.Stylesheet)) {
-          final de.lyca.xalan.templates.ElemTemplateElement savedprev = prev;
-
-          while (null != (prev = prev.getPreviousSiblingElem())) {
-            if (prev instanceof de.lyca.xalan.templates.ElemVariable) {
-              vvar = (de.lyca.xalan.templates.ElemVariable) prev;
-
-              if (vvar.getName().equals(m_qname))
-                return vvar;
-              vvar = null;
-            }
-          }
-          prev = savedprev.getParentElem();
-        }
-      }
-      if (prev != null) {
-        vvar = prev.getStylesheetRoot().getVariableOrParamComposed(m_qname);
-      }
-    }
-    return vvar;
-
-  }
-
-  /**
    * Tell if this expression returns a stable number that will not change during
    * iterations within the expression. This is used to determine if a proximity
    * position predicate can indicate that no more searching has to occur.
@@ -311,15 +266,6 @@ public class Variable extends Expression implements PathComponent {
    */
   @Override
   public int getAnalysisBits() {
-    final de.lyca.xalan.templates.ElemVariable vvar = getElemVariable();
-    if (null != vvar) {
-      final XPath xpath = vvar.getSelect();
-      if (null != xpath) {
-        final Expression expr = xpath.getExpression();
-        if (null != expr && expr instanceof PathComponent)
-          return ((PathComponent) expr).getAnalysisBits();
-      }
-    }
     return WalkerFactory.BIT_FILTER;
   }
 
@@ -341,11 +287,6 @@ public class Variable extends Expression implements PathComponent {
       return false;
 
     if (!m_qname.equals(((Variable) expr).m_qname))
-      return false;
-
-    // We have to make sure that the qname really references
-    // the same variable element.
-    if (getElemVariable() != ((Variable) expr).getElemVariable())
       return false;
 
     return true;

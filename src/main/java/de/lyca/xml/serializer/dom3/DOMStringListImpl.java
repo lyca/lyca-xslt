@@ -23,7 +23,6 @@ package de.lyca.xml.serializer.dom3;
 import java.util.ArrayList;
 import java.util.List;
 
-//import org.apache.xerces.dom3.DOMStringList;
 import org.w3c.dom.DOMStringList;
 
 /**

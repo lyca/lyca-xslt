@@ -73,13 +73,6 @@ public abstract class ToSAXHandler extends SerializerBase {
   private boolean m_shouldGenerateNSAttribute = true;
 
   /**
-   * If this is true, then the content handler wrapped by this serializer
-   * implements the TransformState interface which will give the content handler
-   * access to the state of the transform.
-   */
-  protected TransformStateSetter m_state = null;
-
-  /**
    * Pass callback to the SAX Handler
    */
   @Override
@@ -182,10 +175,6 @@ public abstract class ToSAXHandler extends SerializerBase {
    */
   @Override
   public void startElement(String arg0, String arg1, String arg2, Attributes arg3) throws SAXException {
-    if (m_state != null) {
-      m_state.resetState(getTransformer());
-    }
-
     // fire off the start element event
     if (m_tracer != null) {
       super.fireStartElem(arg2);
@@ -275,18 +264,6 @@ public abstract class ToSAXHandler extends SerializerBase {
   }
 
   /**
-   * Pass in a reference to a TransformState object, which can be used during
-   * SAX ContentHandler events to obtain information about he state of the
-   * transformation. This method will be called before each startDocument event.
-   * 
-   * @param ts
-   *          A reference to a TransformState object
-   */
-  public void setTransformState(TransformStateSetter ts) {
-    m_state = ts;
-  }
-
-  /**
    * Receives notification that an element starts, but attributes are not fully
    * known yet.
    * 
@@ -301,11 +278,6 @@ public abstract class ToSAXHandler extends SerializerBase {
    */
   @Override
   public void startElement(String uri, String localName, String qName) throws SAXException {
-
-    if (m_state != null) {
-      m_state.resetState(getTransformer());
-    }
-
     // fire off the start element event
     if (m_tracer != null) {
       super.fireStartElem(qName);
@@ -322,9 +294,6 @@ public abstract class ToSAXHandler extends SerializerBase {
    */
   @Override
   public void startElement(String qName) throws SAXException {
-    if (m_state != null) {
-      m_state.resetState(getTransformer());
-    }
     // fire off the start element event
     if (m_tracer != null) {
       super.fireStartElem(qName);
@@ -341,11 +310,6 @@ public abstract class ToSAXHandler extends SerializerBase {
    */
   @Override
   public void characters(org.w3c.dom.Node node) throws org.xml.sax.SAXException {
-    // remember the current node
-    if (m_state != null) {
-      m_state.setCurrentNode(node);
-    }
-
     // Get the node's value as a String and use that String as if
     // it were an input character notification.
     final String data = node.getNodeValue();
@@ -417,7 +381,6 @@ public abstract class ToSAXHandler extends SerializerBase {
   private void resetToSAXHandler() {
     m_lexHandler = null;
     m_saxHandler = null;
-    m_state = null;
     m_shouldGenerateNSAttribute = false;
   }
 

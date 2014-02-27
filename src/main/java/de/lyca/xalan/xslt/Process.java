@@ -62,10 +62,6 @@ import org.xml.sax.helpers.XMLReaderFactory;
 import de.lyca.xalan.Version;
 import de.lyca.xalan.res.XSLMessages;
 import de.lyca.xalan.res.XSLTErrorResources;
-import de.lyca.xalan.trace.PrintTraceListener;
-import de.lyca.xalan.trace.TraceManager;
-import de.lyca.xalan.transformer.XalanProperties;
-import de.lyca.xml.res.XMLMessages;
 import de.lyca.xml.utils.DefaultErrorHandler;
 
 /**
@@ -110,22 +106,6 @@ public class Process {
     waitForReturnKey(resbundle);
     System.out.println(resbundle.getString("optionCONTENTHANDLER")); // "   [-CONTENTHANDLER full class name (ContentHandler to be used to serialize output)]");
     System.out.println(resbundle.getString("optionSECUREPROCESSING")); // "   [-SECURE (set the secure processing feature to true)]");
-
-    System.out.println("\n\t\t\t" + resbundle.getString("xslProc_xalan_options") + "\n");
-
-    System.out.println(resbundle.getString("optionQC")); // "   [-QC (Quiet Pattern Conflicts Warnings)]");
-
-    // System.out.println(resbundle.getString("optionQ"));
-    // //"   [-Q  (Quiet Mode)]"); // sc 28-Feb-01 commented out
-    System.out.println(resbundle.getString("optionTT")); // "   [-TT (Trace the templates as they are being called.)]");
-    System.out.println(resbundle.getString("optionTG")); // "   [-TG (Trace each generation event.)]");
-    System.out.println(resbundle.getString("optionTS")); // "   [-TS (Trace each selection event.)]");
-    System.out.println(resbundle.getString("optionTTC")); // "   [-TTC (Trace the template children as they are being processed.)]");
-    System.out.println(resbundle.getString("optionTCLASS")); // "   [-TCLASS (TraceListener class for trace extensions.)]");
-    System.out.println(resbundle.getString("optionLINENUMBERS")); // "   [-L use line numbers]"
-    System.out.println(resbundle.getString("optionINCREMENTAL"));
-    System.out.println(resbundle.getString("optionNOOPTIMIMIZE"));
-    System.out.println(resbundle.getString("optionRL"));
 
     System.out.println("\n\t\t\t" + resbundle.getString("xslProc_xsltc_options") + "\n");
     System.out.println(resbundle.getString("optionXO"));
@@ -174,14 +154,14 @@ public class Process {
      */
     final java.io.PrintWriter diagnosticsWriter = new PrintWriter(System.err, true);
     java.io.PrintWriter dumpWriter = diagnosticsWriter;
-    final ResourceBundle resbundle = XMLMessages
+    final ResourceBundle resbundle = XSLMessages
             .loadResourceBundle(de.lyca.xml.utils.res.XResourceBundle.ERROR_RESOURCES);
     String flavor = "s2s";
 
     if (argv.length < 1) {
       printArgOptions(resbundle);
     } else {
-      boolean useXSLTC = false;
+      boolean useXSLTC = true;
       for (int i = 0; i < argv.length; i++) {
         if ("-XSLTC".equalsIgnoreCase(argv[i])) {
           useXSLTC = true;
@@ -211,74 +191,20 @@ public class Process {
         doExit(msg);
       }
 
-      final boolean formatOutput = false;
-      final boolean useSourceLocation = false;
       String inFileName = null;
       String outFileName = null;
       String dumpFileName = null;
       String xslFileName = null;
-      final String treedumpFileName = null;
-      PrintTraceListener tracer = null;
       String outputType = null;
       String media = null;
       final List<String> params = new ArrayList<>();
-      boolean quietConflictWarnings = false;
       URIResolver uriResolver = null;
       EntityResolver entityResolver = null;
       ContentHandler contentHandler = null;
-      int recursionLimit = -1;
 
       for (int i = 0; i < argv.length; i++) {
         if ("-XSLTC".equalsIgnoreCase(argv[i])) {
           // The -XSLTC option has been processed.
-        } else if ("-TT".equalsIgnoreCase(argv[i])) {
-          if (!useXSLTC) {
-            if (null == tracer) {
-              tracer = new PrintTraceListener(diagnosticsWriter);
-            }
-
-            tracer.m_traceTemplates = true;
-          } else {
-            printInvalidXSLTCOption("-TT");
-          }
-
-          // tfactory.setTraceTemplates(true);
-        } else if ("-TG".equalsIgnoreCase(argv[i])) {
-          if (!useXSLTC) {
-            if (null == tracer) {
-              tracer = new PrintTraceListener(diagnosticsWriter);
-            }
-
-            tracer.m_traceGeneration = true;
-          } else {
-            printInvalidXSLTCOption("-TG");
-          }
-
-          // tfactory.setTraceSelect(true);
-        } else if ("-TS".equalsIgnoreCase(argv[i])) {
-          if (!useXSLTC) {
-            if (null == tracer) {
-              tracer = new PrintTraceListener(diagnosticsWriter);
-            }
-
-            tracer.m_traceSelection = true;
-          } else {
-            printInvalidXSLTCOption("-TS");
-          }
-
-          // tfactory.setTraceTemplates(true);
-        } else if ("-TTC".equalsIgnoreCase(argv[i])) {
-          if (!useXSLTC) {
-            if (null == tracer) {
-              tracer = new PrintTraceListener(diagnosticsWriter);
-            }
-
-            tracer.m_traceElements = true;
-          } else {
-            printInvalidXSLTCOption("-TTC");
-          }
-
-          // tfactory.setTraceTemplateChildren(true);
         } else if ("-INDENT".equalsIgnoreCase(argv[i])) {
           int indentAmount;
 
@@ -348,12 +274,6 @@ public class Process {
 
                   /* xmlProcessorLiaison.getParserDescription()+ */
                   resbundle.getString("version2")); // "<<<<<<<");
-        } else if ("-QC".equalsIgnoreCase(argv[i])) {
-          if (!useXSLTC) {
-            quietConflictWarnings = true;
-          } else {
-            printInvalidXSLTCOption("-QC");
-          }
         } else if ("-Q".equalsIgnoreCase(argv[i])) {
           setQuietMode = true;
         } else if ("-DIAG".equalsIgnoreCase(argv[i])) {
@@ -423,44 +343,6 @@ public class Process {
                     new Object[] { "-ContentHandler" });
             System.err.println(msg);
             doExit(msg);
-          }
-        } else if ("-L".equalsIgnoreCase(argv[i])) {
-          if (!useXSLTC) {
-            tfactory.setAttribute(XalanProperties.SOURCE_LOCATION, Boolean.TRUE);
-          } else {
-            printInvalidXSLTCOption("-L");
-          }
-        } else if ("-INCREMENTAL".equalsIgnoreCase(argv[i])) {
-          if (!useXSLTC) {
-            tfactory.setAttribute("http://xml.apache.org/xalan/features/incremental", java.lang.Boolean.TRUE);
-          } else {
-            printInvalidXSLTCOption("-INCREMENTAL");
-          }
-        } else if ("-NOOPTIMIZE".equalsIgnoreCase(argv[i])) {
-          // Default is true.
-          //
-          // %REVIEW% We should have a generalized syntax for negative
-          // switches... and probably should accept the inverse even
-          // if it is the default.
-          if (!useXSLTC) {
-            tfactory.setAttribute("http://xml.apache.org/xalan/features/optimize", java.lang.Boolean.FALSE);
-          } else {
-            printInvalidXSLTCOption("-NOOPTIMIZE");
-          }
-        } else if ("-RL".equalsIgnoreCase(argv[i])) {
-          if (!useXSLTC) {
-            if (i + 1 < argv.length) {
-              recursionLimit = Integer.parseInt(argv[++i]);
-            } else {
-              System.err.println(XSLMessages.createMessage(XSLTErrorResources.ER_MISSING_ARG_FOR_OPTION,
-                      new Object[] { "-rl" })); // "Missing argument for);
-            }
-          } else {
-            if (i + 1 < argv.length && argv[i + 1].charAt(0) != '-') {
-              i++;
-            }
-
-            printInvalidXSLTCOption("-RL");
           }
         }
         // Generate the translet class and optionally specify the name
@@ -618,7 +500,6 @@ public class Process {
           }
         }
 
-        final PrintWriter resultWriter;
         StreamResult strResult;
 
         if (null != outFileName) {
@@ -637,11 +518,6 @@ public class Process {
         }
 
         final SAXTransformerFactory stf = (SAXTransformerFactory) tfactory;
-
-        // This is currently controlled via TransformerFactoryImpl.
-        if (!useXSLTC && useSourceLocation) {
-          stf.setAttribute(XalanProperties.SOURCE_LOCATION, Boolean.TRUE);
-        }
 
         // Did they pass in a stylesheet, or should we get it from the
         // document?
@@ -670,31 +546,6 @@ public class Process {
           // Override the output format?
           if (null != outputType) {
             transformer.setOutputProperty(OutputKeys.METHOD, outputType);
-          }
-
-          if (transformer instanceof de.lyca.xalan.transformer.TransformerImpl) {
-            final de.lyca.xalan.transformer.TransformerImpl impl = (de.lyca.xalan.transformer.TransformerImpl) transformer;
-            final TraceManager tm = impl.getTraceManager();
-
-            if (null != tracer) {
-              tm.addTraceListener(tracer);
-            }
-
-            impl.setQuietConflictWarnings(quietConflictWarnings);
-
-            // This is currently controlled via TransformerFactoryImpl.
-            if (useSourceLocation) {
-              impl.setProperty(XalanProperties.SOURCE_LOCATION, Boolean.TRUE);
-            }
-
-            if (recursionLimit > 0) {
-              impl.setRecursionLimit(recursionLimit);
-            }
-
-            // sc 28-Feb-01 if we re-implement this, please uncomment helpmsg in
-            // printArgOptions
-            // impl.setDiagnosticsOutput( setQuietMode ? null :
-            // diagnosticsWriter );
           }
 
           final int nParams = params.size();
@@ -785,10 +636,6 @@ public class Process {
 
                 if (null == reader) {
                   reader = XMLReaderFactory.createXMLReader();
-                }
-
-                if (!useXSLTC) {
-                  stf.setAttribute(de.lyca.xalan.processor.TransformerFactoryImpl.FEATURE_INCREMENTAL, Boolean.TRUE);
                 }
 
                 final TransformerHandler th = stf.newTransformerHandler(stylesheet);
@@ -970,16 +817,6 @@ public class Process {
       }
     } catch (final java.io.IOException e) {
     }
-  }
-
-  /**
-   * Print a message if an option cannot be used with -XSLTC.
-   * 
-   * @param option
-   *          The option String
-   */
-  private static void printInvalidXSLTCOption(String option) {
-    System.err.println(XSLMessages.createMessage("xslProc_invalid_xsltc_option", new Object[] { option }));
   }
 
   /**

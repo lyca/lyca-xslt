@@ -20,6 +20,7 @@
  */
 package de.lyca.xalan.lib;
 
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -352,16 +353,18 @@ public class Extensions {
 
       // Fully qualify names since this is the only method they're used in
       final java.lang.reflect.Method method = clazz.getMethod(WHICH_METHODNAME, WHICH_METHOD_ARGS);
-      final Hashtable report = new Hashtable();
+      final Hashtable<String, Object> intermediate = new Hashtable<>();
 
       // Call the method with our Hashtable, common options, and ignore return
       // value
-      final Object[] methodArgs = { report, "XmlCommons;Xalan;Xerces;Crimson;Ant", "" };
-      final Object returnValue = method.invoke(null, methodArgs);
+      final Object[] methodArgs = { intermediate, "XmlCommons;Xalan;Xerces;Crimson;Ant", "" };
+      method.invoke(null, methodArgs);
+
+      final Map<String, Object> report = new HashMap<String, Object>(intermediate);
 
       // Create a parent to hold the report and append hash to it
       final Node resultNode = factoryDocument.createElement("checkEnvironmentExtension");
-      de.lyca.xml.utils.Hashtree2Node.appendHashToNode(report, "whichReport", resultNode, factoryDocument);
+      de.lyca.xml.utils.Map2Node.appendMapToNode(report, "whichReport", resultNode, factoryDocument);
 
       return resultNode;
     } catch (final Throwable t) {
