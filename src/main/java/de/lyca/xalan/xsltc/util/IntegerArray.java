@@ -21,6 +21,8 @@
 
 package de.lyca.xalan.xsltc.util;
 
+import java.util.Arrays;
+
 /**
  * @author Jacek Ambroziak
  */
@@ -153,36 +155,7 @@ public final class IntegerArray implements Cloneable {
   }
 
   public void sort() {
-    quicksort(_array, 0, _free - 1);
-  }
-
-  private static void quicksort(int[] array, int p, int r) {
-    if (p < r) {
-      final int q = partition(array, p, r);
-      quicksort(array, p, q);
-      quicksort(array, q + 1, r);
-    }
-  }
-
-  private static int partition(int[] array, int p, int r) {
-    final int x = array[p + r >>> 1];
-    int i = p - 1;
-    int j = r + 1;
-
-    while (true) {
-      while (x < array[--j]) {
-        ;
-      }
-      while (x > array[++i]) {
-        ;
-      }
-      if (i < j) {
-        final int temp = array[i];
-        array[i] = array[j];
-        array[j] = temp;
-      } else
-        return j;
-    }
+    Arrays.sort(_array, 0, _free);
   }
 
   private void growArray(int size) {
