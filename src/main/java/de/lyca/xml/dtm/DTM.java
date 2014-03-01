@@ -210,7 +210,7 @@ public interface DTM {
    * 
    * @return A DTMAxisIterator, or null if the givin axis isn't supported.
    */
-  public DTMAxisTraverser getAxisTraverser(final int axis);
+  public DTMAxisTraverser getAxisTraverser(final Axis axis);
 
   /**
    * This is a shortcut to the iterators that implement XPath axes. Returns a
@@ -222,7 +222,7 @@ public interface DTM {
    * 
    * @return A DTMAxisIterator, or null if the givin axis isn't supported.
    */
-  public DTMAxisIterator getAxisIterator(final int axis);
+  public DTMAxisIterator getAxisIterator(final Axis axis);
 
   /**
    * Get an iterator that can navigate over an XPath Axis, predicated by the
@@ -234,7 +234,7 @@ public interface DTM {
    * 
    * @return A DTMAxisIterator, or null if the givin axis isn't supported.
    */
-  public DTMAxisIterator getTypedAxisIterator(final int axis, final int type);
+  public DTMAxisIterator getTypedAxisIterator(final Axis axis, final int type);
 
   /**
    * Given a node handle, test if it has child nodes.

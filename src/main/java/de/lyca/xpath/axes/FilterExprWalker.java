@@ -291,7 +291,7 @@ public class FilterExprWalker extends AxesWalker {
    *         types.
    */
   @Override
-  public int getAxis() {
+  public Axis getAxis() {
     return m_exprObj.getAxis();
   }
 

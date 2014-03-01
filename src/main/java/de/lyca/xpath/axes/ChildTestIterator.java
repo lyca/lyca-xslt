@@ -147,7 +147,7 @@ public class ChildTestIterator extends BasicTestIterator {
    *         types.
    */
   @Override
-  public int getAxis() {
+  public Axis getAxis() {
     return de.lyca.xml.dtm.Axis.CHILD;
   }
 

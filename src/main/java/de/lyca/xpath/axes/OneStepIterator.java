@@ -20,6 +20,7 @@
  */
 package de.lyca.xpath.axes;
 
+import de.lyca.xml.dtm.Axis;
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xml.dtm.DTMAxisIterator;
 import de.lyca.xml.dtm.DTMFilter;
@@ -39,7 +40,7 @@ import de.lyca.xpath.compiler.OpMap;
 public class OneStepIterator extends ChildTestIterator {
   static final long serialVersionUID = 4623710779664998283L;
   /** The traversal axis from where the nodes will be filtered. */
-  protected int m_axis = -1;
+  protected Axis m_axis = null;
 
   /** The DTM inner traversal class, that corresponds to the super axis. */
   protected DTMAxisIterator m_iterator;
@@ -73,7 +74,7 @@ public class OneStepIterator extends ChildTestIterator {
    * 
    * @throws javax.xml.transform.TransformerException
    */
-  public OneStepIterator(DTMAxisIterator iterator, int axis) throws javax.xml.transform.TransformerException {
+  public OneStepIterator(DTMAxisIterator iterator, Axis axis) throws javax.xml.transform.TransformerException {
     super(null);
 
     m_iterator = iterator;
@@ -91,7 +92,7 @@ public class OneStepIterator extends ChildTestIterator {
   @Override
   public void setRoot(int context, Object environment) {
     super.setRoot(context, environment);
-    if (m_axis > -1) {
+    if (m_axis != null) {
       m_iterator = m_cdtm.getAxisIterator(m_axis);
     }
     m_iterator.setStartNode(m_context);
@@ -106,7 +107,7 @@ public class OneStepIterator extends ChildTestIterator {
   @Override
   public void detach() {
     if (m_allowDetach) {
-      if (m_axis > -1) {
+      if (m_axis != null) {
         m_iterator = null;
       }
 
@@ -301,7 +302,7 @@ public class OneStepIterator extends ChildTestIterator {
    *         types.
    */
   @Override
-  public int getAxis() {
+  public Axis getAxis() {
     return m_axis;
   }
 

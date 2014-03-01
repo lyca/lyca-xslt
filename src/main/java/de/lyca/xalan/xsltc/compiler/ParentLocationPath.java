@@ -61,12 +61,12 @@ final class ParentLocationPath extends RelativeLocationPath {
   }
 
   @Override
-  public void setAxis(int axis) {
+  public void setAxis(Axis axis) {
     _path.setAxis(axis);
   }
 
   @Override
-  public int getAxis() {
+  public Axis getAxis() {
     return _path.getAxis();
   }
 
@@ -118,8 +118,8 @@ final class ParentLocationPath extends RelativeLocationPath {
    */
   public boolean checkAxisMismatch() {
 
-    final int left = _path.getAxis();
-    final int right = ((Step) _step).getAxis();
+    final Axis left = _path.getAxis();
+    final Axis right = ((Step) _step).getAxis();
 
     if ((left == Axis.ANCESTOR || left == Axis.ANCESTORORSELF)
             && (right == Axis.CHILD || right == Axis.DESCENDANT || right == Axis.DESCENDANTORSELF
@@ -201,8 +201,8 @@ final class ParentLocationPath extends RelativeLocationPath {
     }
 
     if (_path instanceof Step && stp instanceof Step) {
-      final int path = ((Step) _path).getAxis();
-      final int step = ((Step) stp).getAxis();
+      final Axis path = ((Step) _path).getAxis();
+      final Axis step = ((Step) stp).getAxis();
       if (path == Axis.DESCENDANTORSELF && step == Axis.CHILD || path == Axis.PRECEDING && step == Axis.PARENT) {
         final int incl = cpg.addMethodref(NODE_ITERATOR_BASE, "includeSelf", "()" + NODE_ITERATOR_SIG);
         il.append(new INVOKEVIRTUAL(incl));

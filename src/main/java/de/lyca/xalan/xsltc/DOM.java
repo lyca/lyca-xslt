@@ -26,6 +26,7 @@ import java.util.Map;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import de.lyca.xml.dtm.Axis;
 import de.lyca.xml.dtm.DTMAxisIterator;
 import de.lyca.xml.serializer.SerializationHandler;
 
@@ -59,13 +60,13 @@ public interface DOM {
 
   DTMAxisIterator getTypedChildren(final int type);
 
-  DTMAxisIterator getAxisIterator(final int axis);
+  DTMAxisIterator getAxisIterator(final Axis axis);
 
-  DTMAxisIterator getTypedAxisIterator(final int axis, final int type);
+  DTMAxisIterator getTypedAxisIterator(final Axis axis, final int type);
 
   DTMAxisIterator getNthDescendant(int node, int n, boolean includeself);
 
-  DTMAxisIterator getNamespaceAxisIterator(final int axis, final int ns);
+  DTMAxisIterator getNamespaceAxisIterator(final Axis axis, final int ns);
 
   DTMAxisIterator getNodeValueIterator(DTMAxisIterator iter, int returnType, String value, boolean op);
 

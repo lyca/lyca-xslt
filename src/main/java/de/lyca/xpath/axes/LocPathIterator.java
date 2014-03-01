@@ -22,6 +22,7 @@ package de.lyca.xpath.axes;
 
 import javax.xml.transform.TransformerException;
 
+import de.lyca.xml.dtm.Axis;
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xml.dtm.DTMFilter;
 import de.lyca.xml.dtm.DTMIterator;
@@ -119,7 +120,7 @@ public abstract class LocPathIterator extends PredicatedNodeTest implements Clon
    */
   @Override
   public int getAnalysisBits() {
-    final int axis = getAxis();
+    final Axis axis = getAxis();
     final int bit = WalkerFactory.getAnalysisBitFromAxes(axis);
     return bit;
   }
@@ -987,8 +988,8 @@ public abstract class LocPathIterator extends PredicatedNodeTest implements Clon
    *         types.
    */
   @Override
-  public int getAxis() {
-    return -1;
+  public Axis getAxis() {
+    return null;
   }
 
   // /**

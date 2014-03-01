@@ -34,6 +34,7 @@ import de.lyca.xalan.xsltc.StripFilter;
 import de.lyca.xalan.xsltc.TransletException;
 import de.lyca.xalan.xsltc.runtime.AttributeList;
 import de.lyca.xalan.xsltc.runtime.BasisLibrary;
+import de.lyca.xml.dtm.Axis;
 import de.lyca.xml.dtm.DTMAxisIterator;
 import de.lyca.xml.dtm.DTMAxisTraverser;
 import de.lyca.xml.dtm.DTMWSFilter;
@@ -158,7 +159,7 @@ public class AdaptiveResultTreeImpl extends SimpleResultTreeImpl {
   }
 
   @Override
-  public DTMAxisIterator getAxisIterator(final int axis) {
+  public DTMAxisIterator getAxisIterator(final Axis axis) {
     if (_dom != null)
       return _dom.getAxisIterator(axis);
     else
@@ -166,7 +167,7 @@ public class AdaptiveResultTreeImpl extends SimpleResultTreeImpl {
   }
 
   @Override
-  public DTMAxisIterator getTypedAxisIterator(final int axis, final int type) {
+  public DTMAxisIterator getTypedAxisIterator(final Axis axis, final int type) {
     if (_dom != null)
       return _dom.getTypedAxisIterator(axis, type);
     else
@@ -182,7 +183,7 @@ public class AdaptiveResultTreeImpl extends SimpleResultTreeImpl {
   }
 
   @Override
-  public DTMAxisIterator getNamespaceAxisIterator(final int axis, final int ns) {
+  public DTMAxisIterator getNamespaceAxisIterator(final Axis axis, final int ns) {
     if (_dom != null)
       return _dom.getNamespaceAxisIterator(axis, ns);
     else
@@ -648,7 +649,7 @@ public class AdaptiveResultTreeImpl extends SimpleResultTreeImpl {
   }
 
   @Override
-  public DTMAxisTraverser getAxisTraverser(final int axis) {
+  public DTMAxisTraverser getAxisTraverser(final Axis axis) {
     if (_dom != null)
       return _dom.getAxisTraverser(axis);
     else

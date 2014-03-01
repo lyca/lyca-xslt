@@ -38,7 +38,7 @@ public class ContextMatchStepPattern extends StepPattern {
    * Construct a ContextMatchStepPattern.
    * 
    */
-  public ContextMatchStepPattern(int axis, int paxis) {
+  public ContextMatchStepPattern(Axis axis, Axis paxis) {
     super(DTMFilter.SHOW_ALL, axis, paxis);
   }
 
@@ -91,7 +91,7 @@ public class ContextMatchStepPattern extends StepPattern {
     if (null != dtm) {
       DTMAxisTraverser traverser;
 
-      int axis = m_axis;
+      Axis axis = m_axis;
 
       final boolean needToTraverseAttrs = WalkerFactory.isDownwardAxisOfMany(axis);
       final boolean iterRootIsAttr = dtm.getNodeType(xctxt.getIteratorRoot()) == DTM.ATTRIBUTE_NODE;
@@ -118,7 +118,7 @@ public class ContextMatchStepPattern extends StepPattern {
           }
 
           if (needToTraverseAttrs && iterRootIsAttr && DTM.ELEMENT_NODE == dtm.getNodeType(relative)) {
-            int xaxis = Axis.ATTRIBUTE;
+            Axis xaxis = Axis.ATTRIBUTE;
             for (int i = 0; i < 2; i++) {
               final DTMAxisTraverser atraverser = dtm.getAxisTraverser(xaxis);
 

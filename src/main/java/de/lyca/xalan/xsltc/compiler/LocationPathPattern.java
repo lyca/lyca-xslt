@@ -97,7 +97,7 @@ public abstract class LocationPathPattern extends Pattern {
 
   public abstract boolean isWildcard();
 
-  public int getAxis() {
+  public Axis getAxis() {
     final StepPattern sp = getKernelPattern();
     return sp != null ? sp.getAxis() : Axis.CHILD;
   }

@@ -22,6 +22,7 @@ package de.lyca.xpath.axes;
 
 import java.util.List;
 
+import de.lyca.xml.dtm.Axis;
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xml.dtm.DTMAxisTraverser;
 import de.lyca.xml.dtm.DTMIterator;
@@ -46,7 +47,7 @@ public class AxesWalker extends PredicatedNodeTest implements Cloneable, PathCom
    * @param locPathIterator
    *          non-null reference to the parent iterator.
    */
-  public AxesWalker(LocPathIterator locPathIterator, int axis) {
+  public AxesWalker(LocPathIterator locPathIterator, Axis axis) {
     super(locPathIterator);
     m_axis = axis;
   }
@@ -197,7 +198,7 @@ public class AxesWalker extends PredicatedNodeTest implements Cloneable, PathCom
    */
   @Override
   public int getAnalysisBits() {
-    final int axis = getAxis();
+    final Axis axis = getAxis();
     final int bit = WalkerFactory.getAnalysisBitFromAxes(axis);
     return bit;
   }
@@ -458,7 +459,7 @@ public class AxesWalker extends PredicatedNodeTest implements Cloneable, PathCom
    * @return Axis.CHILD, etc., or -1 if the axis is not known or is of multiple
    *         types.
    */
-  public int getAxis() {
+  public Axis getAxis() {
     return m_axis;
   }
 
@@ -542,7 +543,7 @@ public class AxesWalker extends PredicatedNodeTest implements Cloneable, PathCom
   AxesWalker m_prevWalker;
 
   /** The traversal axis from where the nodes will be filtered. */
-  protected int m_axis = -1;
+  protected Axis m_axis = null;
 
   /** The DTM inner traversal class, that corresponds to the super axis. */
   protected DTMAxisTraverser m_traverser;

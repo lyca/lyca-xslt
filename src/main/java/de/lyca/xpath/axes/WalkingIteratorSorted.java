@@ -100,13 +100,13 @@ public class WalkingIteratorSorted extends WalkingIterator {
       final boolean prevIsSimpleDownAxis = true;
 
       for (int i = 0; null != walker; i++) {
-        final int axis = walker.getAxis();
+        final Axis axis = walker.getAxis();
 
         if (walker.isDocOrdered()) {
           final boolean isSimpleDownAxis = axis == Axis.CHILD || axis == Axis.SELF || axis == Axis.ROOT;
           // Catching the filtered list here is only OK because
           // FilterExprWalker#isDocOrdered() did the right thing.
-          if (isSimpleDownAxis || axis == -1) {
+          if (isSimpleDownAxis || axis == null) {
             walker = walker.getNextWalker();
           } else {
             final boolean isLastWalker = null == walker.getNextWalker();

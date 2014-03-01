@@ -69,7 +69,7 @@ final class UnionPathExpr extends Expression {
       _components[i].setParent(this);
       if (_components[i] instanceof Step) {
         final Step step = (Step) _components[i];
-        final int axis = step.getAxis();
+        final Axis axis = step.getAxis();
         final int type = step.getNodeType();
         // Put attribute iterators first
         if (axis == Axis.ATTRIBUTE || type == DTM.ATTRIBUTE_NODE) {
@@ -77,7 +77,7 @@ final class UnionPathExpr extends Expression {
           _components[0] = step;
         }
         // Check if the union contains a reverse iterator
-        if (Axis.isReverse(axis)) {
+        if (axis.isReverse()) {
           _reverse = true;
         }
       }

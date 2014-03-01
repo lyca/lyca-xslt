@@ -20,6 +20,7 @@
  */
 package de.lyca.xpath.axes;
 
+import de.lyca.xml.dtm.Axis;
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xml.dtm.DTMAxisIterator;
 import de.lyca.xpath.XPathContext;
@@ -38,7 +39,7 @@ public class ReverseAxesWalker extends AxesWalker {
    * @param locPathIterator
    *          The location path iterator that 'owns' this walker.
    */
-  ReverseAxesWalker(LocPathIterator locPathIterator, int axis) {
+  ReverseAxesWalker(LocPathIterator locPathIterator, Axis axis) {
     super(locPathIterator, axis);
   }
 

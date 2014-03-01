@@ -113,7 +113,7 @@ parser code {:
      * expansion to be correct, the priority of the pattern/template must be
      * set to -0.25 (when no other predicates are present).
      */
-    public StepPattern createStepPattern(int axis, Object test, List predicates) {
+    public StepPattern createStepPattern(Axis axis, Object test, List predicates) {
 	int nodeType;
 
 	if (test == null) {  // "*"
@@ -181,7 +181,7 @@ parser code {:
 	}
     }
 
-    public int findNodeType(int axis, Object test) {
+    public int findNodeType(Axis axis, Object test) {
 	if (test == null) {  // *
 	    return (axis == Axis.ATTRIBUTE) ? 
 		NodeTest.ATTRIBUTE :
@@ -288,7 +288,7 @@ parser code {:
      * child, attribute, namespace, descendant result in non-empty
      * nodesets only if the context node is of type element.
      */
-    public boolean isElementAxis(int axis) {
+    public boolean isElementAxis(Axis axis) {
 	return (axis == Axis.CHILD || axis == Axis.ATTRIBUTE ||
 		axis == Axis.NAMESPACE || axis == Axis.DESCENDANT);
     }
@@ -333,8 +333,8 @@ non terminal Object NodeTestPattern, NameTestPattern;
 
 non terminal List Predicates, NonemptyArgumentList;
 non terminal QName QName, FunctionName, VariableName;
-non terminal Integer AxisName, AxisSpecifier;
-non terminal Integer ChildOrAttributeAxisSpecifier;
+non terminal Axis AxisName, AxisSpecifier;
+non terminal Axis ChildOrAttributeAxisSpecifier;
 
 precedence left VBAR;
 precedence left OR;
@@ -423,13 +423,13 @@ StepPattern ::= NodeTestPattern:nt
 
             | ChildOrAttributeAxisSpecifier:axis NodeTestPattern:nt
             {: 
-	       RESULT = parser.createStepPattern(axis.intValue(), nt, null);
+	       RESULT = parser.createStepPattern(axis, nt, null);
             :}
 
 	    | ChildOrAttributeAxisSpecifier:axis
 		  NodeTestPattern:nt Predicates:pp
             {: 
-	       RESULT = parser.createStepPattern(axis.intValue(), nt, pp);
+	       RESULT = parser.createStepPattern(axis, nt, pp);
             :}
 
             | ChildOrAttributeAxisSpecifier:axis ProcessingInstructionPattern:pip
@@ -466,13 +466,13 @@ NameTestPattern ::= STAR
             {: RESULT = qn; :};
 
 ChildOrAttributeAxisSpecifier ::= ATSIGN
-            {: RESULT = new Integer(Axis.ATTRIBUTE); :}
+            {: RESULT = Axis.ATTRIBUTE; :}
 
             | CHILD DCOLON
-            {: RESULT = new Integer(Axis.CHILD); :}
+            {: RESULT = Axis.CHILD; :}
 
             | ATTRIBUTE DCOLON
-            {: RESULT = new Integer(Axis.ATTRIBUTE); :};
+            {: RESULT = Axis.ATTRIBUTE; :};
 
 Predicates ::= Predicate:p
             {: 
@@ -631,7 +631,7 @@ AbsoluteLocationPath ::= SLASH
 AbbreviatedRelativeLocationPath ::= RelativeLocationPath:rlp DSLASH Step:step
         {: 
 	   final Step right  = (Step)step;
-           final int  axis   = right.getAxis();
+           final Axis  axis   = right.getAxis();
            final int  type   = right.getNodeType();
            final List predicates = right.getPredicates();
 
@@ -727,14 +727,14 @@ Step ::= NodeTest:ntest
         :}
 
         | AxisSpecifier:axis NodeTest:ntest Predicates:pp
-        {: RESULT = new Step(axis.intValue(),
-                             parser.findNodeType(axis.intValue(), ntest),
+        {: RESULT = new Step(axis,
+                             parser.findNodeType(axis, ntest),
                              pp);
         :}
 
         | AxisSpecifier:axis NodeTest:ntest
-        {: RESULT = new Step(axis.intValue(),
-                             parser.findNodeType(axis.intValue(), ntest),
+        {: RESULT = new Step(axis,
+                             parser.findNodeType(axis, ntest),
                              null);
         :}
 
@@ -745,46 +745,46 @@ AxisSpecifier ::= AxisName:an DCOLON
         {: RESULT = an; :}
 
         | ATSIGN
-        {: RESULT = new Integer(Axis.ATTRIBUTE); :};
+        {: RESULT = Axis.ATTRIBUTE; :};
 
 AxisName ::=    ANCESTOR
-        {: RESULT = new Integer(Axis.ANCESTOR); :}
+        {: RESULT = Axis.ANCESTOR; :}
 
         | ANCESTORORSELF
-        {: RESULT = new Integer(Axis.ANCESTORORSELF); :}
+        {: RESULT = Axis.ANCESTORORSELF; :}
 
         | ATTRIBUTE
-        {: RESULT = new Integer(Axis.ATTRIBUTE); :}
+        {: RESULT = Axis.ATTRIBUTE; :}
 
         | CHILD
-        {: RESULT = new Integer(Axis.CHILD); :}
+        {: RESULT = Axis.CHILD; :}
 
         | DESCENDANT
-        {: RESULT = new Integer(Axis.DESCENDANT); :}
+        {: RESULT = Axis.DESCENDANT; :}
 
         | DESCENDANTORSELF
-        {: RESULT = new Integer(Axis.DESCENDANTORSELF); :}
+        {: RESULT = Axis.DESCENDANTORSELF; :}
 
         | FOLLOWING
-        {: RESULT = new Integer(Axis.FOLLOWING); :}
+        {: RESULT = Axis.FOLLOWING; :}
 
         | FOLLOWINGSIBLING
-        {: RESULT = new Integer(Axis.FOLLOWINGSIBLING); :}
+        {: RESULT = Axis.FOLLOWINGSIBLING; :}
 
         | NAMESPACE
-        {: RESULT = new Integer(Axis.NAMESPACE); :}
+        {: RESULT = Axis.NAMESPACE; :}
 
         | PARENT
-        {: RESULT = new Integer(Axis.PARENT); :}
+        {: RESULT = Axis.PARENT; :}
 
         | PRECEDING
-        {: RESULT = new Integer(Axis.PRECEDING); :}
+        {: RESULT = Axis.PRECEDING; :}
 
         | PRECEDINGSIBLING
-        {: RESULT = new Integer(Axis.PRECEDINGSIBLING); :}
+        {: RESULT = Axis.PRECEDINGSIBLING; :}
 
         | SELF
-        {: RESULT = new Integer(Axis.SELF); :};
+        {: RESULT = Axis.SELF; :};
 
 AbbreviatedStep ::= DOT
         {: RESULT = new Step(Axis.SELF, NodeTest.ANODE, null); :}

@@ -43,6 +43,7 @@ public abstract class Type implements Constants {
   public static final Type Reference = new ReferenceType();
   public static final Type Void = new VoidType();
   public static final Type Object = new ObjectType(java.lang.Object.class);
+  public static final Type Axis = new ObjectType(de.lyca.xml.dtm.Axis.class);
 
   public static final Type Node = new NodeType(NodeTest.ANODE);
   public static final Type Root = new NodeType(NodeTest.ROOT);

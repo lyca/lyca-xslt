@@ -20,6 +20,7 @@
  */
 package de.lyca.xpath.axes;
 
+import de.lyca.xml.dtm.Axis;
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xpath.compiler.Compiler;
 
@@ -64,7 +65,7 @@ public class AttributeIterator extends ChildTestIterator {
    *         types.
    */
   @Override
-  public int getAxis() {
+  public Axis getAxis() {
     return de.lyca.xml.dtm.Axis.ATTRIBUTE;
   }
 

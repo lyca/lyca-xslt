@@ -67,7 +67,7 @@ class StepPattern extends RelativePathPattern {
   private static final int SIMPLE_CONTEXT = 1;
   private static final int GENERAL_CONTEXT = 2;
 
-  protected final int _axis;
+  protected final Axis _axis;
   protected final int _nodeType;
   protected List<Predicate> _predicates;
 
@@ -77,7 +77,7 @@ class StepPattern extends RelativePathPattern {
 
   private double _priority = Double.MAX_VALUE;
 
-  public StepPattern(int axis, int nodeType, List<Predicate> predicates) {
+  public StepPattern(Axis axis, int nodeType, List<Predicate> predicates) {
     _axis = axis;
     _nodeType = nodeType;
     _predicates = predicates;
@@ -141,7 +141,7 @@ class StepPattern extends RelativePathPattern {
   }
 
   @Override
-  public int getAxis() {
+  public Axis getAxis() {
     return _axis;
   }
 
@@ -153,7 +153,7 @@ class StepPattern extends RelativePathPattern {
   @Override
   public String toString() {
     final StringBuilder buffer = new StringBuilder("stepPattern(\"");
-    buffer.append(Axis.getNames(_axis)).append("\", ")
+    buffer.append(_axis.getName()).append("\", ")
             .append(_isEpsilon ? "epsilon{" + Integer.toString(_nodeType) + "}" : Integer.toString(_nodeType));
     if (_predicates != null) {
       buffer.append(", ").append(_predicates.toString());

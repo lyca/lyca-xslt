@@ -30,6 +30,7 @@ import de.lyca.xalan.xsltc.DOM;
 import de.lyca.xalan.xsltc.DOMEnhancedForDTM;
 import de.lyca.xalan.xsltc.StripFilter;
 import de.lyca.xalan.xsltc.TransletException;
+import de.lyca.xml.dtm.Axis;
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xml.dtm.DTMAxisIterator;
 import de.lyca.xml.serializer.SerializationHandler;
@@ -175,12 +176,12 @@ public final class DOMAdapter implements DOM {
   }
 
   @Override
-  public DTMAxisIterator getNamespaceAxisIterator(final int axis, final int ns) {
+  public DTMAxisIterator getNamespaceAxisIterator(final Axis axis, final int ns) {
     return _dom.getNamespaceAxisIterator(axis, getNSReverse()[ns]);
   }
 
   @Override
-  public DTMAxisIterator getAxisIterator(final int axis) {
+  public DTMAxisIterator getAxisIterator(final Axis axis) {
     if (_enhancedDOM != null)
       return _enhancedDOM.getAxisIterator(axis);
     else
@@ -188,7 +189,7 @@ public final class DOMAdapter implements DOM {
   }
 
   @Override
-  public DTMAxisIterator getTypedAxisIterator(final int axis, final int type) {
+  public DTMAxisIterator getTypedAxisIterator(final Axis axis, final int type) {
     final int[] reverse = getReverse();
     if (_enhancedDOM != null)
       return _enhancedDOM.getTypedAxisIterator(axis, reverse[type]);

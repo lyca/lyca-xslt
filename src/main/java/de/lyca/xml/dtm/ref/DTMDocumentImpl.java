@@ -27,6 +27,7 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
 import org.xml.sax.ext.LexicalHandler;
 
+import de.lyca.xml.dtm.Axis;
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xml.dtm.DTMAxisIterator;
 import de.lyca.xml.dtm.DTMAxisTraverser;
@@ -2455,7 +2456,7 @@ public class DTMDocumentImpl implements DTM, org.xml.sax.ContentHandler, org.xml
    * @return A DTMAxisIterator, or null if the given axis isn't supported.
    */
   @Override
-  public DTMAxisTraverser getAxisTraverser(final int axis) {
+  public DTMAxisTraverser getAxisTraverser(final Axis axis) {
     return null;
   }
 
@@ -2470,7 +2471,7 @@ public class DTMDocumentImpl implements DTM, org.xml.sax.ContentHandler, org.xml
    * @return A DTMAxisIterator, or null if the given axis isn't supported.
    */
   @Override
-  public DTMAxisIterator getAxisIterator(final int axis) {
+  public DTMAxisIterator getAxisIterator(final Axis axis) {
     // %TBD%
     return null;
   }
@@ -2487,7 +2488,7 @@ public class DTMDocumentImpl implements DTM, org.xml.sax.ContentHandler, org.xml
    * @return A DTMAxisIterator, or null if the given axis isn't supported.
    */
   @Override
-  public DTMAxisIterator getTypedAxisIterator(final int axis, final int type) {
+  public DTMAxisIterator getTypedAxisIterator(final Axis axis, final int type) {
     // %TBD%
     return null;
   }

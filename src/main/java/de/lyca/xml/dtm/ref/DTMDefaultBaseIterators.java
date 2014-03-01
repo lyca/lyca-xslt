@@ -99,7 +99,7 @@ public abstract class DTMDefaultBaseIterators extends DTMDefaultBaseTraversers {
    * @return A DTMAxisIterator, or null if the given axis isn't supported.
    */
   @Override
-  public DTMAxisIterator getTypedAxisIterator(int axis, int type) {
+  public DTMAxisIterator getTypedAxisIterator(Axis axis, int type) {
 
     DTMAxisIterator iterator = null;
 
@@ -119,47 +119,47 @@ public abstract class DTMDefaultBaseIterators extends DTMDefaultBaseTraversers {
     // else
     {
       switch (axis) {
-        case Axis.SELF:
+        case SELF:
           iterator = new TypedSingletonIterator(type);
           break;
-        case Axis.CHILD:
+        case CHILD:
           iterator = new TypedChildrenIterator(type);
           break;
-        case Axis.PARENT:
+        case PARENT:
           return new ParentIterator().setNodeType(type);
-        case Axis.ANCESTOR:
+        case ANCESTOR:
           return new TypedAncestorIterator(type);
-        case Axis.ANCESTORORSELF:
+        case ANCESTORORSELF:
           return new TypedAncestorIterator(type).includeSelf();
-        case Axis.ATTRIBUTE:
+        case ATTRIBUTE:
           return new TypedAttributeIterator(type);
-        case Axis.DESCENDANT:
+        case DESCENDANT:
           iterator = new TypedDescendantIterator(type);
           break;
-        case Axis.DESCENDANTORSELF:
+        case DESCENDANTORSELF:
           iterator = new TypedDescendantIterator(type).includeSelf();
           break;
-        case Axis.FOLLOWING:
+        case FOLLOWING:
           iterator = new TypedFollowingIterator(type);
           break;
-        case Axis.PRECEDING:
+        case PRECEDING:
           iterator = new TypedPrecedingIterator(type);
           break;
-        case Axis.FOLLOWINGSIBLING:
+        case FOLLOWINGSIBLING:
           iterator = new TypedFollowingSiblingIterator(type);
           break;
-        case Axis.PRECEDINGSIBLING:
+        case PRECEDINGSIBLING:
           iterator = new TypedPrecedingSiblingIterator(type);
           break;
-        case Axis.NAMESPACE:
+        case NAMESPACE:
           iterator = new TypedNamespaceIterator(type);
           break;
-        case Axis.ROOT:
+        case ROOT:
           iterator = new TypedRootIterator(type);
           break;
         default:
           throw new DTMException(XMLMessages.createXMLMessage(XMLErrorResources.ER_TYPED_ITERATOR_AXIS_NOT_IMPLEMENTED,
-                  new Object[] { Axis.getNames(axis) }));
+                  new Object[] { axis.getName() }));
           // "Error: typed iterator for axis "
           // + Axis.names[axis] + "not implemented");
       }
@@ -179,52 +179,52 @@ public abstract class DTMDefaultBaseIterators extends DTMDefaultBaseTraversers {
    * @return A DTMAxisIterator, or null if the given axis isn't supported.
    */
   @Override
-  public DTMAxisIterator getAxisIterator(final int axis) {
+  public DTMAxisIterator getAxisIterator(final Axis axis) {
 
     DTMAxisIterator iterator = null;
 
     switch (axis) {
-      case Axis.SELF:
+      case SELF:
         iterator = new SingletonIterator();
         break;
-      case Axis.CHILD:
+      case CHILD:
         iterator = new ChildrenIterator();
         break;
-      case Axis.PARENT:
+      case PARENT:
         return new ParentIterator();
-      case Axis.ANCESTOR:
+      case ANCESTOR:
         return new AncestorIterator();
-      case Axis.ANCESTORORSELF:
+      case ANCESTORORSELF:
         return new AncestorIterator().includeSelf();
-      case Axis.ATTRIBUTE:
+      case ATTRIBUTE:
         return new AttributeIterator();
-      case Axis.DESCENDANT:
+      case DESCENDANT:
         iterator = new DescendantIterator();
         break;
-      case Axis.DESCENDANTORSELF:
+      case DESCENDANTORSELF:
         iterator = new DescendantIterator().includeSelf();
         break;
-      case Axis.FOLLOWING:
+      case FOLLOWING:
         iterator = new FollowingIterator();
         break;
-      case Axis.PRECEDING:
+      case PRECEDING:
         iterator = new PrecedingIterator();
         break;
-      case Axis.FOLLOWINGSIBLING:
+      case FOLLOWINGSIBLING:
         iterator = new FollowingSiblingIterator();
         break;
-      case Axis.PRECEDINGSIBLING:
+      case PRECEDINGSIBLING:
         iterator = new PrecedingSiblingIterator();
         break;
-      case Axis.NAMESPACE:
+      case NAMESPACE:
         iterator = new NamespaceIterator();
         break;
-      case Axis.ROOT:
+      case ROOT:
         iterator = new RootIterator();
         break;
       default:
         throw new DTMException(XMLMessages.createXMLMessage(XMLErrorResources.ER_ITERATOR_AXIS_NOT_IMPLEMENTED,
-                new Object[] { Axis.getNames(axis) }));
+                new Object[] { axis.getName() }));
         // "Error: iterator for axis '" + Axis.names[axis]
         // + "' not implemented");
     }

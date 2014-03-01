@@ -60,13 +60,13 @@ public final class MultiDOM implements DOM {
 
   private final class AxisIterator extends DTMAxisIteratorBase {
     // constitutive data
-    private final int _axis;
+    private final Axis _axis;
     private final int _type;
     // implementation mechanism
     private DTMAxisIterator _source;
     private int _dtmId = -1;
 
-    public AxisIterator(final int axis, final int type) {
+    public AxisIterator(final Axis axis, final int type) {
       _axis = axis;
       _type = type;
     }
@@ -134,7 +134,7 @@ public final class MultiDOM implements DOM {
 
     @Override
     public boolean isReverse() {
-      return Axis.isReverse(_axis);
+      return _axis.isReverse();
     }
 
     @Override
@@ -403,12 +403,12 @@ public final class MultiDOM implements DOM {
   }
 
   @Override
-  public DTMAxisIterator getAxisIterator(final int axis) {
+  public DTMAxisIterator getAxisIterator(final Axis axis) {
     return new AxisIterator(axis, NO_TYPE);
   }
 
   @Override
-  public DTMAxisIterator getTypedAxisIterator(final int axis, final int type) {
+  public DTMAxisIterator getTypedAxisIterator(final Axis axis, final int type) {
     return new AxisIterator(axis, type);
   }
 
@@ -423,7 +423,7 @@ public final class MultiDOM implements DOM {
   }
 
   @Override
-  public DTMAxisIterator getNamespaceAxisIterator(final int axis, final int ns) {
+  public DTMAxisIterator getNamespaceAxisIterator(final Axis axis, final int ns) {
     final DTMAxisIterator iterator = _main.getNamespaceAxisIterator(axis, ns);
     return iterator;
   }

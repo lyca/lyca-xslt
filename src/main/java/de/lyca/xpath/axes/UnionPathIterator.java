@@ -449,9 +449,9 @@ public class UnionPathIterator extends LocPathIterator implements Cloneable, DTM
    *         types.
    */
   @Override
-  public int getAxis() {
+  public Axis getAxis() {
     // Could be smarter.
-    return -1;
+    return null;
   }
 
   class iterOwner implements ExpressionOwner {

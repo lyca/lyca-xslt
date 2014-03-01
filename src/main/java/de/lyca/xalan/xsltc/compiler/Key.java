@@ -31,6 +31,7 @@ import org.apache.bcel.generic.ILOAD;
 import org.apache.bcel.generic.INVOKEINTERFACE;
 import org.apache.bcel.generic.INVOKEVIRTUAL;
 import org.apache.bcel.generic.ISTORE;
+import org.apache.bcel.generic.InstructionFactory;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.LocalVariableGen;
@@ -210,6 +211,7 @@ final class Key extends TopLevelElement {
 
     final ConstantPoolGen cpg = classGen.getConstantPool();
     final InstructionList il = methodGen.getInstructionList();
+    final InstructionFactory factory = new InstructionFactory(classGen, cpg);
 
     // AbstractTranslet.buildKeyIndex(name,node_id,value) => void
     final int key = cpg.addMethodref(TRANSLET_CLASS, "buildKeyIndex", "(" + STRING_SIG + "I" + OBJECT_SIG + ")V");
@@ -220,14 +222,14 @@ final class Key extends TopLevelElement {
     cpg.addInterfaceMethodref(DOM_INTF, "getNodeIdent", "(I)" + NODE_SIG);
 
     // DOM.getAxisIterator(root) => NodeIterator
-    final int git = cpg.addInterfaceMethodref(DOM_INTF, "getAxisIterator", "(I)" + NODE_ITERATOR_SIG);
+    final int git = cpg.addInterfaceMethodref(DOM_INTF, "getAxisIterator", "(Lde/lyca/xml/dtm/Axis;)" + NODE_ITERATOR_SIG);
 
     il.append(methodGen.loadCurrentNode());
     il.append(methodGen.loadIterator());
 
     // Get an iterator for all nodes in the DOM
     il.append(methodGen.loadDOM());
-    il.append(new PUSH(cpg, Axis.DESCENDANT));
+    il.append(factory.createFieldAccess("de.lyca.xml.dtm.Axis", Axis.DESCENDANT.name(), Type.Axis.toJCType(), org.apache.bcel.Constants.GETSTATIC));
     il.append(new INVOKEINTERFACE(git, 2));
 
     // Reset the iterator to start with the root node

@@ -20,6 +20,7 @@
  */
 package de.lyca.xpath.axes;
 
+import de.lyca.xml.dtm.Axis;
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xml.dtm.DTMFilter;
 import de.lyca.xpath.Expression;
@@ -37,7 +38,7 @@ import de.lyca.xpath.compiler.OpMap;
 public class OneStepIteratorForward extends ChildTestIterator {
   static final long serialVersionUID = -1576936606178190566L;
   /** The traversal axis from where the nodes will be filtered. */
-  protected int m_axis = -1;
+  protected Axis m_axis = null;
 
   /**
    * Create a OneStepIterator object.
@@ -66,7 +67,7 @@ public class OneStepIteratorForward extends ChildTestIterator {
    * 
    * @throws javax.xml.transform.TransformerException
    */
-  public OneStepIteratorForward(int axis) {
+  public OneStepIteratorForward(Axis axis) {
     super(null);
 
     m_axis = axis;
@@ -144,7 +145,7 @@ public class OneStepIteratorForward extends ChildTestIterator {
    *         types.
    */
   @Override
-  public int getAxis() {
+  public Axis getAxis() {
     return m_axis;
   }
 

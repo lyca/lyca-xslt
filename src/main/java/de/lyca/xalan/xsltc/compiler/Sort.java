@@ -34,6 +34,7 @@ import org.apache.bcel.generic.GETFIELD;
 import org.apache.bcel.generic.ILOAD;
 import org.apache.bcel.generic.INVOKEINTERFACE;
 import org.apache.bcel.generic.INVOKESPECIAL;
+import org.apache.bcel.generic.InstructionFactory;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.LocalVariableGen;
@@ -236,6 +237,7 @@ final class Sort extends Instruction implements Closure {
           List<Sort> sortObjects) {
     final ConstantPoolGen cpg = classGen.getConstantPool();
     final InstructionList il = methodGen.getInstructionList();
+    final InstructionFactory factory = new InstructionFactory(classGen, cpg);
 
     // SortingIterator.SortingIterator(NodeIterator,NodeSortRecordFactory);
     final int init = cpg.addMethodref(SORT_ITERATOR, "<init>", "(" + NODE_ITERATOR_SIG + NODE_SORT_FACTORY_SIG + ")V");
@@ -257,9 +259,9 @@ final class Sort extends Instruction implements Closure {
 
     // Get the current node iterator
     if (nodeSet == null) { // apply-templates default
-      final int children = cpg.addInterfaceMethodref(DOM_INTF, "getAxisIterator", "(I)" + NODE_ITERATOR_SIG);
+      final int children = cpg.addInterfaceMethodref(DOM_INTF, "getAxisIterator", "(Lde/lyca/xml/dtm/Axis;)" + NODE_ITERATOR_SIG);
       il.append(methodGen.loadDOM());
-      il.append(new PUSH(cpg, Axis.CHILD));
+      il.append(factory.createFieldAccess("de.lyca.xml.dtm.Axis", Axis.CHILD.name(), Type.Axis.toJCType(), org.apache.bcel.Constants.GETSTATIC));
       il.append(new INVOKEINTERFACE(children, 2));
     } else {
       nodeSet.translate(classGen, methodGen);

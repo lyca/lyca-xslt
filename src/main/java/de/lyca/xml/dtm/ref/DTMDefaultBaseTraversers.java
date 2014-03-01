@@ -100,16 +100,16 @@ public abstract class DTMDefaultBaseTraversers extends DTMDefaultBase {
    * @return A DTMAxisTraverser, or null if the given axis isn't supported.
    */
   @Override
-  public DTMAxisTraverser getAxisTraverser(final int axis) {
+  public DTMAxisTraverser getAxisTraverser(final Axis axis) {
 
     DTMAxisTraverser traverser;
 
     if (null == m_traversers) // Cache of stateless traversers for this DTM
     {
-      m_traversers = new DTMAxisTraverser[Axis.getNamesLength()];
+      m_traversers = new DTMAxisTraverser[Axis.values().length];
       traverser = null;
     } else {
-      traverser = m_traversers[axis]; // Share/reuse existing traverser
+      traverser = m_traversers[axis.ordinal()]; // Share/reuse existing traverser
 
       if (traverser != null)
         return traverser;
@@ -117,80 +117,80 @@ public abstract class DTMDefaultBaseTraversers extends DTMDefaultBase {
 
     switch (axis) // Generate new traverser
     {
-      case Axis.ANCESTOR:
+      case ANCESTOR:
         traverser = new AncestorTraverser();
         break;
-      case Axis.ANCESTORORSELF:
+      case ANCESTORORSELF:
         traverser = new AncestorOrSelfTraverser();
         break;
-      case Axis.ATTRIBUTE:
+      case ATTRIBUTE:
         traverser = new AttributeTraverser();
         break;
-      case Axis.CHILD:
+      case CHILD:
         traverser = new ChildTraverser();
         break;
-      case Axis.DESCENDANT:
+      case DESCENDANT:
         traverser = new DescendantTraverser();
         break;
-      case Axis.DESCENDANTORSELF:
+      case DESCENDANTORSELF:
         traverser = new DescendantOrSelfTraverser();
         break;
-      case Axis.FOLLOWING:
+      case FOLLOWING:
         traverser = new FollowingTraverser();
         break;
-      case Axis.FOLLOWINGSIBLING:
+      case FOLLOWINGSIBLING:
         traverser = new FollowingSiblingTraverser();
         break;
-      case Axis.NAMESPACE:
+      case NAMESPACE:
         traverser = new NamespaceTraverser();
         break;
-      case Axis.NAMESPACEDECLS:
+      case NAMESPACEDECLS:
         traverser = new NamespaceDeclsTraverser();
         break;
-      case Axis.PARENT:
+      case PARENT:
         traverser = new ParentTraverser();
         break;
-      case Axis.PRECEDING:
+      case PRECEDING:
         traverser = new PrecedingTraverser();
         break;
-      case Axis.PRECEDINGSIBLING:
+      case PRECEDINGSIBLING:
         traverser = new PrecedingSiblingTraverser();
         break;
-      case Axis.SELF:
+      case SELF:
         traverser = new SelfTraverser();
         break;
-      case Axis.ALL:
+      case ALL:
         traverser = new AllFromRootTraverser();
         break;
-      case Axis.ALLFROMNODE:
+      case ALLFROMNODE:
         traverser = new AllFromNodeTraverser();
         break;
-      case Axis.PRECEDINGANDANCESTOR:
+      case PRECEDINGANDANCESTOR:
         traverser = new PrecedingAndAncestorTraverser();
         break;
-      case Axis.DESCENDANTSFROMROOT:
+      case DESCENDANTSFROMROOT:
         traverser = new DescendantFromRootTraverser();
         break;
-      case Axis.DESCENDANTSORSELFFROMROOT:
+      case DESCENDANTSORSELFFROMROOT:
         traverser = new DescendantOrSelfFromRootTraverser();
         break;
-      case Axis.ROOT:
+      case ROOT:
         traverser = new RootTraverser();
         break;
-      case Axis.FILTEREDLIST:
+      case FILTEREDLIST:
         return null; // Don't want to throw an exception for this one.
       default:
         throw new DTMException(XMLMessages.createXMLMessage(XMLErrorResources.ER_UNKNOWN_AXIS_TYPE,
-                new Object[] { Integer.toString(axis) })); // "Unknown axis traversal type: "+axis);
+                new Object[] { axis.getName() })); // "Unknown axis traversal type: "+axis);
     }
 
     if (null == traverser)
       throw new DTMException(XMLMessages.createXMLMessage(XMLErrorResources.ER_AXIS_TRAVERSER_NOT_SUPPORTED,
-              new Object[] { Axis.getNames(axis) }));
+              new Object[] { axis.getName() }));
     // "Axis traverser not supported: "
     // + Axis.names[axis]);
 
-    m_traversers[axis] = traverser;
+    m_traversers[axis.ordinal()] = traverser;
 
     return traverser;
   }

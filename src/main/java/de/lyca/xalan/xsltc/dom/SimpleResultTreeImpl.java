@@ -337,19 +337,19 @@ public class SimpleResultTreeImpl extends EmptySerializer implements DOM, DTM {
   // The SimpleIterator is used for the child, descendant, parent and ancestor
   // axes.
   @Override
-  public DTMAxisIterator getAxisIterator(final int axis) {
+  public DTMAxisIterator getAxisIterator(final Axis axis) {
     switch (axis) {
-      case Axis.CHILD:
-      case Axis.DESCENDANT:
+      case CHILD:
+      case DESCENDANT:
         return new SimpleIterator(SimpleIterator.DIRECTION_DOWN);
-      case Axis.PARENT:
-      case Axis.ANCESTOR:
+      case PARENT:
+      case ANCESTOR:
         return new SimpleIterator(SimpleIterator.DIRECTION_UP);
-      case Axis.ANCESTORORSELF:
+      case ANCESTORORSELF:
         return new SimpleIterator(SimpleIterator.DIRECTION_UP).includeSelf();
-      case Axis.DESCENDANTORSELF:
+      case DESCENDANTORSELF:
         return new SimpleIterator(SimpleIterator.DIRECTION_DOWN).includeSelf();
-      case Axis.SELF:
+      case SELF:
         return new SingletonIterator();
       default:
         return EMPTY_ITERATOR;
@@ -357,19 +357,19 @@ public class SimpleResultTreeImpl extends EmptySerializer implements DOM, DTM {
   }
 
   @Override
-  public DTMAxisIterator getTypedAxisIterator(final int axis, final int type) {
+  public DTMAxisIterator getTypedAxisIterator(final Axis axis, final int type) {
     switch (axis) {
-      case Axis.CHILD:
-      case Axis.DESCENDANT:
+      case CHILD:
+      case DESCENDANT:
         return new SimpleIterator(SimpleIterator.DIRECTION_DOWN, type);
-      case Axis.PARENT:
-      case Axis.ANCESTOR:
+      case PARENT:
+      case ANCESTOR:
         return new SimpleIterator(SimpleIterator.DIRECTION_UP, type);
-      case Axis.ANCESTORORSELF:
+      case ANCESTORORSELF:
         return new SimpleIterator(SimpleIterator.DIRECTION_UP, type).includeSelf();
-      case Axis.DESCENDANTORSELF:
+      case DESCENDANTORSELF:
         return new SimpleIterator(SimpleIterator.DIRECTION_DOWN, type).includeSelf();
-      case Axis.SELF:
+      case SELF:
         return new SingletonIterator(type);
       default:
         return EMPTY_ITERATOR;
@@ -383,7 +383,7 @@ public class SimpleResultTreeImpl extends EmptySerializer implements DOM, DTM {
   }
 
   @Override
-  public DTMAxisIterator getNamespaceAxisIterator(final int axis, final int ns) {
+  public DTMAxisIterator getNamespaceAxisIterator(final Axis axis, final int ns) {
     return null;
   }
 
@@ -727,7 +727,7 @@ public class SimpleResultTreeImpl extends EmptySerializer implements DOM, DTM {
   }
 
   @Override
-  public DTMAxisTraverser getAxisTraverser(final int axis) {
+  public DTMAxisTraverser getAxisTraverser(final Axis axis) {
     return null;
   }
 

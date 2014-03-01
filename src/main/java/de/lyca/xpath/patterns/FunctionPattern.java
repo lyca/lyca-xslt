@@ -22,6 +22,7 @@ package de.lyca.xpath.patterns;
 
 import java.util.List;
 
+import de.lyca.xml.dtm.Axis;
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xml.dtm.DTMIterator;
 import de.lyca.xml.utils.QName;
@@ -46,9 +47,9 @@ public class FunctionPattern extends StepPattern {
    * 
    * NEEDSDOC @param expr
    */
-  public FunctionPattern(Expression expr, int axis, int predaxis) {
+  public FunctionPattern(Expression expr, Axis axis, Axis predicateAxis) {
 
-    super(0, null, null, axis, predaxis);
+    super(0, null, null, axis, predicateAxis);
 
     m_functionExpr = expr;
   }

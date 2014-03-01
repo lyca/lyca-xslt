@@ -285,7 +285,7 @@ public class WalkerFactory {
    * 
    * @throws javax.xml.transform.TransformerException
    */
-  public static int getAxisFromStep(Compiler compiler, int stepOpCodePos)
+  public static Axis getAxisFromStep(Compiler compiler, int stepOpCodePos)
           throws javax.xml.transform.TransformerException {
 
     final int stepType = compiler.getOp(stepOpCodePos);
@@ -338,46 +338,46 @@ public class WalkerFactory {
    *          One of Axis.ANCESTOR, etc.
    * @return One of BIT_ANCESTOR, etc.
    */
-  static public int getAnalysisBitFromAxes(int axis) {
+  static public int getAnalysisBitFromAxes(Axis axis) {
     switch (axis) // Generate new traverser
     {
-      case Axis.ANCESTOR:
+      case ANCESTOR:
         return BIT_ANCESTOR;
-      case Axis.ANCESTORORSELF:
+      case ANCESTORORSELF:
         return BIT_ANCESTOR_OR_SELF;
-      case Axis.ATTRIBUTE:
+      case ATTRIBUTE:
         return BIT_ATTRIBUTE;
-      case Axis.CHILD:
+      case CHILD:
         return BIT_CHILD;
-      case Axis.DESCENDANT:
+      case DESCENDANT:
         return BIT_DESCENDANT;
-      case Axis.DESCENDANTORSELF:
+      case DESCENDANTORSELF:
         return BIT_DESCENDANT_OR_SELF;
-      case Axis.FOLLOWING:
+      case FOLLOWING:
         return BIT_FOLLOWING;
-      case Axis.FOLLOWINGSIBLING:
+      case FOLLOWINGSIBLING:
         return BIT_FOLLOWING_SIBLING;
-      case Axis.NAMESPACE:
-      case Axis.NAMESPACEDECLS:
+      case NAMESPACE:
+      case NAMESPACEDECLS:
         return BIT_NAMESPACE;
-      case Axis.PARENT:
+      case PARENT:
         return BIT_PARENT;
-      case Axis.PRECEDING:
+      case PRECEDING:
         return BIT_PRECEDING;
-      case Axis.PRECEDINGSIBLING:
+      case PRECEDINGSIBLING:
         return BIT_PRECEDING_SIBLING;
-      case Axis.SELF:
+      case SELF:
         return BIT_SELF;
-      case Axis.ALLFROMNODE:
+      case ALLFROMNODE:
         return BIT_DESCENDANT_OR_SELF;
-        // case Axis.PRECEDINGANDANCESTOR :
-      case Axis.DESCENDANTSFROMROOT:
-      case Axis.ALL:
-      case Axis.DESCENDANTSORSELFFROMROOT:
+        // case PRECEDINGANDANCESTOR :
+      case DESCENDANTSFROMROOT:
+      case ALL:
+      case DESCENDANTSORSELFFROMROOT:
         return BIT_ANY_DESCENDANT_FROM_ROOT;
-      case Axis.ROOT:
+      case ROOT:
         return BIT_ROOT;
-      case Axis.FILTEREDLIST:
+      case FILTEREDLIST:
         return BIT_FILTER;
       default:
         return BIT_FILTER;
@@ -759,7 +759,7 @@ public class WalkerFactory {
    * @return true if the axis is not a child axis and does not go up from the
    *         axis root.
    */
-  public static boolean isDownwardAxisOfMany(int axis) {
+  public static boolean isDownwardAxisOfMany(Axis axis) {
     return Axis.DESCENDANTORSELF == axis || Axis.DESCENDANT == axis || Axis.FOLLOWING == axis
     // || (Axis.FOLLOWINGSIBLING == axis)
             || Axis.PRECEDING == axis;
@@ -824,11 +824,11 @@ public class WalkerFactory {
       }
     }
 
-    int axis = Axis.SELF;
-    final int paxis = Axis.SELF;
+    Axis axis = Axis.SELF;
+    final Axis paxis = Axis.SELF;
     StepPattern tail = step;
     for (StepPattern pat = step; null != pat; pat = pat.getRelativePathPattern()) {
-      final int nextAxis = pat.getAxis();
+      final Axis nextAxis = pat.getAxis();
       // int nextPaxis = pat.getPredicateAxis();
       pat.setAxis(axis);
 
@@ -857,11 +857,11 @@ public class WalkerFactory {
       // -sb
       final int whatToShow = pat.getWhatToShow();
       if (whatToShow == DTMFilter.SHOW_ATTRIBUTE || whatToShow == DTMFilter.SHOW_NAMESPACE) {
-        final int newAxis = whatToShow == DTMFilter.SHOW_ATTRIBUTE ? Axis.ATTRIBUTE : Axis.NAMESPACE;
+        final Axis newAxis = whatToShow == DTMFilter.SHOW_ATTRIBUTE ? Axis.ATTRIBUTE : Axis.NAMESPACE;
         if (isDownwardAxisOfMany(axis)) {
           final StepPattern attrPat = new StepPattern(whatToShow, pat.getNamespace(), pat.getLocalName(),
           // newAxis, pat.getPredicateAxis);
-                  newAxis, 0); // don't care about the predicate axis
+                  newAxis, Axis.ANCESTOR); // don't care about the predicate axis
           final XNumber score = pat.getStaticScore();
           pat.setNamespace(null);
           pat.setLocalName(NodeTest.WILD);
@@ -895,7 +895,8 @@ public class WalkerFactory {
       tail = pat;
     }
 
-    if (axis < Axis.ALL) {
+    // if (axis.ordinal() < Axis.ALL.ordinal()) {
+    if (!axis.isAbsolute()) {
       final StepPattern selfPattern = new ContextMatchStepPattern(axis, paxis);
       // We need to keep the new nodetest from affecting the score...
       final XNumber score = tail.getStaticScore();
@@ -945,7 +946,7 @@ public class WalkerFactory {
 
     int whatToShow = compiler.getWhatToShow(opPos);
     StepPattern ai = null;
-    int axis, predicateAxis;
+    Axis axis, predicateAxis;
 
     switch (stepType) {
       case OpCodes.OP_VARIABLE:
@@ -1047,8 +1048,8 @@ public class WalkerFactory {
 
     if (false || DEBUG_PATTERN_CREATION) {
       System.out.print("new step: " + ai);
-      System.out.print(", axis: " + Axis.getNames(ai.getAxis()));
-      System.out.print(", predAxis: " + Axis.getNames(ai.getAxis()));
+      System.out.print(", axis: " + ai.getAxis().getName());
+      System.out.print(", predAxis: " + ai.getAxis().getName());
       System.out.print(", what: ");
       System.out.print("    ");
       NodeTest.debugWhatToShow(ai.getWhatToShow());

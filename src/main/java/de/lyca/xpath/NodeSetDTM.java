@@ -25,6 +25,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.traversal.NodeIterator;
 
+import de.lyca.xml.dtm.Axis;
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xml.dtm.DTMFilter;
 import de.lyca.xml.dtm.DTMIterator;
@@ -1241,8 +1242,8 @@ public class NodeSetDTM extends NodeVector implements /* NodeList, NodeIterator,
    *         types.
    */
   @Override
-  public int getAxis() {
-    return -1;
+  public Axis getAxis() {
+    return null;
   }
 
 }

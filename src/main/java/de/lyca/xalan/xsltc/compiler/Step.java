@@ -32,6 +32,7 @@ import org.apache.bcel.generic.ILOAD;
 import org.apache.bcel.generic.INVOKEINTERFACE;
 import org.apache.bcel.generic.INVOKESPECIAL;
 import org.apache.bcel.generic.ISTORE;
+import org.apache.bcel.generic.InstructionFactory;
 import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.LocalVariableGen;
 import org.apache.bcel.generic.NEW;
@@ -56,7 +57,7 @@ final class Step extends RelativeLocationPath {
   /**
    * This step's axis as defined in class Axis.
    */
-  private int _axis;
+  private Axis _axis;
 
   /**
    * A list of predicates (filters) defined on this step - may be null
@@ -75,7 +76,7 @@ final class Step extends RelativeLocationPath {
    */
   private int _nodeType;
 
-  public Step(int axis, int nodeType, List<Predicate> predicates) {
+  public Step(Axis axis, int nodeType, List<Predicate> predicates) {
     _axis = axis;
     _nodeType = nodeType;
     _predicates = predicates;
@@ -99,7 +100,7 @@ final class Step extends RelativeLocationPath {
    * Define the axis (defined in Axis class) for this step
    */
   @Override
-  public int getAxis() {
+  public Axis getAxis() {
     return _axis;
   }
 
@@ -107,7 +108,7 @@ final class Step extends RelativeLocationPath {
    * Get the axis (defined in Axis class) for this step
    */
   @Override
-  public void setAxis(int axis) {
+  public void setAxis(Axis axis) {
     _axis = axis;
   }
 
@@ -209,6 +210,7 @@ final class Step extends RelativeLocationPath {
   public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
     final ConstantPoolGen cpg = classGen.getConstantPool();
     final InstructionList il = methodGen.getInstructionList();
+    final InstructionFactory factory = new InstructionFactory(classGen, cpg);
 
     if (hasPredicates()) {
       translatePredicates(classGen, methodGen);
@@ -228,9 +230,9 @@ final class Step extends RelativeLocationPath {
       // and has no parent
       if (_axis == Axis.ATTRIBUTE && _nodeType != NodeTest.ATTRIBUTE && _nodeType != NodeTest.ANODE
               && !hasParentPattern() && star == 0) {
-        final int iter = cpg.addInterfaceMethodref(DOM_INTF, "getTypedAxisIterator", "(II)" + NODE_ITERATOR_SIG);
+        final int iter = cpg.addInterfaceMethodref(DOM_INTF, "getTypedAxisIterator", "(Lde/lyca/xml/dtm/Axis;I)" + NODE_ITERATOR_SIG);
         il.append(methodGen.loadDOM());
-        il.append(new PUSH(cpg, Axis.ATTRIBUTE));
+        il.append(factory.createFieldAccess("de.lyca.xml.dtm.Axis", Axis.ATTRIBUTE.name(), Type.Axis.toJCType(), org.apache.bcel.Constants.GETSTATIC));
         il.append(new PUSH(cpg, _nodeType));
         il.append(new INVOKEINTERFACE(iter, 3));
         return;
@@ -252,9 +254,9 @@ final class Step extends RelativeLocationPath {
             il.append(new INVOKESPECIAL(init));
           } else {
             // DOM.getAxisIterator(int axis);
-            final int git = cpg.addInterfaceMethodref(DOM_INTF, "getAxisIterator", "(I)" + NODE_ITERATOR_SIG);
+            final int git = cpg.addInterfaceMethodref(DOM_INTF, "getAxisIterator", "(Lde/lyca/xml/dtm/Axis;)" + NODE_ITERATOR_SIG);
             il.append(methodGen.loadDOM());
-            il.append(new PUSH(cpg, _axis));
+            il.append(factory.createFieldAccess("de.lyca.xml.dtm.Axis", _axis.name(), Type.Axis.toJCType(), org.apache.bcel.Constants.GETSTATIC));
             il.append(new INVOKEINTERFACE(git, 2));
           }
         }
@@ -274,9 +276,9 @@ final class Step extends RelativeLocationPath {
           _axis = Axis.ATTRIBUTE;
         case NodeTest.ANODE:
           // DOM.getAxisIterator(int axis);
-          final int git = cpg.addInterfaceMethodref(DOM_INTF, "getAxisIterator", "(I)" + NODE_ITERATOR_SIG);
+          final int git = cpg.addInterfaceMethodref(DOM_INTF, "getAxisIterator", "(Lde/lyca/xml/dtm/Axis;)" + NODE_ITERATOR_SIG);
           il.append(methodGen.loadDOM());
-          il.append(new PUSH(cpg, _axis));
+          il.append(factory.createFieldAccess("de.lyca.xml.dtm.Axis", _axis.name(), Type.Axis.toJCType(), org.apache.bcel.Constants.GETSTATIC));
           il.append(new INVOKEINTERFACE(git, 2));
           break;
         default:
@@ -289,19 +291,19 @@ final class Step extends RelativeLocationPath {
             }
 
             final int nsType = xsltc.registerNamespace(namespace);
-            final int ns = cpg.addInterfaceMethodref(DOM_INTF, "getNamespaceAxisIterator", "(II)" + NODE_ITERATOR_SIG);
+            final int ns = cpg.addInterfaceMethodref(DOM_INTF, "getNamespaceAxisIterator", "(Lde/lyca/xml/dtm/Axis;I)" + NODE_ITERATOR_SIG);
             il.append(methodGen.loadDOM());
-            il.append(new PUSH(cpg, _axis));
+            il.append(factory.createFieldAccess("de.lyca.xml.dtm.Axis", _axis.name(), Type.Axis.toJCType(), org.apache.bcel.Constants.GETSTATIC));
             il.append(new PUSH(cpg, nsType));
             il.append(new INVOKEINTERFACE(ns, 3));
             break;
           }
         case NodeTest.ELEMENT:
           // DOM.getTypedAxisIterator(int axis, int type);
-          final int ty = cpg.addInterfaceMethodref(DOM_INTF, "getTypedAxisIterator", "(II)" + NODE_ITERATOR_SIG);
+          final int ty = cpg.addInterfaceMethodref(DOM_INTF, "getTypedAxisIterator", "(Lde/lyca/xml/dtm/Axis;I)" + NODE_ITERATOR_SIG);
           // Get the typed iterator we're after
           il.append(methodGen.loadDOM());
-          il.append(new PUSH(cpg, _axis));
+          il.append(factory.createFieldAccess("de.lyca.xml.dtm.Axis", _axis.name(), Type.Axis.toJCType(), org.apache.bcel.Constants.GETSTATIC));
           il.append(new PUSH(cpg, _nodeType));
           il.append(new INVOKEINTERFACE(ty, 3));
 
@@ -445,7 +447,7 @@ final class Step extends RelativeLocationPath {
   @Override
   public String toString() {
     final StringBuilder buffer = new StringBuilder("step(\"");
-    buffer.append(Axis.getNames(_axis)).append("\", ").append(_nodeType);
+    buffer.append(_axis.getName()).append("\", ").append(_nodeType);
     if (_predicates != null) {
       for (final Predicate pred : _predicates) {
         buffer.append(", ").append(pred.toString());

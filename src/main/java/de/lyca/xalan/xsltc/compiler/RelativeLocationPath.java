@@ -21,12 +21,14 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
+import de.lyca.xml.dtm.Axis;
+
 /**
  * @author Jacek Ambroziak
  * @author Santiago Pericas-Geertsen
  */
 abstract class RelativeLocationPath extends Expression {
-  public abstract int getAxis();
+  public abstract Axis getAxis();
 
-  public abstract void setAxis(int axis);
+  public abstract void setAxis(Axis axis);
 }

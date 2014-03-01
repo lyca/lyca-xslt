@@ -1071,38 +1071,38 @@ public final class SAXImpl extends SAX2DTM2 implements DOMEnhancedForDTM, DOMBui
    * must be initialized with a start node (using iterator.setStartNode()).
    */
   @Override
-  public DTMAxisIterator getAxisIterator(final int axis) {
+  public DTMAxisIterator getAxisIterator(final Axis axis) {
     switch (axis) {
-      case Axis.SELF:
+      case SELF:
         return new SingletonIterator();
-      case Axis.CHILD:
+      case CHILD:
         return new ChildrenIterator();
-      case Axis.PARENT:
+      case PARENT:
         return new ParentIterator();
-      case Axis.ANCESTOR:
+      case ANCESTOR:
         return new AncestorIterator();
-      case Axis.ANCESTORORSELF:
+      case ANCESTORORSELF:
         return new AncestorIterator().includeSelf();
-      case Axis.ATTRIBUTE:
+      case ATTRIBUTE:
         return new AttributeIterator();
-      case Axis.DESCENDANT:
+      case DESCENDANT:
         return new DescendantIterator();
-      case Axis.DESCENDANTORSELF:
+      case DESCENDANTORSELF:
         return new DescendantIterator().includeSelf();
-      case Axis.FOLLOWING:
+      case FOLLOWING:
         return new FollowingIterator();
-      case Axis.PRECEDING:
+      case PRECEDING:
         return new PrecedingIterator();
-      case Axis.FOLLOWINGSIBLING:
+      case FOLLOWINGSIBLING:
         return new FollowingSiblingIterator();
-      case Axis.PRECEDINGSIBLING:
+      case PRECEDINGSIBLING:
         return new PrecedingSiblingIterator();
-      case Axis.NAMESPACE:
+      case NAMESPACE:
         return new NamespaceIterator();
-      case Axis.ROOT:
+      case ROOT:
         return new RootIterator();
       default:
-        BasisLibrary.runTimeError(BasisLibrary.AXIS_SUPPORT_ERR, Axis.getNames(axis));
+        BasisLibrary.runTimeError(BasisLibrary.AXIS_SUPPORT_ERR, axis.getName());
     }
     return null;
   }
@@ -1112,7 +1112,7 @@ public final class SAXImpl extends SAX2DTM2 implements DOMEnhancedForDTM, DOMBui
    * nodes of a typed axis (ex.: child::foo)
    */
   @Override
-  public DTMAxisIterator getTypedAxisIterator(int axis, int type) {
+  public DTMAxisIterator getTypedAxisIterator(Axis axis, int type) {
     // Most common case handled first
     if (axis == Axis.CHILD)
       return new TypedChildrenIterator(type);
@@ -1121,36 +1121,36 @@ public final class SAXImpl extends SAX2DTM2 implements DOMEnhancedForDTM, DOMBui
       return EMPTYITERATOR;
 
     switch (axis) {
-      case Axis.SELF:
+      case SELF:
         return new TypedSingletonIterator(type);
-      case Axis.CHILD:
+      case CHILD:
         return new TypedChildrenIterator(type);
-      case Axis.PARENT:
+      case PARENT:
         return new ParentIterator().setNodeType(type);
-      case Axis.ANCESTOR:
+      case ANCESTOR:
         return new TypedAncestorIterator(type);
-      case Axis.ANCESTORORSELF:
+      case ANCESTORORSELF:
         return new TypedAncestorIterator(type).includeSelf();
-      case Axis.ATTRIBUTE:
+      case ATTRIBUTE:
         return new TypedAttributeIterator(type);
-      case Axis.DESCENDANT:
+      case DESCENDANT:
         return new TypedDescendantIterator(type);
-      case Axis.DESCENDANTORSELF:
+      case DESCENDANTORSELF:
         return new TypedDescendantIterator(type).includeSelf();
-      case Axis.FOLLOWING:
+      case FOLLOWING:
         return new TypedFollowingIterator(type);
-      case Axis.PRECEDING:
+      case PRECEDING:
         return new TypedPrecedingIterator(type);
-      case Axis.FOLLOWINGSIBLING:
+      case FOLLOWINGSIBLING:
         return new TypedFollowingSiblingIterator(type);
-      case Axis.PRECEDINGSIBLING:
+      case PRECEDINGSIBLING:
         return new TypedPrecedingSiblingIterator(type);
-      case Axis.NAMESPACE:
+      case NAMESPACE:
         return new TypedNamespaceIterator(type);
-      case Axis.ROOT:
+      case ROOT:
         return new TypedRootIterator(type);
       default:
-        BasisLibrary.runTimeError(BasisLibrary.TYPED_AXIS_SUPPORT_ERR, Axis.getNames(axis));
+        BasisLibrary.runTimeError(BasisLibrary.TYPED_AXIS_SUPPORT_ERR, axis.getName());
     }
     return null;
   }
@@ -1163,7 +1163,7 @@ public final class SAXImpl extends SAX2DTM2 implements DOMEnhancedForDTM, DOMBui
    * specifies the namespace URI type.
    */
   @Override
-  public DTMAxisIterator getNamespaceAxisIterator(int axis, int ns) {
+  public DTMAxisIterator getNamespaceAxisIterator(Axis axis, int ns) {
 
     final DTMAxisIterator iterator = null;
 
@@ -1171,9 +1171,9 @@ public final class SAXImpl extends SAX2DTM2 implements DOMEnhancedForDTM, DOMBui
       return EMPTYITERATOR;
     else {
       switch (axis) {
-        case Axis.CHILD:
+        case CHILD:
           return new NamespaceChildrenIterator(ns);
-        case Axis.ATTRIBUTE:
+        case ATTRIBUTE:
           return new NamespaceAttributeIterator(ns);
         default:
           return new NamespaceWildcardIterator(axis, ns);
@@ -1206,18 +1206,18 @@ public final class SAXImpl extends SAX2DTM2 implements DOMEnhancedForDTM, DOMBui
      * @param nsType
      *          The namespace type index
      */
-    public NamespaceWildcardIterator(int axis, int nsType) {
+    public NamespaceWildcardIterator(Axis axis, int nsType) {
       m_nsType = nsType;
 
       // Create a nested iterator that will select nodes of
       // the principal node kind for the selected axis.
       switch (axis) {
-        case Axis.ATTRIBUTE: {
+        case ATTRIBUTE: {
           // For "attribute::p:*", the principal node kind is
           // attribute
           m_baseIterator = getAxisIterator(axis);
         }
-        case Axis.NAMESPACE: {
+        case NAMESPACE: {
           // This covers "namespace::p:*". It is syntactically
           // correct, though it doesn't make much sense.
           m_baseIterator = getAxisIterator(axis);

@@ -367,6 +367,6 @@ public interface DTMIterator {
    * @return Axis.CHILD, etc., or -1 if the axis is not known or is of multiple
    *         types.
    */
-  public int getAxis();
+  public Axis getAxis();
 
 }

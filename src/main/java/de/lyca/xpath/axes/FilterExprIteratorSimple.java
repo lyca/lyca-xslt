@@ -281,7 +281,7 @@ public class FilterExprIteratorSimple extends LocPathIterator {
    *         types.
    */
   @Override
-  public int getAxis() {
+  public Axis getAxis() {
     if (null != m_exprObj)
       return m_exprObj.getAxis();
     else

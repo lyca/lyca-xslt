@@ -22,6 +22,7 @@ package de.lyca.xpath.axes;
 
 import java.util.List;
 
+import de.lyca.xml.dtm.Axis;
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xml.dtm.DTMFilter;
 import de.lyca.xml.dtm.DTMIterator;
@@ -606,12 +607,12 @@ public class NodeSequence extends XObject implements DTMIterator, Cloneable, Pat
    * @see DTMIterator#getAxis()
    */
   @Override
-  public int getAxis() {
+  public Axis getAxis() {
     if (null != m_iter)
       return m_iter.getAxis();
     else {
       assertion(false, "Can not getAxis from a non-iterated node sequence!");
-      return 0;
+      return null;
     }
   }
 

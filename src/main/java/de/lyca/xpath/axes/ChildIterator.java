@@ -20,6 +20,7 @@
  */
 package de.lyca.xpath.axes;
 
+import de.lyca.xml.dtm.Axis;
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xml.dtm.DTMFilter;
 import de.lyca.xpath.XPathContext;
@@ -111,7 +112,7 @@ public class ChildIterator extends LocPathIterator {
    *         types.
    */
   @Override
-  public int getAxis() {
+  public Axis getAxis() {
     return de.lyca.xml.dtm.Axis.CHILD;
   }
 

@@ -313,7 +313,7 @@ public class DescendantIterator extends LocPathIterator {
    *         types.
    */
   @Override
-  public int getAxis() {
+  public Axis getAxis() {
     return m_axis;
   }
 
@@ -321,7 +321,7 @@ public class DescendantIterator extends LocPathIterator {
   transient protected DTMAxisTraverser m_traverser;
 
   /** The axis that we are traversing. */
-  protected int m_axis;
+  protected Axis m_axis;
 
   /** The extended type ID, not set until setRoot. */
   protected int m_extendedTypeID;

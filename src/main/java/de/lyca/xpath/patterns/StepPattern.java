@@ -44,7 +44,7 @@ public class StepPattern extends NodeTest implements SubContextList, ExpressionO
   static final long serialVersionUID = 9071668960168152644L;
 
   /** The axis for this test. */
-  protected int m_axis;
+  protected Axis m_axis;
 
   /**
    * Construct a StepPattern that tests for namespaces and node names.
@@ -59,10 +59,10 @@ public class StepPattern extends NodeTest implements SubContextList, ExpressionO
    *          The local name to be tested.
    * @param axis
    *          The Axis for this test, one of of Axes.ANCESTORORSELF, etc.
-   * @param axisForPredicate
+   * @param predicateAxis
    *          No longer used.
    */
-  public StepPattern(int whatToShow, String namespace, String name, int axis, int axisForPredicate) {
+  public StepPattern(int whatToShow, String namespace, String name, Axis axis, Axis predicateAxis) {
 
     super(whatToShow, namespace, name);
 
@@ -78,10 +78,10 @@ public class StepPattern extends NodeTest implements SubContextList, ExpressionO
    *          .
    * @param axis
    *          The Axis for this test, one of of Axes.ANCESTORORSELF, etc.
-   * @param axisForPredicate
+   * @param paxis
    *          No longer used.
    */
-  public StepPattern(int whatToShow, int axis, int axisForPredicate) {
+  public StepPattern(int whatToShow, Axis axis, Axis paxis) {
 
     super(whatToShow);
 
@@ -735,7 +735,7 @@ public class StepPattern extends NodeTest implements SubContextList, ExpressionO
         buf.append("/");
       }
 
-      buf.append(Axis.getNames(pat.m_axis));
+      buf.append(pat.m_axis.getName());
       buf.append("::");
 
       if (0x000005000 == pat.m_whatToShow) {
@@ -828,7 +828,7 @@ public class StepPattern extends NodeTest implements SubContextList, ExpressionO
    * @param axis
    *          The Axis for this test, one of of Axes.ANCESTORORSELF, etc.
    */
-  public void setAxis(int axis) {
+  public void setAxis(Axis axis) {
     m_axis = axis;
   }
 
@@ -838,7 +838,7 @@ public class StepPattern extends NodeTest implements SubContextList, ExpressionO
    * 
    * @return The Axis for this test, one of of Axes.ANCESTORORSELF, etc.
    */
-  public int getAxis() {
+  public Axis getAxis() {
     return m_axis;
   }
 

@@ -46,7 +46,7 @@ public class MatchPatternIterator extends LocPathIterator {
   protected StepPattern m_pattern;
 
   /** The traversal axis from where the nodes will be filtered. */
-  protected int m_superAxis = -1;
+  protected Axis m_superAxis = null;
 
   /** The DTM inner traversal class, that corresponds to the super axis. */
   protected DTMAxisTraverser m_traverser;
@@ -124,7 +124,7 @@ public class MatchPatternIterator extends LocPathIterator {
       m_superAxis = Axis.ALL;
     }
     if (false || DEBUG) {
-      System.out.println("axis: " + Axis.getNames(m_superAxis));
+      System.out.println("axis: " + m_superAxis.getName());
     }
 
   }
