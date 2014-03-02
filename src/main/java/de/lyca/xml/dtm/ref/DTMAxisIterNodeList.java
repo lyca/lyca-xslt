@@ -56,14 +56,12 @@ import de.lyca.xml.utils.IntVector;
  * */
 public class DTMAxisIterNodeList extends DTMNodeListBase {
   private DTM m_dtm;
-  private DTMAxisIterator m_iter;
+  private final DTMAxisIterator m_iter;
   private IntVector m_cachedNodes;
   private int m_last = -1;
 
   // ================================================================
   // Methods unique to this class
-  private DTMAxisIterNodeList() {
-  }
 
   /**
    * Public constructor: Wrap a DTMNodeList around an existing and preconfigured

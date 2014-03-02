@@ -22,6 +22,15 @@ package de.lyca.xml.dtm;
 
 import javax.xml.transform.SourceLocator;
 
+import org.w3c.dom.Node;
+import org.xml.sax.ContentHandler;
+import org.xml.sax.DTDHandler;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.SAXException;
+import org.xml.sax.ext.DeclHandler;
+import org.xml.sax.ext.LexicalHandler;
+
 import de.lyca.xml.utils.XMLString;
 
 /**
@@ -89,7 +98,7 @@ public interface DTM {
   /**
    * Null node handles are represented by this value.
    */
-  public static final int NULL = -1;
+  int NULL = -1;
 
   // These nodeType mnemonics and values are deliberately the same as those
   // used by the DOM, for convenient mapping
@@ -100,78 +109,78 @@ public interface DTM {
   /**
    * The node is a <code>Root</code>.
    */
-  public static final short ROOT_NODE = 0;
+  short ROOT_NODE = 0;
 
   /**
    * The node is an <code>Element</code>.
    */
-  public static final short ELEMENT_NODE = 1;
+  short ELEMENT_NODE = 1;
 
   /**
    * The node is an <code>Attr</code>.
    */
-  public static final short ATTRIBUTE_NODE = 2;
+  short ATTRIBUTE_NODE = 2;
 
   /**
    * The node is a <code>Text</code> node.
    */
-  public static final short TEXT_NODE = 3;
+  short TEXT_NODE = 3;
 
   /**
    * The node is a <code>CDATASection</code>.
    */
-  public static final short CDATA_SECTION_NODE = 4;
+  short CDATA_SECTION_NODE = 4;
 
   /**
    * The node is an <code>EntityReference</code>.
    */
-  public static final short ENTITY_REFERENCE_NODE = 5;
+  short ENTITY_REFERENCE_NODE = 5;
 
   /**
    * The node is an <code>Entity</code>.
    */
-  public static final short ENTITY_NODE = 6;
+  short ENTITY_NODE = 6;
 
   /**
    * The node is a <code>ProcessingInstruction</code>.
    */
-  public static final short PROCESSING_INSTRUCTION_NODE = 7;
+  short PROCESSING_INSTRUCTION_NODE = 7;
 
   /**
    * The node is a <code>Comment</code>.
    */
-  public static final short COMMENT_NODE = 8;
+  short COMMENT_NODE = 8;
 
   /**
    * The node is a <code>Document</code>.
    */
-  public static final short DOCUMENT_NODE = 9;
+  short DOCUMENT_NODE = 9;
 
   /**
    * The node is a <code>DocumentType</code>.
    */
-  public static final short DOCUMENT_TYPE_NODE = 10;
+  short DOCUMENT_TYPE_NODE = 10;
 
   /**
    * The node is a <code>DocumentFragment</code>.
    */
-  public static final short DOCUMENT_FRAGMENT_NODE = 11;
+  short DOCUMENT_FRAGMENT_NODE = 11;
 
   /**
    * The node is a <code>Notation</code>.
    */
-  public static final short NOTATION_NODE = 12;
+  short NOTATION_NODE = 12;
 
   /**
    * The node is a <code>namespace node</code>. Note that this is not currently
    * a node type defined by the DOM API.
    */
-  public static final short NAMESPACE_NODE = 13;
+  short NAMESPACE_NODE = 13;
 
   /**
    * The number of valid nodetypes.
    */
-  public static final short NTYPES = 14;
+  short NTYPES = 14;
 
   // ========= DTM Implementation Control Functions. ==============
   // %TBD% RETIRED -- do via setFeature if needed. Remove from impls.
@@ -187,7 +196,7 @@ public interface DTM {
    * @param state
    *          true if this feature should be on, false otherwise.
    */
-  public void setFeature(String featureId, boolean state);
+  void setFeature(String featureId, boolean state);
 
   /**
    * Set a run time property for this DTM instance.
@@ -197,7 +206,7 @@ public interface DTM {
    * @param value
    *          an <code>Object</code> value
    */
-  public void setProperty(String property, Object value);
+  void setProperty(String property, Object value);
 
   // ========= Document Navigation Functions =========
 
@@ -210,7 +219,7 @@ public interface DTM {
    * 
    * @return A DTMAxisIterator, or null if the givin axis isn't supported.
    */
-  public DTMAxisTraverser getAxisTraverser(final Axis axis);
+  DTMAxisTraverser getAxisTraverser(final Axis axis);
 
   /**
    * This is a shortcut to the iterators that implement XPath axes. Returns a
@@ -222,7 +231,7 @@ public interface DTM {
    * 
    * @return A DTMAxisIterator, or null if the givin axis isn't supported.
    */
-  public DTMAxisIterator getAxisIterator(final Axis axis);
+  DTMAxisIterator getAxisIterator(final Axis axis);
 
   /**
    * Get an iterator that can navigate over an XPath Axis, predicated by the
@@ -234,7 +243,7 @@ public interface DTM {
    * 
    * @return A DTMAxisIterator, or null if the givin axis isn't supported.
    */
-  public DTMAxisIterator getTypedAxisIterator(final Axis axis, final int type);
+  DTMAxisIterator getTypedAxisIterator(final Axis axis, final int type);
 
   /**
    * Given a node handle, test if it has child nodes.
@@ -250,7 +259,7 @@ public interface DTM {
    *          int Handle of the node.
    * @return int true if the given node has child nodes.
    */
-  public boolean hasChildNodes(int nodeHandle);
+  boolean hasChildNodes(int nodeHandle);
 
   /**
    * Given a node handle, get the handle of the node's first child.
@@ -260,7 +269,7 @@ public interface DTM {
    * @return int DTM node-number of first child, or DTM.NULL to indicate none
    *         exists.
    */
-  public int getFirstChild(int nodeHandle);
+  int getFirstChild(int nodeHandle);
 
   /**
    * Given a node handle, get the handle of the node's last child.
@@ -269,7 +278,7 @@ public interface DTM {
    *          int Handle of the node.
    * @return int Node-number of last child, or DTM.NULL to indicate none exists.
    */
-  public int getLastChild(int nodeHandle);
+  int getLastChild(int nodeHandle);
 
   /**
    * Retrieves an attribute node by local name and namespace URI
@@ -287,7 +296,7 @@ public interface DTM {
    *         <code>nodeName</code>) or <code>DTM.NULL</code> if there is no such
    *         attribute.
    */
-  public int getAttributeNode(int elementHandle, String namespaceURI, String name);
+  int getAttributeNode(int elementHandle, String namespaceURI, String name);
 
   /**
    * Given a node handle, get the index of the node's first attribute.
@@ -296,7 +305,7 @@ public interface DTM {
    *          int Handle of the node.
    * @return Handle of first attribute, or DTM.NULL to indicate none exists.
    */
-  public int getFirstAttribute(int nodeHandle);
+  int getFirstAttribute(int nodeHandle);
 
   /**
    * Given a node handle, get the index of the node's first namespace node.
@@ -310,7 +319,7 @@ public interface DTM {
    *          the node's own namespace declarations should be returned.
    * @return handle of first namespace, or DTM.NULL to indicate none exists.
    */
-  public int getFirstNamespaceNode(int nodeHandle, boolean inScope);
+  int getFirstNamespaceNode(int nodeHandle, boolean inScope);
 
   /**
    * Given a node handle, advance to its next sibling.
@@ -320,7 +329,7 @@ public interface DTM {
    * @return int Node-number of next sibling, or DTM.NULL to indicate none
    *         exists.
    */
-  public int getNextSibling(int nodeHandle);
+  int getNextSibling(int nodeHandle);
 
   /**
    * Given a node handle, find its preceeding sibling. WARNING: DTM
@@ -332,7 +341,7 @@ public interface DTM {
    * @return int Node-number of the previous sib, or DTM.NULL to indicate none
    *         exists.
    */
-  public int getPreviousSibling(int nodeHandle);
+  int getPreviousSibling(int nodeHandle);
 
   /**
    * Given a node handle, advance to the next attribute. If an element, we
@@ -344,7 +353,7 @@ public interface DTM {
    * @return int DTM node-number of the resolved attr, or DTM.NULL to indicate
    *         none exists.
    */
-  public int getNextAttribute(int nodeHandle);
+  int getNextAttribute(int nodeHandle);
 
   /**
    * Given a namespace handle, advance to the next namespace in the same scope
@@ -358,7 +367,7 @@ public interface DTM {
    *          inScope
    * @return handle of next namespace, or DTM.NULL to indicate none exists.
    */
-  public int getNextNamespaceNode(int baseHandle, int namespaceHandle, boolean inScope);
+  int getNextNamespaceNode(int baseHandle, int namespaceHandle, boolean inScope);
 
   /**
    * Given a node handle, find its parent node.
@@ -367,7 +376,7 @@ public interface DTM {
    *          the id of the node.
    * @return int Node handle of parent, or DTM.NULL to indicate none exists.
    */
-  public int getParent(int nodeHandle);
+  int getParent(int nodeHandle);
 
   /**
    * Given a DTM which contains only a single document, find the Node Handle of
@@ -380,7 +389,7 @@ public interface DTM {
    * @return int Node handle of document, or DTM.NULL if a shared DTM can not
    *         tell us which Document is currently active.
    */
-  public int getDocument();
+  int getDocument();
 
   /**
    * Given a node handle, find the owning document node. This version mimics the
@@ -392,7 +401,7 @@ public interface DTM {
    *         Document.
    * @see #getDocumentRoot(int nodeHandle)
    */
-  public int getOwnerDocument(int nodeHandle);
+  int getOwnerDocument(int nodeHandle);
 
   /**
    * Given a node handle, find the owning document node.
@@ -404,7 +413,7 @@ public interface DTM {
    *         null for the Document node.)
    * @see #getOwnerDocument(int nodeHandle)
    */
-  public int getDocumentRoot(int nodeHandle);
+  int getDocumentRoot(int nodeHandle);
 
   /**
    * Get the string-value of a node as a String object (see
@@ -416,7 +425,7 @@ public interface DTM {
    * 
    * @return A string object that represents the string-value of the given node.
    */
-  public XMLString getStringValue(int nodeHandle);
+  XMLString getStringValue(int nodeHandle);
 
   /**
    * Get number of character array chunks in the string-value of a node. (see
@@ -428,7 +437,7 @@ public interface DTM {
    * 
    * @return number of character array chunks in the string-value of a node.
    */
-  public int getStringValueChunkCount(int nodeHandle);
+  int getStringValueChunkCount(int nodeHandle);
 
   /**
    * Get a character array chunk in the string-value of a node. (see
@@ -446,7 +455,7 @@ public interface DTM {
    * @return The character array buffer within which the chunk occurs, setting
    *         startAndLen's contents as a side-effect.
    */
-  public char[] getStringValueChunk(int nodeHandle, int chunkIndex, int[] startAndLen);
+  char[] getStringValueChunk(int nodeHandle, int chunkIndex, int[] startAndLen);
 
   /**
    * Given a node handle, return an ID that represents the node's expanded name.
@@ -456,7 +465,7 @@ public interface DTM {
    * 
    * @return the expanded-name id of the node.
    */
-  public int getExpandedTypeID(int nodeHandle);
+  int getExpandedTypeID(int nodeHandle);
 
   /**
    * Given an expanded name, return an ID. If the expanded-name does not exist
@@ -468,7 +477,7 @@ public interface DTM {
    * 
    * @return the expanded-name id of the node.
    */
-  public int getExpandedTypeID(String namespace, String localName, int type);
+  int getExpandedTypeID(String namespace, String localName, int type);
 
   /**
    * Given an expanded-name ID, return the local name part.
@@ -477,7 +486,7 @@ public interface DTM {
    *          an ID that represents an expanded-name.
    * @return String Local name of this node.
    */
-  public String getLocalNameFromExpandedNameID(int ExpandedNameID);
+  String getLocalNameFromExpandedNameID(int ExpandedNameID);
 
   /**
    * Given an expanded-name ID, return the namespace URI part.
@@ -487,7 +496,7 @@ public interface DTM {
    * @return String URI value of this node's namespace, or null if no namespace
    *         was resolved.
    */
-  public String getNamespaceFromExpandedNameID(int ExpandedNameID);
+  String getNamespaceFromExpandedNameID(int ExpandedNameID);
 
   /**
    * Given a node handle, return its DOM-style node name. This will include
@@ -498,7 +507,7 @@ public interface DTM {
    * @return String Name of this node, which may be an empty string. %REVIEW%
    *         Document when empty string is possible...
    */
-  public String getNodeName(int nodeHandle);
+  String getNodeName(int nodeHandle);
 
   /**
    * Given a node handle, return the XPath node name. This should be the name as
@@ -508,7 +517,7 @@ public interface DTM {
    *          the id of the node.
    * @return String Name of this node.
    */
-  public String getNodeNameX(int nodeHandle);
+  String getNodeNameX(int nodeHandle);
 
   /**
    * Given a node handle, return its DOM-style localname. (As defined in
@@ -519,7 +528,7 @@ public interface DTM {
    *          the id of the node.
    * @return String Local name of this node.
    */
-  public String getLocalName(int nodeHandle);
+  String getLocalName(int nodeHandle);
 
   /**
    * Given a namespace handle, return the prefix that the namespace decl is
@@ -536,7 +545,7 @@ public interface DTM {
    * @return String prefix of this node's name, or "" if no explicit namespace
    *         prefix was given.
    */
-  public String getPrefix(int nodeHandle);
+  String getPrefix(int nodeHandle);
 
   /**
    * Given a node handle, return its DOM-style namespace URI (As defined in
@@ -548,7 +557,7 @@ public interface DTM {
    * @return String URI value of this node's namespace, or null if no namespace
    *         was resolved.
    */
-  public String getNamespaceURI(int nodeHandle);
+  String getNamespaceURI(int nodeHandle);
 
   /**
    * Given a node handle, return its node value. This is mostly as defined by
@@ -560,7 +569,7 @@ public interface DTM {
    * @return String Value of this node, or null if not meaningful for this node
    *         type.
    */
-  public String getNodeValue(int nodeHandle);
+  String getNodeValue(int nodeHandle);
 
   /**
    * Given a node handle, return its DOM-style node type.
@@ -573,7 +582,7 @@ public interface DTM {
    *          The node id.
    * @return int Node type, as per the DOM's Node._NODE constants.
    */
-  public short getNodeType(int nodeHandle);
+  short getNodeType(int nodeHandle);
 
   /**
    * Get the depth level of this node in the tree (equals 1 for a parentless
@@ -584,7 +593,7 @@ public interface DTM {
    * @return the number of ancestors, plus one
    * @xsl.usage internal
    */
-  public short getLevel(int nodeHandle);
+  short getLevel(int nodeHandle);
 
   // ============== Document query functions ==============
 
@@ -601,7 +610,7 @@ public interface DTM {
    * @return Returns <code>true</code> if the specified feature is supported on
    *         this node, <code>false</code> otherwise.
    */
-  public boolean isSupported(String feature, String version);
+  boolean isSupported(String feature, String version);
 
   /**
    * Return the base URI of the document entity. If it is not known (because the
@@ -610,7 +619,7 @@ public interface DTM {
    * 
    * @return the document base URI String object or null if unknown.
    */
-  public String getDocumentBaseURI();
+  String getDocumentBaseURI();
 
   /**
    * Set the base URI of the document entity.
@@ -618,7 +627,7 @@ public interface DTM {
    * @param baseURI
    *          the document base URI String object or null if unknown.
    */
-  public void setDocumentBaseURI(String baseURI);
+  void setDocumentBaseURI(String baseURI);
 
   /**
    * Return the system identifier of the document entity. If it is not known,
@@ -628,7 +637,7 @@ public interface DTM {
    *          The node id, which can be any valid node handle.
    * @return the system identifier String object or null if unknown.
    */
-  public String getDocumentSystemIdentifier(int nodeHandle);
+  String getDocumentSystemIdentifier(int nodeHandle);
 
   /**
    * Return the name of the character encoding scheme in which the document
@@ -638,7 +647,7 @@ public interface DTM {
    *          The node id, which can be any valid node handle.
    * @return the document encoding String object.
    */
-  public String getDocumentEncoding(int nodeHandle);
+  String getDocumentEncoding(int nodeHandle);
 
   /**
    * Return an indication of the standalone status of the document, either "yes"
@@ -650,7 +659,7 @@ public interface DTM {
    *          The node id, which can be any valid node handle.
    * @return the document standalone String object, either "yes", "no", or null.
    */
-  public String getDocumentStandalone(int nodeHandle);
+  String getDocumentStandalone(int nodeHandle);
 
   /**
    * Return a string representing the XML version of the document. This property
@@ -661,7 +670,7 @@ public interface DTM {
    *          the document handle
    * @return the document version String object
    */
-  public String getDocumentVersion(int documentHandle);
+  String getDocumentVersion(int documentHandle);
 
   /**
    * Return an indication of whether the processor has read the complete DTD.
@@ -672,7 +681,7 @@ public interface DTM {
    * @return <code>true</code> if all declarations were processed;
    *         <code>false</code> otherwise.
    */
-  public boolean getDocumentAllDeclarationsProcessed();
+  boolean getDocumentAllDeclarationsProcessed();
 
   /**
    * A document type declaration information item has the following properties:
@@ -682,7 +691,7 @@ public interface DTM {
    * 
    * @return the system identifier String object, or null if there is none.
    */
-  public String getDocumentTypeDeclarationSystemIdentifier();
+  String getDocumentTypeDeclarationSystemIdentifier();
 
   /**
    * Return the public identifier of the external subset, normalized as
@@ -691,7 +700,7 @@ public interface DTM {
    * 
    * @return the public identifier String object, or null if there is none.
    */
-  public String getDocumentTypeDeclarationPublicIdentifier();
+  String getDocumentTypeDeclarationPublicIdentifier();
 
   /**
    * Returns the <code>Element</code> whose <code>ID</code> is given by
@@ -712,7 +721,7 @@ public interface DTM {
    *          The unique <code>id</code> value for an element.
    * @return The handle of the matching element.
    */
-  public int getElementById(String elementId);
+  int getElementById(String elementId);
 
   /**
    * The getUnparsedEntityURI function returns the URI of the unparsed entity
@@ -745,7 +754,7 @@ public interface DTM {
    * @return String containing the URI of the Unparsed Entity, or an empty
    *         string if no such entity exists.
    */
-  public String getUnparsedEntityURI(String name);
+  String getUnparsedEntityURI(String name);
 
   // ============== Boolean methods ================
 
@@ -755,7 +764,7 @@ public interface DTM {
    * 
    * NEEDSDOC ($objectName$) @return
    */
-  public boolean supportsPreStripping();
+  boolean supportsPreStripping();
 
   /**
    * Figure out whether nodeHandle2 should be considered as being later in the
@@ -779,7 +788,7 @@ public interface DTM {
    *         <code>(firstNode.documentOrderPosition &lt;= secondNode.documentOrderPosition)</code>
    *         .
    */
-  public boolean isNodeAfter(int firstNodeHandle, int secondNodeHandle);
+  boolean isNodeAfter(int firstNodeHandle, int secondNodeHandle);
 
   /**
    * 2. [element content whitespace] A boolean indicating whether a text node
@@ -808,7 +817,7 @@ public interface DTM {
    * @return <code>true</code> if the node definitely represents whitespace in
    *         element content; <code>false</code> otherwise.
    */
-  public boolean isCharacterElementContentWhitespace(int nodeHandle);
+  boolean isCharacterElementContentWhitespace(int nodeHandle);
 
   /**
    * 10. [all declarations processed] This property is not strictly speaking
@@ -822,7 +831,7 @@ public interface DTM {
    * @return <code>true</code> if all declarations were processed;
    *         <code>false</code> otherwise.
    */
-  public boolean isDocumentAllDeclarationsProcessed(int documentHandle);
+  boolean isDocumentAllDeclarationsProcessed(int documentHandle);
 
   /**
    * 5. [specified] A flag indicating whether this attribute was actually
@@ -835,7 +844,7 @@ public interface DTM {
    *         <code>false</code> if it was defaulted or the handle doesn't refer
    *         to an attribute node.
    */
-  public boolean isAttributeSpecified(int attributeHandle);
+  boolean isAttributeSpecified(int attributeHandle);
 
   // ========== Direct SAX Dispatch, for optimization purposes ========
 
@@ -856,10 +865,9 @@ public interface DTM {
    *          href="http://www.w3.org/TR/xpath#function-normalize-space"
    *          >normalize-space</a> function.
    * 
-   * @throws org.xml.sax.SAXException
+   * @throws SAXException
    */
-  public void dispatchCharactersEvents(int nodeHandle, org.xml.sax.ContentHandler ch, boolean normalize)
-          throws org.xml.sax.SAXException;
+  void dispatchCharactersEvents(int nodeHandle, ContentHandler ch, boolean normalize) throws SAXException;
 
   /**
    * Directly create SAX parser events representing the XML content of a DTM
@@ -870,9 +878,9 @@ public interface DTM {
    * @param ch
    *          A non-null reference to a ContentHandler.
    * 
-   * @throws org.xml.sax.SAXException
+   * @throws SAXException
    */
-  public void dispatchToEvents(int nodeHandle, org.xml.sax.ContentHandler ch) throws org.xml.sax.SAXException;
+  void dispatchToEvents(int nodeHandle, ContentHandler ch) throws SAXException;
 
   /**
    * Return an DOM node for the given node.
@@ -882,7 +890,7 @@ public interface DTM {
    * 
    * @return A node representation of the DTM node.
    */
-  public org.w3c.dom.Node getNode(int nodeHandle);
+  Node getNode(int nodeHandle);
 
   // ==== Construction methods (may not be supported by some implementations!)
   // =====
@@ -894,7 +902,7 @@ public interface DTM {
    *         transformation and the parse run simultaneously. Guidance to the
    *         DTMManager.
    */
-  public boolean needsTwoThreads();
+  boolean needsTwoThreads();
 
   // %REVIEW% Do these appends make any sense, should we support a
   // wider set of methods (like the "append" methods in the
@@ -907,7 +915,7 @@ public interface DTM {
    * 
    * @return null if this model doesn't respond to SAX events.
    */
-  public org.xml.sax.ContentHandler getContentHandler();
+  ContentHandler getContentHandler();
 
   /**
    * Return this DTM's lexical handler, if it has one.
@@ -916,35 +924,35 @@ public interface DTM {
    * 
    * @return null if this model doesn't respond to lexical SAX events.
    */
-  public org.xml.sax.ext.LexicalHandler getLexicalHandler();
+  LexicalHandler getLexicalHandler();
 
   /**
    * Return this DTM's EntityResolver, if it has one.
    * 
    * @return null if this model doesn't respond to SAX entity ref events.
    */
-  public org.xml.sax.EntityResolver getEntityResolver();
+  EntityResolver getEntityResolver();
 
   /**
    * Return this DTM's DTDHandler, if it has one.
    * 
    * @return null if this model doesn't respond to SAX dtd events.
    */
-  public org.xml.sax.DTDHandler getDTDHandler();
+  DTDHandler getDTDHandler();
 
   /**
    * Return this DTM's ErrorHandler, if it has one.
    * 
    * @return null if this model doesn't respond to SAX error events.
    */
-  public org.xml.sax.ErrorHandler getErrorHandler();
+  ErrorHandler getErrorHandler();
 
   /**
    * Return this DTM's DeclHandler, if it has one.
    * 
    * @return null if this model doesn't respond to SAX Decl events.
    */
-  public org.xml.sax.ext.DeclHandler getDeclHandler();
+  DeclHandler getDeclHandler();
 
   /**
    * Append a child to "the end of the document". Please note that the node is
@@ -967,7 +975,7 @@ public interface DTM {
    *          if the clone argument is true, specifies that the clone should
    *          include all it's children.
    */
-  public void appendChild(int newChild, boolean clone, boolean cloneDepth);
+  void appendChild(int newChild, boolean clone, boolean cloneDepth);
 
   /**
    * Append a text node child that will be constructed from a string, to the end
@@ -976,7 +984,7 @@ public interface DTM {
    * @param str
    *          Non-null reference to a string.
    */
-  public void appendTextChild(String str);
+  void appendTextChild(String str);
 
   /**
    * Get the location of a node in the source document.
@@ -986,14 +994,14 @@ public interface DTM {
    * @return a <code>SourceLocator</code> value or null if no location is
    *         available
    */
-  public SourceLocator getSourceLocatorFor(int node);
+  SourceLocator getSourceLocatorFor(int node);
 
   /**
    * As the DTM is registered with the DTMManager, this method will be called.
    * This will give the DTM implementation a chance to initialize any subsystems
    * that are required to build the DTM
    */
-  public void documentRegistration();
+  void documentRegistration();
 
   /**
    * As documents are released from the DTMManager, the DTM implementation will
@@ -1001,8 +1009,7 @@ public interface DTM {
    * shutdown any subsystem activity that may of been assoiated with the active
    * DTM Implementation.
    */
-
-  public void documentRelease();
+  void documentRelease();
 
   /**
    * Migrate a DTM built with an old DTMManager to a new DTMManager. After the
@@ -1013,5 +1020,5 @@ public interface DTM {
    * @param manager
    *          the DTMManager
    */
-  public void migrateTo(DTMManager manager);
+  void migrateTo(DTMManager manager);
 }

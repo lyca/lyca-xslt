@@ -22,8 +22,10 @@
 package de.lyca.xml.dtm.ref;
 
 import org.xml.sax.ContentHandler;
+import org.xml.sax.DTDHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.xml.sax.ext.LexicalHandler;
 
 /**
  * <p>
@@ -43,17 +45,17 @@ public interface IncrementalSAXSource {
   /**
    * Register a SAX-style content handler for us to output to
    */
-  public void setContentHandler(ContentHandler handler);
+  void setContentHandler(ContentHandler handler);
 
   /**
    * Register a SAX-style lexical handler for us to output to
    */
-  public void setLexicalHandler(org.xml.sax.ext.LexicalHandler handler);
+  void setLexicalHandler(LexicalHandler handler);
 
   /**
    * Register a SAX-style DTD handler for us to output to
    */
-  public void setDTDHandler(org.xml.sax.DTDHandler handler);
+  void setDTDHandler(DTDHandler handler);
 
   // ------------------------------------------------------------------
   // Command Input API
@@ -75,7 +77,7 @@ public interface IncrementalSAXSource {
    *         available for further parsing. Boolean.FALSE if parsing ran to
    *         completion, or was ended by deliverMoreNodes(false).
    * */
-  public Object deliverMoreNodes(boolean parsemore);
+  Object deliverMoreNodes(boolean parsemore);
 
   // ------------------------------------------------------------------
   // Parse Thread Convenience API
@@ -91,6 +93,6 @@ public interface IncrementalSAXSource {
    *           is parse thread is already in progress or parsing can not be
    *           started.
    * */
-  public void startParse(InputSource source) throws SAXException;
+  void startParse(InputSource source) throws SAXException;
 
 } // class IncrementalSAXSource

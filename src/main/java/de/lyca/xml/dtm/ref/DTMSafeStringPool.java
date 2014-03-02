@@ -44,7 +44,7 @@ public class DTMSafeStringPool extends DTMStringPool {
    *           if index doesn't map to a string.
    * */
   @Override
-  public synchronized String indexToString(int i) throws java.lang.ArrayIndexOutOfBoundsException {
+  public synchronized String indexToString(int i) throws ArrayIndexOutOfBoundsException {
     return super.indexToString(i);
   }
 

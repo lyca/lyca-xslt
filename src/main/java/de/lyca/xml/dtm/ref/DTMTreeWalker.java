@@ -20,10 +20,13 @@
  */
 package de.lyca.xml.dtm.ref;
 
+import javax.xml.transform.Result;
 import javax.xml.transform.TransformerException;
 
 import org.xml.sax.ContentHandler;
+import org.xml.sax.SAXException;
 import org.xml.sax.ext.LexicalHandler;
+import org.xml.sax.helpers.AttributesImpl;
 
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xml.utils.NodeConsumer;
@@ -106,7 +109,7 @@ public class DTMTreeWalker {
    * 
    * @throws TransformerException
    */
-  public void traverse(int pos) throws org.xml.sax.SAXException {
+  public void traverse(int pos) throws SAXException {
     // %REVIEW% Why isn't this just traverse(pos,pos)?
 
     final int top = pos; // Remember the root of this subtree
@@ -197,7 +200,7 @@ public class DTMTreeWalker {
   /**
    * Optimized dispatch of characters.
    */
-  private final void dispatachChars(int node) throws org.xml.sax.SAXException {
+  private final void dispatachChars(int node) throws SAXException {
     m_dtm.dispatchCharactersEvents(node, m_contentHandler, false);
   }
 
@@ -210,7 +213,7 @@ public class DTMTreeWalker {
    * 
    * @throws org.xml.sax.SAXException
    */
-  protected void startNode(int node) throws org.xml.sax.SAXException {
+  protected void startNode(int node) throws SAXException {
 
     if (m_contentHandler instanceof NodeConsumer) {
       // %TBD%
@@ -254,7 +257,7 @@ public class DTMTreeWalker {
         }
 
         // %OPT% !!
-        final org.xml.sax.helpers.AttributesImpl attrs = new org.xml.sax.helpers.AttributesImpl();
+        final AttributesImpl attrs = new AttributesImpl();
 
         for (int i = dtm.getFirstAttribute(node); i != DTM.NULL; i = dtm.getNextAttribute(i)) {
           attrs.addAttribute(dtm.getNamespaceURI(i), dtm.getLocalName(i), dtm.getNodeName(i), "CDATA",
@@ -295,9 +298,9 @@ public class DTMTreeWalker {
         if (nextIsRaw) {
           nextIsRaw = false;
 
-          m_contentHandler.processingInstruction(javax.xml.transform.Result.PI_DISABLE_OUTPUT_ESCAPING, "");
+          m_contentHandler.processingInstruction(Result.PI_DISABLE_OUTPUT_ESCAPING, "");
           dispatachChars(node);
-          m_contentHandler.processingInstruction(javax.xml.transform.Result.PI_ENABLE_OUTPUT_ESCAPING, "");
+          m_contentHandler.processingInstruction(Result.PI_ENABLE_OUTPUT_ESCAPING, "");
         } else {
           dispatachChars(node);
         }
@@ -325,7 +328,7 @@ public class DTMTreeWalker {
    * 
    * @throws org.xml.sax.SAXException
    */
-  protected void endNode(int node) throws org.xml.sax.SAXException {
+  protected void endNode(int node) throws SAXException {
 
     switch (m_dtm.getNodeType(node)) {
       case DTM.DOCUMENT_NODE:

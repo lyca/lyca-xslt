@@ -66,7 +66,7 @@ import de.lyca.xml.utils.IntVector;
  * </p>
  * */
 public class DTMStringPool {
-  List m_intToString;
+  List<String> m_intToString;
   static final int HASHPRIME = 101;
   int[] m_hashStart = new int[HASHPRIME];
   IntVector m_hashChain;
@@ -104,10 +104,10 @@ public class DTMStringPool {
    * @throws java.lang.ArrayIndexOutOfBoundsException
    *           if index doesn't map to a string.
    * */
-  public String indexToString(int i) throws java.lang.ArrayIndexOutOfBoundsException {
+  public String indexToString(int i) throws ArrayIndexOutOfBoundsException {
     if (i == NULL)
       return null;
-    return (String) m_intToString.get(i);
+    return m_intToString.get(i);
   }
 
   /** @return integer index uniquely identifying the value of this string. */

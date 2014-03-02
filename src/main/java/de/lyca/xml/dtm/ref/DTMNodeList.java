@@ -58,8 +58,6 @@ public class DTMNodeList extends DTMNodeListBase {
 
   // ================================================================
   // Methods unique to this class
-  private DTMNodeList() {
-  }
 
   /**
    * Public constructor: Wrap a DTMNodeList around an existing and preconfigured

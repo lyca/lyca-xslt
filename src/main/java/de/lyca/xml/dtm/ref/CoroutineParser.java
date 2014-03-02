@@ -24,6 +24,7 @@ package de.lyca.xml.dtm.ref;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
+import org.xml.sax.ext.LexicalHandler;
 
 /**
  * <p>
@@ -79,7 +80,7 @@ public interface CoroutineParser {
    * %REVIEW% Not called setLexicalHandler because Xalan uses that name
    * internally, which causes subclassing nuisances.
    */
-  public void setLexHandler(org.xml.sax.ext.LexicalHandler handler);
+  public void setLexHandler(LexicalHandler handler);
 
   /*
    * The run() method is required in CoroutineParsers that run as threads (of

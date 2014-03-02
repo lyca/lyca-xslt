@@ -276,7 +276,7 @@ public class DTMNamedNodeMap implements NamedNodeMap {
    * 
    * @xsl.usage internal
    */
-  public static class DTMException extends org.w3c.dom.DOMException {
+  public static class DTMException extends DOMException {
     static final long serialVersionUID = -8290238117162437678L;
 
     /**

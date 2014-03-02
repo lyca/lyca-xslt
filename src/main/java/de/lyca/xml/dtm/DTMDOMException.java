@@ -20,6 +20,8 @@
  */
 package de.lyca.xml.dtm;
 
+import org.w3c.dom.DOMException;
+
 /**
  * Simple implementation of DOMException.
  * 
@@ -28,7 +30,7 @@ package de.lyca.xml.dtm;
  * 
  * @xsl.usage internal
  */
-public class DTMDOMException extends org.w3c.dom.DOMException {
+public class DTMDOMException extends DOMException {
   static final long serialVersionUID = 1895654266613192414L;
 
   /**

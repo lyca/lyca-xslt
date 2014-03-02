@@ -53,13 +53,11 @@ import de.lyca.xml.dtm.DTM;
  * </p>
  * */
 public class DTMChildIterNodeList extends DTMNodeListBase {
-  private int m_firstChild;
-  private DTM m_parentDTM;
+  private final int m_firstChild;
+  private final DTM m_parentDTM;
 
   // ================================================================
   // Methods unique to this class
-  private DTMChildIterNodeList() {
-  }
 
   /**
    * Public constructor: Create a NodeList to support

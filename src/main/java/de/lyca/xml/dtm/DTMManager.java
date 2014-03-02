@@ -20,6 +20,10 @@
  */
 package de.lyca.xml.dtm;
 
+import javax.xml.transform.Source;
+
+import org.w3c.dom.Node;
+
 import de.lyca.xml.res.XMLErrorResources;
 import de.lyca.xml.res.XMLMessages;
 import de.lyca.xml.utils.PrefixResolver;
@@ -168,7 +172,7 @@ public abstract class DTMManager {
    * 
    * @return a non-null DTM reference.
    */
-  public abstract DTM getDTM(javax.xml.transform.Source source, boolean unique, DTMWSFilter whiteSpaceFilter,
+  public abstract DTM getDTM(Source source, boolean unique, DTMWSFilter whiteSpaceFilter,
           boolean incremental, boolean doIndexing);
 
   /**
@@ -190,7 +194,7 @@ public abstract class DTMManager {
    * 
    * @return a valid DTM handle.
    */
-  public abstract int getDTMHandleFromNode(org.w3c.dom.Node node);
+  public abstract int getDTMHandleFromNode(Node node);
 
   /**
    * Creates a DTM representing an empty <code>DocumentFragment</code> object.

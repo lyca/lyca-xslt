@@ -33,12 +33,12 @@ public interface DTMFilter {
   /**
    * Show all <code>Nodes</code>.
    */
-  public static final int SHOW_ALL = 0xFFFFFFFF;
+  int SHOW_ALL = 0xFFFFFFFF;
 
   /**
    * Show <code>Element</code> nodes.
    */
-  public static final int SHOW_ELEMENT = 0x00000001;
+  int SHOW_ELEMENT = 0x00000001;
 
   /**
    * Show <code>Attr</code> nodes. This is meaningful only when creating an
@@ -48,24 +48,24 @@ public interface DTMFilter {
    * of other nodes, they do not appear when traversing over the main document
    * tree.
    */
-  public static final int SHOW_ATTRIBUTE = 0x00000002;
+  int SHOW_ATTRIBUTE = 0x00000002;
 
   /**
    * Show <code>Text</code> nodes.
    */
-  public static final int SHOW_TEXT = 0x00000004;
+  int SHOW_TEXT = 0x00000004;
 
   /**
    * Show <code>CDATASection</code> nodes.
    */
-  public static final int SHOW_CDATA_SECTION = 0x00000008;
+  int SHOW_CDATA_SECTION = 0x00000008;
 
   /**
    * Show <code>EntityReference</code> nodes. Note that if Entity References
    * have been fully expanded while the tree was being constructed, these nodes
    * will not appear and this mask has no effect.
    */
-  public static final int SHOW_ENTITY_REFERENCE = 0x00000010;
+  int SHOW_ENTITY_REFERENCE = 0x00000010;
 
   /**
    * Show <code>Entity</code> nodes. This is meaningful only when creating an
@@ -75,36 +75,36 @@ public interface DTMFilter {
    * part of the document tree, they do not appear when traversing over the main
    * document tree.
    */
-  public static final int SHOW_ENTITY = 0x00000020;
+  int SHOW_ENTITY = 0x00000020;
 
   /**
    * Show <code>ProcessingInstruction</code> nodes.
    */
-  public static final int SHOW_PROCESSING_INSTRUCTION = 0x00000040;
+  int SHOW_PROCESSING_INSTRUCTION = 0x00000040;
 
   /**
    * Show <code>Comment</code> nodes.
    */
-  public static final int SHOW_COMMENT = 0x00000080;
+  int SHOW_COMMENT = 0x00000080;
 
   /**
    * Show <code>Document</code> nodes. (Of course, as with Attributes and such,
    * this is meaningful only when the iteration root is the Document itself,
    * since Document has no parent.)
    */
-  public static final int SHOW_DOCUMENT = 0x00000100;
+  int SHOW_DOCUMENT = 0x00000100;
 
   /**
    * Show <code>DocumentType</code> nodes.
    */
-  public static final int SHOW_DOCUMENT_TYPE = 0x00000200;
+  int SHOW_DOCUMENT_TYPE = 0x00000200;
 
   /**
    * Show <code>DocumentFragment</code> nodes. (Of course, as with Attributes
    * and such, this is meaningful only when the iteration root is the Document
    * itself, since DocumentFragment has no parent.)
    */
-  public static final int SHOW_DOCUMENT_FRAGMENT = 0x00000400;
+  int SHOW_DOCUMENT_FRAGMENT = 0x00000400;
 
   /**
    * Show <code>Notation</code> nodes. This is meaningful only when creating an
@@ -114,7 +114,7 @@ public interface DTMFilter {
    * are not part of the document tree, they do not appear when traversing over
    * the main document tree.
    */
-  public static final int SHOW_NOTATION = 0x00000800;
+  int SHOW_NOTATION = 0x00000800;
 
   /**
    * 
@@ -126,7 +126,7 @@ public interface DTMFilter {
    * room for the DOM to expand its set of constants... Or, possibly, to create
    * a DTM-specific field for these additional bits.
    */
-  public static final int SHOW_NAMESPACE = 0x00001000;
+  int SHOW_NAMESPACE = 0x00001000;
 
   /**
    * Special bit for filters implementing match patterns starting with a
@@ -137,7 +137,7 @@ public interface DTMFilter {
    * room for the DOM to expand its set of constants... Or, possibly, to create
    * a DTM-specific field for these additional bits.
    */
-  public static final int SHOW_BYFUNCTION = 0x00010000;
+  int SHOW_BYFUNCTION = 0x00010000;
 
   /**
    * Test whether a specified node is visible in the logical view of a
@@ -151,7 +151,7 @@ public interface DTMFilter {
    *          one of SHOW_XXX values.
    * @return one of FILTER_ACCEPT, FILTER_REJECT, or FILTER_SKIP.
    */
-  public short acceptNode(int nodeHandle, int whatToShow);
+  short acceptNode(int nodeHandle, int whatToShow);
 
   /**
    * Test whether a specified node is visible in the logical view of a
@@ -188,6 +188,6 @@ public interface DTMFilter {
    *          localname portion of the expandedName.
    * @return one of FILTER_ACCEPT, FILTER_REJECT, or FILTER_SKIP.
    */
-  public short acceptNode(int nodeHandle, int whatToShow, int expandedName);
+  short acceptNode(int nodeHandle, int whatToShow, int expandedName);
 
 }

@@ -22,9 +22,15 @@ package de.lyca.xml.dtm.ref;
 
 import javax.xml.transform.SourceLocator;
 
+import org.w3c.dom.Node;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
+import org.xml.sax.DTDHandler;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.ErrorHandler;
 import org.xml.sax.Locator;
+import org.xml.sax.SAXException;
+import org.xml.sax.ext.DeclHandler;
 import org.xml.sax.ext.LexicalHandler;
 
 import de.lyca.xml.dtm.Axis;
@@ -66,7 +72,7 @@ import de.lyca.xml.utils.XMLStringFactory;
  * DocImpl, DocumentImpl, ElementImpl, TextImpl, etc. of XalanJ2
  * </p>
  */
-public class DTMDocumentImpl implements DTM, org.xml.sax.ContentHandler, org.xml.sax.ext.LexicalHandler {
+public class DTMDocumentImpl implements DTM, ContentHandler, LexicalHandler {
 
   // Number of lower bits used to represent node index.
   protected static final byte DOCHANDLE_SHIFT = 22;
@@ -334,7 +340,7 @@ public class DTMDocumentImpl implements DTM, org.xml.sax.ContentHandler, org.xml
    *         incremental build purposes...
    * */
   @Override
-  public org.xml.sax.ContentHandler getContentHandler() {
+  public ContentHandler getContentHandler() {
     if (m_incrSAXSource instanceof IncrementalSAXSource_Filter)
       return (ContentHandler) m_incrSAXSource;
     else
@@ -366,7 +372,7 @@ public class DTMDocumentImpl implements DTM, org.xml.sax.ContentHandler, org.xml
    * @return null if this model doesn't respond to SAX entity ref events.
    */
   @Override
-  public org.xml.sax.EntityResolver getEntityResolver() {
+  public EntityResolver getEntityResolver() {
 
     return null;
   }
@@ -377,7 +383,7 @@ public class DTMDocumentImpl implements DTM, org.xml.sax.ContentHandler, org.xml
    * @return null if this model doesn't respond to SAX dtd events.
    */
   @Override
-  public org.xml.sax.DTDHandler getDTDHandler() {
+  public DTDHandler getDTDHandler() {
 
     return null;
   }
@@ -388,7 +394,7 @@ public class DTMDocumentImpl implements DTM, org.xml.sax.ContentHandler, org.xml
    * @return null if this model doesn't respond to SAX error events.
    */
   @Override
-  public org.xml.sax.ErrorHandler getErrorHandler() {
+  public ErrorHandler getErrorHandler() {
 
     return null;
   }
@@ -399,7 +405,7 @@ public class DTMDocumentImpl implements DTM, org.xml.sax.ContentHandler, org.xml
    * @return null if this model doesn't respond to SAX Decl events.
    */
   @Override
-  public org.xml.sax.ext.DeclHandler getDeclHandler() {
+  public DeclHandler getDeclHandler() {
 
     return null;
   }
@@ -421,7 +427,7 @@ public class DTMDocumentImpl implements DTM, org.xml.sax.ContentHandler, org.xml
   // Replaces the deprecated DocumentHandler interface.
 
   @Override
-  public void characters(char[] ch, int start, int length) throws org.xml.sax.SAXException {
+  public void characters(char[] ch, int start, int length) throws SAXException {
     // Actually creating the text node is handled by
     // processAccumulatedText(); here we just accumulate the
     // characters into the buffer.
@@ -439,15 +445,14 @@ public class DTMDocumentImpl implements DTM, org.xml.sax.ContentHandler, org.xml
   }
 
   @Override
-  public void endDocument() throws org.xml.sax.SAXException {
+  public void endDocument() throws SAXException {
     // May need to tell the low-level builder code to pop up a level.
     // There _should't_ be any significant pending text at this point.
     appendEndDocument();
   }
 
   @Override
-  public void endElement(java.lang.String namespaceURI, java.lang.String localName, java.lang.String qName)
-          throws org.xml.sax.SAXException {
+  public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
     processAccumulatedText();
     // No args but we do need to tell the low-level builder code to
     // pop up a level.
@@ -455,17 +460,17 @@ public class DTMDocumentImpl implements DTM, org.xml.sax.ContentHandler, org.xml
   }
 
   @Override
-  public void endPrefixMapping(java.lang.String prefix) throws org.xml.sax.SAXException {
+  public void endPrefixMapping(String prefix) throws SAXException {
     // No-op
   }
 
   @Override
-  public void ignorableWhitespace(char[] ch, int start, int length) throws org.xml.sax.SAXException {
+  public void ignorableWhitespace(char[] ch, int start, int length) throws SAXException {
     // %TBD% I believe ignorable text isn't part of the DTM model...?
   }
 
   @Override
-  public void processingInstruction(java.lang.String target, java.lang.String data) throws org.xml.sax.SAXException {
+  public void processingInstruction(String target, String data) throws SAXException {
     processAccumulatedText();
     // %TBD% Which pools do target and data go into?
   }
@@ -476,19 +481,18 @@ public class DTMDocumentImpl implements DTM, org.xml.sax.ContentHandler, org.xml
   }
 
   @Override
-  public void skippedEntity(java.lang.String name) throws org.xml.sax.SAXException {
+  public void skippedEntity(String name) throws SAXException {
     processAccumulatedText();
     // %TBD%
   }
 
   @Override
-  public void startDocument() throws org.xml.sax.SAXException {
+  public void startDocument() throws SAXException {
     appendStartDocument();
   }
 
   @Override
-  public void startElement(java.lang.String namespaceURI, java.lang.String localName, java.lang.String qName,
-          Attributes atts) throws org.xml.sax.SAXException {
+  public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
     processAccumulatedText();
 
     // %TBD% Split prefix off qname
@@ -555,7 +559,7 @@ public class DTMDocumentImpl implements DTM, org.xml.sax.ContentHandler, org.xml
   }
 
   @Override
-  public void startPrefixMapping(java.lang.String prefix, java.lang.String uri) throws org.xml.sax.SAXException {
+  public void startPrefixMapping(String prefix, String uri) throws SAXException {
     // No-op in DTM, handled during element/attr processing?
   }
 
@@ -564,7 +568,7 @@ public class DTMDocumentImpl implements DTM, org.xml.sax.ContentHandler, org.xml
   // but we may want to pass them through when they exist...
   //
   @Override
-  public void comment(char[] ch, int start, int length) throws org.xml.sax.SAXException {
+  public void comment(char[] ch, int start, int length) throws SAXException {
     processAccumulatedText();
 
     m_char.append(ch, start, length); // Single-string value
@@ -573,33 +577,32 @@ public class DTMDocumentImpl implements DTM, org.xml.sax.ContentHandler, org.xml
   }
 
   @Override
-  public void endCDATA() throws org.xml.sax.SAXException {
+  public void endCDATA() throws SAXException {
     // No-op in DTM
   }
 
   @Override
-  public void endDTD() throws org.xml.sax.SAXException {
+  public void endDTD() throws SAXException {
     // No-op in DTM
   }
 
   @Override
-  public void endEntity(java.lang.String name) throws org.xml.sax.SAXException {
+  public void endEntity(String name) throws SAXException {
     // No-op in DTM
   }
 
   @Override
-  public void startCDATA() throws org.xml.sax.SAXException {
+  public void startCDATA() throws SAXException {
     // No-op in DTM
   }
 
   @Override
-  public void startDTD(java.lang.String name, java.lang.String publicId, java.lang.String systemId)
-          throws org.xml.sax.SAXException {
+  public void startDTD(String name, String publicId, String systemId) throws SAXException {
     // No-op in DTM
   }
 
   @Override
-  public void startEntity(java.lang.String name) throws org.xml.sax.SAXException {
+  public void startEntity(String name) throws SAXException {
     // No-op in DTM
   }
 
@@ -2157,8 +2160,7 @@ public class DTMDocumentImpl implements DTM, org.xml.sax.ContentHandler, org.xml
    * @throws org.xml.sax.SAXException
    */
   @Override
-  public void dispatchCharactersEvents(int nodeHandle, org.xml.sax.ContentHandler ch, boolean normalize)
-          throws org.xml.sax.SAXException {
+  public void dispatchCharactersEvents(int nodeHandle, ContentHandler ch, boolean normalize) throws SAXException {
   }
 
   /**
@@ -2173,7 +2175,7 @@ public class DTMDocumentImpl implements DTM, org.xml.sax.ContentHandler, org.xml
    */
 
   @Override
-  public void dispatchToEvents(int nodeHandle, org.xml.sax.ContentHandler ch) throws org.xml.sax.SAXException {
+  public void dispatchToEvents(int nodeHandle, ContentHandler ch) throws SAXException {
   }
 
   /**
@@ -2185,7 +2187,7 @@ public class DTMDocumentImpl implements DTM, org.xml.sax.ContentHandler, org.xml
    * @return A node representation of the DTM node.
    */
   @Override
-  public org.w3c.dom.Node getNode(int nodeHandle) {
+  public Node getNode(int nodeHandle) {
     return null;
   }
 

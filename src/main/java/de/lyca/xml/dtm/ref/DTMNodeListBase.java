@@ -21,6 +21,7 @@
 package de.lyca.xml.dtm.ref;
 
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 /**
  * <code>DTMNodeList</code> gives us an implementation of the DOM's NodeList
@@ -51,7 +52,7 @@ import org.w3c.dom.Node;
  * </p>
  * 
  */
-public class DTMNodeListBase implements org.w3c.dom.NodeList {
+public class DTMNodeListBase implements NodeList {
   public DTMNodeListBase() {
   }
 

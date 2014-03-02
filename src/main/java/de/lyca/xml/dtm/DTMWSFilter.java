@@ -28,17 +28,17 @@ public interface DTMWSFilter {
   /**
    * Do not strip whitespace child nodes of this element.
    */
-  public static final short NOTSTRIP = 1;
+  short NOTSTRIP = 1;
 
   /**
    * Strip whitespace child nodes of this element.
    */
-  public static final short STRIP = 2;
+  short STRIP = 2;
 
   /**
    * Inherit whitespace stripping behavior of the parent node.
    */
-  public static final short INHERIT = 3;
+  short INHERIT = 3;
 
   /**
    * Test whether whitespace-only text nodes are visible in the logical view of
@@ -50,6 +50,6 @@ public interface DTMWSFilter {
    *          int Handle of the element.
    * @return one of NOTSTRIP, STRIP, or INHERIT.
    */
-  public short getShouldStripSpace(int elementHandle, DTM dtm);
+  short getShouldStripSpace(int elementHandle, DTM dtm);
 
 }

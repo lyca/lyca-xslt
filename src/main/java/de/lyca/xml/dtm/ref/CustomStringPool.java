@@ -55,7 +55,7 @@ public class CustomStringPool extends DTMStringPool {
   // final Vector m_intToString;
   // static final int HASHPRIME=101;
   // int[] m_hashStart=new int[HASHPRIME];
-  final Hashtable m_stringToInt = new Hashtable(); // can this be a HashMap
+  final Hashtable<String, Integer> m_stringToInt = new Hashtable<>(); // can this be a HashMap
                                                    // instead?
   public static final int NULL = -1;
 
@@ -84,8 +84,8 @@ public class CustomStringPool extends DTMStringPool {
    *           if index doesn't map to a string.
    * */
   @Override
-  public String indexToString(int i) throws java.lang.ArrayIndexOutOfBoundsException {
-    return (String) m_intToString.get(i);
+  public String indexToString(int i) throws ArrayIndexOutOfBoundsException {
+    return m_intToString.get(i);
   }
 
   /** @return integer index uniquely identifying the value of this string. */
@@ -93,7 +93,7 @@ public class CustomStringPool extends DTMStringPool {
   public int stringToIndex(String s) {
     if (s == null)
       return NULL;
-    Integer iobj = (Integer) m_stringToInt.get(s);
+    Integer iobj = m_stringToInt.get(s);
     if (iobj == null) {
       m_intToString.add(s);
       iobj = new Integer(m_intToString.size());

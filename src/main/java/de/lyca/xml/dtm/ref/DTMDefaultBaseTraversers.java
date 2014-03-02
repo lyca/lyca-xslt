@@ -184,12 +184,6 @@ public abstract class DTMDefaultBaseTraversers extends DTMDefaultBase {
                 new Object[] { axis.getName() })); // "Unknown axis traversal type: "+axis);
     }
 
-    if (null == traverser)
-      throw new DTMException(XMLMessages.createXMLMessage(XMLErrorResources.ER_AXIS_TRAVERSER_NOT_SUPPORTED,
-              new Object[] { axis.getName() }));
-    // "Axis traverser not supported: "
-    // + Axis.names[axis]);
-
     m_traversers[axis.ordinal()] = traverser;
 
     return traverser;
@@ -432,20 +426,9 @@ public abstract class DTMDefaultBaseTraversers extends DTMDefaultBase {
      */
     @Override
     public int first(int context, int expandedTypeID) {
-      if (true) {
-        final int identity = makeNodeIdentity(context);
-
-        final int firstMatch = getNextIndexed(identity, _firstch(identity), expandedTypeID);
-
-        return makeNodeHandle(firstMatch);
-      } else {
-        // %REVIEW% Dead code. Eliminate?
-        for (int current = _firstch(makeNodeIdentity(context)); DTM.NULL != current; current = _nextsib(current)) {
-          if (m_exptype.elementAt(current) == expandedTypeID)
-            return makeNodeHandle(current);
-        }
-        return NULL;
-      }
+      final int identity = makeNodeIdentity(context);
+      final int firstMatch = getNextIndexed(identity, _firstch(identity), expandedTypeID);
+      return makeNodeHandle(firstMatch);
     }
 
     /**
@@ -815,7 +798,7 @@ public abstract class DTMDefaultBaseTraversers extends DTMDefaultBase {
 
       final int subtreeRootIdent = makeNodeIdentity(context);
 
-      for (current = makeNodeIdentity(current) + 1;; current++) {
+      for (current = makeNodeIdentity(current) + 1;;) {
         // Trickological code: _exptype() has the side-effect of
         // running nextNode until the specified node has been loaded,
         // and thus can be used to ensure that incremental construction of
@@ -1322,8 +1305,6 @@ public abstract class DTMDefaultBaseTraversers extends DTMDefaultBase {
      */
     @Override
     public int next(int context, int current) {
-      // Compute in ID space
-      final int subtreeRootIdent = makeNodeIdentity(context);
 
       for (current = makeNodeIdentity(current) - 1; current >= 0; current--) {
         final short type = _type(current);
@@ -1353,8 +1334,6 @@ public abstract class DTMDefaultBaseTraversers extends DTMDefaultBase {
      */
     @Override
     public int next(int context, int current, int expandedTypeID) {
-      // Compute in ID space
-      final int subtreeRootIdent = makeNodeIdentity(context);
 
       for (current = makeNodeIdentity(current) - 1; current >= 0; current--) {
         final int exptype = m_exptype.elementAt(current);
@@ -1533,10 +1512,8 @@ public abstract class DTMDefaultBaseTraversers extends DTMDefaultBase {
      */
     @Override
     public int next(int context, int current) {
-      // Compute in ID space
-      final int subtreeRootIdent = makeNodeIdentity(context);
 
-      for (current = makeNodeIdentity(current) + 1;; current++) {
+      for (current = makeNodeIdentity(current) + 1;;) {
         // Kluge test: Just make sure +1 yielded a real node
         final int type = _type(current); // may call nextNode()
         if (type == NULL)
@@ -1561,9 +1538,6 @@ public abstract class DTMDefaultBaseTraversers extends DTMDefaultBase {
      */
     @Override
     public int next(int context, int current, int expandedTypeID) {
-      // Compute in ID space
-      final int subtreeRootIdent = makeNodeIdentity(context);
-
       for (current = makeNodeIdentity(current) + 1;; current++) {
         final int exptype = _exptype(current); // may call nextNode()
 

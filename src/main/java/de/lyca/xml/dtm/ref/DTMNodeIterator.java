@@ -23,10 +23,12 @@ package de.lyca.xml.dtm.ref;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Node;
 import org.w3c.dom.traversal.NodeFilter;
+import org.w3c.dom.traversal.NodeIterator;
 
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xml.dtm.DTMDOMException;
 import de.lyca.xml.dtm.DTMIterator;
+import de.lyca.xml.utils.WrappedRuntimeException;
 
 /**
  * <code>DTMNodeIterator</code> gives us an implementation of the
@@ -56,7 +58,7 @@ import de.lyca.xml.dtm.DTMIterator;
  * State: In progress!!
  * </p>
  * */
-public class DTMNodeIterator implements org.w3c.dom.traversal.NodeIterator {
+public class DTMNodeIterator implements NodeIterator {
   private DTMIterator dtm_iter;
   private boolean valid = true;
 
@@ -71,7 +73,7 @@ public class DTMNodeIterator implements org.w3c.dom.traversal.NodeIterator {
     try {
       dtm_iter = (DTMIterator) dtmIterator.clone();
     } catch (final CloneNotSupportedException cnse) {
-      throw new de.lyca.xml.utils.WrappedRuntimeException(cnse);
+      throw new WrappedRuntimeException(cnse);
     }
   }
 

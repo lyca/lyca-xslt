@@ -60,8 +60,6 @@ import de.lyca.xml.utils.XMLStringFactory;
  * a future code-size optimization.
  * */
 public class SAX2RTFDTM extends SAX2DTM {
-  /** Set true to monitor SAX events and similar diagnostic info. */
-  private static final boolean DEBUG = false;
 
   /** Most recently started Document, or null if the DTM is empty. */
   private int m_currentDocumentNode = NULL;

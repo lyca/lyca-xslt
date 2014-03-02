@@ -20,8 +20,8 @@
  */
 package de.lyca.xml.dtm;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.io.PrintStream;
+import java.io.PrintWriter;
 
 import javax.xml.transform.SourceLocator;
 
@@ -296,7 +296,7 @@ public class DTMException extends RuntimeException {
    */
   @Override
   public void printStackTrace() {
-    printStackTrace(new java.io.PrintWriter(System.err, true));
+    printStackTrace(new PrintWriter(System.err, true));
   }
 
   /**
@@ -307,8 +307,8 @@ public class DTMException extends RuntimeException {
    *          The stream where the dump will be sent to.
    */
   @Override
-  public void printStackTrace(java.io.PrintStream s) {
-    printStackTrace(new java.io.PrintWriter(s));
+  public void printStackTrace(PrintStream s) {
+    printStackTrace(new PrintWriter(s));
   }
 
   /**
@@ -319,9 +319,9 @@ public class DTMException extends RuntimeException {
    *          The writer where the dump will be sent to.
    */
   @Override
-  public void printStackTrace(java.io.PrintWriter s) {
+  public void printStackTrace(PrintWriter s) {
     if (s == null) {
-      s = new java.io.PrintWriter(System.err, true);
+      s = new PrintWriter(System.err, true);
     }
     try {
       final String locInfo = getLocationAsString();
