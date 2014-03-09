@@ -20,6 +20,8 @@
  */
 package de.lyca.xml.dtm.ref;
 
+import java.util.EnumMap;
+
 import javax.xml.transform.Source;
 
 import de.lyca.xml.dtm.Axis;
@@ -106,10 +108,10 @@ public abstract class DTMDefaultBaseTraversers extends DTMDefaultBase {
 
     if (null == m_traversers) // Cache of stateless traversers for this DTM
     {
-      m_traversers = new DTMAxisTraverser[Axis.values().length];
+      m_traversers = new EnumMap<>(Axis.class);
       traverser = null;
     } else {
-      traverser = m_traversers[axis.ordinal()]; // Share/reuse existing traverser
+      traverser = m_traversers.get(axis); // Share/reuse existing traverser
 
       if (traverser != null)
         return traverser;
@@ -184,7 +186,7 @@ public abstract class DTMDefaultBaseTraversers extends DTMDefaultBase {
                 new Object[] { axis.getName() })); // "Unknown axis traversal type: "+axis);
     }
 
-    m_traversers[axis.ordinal()] = traverser;
+    m_traversers.put(axis, traverser);
 
     return traverser;
   }

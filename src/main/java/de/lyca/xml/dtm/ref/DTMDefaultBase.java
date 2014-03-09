@@ -26,10 +26,12 @@ import java.io.IOException;
 import java.io.OutputStream; // for dumpDTM
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.List;
 
 import javax.xml.transform.Source;
 
+import de.lyca.xml.dtm.Axis;
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xml.dtm.DTMAxisTraverser;
 import de.lyca.xml.dtm.DTMException;
@@ -433,7 +435,7 @@ public abstract class DTMDefaultBase implements DTM {
   protected abstract int getNumberOfNodes();
 
   /** Stateless axis traversers, lazely built. */
-  protected DTMAxisTraverser[] m_traversers;
+  protected EnumMap<Axis, DTMAxisTraverser> m_traversers;
 
   /**
    * Get the simple type ID for the given node identity.
