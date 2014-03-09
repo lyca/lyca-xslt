@@ -214,7 +214,7 @@ public abstract class ToSAXHandler extends SerializerBase {
    * @see SerializationHandler#setCdataSectionElements(java.util.List)
    */
   @Override
-  public void setCdataSectionElements(List URI_and_localNames) {
+  public void setCdataSectionElements(List<String> URI_and_localNames) {
     // do nothing
   }
 

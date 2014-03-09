@@ -35,56 +35,56 @@ public interface SerializerTrace {
    * Event type generated when a document begins.
    * 
    */
-  public static final int EVENTTYPE_STARTDOCUMENT = 1;
+  int EVENTTYPE_STARTDOCUMENT = 1;
 
   /**
    * Event type generated when a document ends.
    */
-  public static final int EVENTTYPE_ENDDOCUMENT = 2;
+  int EVENTTYPE_ENDDOCUMENT = 2;
 
   /**
    * Event type generated when an element begins (after the attributes have been
    * processed but before the children have been added).
    */
-  public static final int EVENTTYPE_STARTELEMENT = 3;
+  int EVENTTYPE_STARTELEMENT = 3;
 
   /**
    * Event type generated when an element ends, after it's children have been
    * added.
    */
-  public static final int EVENTTYPE_ENDELEMENT = 4;
+  int EVENTTYPE_ENDELEMENT = 4;
 
   /**
    * Event type generated for character data (CDATA and Ignorable Whitespace
    * have their own events).
    */
-  public static final int EVENTTYPE_CHARACTERS = 5;
+  int EVENTTYPE_CHARACTERS = 5;
 
   /**
    * Event type generated for ignorable whitespace (I'm not sure how much this
    * is actually called.
    */
-  public static final int EVENTTYPE_IGNORABLEWHITESPACE = 6;
+  int EVENTTYPE_IGNORABLEWHITESPACE = 6;
 
   /**
    * Event type generated for processing instructions.
    */
-  public static final int EVENTTYPE_PI = 7;
+  int EVENTTYPE_PI = 7;
 
   /**
    * Event type generated after a comment has been added.
    */
-  public static final int EVENTTYPE_COMMENT = 8;
+  int EVENTTYPE_COMMENT = 8;
 
   /**
    * Event type generate after an entity ref is created.
    */
-  public static final int EVENTTYPE_ENTITYREF = 9;
+  int EVENTTYPE_ENTITYREF = 9;
 
   /**
    * Event type generated after CDATA is generated.
    */
-  public static final int EVENTTYPE_CDATA = 10;
+  int EVENTTYPE_CDATA = 10;
 
   /**
    * Event type generated when characters might be written to an output stream,
@@ -95,19 +95,19 @@ public interface SerializerTrace {
    * ouput to the document the real characters will be written out using the
    * EVENTTYPE_OUTPUT_CHARACTERS.
    */
-  public static final int EVENTTYPE_OUTPUT_PSEUDO_CHARACTERS = 11;
+  int EVENTTYPE_OUTPUT_PSEUDO_CHARACTERS = 11;
 
   /**
    * Event type generated when characters are written to an output stream.
    */
-  public static final int EVENTTYPE_OUTPUT_CHARACTERS = 12;
+  int EVENTTYPE_OUTPUT_CHARACTERS = 12;
 
   /**
    * Tell if trace listeners are present.
    * 
    * @return True if there are trace listeners
    */
-  public boolean hasTraceListeners();
+  boolean hasTraceListeners();
 
   /**
    * Fire startDocument, endDocument events.
@@ -115,7 +115,7 @@ public interface SerializerTrace {
    * @param eventType
    *          One of the EVENTTYPE_XXX constants.
    */
-  public void fireGenerateEvent(int eventType);
+  void fireGenerateEvent(int eventType);
 
   /**
    * Fire startElement, endElement events.
@@ -127,7 +127,7 @@ public interface SerializerTrace {
    * @param atts
    *          The SAX attribute list.
    */
-  public void fireGenerateEvent(int eventType, String name, Attributes atts);
+  void fireGenerateEvent(int eventType, String name, Attributes atts);
 
   /**
    * Fire characters, cdata events.
@@ -141,7 +141,7 @@ public interface SerializerTrace {
    * @param length
    *          The end offset to be used in the chara array.
    */
-  public void fireGenerateEvent(int eventType, char ch[], int start, int length);
+  void fireGenerateEvent(int eventType, char ch[], int start, int length);
 
   /**
    * Fire processingInstruction events.
@@ -153,7 +153,7 @@ public interface SerializerTrace {
    * @param data
    *          The processing instruction data.
    */
-  public void fireGenerateEvent(int eventType, String name, String data);
+  void fireGenerateEvent(int eventType, String name, String data);
 
   /**
    * Fire comment and entity ref events.
@@ -163,6 +163,6 @@ public interface SerializerTrace {
    * @param data
    *          The comment or entity ref data.
    */
-  public void fireGenerateEvent(int eventType, String data);
+  void fireGenerateEvent(int eventType, String data);
 
 }

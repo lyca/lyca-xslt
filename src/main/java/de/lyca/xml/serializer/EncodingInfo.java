@@ -62,7 +62,7 @@ package de.lyca.xml.serializer;
  * 
  * @xsl.usage internal
  */
-public final class EncodingInfo extends Object {
+public final class EncodingInfo {
 
   /**
    * Not all characters in an encoding are in on contiguous group, however there

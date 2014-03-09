@@ -52,25 +52,25 @@ import java.io.Writer;
  */
 interface WriterChain {
   /** This method forces us to over-ride the method defined in java.io.Writer */
-  public void write(int val) throws IOException;
+  void write(int val) throws IOException;
 
   /** This method forces us to over-ride the method defined in java.io.Writer */
-  public void write(char[] chars) throws IOException;
+  void write(char[] chars) throws IOException;
 
   /** This method forces us to over-ride the method defined in java.io.Writer */
-  public void write(char[] chars, int start, int count) throws IOException;
+  void write(char[] chars, int start, int count) throws IOException;
 
   /** This method forces us to over-ride the method defined in java.io.Writer */
-  public void write(String chars) throws IOException;
+  void write(String chars) throws IOException;
 
   /** This method forces us to over-ride the method defined in java.io.Writer */
-  public void write(String chars, int start, int count) throws IOException;
+  void write(String chars, int start, int count) throws IOException;
 
   /** This method forces us to over-ride the method defined in java.io.Writer */
-  public void flush() throws IOException;
+  void flush() throws IOException;
 
   /** This method forces us to over-ride the method defined in java.io.Writer */
-  public void close() throws IOException;
+  void close() throws IOException;
 
   /**
    * If this method returns null, getOutputStream() must return non-null. Get
@@ -79,11 +79,11 @@ interface WriterChain {
    * It is possible that the Writer returned by this method does not implement
    * the WriterChain interface.
    */
-  public Writer getWriter();
+  Writer getWriter();
 
   /**
    * If this method returns null, getWriter() must return non-null. Get the
    * OutputStream that this writer sends its output to.
    */
-  public OutputStream getOutputStream();
+  OutputStream getOutputStream();
 }

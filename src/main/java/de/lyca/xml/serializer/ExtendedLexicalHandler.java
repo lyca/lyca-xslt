@@ -21,6 +21,7 @@
 package de.lyca.xml.serializer;
 
 import org.xml.sax.SAXException;
+import org.xml.sax.ext.LexicalHandler;
 
 /**
  * This interface has extensions to the standard SAX LexicalHandler interface.
@@ -28,7 +29,7 @@ import org.xml.sax.SAXException;
  * 
  * @xsl.usage internal
  */
-public interface ExtendedLexicalHandler extends org.xml.sax.ext.LexicalHandler {
+public interface ExtendedLexicalHandler extends LexicalHandler {
   /**
    * This method is used to notify of a comment
    * 
@@ -37,5 +38,5 @@ public interface ExtendedLexicalHandler extends org.xml.sax.ext.LexicalHandler {
    *          a String rather than a character array.
    * @throws SAXException
    */
-  public void comment(String comment) throws SAXException;
+  void comment(String comment) throws SAXException;
 }

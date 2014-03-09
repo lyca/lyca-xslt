@@ -49,7 +49,7 @@ final class SerializerTraceWriter extends Writer implements WriterChain {
    * which case nothing is written out, but only the trace events are fired for
    * output.
    */
-  private final java.io.Writer m_writer;
+  private final Writer m_writer;
 
   /** The tracer to send events to */
   private final SerializerTrace m_tracer;
@@ -132,7 +132,7 @@ final class SerializerTraceWriter extends Writer implements WriterChain {
    * @see java.io.Writer#flush()
    */
   @Override
-  public void flush() throws java.io.IOException {
+  public void flush() throws IOException {
     // send to the real writer
     if (m_writer != null) {
       m_writer.flush();
@@ -148,7 +148,7 @@ final class SerializerTraceWriter extends Writer implements WriterChain {
    * @see java.io.Writer#close()
    */
   @Override
-  public void close() throws java.io.IOException {
+  public void close() throws IOException {
     // send to the real writer
     if (m_writer != null) {
       m_writer.close();
@@ -217,7 +217,7 @@ final class SerializerTraceWriter extends Writer implements WriterChain {
    * @throws java.io.IOException
    */
   @Override
-  public void write(final char chars[], final int start, final int length) throws java.io.IOException {
+  public void write(final char chars[], final int start, final int length) throws IOException {
     // send to the real writer
     if (m_writer != null) {
       m_writer.write(chars, start, length);

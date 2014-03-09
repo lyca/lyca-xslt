@@ -20,7 +20,6 @@
  */
 package de.lyca.xml.serializer;
 
-import java.util.Hashtable;
 import java.util.Properties;
 
 import javax.xml.transform.OutputKeys;
@@ -67,11 +66,6 @@ public final class SerializerFactory {
   private SerializerFactory() {
 
   }
-
-  /**
-   * Associates output methods to default output formats.
-   */
-  private static Hashtable m_formats = new Hashtable();
 
   /**
    * Returns a serializer for the specified output method. The output method is

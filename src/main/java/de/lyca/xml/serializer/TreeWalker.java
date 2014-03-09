@@ -22,6 +22,7 @@ package de.lyca.xml.serializer;
 
 import java.io.File;
 
+import javax.xml.transform.Result;
 import javax.xml.transform.TransformerException;
 
 import org.w3c.dom.Comment;
@@ -33,6 +34,7 @@ import org.w3c.dom.ProcessingInstruction;
 import org.w3c.dom.Text;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
+import org.xml.sax.SAXException;
 import org.xml.sax.ext.LexicalHandler;
 import org.xml.sax.helpers.LocatorImpl;
 
@@ -136,7 +138,7 @@ public final class TreeWalker {
    * 
    * @throws TransformerException
    */
-  public void traverse(Node pos) throws org.xml.sax.SAXException {
+  public void traverse(Node pos) throws SAXException {
 
     m_contentHandler.startDocument();
 
@@ -191,7 +193,7 @@ public final class TreeWalker {
    * 
    * @throws TransformerException
    */
-  public void traverse(Node pos, Node top) throws org.xml.sax.SAXException {
+  public void traverse(Node pos, Node top) throws SAXException {
 
     m_contentHandler.startDocument();
 
@@ -231,7 +233,7 @@ public final class TreeWalker {
   /**
    * Optimized dispatch of characters.
    */
-  private final void dispatachChars(Node node) throws org.xml.sax.SAXException {
+  private final void dispatachChars(Node node) throws SAXException {
     if (m_Serializer != null) {
       m_Serializer.characters(node);
     } else {
@@ -249,7 +251,7 @@ public final class TreeWalker {
    * 
    * @throws org.xml.sax.SAXException
    */
-  protected void startNode(Node node) throws org.xml.sax.SAXException {
+  protected void startNode(Node node) throws SAXException {
 
     // TODO: <REVIEW>
     // A Serializer implements ContentHandler, but not NodeConsumer
@@ -379,9 +381,9 @@ public final class TreeWalker {
         if (nextIsRaw) {
           nextIsRaw = false;
 
-          m_contentHandler.processingInstruction(javax.xml.transform.Result.PI_DISABLE_OUTPUT_ESCAPING, "");
+          m_contentHandler.processingInstruction(Result.PI_DISABLE_OUTPUT_ESCAPING, "");
           dispatachChars(node);
-          m_contentHandler.processingInstruction(javax.xml.transform.Result.PI_ENABLE_OUTPUT_ESCAPING, "");
+          m_contentHandler.processingInstruction(Result.PI_ENABLE_OUTPUT_ESCAPING, "");
         } else {
           dispatachChars(node);
         }
@@ -411,7 +413,7 @@ public final class TreeWalker {
    * 
    * @throws org.xml.sax.SAXException
    */
-  protected void endNode(Node node) throws org.xml.sax.SAXException {
+  protected void endNode(Node node) throws SAXException {
 
     switch (node.getNodeType()) {
       case Node.DOCUMENT_NODE:

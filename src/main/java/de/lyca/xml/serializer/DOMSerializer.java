@@ -72,5 +72,5 @@ public interface DOMSerializer {
    * @throws IOException
    *           if an I/O exception occured while serializing
    */
-  public void serialize(Node node) throws IOException;
+  void serialize(Node node) throws IOException;
 }

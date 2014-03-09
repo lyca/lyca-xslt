@@ -130,7 +130,7 @@ public interface DOM3Serializer {
    * @throws IOException
    *           if an I/O exception occured while serializing
    */
-  public void serializeDOM3(Node node) throws IOException;
+  void serializeDOM3(Node node) throws IOException;
 
   /**
    * Sets a DOMErrorHandler on the DOM Level 3 Serializer.
@@ -140,7 +140,7 @@ public interface DOM3Serializer {
    * @param handler
    *          the Level 3 DOMErrorHandler
    */
-  public void setErrorHandler(DOMErrorHandler handler);
+  void setErrorHandler(DOMErrorHandler handler);
 
   /**
    * Returns a DOMErrorHandler set on the DOM Level 3 Serializer.
@@ -149,7 +149,7 @@ public interface DOM3Serializer {
    * 
    * @return A Level 3 DOMErrorHandler
    */
-  public DOMErrorHandler getErrorHandler();
+  DOMErrorHandler getErrorHandler();
 
   /**
    * Sets a LSSerializerFilter on the DOM Level 3 Serializer to filter nodes
@@ -160,7 +160,7 @@ public interface DOM3Serializer {
    * @param filter
    *          the Level 3 LSSerializerFilter
    */
-  public void setNodeFilter(LSSerializerFilter filter);
+  void setNodeFilter(LSSerializerFilter filter);
 
   /**
    * Returns a LSSerializerFilter set on the DOM Level 3 Serializer to filter
@@ -170,7 +170,7 @@ public interface DOM3Serializer {
    * 
    * @return The Level 3 LSSerializerFilter
    */
-  public LSSerializerFilter getNodeFilter();
+  LSSerializerFilter getNodeFilter();
 
   /**
    * Sets the end-of-line sequence of characters to be used during serialization
@@ -179,5 +179,5 @@ public interface DOM3Serializer {
    *          The end-of-line sequence of characters to be used during
    *          serialization
    */
-  public void setNewLine(char[] newLine);
+  void setNewLine(char[] newLine);
 }

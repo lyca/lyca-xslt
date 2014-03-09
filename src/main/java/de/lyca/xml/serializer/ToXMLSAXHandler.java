@@ -320,7 +320,7 @@ public final class ToXMLSAXHandler extends ToSAXHandler {
    */
 
   @Override
-  public boolean startPrefixMapping(String prefix, String uri, boolean shouldFlush) throws org.xml.sax.SAXException {
+  public boolean startPrefixMapping(String prefix, String uri, boolean shouldFlush) throws SAXException {
 
     /*
      * Remember the mapping, and at what depth it was declared This is one

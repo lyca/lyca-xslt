@@ -58,7 +58,7 @@ public class ToTextStream extends ToStream {
    * @throws org.xml.sax.SAXException
    */
   @Override
-  protected void startDocumentInternal() throws org.xml.sax.SAXException {
+  protected void startDocumentInternal() throws SAXException {
     super.startDocumentInternal();
 
     m_needToCallStartDocument = false;
@@ -82,7 +82,7 @@ public class ToTextStream extends ToStream {
    * @throws org.xml.sax.SAXException
    */
   @Override
-  public void endDocument() throws org.xml.sax.SAXException {
+  public void endDocument() throws SAXException {
     flushPending();
     flushWriter();
     if (m_tracer != null) {
@@ -129,7 +129,7 @@ public class ToTextStream extends ToStream {
    */
   @Override
   public void startElement(String namespaceURI, String localName, String name, Attributes atts)
-          throws org.xml.sax.SAXException {
+          throws SAXException {
     // time to fire off startElement event
     if (m_tracer != null) {
       super.fireStartElem(name);
@@ -168,7 +168,7 @@ public class ToTextStream extends ToStream {
    * @throws org.xml.sax.SAXException
    */
   @Override
-  public void endElement(String namespaceURI, String localName, String name) throws org.xml.sax.SAXException {
+  public void endElement(String namespaceURI, String localName, String name) throws SAXException {
     if (m_tracer != null) {
       super.fireEndElem(name);
     }
@@ -208,7 +208,7 @@ public class ToTextStream extends ToStream {
    * @see org.xml.sax.Locator
    */
   @Override
-  public void characters(char ch[], int start, int length) throws org.xml.sax.SAXException {
+  public void characters(char ch[], int start, int length) throws SAXException {
 
     flushPending();
 
@@ -253,7 +253,7 @@ public class ToTextStream extends ToStream {
    *           Any SAX exception, possibly wrapping another exception.
    */
   @Override
-  public void charactersRaw(char ch[], int start, int length) throws org.xml.sax.SAXException {
+  public void charactersRaw(char ch[], int start, int length) throws SAXException {
 
     try {
       writeNormalizedChars(ch, start, length, m_lineSepUse);
@@ -281,7 +281,7 @@ public class ToTextStream extends ToStream {
    * @throws org.xml.sax.SAXException
    */
   void writeNormalizedChars(final char ch[], final int start, final int length, final boolean useLineSep)
-          throws IOException, org.xml.sax.SAXException {
+          throws IOException, SAXException {
     final String encoding = getEncoding();
     final java.io.Writer writer = m_writer;
     final int end = start + length;
@@ -389,7 +389,7 @@ public class ToTextStream extends ToStream {
    * @see org.xml.sax.Locator
    */
   @Override
-  public void cdata(char ch[], int start, int length) throws org.xml.sax.SAXException {
+  public void cdata(char ch[], int start, int length) throws SAXException {
     try {
       writeNormalizedChars(ch, start, length, m_lineSepUse);
       if (m_tracer != null) {
@@ -435,7 +435,7 @@ public class ToTextStream extends ToStream {
    * @throws org.xml.sax.SAXException
    */
   @Override
-  public void ignorableWhitespace(char ch[], int start, int length) throws org.xml.sax.SAXException {
+  public void ignorableWhitespace(char ch[], int start, int length) throws SAXException {
 
     try {
       writeNormalizedChars(ch, start, length, m_lineSepUse);
@@ -468,7 +468,7 @@ public class ToTextStream extends ToStream {
    * @throws org.xml.sax.SAXException
    */
   @Override
-  public void processingInstruction(String target, String data) throws org.xml.sax.SAXException {
+  public void processingInstruction(String target, String data) throws SAXException {
     // flush anything pending first
     flushPending();
 
@@ -488,7 +488,7 @@ public class ToTextStream extends ToStream {
    *           Any SAX exception, possibly wrapping another exception.
    */
   @Override
-  public void comment(String data) throws org.xml.sax.SAXException {
+  public void comment(String data) throws SAXException {
     final int length = data.length();
     if (length > m_charsBuff.length) {
       m_charsBuff = new char[length * 2 + 1];
@@ -513,7 +513,7 @@ public class ToTextStream extends ToStream {
    *           The application may raise an exception.
    */
   @Override
-  public void comment(char ch[], int start, int length) throws org.xml.sax.SAXException {
+  public void comment(char ch[], int start, int length) throws SAXException {
 
     flushPending();
     if (m_tracer != null) {
@@ -530,7 +530,7 @@ public class ToTextStream extends ToStream {
    * @throws org.xml.sax.SAXException
    */
   @Override
-  public void entityReference(String name) throws org.xml.sax.SAXException {
+  public void entityReference(String name) throws SAXException {
     if (m_tracer != null) {
       super.fireEntityReference(name);
     }
@@ -616,7 +616,7 @@ public class ToTextStream extends ToStream {
   }
 
   @Override
-  public void startPrefixMapping(String prefix, String uri) throws org.xml.sax.SAXException {
+  public void startPrefixMapping(String prefix, String uri) throws SAXException {
     // no namespace support for HTML
   }
 
@@ -626,7 +626,7 @@ public class ToTextStream extends ToStream {
   }
 
   @Override
-  public void flushPending() throws org.xml.sax.SAXException {
+  public void flushPending() throws SAXException {
     if (m_needToCallStartDocument) {
       startDocumentInternal();
       m_needToCallStartDocument = false;

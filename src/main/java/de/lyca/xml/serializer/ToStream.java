@@ -2526,7 +2526,7 @@ abstract public class ToStream extends SerializerBase {
    *          a vector of pairs of Strings (URI/local)
    */
   @Override
-  public void setCdataSectionElements(List URI_and_localNames) {
+  public void setCdataSectionElements(List<String> URI_and_localNames) {
     // convert to the new way.
     if (URI_and_localNames != null) {
       final int len = URI_and_localNames.size() - 1;
@@ -2537,8 +2537,8 @@ abstract public class ToStream extends SerializerBase {
           if (i != 0) {
             sb.append(' ');
           }
-          final String uri = (String) URI_and_localNames.get(i);
-          final String localName = (String) URI_and_localNames.get(i + 1);
+          final String uri = URI_and_localNames.get(i);
+          final String localName = URI_and_localNames.get(i + 1);
           if (uri != null) {
             // If there is no URI don't put this in, just the localName then.
             sb.append('{');
@@ -2566,7 +2566,7 @@ abstract public class ToStream extends SerializerBase {
    * @throws SAXException
    */
   protected String ensureAttributesNamespaceIsDeclared(String ns, String localName, String rawName)
-          throws org.xml.sax.SAXException {
+          throws SAXException {
 
     if (ns != null && ns.length() > 0) {
 
@@ -2609,7 +2609,7 @@ abstract public class ToStream extends SerializerBase {
     return null;
   }
 
-  void ensurePrefixIsDeclared(String ns, String rawName) throws org.xml.sax.SAXException {
+  void ensurePrefixIsDeclared(String ns, String rawName) throws SAXException {
 
     if (ns != null && ns.length() > 0) {
       int index;
@@ -2843,7 +2843,7 @@ abstract public class ToStream extends SerializerBase {
    * method writeAttrString() into a string buffer. In this manner trace events,
    * and the real writing of attributes will use the same code.
    */
-  private static class WritertoStringBuilder extends java.io.Writer {
+  private static class WritertoStringBuilder extends Writer {
     final private StringBuilder m_stringbuf;
 
     /**

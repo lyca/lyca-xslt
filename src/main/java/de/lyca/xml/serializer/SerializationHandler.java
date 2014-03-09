@@ -50,9 +50,9 @@ public interface SerializationHandler extends ExtendedContentHandler, ExtendedLe
    * @see Serializer#asContentHandler()
    * @see ToSAXHandler
    */
-  public void setContentHandler(ContentHandler ch);
+  void setContentHandler(ContentHandler ch);
 
-  public void close();
+  void close();
 
   /**
    * Notify that the serializer should take this DOM node as input to be
@@ -63,7 +63,7 @@ public interface SerializationHandler extends ExtendedContentHandler, ExtendedLe
    * @throws IOException
    */
   @Override
-  public void serialize(Node node) throws IOException;
+  void serialize(Node node) throws IOException;
 
   /**
    * Turns special character escaping on/off.
@@ -74,7 +74,7 @@ public interface SerializationHandler extends ExtendedContentHandler, ExtendedLe
    * @param escape
    *          true if escaping is to be set on.
    */
-  public boolean setEscaping(boolean escape) throws SAXException;
+  boolean setEscaping(boolean escape) throws SAXException;
 
   /**
    * Set the number of spaces to indent for each indentation level.
@@ -82,7 +82,7 @@ public interface SerializationHandler extends ExtendedContentHandler, ExtendedLe
    * @param spaces
    *          the number of spaces to indent for each indentation level.
    */
-  public void setIndentAmount(int spaces);
+  void setIndentAmount(int spaces);
 
   /**
    * Set the transformer associated with the serializer.
@@ -90,14 +90,14 @@ public interface SerializationHandler extends ExtendedContentHandler, ExtendedLe
    * @param transformer
    *          the transformer associated with the serializer.
    */
-  public void setTransformer(Transformer transformer);
+  void setTransformer(Transformer transformer);
 
   /**
    * Get the transformer associated with the serializer.
    * 
    * @return Transformer the transformer associated with the serializer.
    */
-  public Transformer getTransformer();
+  Transformer getTransformer();
 
   /**
    * Used only by TransformerSnapshotImpl to restore the serialization to a
@@ -106,7 +106,7 @@ public interface SerializationHandler extends ExtendedContentHandler, ExtendedLe
    * @param mappings
    *          NamespaceMappings
    */
-  public void setNamespaceMappings(NamespaceMappings mappings);
+  void setNamespaceMappings(NamespaceMappings mappings);
 
   /**
    * A SerializationHandler accepts SAX-like events, so it can accumulate
@@ -127,7 +127,7 @@ public interface SerializationHandler extends ExtendedContentHandler, ExtendedLe
    * <p>
    * For performance reasons this method should not be called very often.
    */
-  public void flushPending() throws SAXException;
+  void flushPending() throws SAXException;
 
   /**
    * Default behavior is to expand DTD entities, that is the initall default
@@ -137,6 +137,6 @@ public interface SerializationHandler extends ExtendedContentHandler, ExtendedLe
    *          true if DTD entities are to be expanded, false if they are to be
    *          left as DTD entity references.
    */
-  public void setDTDEntityExpansion(boolean expand);
+  void setDTDEntityExpansion(boolean expand);
 
 }

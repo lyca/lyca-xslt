@@ -43,7 +43,7 @@ import java.util.StringTokenizer;
  * @xsl.usage internal
  */
 
-public final class Encodings extends Object {
+public final class Encodings {
   /**
    * Standard filename for properties file with encodings data.
    */

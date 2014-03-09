@@ -22,6 +22,9 @@ package de.lyca.xml.serializer;
 
 import javax.xml.transform.SourceLocator;
 
+import org.w3c.dom.Node;
+import org.xml.sax.Attributes;
+import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
 /**
@@ -50,7 +53,7 @@ import org.xml.sax.SAXException;
  * 
  * @xsl.usage internal
  */
-public interface ExtendedContentHandler extends org.xml.sax.ContentHandler {
+public interface ExtendedContentHandler extends ContentHandler {
   /**
    * Add at attribute to the current element
    * 
@@ -69,7 +72,7 @@ public interface ExtendedContentHandler extends org.xml.sax.ContentHandler {
    *          element
    * @throws SAXException
    */
-  public void addAttribute(String uri, String localName, String rawName, String type, String value, boolean XSLAttribute)
+  void addAttribute(String uri, String localName, String rawName, String type, String value, boolean XSLAttribute)
           throws SAXException;
 
   /**
@@ -79,7 +82,7 @@ public interface ExtendedContentHandler extends org.xml.sax.ContentHandler {
    *          the attributes to add.
    * @throws SAXException
    */
-  public void addAttributes(org.xml.sax.Attributes atts) throws org.xml.sax.SAXException;
+  void addAttributes(Attributes atts) throws SAXException;
 
   /**
    * Add an attribute to the current element. The namespace URI of the attribute
@@ -89,7 +92,7 @@ public interface ExtendedContentHandler extends org.xml.sax.ContentHandler {
    * @param qName
    * @param value
    */
-  public void addAttribute(String qName, String value);
+  void addAttribute(String qName, String value);
 
   /**
    * This method is used to notify of a character event, but passing the data as
@@ -99,7 +102,7 @@ public interface ExtendedContentHandler extends org.xml.sax.ContentHandler {
    *          the character data
    * @throws SAXException
    */
-  public void characters(String chars) throws SAXException;
+  void characters(String chars) throws SAXException;
 
   /**
    * This method is used to notify of a character event, but passing the data as
@@ -109,7 +112,7 @@ public interface ExtendedContentHandler extends org.xml.sax.ContentHandler {
    *          a DOM Node containing text.
    * @throws SAXException
    */
-  public void characters(org.w3c.dom.Node node) throws org.xml.sax.SAXException;
+  void characters(Node node) throws SAXException;
 
   /**
    * This method is used to notify that an element has ended. Unlike the
@@ -127,7 +130,7 @@ public interface ExtendedContentHandler extends org.xml.sax.ContentHandler {
    *          the fully qualified element name.
    * @throws SAXException
    */
-  public void endElement(String elemName) throws SAXException;
+  void endElement(String elemName) throws SAXException;
 
   /**
    * This method is used to notify that an element is starting. This method is
@@ -148,7 +151,7 @@ public interface ExtendedContentHandler extends org.xml.sax.ContentHandler {
    * 
    * @throws SAXException
    */
-  public void startElement(String uri, String localName, String qName) throws org.xml.sax.SAXException;
+  void startElement(String uri, String localName, String qName) throws SAXException;
 
   /**
    * This method is used to notify of the start of an element
@@ -157,7 +160,7 @@ public interface ExtendedContentHandler extends org.xml.sax.ContentHandler {
    *          the fully qualified name of the element
    * @throws SAXException
    */
-  public void startElement(String qName) throws SAXException;
+  void startElement(String qName) throws SAXException;
 
   /**
    * This method is used to notify that a prefix mapping is to start, but after
@@ -182,7 +185,7 @@ public interface ExtendedContentHandler extends org.xml.sax.ContentHandler {
    *          the prefix that maps to the given namespace
    * @throws SAXException
    */
-  public void namespaceAfterStartElement(String uri, String prefix) throws SAXException;
+  void namespaceAfterStartElement(String uri, String prefix) throws SAXException;
 
   /**
    * This method is used to notify that a prefix maping is to start, which can
@@ -201,7 +204,7 @@ public interface ExtendedContentHandler extends org.xml.sax.ContentHandler {
    *         before seen mapping for the element.
    * @throws SAXException
    */
-  public boolean startPrefixMapping(String prefix, String uri, boolean shouldFlush) throws SAXException;
+  boolean startPrefixMapping(String prefix, String uri, boolean shouldFlush) throws SAXException;
 
   /**
    * Notify of an entity reference.
@@ -210,7 +213,7 @@ public interface ExtendedContentHandler extends org.xml.sax.ContentHandler {
    *          the name of the entity
    * @throws SAXException
    */
-  public void entityReference(String entityName) throws SAXException;
+  void entityReference(String entityName) throws SAXException;
 
   /**
    * This method returns an object that has the current namespace mappings in
@@ -219,7 +222,7 @@ public interface ExtendedContentHandler extends org.xml.sax.ContentHandler {
    * @return NamespaceMappings an object that has the current namespace mappings
    *         in effect.
    */
-  public NamespaceMappings getNamespaceMappings();
+  NamespaceMappings getNamespaceMappings();
 
   /**
    * This method returns the prefix that currently maps to the given namespace
@@ -229,7 +232,7 @@ public interface ExtendedContentHandler extends org.xml.sax.ContentHandler {
    *          the namespace URI
    * @return String the prefix that currently maps to the given URI.
    */
-  public String getPrefix(String uri);
+  String getPrefix(String uri);
 
   /**
    * This method gets the prefix associated with a current element or attribute
@@ -241,7 +244,7 @@ public interface ExtendedContentHandler extends org.xml.sax.ContentHandler {
    *          true if it is an element name, false if it is an atttribute name
    * @return String the namespace URI associated with the element or attribute.
    */
-  public String getNamespaceURI(String name, boolean isElement);
+  String getNamespaceURI(String name, boolean isElement);
 
   /**
    * This method returns the namespace URI currently associated with the prefix.
@@ -250,7 +253,7 @@ public interface ExtendedContentHandler extends org.xml.sax.ContentHandler {
    *          a prefix of an element or attribute.
    * @return String the namespace URI currently associated with the prefix.
    */
-  public String getNamespaceURIFromPrefix(String prefix);
+  String getNamespaceURIFromPrefix(String prefix);
 
   /**
    * This method is used to set the source locator, which might be used to
@@ -259,20 +262,20 @@ public interface ExtendedContentHandler extends org.xml.sax.ContentHandler {
    * @param locator
    *          the source locator
    */
-  public void setSourceLocator(SourceLocator locator);
+  void setSourceLocator(SourceLocator locator);
 
   // Bit constants for addUniqueAttribute().
 
   // The attribute value contains no bad characters. A "bad" character is one
   // which
   // is greater than 126 or it is one of '<', '>', '&' or '"'.
-  public static final int NO_BAD_CHARS = 0x1;
+  int NO_BAD_CHARS = 0x1;
 
   // An HTML empty attribute (e.g. <OPTION selected>).
-  public static final int HTML_ATTREMPTY = 0x2;
+  int HTML_ATTREMPTY = 0x2;
 
   // An HTML URL attribute
-  public static final int HTML_ATTRURL = 0x4;
+  int HTML_ATTRURL = 0x4;
 
   /**
    * Add a unique attribute to the current element. The attribute is guaranteed
@@ -288,7 +291,7 @@ public interface ExtendedContentHandler extends org.xml.sax.ContentHandler {
    * @param flags
    *          a bitwise flag
    */
-  public void addUniqueAttribute(String qName, String value, int flags) throws SAXException;
+  void addUniqueAttribute(String qName, String value, int flags) throws SAXException;
 
   /**
    * Add an attribute from an xsl:attribute element.
@@ -300,7 +303,7 @@ public interface ExtendedContentHandler extends org.xml.sax.ContentHandler {
    * @param uri
    *          the uri that the prefix of the qName is mapped to.
    */
-  public void addXSLAttribute(String qName, final String value, final String uri);
+  void addXSLAttribute(String qName, final String value, final String uri);
 
   /**
    * Add at attribute to the current element, not from an xsl:attribute element.
@@ -317,5 +320,5 @@ public interface ExtendedContentHandler extends org.xml.sax.ContentHandler {
    *          the value of the attribute
    * @throws SAXException
    */
-  public void addAttribute(String uri, String localName, String rawName, String type, String value) throws SAXException;
+  void addAttribute(String uri, String localName, String rawName, String type, String value) throws SAXException;
 }

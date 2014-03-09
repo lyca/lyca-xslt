@@ -105,14 +105,14 @@ public interface Serializer {
    * @param output
    *          The output stream
    */
-  public void setOutputStream(OutputStream output);
+  void setOutputStream(OutputStream output);
 
   /**
    * Get the output stream where the events will be serialized to.
    * 
    * @return reference to the result stream, or null if only a writer was set.
    */
-  public OutputStream getOutputStream();
+  OutputStream getOutputStream();
 
   /**
    * Specifies a writer to which the document should be serialized. This method
@@ -128,14 +128,14 @@ public interface Serializer {
    * @param writer
    *          The output writer stream
    */
-  public void setWriter(Writer writer);
+  void setWriter(Writer writer);
 
   /**
    * Get the character stream where the events will be serialized to.
    * 
    * @return Reference to the result Writer, or null.
    */
-  public Writer getWriter();
+  Writer getWriter();
 
   /**
    * Specifies an output format for this serializer. It the serializer has
@@ -169,14 +169,14 @@ public interface Serializer {
    * @param format
    *          The output format to use, as a set of key/value pairs.
    */
-  public void setOutputFormat(Properties format);
+  void setOutputFormat(Properties format);
 
   /**
    * Returns the output format properties for this serializer.
    * 
    * @return The output format key/value pairs in use.
    */
-  public Properties getOutputFormat();
+  Properties getOutputFormat();
 
   /**
    * Return a {@link ContentHandler} interface to provide SAX input to. Through
@@ -192,7 +192,7 @@ public interface Serializer {
    * @throws IOException
    *           An I/O exception occured
    */
-  public ContentHandler asContentHandler() throws IOException;
+  ContentHandler asContentHandler() throws IOException;
 
   /**
    * Return a {@link DOMSerializer} interface into this serializer. Through the
@@ -208,7 +208,7 @@ public interface Serializer {
    * @throws IOException
    *           An I/O exception occured
    */
-  public DOMSerializer asDOMSerializer() throws IOException;
+  DOMSerializer asDOMSerializer() throws IOException;
 
   /**
    * This method resets the serializer. If this method returns true, the
@@ -219,7 +219,7 @@ public interface Serializer {
    * 
    * @return True if serializer has been reset and can be reused
    */
-  public boolean reset();
+  boolean reset();
 
   /**
    * Return an Object into this serializer to be cast to a DOM3Serializer.
@@ -235,5 +235,5 @@ public interface Serializer {
    * @throws IOException
    *           An I/O exception occured
    */
-  public Object asDOM3Serializer() throws IOException;
+  Object asDOM3Serializer() throws IOException;
 }

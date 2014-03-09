@@ -1146,14 +1146,14 @@ public final class ToUnknownStream extends SerializerBase {
   }
 
   /**
-   * @param URI_and_localNames
+   * @param uri_and_localNames
    *          Vector a list of pairs of URI/localName specified in the
    *          cdata-section-elements attribute.
    * @see SerializationHandler#setCdataSectionElements(java.util.List)
    */
   @Override
-  public void setCdataSectionElements(List URI_and_localNames) {
-    m_handler.setCdataSectionElements(URI_and_localNames);
+  public void setCdataSectionElements(List<String> uri_and_localNames) {
+    m_handler.setCdataSectionElements(uri_and_localNames);
   }
 
   /**

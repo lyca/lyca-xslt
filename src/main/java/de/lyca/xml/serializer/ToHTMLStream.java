@@ -21,6 +21,7 @@
 package de.lyca.xml.serializer;
 
 import java.io.IOException;
+import java.io.Writer;
 import java.util.Properties;
 
 import javax.xml.transform.Result;
@@ -438,24 +439,6 @@ public class ToHTMLStream extends ToStream {
   }
 
   /**
-   * Tells if the formatter should use special URL escaping.
-   * 
-   * @return True if URLs should be specially escaped with the %xx form.
-   */
-  private final boolean getSpecialEscapeURLs() {
-    return m_specialEscapeURLs;
-  }
-
-  /**
-   * Tells if the formatter should omit the META tag.
-   * 
-   * @return True if the META tag should be omitted.
-   */
-  private final boolean getOmitMetaTag() {
-    return m_omitMetaTag;
-  }
-
-  /**
    * Get a description of the given element.
    * 
    * @param name
@@ -520,7 +503,7 @@ public class ToHTMLStream extends ToStream {
    * @throws org.xml.sax.SAXException
    */
   @Override
-  protected void startDocumentInternal() throws org.xml.sax.SAXException {
+  protected void startDocumentInternal() throws SAXException {
     super.startDocumentInternal();
 
     m_needToCallStartDocument = false;
@@ -580,7 +563,7 @@ public class ToHTMLStream extends ToStream {
    * @throws org.xml.sax.SAXException
    */
   @Override
-  public final void endDocument() throws org.xml.sax.SAXException {
+  public final void endDocument() throws SAXException {
 
     flushPending();
     if (m_doIndent && !m_isprevtext) {
@@ -614,7 +597,7 @@ public class ToHTMLStream extends ToStream {
    */
   @Override
   public void startElement(String namespaceURI, String localName, String name, Attributes atts)
-          throws org.xml.sax.SAXException {
+          throws SAXException {
 
     ElemContext elemContext = m_elemContext;
 
@@ -737,7 +720,7 @@ public class ToHTMLStream extends ToStream {
    */
   @Override
   public final void endElement(final String namespaceURI, final String localName, final String name)
-          throws org.xml.sax.SAXException {
+          throws SAXException {
     // deal with any pending issues
     if (m_cdataTagOpen) {
       closeCDATA();
@@ -858,7 +841,7 @@ public class ToHTMLStream extends ToStream {
    * 
    * @throws org.xml.sax.SAXException
    */
-  protected void processAttribute(java.io.Writer writer, String name, String value, ElemDesc elemDesc)
+  protected void processAttribute(Writer writer, String name, String value, ElemDesc elemDesc)
           throws IOException {
     writer.write(' ');
 
@@ -882,13 +865,6 @@ public class ToHTMLStream extends ToStream {
   }
 
   /**
-   * Tell if a character is an ASCII digit.
-   */
-  private boolean isASCIIDigit(char c) {
-    return c >= '0' && c <= '9';
-  }
-
-  /**
    * Make an integer into an HH hex value. Does no checking on the size of the
    * input, since this is only meant to be used locally by writeAttrURI.
    * 
@@ -906,24 +882,6 @@ public class ToHTMLStream extends ToStream {
   }
 
   /**
-   * Dmitri Ilyin: Makes sure if the String is HH encoded sign.
-   * 
-   * @param str
-   *          must be 2 characters long
-   * 
-   * @return true or false
-   */
-  private boolean isHHSign(String str) {
-    boolean sign = true;
-    try {
-      final char r = (char) Integer.parseInt(str, 16);
-    } catch (final NumberFormatException e) {
-      sign = false;
-    }
-    return sign;
-  }
-
-  /**
    * Write the specified <var>string</var> after substituting non ASCII
    * characters, with <CODE>%HH</CODE>, where HH is the hex of the byte value.
    * 
@@ -936,7 +894,7 @@ public class ToHTMLStream extends ToStream {
    * @throws org.xml.sax.SAXException
    *           if a bad surrogate pair is detected.
    */
-  public void writeAttrURI(final java.io.Writer writer, String string, boolean doURLEscaping) throws IOException {
+  public void writeAttrURI(final Writer writer, String string, boolean doURLEscaping) throws IOException {
     // http://www.ietf.org/rfc/rfc2396.txt says:
     // A URI is always in an "escaped" form, since escaping or unescaping a
     // completed URI might change its semantics. Normally, the only time
@@ -1157,7 +1115,7 @@ public class ToHTMLStream extends ToStream {
    * @throws org.xml.sax.SAXException
    */
   @Override
-  public void writeAttrString(final java.io.Writer writer, String string, String encoding) throws IOException {
+  public void writeAttrString(final Writer writer, String string, String encoding) throws IOException {
     final int end = string.length();
     if (end > m_attrBuff.length) {
       m_attrBuff = new char[end * 2 + 1];
@@ -1276,7 +1234,7 @@ public class ToHTMLStream extends ToStream {
    * @throws org.xml.sax.SAXException
    */
   @Override
-  public final void characters(char chars[], int start, int length) throws org.xml.sax.SAXException {
+  public final void characters(char chars[], int start, int length) throws SAXException {
 
     if (m_elemContext.m_isRaw) {
       try {
@@ -1297,7 +1255,7 @@ public class ToHTMLStream extends ToStream {
 
         return;
       } catch (final IOException ioe) {
-        throw new org.xml.sax.SAXException(Utils.messages.createMessage(MsgKey.ER_OIERROR, null), ioe);
+        throw new SAXException(Utils.messages.createMessage(MsgKey.ER_OIERROR, null), ioe);
       }
     } else {
       super.characters(chars, start, length);
@@ -1340,7 +1298,7 @@ public class ToHTMLStream extends ToStream {
    * @throws org.xml.sax.SAXException
    */
   @Override
-  public final void cdata(char ch[], int start, int length) throws org.xml.sax.SAXException {
+  public final void cdata(char ch[], int start, int length) throws SAXException {
 
     if (null != m_elemContext.m_elementName
             && (m_elemContext.m_elementName.equalsIgnoreCase("SCRIPT") || m_elemContext.m_elementName
@@ -1381,7 +1339,7 @@ public class ToHTMLStream extends ToStream {
    * @throws org.xml.sax.SAXException
    */
   @Override
-  public void processingInstruction(String target, String data) throws org.xml.sax.SAXException {
+  public void processingInstruction(String target, String data) throws SAXException {
 
     // Process any pending starDocument and startElement first.
     flushPending();
@@ -1458,7 +1416,7 @@ public class ToHTMLStream extends ToStream {
    * @throws org.xml.sax.SAXException
    */
   @Override
-  public final void entityReference(String name) throws org.xml.sax.SAXException {
+  public final void entityReference(String name) throws SAXException {
     try {
 
       final java.io.Writer writer = m_writer;
@@ -1585,7 +1543,7 @@ public class ToHTMLStream extends ToStream {
    * @see #startDTD
    */
   @Override
-  public void endDTD() throws org.xml.sax.SAXException {
+  public void endDTD() throws SAXException {
     m_inDTD = false;
     /*
      * for ToHTMLStream the DOCTYPE is entirely output in the
@@ -1642,7 +1600,7 @@ public class ToHTMLStream extends ToStream {
   @Override
   public void addUniqueAttribute(String name, String value, int flags) throws SAXException {
     try {
-      final java.io.Writer writer = m_writer;
+      final Writer writer = m_writer;
       if ((flags & NO_BAD_CHARS) > 0 && m_htmlcharInfo.onlyQuotAmpLtGt) {
         // "flags" has indicated that the characters
         // '>' '<' '&' and '"' are not in the value and

@@ -102,7 +102,7 @@ public class ToXMLStream extends ToStream {
    * @throws org.xml.sax.SAXException
    */
   @Override
-  public void startDocumentInternal() throws org.xml.sax.SAXException {
+  public void startDocumentInternal() throws SAXException {
 
     if (m_needToCallStartDocument) {
       super.startDocumentInternal();
@@ -169,7 +169,7 @@ public class ToXMLStream extends ToStream {
    * @throws org.xml.sax.SAXException
    */
   @Override
-  public void endDocument() throws org.xml.sax.SAXException {
+  public void endDocument() throws SAXException {
     flushPending();
     if (m_doIndent && !m_isprevtext) {
       try {
@@ -198,7 +198,7 @@ public class ToXMLStream extends ToStream {
    * 
    * @throws org.xml.sax.SAXException
    */
-  public void startPreserving() throws org.xml.sax.SAXException {
+  public void startPreserving() throws SAXException {
 
     // Not sure this is really what we want. -sb
     m_preserves.push(true);
@@ -213,7 +213,7 @@ public class ToXMLStream extends ToStream {
    * 
    * @throws org.xml.sax.SAXException
    */
-  public void endPreserving() throws org.xml.sax.SAXException {
+  public void endPreserving() throws SAXException {
 
     // Not sure this is really what we want. -sb
     m_ispreserve = m_preserves.isEmpty() ? false : m_preserves.pop();
@@ -232,7 +232,7 @@ public class ToXMLStream extends ToStream {
    * @throws org.xml.sax.SAXException
    */
   @Override
-  public void processingInstruction(String target, String data) throws org.xml.sax.SAXException {
+  public void processingInstruction(String target, String data) throws SAXException {
     if (m_inEntityRef)
       return;
 
@@ -312,7 +312,7 @@ public class ToXMLStream extends ToStream {
    * @throws org.xml.sax.SAXException
    */
   @Override
-  public void entityReference(String name) throws org.xml.sax.SAXException {
+  public void entityReference(String name) throws SAXException {
     if (m_elemContext.m_startTagOpen) {
       closeStartTag();
       m_elemContext.m_startTagOpen = false;
