@@ -20,7 +20,6 @@
  */
 package de.lyca.xpath.functions;
 
-import de.lyca.xml.utils.QName;
 import de.lyca.xpath.ExtensionsProvider;
 import de.lyca.xpath.XPathContext;
 import de.lyca.xpath.objects.XBoolean;

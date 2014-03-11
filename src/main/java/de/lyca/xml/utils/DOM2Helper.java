@@ -48,40 +48,6 @@ public class DOM2Helper extends DOMHelper {
   }
 
   /**
-   * Check node to see if it was created by a DOM implementation that this
-   * helper is intended to support. This is currently disabled, and assumes all
-   * nodes are acceptable rather than checking that they implement
-   * org.apache.xerces.dom.NodeImpl.
-   * 
-   * @param node
-   *          The node to be tested.
-   * 
-   * @throws TransformerException
-   *           if the node is not one which this DOM2Helper can support. If we
-   *           return without throwing the exception, the node is compatable.
-   * @xsl.usage internal
-   */
-  public void checkNode(Node node) throws TransformerException {
-
-    // if(!(node instanceof org.apache.xerces.dom.NodeImpl))
-    // throw new
-    // TransformerException(XSLMessages.createXPATHMessage(XPATHErrorResources.ER_XERCES_CANNOT_HANDLE_NODES,
-    // new Object[]{((Object)node).getClass()}));
-    // //"DOM2Helper can not handle nodes of type"
-    // +((Object)node).getClass());
-  }
-
-  /**
-   * Returns true if the DOM implementation handled by this helper supports the
-   * SAX ContentHandler interface.
-   * 
-   * @return true (since Xerces does).
-   */
-  public boolean supportsSAX() {
-    return true;
-  }
-
-  /**
    * Field m_doc: Document Node for the document this helper is currently
    * accessing or building
    * 
@@ -89,124 +55,6 @@ public class DOM2Helper extends DOMHelper {
    * @see #getDocument
    * */
   private Document m_doc;
-
-  /**
-   * Specify which document this helper is currently operating on.
-   * 
-   * @param doc
-   *          The DOM Document node for this document.
-   * @see #getDocument
-   */
-  public void setDocument(Document doc) {
-    m_doc = doc;
-  }
-
-  /**
-   * Query which document this helper is currently operating on.
-   * 
-   * @return The DOM Document node for this document.
-   * @see #setDocument
-   */
-  public Document getDocument() {
-    return m_doc;
-  }
-
-  /**
-   * Parse an XML document.
-   * 
-   * <p>
-   * Right now the Xerces DOMParser class is used. This needs fixing, either via
-   * jaxp, or via some other, standard method.
-   * </p>
-   * 
-   * <p>
-   * The application can use this method to instruct the SAX parser to begin
-   * parsing an XML document from any valid input source (a character stream, a
-   * byte stream, or a URI).
-   * </p>
-   * 
-   * <p>
-   * Applications may not invoke this method while a parse is in progress (they
-   * should create a new Parser instead for each additional XML document). Once
-   * a parse is complete, an application may reuse the same Parser object,
-   * possibly with a different input source.
-   * </p>
-   * 
-   * @param source
-   *          The input source for the top-level of the XML document.
-   * 
-   * @throws TransformerException
-   *           if any checked exception is thrown.
-   * @xsl.usage internal
-   */
-  public void parse(InputSource source) throws TransformerException {
-
-    try {
-
-      // I guess I should use JAXP factory here... when it's legal.
-      // org.apache.xerces.parsers.DOMParser parser
-      // = new org.apache.xerces.parsers.DOMParser();
-      final DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
-
-      builderFactory.setNamespaceAware(true);
-      builderFactory.setValidating(true);
-
-      final DocumentBuilder parser = builderFactory.newDocumentBuilder();
-
-      /*
-       * // domParser.setFeature(
-       * "http://apache.org/xml/features/dom/create-entity-ref-nodes",
-       * getShouldExpandEntityRefs()? false : true);
-       * if(m_useDOM2getNamespaceURI) {
-       * parser.setFeature("http://apache.org/xml/features/dom/defer-node-expansion"
-       * , true); parser.setFeature("http://xml.org/sax/features/namespaces",
-       * true); } else {
-       * parser.setFeature("http://apache.org/xml/features/dom/defer-node-expansion"
-       * , false); }
-       * 
-       * parser.setFeature("http://apache.org/xml/features/allow-java-encodings",
-       * true);
-       */
-
-      parser.setErrorHandler(new de.lyca.xml.utils.DefaultErrorHandler());
-
-      // if(null != m_entityResolver)
-      // {
-      // System.out.println("Setting the entity resolver.");
-      // parser.setEntityResolver(m_entityResolver);
-      // }
-      setDocument(parser.parse(source));
-    } catch (final org.xml.sax.SAXException se) {
-      throw new TransformerException(se);
-    } catch (final ParserConfigurationException pce) {
-      throw new TransformerException(pce);
-    } catch (final IOException ioe) {
-      throw new TransformerException(ioe);
-    }
-
-    // setDocument(((org.apache.xerces.parsers.DOMParser)parser).getDocument());
-  }
-
-  /**
-   * Given an XML ID, return the element. This requires assistance from the DOM
-   * and parser, and is meaningful only in the context of a DTD or schema which
-   * declares attributes as being of type ID. This information may or may not be
-   * available in all parsers, may or may not be available for specific
-   * documents, and may or may not be available when validation is not turned
-   * on.
-   * 
-   * @param id
-   *          The ID to search for, as a String.
-   * @param doc
-   *          The document to search within, as a DOM Document node.
-   * @return DOM Element node with an attribute of type ID whose value uniquely
-   *         matches the requested id string, or null if there isn't such an
-   *         element or if the DOM can't answer the question for other reasons.
-   */
-  @Override
-  public Element getElementByID(String id, Document doc) {
-    return doc.getElementById(id);
-  }
 
   /**
    * Figure out whether node2 should be considered as being later in the
@@ -241,27 +89,6 @@ public class DOM2Helper extends DOMHelper {
       // isNodeAfter will return true if node is after countedNode
       // in document order. The base isNodeAfter is sloooow (relatively).
       return DOMHelper.isNodeAfter(node1, node2);
-  }
-
-  /**
-   * Get the XPath-model parent of a node. This version takes advantage of the
-   * DOM Level 2 Attr.ownerElement() method; the base version we would otherwise
-   * inherit is prepared to fall back on exhaustively walking the document to
-   * find an Attr's parent.
-   * 
-   * @param node
-   *          Node to be examined
-   * 
-   * @return the DOM parent of the input node, if there is one, or the
-   *         ownerElement if the input node is an Attr, or null if the node is a
-   *         Document, a DocumentFragment, or an orphan.
-   */
-  public static Node getParentOfNode(Node node) {
-    Node parent = node.getParentNode();
-    if (parent == null && Node.ATTRIBUTE_NODE == node.getNodeType()) {
-      parent = ((Attr) node).getOwnerElement();
-    }
-    return parent;
   }
 
   /**

@@ -69,17 +69,6 @@ public final class BasisLibrary {
   }
 
   /**
-   * Standard function position()
-   * 
-   * @deprecated This method exists only for backwards compatibility with old
-   *             translets. New code should not reference it.
-   */
-  @Deprecated
-  public static int positionF(DTMAxisIterator iterator) {
-    return iterator.isReverse() ? iterator.getLast() - iterator.getPosition() + 1 : iterator.getPosition();
-  }
-
-  /**
    * XSLT Standard function sum(node-set). stringToDouble is inlined
    */
   public static double sumF(DTMAxisIterator iterator, DOM dom) {
@@ -1039,40 +1028,6 @@ public final class BasisLibrary {
     };
 
     return nodeList2Iterator(nodelist, translet, dom);
-  }
-
-  /**
-   * In a perfect world, this would be the implementation for nodeList2Iterator.
-   * In reality, though, this causes a ClassCastException in
-   * getDTMHandleFromNode because SAXImpl is not an instance of DOM2DTM. So we
-   * use the more lengthy implementation below until this issue has been
-   * addressed.
-   * 
-   * @see de.lyca.xml.dtm.ref.DTMManagerDefault#getDTMHandleFromNode
-   */
-  private static DTMAxisIterator nodeList2IteratorUsingHandleFromNode(org.w3c.dom.NodeList nodeList, Translet translet,
-          DOM dom) {
-    final int n = nodeList.getLength();
-    final int[] dtmHandles = new int[n];
-    DTMManager dtmManager = null;
-    if (dom instanceof MultiDOM) {
-      dtmManager = ((MultiDOM) dom).getDTMManager();
-    }
-    for (int i = 0; i < n; ++i) {
-      final org.w3c.dom.Node node = nodeList.item(i);
-      int handle;
-      if (dtmManager != null) {
-        handle = dtmManager.getDTMHandleFromNode(node);
-      } else if (node instanceof DTMNodeProxy && ((DTMNodeProxy) node).getDTM() == dom) {
-        handle = ((DTMNodeProxy) node).getDTMNodeNumber();
-      } else {
-        runTimeError(RUN_TIME_INTERNAL_ERR, "need MultiDOM");
-        return null;
-      }
-      dtmHandles[i] = handle;
-      System.out.println("Node " + i + " has handle 0x" + Integer.toString(handle, 16));
-    }
-    return new ArrayNodeListIterator(dtmHandles);
   }
 
   /**

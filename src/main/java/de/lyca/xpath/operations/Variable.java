@@ -27,7 +27,6 @@ import javax.xml.transform.TransformerException;
 import de.lyca.xml.utils.QName;
 import de.lyca.xpath.Expression;
 import de.lyca.xpath.ExpressionOwner;
-import de.lyca.xpath.XPath;
 import de.lyca.xpath.XPathContext;
 import de.lyca.xpath.XPathVisitor;
 import de.lyca.xpath.axes.PathComponent;
