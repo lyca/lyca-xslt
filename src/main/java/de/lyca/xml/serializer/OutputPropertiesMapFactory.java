@@ -178,6 +178,8 @@ public final class OutputPropertiesMapFactory {
   private static final String PROP_FILE_TEXT = "output_text.properties";
   /** property file for default HTML properties */
   private static final String PROP_FILE_HTML = "output_html.properties";
+  /** property file for default XHTML properties */
+  private static final String PROP_FILE_XHTML = "output_xhtml.properties";
   /**
    * property file for default UNKNOWN (Either XML or HTML, to be determined
    * later) properties
@@ -193,6 +195,9 @@ public final class OutputPropertiesMapFactory {
 
   /** The default properties when method="html". */
   private static Map<String, String> m_html_map = null;
+
+  /** The default properties when method="xhtml". */
+  private static Map<String, String> m_xhtml_map = null;
 
   /** The default properties when method="text". */
   private static Map<String, String> m_text_map = null;
@@ -243,6 +248,17 @@ public final class OutputPropertiesMapFactory {
           }
         }
         return m_html_map;
+      }
+
+      if (method.equals(Method.XHTML)) {
+        if (m_xhtml_map == null) {
+          synchronized (m_synch_object) {
+            if (m_xhtml_map == null) {
+              m_xhtml_map = loadPropertiesFile(fileName = PROP_FILE_XHTML, m_xml_map);
+            }
+          }
+        }
+        return m_xhtml_map;
       }
 
       if (method.equals(Method.TEXT)) {

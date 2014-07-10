@@ -319,7 +319,7 @@ final class CharInfo {
       shouldMapTextChar_ASCII[S_QUOTE] = false;
     }
 
-    if (Method.HTML.equals(method)) {
+    if (Method.HTML.equals(method) || Method.XHTML.equals(method)) {
       // The XSLT 1.0 recommendation says
       // "The html output method should not escape < characters occurring in attribute values."
       // So we don't escape '<' in an attribute for HTML
