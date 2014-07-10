@@ -28,6 +28,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.UnknownServiceException;
@@ -388,20 +390,18 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
         // System Id may be in one of several forms, (1) a uri
         // that starts with 'file:', (2) uri that starts with 'http:'
         // or (3) just a filename on the local system.
-        URL url = null;
         if (systemId.startsWith("file:")) {
-          url = new URL(systemId);
-          _tohFactory.setOutputStream(_ostream = new FileOutputStream(url.getFile()));
+          URI uri = new URI(systemId);
+          _tohFactory.setOutputStream(_ostream = new FileOutputStream(new File(uri)));
           return _tohFactory.getSerializationHandler(this);
         } else if (systemId.startsWith("http:")) {
-          url = new URL(systemId);
+          URL url = new URL(systemId);
           final URLConnection connection = url.openConnection();
           _tohFactory.setOutputStream(_ostream = connection.getOutputStream());
           return _tohFactory.getSerializationHandler(this);
         } else {
           // system id is just a filename
-          url = new File(systemId).toURI().toURL();
-          _tohFactory.setOutputStream(_ostream = new FileOutputStream(url.getFile()));
+          _tohFactory.setOutputStream(_ostream = new FileOutputStream(new File(systemId)));
           return _tohFactory.getSerializationHandler(this);
         }
       }
@@ -414,6 +414,10 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
     }
     // If we cannot create the file specified by the SystemId
     catch (final IOException e) {
+      throw new TransformerException(e);
+    }
+    // If we cannot parse the SystemId to URI
+    catch (final URISyntaxException e) {
       throw new TransformerException(e);
     }
     return null;
