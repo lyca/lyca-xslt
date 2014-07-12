@@ -37,6 +37,7 @@ import de.lyca.xml.serializer.SerializationHandler;
 import de.lyca.xml.serializer.ToHTMLStream;
 import de.lyca.xml.serializer.ToTextStream;
 import de.lyca.xml.serializer.ToUnknownStream;
+import de.lyca.xml.serializer.ToXHTMLStream;
 import de.lyca.xml.serializer.ToXMLSAXHandler;
 import de.lyca.xml.serializer.ToXMLStream;
 
@@ -126,6 +127,10 @@ public class TransletOutputHandlerFactory {
 
           result = new ToHTMLStream();
 
+        } else if (_method.equalsIgnoreCase("xhtml")) {
+          
+          result = new ToXHTMLStream();
+          
         } else if (_method.equalsIgnoreCase("text")) {
 
           result = new ToTextStream();

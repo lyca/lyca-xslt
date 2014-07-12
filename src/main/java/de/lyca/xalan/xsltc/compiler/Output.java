@@ -168,7 +168,7 @@ final class Output extends TopLevelElement {
     }
     if (_method != null) {
       _method = _method.toLowerCase();
-      if (_method.equals("xml") || _method.equals("html") || _method.equals("text")
+      if (_method.equals("xml") || _method.equals("html") || _method.equals("xhtml") || _method.equals("text")
               || XML11Char.isXML11ValidQName(_method) && _method.indexOf(":") > 0) {
         outputProperties.setProperty(OutputKeys.METHOD, _method);
       } else {

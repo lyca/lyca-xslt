@@ -509,7 +509,7 @@ public class ToXHTMLStream extends ToStream {
     m_needToCallStartDocument = false;
     m_needToOutputDocTypeDecl = true;
     m_startNewLine = false;
-    setOmitXMLDeclaration(true);
+    // setOmitXMLDeclaration(true);
   }
 
   /**
