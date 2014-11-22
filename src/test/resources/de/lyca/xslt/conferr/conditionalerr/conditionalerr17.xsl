@@ -16,7 +16,7 @@
 
 <xsl:template match="/">
   <out>
-    <xsl:if test="Œnot(name(.)='')">
+    <xsl:if test="ï¿½not(name(.)='')">
       <xsl:text>string</xsl:text>
     </xsl:if>
   </out>

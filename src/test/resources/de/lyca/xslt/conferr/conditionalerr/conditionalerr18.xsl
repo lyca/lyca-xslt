@@ -14,7 +14,7 @@
 <xsl:template match="doc">
   <out>
     <xsl:choose>
-      <xsl:when test="Œnot(name(.)='')">1</xsl:when>
+      <xsl:when test="ï¿½not(name(.)='')">1</xsl:when>
       <xsl:otherwise>0</xsl:otherwise>
     </xsl:choose>
   </out>
