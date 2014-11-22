@@ -80,7 +80,7 @@ public class DOMWSFilter implements DTMWSFilter {
    *         <code>INHERIT</code>.
    */
   @Override
-  public short getShouldStripSpace(int node, DTM dtm) {
+  public Mode getShouldStripSpace(int node, DTM dtm) {
     if (m_filter != null && dtm instanceof DOM) {
       final DOM dom = (DOM) dtm;
       int type = 0;
@@ -116,13 +116,13 @@ public class DOMWSFilter implements DTMWSFilter {
         }
 
       } else
-        return INHERIT;
+        return Mode.INHERIT;
 
       if (m_filter.stripSpace(dom, node, type))
-        return STRIP;
+        return Mode.STRIP;
       else
-        return NOTSTRIP;
+        return Mode.NOTSTRIP;
     } else
-      return NOTSTRIP;
+      return Mode.NOTSTRIP;
   }
 }

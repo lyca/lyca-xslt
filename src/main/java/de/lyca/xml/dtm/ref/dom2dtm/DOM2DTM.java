@@ -38,6 +38,7 @@ import org.xml.sax.ContentHandler;
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xml.dtm.DTMManager;
 import de.lyca.xml.dtm.DTMWSFilter;
+import de.lyca.xml.dtm.DTMWSFilter.Mode;
 import de.lyca.xml.dtm.ref.DTMDefaultBaseIterators;
 import de.lyca.xml.dtm.ref.DTMManagerDefault;
 import de.lyca.xml.dtm.ref.ExpandedNameTable;
@@ -357,9 +358,9 @@ public class DOM2DTM extends DTMDefaultBaseIterators {
           m_last_kid = NULL;
           // Whitespace-handler context stacking
           if (null != m_wsfilter) {
-            final short wsv = m_wsfilter.getShouldStripSpace(makeNodeHandle(m_last_parent), this);
-            final boolean shouldStrip = DTMWSFilter.INHERIT == wsv ? getShouldStripWhitespace()
-                    : DTMWSFilter.STRIP == wsv;
+            final Mode wsv = m_wsfilter.getShouldStripSpace(makeNodeHandle(m_last_parent), this);
+            final boolean shouldStrip = Mode.INHERIT == wsv ? getShouldStripWhitespace()
+                    : Mode.STRIP == wsv;
             pushShouldStripWhitespace(shouldStrip);
           } // if(m_wsfilter)
         }

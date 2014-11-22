@@ -34,6 +34,7 @@ import de.lyca.xml.dtm.DTMAxisIterator;
 import de.lyca.xml.dtm.DTMException;
 import de.lyca.xml.dtm.DTMManager;
 import de.lyca.xml.dtm.DTMWSFilter;
+import de.lyca.xml.dtm.DTMWSFilter.Mode;
 import de.lyca.xml.dtm.ref.DTMDefaultBase;
 import de.lyca.xml.dtm.ref.ExpandedNameTable;
 import de.lyca.xml.dtm.ref.ExtendedType;
@@ -2100,8 +2101,8 @@ public class SAX2DTM2 extends SAX2DTM {
     }
 
     if (null != m_wsfilter) {
-      final short wsv = m_wsfilter.getShouldStripSpace(makeNodeHandle(elemNode), this);
-      final boolean shouldStrip = DTMWSFilter.INHERIT == wsv ? getShouldStripWhitespace() : DTMWSFilter.STRIP == wsv;
+      final Mode wsv = m_wsfilter.getShouldStripSpace(makeNodeHandle(elemNode), this);
+      final boolean shouldStrip = Mode.INHERIT == wsv ? getShouldStripWhitespace() : Mode.STRIP == wsv;
 
       pushShouldStripWhitespace(shouldStrip);
     }

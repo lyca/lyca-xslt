@@ -25,20 +25,23 @@ package de.lyca.xml.dtm;
  * stripping of whitespace nodes.
  */
 public interface DTMWSFilter {
-  /**
-   * Do not strip whitespace child nodes of this element.
-   */
-  short NOTSTRIP = 1;
 
-  /**
-   * Strip whitespace child nodes of this element.
-   */
-  short STRIP = 2;
+  public enum Mode {
+    /**
+     * Do not strip whitespace child nodes of this element.
+     */
+    NOTSTRIP,
 
-  /**
-   * Inherit whitespace stripping behavior of the parent node.
-   */
-  short INHERIT = 3;
+    /**
+     * Strip whitespace child nodes of this element.
+     */
+    STRIP,
+
+    /**
+     * Inherit whitespace stripping behavior of the parent node.
+     */
+    INHERIT
+  }
 
   /**
    * Test whether whitespace-only text nodes are visible in the logical view of
@@ -50,6 +53,6 @@ public interface DTMWSFilter {
    *          int Handle of the element.
    * @return one of NOTSTRIP, STRIP, or INHERIT.
    */
-  short getShouldStripSpace(int elementHandle, DTM dtm);
+  Mode getShouldStripSpace(int elementHandle, DTM dtm);
 
 }

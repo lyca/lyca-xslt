@@ -43,6 +43,7 @@ import org.xml.sax.ext.LexicalHandler;
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xml.dtm.DTMManager;
 import de.lyca.xml.dtm.DTMWSFilter;
+import de.lyca.xml.dtm.DTMWSFilter.Mode;
 import de.lyca.xml.dtm.ref.DTMDefaultBaseIterators;
 import de.lyca.xml.dtm.ref.DTMManagerDefault;
 import de.lyca.xml.dtm.ref.DTMStringPool;
@@ -1927,8 +1928,8 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
     }
 
     if (null != m_wsfilter) {
-      final short wsv = m_wsfilter.getShouldStripSpace(makeNodeHandle(elemNode), this);
-      final boolean shouldStrip = DTMWSFilter.INHERIT == wsv ? getShouldStripWhitespace() : DTMWSFilter.STRIP == wsv;
+      final Mode wsv = m_wsfilter.getShouldStripSpace(makeNodeHandle(elemNode), this);
+      final boolean shouldStrip = Mode.INHERIT == wsv ? getShouldStripWhitespace() : Mode.STRIP == wsv;
 
       pushShouldStripWhitespace(shouldStrip);
     }
