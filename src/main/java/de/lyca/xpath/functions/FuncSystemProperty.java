@@ -57,7 +57,7 @@ public class FuncSystemProperty extends FunctionOneArg {
 
     final String fullName = m_arg0.execute(xctxt).str();
     final int indexOfNSSep = fullName.indexOf(':');
-    String result;
+    String result = null;
     String propName = "";
 
     // List of properties where the name of the
@@ -86,11 +86,15 @@ public class FuncSystemProperty extends FunctionOneArg {
         warn(xctxt, XPATHErrorResources.WG_DONT_DO_ANYTHING_WITH_NS, new Object[] { namespace, fullName }); // "Don't currently do anything with namespace "+namespace+" in property: "+fullName);
 
         try {
-          result = System.getProperty(propName);
-
-          if (null == result)
-            // result = System.getenv(propName);
+          //if secure procession is enabled only handle required properties do not not map any valid system property
+          if (!xctxt.isSecureProcessing()) {
+            result = System.getProperty(propName);
+          } else {
+            warn(xctxt, XPATHErrorResources.WG_SECURITY_EXCEPTION, new Object[]{ fullName });  //"SecurityException when trying to access XSL system property: "+fullName);
+          }
+          if (null == result) {
             return XString.EMPTYSTRING;
+          }
         } catch (final SecurityException se) {
           warn(xctxt, XPATHErrorResources.WG_SECURITY_EXCEPTION, new Object[] { fullName }); // "SecurityException when trying to access XSL system property: "+fullName);
 
@@ -99,11 +103,15 @@ public class FuncSystemProperty extends FunctionOneArg {
       }
     } else {
       try {
-        result = System.getProperty(fullName);
-
-        if (null == result)
-          // result = System.getenv(fullName);
+        //if secure procession is enabled only handle required properties do not not map any valid system property
+        if (!xctxt.isSecureProcessing()) {
+          result = System.getProperty(fullName);
+        } else {
+          warn(xctxt, XPATHErrorResources.WG_SECURITY_EXCEPTION, new Object[]{ fullName });  //"SecurityException when trying to access XSL system property: "+fullName);
+        }
+        if (null == result) {
           return XString.EMPTYSTRING;
+        }
       } catch (final SecurityException se) {
         warn(xctxt, XPATHErrorResources.WG_SECURITY_EXCEPTION, new Object[] { fullName }); // "SecurityException when trying to access XSL system property: "+fullName);
 
