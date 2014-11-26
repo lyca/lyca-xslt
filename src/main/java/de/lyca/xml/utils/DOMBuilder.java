@@ -68,6 +68,9 @@ public class DOMBuilder implements ContentHandler, LexicalHandler {
   /** Namespace support */
   protected List<String> m_prefixMappings = new ArrayList<>();
 
+  /** Used to build text nodes efficiently */
+  private StringBuilder m_textBuffer = new StringBuilder();
+
   /**
    * DOMBuilder instance constructor... it will add the DOM nodes to the
    * document fragment.
@@ -317,7 +320,7 @@ public class DOMBuilder implements ContentHandler, LexicalHandler {
    */
   @Override
   public void startElement(String ns, String localName, String name, Attributes atts) throws org.xml.sax.SAXException {
-
+    appendTextNode();
     Element elem;
 
     // Note that the namespace-aware call must be used to correctly
@@ -428,6 +431,7 @@ public class DOMBuilder implements ContentHandler, LexicalHandler {
    */
   @Override
   public void endElement(String ns, String localName, String name) throws org.xml.sax.SAXException {
+    appendTextNode();
     m_elemStack.pop();
     m_currentNode = m_elemStack.isEmpty() ? null : (Node) m_elemStack.peek();
   }
@@ -487,14 +491,14 @@ public class DOMBuilder implements ContentHandler, LexicalHandler {
       return;
     }
 
-    final String s = new String(ch, start, length);
-    Node childNode;
-    childNode = m_currentNode != null ? m_currentNode.getLastChild() : null;
-    if (childNode != null && childNode.getNodeType() == Node.TEXT_NODE) {
-      ((Text) childNode).appendData(s);
-    } else {
-      final Text text = m_doc.createTextNode(s);
+    m_textBuffer.append(ch, start, length);
+  }
+
+  private void appendTextNode() throws org.xml.sax.SAXException {
+    if (m_textBuffer.length() > 0) {
+      Text text = m_doc.createTextNode(m_textBuffer.toString());
       append(text);
+      m_textBuffer.setLength(0);
     }
   }
 
@@ -633,6 +637,7 @@ public class DOMBuilder implements ContentHandler, LexicalHandler {
    */
   @Override
   public void processingInstruction(String target, String data) throws org.xml.sax.SAXException {
+    appendTextNode();
     append(m_doc.createProcessingInstruction(target, data));
   }
 
@@ -651,6 +656,7 @@ public class DOMBuilder implements ContentHandler, LexicalHandler {
    */
   @Override
   public void comment(char ch[], int start, int length) throws org.xml.sax.SAXException {
+    appendTextNode();
     append(m_doc.createComment(new String(ch, start, length)));
   }
 
