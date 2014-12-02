@@ -27,6 +27,9 @@ import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.INVOKEVIRTUAL;
 import org.apache.bcel.generic.InstructionList;
 
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JMethod;
+
 import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 import de.lyca.xalan.xsltc.compiler.util.Type;
@@ -41,15 +44,16 @@ final class StringLengthCall extends FunctionCall {
   }
 
   @Override
-  public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
-    final ConstantPoolGen cpg = classGen.getConstantPool();
-    final InstructionList il = methodGen.getInstructionList();
-    if (argumentCount() > 0) {
-      argument().translate(classGen, methodGen);
-    } else {
-      il.append(methodGen.loadContextNode());
-      Type.Node.translateTo(classGen, methodGen, Type.String);
-    }
-    il.append(new INVOKEVIRTUAL(cpg.addMethodref(STRING_CLASS, "length", "()I")));
+  public void translate(JDefinedClass definedClass, JMethod method) {
+//    FIXME
+//    final ConstantPoolGen cpg = classGen.getConstantPool();
+//    final InstructionList il = methodGen.getInstructionList();
+//    if (argumentCount() > 0) {
+//      argument().translate(classGen, methodGen);
+//    } else {
+//      il.append(methodGen.loadContextNode());
+//      Type.Node.translateTo(classGen, methodGen, Type.String);
+//    }
+//    il.append(new INVOKEVIRTUAL(cpg.addMethodref(STRING_CLASS, "length", "()I")));
   }
 }

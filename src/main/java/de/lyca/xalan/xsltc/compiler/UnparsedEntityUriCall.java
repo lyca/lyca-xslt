@@ -27,6 +27,9 @@ import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.INVOKEINTERFACE;
 import org.apache.bcel.generic.InstructionList;
 
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JMethod;
+
 import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 import de.lyca.xalan.xsltc.compiler.util.StringType;
@@ -56,15 +59,16 @@ final class UnparsedEntityUriCall extends FunctionCall {
   }
 
   @Override
-  public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
-    final ConstantPoolGen cpg = classGen.getConstantPool();
-    final InstructionList il = methodGen.getInstructionList();
-    // Push the this pointer on the stack...
-    il.append(methodGen.loadDOM());
-    // ...then the entity name...
-    _entity.translate(classGen, methodGen);
-    // ...to get the URI from the DOM object.
-    il.append(new INVOKEINTERFACE(cpg.addInterfaceMethodref(DOM_INTF, GET_UNPARSED_ENTITY_URI,
-            GET_UNPARSED_ENTITY_URI_SIG), 2));
+  public void translate(JDefinedClass definedClass, JMethod method) {
+//    FIXME
+//    final ConstantPoolGen cpg = classGen.getConstantPool();
+//    final InstructionList il = methodGen.getInstructionList();
+//    // Push the this pointer on the stack...
+//    il.append(methodGen.loadDOM());
+//    // ...then the entity name...
+//    _entity.translate(classGen, methodGen);
+//    // ...to get the URI from the DOM object.
+//    il.append(new INVOKEINTERFACE(cpg.addInterfaceMethodref(DOM_INTF, GET_UNPARSED_ENTITY_URI,
+//            GET_UNPARSED_ENTITY_URI_SIG), 2));
   }
 }

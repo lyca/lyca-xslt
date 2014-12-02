@@ -24,6 +24,9 @@ package de.lyca.xalan.xsltc.compiler;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InstructionList;
 
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JMethod;
+
 import de.lyca.xalan.xsltc.compiler.util.BooleanType;
 import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
@@ -101,15 +104,16 @@ final class If extends Instruction {
    * will be ignored if we know the test will always fail.
    */
   @Override
-  public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
-    final InstructionList il = methodGen.getInstructionList();
-    _test.translateDesynthesized(classGen, methodGen);
-    // remember end of condition
-    final InstructionHandle truec = il.getEnd();
-    if (!_ignore) {
-      translateContents(classGen, methodGen);
-    }
-    _test.backPatchFalseList(il.append(NOP));
-    _test.backPatchTrueList(truec.getNext());
+  public void translate(JDefinedClass definedClass, JMethod method) {
+ // FIXME
+//    final InstructionList il = methodGen.getInstructionList();
+//    _test.translateDesynthesized(classGen, methodGen);
+//    // remember end of condition
+//    final InstructionHandle truec = il.getEnd();
+//    if (!_ignore) {
+//      translateContents(classGen, methodGen);
+//    }
+//    _test.backPatchFalseList(il.append(NOP));
+//    _test.backPatchTrueList(truec.getNext());
   }
 }

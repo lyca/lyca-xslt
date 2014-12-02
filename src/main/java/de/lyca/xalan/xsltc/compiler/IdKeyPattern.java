@@ -28,6 +28,9 @@ import org.apache.bcel.generic.INVOKEVIRTUAL;
 import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.PUSH;
 
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JMethod;
+
 import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 import de.lyca.xalan.xsltc.compiler.util.Type;
@@ -85,37 +88,37 @@ abstract class IdKeyPattern extends LocationPathPattern {
    * Stylesheet.compileConstructor() and not as the syntax tree is traversed.
    */
   @Override
-  public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
-
-    final ConstantPoolGen cpg = classGen.getConstantPool();
-    final InstructionList il = methodGen.getInstructionList();
-
-    // Returns the KeyIndex object of a given name
-    final int getKeyIndex = cpg.addMethodref(TRANSLET_CLASS, "getKeyIndex", "(Ljava/lang/String;)" + KEY_INDEX_SIG);
-
-    // Initialises a KeyIndex to return nodes with specific values
-    final int lookupId = cpg.addMethodref(KEY_INDEX_CLASS, "containsID", "(ILjava/lang/Object;)I");
-    final int lookupKey = cpg.addMethodref(KEY_INDEX_CLASS, "containsKey", "(ILjava/lang/Object;)I");
-    cpg.addInterfaceMethodref(DOM_INTF, "getNodeIdent", "(I)" + NODE_SIG);
-
-    // Call getKeyIndex in AbstractTranslet with the name of the key
-    // to get the index for this key (which is also a node iterator).
-    il.append(classGen.loadTranslet());
-    il.append(new PUSH(cpg, _index));
-    il.append(new INVOKEVIRTUAL(getKeyIndex));
-
-    // Now use the value in the second argument to determine what nodes
-    // the iterator should return.
-    il.append(SWAP);
-    il.append(new PUSH(cpg, _value));
-    if (this instanceof IdPattern) {
-      il.append(new INVOKEVIRTUAL(lookupId));
-    } else {
-      il.append(new INVOKEVIRTUAL(lookupKey));
-    }
-
-    _trueList.add(il.append(new IFNE(null)));
-    _falseList.add(il.append(new GOTO(null)));
+  public void translate(JDefinedClass definedClass, JMethod method) {
+ // FIXME
+//    final ConstantPoolGen cpg = classGen.getConstantPool();
+//    final InstructionList il = methodGen.getInstructionList();
+//
+//    // Returns the KeyIndex object of a given name
+//    final int getKeyIndex = cpg.addMethodref(TRANSLET_CLASS, "getKeyIndex", "(Ljava/lang/String;)" + KEY_INDEX_SIG);
+//
+//    // Initialises a KeyIndex to return nodes with specific values
+//    final int lookupId = cpg.addMethodref(KEY_INDEX_CLASS, "containsID", "(ILjava/lang/Object;)I");
+//    final int lookupKey = cpg.addMethodref(KEY_INDEX_CLASS, "containsKey", "(ILjava/lang/Object;)I");
+//    cpg.addInterfaceMethodref(DOM_INTF, "getNodeIdent", "(I)" + NODE_SIG);
+//
+//    // Call getKeyIndex in AbstractTranslet with the name of the key
+//    // to get the index for this key (which is also a node iterator).
+//    il.append(classGen.loadTranslet());
+//    il.append(new PUSH(cpg, _index));
+//    il.append(new INVOKEVIRTUAL(getKeyIndex));
+//
+//    // Now use the value in the second argument to determine what nodes
+//    // the iterator should return.
+//    il.append(SWAP);
+//    il.append(new PUSH(cpg, _value));
+//    if (this instanceof IdPattern) {
+//      il.append(new INVOKEVIRTUAL(lookupId));
+//    } else {
+//      il.append(new INVOKEVIRTUAL(lookupKey));
+//    }
+//
+//    _trueList.add(il.append(new IFNE(null)));
+//    _falseList.add(il.append(new GOTO(null)));
   }
 
 }

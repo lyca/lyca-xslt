@@ -25,6 +25,9 @@ import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.PUSH;
 
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JMethod;
+
 import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 import de.lyca.xalan.xsltc.compiler.util.Type;
@@ -52,9 +55,9 @@ final class IntExpr extends Expression {
   }
 
   @Override
-  public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
-    final ConstantPoolGen cpg = classGen.getConstantPool();
-    final InstructionList il = methodGen.getInstructionList();
-    il.append(new PUSH(cpg, _value));
+  public void translate(JDefinedClass definedClass, JMethod method) {
+//    final ConstantPoolGen cpg = classGen.getConstantPool();
+//    final InstructionList il = methodGen.getInstructionList();
+//    il.append(new PUSH(cpg, _value));
   }
 }

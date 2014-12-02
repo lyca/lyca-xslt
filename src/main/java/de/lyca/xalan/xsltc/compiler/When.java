@@ -21,6 +21,9 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JMethod;
+
 import de.lyca.xalan.xsltc.compiler.util.BooleanType;
 import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
@@ -102,7 +105,7 @@ final class When extends Instruction {
    * translate the "test" expression and and contents of this element.
    */
   @Override
-  public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
+  public void translate(JDefinedClass definedClass, JMethod method) {
     final ErrorMsg msg = new ErrorMsg(ErrorMsg.STRAY_WHEN_ERR, this);
     getParser().reportError(Constants.ERROR, msg);
   }

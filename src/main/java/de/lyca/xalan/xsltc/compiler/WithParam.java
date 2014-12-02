@@ -26,6 +26,9 @@ import org.apache.bcel.generic.INVOKEVIRTUAL;
 import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.PUSH;
 
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JMethod;
+
 import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
@@ -155,22 +158,24 @@ final class WithParam extends Instruction {
    * Compile the value of the parameter, which is either in an expression in a
    * 'select' attribute, or in the with-param element's body
    */
-  public void translateValue(ClassGenerator classGen, MethodGenerator methodGen) {
-    // Compile expression is 'select' attribute if present
-    if (_select != null) {
-      _select.translate(classGen, methodGen);
-      _select.startIterator(classGen, methodGen);
-    }
-    // If not, compile result tree from parameter body if present.
-    else if (hasContents()) {
-      compileResultTree(classGen, methodGen);
-    }
-    // If neither are present then store empty string in parameter slot
-    else {
-      final ConstantPoolGen cpg = classGen.getConstantPool();
-      final InstructionList il = methodGen.getInstructionList();
-      il.append(new PUSH(cpg, Constants.EMPTYSTRING));
-    }
+  public void translateValue(JDefinedClass definedClass, JMethod method) {
+//    FIXME
+//
+//    // Compile expression is 'select' attribute if present
+//    if (_select != null) {
+//      _select.translate(classGen, methodGen);
+//      _select.startIterator(classGen, methodGen);
+//    }
+//    // If not, compile result tree from parameter body if present.
+//    else if (hasContents()) {
+//      compileResultTree(classGen, methodGen);
+//    }
+//    // If neither are present then store empty string in parameter slot
+//    else {
+//      final ConstantPoolGen cpg = classGen.getConstantPool();
+//      final InstructionList il = methodGen.getInstructionList();
+//      il.append(new PUSH(cpg, Constants.EMPTYSTRING));
+//    }
   }
 
   /**
@@ -179,30 +184,31 @@ final class WithParam extends Instruction {
    * parameter frame with the new parameter value.
    */
   @Override
-  public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
-    final ConstantPoolGen cpg = classGen.getConstantPool();
-    final InstructionList il = methodGen.getInstructionList();
-
-    // Translate the value and put it on the stack
-    if (_doParameterOptimization) {
-      translateValue(classGen, methodGen);
-      return;
-    }
-
-    // Make name acceptable for use as field name in class
-    final String name = Util.escape(getEscapedName());
-
-    // Load reference to the translet (method is in AbstractTranslet)
-    il.append(classGen.loadTranslet());
-
-    // Load the name of the parameter
-    il.append(new PUSH(cpg, name)); // TODO: namespace ?
-    // Generete the value of the parameter (use value in 'select' by def.)
-    translateValue(classGen, methodGen);
-    // Mark this parameter value is not being the default value
-    il.append(new PUSH(cpg, false));
-    // Pass the parameter to the template
-    il.append(new INVOKEVIRTUAL(cpg.addMethodref(TRANSLET_CLASS, ADD_PARAMETER, ADD_PARAMETER_SIG)));
-    il.append(POP); // cleanup stack
+  public void translate(JDefinedClass definedClass, JMethod method) {
+//    FIXME
+//    final ConstantPoolGen cpg = classGen.getConstantPool();
+//    final InstructionList il = methodGen.getInstructionList();
+//
+//    // Translate the value and put it on the stack
+//    if (_doParameterOptimization) {
+//      translateValue(classGen, methodGen);
+//      return;
+//    }
+//
+//    // Make name acceptable for use as field name in class
+//    final String name = Util.escape(getEscapedName());
+//
+//    // Load reference to the translet (method is in AbstractTranslet)
+//    il.append(classGen.loadTranslet());
+//
+//    // Load the name of the parameter
+//    il.append(new PUSH(cpg, name)); // TODO: namespace ?
+//    // Generete the value of the parameter (use value in 'select' by def.)
+//    translateValue(classGen, methodGen);
+//    // Mark this parameter value is not being the default value
+//    il.append(new PUSH(cpg, false));
+//    // Pass the parameter to the template
+//    il.append(new INVOKEVIRTUAL(cpg.addMethodref(TRANSLET_CLASS, ADD_PARAMETER, ADD_PARAMETER_SIG)));
+//    il.append(POP); // cleanup stack
   }
 }

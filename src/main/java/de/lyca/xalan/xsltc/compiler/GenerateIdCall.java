@@ -27,6 +27,9 @@ import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.INVOKESTATIC;
 import org.apache.bcel.generic.InstructionList;
 
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JMethod;
+
 import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 
@@ -40,16 +43,17 @@ final class GenerateIdCall extends FunctionCall {
   }
 
   @Override
-  public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
-    final InstructionList il = methodGen.getInstructionList();
-    if (argumentCount() == 0) {
-      il.append(methodGen.loadContextNode());
-    } else { // one argument
-      argument().translate(classGen, methodGen);
-    }
-    final ConstantPoolGen cpg = classGen.getConstantPool();
-    il.append(new INVOKESTATIC(cpg.addMethodref(BASIS_LIBRARY_CLASS, "generate_idF",
-    // reuse signature
-            GET_NODE_NAME_SIG)));
+  public void translate(JDefinedClass definedClass, JMethod method) {
+ // FIXME
+//    final InstructionList il = methodGen.getInstructionList();
+//    if (argumentCount() == 0) {
+//      il.append(methodGen.loadContextNode());
+//    } else { // one argument
+//      argument().translate(definedClass, method);
+//    }
+//    final ConstantPoolGen cpg = classGen.getConstantPool();
+//    il.append(new INVOKESTATIC(cpg.addMethodref(BASIS_LIBRARY_CLASS, "generate_idF",
+//    // reuse signature
+//            GET_NODE_NAME_SIG)));
   }
 }

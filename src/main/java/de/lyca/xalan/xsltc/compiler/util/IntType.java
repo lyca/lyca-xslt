@@ -45,6 +45,9 @@ import org.apache.bcel.generic.InstructionConstants;
 import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.NEW;
 
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JMethod;
+
 import de.lyca.xalan.xsltc.compiler.Constants;
 import de.lyca.xalan.xsltc.compiler.FlowList;
 
@@ -95,18 +98,18 @@ public final class IntType extends NumberType {
    * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
    */
   @Override
-  public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, final Type type) {
+  public void translateTo(JDefinedClass definedClass, JMethod method, final Type type) {
     if (type == Type.Real) {
-      translateTo(classGen, methodGen, (RealType) type);
+      translateTo(definedClass, method, (RealType) type);
     } else if (type == Type.String) {
-      translateTo(classGen, methodGen, (StringType) type);
+      translateTo(definedClass, method, (StringType) type);
     } else if (type == Type.Boolean) {
-      translateTo(classGen, methodGen, (BooleanType) type);
+      translateTo(definedClass, method, (BooleanType) type);
     } else if (type == Type.Reference) {
-      translateTo(classGen, methodGen, (ReferenceType) type);
+      translateTo(definedClass, method, (ReferenceType) type);
     } else {
       final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), type.toString());
-      classGen.getParser().reportError(Constants.FATAL, err);
+      // FIXME classGen.getParser().reportError(Constants.FATAL, err);
     }
   }
 
@@ -115,8 +118,9 @@ public final class IntType extends NumberType {
    * 
    * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
    */
-  public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, RealType type) {
-    methodGen.getInstructionList().append(I2D);
+  public void translateTo(JDefinedClass definedClass, JMethod method, RealType type) {
+//    FIXME
+//    methodGen.getInstructionList().append(I2D);
   }
 
   /**
@@ -125,10 +129,11 @@ public final class IntType extends NumberType {
    * 
    * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
    */
-  public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, StringType type) {
-    final ConstantPoolGen cpg = classGen.getConstantPool();
-    final InstructionList il = methodGen.getInstructionList();
-    il.append(new INVOKESTATIC(cpg.addMethodref(INTEGER_CLASS, "toString", "(I)" + STRING_SIG)));
+  public void translateTo(JDefinedClass definedClass, JMethod method, StringType type) {
+//    FIXME
+//    final ConstantPoolGen cpg = classGen.getConstantPool();
+//    final InstructionList il = methodGen.getInstructionList();
+//    il.append(new INVOKESTATIC(cpg.addMethodref(INTEGER_CLASS, "toString", "(I)" + STRING_SIG)));
   }
 
   /**
@@ -137,13 +142,14 @@ public final class IntType extends NumberType {
    * 
    * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
    */
-  public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, BooleanType type) {
-    final InstructionList il = methodGen.getInstructionList();
-    final BranchHandle falsec = il.append(new IFEQ(null));
-    il.append(ICONST_1);
-    final BranchHandle truec = il.append(new GOTO(null));
-    falsec.setTarget(il.append(ICONST_0));
-    truec.setTarget(il.append(NOP));
+  public void translateTo(JDefinedClass definedClass, JMethod method, BooleanType type) {
+//    FIXME
+//    final InstructionList il = methodGen.getInstructionList();
+//    final BranchHandle falsec = il.append(new IFEQ(null));
+//    il.append(ICONST_1);
+//    final BranchHandle truec = il.append(new GOTO(null));
+//    falsec.setTarget(il.append(ICONST_0));
+//    truec.setTarget(il.append(NOP));
   }
 
   /**
@@ -154,9 +160,11 @@ public final class IntType extends NumberType {
    * @see de.lyca.xalan.xsltc.compiler.util.Type#translateToDesynthesized
    */
   @Override
-  public FlowList translateToDesynthesized(ClassGenerator classGen, MethodGenerator methodGen, BooleanType type) {
-    final InstructionList il = methodGen.getInstructionList();
-    return new FlowList(il.append(new IFEQ(null)));
+  public FlowList translateToDesynthesized(JDefinedClass definedClass, JMethod method, BooleanType type) {
+    return null;
+//    FIXME
+//    final InstructionList il = methodGen.getInstructionList();
+//    return new FlowList(il.append(new IFEQ(null)));
   }
 
   /**
@@ -165,13 +173,14 @@ public final class IntType extends NumberType {
    * 
    * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
    */
-  public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, ReferenceType type) {
-    final ConstantPoolGen cpg = classGen.getConstantPool();
-    final InstructionList il = methodGen.getInstructionList();
-    il.append(new NEW(cpg.addClass(INTEGER_CLASS)));
-    il.append(DUP_X1);
-    il.append(SWAP);
-    il.append(new INVOKESPECIAL(cpg.addMethodref(INTEGER_CLASS, "<init>", "(I)V")));
+  public void translateTo(JDefinedClass definedClass, JMethod method, ReferenceType type) {
+//    FIXME
+//    final ConstantPoolGen cpg = classGen.getConstantPool();
+//    final InstructionList il = methodGen.getInstructionList();
+//    il.append(new NEW(cpg.addClass(INTEGER_CLASS)));
+//    il.append(DUP_X1);
+//    il.append(SWAP);
+//    il.append(new INVOKESPECIAL(cpg.addMethodref(INTEGER_CLASS, "<init>", "(I)V")));
   }
 
   /**
@@ -180,51 +189,54 @@ public final class IntType extends NumberType {
    * after coercion.
    */
   @Override
-  public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, Class<?> clazz) {
-    final InstructionList il = methodGen.getInstructionList();
-    if (clazz == Character.TYPE) {
-      il.append(I2C);
-    } else if (clazz == Byte.TYPE) {
-      il.append(I2B);
-    } else if (clazz == Short.TYPE) {
-      il.append(I2S);
-    } else if (clazz == Integer.TYPE) {
-      il.append(NOP);
-    } else if (clazz == Long.TYPE) {
-      il.append(I2L);
-    } else if (clazz == Float.TYPE) {
-      il.append(I2F);
-    } else if (clazz == Double.TYPE) {
-      il.append(I2D);
-    }
-    // Is Double <: clazz? I.e. clazz in { Double, Number, Object }
-    else if (clazz.isAssignableFrom(java.lang.Double.class)) {
-      il.append(I2D);
-      Type.Real.translateTo(classGen, methodGen, Type.Reference);
-    } else {
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), clazz.getName());
-      classGen.getParser().reportError(Constants.FATAL, err);
-    }
+  public void translateTo(JDefinedClass definedClass, JMethod method, Class<?> clazz) {
+//    FIXME
+//    final InstructionList il = methodGen.getInstructionList();
+//    if (clazz == Character.TYPE) {
+//      il.append(I2C);
+//    } else if (clazz == Byte.TYPE) {
+//      il.append(I2B);
+//    } else if (clazz == Short.TYPE) {
+//      il.append(I2S);
+//    } else if (clazz == Integer.TYPE) {
+//      il.append(NOP);
+//    } else if (clazz == Long.TYPE) {
+//      il.append(I2L);
+//    } else if (clazz == Float.TYPE) {
+//      il.append(I2F);
+//    } else if (clazz == Double.TYPE) {
+//      il.append(I2D);
+//    }
+//    // Is Double <: clazz? I.e. clazz in { Double, Number, Object }
+//    else if (clazz.isAssignableFrom(java.lang.Double.class)) {
+//      il.append(I2D);
+//      Type.Real.translateTo(classGen, methodGen, Type.Reference);
+//    } else {
+//      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), clazz.getName());
+//      classGen.getParser().reportError(Constants.FATAL, err);
+//    }
   }
 
   /**
    * Translates an object of this type to its boxed representation.
    */
   @Override
-  public void translateBox(ClassGenerator classGen, MethodGenerator methodGen) {
-    translateTo(classGen, methodGen, Type.Reference);
+  public void translateBox(JDefinedClass definedClass, JMethod method) {
+//    FIXME
+//    translateTo(classGen, methodGen, Type.Reference);
   }
 
   /**
    * Translates an object of this type to its unboxed representation.
    */
   @Override
-  public void translateUnBox(ClassGenerator classGen, MethodGenerator methodGen) {
-    final ConstantPoolGen cpg = classGen.getConstantPool();
-    final InstructionList il = methodGen.getInstructionList();
-    il.append(new CHECKCAST(cpg.addClass(INTEGER_CLASS)));
-    final int index = cpg.addMethodref(INTEGER_CLASS, INT_VALUE, INT_VALUE_SIG);
-    il.append(new INVOKEVIRTUAL(index));
+  public void translateUnBox(JDefinedClass definedClass, JMethod method) {
+//    FIXME
+//    final ConstantPoolGen cpg = classGen.getConstantPool();
+//    final InstructionList il = methodGen.getInstructionList();
+//    il.append(new CHECKCAST(cpg.addClass(INTEGER_CLASS)));
+//    final int index = cpg.addMethodref(INTEGER_CLASS, INT_VALUE, INT_VALUE_SIG);
+//    il.append(new INVOKEVIRTUAL(index));
   }
 
   @Override

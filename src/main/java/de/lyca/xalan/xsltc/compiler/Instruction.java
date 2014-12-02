@@ -21,9 +21,10 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JMethod;
+
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
-import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
 
@@ -44,7 +45,7 @@ abstract class Instruction extends SyntaxTreeNode {
    * Translate this node into JVM bytecodes.
    */
   @Override
-  public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
+  public void translate(JDefinedClass definedClass, JMethod method) {
     final ErrorMsg msg = new ErrorMsg(ErrorMsg.NOT_IMPLEMENTED_ERR, getClass(), this);
     getParser().reportError(FATAL, msg);
   }

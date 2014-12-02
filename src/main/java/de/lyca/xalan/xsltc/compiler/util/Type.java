@@ -24,6 +24,9 @@ package de.lyca.xalan.xsltc.compiler.util;
 import org.apache.bcel.generic.BranchInstruction;
 import org.apache.bcel.generic.Instruction;
 
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JMethod;
+
 import de.lyca.xalan.xsltc.compiler.Constants;
 import de.lyca.xalan.xsltc.compiler.FlowList;
 import de.lyca.xalan.xsltc.compiler.NodeTest;
@@ -133,9 +136,10 @@ public abstract class Type implements Constants {
    * Translates an object of this type to an object of type <code>type</code>.
    * Expects an object of the former type and pushes an object of the latter.
    */
-  public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, Type type) {
+  public void translateTo(JDefinedClass definedClass, JMethod method, Type type) {
     final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), type.toString());
-    classGen.getParser().reportError(Constants.FATAL, err);
+// FIXME
+//    definedClass.getParser().reportError(Constants.FATAL, err);
   }
 
   /**
@@ -144,14 +148,16 @@ public abstract class Type implements Constants {
    * not boolean. If type <code>type</code> is boolean then a branchhandle list
    * (to be appended to the false list) is returned.
    */
-  public FlowList translateToDesynthesized(ClassGenerator classGen, MethodGenerator methodGen, Type type) {
-    FlowList fl = null;
-    if (type == Type.Boolean) {
-      fl = translateToDesynthesized(classGen, methodGen, (BooleanType) type);
-    } else {
-      translateTo(classGen, methodGen, type);
-    }
-    return fl;
+  public FlowList translateToDesynthesized(JDefinedClass definedClass, JMethod method, Type type) {
+    return null;
+//    FIXME
+//    FlowList fl = null;
+//    if (type == Type.Boolean) {
+//      fl = translateToDesynthesized(classGen, methodGen, (BooleanType) type);
+//    } else {
+//      translateTo(classGen, methodGen, type);
+//    }
+//    return fl;
   }
 
   /**
@@ -159,9 +165,10 @@ public abstract class Type implements Constants {
    * not push a 0 or a 1 but instead returns branchhandle list to be appended to
    * the false list.
    */
-  public FlowList translateToDesynthesized(ClassGenerator classGen, MethodGenerator methodGen, BooleanType type) {
-    final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), type.toString());
-    classGen.getParser().reportError(Constants.FATAL, err);
+  public FlowList translateToDesynthesized(JDefinedClass definedClass, JMethod method, BooleanType type) {
+//    FIXME
+//    final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), type.toString());
+//    classGen.getParser().reportError(Constants.FATAL, err);
     return null;
   }
 
@@ -170,9 +177,10 @@ public abstract class Type implements Constants {
    * <code>clazz</code>. This method is used to translate parameters when
    * external functions are called.
    */
-  public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, Class<?> clazz) {
-    final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), clazz.getClass().toString());
-    classGen.getParser().reportError(Constants.FATAL, err);
+  public void translateTo(JDefinedClass definedClass, JMethod method, Class<?> clazz) {
+//    FIXME
+//    final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), clazz.getClass().toString());
+//    classGen.getParser().reportError(Constants.FATAL, err);
   }
 
   /**
@@ -180,25 +188,28 @@ public abstract class Type implements Constants {
    * object of this type. This method is used to translate return values when
    * external functions are called.
    */
-  public void translateFrom(ClassGenerator classGen, MethodGenerator methodGen, Class<?> clazz) {
-    final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, clazz.getClass().toString(), toString());
-    classGen.getParser().reportError(Constants.FATAL, err);
+  public void translateFrom(JDefinedClass definedClass, JMethod method, Class<?> clazz) {
+//    FIXME
+//    final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, clazz.getClass().toString(), toString());
+//    classGen.getParser().reportError(Constants.FATAL, err);
   }
 
   /**
    * Translates an object of this type to its boxed representation.
    */
-  public void translateBox(ClassGenerator classGen, MethodGenerator methodGen) {
-    final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), "[" + toString() + "]");
-    classGen.getParser().reportError(Constants.FATAL, err);
+  public void translateBox(JDefinedClass definedClass, JMethod method) {
+//    FIXME
+//    final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), "[" + toString() + "]");
+//    classGen.getParser().reportError(Constants.FATAL, err);
   }
 
   /**
    * Translates an object of this type to its unboxed representation.
    */
-  public void translateUnBox(ClassGenerator classGen, MethodGenerator methodGen) {
-    final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, "[" + toString() + "]", toString());
-    classGen.getParser().reportError(Constants.FATAL, err);
+  public void translateUnBox(JDefinedClass definedClass, JMethod method) {
+//    FIXME
+//    final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, "[" + toString() + "]", toString());
+//    classGen.getParser().reportError(Constants.FATAL, err);
   }
 
   /**

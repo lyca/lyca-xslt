@@ -28,6 +28,9 @@ import java.util.List;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.PUSH;
 
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JMethod;
+
 import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
@@ -176,9 +179,10 @@ final class FunctionAvailableCall extends FunctionCall {
    * Consequently, arguments to this function must be literals.
    */
   @Override
-  public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
-    final ConstantPoolGen cpg = classGen.getConstantPool();
-    methodGen.getInstructionList().append(new PUSH(cpg, getResult()));
+  public void translate(JDefinedClass definedClass, JMethod method) {
+ // FIXME
+//    final ConstantPoolGen cpg = classGen.getConstantPool();
+//    methodGen.getInstructionList().append(new PUSH(cpg, getResult()));
   }
 
 }

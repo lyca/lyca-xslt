@@ -31,6 +31,9 @@ import org.apache.bcel.generic.INVOKEVIRTUAL;
 import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.LocalVariableGen;
 
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JMethod;
+
 import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
@@ -79,56 +82,57 @@ final class ProcessingInstruction extends Instruction {
   }
 
   @Override
-  public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
-    final ConstantPoolGen cpg = classGen.getConstantPool();
-    final InstructionList il = methodGen.getInstructionList();
-
-    if (!_isLiteral) {
-      // if the ncname is an AVT, then the ncname has to be checked at runtime
-      // if it is a valid ncname
-      final LocalVariableGen nameValue = methodGen.addLocalVariable2("nameValue", Util.getJCRefType(STRING_SIG), null);
-
-      // store the name into a variable first so _name.translate only needs to
-      // be called once
-      _name.translate(classGen, methodGen);
-      nameValue.setStart(il.append(new ASTORE(nameValue.getIndex())));
-      il.append(new ALOAD(nameValue.getIndex()));
-
-      // call checkNCName if the name is an AVT
-      final int check = cpg.addMethodref(BASIS_LIBRARY_CLASS, "checkNCName", "(" + STRING_SIG + ")V");
-      il.append(new INVOKESTATIC(check));
-
-      // Save the current handler base on the stack
-      il.append(methodGen.loadHandler());
-      il.append(DUP); // first arg to "attributes" call
-
-      // load name value again
-      nameValue.setEnd(il.append(new ALOAD(nameValue.getIndex())));
-    } else {
-      // Save the current handler base on the stack
-      il.append(methodGen.loadHandler());
-      il.append(DUP); // first arg to "attributes" call
-
-      // Push attribute name
-      _name.translate(classGen, methodGen);// 2nd arg
-
-    }
-
-    il.append(classGen.loadTranslet());
-    il.append(new GETFIELD(cpg.addFieldref(TRANSLET_CLASS, "stringValueHandler", STRING_VALUE_HANDLER_SIG)));
-    il.append(DUP);
-    il.append(methodGen.storeHandler());
-
-    // translate contents with substituted handler
-    translateContents(classGen, methodGen);
-
-    // get String out of the handler
-    il.append(new INVOKEVIRTUAL(cpg.addMethodref(STRING_VALUE_HANDLER, "getValueOfPI", "()" + STRING_SIG)));
-    // call "processingInstruction"
-    final int processingInstruction = cpg.addInterfaceMethodref(TRANSLET_OUTPUT_INTERFACE, "processingInstruction", "("
-            + STRING_SIG + STRING_SIG + ")V");
-    il.append(new INVOKEINTERFACE(processingInstruction, 3));
-    // Restore old handler base from stack
-    il.append(methodGen.storeHandler());
+  public void translate(JDefinedClass definedClass, JMethod method) {
+ // FIXME
+//    final ConstantPoolGen cpg = classGen.getConstantPool();
+//    final InstructionList il = methodGen.getInstructionList();
+//
+//    if (!_isLiteral) {
+//      // if the ncname is an AVT, then the ncname has to be checked at runtime
+//      // if it is a valid ncname
+//      final LocalVariableGen nameValue = methodGen.addLocalVariable2("nameValue", Util.getJCRefType(STRING_SIG), null);
+//
+//      // store the name into a variable first so _name.translate only needs to
+//      // be called once
+//      _name.translate(classGen, methodGen);
+//      nameValue.setStart(il.append(new ASTORE(nameValue.getIndex())));
+//      il.append(new ALOAD(nameValue.getIndex()));
+//
+//      // call checkNCName if the name is an AVT
+//      final int check = cpg.addMethodref(BASIS_LIBRARY_CLASS, "checkNCName", "(" + STRING_SIG + ")V");
+//      il.append(new INVOKESTATIC(check));
+//
+//      // Save the current handler base on the stack
+//      il.append(methodGen.loadHandler());
+//      il.append(DUP); // first arg to "attributes" call
+//
+//      // load name value again
+//      nameValue.setEnd(il.append(new ALOAD(nameValue.getIndex())));
+//    } else {
+//      // Save the current handler base on the stack
+//      il.append(methodGen.loadHandler());
+//      il.append(DUP); // first arg to "attributes" call
+//
+//      // Push attribute name
+//      _name.translate(classGen, methodGen);// 2nd arg
+//
+//    }
+//
+//    il.append(classGen.loadTranslet());
+//    il.append(new GETFIELD(cpg.addFieldref(TRANSLET_CLASS, "stringValueHandler", STRING_VALUE_HANDLER_SIG)));
+//    il.append(DUP);
+//    il.append(methodGen.storeHandler());
+//
+//    // translate contents with substituted handler
+//    translateContents(classGen, methodGen);
+//
+//    // get String out of the handler
+//    il.append(new INVOKEVIRTUAL(cpg.addMethodref(STRING_VALUE_HANDLER, "getValueOfPI", "()" + STRING_SIG)));
+//    // call "processingInstruction"
+//    final int processingInstruction = cpg.addInterfaceMethodref(TRANSLET_OUTPUT_INTERFACE, "processingInstruction", "("
+//            + STRING_SIG + STRING_SIG + ")V");
+//    il.append(new INVOKEINTERFACE(processingInstruction, 3));
+//    // Restore old handler base from stack
+//    il.append(methodGen.storeHandler());
   }
 }

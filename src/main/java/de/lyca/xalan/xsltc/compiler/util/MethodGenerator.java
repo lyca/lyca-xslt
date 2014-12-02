@@ -1621,7 +1621,8 @@ public class MethodGenerator extends MethodGen implements de.lyca.xalan.xsltc.co
       lvg.setEnd(endInst);
     }
 
-    xsltc.dumpClass(copyAreaCG.getJavaClass());
+    // FIXME
+    // xsltc.dumpClass(copyAreaCG.getJavaClass());
 
     // Assemble the instruction lists so that the old method invokes the
     // new outlined method

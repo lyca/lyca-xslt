@@ -32,6 +32,9 @@ import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.NEW;
 import org.apache.bcel.generic.PUSH;
 
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JMethod;
+
 import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 import de.lyca.xalan.xsltc.compiler.util.Type;
@@ -60,35 +63,36 @@ final class ConcatCall extends FunctionCall {
 
   /** translate leaves a String on the stack */
   @Override
-  public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
-    final ConstantPoolGen cpg = classGen.getConstantPool();
-    final InstructionList il = methodGen.getInstructionList();
-    final int nArgs = argumentCount();
-
-    switch (nArgs) {
-      case 0:
-        il.append(new PUSH(cpg, EMPTYSTRING));
-        break;
-
-      case 1:
-        argument().translate(classGen, methodGen);
-        break;
-
-      default:
-        final int initBuffer = cpg.addMethodref(STRING_BUILDER_CLASS, "<init>", "()V");
-        final Instruction append = new INVOKEVIRTUAL(cpg.addMethodref(STRING_BUILDER_CLASS, "append", "(" + STRING_SIG
-                + ")" + STRING_BUILDER_SIG));
-
-        final int toString = cpg.addMethodref(STRING_BUILDER_CLASS, "toString", "()" + STRING_SIG);
-
-        il.append(new NEW(cpg.addClass(STRING_BUILDER_CLASS)));
-        il.append(DUP);
-        il.append(new INVOKESPECIAL(initBuffer));
-        for (int i = 0; i < nArgs; i++) {
-          argument(i).translate(classGen, methodGen);
-          il.append(append);
-        }
-        il.append(new INVOKEVIRTUAL(toString));
-    }
+  public void translate(JDefinedClass definedClass, JMethod method) {
+    // FIXME
+//    final ConstantPoolGen cpg = classGen.getConstantPool();
+//    final InstructionList il = methodGen.getInstructionList();
+//    final int nArgs = argumentCount();
+//
+//    switch (nArgs) {
+//      case 0:
+//        il.append(new PUSH(cpg, EMPTYSTRING));
+//        break;
+//
+//      case 1:
+//        argument().translate(classGen, methodGen);
+//        break;
+//
+//      default:
+//        final int initBuffer = cpg.addMethodref(STRING_BUILDER_CLASS, "<init>", "()V");
+//        final Instruction append = new INVOKEVIRTUAL(cpg.addMethodref(STRING_BUILDER_CLASS, "append", "(" + STRING_SIG
+//                + ")" + STRING_BUILDER_SIG));
+//
+//        final int toString = cpg.addMethodref(STRING_BUILDER_CLASS, "toString", "()" + STRING_SIG);
+//
+//        il.append(new NEW(cpg.addClass(STRING_BUILDER_CLASS)));
+//        il.append(DUP);
+//        il.append(new INVOKESPECIAL(initBuffer));
+//        for (int i = 0; i < nArgs; i++) {
+//          argument(i).translate(classGen, methodGen);
+//          il.append(append);
+//        }
+//        il.append(new INVOKEVIRTUAL(toString));
+//    }
   }
 }

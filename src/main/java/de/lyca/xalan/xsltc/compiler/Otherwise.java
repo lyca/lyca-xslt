@@ -21,6 +21,9 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JMethod;
+
 import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
@@ -48,7 +51,7 @@ final class Otherwise extends Instruction {
   }
 
   @Override
-  public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
+  public void translate(JDefinedClass definedClass, JMethod method) {
     final Parser parser = getParser();
     final ErrorMsg err = new ErrorMsg(ErrorMsg.STRAY_OTHERWISE_ERR, this);
     parser.reportError(Constants.ERROR, err);

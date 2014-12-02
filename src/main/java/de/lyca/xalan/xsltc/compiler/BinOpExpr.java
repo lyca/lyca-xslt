@@ -23,6 +23,9 @@ package de.lyca.xalan.xsltc.compiler;
 
 import org.apache.bcel.generic.InstructionList;
 
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JMethod;
+
 import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
@@ -100,32 +103,33 @@ final class BinOpExpr extends Expression {
   }
 
   @Override
-  public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
-    final InstructionList il = methodGen.getInstructionList();
-
-    _left.translate(classGen, methodGen);
-    _right.translate(classGen, methodGen);
-
-    switch (_op) {
-      case PLUS:
-        il.append(_type.ADD());
-        break;
-      case MINUS:
-        il.append(_type.SUB());
-        break;
-      case TIMES:
-        il.append(_type.MUL());
-        break;
-      case DIV:
-        il.append(_type.DIV());
-        break;
-      case MOD:
-        il.append(_type.REM());
-        break;
-      default:
-        final ErrorMsg msg = new ErrorMsg(ErrorMsg.ILLEGAL_BINARY_OP_ERR, this);
-        getParser().reportError(Constants.ERROR, msg);
-    }
+  public void translate(JDefinedClass definedClass, JMethod method) {
+// FIXME
+//    final InstructionList il = methodGen.getInstructionList();
+//
+//    _left.translate(classGen, methodGen);
+//    _right.translate(classGen, methodGen);
+//
+//    switch (_op) {
+//      case PLUS:
+//        il.append(_type.ADD());
+//        break;
+//      case MINUS:
+//        il.append(_type.SUB());
+//        break;
+//      case TIMES:
+//        il.append(_type.MUL());
+//        break;
+//      case DIV:
+//        il.append(_type.DIV());
+//        break;
+//      case MOD:
+//        il.append(_type.REM());
+//        break;
+//      default:
+//        final ErrorMsg msg = new ErrorMsg(ErrorMsg.ILLEGAL_BINARY_OP_ERR, this);
+//        getParser().reportError(Constants.ERROR, msg);
+//    }
   }
 
   @Override

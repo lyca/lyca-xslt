@@ -34,6 +34,9 @@ import org.apache.bcel.generic.INVOKEINTERFACE;
 import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.SIPUSH;
 
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JMethod;
+
 import de.lyca.xalan.xsltc.compiler.util.BooleanType;
 import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
@@ -185,47 +188,49 @@ final class CastExpr extends Expression {
   }
 
   @Override
-  public void translateDesynthesized(ClassGenerator classGen, MethodGenerator methodGen) {
-    FlowList fl;
-    final Type ltype = _left.getType();
-
-    // This is a special case for the self:: axis. Instead of letting
-    // the Step object create and iterator that we cast back to a single
-    // node, we simply ask the DOM for the node type.
-    if (_typeTest) {
-      final ConstantPoolGen cpg = classGen.getConstantPool();
-      final InstructionList il = methodGen.getInstructionList();
-
-      final int idx = cpg.addInterfaceMethodref(DOM_INTF, "getExpandedTypeID", "(I)I");
-      il.append(new SIPUSH((short) ((Step) _left).getNodeType()));
-      il.append(methodGen.loadDOM());
-      il.append(methodGen.loadContextNode());
-      il.append(new INVOKEINTERFACE(idx, 2));
-      _falseList.add(il.append(new IF_ICMPNE(null)));
-    } else {
-
-      _left.translate(classGen, methodGen);
-      if (_type != ltype) {
-        _left.startIterator(classGen, methodGen);
-        if (_type instanceof BooleanType) {
-          fl = ltype.translateToDesynthesized(classGen, methodGen, _type);
-          if (fl != null) {
-            _falseList.append(fl);
-          }
-        } else {
-          ltype.translateTo(classGen, methodGen, _type);
-        }
-      }
-    }
+  public void translateDesynthesized(JDefinedClass definedClass, JMethod method) {
+    // FIXME
+//    FlowList fl;
+//    final Type ltype = _left.getType();
+//
+//    // This is a special case for the self:: axis. Instead of letting
+//    // the Step object create and iterator that we cast back to a single
+//    // node, we simply ask the DOM for the node type.
+//    if (_typeTest) {
+//      final ConstantPoolGen cpg = classGen.getConstantPool();
+//      final InstructionList il = methodGen.getInstructionList();
+//
+//      final int idx = cpg.addInterfaceMethodref(DOM_INTF, "getExpandedTypeID", "(I)I");
+//      il.append(new SIPUSH((short) ((Step) _left).getNodeType()));
+//      il.append(methodGen.loadDOM());
+//      il.append(methodGen.loadContextNode());
+//      il.append(new INVOKEINTERFACE(idx, 2));
+//      _falseList.add(il.append(new IF_ICMPNE(null)));
+//    } else {
+//
+//      _left.translate(classGen, methodGen);
+//      if (_type != ltype) {
+//        _left.startIterator(classGen, methodGen);
+//        if (_type instanceof BooleanType) {
+//          fl = ltype.translateToDesynthesized(classGen, methodGen, _type);
+//          if (fl != null) {
+//            _falseList.append(fl);
+//          }
+//        } else {
+//          ltype.translateTo(classGen, methodGen, _type);
+//        }
+//      }
+//    }
   }
 
   @Override
-  public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
-    final Type ltype = _left.getType();
-    _left.translate(classGen, methodGen);
-    if (_type.identicalTo(ltype) == false) {
-      _left.startIterator(classGen, methodGen);
-      ltype.translateTo(classGen, methodGen, _type);
-    }
+  public void translate(JDefinedClass definedClass, JMethod method) {
+    // FIXME
+//    final Type ltype = _left.getType();
+//    _left.translate(classGen, methodGen);
+//    if (_type.identicalTo(ltype) == false) {
+//      _left.startIterator(classGen, methodGen);
+//      ltype.translateTo(classGen, methodGen, _type);
+//    }
   }
 }

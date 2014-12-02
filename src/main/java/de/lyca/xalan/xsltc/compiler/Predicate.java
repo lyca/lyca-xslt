@@ -36,6 +36,9 @@ import org.apache.bcel.generic.NEW;
 import org.apache.bcel.generic.PUSH;
 import org.apache.bcel.generic.PUTFIELD;
 
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JMethod;
+
 import de.lyca.xalan.xsltc.compiler.util.BooleanType;
 import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.FilterGenerator;
@@ -350,51 +353,52 @@ final class Predicate extends Expression implements Closure {
    * . Allocate registers for local variables and local parameters passed in the
    * closure to test(). Notice that local variables need to be "unboxed".
    */
-  private void compileFilter(ClassGenerator classGen, MethodGenerator methodGen) {
-    TestGenerator testGen;
-    LocalVariableGen local;
-    FilterGenerator filterGen;
-
-    _className = getXSLTC().getHelperClassName();
-    filterGen = new FilterGenerator(_className, "java.lang.Object", toString(), ACC_PUBLIC | ACC_SUPER,
-            new String[] { CURRENT_NODE_LIST_FILTER }, classGen.getStylesheet());
-
-    final ConstantPoolGen cpg = filterGen.getConstantPool();
-
-    // Add a new instance variable for each var in closure
-    if (_closureVars != null) {
-      for (final VariableRefBase varRefBase : _closureVars) {
-        final VariableBase var = varRefBase.getVariable();
-        filterGen.addField(new Field(ACC_PUBLIC, cpg.addUtf8(var.getEscapedName()), cpg.addUtf8(var.getType()
-                .toSignature()), null, cpg.getConstantPool()));
-      }
-    }
-
-    final InstructionList il = new InstructionList();
-    testGen = new TestGenerator(ACC_PUBLIC | ACC_FINAL, org.apache.bcel.generic.Type.BOOLEAN,
-            new org.apache.bcel.generic.Type[] { org.apache.bcel.generic.Type.INT, org.apache.bcel.generic.Type.INT,
-                    org.apache.bcel.generic.Type.INT, org.apache.bcel.generic.Type.INT,
-                    Util.getJCRefType(TRANSLET_SIG), Util.getJCRefType(NODE_ITERATOR_SIG) }, new String[] { "node",
-                    "position", "last", "current", "translet", "iterator" }, "test", _className, il, cpg);
-
-    // Store the dom in a local variable
-    local = testGen.addLocalVariable("document", Util.getJCRefType(DOM_INTF_SIG), null, null);
-    final String className = classGen.getClassName();
-    il.append(filterGen.loadTranslet());
-    il.append(new CHECKCAST(cpg.addClass(className)));
-    il.append(new GETFIELD(cpg.addFieldref(className, DOM_FIELD, DOM_INTF_SIG)));
-    local.setStart(il.append(new ASTORE(local.getIndex())));
-
-    // Store the dom index in the test generator
-    testGen.setDomIndex(local.getIndex());
-
-    _exp.translate(filterGen, testGen);
-    il.append(IRETURN);
-
-    filterGen.addEmptyConstructor(ACC_PUBLIC);
-    filterGen.addMethod(testGen);
-
-    getXSLTC().dumpClass(filterGen.getJavaClass());
+  private void compileFilter(JDefinedClass definedClass, JMethod method) {
+ // FIXME
+//    TestGenerator testGen;
+//    LocalVariableGen local;
+//    FilterGenerator filterGen;
+//
+//    _className = getXSLTC().getHelperClassName();
+//    filterGen = new FilterGenerator(_className, "java.lang.Object", toString(), ACC_PUBLIC | ACC_SUPER,
+//            new String[] { CURRENT_NODE_LIST_FILTER }, classGen.getStylesheet());
+//
+//    final ConstantPoolGen cpg = filterGen.getConstantPool();
+//
+//    // Add a new instance variable for each var in closure
+//    if (_closureVars != null) {
+//      for (final VariableRefBase varRefBase : _closureVars) {
+//        final VariableBase var = varRefBase.getVariable();
+//        filterGen.addField(new Field(ACC_PUBLIC, cpg.addUtf8(var.getEscapedName()), cpg.addUtf8(var.getType()
+//                .toSignature()), null, cpg.getConstantPool()));
+//      }
+//    }
+//
+//    final InstructionList il = new InstructionList();
+//    testGen = new TestGenerator(ACC_PUBLIC | ACC_FINAL, org.apache.bcel.generic.Type.BOOLEAN,
+//            new org.apache.bcel.generic.Type[] { org.apache.bcel.generic.Type.INT, org.apache.bcel.generic.Type.INT,
+//                    org.apache.bcel.generic.Type.INT, org.apache.bcel.generic.Type.INT,
+//                    Util.getJCRefType(TRANSLET_SIG), Util.getJCRefType(NODE_ITERATOR_SIG) }, new String[] { "node",
+//                    "position", "last", "current", "translet", "iterator" }, "test", _className, il, cpg);
+//
+//    // Store the dom in a local variable
+//    local = testGen.addLocalVariable("document", Util.getJCRefType(DOM_INTF_SIG), null, null);
+//    final String className = classGen.getClassName();
+//    il.append(filterGen.loadTranslet());
+//    il.append(new CHECKCAST(cpg.addClass(className)));
+//    il.append(new GETFIELD(cpg.addFieldref(className, DOM_FIELD, DOM_INTF_SIG)));
+//    local.setStart(il.append(new ASTORE(local.getIndex())));
+//
+//    // Store the dom index in the test generator
+//    testGen.setDomIndex(local.getIndex());
+//
+//    _exp.translate(filterGen, testGen);
+//    il.append(IRETURN);
+//
+//    filterGen.addEmptyConstructor(ACC_PUBLIC);
+//    filterGen.addMethod(testGen);
+//
+//    getXSLTC().dumpClass(filterGen.getJavaClass());
   }
 
   /**
@@ -506,50 +510,51 @@ final class Predicate extends Expression implements Closure {
    * the stack: a reference to a newly created filter object and a reference to
    * the predicate's closure.
    */
-  public void translateFilter(ClassGenerator classGen, MethodGenerator methodGen) {
-    final ConstantPoolGen cpg = classGen.getConstantPool();
-    final InstructionList il = methodGen.getInstructionList();
-
-    // Compile auxiliary class for filter
-    compileFilter(classGen, methodGen);
-
-    // Create new instance of filter
-    il.append(new NEW(cpg.addClass(_className)));
-    il.append(DUP);
-    il.append(new INVOKESPECIAL(cpg.addMethodref(_className, "<init>", "()V")));
-
-    // Initialize closure variables
-    final int length = _closureVars == null ? 0 : _closureVars.size();
-
-    for (int i = 0; i < length; i++) {
-      final VariableRefBase varRef = _closureVars.get(i);
-      final VariableBase var = varRef.getVariable();
-      final Type varType = var.getType();
-
-      il.append(DUP);
-
-      // Find nearest closure implemented as an inner class
-      Closure variableClosure = _parentClosure;
-      while (variableClosure != null) {
-        if (variableClosure.inInnerClass()) {
-          break;
-        }
-        variableClosure = variableClosure.getParentClosure();
-      }
-
-      // Use getfield if in an inner class
-      if (variableClosure != null) {
-        il.append(ALOAD_0);
-        il.append(new GETFIELD(cpg.addFieldref(variableClosure.getInnerClassName(), var.getEscapedName(),
-                varType.toSignature())));
-      } else {
-        // Use a load of instruction if in translet class
-        il.append(var.loadInstruction());
-      }
-
-      // Store variable in new closure
-      il.append(new PUTFIELD(cpg.addFieldref(_className, var.getEscapedName(), varType.toSignature())));
-    }
+  public void translateFilter(JDefinedClass definedClass, JMethod method) {
+ // FIXME
+//    final ConstantPoolGen cpg = classGen.getConstantPool();
+//    final InstructionList il = methodGen.getInstructionList();
+//
+//    // Compile auxiliary class for filter
+//    compileFilter(classGen, methodGen);
+//
+//    // Create new instance of filter
+//    il.append(new NEW(cpg.addClass(_className)));
+//    il.append(DUP);
+//    il.append(new INVOKESPECIAL(cpg.addMethodref(_className, "<init>", "()V")));
+//
+//    // Initialize closure variables
+//    final int length = _closureVars == null ? 0 : _closureVars.size();
+//
+//    for (int i = 0; i < length; i++) {
+//      final VariableRefBase varRef = _closureVars.get(i);
+//      final VariableBase var = varRef.getVariable();
+//      final Type varType = var.getType();
+//
+//      il.append(DUP);
+//
+//      // Find nearest closure implemented as an inner class
+//      Closure variableClosure = _parentClosure;
+//      while (variableClosure != null) {
+//        if (variableClosure.inInnerClass()) {
+//          break;
+//        }
+//        variableClosure = variableClosure.getParentClosure();
+//      }
+//
+//      // Use getfield if in an inner class
+//      if (variableClosure != null) {
+//        il.append(ALOAD_0);
+//        il.append(new GETFIELD(cpg.addFieldref(variableClosure.getInnerClassName(), var.getEscapedName(),
+//                varType.toSignature())));
+//      } else {
+//        // Use a load of instruction if in translet class
+//        il.append(var.loadInstruction());
+//      }
+//
+//      // Store variable in new closure
+//      il.append(new PUTFIELD(cpg.addFieldref(_className, var.getEscapedName(), varType.toSignature())));
+//    }
   }
 
   /**
@@ -559,19 +564,20 @@ final class Predicate extends Expression implements Closure {
    * <code>Step</code> for further details.
    */
   @Override
-  public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
-
-    final ConstantPoolGen cpg = classGen.getConstantPool();
-    final InstructionList il = methodGen.getInstructionList();
-
-    if (_nthPositionFilter || _nthDescendant) {
-      _exp.translate(classGen, methodGen);
-    } else if (isNodeValueTest() && getParent() instanceof Step) {
-      _value.translate(classGen, methodGen);
-      il.append(new CHECKCAST(cpg.addClass(STRING_CLASS)));
-      il.append(new PUSH(cpg, ((EqualityExpr) _exp).getOp()));
-    } else {
-      translateFilter(classGen, methodGen);
-    }
+  public void translate(JDefinedClass definedClass, JMethod method) {
+ // FIXME
+//
+//    final ConstantPoolGen cpg = classGen.getConstantPool();
+//    final InstructionList il = methodGen.getInstructionList();
+//
+//    if (_nthPositionFilter || _nthDescendant) {
+//      _exp.translate(classGen, methodGen);
+//    } else if (isNodeValueTest() && getParent() instanceof Step) {
+//      _value.translate(classGen, methodGen);
+//      il.append(new CHECKCAST(cpg.addClass(STRING_CLASS)));
+//      il.append(new PUSH(cpg, ((EqualityExpr) _exp).getOp()));
+//    } else {
+//      translateFilter(classGen, methodGen);
+//    }
   }
 }

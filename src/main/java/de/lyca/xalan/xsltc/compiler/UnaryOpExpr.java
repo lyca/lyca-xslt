@@ -23,6 +23,9 @@ package de.lyca.xalan.xsltc.compiler;
 
 import org.apache.bcel.generic.InstructionList;
 
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JMethod;
+
 import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 import de.lyca.xalan.xsltc.compiler.util.MethodType;
@@ -85,9 +88,10 @@ final class UnaryOpExpr extends Expression {
   }
 
   @Override
-  public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
-    final InstructionList il = methodGen.getInstructionList();
-    _left.translate(classGen, methodGen);
-    il.append(_type.NEG());
+  public void translate(JDefinedClass definedClass, JMethod method) {
+//    FIXME
+//    final InstructionList il = methodGen.getInstructionList();
+//    _left.translate(classGen, methodGen);
+//    il.append(_type.NEG());
   }
 }

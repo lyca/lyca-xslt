@@ -26,6 +26,9 @@ import org.apache.bcel.generic.GOTO;
 import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.PUSH;
 
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JMethod;
+
 import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 import de.lyca.xalan.xsltc.compiler.util.Type;
@@ -66,19 +69,21 @@ final class BooleanExpr extends Expression {
   }
 
   @Override
-  public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
-    final ConstantPoolGen cpg = classGen.getConstantPool();
-    final InstructionList il = methodGen.getInstructionList();
-    il.append(new PUSH(cpg, _value));
+  public void translate(JDefinedClass definedClass, JMethod method) {
+// FIXME
+//    final ConstantPoolGen cpg = classGen.getConstantPool();
+//    final InstructionList il = methodGen.getInstructionList();
+//    il.append(new PUSH(cpg, _value));
   }
 
   @Override
-  public void translateDesynthesized(ClassGenerator classGen, MethodGenerator methodGen) {
-    final InstructionList il = methodGen.getInstructionList();
-    if (_value) {
-      il.append(NOP); // true list falls through
-    } else {
-      _falseList.add(il.append(new GOTO(null)));
-    }
+  public void translateDesynthesized(JDefinedClass definedClass, JMethod method) {
+// FIXME
+//    final InstructionList il = methodGen.getInstructionList();
+//    if (_value) {
+//      il.append(NOP); // true list falls through
+//    } else {
+//      _falseList.add(il.append(new GOTO(null)));
+//    }
   }
 }

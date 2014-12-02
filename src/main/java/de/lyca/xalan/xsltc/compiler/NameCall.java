@@ -27,6 +27,9 @@ import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.INVOKEINTERFACE;
 import org.apache.bcel.generic.InstructionList;
 
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JMethod;
+
 import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 
@@ -55,12 +58,13 @@ final class NameCall extends NameBase {
    * Translate code that leaves a node's QName (as a String) on the stack
    */
   @Override
-  public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
-    final ConstantPoolGen cpg = classGen.getConstantPool();
-    final InstructionList il = methodGen.getInstructionList();
-
-    final int getName = cpg.addInterfaceMethodref(DOM_INTF, GET_NODE_NAME, GET_NODE_NAME_SIG);
-    super.translate(classGen, methodGen);
-    il.append(new INVOKEINTERFACE(getName, 2));
+  public void translate(JDefinedClass definedClass, JMethod method) {
+ // FIXME
+//    final ConstantPoolGen cpg = classGen.getConstantPool();
+//    final InstructionList il = methodGen.getInstructionList();
+//
+//    final int getName = cpg.addInterfaceMethodref(DOM_INTF, GET_NODE_NAME, GET_NODE_NAME_SIG);
+//    super.translate(classGen, methodGen);
+//    il.append(new INVOKEINTERFACE(getName, 2));
   }
 }

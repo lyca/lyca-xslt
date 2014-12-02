@@ -25,6 +25,9 @@ import org.apache.bcel.generic.GOTO;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InstructionList;
 
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JMethod;
+
 import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 import de.lyca.xalan.xsltc.compiler.util.Type;
@@ -89,18 +92,20 @@ final class AlternativePattern extends Pattern {
   }
 
   @Override
-  public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
-    final InstructionList il = methodGen.getInstructionList();
-
-    _left.translate(classGen, methodGen);
-    final InstructionHandle gotot = il.append(new GOTO(null));
-    il.append(methodGen.loadContextNode());
-    _right.translate(classGen, methodGen);
-
-    _left._trueList.backPatch(gotot);
-    _left._falseList.backPatch(gotot.getNext());
-
-    _trueList.append(_right._trueList.add(gotot));
-    _falseList.append(_right._falseList);
+  public void translate(JDefinedClass definedClass, JMethod method) {
+//    FIXME
+//
+//    final InstructionList il = methodGen.getInstructionList();
+//
+//    _left.translate(classGen, methodGen);
+//    final InstructionHandle gotot = il.append(new GOTO(null));
+//    il.append(methodGen.loadContextNode());
+//    _right.translate(classGen, methodGen);
+//
+//    _left._trueList.backPatch(gotot);
+//    _left._falseList.backPatch(gotot.getNext());
+//
+//    _trueList.append(_right._trueList.add(gotot));
+//    _falseList.append(_right._falseList);
   }
 }

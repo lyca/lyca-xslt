@@ -25,6 +25,9 @@ import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.INVOKEVIRTUAL;
 import org.apache.bcel.generic.InstructionList;
 
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JMethod;
+
 import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 import de.lyca.xalan.xsltc.compiler.util.Type;
@@ -103,48 +106,49 @@ final class ApplyImports extends Instruction {
    * in the stylesheet uses parameters.
    */
   @Override
-  public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
-    final Stylesheet stylesheet = classGen.getStylesheet();
-    final ConstantPoolGen cpg = classGen.getConstantPool();
-    final InstructionList il = methodGen.getInstructionList();
-
-    // Push the arguments that are passed to applyTemplates()
-    il.append(classGen.loadTranslet());
-    il.append(methodGen.loadDOM());
-    il.append(methodGen.loadIterator());
-    il.append(methodGen.loadHandler());
-    il.append(methodGen.loadCurrentNode());
-
-    // Push a new parameter frame in case imported template might expect
-    // parameters. The apply-imports has nothing that it can pass.
-    if (stylesheet.hasLocalParams()) {
-      il.append(classGen.loadTranslet());
-      final int pushFrame = cpg.addMethodref(TRANSLET_CLASS, PUSH_PARAM_FRAME, PUSH_PARAM_FRAME_SIG);
-      il.append(new INVOKEVIRTUAL(pushFrame));
-    }
-
-    // Get the [min,max> precedence of all templates imported under the
-    // current stylesheet
-    final int maxPrecedence = _precedence;
-    final int minPrecedence = getMinPrecedence(maxPrecedence);
-    final Mode mode = stylesheet.getMode(_modeName);
-
-    // Get name of appropriate apply-templates function for this
-    // xsl:apply-imports instruction
-    final String functionName = mode.functionName(minPrecedence, maxPrecedence);
-
-    // Construct the translet class-name and the signature of the method
-    final String className = classGen.getStylesheet().getClassName();
-    final String signature = classGen.getApplyTemplatesSigForImport();
-    final int applyTemplates = cpg.addMethodref(className, functionName, signature);
-    il.append(new INVOKEVIRTUAL(applyTemplates));
-
-    // Pop any parameter frame that was pushed above.
-    if (stylesheet.hasLocalParams()) {
-      il.append(classGen.loadTranslet());
-      final int pushFrame = cpg.addMethodref(TRANSLET_CLASS, POP_PARAM_FRAME, POP_PARAM_FRAME_SIG);
-      il.append(new INVOKEVIRTUAL(pushFrame));
-    }
+  public void translate(JDefinedClass definedClass, JMethod method) {
+ // FIXME
+//    final Stylesheet stylesheet = classGen.getStylesheet();
+//    final ConstantPoolGen cpg = classGen.getConstantPool();
+//    final InstructionList il = methodGen.getInstructionList();
+//
+//    // Push the arguments that are passed to applyTemplates()
+//    il.append(classGen.loadTranslet());
+//    il.append(methodGen.loadDOM());
+//    il.append(methodGen.loadIterator());
+//    il.append(methodGen.loadHandler());
+//    il.append(methodGen.loadCurrentNode());
+//
+//    // Push a new parameter frame in case imported template might expect
+//    // parameters. The apply-imports has nothing that it can pass.
+//    if (stylesheet.hasLocalParams()) {
+//      il.append(classGen.loadTranslet());
+//      final int pushFrame = cpg.addMethodref(TRANSLET_CLASS, PUSH_PARAM_FRAME, PUSH_PARAM_FRAME_SIG);
+//      il.append(new INVOKEVIRTUAL(pushFrame));
+//    }
+//
+//    // Get the [min,max> precedence of all templates imported under the
+//    // current stylesheet
+//    final int maxPrecedence = _precedence;
+//    final int minPrecedence = getMinPrecedence(maxPrecedence);
+//    final Mode mode = stylesheet.getMode(_modeName);
+//
+//    // Get name of appropriate apply-templates function for this
+//    // xsl:apply-imports instruction
+//    final String functionName = mode.functionName(minPrecedence, maxPrecedence);
+//
+//    // Construct the translet class-name and the signature of the method
+//    final String className = classGen.getStylesheet().getClassName();
+//    final String signature = classGen.getApplyTemplatesSigForImport();
+//    final int applyTemplates = cpg.addMethodref(className, functionName, signature);
+//    il.append(new INVOKEVIRTUAL(applyTemplates));
+//
+//    // Pop any parameter frame that was pushed above.
+//    if (stylesheet.hasLocalParams()) {
+//      il.append(classGen.loadTranslet());
+//      final int pushFrame = cpg.addMethodref(TRANSLET_CLASS, POP_PARAM_FRAME, POP_PARAM_FRAME_SIG);
+//      il.append(new INVOKEVIRTUAL(pushFrame));
+//    }
   }
 
 }

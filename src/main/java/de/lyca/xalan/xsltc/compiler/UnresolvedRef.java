@@ -21,6 +21,9 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JMethod;
+
 import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
@@ -85,9 +88,9 @@ final class UnresolvedRef extends VariableRefBase {
   }
 
   @Override
-  public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
+  public void translate(JDefinedClass definedClass, JMethod method) {
     if (_ref != null) {
-      _ref.translate(classGen, methodGen);
+      _ref.translate(definedClass, method);
     } else {
       reportError();
     }

@@ -42,6 +42,9 @@ import org.apache.bcel.generic.NEWARRAY;
 import org.apache.bcel.generic.PUSH;
 import org.xml.sax.Attributes;
 
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JMethod;
+
 import de.lyca.xalan.xsltc.DOM;
 import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
@@ -541,7 +544,8 @@ public abstract class SyntaxTreeNode implements Constants {
    * @param methodGen
    *          BCEL Java method generator
    */
-  public abstract void translate(ClassGenerator classGen, MethodGenerator methodGen);
+//  public abstract void translate(JDefinedClass definedClass, JMethod method);
+  public abstract void translate(JDefinedClass definedClass, JMethod method);
 
   /**
    * Call translate() on all child syntax tree nodes.
@@ -551,12 +555,11 @@ public abstract class SyntaxTreeNode implements Constants {
    * @param methodGen
    *          BCEL Java method generator
    */
-  protected void translateContents(ClassGenerator classGen, MethodGenerator methodGen) {
+//  protected void translateContents(JDefinedClass definedClass, JMethod method) {
+  protected void translateContents(JDefinedClass definedClass, JMethod method) {
     // Call translate() on all child nodes
     for (SyntaxTreeNode item : _contents) {
-      methodGen.markChunkStart();
-      item.translate(classGen, methodGen);
-      methodGen.markChunkEnd();
+      item.translate(definedClass, method);
     }
 
     // After translation, unmap any registers for any variables/parameters
@@ -566,7 +569,7 @@ public abstract class SyntaxTreeNode implements Constants {
     // (the cause of which being 'lazy' register allocation for references)
     for (SyntaxTreeNode item : _contents) {
       if (item instanceof VariableBase) {
-        ((VariableBase) item).unmapRegister(methodGen);
+        ((VariableBase) item).unmapRegister(method);
       }
     }
   }
@@ -652,106 +655,107 @@ public abstract class SyntaxTreeNode implements Constants {
    * @param methodGen
    *          BCEL Java method generator
    */
-  protected void compileResultTree(ClassGenerator classGen, MethodGenerator methodGen) {
-    final ConstantPoolGen cpg = classGen.getConstantPool();
-    final InstructionList il = methodGen.getInstructionList();
-    final Stylesheet stylesheet = classGen.getStylesheet();
-
-    final boolean isSimple = isSimpleRTF(this);
-    boolean isAdaptive = false;
-    if (!isSimple) {
-      isAdaptive = isAdaptiveRTF(this);
-    }
-
-    final int rtfType = isSimple ? DOM.SIMPLE_RTF : isAdaptive ? DOM.ADAPTIVE_RTF : DOM.TREE_RTF;
-
-    // Save the current handler base on the stack
-    il.append(methodGen.loadHandler());
-
-    final String DOM_CLASS = classGen.getDOMClass();
-
-    // Create new instance of DOM class (with RTF_INITIAL_SIZE nodes)
-    // int index = cpg.addMethodref(DOM_IMPL, "<init>", "(I)V");
-    // il.append(new NEW(cpg.addClass(DOM_IMPL)));
-
-    il.append(methodGen.loadDOM());
-    int index = cpg.addInterfaceMethodref(DOM_INTF, "getResultTreeFrag", "(IIZ)" + DOM_INTF_SIG);
-    il.append(new PUSH(cpg, RTF_INITIAL_SIZE));
-    il.append(new PUSH(cpg, rtfType));
-    il.append(new PUSH(cpg, stylesheet.callsNodeset()));
-    il.append(new INVOKEINTERFACE(index, 4));
-
-    il.append(DUP);
-
-    // Overwrite old handler with DOM handler
-    index = cpg.addInterfaceMethodref(DOM_INTF, "getOutputDomBuilder", "()" + TRANSLET_OUTPUT_SIG);
-
-    il.append(new INVOKEINTERFACE(index, 1));
-    il.append(DUP);
-    il.append(methodGen.storeHandler());
-
-    // Call startDocument on the new handler
-    il.append(methodGen.startDocument());
-
-    // Instantiate result tree fragment
-    translateContents(classGen, methodGen);
-
-    // Call endDocument on the new handler
-    il.append(methodGen.loadHandler());
-    il.append(methodGen.endDocument());
-
-    // Check if we need to wrap the DOMImpl object in a DOMAdapter object.
-    // DOMAdapter is not needed if the RTF is a simple RTF and the nodeset()
-    // function is not used.
-    if (stylesheet.callsNodeset() && !DOM_CLASS.equals(DOM_IMPL_CLASS)) {
-      // new de.lyca.xalan.xsltc.dom.DOMAdapter(DOMImpl,String[]);
-      index = cpg.addMethodref(DOM_ADAPTER_CLASS, "<init>", "(" + DOM_INTF_SIG + "[" + STRING_SIG + "[" + STRING_SIG
-              + "[I" + "[" + STRING_SIG + ")V");
-      il.append(new NEW(cpg.addClass(DOM_ADAPTER_CLASS)));
-      il.append(new DUP_X1());
-      il.append(SWAP);
-
-      /*
-       * Give the DOM adapter an empty type mapping if the nodeset extension
-       * function is never called.
-       */
-      if (!stylesheet.callsNodeset()) {
-        il.append(new ICONST(0));
-        il.append(new ANEWARRAY(cpg.addClass(STRING)));
-        il.append(DUP);
-        il.append(DUP);
-        il.append(new ICONST(0));
-        il.append(new NEWARRAY(org.apache.bcel.generic.Type.INT));
-        il.append(SWAP);
-        il.append(new INVOKESPECIAL(index));
-      } else {
-        // Push name arrays on the stack
-        il.append(ALOAD_0);
-        il.append(new GETFIELD(cpg.addFieldref(TRANSLET_CLASS, NAMES_INDEX, NAMES_INDEX_SIG)));
-        il.append(ALOAD_0);
-        il.append(new GETFIELD(cpg.addFieldref(TRANSLET_CLASS, URIS_INDEX, URIS_INDEX_SIG)));
-        il.append(ALOAD_0);
-        il.append(new GETFIELD(cpg.addFieldref(TRANSLET_CLASS, TYPES_INDEX, TYPES_INDEX_SIG)));
-        il.append(ALOAD_0);
-        il.append(new GETFIELD(cpg.addFieldref(TRANSLET_CLASS, NAMESPACE_INDEX, NAMESPACE_INDEX_SIG)));
-
-        // Initialized DOM adapter
-        il.append(new INVOKESPECIAL(index));
-
-        // Add DOM adapter to MultiDOM class by calling addDOMAdapter()
-        il.append(DUP);
-        il.append(methodGen.loadDOM());
-        il.append(new CHECKCAST(cpg.addClass(classGen.getDOMClass())));
-        il.append(SWAP);
-        index = cpg.addMethodref(MULTI_DOM_CLASS, "addDOMAdapter", "(" + DOM_ADAPTER_SIG + ")I");
-        il.append(new INVOKEVIRTUAL(index));
-        il.append(POP); // ignore mask returned by addDOMAdapter
-      }
-    }
-
-    // Restore old handler base from stack
-    il.append(SWAP);
-    il.append(methodGen.storeHandler());
+  protected void compileResultTree(JDefinedClass definedClass, JMethod method) {
+//    FIXME
+//    final ConstantPoolGen cpg = classGen.getConstantPool();
+//    final InstructionList il = methodGen.getInstructionList();
+//    final Stylesheet stylesheet = classGen.getStylesheet();
+//
+//    final boolean isSimple = isSimpleRTF(this);
+//    boolean isAdaptive = false;
+//    if (!isSimple) {
+//      isAdaptive = isAdaptiveRTF(this);
+//    }
+//
+//    final int rtfType = isSimple ? DOM.SIMPLE_RTF : isAdaptive ? DOM.ADAPTIVE_RTF : DOM.TREE_RTF;
+//
+//    // Save the current handler base on the stack
+//    il.append(methodGen.loadHandler());
+//
+//    final String DOM_CLASS = classGen.getDOMClass();
+//
+//    // Create new instance of DOM class (with RTF_INITIAL_SIZE nodes)
+//    // int index = cpg.addMethodref(DOM_IMPL, "<init>", "(I)V");
+//    // il.append(new NEW(cpg.addClass(DOM_IMPL)));
+//
+//    il.append(methodGen.loadDOM());
+//    int index = cpg.addInterfaceMethodref(DOM_INTF, "getResultTreeFrag", "(IIZ)" + DOM_INTF_SIG);
+//    il.append(new PUSH(cpg, RTF_INITIAL_SIZE));
+//    il.append(new PUSH(cpg, rtfType));
+//    il.append(new PUSH(cpg, stylesheet.callsNodeset()));
+//    il.append(new INVOKEINTERFACE(index, 4));
+//
+//    il.append(DUP);
+//
+//    // Overwrite old handler with DOM handler
+//    index = cpg.addInterfaceMethodref(DOM_INTF, "getOutputDomBuilder", "()" + TRANSLET_OUTPUT_SIG);
+//
+//    il.append(new INVOKEINTERFACE(index, 1));
+//    il.append(DUP);
+//    il.append(methodGen.storeHandler());
+//
+//    // Call startDocument on the new handler
+//    il.append(methodGen.startDocument());
+//
+//    // Instantiate result tree fragment
+//    translateContents(classGen, methodGen);
+//
+//    // Call endDocument on the new handler
+//    il.append(methodGen.loadHandler());
+//    il.append(methodGen.endDocument());
+//
+//    // Check if we need to wrap the DOMImpl object in a DOMAdapter object.
+//    // DOMAdapter is not needed if the RTF is a simple RTF and the nodeset()
+//    // function is not used.
+//    if (stylesheet.callsNodeset() && !DOM_CLASS.equals(DOM_IMPL_CLASS)) {
+//      // new de.lyca.xalan.xsltc.dom.DOMAdapter(DOMImpl,String[]);
+//      index = cpg.addMethodref(DOM_ADAPTER_CLASS, "<init>", "(" + DOM_INTF_SIG + "[" + STRING_SIG + "[" + STRING_SIG
+//              + "[I" + "[" + STRING_SIG + ")V");
+//      il.append(new NEW(cpg.addClass(DOM_ADAPTER_CLASS)));
+//      il.append(new DUP_X1());
+//      il.append(SWAP);
+//
+//      /*
+//       * Give the DOM adapter an empty type mapping if the nodeset extension
+//       * function is never called.
+//       */
+//      if (!stylesheet.callsNodeset()) {
+//        il.append(new ICONST(0));
+//        il.append(new ANEWARRAY(cpg.addClass(STRING)));
+//        il.append(DUP);
+//        il.append(DUP);
+//        il.append(new ICONST(0));
+//        il.append(new NEWARRAY(org.apache.bcel.generic.Type.INT));
+//        il.append(SWAP);
+//        il.append(new INVOKESPECIAL(index));
+//      } else {
+//        // Push name arrays on the stack
+//        il.append(ALOAD_0);
+//        il.append(new GETFIELD(cpg.addFieldref(TRANSLET_CLASS, NAMES_INDEX, NAMES_INDEX_SIG)));
+//        il.append(ALOAD_0);
+//        il.append(new GETFIELD(cpg.addFieldref(TRANSLET_CLASS, URIS_INDEX, URIS_INDEX_SIG)));
+//        il.append(ALOAD_0);
+//        il.append(new GETFIELD(cpg.addFieldref(TRANSLET_CLASS, TYPES_INDEX, TYPES_INDEX_SIG)));
+//        il.append(ALOAD_0);
+//        il.append(new GETFIELD(cpg.addFieldref(TRANSLET_CLASS, NAMESPACE_INDEX, NAMESPACE_INDEX_SIG)));
+//
+//        // Initialized DOM adapter
+//        il.append(new INVOKESPECIAL(index));
+//
+//        // Add DOM adapter to MultiDOM class by calling addDOMAdapter()
+//        il.append(DUP);
+//        il.append(methodGen.loadDOM());
+//        il.append(new CHECKCAST(cpg.addClass(classGen.getDOMClass())));
+//        il.append(SWAP);
+//        index = cpg.addMethodref(MULTI_DOM_CLASS, "addDOMAdapter", "(" + DOM_ADAPTER_SIG + ")I");
+//        il.append(new INVOKEVIRTUAL(index));
+//        il.append(POP); // ignore mask returned by addDOMAdapter
+//      }
+//    }
+//
+//    // Restore old handler base from stack
+//    il.append(SWAP);
+//    il.append(methodGen.storeHandler());
   }
 
   /**

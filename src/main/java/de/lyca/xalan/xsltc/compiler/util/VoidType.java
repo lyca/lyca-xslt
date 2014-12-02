@@ -25,6 +25,9 @@ import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.PUSH;
 
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JMethod;
+
 import de.lyca.xalan.xsltc.compiler.Constants;
 
 /**
@@ -67,13 +70,14 @@ public final class VoidType extends Type {
    * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
    */
   @Override
-  public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, Type type) {
-    if (type == Type.String) {
-      translateTo(classGen, methodGen, (StringType) type);
-    } else {
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), type.toString());
-      classGen.getParser().reportError(Constants.FATAL, err);
-    }
+  public void translateTo(JDefinedClass definedClass, JMethod method, Type type) {
+//    FIXME
+//    if (type == Type.String) {
+//      translateTo(classGen, methodGen, (StringType) type);
+//    } else {
+//      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), type.toString());
+//      classGen.getParser().reportError(Constants.FATAL, err);
+//    }
   }
 
   /**
@@ -81,9 +85,10 @@ public final class VoidType extends Type {
    * 
    * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
    */
-  public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, StringType type) {
-    final InstructionList il = methodGen.getInstructionList();
-    il.append(new PUSH(classGen.getConstantPool(), ""));
+  public void translateTo(JDefinedClass definedClass, JMethod method, StringType type) {
+//    FIXME
+//    final InstructionList il = methodGen.getInstructionList();
+//    il.append(new PUSH(classGen.getConstantPool(), ""));
   }
 
   /**
@@ -91,10 +96,11 @@ public final class VoidType extends Type {
    * "void" can be converted to this class.
    */
   @Override
-  public void translateFrom(ClassGenerator classGen, MethodGenerator methodGen, Class<?> clazz) {
-    if (!clazz.getName().equals("void")) {
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), clazz.getName());
-      classGen.getParser().reportError(Constants.FATAL, err);
-    }
+  public void translateFrom(JDefinedClass definedClass, JMethod method, Class<?> clazz) {
+//    FIXME
+//    if (!clazz.getName().equals("void")) {
+//      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), clazz.getName());
+//      classGen.getParser().reportError(Constants.FATAL, err);
+//    }
   }
 }

@@ -38,6 +38,9 @@ import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.LocalVariableGen;
 import org.apache.bcel.generic.NEW;
 
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JMethod;
+
 import de.lyca.xalan.xsltc.compiler.Constants;
 import de.lyca.xalan.xsltc.compiler.FlowList;
 
@@ -89,19 +92,20 @@ public final class RealType extends NumberType {
    * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
    */
   @Override
-  public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, Type type) {
-    if (type == Type.String) {
-      translateTo(classGen, methodGen, (StringType) type);
-    } else if (type == Type.Boolean) {
-      translateTo(classGen, methodGen, (BooleanType) type);
-    } else if (type == Type.Reference) {
-      translateTo(classGen, methodGen, (ReferenceType) type);
-    } else if (type == Type.Int) {
-      translateTo(classGen, methodGen, (IntType) type);
-    } else {
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), type.toString());
-      classGen.getParser().reportError(Constants.FATAL, err);
-    }
+  public void translateTo(JDefinedClass definedClass, JMethod method, Type type) {
+//    FIXME
+//    if (type == Type.String) {
+//      translateTo(classGen, methodGen, (StringType) type);
+//    } else if (type == Type.Boolean) {
+//      translateTo(classGen, methodGen, (BooleanType) type);
+//    } else if (type == Type.Reference) {
+//      translateTo(classGen, methodGen, (ReferenceType) type);
+//    } else if (type == Type.Int) {
+//      translateTo(classGen, methodGen, (IntType) type);
+//    } else {
+//      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), type.toString());
+//      classGen.getParser().reportError(Constants.FATAL, err);
+//    }
   }
 
   /**
@@ -110,10 +114,11 @@ public final class RealType extends NumberType {
    * 
    * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
    */
-  public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, StringType type) {
-    final ConstantPoolGen cpg = classGen.getConstantPool();
-    final InstructionList il = methodGen.getInstructionList();
-    il.append(new INVOKESTATIC(cpg.addMethodref(BASIS_LIBRARY_CLASS, "realToString", "(D)" + STRING_SIG)));
+  public void translateTo(JDefinedClass definedClass, JMethod method, StringType type) {
+//    FIXME
+//    final ConstantPoolGen cpg = classGen.getConstantPool();
+//    final InstructionList il = methodGen.getInstructionList();
+//    il.append(new INVOKESTATIC(cpg.addMethodref(BASIS_LIBRARY_CLASS, "realToString", "(D)" + STRING_SIG)));
   }
 
   /**
@@ -122,13 +127,14 @@ public final class RealType extends NumberType {
    * 
    * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
    */
-  public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, BooleanType type) {
-    final InstructionList il = methodGen.getInstructionList();
-    final FlowList falsel = translateToDesynthesized(classGen, methodGen, type);
-    il.append(ICONST_1);
-    final BranchHandle truec = il.append(new GOTO(null));
-    falsel.backPatch(il.append(ICONST_0));
-    truec.setTarget(il.append(NOP));
+  public void translateTo(JDefinedClass definedClass, JMethod method, BooleanType type) {
+//    FIXME
+//    final InstructionList il = methodGen.getInstructionList();
+//    final FlowList falsel = translateToDesynthesized(classGen, methodGen, type);
+//    il.append(ICONST_1);
+//    final BranchHandle truec = il.append(new GOTO(null));
+//    falsel.backPatch(il.append(ICONST_0));
+//    truec.setTarget(il.append(NOP));
   }
 
   /**
@@ -136,10 +142,11 @@ public final class RealType extends NumberType {
    * 
    * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
    */
-  public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, IntType type) {
-    final ConstantPoolGen cpg = classGen.getConstantPool();
-    final InstructionList il = methodGen.getInstructionList();
-    il.append(new INVOKESTATIC(cpg.addMethodref(BASIS_LIBRARY_CLASS, "realToInt", "(D)I")));
+  public void translateTo(JDefinedClass definedClass, JMethod method, IntType type) {
+//    FIXME
+//    final ConstantPoolGen cpg = classGen.getConstantPool();
+//    final InstructionList il = methodGen.getInstructionList();
+//    il.append(new INVOKESTATIC(cpg.addMethodref(BASIS_LIBRARY_CLASS, "realToInt", "(D)I")));
   }
 
   /**
@@ -150,28 +157,30 @@ public final class RealType extends NumberType {
    * @see de.lyca.xalan.xsltc.compiler.util.Type#translateToDesynthesized
    */
   @Override
-  public FlowList translateToDesynthesized(ClassGenerator classGen, MethodGenerator methodGen, BooleanType type) {
-    LocalVariableGen local;
-    final FlowList flowlist = new FlowList();
-    final InstructionList il = methodGen.getInstructionList();
-
-    // Store real into a local variable
-    il.append(DUP2);
-    local = methodGen.addLocalVariable("real_to_boolean_tmp", org.apache.bcel.generic.Type.DOUBLE, null, null);
-    local.setStart(il.append(new DSTORE(local.getIndex())));
-
-    // Compare it to 0.0
-    il.append(DCONST_0);
-    il.append(DCMPG);
-    flowlist.add(il.append(new IFEQ(null)));
-
-    // !!! call isNaN
-    // Compare it to itself to see if NaN
-    il.append(new DLOAD(local.getIndex()));
-    local.setEnd(il.append(new DLOAD(local.getIndex())));
-    il.append(DCMPG);
-    flowlist.add(il.append(new IFNE(null))); // NaN != NaN
-    return flowlist;
+  public FlowList translateToDesynthesized(JDefinedClass definedClass, JMethod method, BooleanType type) {
+    return null;
+//    FIXME
+//    LocalVariableGen local;
+//    final FlowList flowlist = new FlowList();
+//    final InstructionList il = methodGen.getInstructionList();
+//
+//    // Store real into a local variable
+//    il.append(DUP2);
+//    local = methodGen.addLocalVariable("real_to_boolean_tmp", org.apache.bcel.generic.Type.DOUBLE, null, null);
+//    local.setStart(il.append(new DSTORE(local.getIndex())));
+//
+//    // Compare it to 0.0
+//    il.append(DCONST_0);
+//    il.append(DCMPG);
+//    flowlist.add(il.append(new IFEQ(null)));
+//
+//    // !!! call isNaN
+//    // Compare it to itself to see if NaN
+//    il.append(new DLOAD(local.getIndex()));
+//    local.setEnd(il.append(new DLOAD(local.getIndex())));
+//    il.append(DCMPG);
+//    flowlist.add(il.append(new IFNE(null))); // NaN != NaN
+//    return flowlist;
   }
 
   /**
@@ -180,14 +189,15 @@ public final class RealType extends NumberType {
    * 
    * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
    */
-  public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, ReferenceType type) {
-    final ConstantPoolGen cpg = classGen.getConstantPool();
-    final InstructionList il = methodGen.getInstructionList();
-    il.append(new NEW(cpg.addClass(DOUBLE_CLASS)));
-    il.append(DUP_X2);
-    il.append(DUP_X2);
-    il.append(POP);
-    il.append(new INVOKESPECIAL(cpg.addMethodref(DOUBLE_CLASS, "<init>", "(D)V")));
+  public void translateTo(JDefinedClass definedClass, JMethod method, ReferenceType type) {
+//    FIXME
+//    final ConstantPoolGen cpg = classGen.getConstantPool();
+//    final InstructionList il = methodGen.getInstructionList();
+//    il.append(new NEW(cpg.addClass(DOUBLE_CLASS)));
+//    il.append(DUP_X2);
+//    il.append(DUP_X2);
+//    il.append(POP);
+//    il.append(new INVOKESPECIAL(cpg.addMethodref(DOUBLE_CLASS, "<init>", "(D)V")));
   }
 
   /**
@@ -196,33 +206,34 @@ public final class RealType extends NumberType {
    * coercion.
    */
   @Override
-  public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, final Class<?> clazz) {
-    final InstructionList il = methodGen.getInstructionList();
-    if (clazz == Character.TYPE) {
-      il.append(D2I);
-      il.append(I2C);
-    } else if (clazz == Byte.TYPE) {
-      il.append(D2I);
-      il.append(I2B);
-    } else if (clazz == Short.TYPE) {
-      il.append(D2I);
-      il.append(I2S);
-    } else if (clazz == Integer.TYPE) {
-      il.append(D2I);
-    } else if (clazz == Long.TYPE) {
-      il.append(D2L);
-    } else if (clazz == Float.TYPE) {
-      il.append(D2F);
-    } else if (clazz == Double.TYPE) {
-      il.append(NOP);
-    }
-    // Is Double <: clazz? I.e. clazz in { Double, Number, Object }
-    else if (clazz.isAssignableFrom(java.lang.Double.class)) {
-      translateTo(classGen, methodGen, Type.Reference);
-    } else {
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), clazz.getName());
-      classGen.getParser().reportError(Constants.FATAL, err);
-    }
+  public void translateTo(JDefinedClass definedClass, JMethod method, final Class<?> clazz) {
+//    FIXME
+//    final InstructionList il = methodGen.getInstructionList();
+//    if (clazz == Character.TYPE) {
+//      il.append(D2I);
+//      il.append(I2C);
+//    } else if (clazz == Byte.TYPE) {
+//      il.append(D2I);
+//      il.append(I2B);
+//    } else if (clazz == Short.TYPE) {
+//      il.append(D2I);
+//      il.append(I2S);
+//    } else if (clazz == Integer.TYPE) {
+//      il.append(D2I);
+//    } else if (clazz == Long.TYPE) {
+//      il.append(D2L);
+//    } else if (clazz == Float.TYPE) {
+//      il.append(D2F);
+//    } else if (clazz == Double.TYPE) {
+//      il.append(NOP);
+//    }
+//    // Is Double <: clazz? I.e. clazz in { Double, Number, Object }
+//    else if (clazz.isAssignableFrom(java.lang.Double.class)) {
+//      translateTo(classGen, methodGen, Type.Reference);
+//    } else {
+//      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), clazz.getName());
+//      classGen.getParser().reportError(Constants.FATAL, err);
+//    }
   }
 
   /**
@@ -230,40 +241,43 @@ public final class RealType extends NumberType {
    * object on the stack and pushes a real (i.e., a double).
    */
   @Override
-  public void translateFrom(ClassGenerator classGen, MethodGenerator methodGen, Class<?> clazz) {
-    final InstructionList il = methodGen.getInstructionList();
-
-    if (clazz == Character.TYPE || clazz == Byte.TYPE || clazz == Short.TYPE || clazz == Integer.TYPE) {
-      il.append(I2D);
-    } else if (clazz == Long.TYPE) {
-      il.append(L2D);
-    } else if (clazz == Float.TYPE) {
-      il.append(F2D);
-    } else if (clazz == Double.TYPE) {
-      il.append(NOP);
-    } else {
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), clazz.getName());
-      classGen.getParser().reportError(Constants.FATAL, err);
-    }
+  public void translateFrom(JDefinedClass definedClass, JMethod method, Class<?> clazz) {
+//    FIXME
+//    final InstructionList il = methodGen.getInstructionList();
+//
+//    if (clazz == Character.TYPE || clazz == Byte.TYPE || clazz == Short.TYPE || clazz == Integer.TYPE) {
+//      il.append(I2D);
+//    } else if (clazz == Long.TYPE) {
+//      il.append(L2D);
+//    } else if (clazz == Float.TYPE) {
+//      il.append(F2D);
+//    } else if (clazz == Double.TYPE) {
+//      il.append(NOP);
+//    } else {
+//      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), clazz.getName());
+//      classGen.getParser().reportError(Constants.FATAL, err);
+//    }
   }
 
   /**
    * Translates an object of this type to its boxed representation.
    */
   @Override
-  public void translateBox(ClassGenerator classGen, MethodGenerator methodGen) {
-    translateTo(classGen, methodGen, Type.Reference);
+  public void translateBox(JDefinedClass definedClass, JMethod method) {
+//    FIXME
+//    translateTo(classGen, methodGen, Type.Reference);
   }
 
   /**
    * Translates an object of this type to its unboxed representation.
    */
   @Override
-  public void translateUnBox(ClassGenerator classGen, MethodGenerator methodGen) {
-    final ConstantPoolGen cpg = classGen.getConstantPool();
-    final InstructionList il = methodGen.getInstructionList();
-    il.append(new CHECKCAST(cpg.addClass(DOUBLE_CLASS)));
-    il.append(new INVOKEVIRTUAL(cpg.addMethodref(DOUBLE_CLASS, DOUBLE_VALUE, DOUBLE_VALUE_SIG)));
+  public void translateUnBox(JDefinedClass definedClass, JMethod method) {
+//    FIXME
+//    final ConstantPoolGen cpg = classGen.getConstantPool();
+//    final InstructionList il = methodGen.getInstructionList();
+//    il.append(new CHECKCAST(cpg.addClass(DOUBLE_CLASS)));
+//    il.append(new INVOKEVIRTUAL(cpg.addMethodref(DOUBLE_CLASS, DOUBLE_VALUE, DOUBLE_VALUE_SIG)));
   }
 
   @Override

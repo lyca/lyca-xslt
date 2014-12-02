@@ -32,6 +32,9 @@ import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.PUSH;
 import org.apache.bcel.generic.PUTFIELD;
 
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JMethod;
+
 import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
@@ -168,78 +171,79 @@ final class Param extends VariableBase {
   }
 
   @Override
-  public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
-    final ConstantPoolGen cpg = classGen.getConstantPool();
-    final InstructionList il = methodGen.getInstructionList();
-
-    if (_ignore)
-      return;
-    _ignore = true;
-
-    /*
-     * To fix bug 24518 related to setting parameters of the form
-     * {namespaceuri}localName which will get mapped to an instance variable in
-     * the class.
-     */
-    final String name = BasisLibrary.mapQNameToJavaName(_name.toString());
-    final String signature = _type.toSignature();
-    final String className = _type.getClassName();
-
-    if (isLocal()) {
-      /*
-       * If simple named template then generate a conditional init of the param
-       * using its default value: if (param == null) param = <default-value>
-       */
-      if (_isInSimpleNamedTemplate) {
-        il.append(loadInstruction());
-        final BranchHandle ifBlock = il.append(new IFNONNULL(null));
-        translateValue(classGen, methodGen);
-        il.append(storeInstruction());
-        ifBlock.setTarget(il.append(NOP));
-        return;
-      }
-
-      il.append(classGen.loadTranslet());
-      il.append(new PUSH(cpg, name));
-      translateValue(classGen, methodGen);
-      il.append(new PUSH(cpg, true));
-
-      // Call addParameter() from this class
-      il.append(new INVOKEVIRTUAL(cpg.addMethodref(TRANSLET_CLASS, ADD_PARAMETER, ADD_PARAMETER_SIG)));
-      if (className != EMPTYSTRING) {
-        il.append(new CHECKCAST(cpg.addClass(className)));
-      }
-
-      _type.translateUnBox(classGen, methodGen);
-
-      if (_refs.isEmpty()) { // nobody uses the value
-        il.append(_type.POP());
-        _local = null;
-      } else { // normal case
-        _local = methodGen.addLocalVariable2(name, _type.toJCType(), null);
-        // Cache the result of addParameter() in a local variable
-        _local.setStart(il.append(_type.STORE(_local.getIndex())));
-      }
-    } else {
-      if (classGen.containsField(name) == null) {
-        classGen.addField(new Field(ACC_PUBLIC, cpg.addUtf8(name), cpg.addUtf8(signature), null, cpg.getConstantPool()));
-        il.append(classGen.loadTranslet());
-        il.append(DUP);
-        il.append(new PUSH(cpg, name));
-        translateValue(classGen, methodGen);
-        il.append(new PUSH(cpg, true));
-
-        // Call addParameter() from this class
-        il.append(new INVOKEVIRTUAL(cpg.addMethodref(TRANSLET_CLASS, ADD_PARAMETER, ADD_PARAMETER_SIG)));
-
-        _type.translateUnBox(classGen, methodGen);
-
-        // Cache the result of addParameter() in a field
-        if (className != EMPTYSTRING) {
-          il.append(new CHECKCAST(cpg.addClass(className)));
-        }
-        il.append(new PUTFIELD(cpg.addFieldref(classGen.getClassName(), name, signature)));
-      }
-    }
+  public void translate(JDefinedClass definedClass, JMethod method) {
+ // FIXME
+//    final ConstantPoolGen cpg = classGen.getConstantPool();
+//    final InstructionList il = methodGen.getInstructionList();
+//
+//    if (_ignore)
+//      return;
+//    _ignore = true;
+//
+//    /*
+//     * To fix bug 24518 related to setting parameters of the form
+//     * {namespaceuri}localName which will get mapped to an instance variable in
+//     * the class.
+//     */
+//    final String name = BasisLibrary.mapQNameToJavaName(_name.toString());
+//    final String signature = _type.toSignature();
+//    final String className = _type.getClassName();
+//
+//    if (isLocal()) {
+//      /*
+//       * If simple named template then generate a conditional init of the param
+//       * using its default value: if (param == null) param = <default-value>
+//       */
+//      if (_isInSimpleNamedTemplate) {
+//        il.append(loadInstruction());
+//        final BranchHandle ifBlock = il.append(new IFNONNULL(null));
+//        translateValue(classGen, methodGen);
+//        il.append(storeInstruction());
+//        ifBlock.setTarget(il.append(NOP));
+//        return;
+//      }
+//
+//      il.append(classGen.loadTranslet());
+//      il.append(new PUSH(cpg, name));
+//      translateValue(classGen, methodGen);
+//      il.append(new PUSH(cpg, true));
+//
+//      // Call addParameter() from this class
+//      il.append(new INVOKEVIRTUAL(cpg.addMethodref(TRANSLET_CLASS, ADD_PARAMETER, ADD_PARAMETER_SIG)));
+//      if (className != EMPTYSTRING) {
+//        il.append(new CHECKCAST(cpg.addClass(className)));
+//      }
+//
+//      _type.translateUnBox(classGen, methodGen);
+//
+//      if (_refs.isEmpty()) { // nobody uses the value
+//        il.append(_type.POP());
+//        _local = null;
+//      } else { // normal case
+//        _local = methodGen.addLocalVariable2(name, _type.toJCType(), null);
+//        // Cache the result of addParameter() in a local variable
+//        _local.setStart(il.append(_type.STORE(_local.getIndex())));
+//      }
+//    } else {
+//      if (classGen.containsField(name) == null) {
+//        classGen.addField(new Field(ACC_PUBLIC, cpg.addUtf8(name), cpg.addUtf8(signature), null, cpg.getConstantPool()));
+//        il.append(classGen.loadTranslet());
+//        il.append(DUP);
+//        il.append(new PUSH(cpg, name));
+//        translateValue(classGen, methodGen);
+//        il.append(new PUSH(cpg, true));
+//
+//        // Call addParameter() from this class
+//        il.append(new INVOKEVIRTUAL(cpg.addMethodref(TRANSLET_CLASS, ADD_PARAMETER, ADD_PARAMETER_SIG)));
+//
+//        _type.translateUnBox(classGen, methodGen);
+//
+//        // Cache the result of addParameter() in a field
+//        if (className != EMPTYSTRING) {
+//          il.append(new CHECKCAST(cpg.addClass(className)));
+//        }
+//        il.append(new PUTFIELD(cpg.addFieldref(classGen.getClassName(), name, signature)));
+//      }
+//    }
   }
 }

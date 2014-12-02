@@ -28,6 +28,9 @@ import org.apache.bcel.generic.IFLT;
 import org.apache.bcel.generic.INVOKEVIRTUAL;
 import org.apache.bcel.generic.InstructionList;
 
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JMethod;
+
 import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
@@ -89,21 +92,23 @@ final class ContainsCall extends FunctionCall {
    * Compile the expression - leave boolean expression on stack
    */
   @Override
-  public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
-    translateDesynthesized(classGen, methodGen);
-    synthesize(classGen, methodGen);
+  public void translate(JDefinedClass definedClass, JMethod method) {
+    // FIXME
+//    translateDesynthesized(classGen, methodGen);
+//    synthesize(classGen, methodGen);
   }
 
   /**
    * Compile expression and update true/false-lists
    */
   @Override
-  public void translateDesynthesized(ClassGenerator classGen, MethodGenerator methodGen) {
-    final ConstantPoolGen cpg = classGen.getConstantPool();
-    final InstructionList il = methodGen.getInstructionList();
-    _base.translate(classGen, methodGen);
-    _token.translate(classGen, methodGen);
-    il.append(new INVOKEVIRTUAL(cpg.addMethodref(STRING_CLASS, "indexOf", "(" + STRING_SIG + ")I")));
-    _falseList.add(il.append(new IFLT(null)));
+  public void translateDesynthesized(JDefinedClass definedClass, JMethod method) {
+    // FIXME
+//    final ConstantPoolGen cpg = classGen.getConstantPool();
+//    final InstructionList il = methodGen.getInstructionList();
+//    _base.translate(classGen, methodGen);
+//    _token.translate(classGen, methodGen);
+//    il.append(new INVOKEVIRTUAL(cpg.addMethodref(STRING_CLASS, "indexOf", "(" + STRING_SIG + ")I")));
+//    _falseList.add(il.append(new IFLT(null)));
   }
 }

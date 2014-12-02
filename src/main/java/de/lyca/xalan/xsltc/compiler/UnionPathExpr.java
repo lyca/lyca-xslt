@@ -31,6 +31,9 @@ import org.apache.bcel.generic.INVOKEVIRTUAL;
 import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.NEW;
 
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JMethod;
+
 import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 import de.lyca.xalan.xsltc.compiler.util.Type;
@@ -116,33 +119,34 @@ final class UnionPathExpr extends Expression {
   }
 
   @Override
-  public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
-    final ConstantPoolGen cpg = classGen.getConstantPool();
-    final InstructionList il = methodGen.getInstructionList();
-
-    final int init = cpg.addMethodref(UNION_ITERATOR_CLASS, "<init>", "(" + DOM_INTF_SIG + ")V");
-    final int iter = cpg.addMethodref(UNION_ITERATOR_CLASS, ADD_ITERATOR, ADD_ITERATOR_SIG);
-
-    // Create the UnionIterator and leave it on the stack
-    il.append(new NEW(cpg.addClass(UNION_ITERATOR_CLASS)));
-    il.append(DUP);
-    il.append(methodGen.loadDOM());
-    il.append(new INVOKESPECIAL(init));
-
-    // Add the various iterators to the UnionIterator
-    for (final Expression expression : _components) {
-      expression.translate(classGen, methodGen);
-      il.append(new INVOKEVIRTUAL(iter));
-    }
-
-    // Order the iterator only if strictly needed
-    if (_reverse) {
-      final int order = cpg.addInterfaceMethodref(DOM_INTF, ORDER_ITERATOR, ORDER_ITERATOR_SIG);
-      il.append(methodGen.loadDOM());
-      il.append(SWAP);
-      il.append(methodGen.loadContextNode());
-      il.append(new INVOKEINTERFACE(order, 3));
-
-    }
+  public void translate(JDefinedClass definedClass, JMethod method) {
+//    FIXME
+//    final ConstantPoolGen cpg = classGen.getConstantPool();
+//    final InstructionList il = methodGen.getInstructionList();
+//
+//    final int init = cpg.addMethodref(UNION_ITERATOR_CLASS, "<init>", "(" + DOM_INTF_SIG + ")V");
+//    final int iter = cpg.addMethodref(UNION_ITERATOR_CLASS, ADD_ITERATOR, ADD_ITERATOR_SIG);
+//
+//    // Create the UnionIterator and leave it on the stack
+//    il.append(new NEW(cpg.addClass(UNION_ITERATOR_CLASS)));
+//    il.append(DUP);
+//    il.append(methodGen.loadDOM());
+//    il.append(new INVOKESPECIAL(init));
+//
+//    // Add the various iterators to the UnionIterator
+//    for (final Expression expression : _components) {
+//      expression.translate(classGen, methodGen);
+//      il.append(new INVOKEVIRTUAL(iter));
+//    }
+//
+//    // Order the iterator only if strictly needed
+//    if (_reverse) {
+//      final int order = cpg.addInterfaceMethodref(DOM_INTF, ORDER_ITERATOR, ORDER_ITERATOR_SIG);
+//      il.append(methodGen.loadDOM());
+//      il.append(SWAP);
+//      il.append(methodGen.loadContextNode());
+//      il.append(new INVOKEINTERFACE(order, 3));
+//
+//    }
   }
 }

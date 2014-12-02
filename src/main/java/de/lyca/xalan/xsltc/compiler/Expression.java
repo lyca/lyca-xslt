@@ -29,6 +29,9 @@ import org.apache.bcel.generic.IFEQ;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InstructionList;
 
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JMethod;
+
 import de.lyca.xalan.xsltc.compiler.util.BooleanType;
 import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
@@ -97,7 +100,7 @@ abstract class Expression extends SyntaxTreeNode {
    * Translate this node into JVM bytecodes.
    */
   @Override
-  public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
+  public void translate(JDefinedClass definedClass, JMethod method) {
     final ErrorMsg msg = new ErrorMsg(ErrorMsg.NOT_IMPLEMENTED_ERR, getClass(), this);
     getParser().reportError(FATAL, msg);
   }
@@ -106,21 +109,23 @@ abstract class Expression extends SyntaxTreeNode {
    * Translate this node into a fresh instruction list. The original instruction
    * list is saved and restored.
    */
-  public final InstructionList compile(ClassGenerator classGen, MethodGenerator methodGen) {
-    final InstructionList result, save = methodGen.getInstructionList();
-    methodGen.setInstructionList(result = new InstructionList());
-    translate(classGen, methodGen);
-    methodGen.setInstructionList(save);
-    return result;
+  public final InstructionList compile(JDefinedClass definedClass, JMethod method) {
+    return null;
+    // FIXME
+//    final InstructionList result, save = methodGen.getInstructionList();
+//    methodGen.setInstructionList(result = new InstructionList());
+//    translate(classGen, methodGen);
+//    methodGen.setInstructionList(save);
+//    return result;
   }
 
   /**
    * Redefined by expressions of type boolean that use flow lists.
    */
-  public void translateDesynthesized(ClassGenerator classGen, MethodGenerator methodGen) {
-    translate(classGen, methodGen);
+  public void translateDesynthesized(JDefinedClass definedClass, JMethod method) {
+    translate(definedClass, method);
     if (_type instanceof BooleanType) {
-      desynthesize(classGen, methodGen);
+      desynthesize(definedClass, method);
     }
   }
 
@@ -128,7 +133,7 @@ abstract class Expression extends SyntaxTreeNode {
    * If this expression is of type node-set and it is not a variable reference,
    * then call setStartNode() passing the context node.
    */
-  public void startIterator(ClassGenerator classGen, MethodGenerator methodGen) {
+  public void startIterator(JDefinedClass definedClass, JMethod method) {
     // Ignore if type is not node-set
     if (_type instanceof NodeSetType == false)
       return;
@@ -139,9 +144,10 @@ abstract class Expression extends SyntaxTreeNode {
       expr = ((CastExpr) expr).getExpr();
     }
     if (expr instanceof VariableRefBase == false) {
-      final InstructionList il = methodGen.getInstructionList();
-      il.append(methodGen.loadContextNode());
-      il.append(methodGen.setStartNode());
+// FIXME
+//      final InstructionList il = method.getInstructionList();
+//      il.append(method.loadContextNode());
+//      il.append(method.setStartNode());
     }
   }
 
@@ -150,17 +156,19 @@ abstract class Expression extends SyntaxTreeNode {
    * operand stack for the next statement to succeed. Returns the handle of the
    * instruction to be backpatched.
    */
-  public void synthesize(ClassGenerator classGen, MethodGenerator methodGen) {
-    final InstructionList il = methodGen.getInstructionList();
-    _trueList.backPatch(il.append(ICONST_1));
-    final BranchHandle truec = il.append(new GOTO_W(null));
-    _falseList.backPatch(il.append(ICONST_0));
-    truec.setTarget(il.append(NOP));
+  public void synthesize(JDefinedClass definedClass, JMethod method) {
+    // FIXME
+//    final InstructionList il = methodGen.getInstructionList();
+//    _trueList.backPatch(il.append(ICONST_1));
+//    final BranchHandle truec = il.append(new GOTO_W(null));
+//    _falseList.backPatch(il.append(ICONST_0));
+//    truec.setTarget(il.append(NOP));
   }
 
-  public void desynthesize(ClassGenerator classGen, MethodGenerator methodGen) {
-    final InstructionList il = methodGen.getInstructionList();
-    _falseList.add(il.append(new IFEQ(null)));
+  public void desynthesize(JDefinedClass definedClass, JMethod method) {
+ // FIXME
+//    final InstructionList il = methodGen.getInstructionList();
+//    _falseList.add(il.append(new IFEQ(null)));
   }
 
   public FlowList getFalseList() {

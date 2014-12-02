@@ -27,6 +27,9 @@ import org.apache.bcel.generic.INVOKEINTERFACE;
 import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.PUSH;
 
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JMethod;
+
 import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 import de.lyca.xalan.xsltc.compiler.util.Util;
@@ -164,43 +167,44 @@ final class Text extends Instruction {
   }
 
   @Override
-  public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
-    final ConstantPoolGen cpg = classGen.getConstantPool();
-    final InstructionList il = methodGen.getInstructionList();
-
-    if (!_ignore) {
-      // Turn off character escaping if so is wanted.
-      final int esc = cpg.addInterfaceMethodref(OUTPUT_HANDLER, "setEscaping", "(Z)Z");
-      if (!_escaping) {
-        il.append(methodGen.loadHandler());
-        il.append(new PUSH(cpg, false));
-        il.append(new INVOKEINTERFACE(esc, 2));
-      }
-
-      il.append(methodGen.loadHandler());
-
-      // Call characters(String) or characters(char[],int,int), as
-      // appropriate.
-      if (!canLoadAsArrayOffsetLength()) {
-        final int characters = cpg.addInterfaceMethodref(OUTPUT_HANDLER, "characters", "(" + STRING_SIG + ")V");
-        il.append(new PUSH(cpg, _text));
-        il.append(new INVOKEINTERFACE(characters, 2));
-      } else {
-        final int characters = cpg.addInterfaceMethodref(OUTPUT_HANDLER, "characters", "([CII)V");
-        loadAsArrayOffsetLength(classGen, methodGen);
-        il.append(new INVOKEINTERFACE(characters, 4));
-      }
-
-      // Restore character escaping setting to whatever it was.
-      // Note: setEscaping(bool) returns the original (old) value
-      if (!_escaping) {
-        il.append(methodGen.loadHandler());
-        il.append(SWAP);
-        il.append(new INVOKEINTERFACE(esc, 2));
-        il.append(POP);
-      }
-    }
-    translateContents(classGen, methodGen);
+  public void translate(JDefinedClass definedClass, JMethod method) {
+//    FIXME
+//    final ConstantPoolGen cpg = classGen.getConstantPool();
+//    final InstructionList il = methodGen.getInstructionList();
+//
+//    if (!_ignore) {
+//      // Turn off character escaping if so is wanted.
+//      final int esc = cpg.addInterfaceMethodref(OUTPUT_HANDLER, "setEscaping", "(Z)Z");
+//      if (!_escaping) {
+//        il.append(methodGen.loadHandler());
+//        il.append(new PUSH(cpg, false));
+//        il.append(new INVOKEINTERFACE(esc, 2));
+//      }
+//
+//      il.append(methodGen.loadHandler());
+//
+//      // Call characters(String) or characters(char[],int,int), as
+//      // appropriate.
+//      if (!canLoadAsArrayOffsetLength()) {
+//        final int characters = cpg.addInterfaceMethodref(OUTPUT_HANDLER, "characters", "(" + STRING_SIG + ")V");
+//        il.append(new PUSH(cpg, _text));
+//        il.append(new INVOKEINTERFACE(characters, 2));
+//      } else {
+//        final int characters = cpg.addInterfaceMethodref(OUTPUT_HANDLER, "characters", "([CII)V");
+//        loadAsArrayOffsetLength(classGen, methodGen);
+//        il.append(new INVOKEINTERFACE(characters, 4));
+//      }
+//
+//      // Restore character escaping setting to whatever it was.
+//      // Note: setEscaping(bool) returns the original (old) value
+//      if (!_escaping) {
+//        il.append(methodGen.loadHandler());
+//        il.append(SWAP);
+//        il.append(new INVOKEINTERFACE(esc, 2));
+//        il.append(POP);
+//      }
+//    }
+//    translateContents(classGen, methodGen);
   }
 
   /**
@@ -232,18 +236,19 @@ final class Text extends Instruction {
    * 
    * @see #canLoadArrayOffsetLength()
    */
-  public void loadAsArrayOffsetLength(ClassGenerator classGen, MethodGenerator methodGen) {
-    final ConstantPoolGen cpg = classGen.getConstantPool();
-    final InstructionList il = methodGen.getInstructionList();
-    final XSLTC xsltc = classGen.getParser().getXSLTC();
-
-    // The XSLTC object keeps track of character data
-    // that is to be stored in char arrays.
-    final int offset = xsltc.addCharacterData(_text);
-    final String charDataFieldName = STATIC_CHAR_DATA_FIELD + (xsltc.getCharacterDataCount() - 1);
-
-    il.append(new GETSTATIC(cpg.addFieldref(xsltc.getClassName(), charDataFieldName, STATIC_CHAR_DATA_FIELD_SIG)));
-    il.append(new PUSH(cpg, offset));
-    il.append(new PUSH(cpg, _text.length()));
+  public void loadAsArrayOffsetLength(JDefinedClass definedClass, JMethod method) {
+//    FIXME
+//    final ConstantPoolGen cpg = classGen.getConstantPool();
+//    final InstructionList il = methodGen.getInstructionList();
+//    final XSLTC xsltc = classGen.getParser().getXSLTC();
+//
+//    // The XSLTC object keeps track of character data
+//    // that is to be stored in char arrays.
+//    final int offset = xsltc.addCharacterData(_text);
+//    final String charDataFieldName = STATIC_CHAR_DATA_FIELD + (xsltc.getCharacterDataCount() - 1);
+//
+//    il.append(new GETSTATIC(cpg.addFieldref(xsltc.getClassName(), charDataFieldName, STATIC_CHAR_DATA_FIELD_SIG)));
+//    il.append(new PUSH(cpg, offset));
+//    il.append(new PUSH(cpg, _text.length()));
   }
 }

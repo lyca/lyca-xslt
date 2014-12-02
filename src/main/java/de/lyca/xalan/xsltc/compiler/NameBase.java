@@ -27,6 +27,9 @@ import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.INVOKESTATIC;
 import org.apache.bcel.generic.InstructionList;
 
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JMethod;
+
 import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 import de.lyca.xalan.xsltc.compiler.util.Type;
@@ -92,30 +95,31 @@ class NameBase extends FunctionCall {
    * local-name or namespace URI should be extracted.
    */
   @Override
-  public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
-    final ConstantPoolGen cpg = classGen.getConstantPool();
-    final InstructionList il = methodGen.getInstructionList();
-
-    il.append(methodGen.loadDOM());
-
-    // Function was called with no parameters
-    if (argumentCount() == 0) {
-      il.append(methodGen.loadContextNode());
-    }
-    // Function was called with node parameter
-    else if (_paramType == Type.Node) {
-      _param.translate(classGen, methodGen);
-    } else if (_paramType == Type.Reference) {
-      _param.translate(classGen, methodGen);
-      il.append(new INVOKESTATIC(cpg.addMethodref(BASIS_LIBRARY_CLASS, "referenceToNodeSet", "(" + OBJECT_SIG + ")"
-              + NODE_ITERATOR_SIG)));
-      il.append(methodGen.nextNode());
-    }
-    // Function was called with node-set parameter
-    else {
-      _param.translate(classGen, methodGen);
-      _param.startIterator(classGen, methodGen);
-      il.append(methodGen.nextNode());
-    }
+  public void translate(JDefinedClass definedClass, JMethod method) {
+// // FIXME
+//    final ConstantPoolGen cpg = classGen.getConstantPool();
+//    final InstructionList il = methodGen.getInstructionList();
+//
+//    il.append(methodGen.loadDOM());
+//
+//    // Function was called with no parameters
+//    if (argumentCount() == 0) {
+//      il.append(methodGen.loadContextNode());
+//    }
+//    // Function was called with node parameter
+//    else if (_paramType == Type.Node) {
+//      _param.translate(classGen, methodGen);
+//    } else if (_paramType == Type.Reference) {
+//      _param.translate(classGen, methodGen);
+//      il.append(new INVOKESTATIC(cpg.addMethodref(BASIS_LIBRARY_CLASS, "referenceToNodeSet", "(" + OBJECT_SIG + ")"
+//              + NODE_ITERATOR_SIG)));
+//      il.append(methodGen.nextNode());
+//    }
+//    // Function was called with node-set parameter
+//    else {
+//      _param.translate(classGen, methodGen);
+//      _param.startIterator(classGen, methodGen);
+//      il.append(methodGen.nextNode());
+//    }
   }
 }

@@ -28,6 +28,11 @@ import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.INVOKEVIRTUAL;
 import org.apache.bcel.generic.InstructionList;
 
+import com.sun.codemodel.JBlock;
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JMethod;
+import com.sun.codemodel.JVar;
+
 import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
@@ -294,24 +299,18 @@ public final class Template extends TopLevelElement implements Comparable<Templa
   }
 
   @Override
-  public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
-    final ConstantPoolGen cpg = classGen.getConstantPool();
-    final InstructionList il = methodGen.getInstructionList();
+  public void translate(JDefinedClass definedClass, JMethod method) {
+    final JBlock block = method.body();
 
     if (_disabled)
       return;
     // bug fix #4433133, add a call to named template from applyTemplates
-    final String className = classGen.getClassName();
+    // XXX final String className = classGen.getClassName();
 
     if (_compiled && isNamed()) {
       final String methodName = Util.escape(_name.toString());
-      il.append(classGen.loadTranslet());
-      il.append(methodGen.loadDOM());
-      il.append(methodGen.loadIterator());
-      il.append(methodGen.loadHandler());
-      il.append(methodGen.loadCurrentNode());
-      il.append(new INVOKEVIRTUAL(cpg.addMethodref(className, methodName, "(" + DOM_INTF_SIG + NODE_ITERATOR_SIG
-              + TRANSLET_OUTPUT_SIG + "I)V")));
+      JVar[] params = method.listParams();
+      block.invoke(methodName).arg(params[0]).arg(params[1]).arg(params[2]).arg("current");
       return;
     }
 
@@ -320,20 +319,22 @@ public final class Template extends TopLevelElement implements Comparable<Templa
     _compiled = true;
 
     // %OPT% Special handling for simple named templates.
-    if (_isSimpleNamedTemplate && methodGen instanceof NamedMethodGenerator) {
+    if (_isSimpleNamedTemplate) { // && methodGen instanceof NamedMethodGenerator) {
       final int numParams = _parameters.size();
-      final NamedMethodGenerator namedMethodGen = (NamedMethodGenerator) methodGen;
+      // final NamedMethodGenerator namedMethodGen = (NamedMethodGenerator) methodGen;
 
       // Update load/store instructions to access Params from the stack
       for (int i = 0; i < numParams; i++) {
-        final Param param = _parameters.get(i);
-        param.setLoadInstruction(namedMethodGen.loadParameter(i));
-        param.setStoreInstruction(namedMethodGen.storeParameter(i));
+        // FIXME
+//        final Param param = _parameters.get(i);
+//        param.setLoadInstruction(namedMethodGen.loadParameter(i));
+//        param.setStoreInstruction(namedMethodGen.storeParameter(i));
       }
     }
 
-    translateContents(classGen, methodGen);
-    il.setPositions(true);
+    translateContents(definedClass, method);
+    // InstructionList il = null;
+    // il.setPositions(true);
   }
 
 }

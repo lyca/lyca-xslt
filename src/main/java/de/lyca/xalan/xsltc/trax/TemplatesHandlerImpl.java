@@ -182,7 +182,7 @@ public class TemplatesHandlerImpl implements ContentHandler, TemplatesHandler, S
   public void startDocument() {
     final XSLTC xsltc = _parser.getXSLTC();
     xsltc.init(); // calls _parser.init()
-    xsltc.setOutputType(XSLTC.BYTEARRAY_OUTPUT);
+    xsltc.setOutputType(XSLTC.BYTEARRAY_AND_FILE_OUTPUT);
     _parser.startDocument();
   }
 

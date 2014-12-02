@@ -36,6 +36,9 @@ import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.NEW;
 import org.apache.bcel.generic.PUSH;
 
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JMethod;
+
 import de.lyca.xalan.xsltc.compiler.Constants;
 import de.lyca.xalan.xsltc.compiler.FlowList;
 import de.lyca.xalan.xsltc.compiler.NodeTest;
@@ -92,22 +95,22 @@ public final class NodeType extends Type {
    * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
    */
   @Override
-  public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, Type type) {
+  public void translateTo(JDefinedClass definedClass, JMethod method, Type type) {
     if (type == Type.String) {
-      translateTo(classGen, methodGen, (StringType) type);
+      translateTo(definedClass, method, (StringType) type);
     } else if (type == Type.Boolean) {
-      translateTo(classGen, methodGen, (BooleanType) type);
+      translateTo(definedClass, method, (BooleanType) type);
     } else if (type == Type.Real) {
-      translateTo(classGen, methodGen, (RealType) type);
+      translateTo(definedClass, method, (RealType) type);
     } else if (type == Type.NodeSet) {
-      translateTo(classGen, methodGen, (NodeSetType) type);
+      translateTo(definedClass, method, (NodeSetType) type);
     } else if (type == Type.Reference) {
-      translateTo(classGen, methodGen, (ReferenceType) type);
+      translateTo(definedClass, method, (ReferenceType) type);
     } else if (type == Type.Object) {
-      translateTo(classGen, methodGen, (ObjectType) type);
+      translateTo(definedClass, method, (ObjectType) type);
     } else {
       final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), type.toString());
-      classGen.getParser().reportError(Constants.FATAL, err);
+      // FIXME classGen.getParser().reportError(Constants.FATAL, err);
     }
   }
 
@@ -116,34 +119,35 @@ public final class NodeType extends Type {
    * 
    * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
    */
-  public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, StringType type) {
-    final ConstantPoolGen cpg = classGen.getConstantPool();
-    final InstructionList il = methodGen.getInstructionList();
-
-    switch (_type) {
-      case NodeTest.ROOT:
-      case NodeTest.ELEMENT:
-        il.append(methodGen.loadDOM());
-        il.append(SWAP); // dom ref must be below node index
-        int index = cpg.addInterfaceMethodref(DOM_INTF, GET_ELEMENT_VALUE, GET_ELEMENT_VALUE_SIG);
-        il.append(new INVOKEINTERFACE(index, 2));
-        break;
-
-      case NodeTest.ANODE:
-      case NodeTest.COMMENT:
-      case NodeTest.ATTRIBUTE:
-      case NodeTest.PI:
-        il.append(methodGen.loadDOM());
-        il.append(SWAP); // dom ref must be below node index
-        index = cpg.addInterfaceMethodref(DOM_INTF, GET_NODE_VALUE, GET_NODE_VALUE_SIG);
-        il.append(new INVOKEINTERFACE(index, 2));
-        break;
-
-      default:
-        final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), type.toString());
-        classGen.getParser().reportError(Constants.FATAL, err);
-        break;
-    }
+  public void translateTo(JDefinedClass definedClass, JMethod method, StringType type) {
+//    FIXME
+//    final ConstantPoolGen cpg = classGen.getConstantPool();
+//    final InstructionList il = methodGen.getInstructionList();
+//
+//    switch (_type) {
+//      case NodeTest.ROOT:
+//      case NodeTest.ELEMENT:
+//        il.append(methodGen.loadDOM());
+//        il.append(SWAP); // dom ref must be below node index
+//        int index = cpg.addInterfaceMethodref(DOM_INTF, GET_ELEMENT_VALUE, GET_ELEMENT_VALUE_SIG);
+//        il.append(new INVOKEINTERFACE(index, 2));
+//        break;
+//
+//      case NodeTest.ANODE:
+//      case NodeTest.COMMENT:
+//      case NodeTest.ATTRIBUTE:
+//      case NodeTest.PI:
+//        il.append(methodGen.loadDOM());
+//        il.append(SWAP); // dom ref must be below node index
+//        index = cpg.addInterfaceMethodref(DOM_INTF, GET_NODE_VALUE, GET_NODE_VALUE_SIG);
+//        il.append(new INVOKEINTERFACE(index, 2));
+//        break;
+//
+//      default:
+//        final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), type.toString());
+//        classGen.getParser().reportError(Constants.FATAL, err);
+//        break;
+//    }
   }
 
   /**
@@ -153,13 +157,14 @@ public final class NodeType extends Type {
    * 
    * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
    */
-  public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, BooleanType type) {
-    final InstructionList il = methodGen.getInstructionList();
-    final FlowList falsel = translateToDesynthesized(classGen, methodGen, type);
-    il.append(ICONST_1);
-    final BranchHandle truec = il.append(new GOTO(null));
-    falsel.backPatch(il.append(ICONST_0));
-    truec.setTarget(il.append(NOP));
+  public void translateTo(JDefinedClass definedClass, JMethod method, BooleanType type) {
+//    FIXME
+//    final InstructionList il = methodGen.getInstructionList();
+//    final FlowList falsel = translateToDesynthesized(classGen, methodGen, type);
+//    il.append(ICONST_1);
+//    final BranchHandle truec = il.append(new GOTO(null));
+//    falsel.backPatch(il.append(ICONST_0));
+//    truec.setTarget(il.append(NOP));
   }
 
   /**
@@ -168,9 +173,10 @@ public final class NodeType extends Type {
    * 
    * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
    */
-  public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, RealType type) {
-    translateTo(classGen, methodGen, Type.String);
-    Type.String.translateTo(classGen, methodGen, Type.Real);
+  public void translateTo(JDefinedClass definedClass, JMethod method, RealType type) {
+//    FIXME
+//    translateTo(classGen, methodGen, Type.String);
+//    Type.String.translateTo(classGen, methodGen, Type.Real);
   }
 
   /**
@@ -179,16 +185,17 @@ public final class NodeType extends Type {
    * 
    * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
    */
-  public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, NodeSetType type) {
-    final ConstantPoolGen cpg = classGen.getConstantPool();
-    final InstructionList il = methodGen.getInstructionList();
-
-    // Create a new instance of SingletonIterator
-    il.append(new NEW(cpg.addClass(SINGLETON_ITERATOR)));
-    il.append(DUP_X1);
-    il.append(SWAP);
-    final int init = cpg.addMethodref(SINGLETON_ITERATOR, "<init>", "(" + NODE_SIG + ")V");
-    il.append(new INVOKESPECIAL(init));
+  public void translateTo(JDefinedClass definedClass, JMethod method, NodeSetType type) {
+//    FIXME
+//    final ConstantPoolGen cpg = classGen.getConstantPool();
+//    final InstructionList il = methodGen.getInstructionList();
+//
+//    // Create a new instance of SingletonIterator
+//    il.append(new NEW(cpg.addClass(SINGLETON_ITERATOR)));
+//    il.append(DUP_X1);
+//    il.append(SWAP);
+//    final int init = cpg.addMethodref(SINGLETON_ITERATOR, "<init>", "(" + NODE_SIG + ")V");
+//    il.append(new INVOKESPECIAL(init));
   }
 
   /**
@@ -196,8 +203,9 @@ public final class NodeType extends Type {
    * 
    * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
    */
-  public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, ObjectType type) {
-    methodGen.getInstructionList().append(NOP);
+  public void translateTo(JDefinedClass definedClass, JMethod method, ObjectType type) {
+//    FIXME
+//    methodGen.getInstructionList().append(NOP);
   }
 
   /**
@@ -207,9 +215,11 @@ public final class NodeType extends Type {
    * @see de.lyca.xalan.xsltc.compiler.util.Type#translateToDesynthesized
    */
   @Override
-  public FlowList translateToDesynthesized(ClassGenerator classGen, MethodGenerator methodGen, BooleanType type) {
-    final InstructionList il = methodGen.getInstructionList();
-    return new FlowList(il.append(new IFEQ(null)));
+  public FlowList translateToDesynthesized(JDefinedClass definedClass, JMethod method, BooleanType type) {
+    return null;
+//    FIXME
+//    final InstructionList il = methodGen.getInstructionList();
+//    return new FlowList(il.append(new IFEQ(null)));
   }
 
   /**
@@ -218,14 +228,15 @@ public final class NodeType extends Type {
    * 
    * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
    */
-  public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, ReferenceType type) {
-    final ConstantPoolGen cpg = classGen.getConstantPool();
-    final InstructionList il = methodGen.getInstructionList();
-    il.append(new NEW(cpg.addClass(RUNTIME_NODE_CLASS)));
-    il.append(DUP_X1);
-    il.append(SWAP);
-    il.append(new PUSH(cpg, _type));
-    il.append(new INVOKESPECIAL(cpg.addMethodref(RUNTIME_NODE_CLASS, "<init>", "(II)V")));
+  public void translateTo(JDefinedClass definedClass, JMethod method, ReferenceType type) {
+//    FIXME
+//    final ConstantPoolGen cpg = classGen.getConstantPool();
+//    final InstructionList il = methodGen.getInstructionList();
+//    il.append(new NEW(cpg.addClass(RUNTIME_NODE_CLASS)));
+//    il.append(DUP_X1);
+//    il.append(SWAP);
+//    il.append(new PUSH(cpg, _type));
+//    il.append(new INVOKESPECIAL(cpg.addMethodref(RUNTIME_NODE_CLASS, "<init>", "(II)V")));
   }
 
   /**
@@ -234,48 +245,51 @@ public final class NodeType extends Type {
    * coercion.
    */
   @Override
-  public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, Class<?> clazz) {
-    final ConstantPoolGen cpg = classGen.getConstantPool();
-    final InstructionList il = methodGen.getInstructionList();
-
-    final String className = clazz.getName();
-    if (className.equals("java.lang.String")) {
-      translateTo(classGen, methodGen, Type.String);
-      return;
-    }
-
-    il.append(methodGen.loadDOM());
-    il.append(SWAP); // dom ref must be below node index
-
-    if (className.equals("org.w3c.dom.Node") || className.equals("java.lang.Object")) {
-      final int index = cpg.addInterfaceMethodref(DOM_INTF, MAKE_NODE, MAKE_NODE_SIG);
-      il.append(new INVOKEINTERFACE(index, 2));
-    } else if (className.equals("org.w3c.dom.NodeList")) {
-      final int index = cpg.addInterfaceMethodref(DOM_INTF, MAKE_NODE_LIST, MAKE_NODE_LIST_SIG);
-      il.append(new INVOKEINTERFACE(index, 2));
-    } else {
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), className);
-      classGen.getParser().reportError(Constants.FATAL, err);
-    }
+  public void translateTo(JDefinedClass definedClass, JMethod method, Class<?> clazz) {
+//    FIXME
+//    final ConstantPoolGen cpg = classGen.getConstantPool();
+//    final InstructionList il = methodGen.getInstructionList();
+//
+//    final String className = clazz.getName();
+//    if (className.equals("java.lang.String")) {
+//      translateTo(classGen, methodGen, Type.String);
+//      return;
+//    }
+//
+//    il.append(methodGen.loadDOM());
+//    il.append(SWAP); // dom ref must be below node index
+//
+//    if (className.equals("org.w3c.dom.Node") || className.equals("java.lang.Object")) {
+//      final int index = cpg.addInterfaceMethodref(DOM_INTF, MAKE_NODE, MAKE_NODE_SIG);
+//      il.append(new INVOKEINTERFACE(index, 2));
+//    } else if (className.equals("org.w3c.dom.NodeList")) {
+//      final int index = cpg.addInterfaceMethodref(DOM_INTF, MAKE_NODE_LIST, MAKE_NODE_LIST_SIG);
+//      il.append(new INVOKEINTERFACE(index, 2));
+//    } else {
+//      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), className);
+//      classGen.getParser().reportError(Constants.FATAL, err);
+//    }
   }
 
   /**
    * Translates an object of this type to its boxed representation.
    */
   @Override
-  public void translateBox(ClassGenerator classGen, MethodGenerator methodGen) {
-    translateTo(classGen, methodGen, Type.Reference);
+  public void translateBox(JDefinedClass definedClass, JMethod method) {
+//    FIXME
+//    translateTo(classGen, methodGen, Type.Reference);
   }
 
   /**
    * Translates an object of this type to its unboxed representation.
    */
   @Override
-  public void translateUnBox(ClassGenerator classGen, MethodGenerator methodGen) {
-    final ConstantPoolGen cpg = classGen.getConstantPool();
-    final InstructionList il = methodGen.getInstructionList();
-    il.append(new CHECKCAST(cpg.addClass(RUNTIME_NODE_CLASS)));
-    il.append(new GETFIELD(cpg.addFieldref(RUNTIME_NODE_CLASS, NODE_FIELD, NODE_FIELD_SIG)));
+  public void translateUnBox(JDefinedClass definedClass, JMethod method) {
+//    FIXME
+//    final ConstantPoolGen cpg = classGen.getConstantPool();
+//    final InstructionList il = methodGen.getInstructionList();
+//    il.append(new CHECKCAST(cpg.addClass(RUNTIME_NODE_CLASS)));
+//    il.append(new GETFIELD(cpg.addFieldref(RUNTIME_NODE_CLASS, NODE_FIELD, NODE_FIELD_SIG)));
   }
 
   /**

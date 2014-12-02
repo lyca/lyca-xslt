@@ -23,6 +23,9 @@ package de.lyca.xalan.xsltc.compiler;
 
 import java.util.List;
 
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JMethod;
+
 import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 import de.lyca.xalan.xsltc.compiler.util.Type;
@@ -48,12 +51,12 @@ final class BooleanCall extends FunctionCall {
   }
 
   @Override
-  public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
-    _arg.translate(classGen, methodGen);
+  public void translate(JDefinedClass definedClass, JMethod method) {
+    _arg.translate(definedClass, method);
     final Type targ = _arg.getType();
     if (!targ.identicalTo(Type.Boolean)) {
-      _arg.startIterator(classGen, methodGen);
-      targ.translateTo(classGen, methodGen, Type.Boolean);
+      _arg.startIterator(definedClass, method);
+      targ.translateTo(definedClass, method, Type.Boolean);
     }
   }
 }

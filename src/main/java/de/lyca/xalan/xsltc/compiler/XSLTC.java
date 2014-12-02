@@ -28,7 +28,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -39,9 +42,18 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 
+import javax.tools.JavaCompiler;
+import javax.tools.JavaCompiler.CompilationTask;
+import javax.tools.JavaFileObject;
+import javax.tools.StandardJavaFileManager;
+import javax.tools.ToolProvider;
+
 import org.apache.bcel.classfile.JavaClass;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
+
+import com.sun.codemodel.JCodeModel;
+import com.sun.codemodel.JDefinedClass;
 
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.Util;
@@ -844,10 +856,10 @@ public final class XSLTC {
     return getClassName() + '$' + _helperClassSerial++;
   }
 
-  public void dumpClass(JavaClass clazz) {
+  public void dumpClass(JCodeModel jCodeModel, JDefinedClass definedClass) {
 
     if (_outputType == FILE_OUTPUT || _outputType == BYTEARRAY_AND_FILE_OUTPUT) {
-      final File outFile = getOutputFile(clazz.getClassName());
+      final File outFile = getOutputFile(definedClass.fullName());
       final String parentDir = outFile.getParent();
       if (parentDir != null) {
         final File parentFile = new File(parentDir);
@@ -860,23 +872,30 @@ public final class XSLTC {
     try {
       switch (_outputType) {
         case FILE_OUTPUT:
-          clazz.dump(new BufferedOutputStream(new FileOutputStream(getOutputFile(clazz.getClassName()))));
+          jCodeModel.build(getOutputFile(definedClass.fullName()));
           break;
         case JAR_OUTPUT:
-          _bcelClasses.add(clazz);
+          // FIXME
+          // _bcelClasses.add(jCodeModel);
           break;
         case BYTEARRAY_OUTPUT:
         case BYTEARRAY_AND_FILE_OUTPUT:
         case BYTEARRAY_AND_JAR_OUTPUT:
         case CLASSLOADER_OUTPUT:
-          final ByteArrayOutputStream out = new ByteArrayOutputStream(2048);
-          clazz.dump(out);
-          _classes.add(out.toByteArray());
+          JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+          StandardJavaFileManager fileManager = compiler.getStandardFileManager(null, null, null);
+          Iterable<? extends JavaFileObject> fileObjects = fileManager.getJavaFileObjects(getOutputFile(definedClass.fullName()));
+          CompilationTask task = compiler.getTask(null, fileManager, null, null, null, fileObjects);
+          Boolean result = task.call();
+          if(result == true){
+            System.out.println("Compilation has succeeded");
+          }
+          _classes.add(Files.readAllBytes(Paths.get(getOutputFile(definedClass.fullName()).toURI())));
 
           if (_outputType == BYTEARRAY_AND_FILE_OUTPUT) {
-            clazz.dump(new BufferedOutputStream(new FileOutputStream(getOutputFile(clazz.getClassName()))));
+            jCodeModel.build(getOutputFile(definedClass.fullName()));
           } else if (_outputType == BYTEARRAY_AND_JAR_OUTPUT) {
-            _bcelClasses.add(clazz);
+            //_bcelClasses.add(jCodeModel);
           }
 
           break;

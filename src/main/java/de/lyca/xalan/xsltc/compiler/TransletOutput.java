@@ -27,6 +27,9 @@ import org.apache.bcel.generic.INVOKEVIRTUAL;
 import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.PUSH;
 
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JMethod;
+
 import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
@@ -100,44 +103,45 @@ final class TransletOutput extends Instruction {
    * element to the file, then closes the file.
    */
   @Override
-  public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
-    final ConstantPoolGen cpg = classGen.getConstantPool();
-    final InstructionList il = methodGen.getInstructionList();
-    final boolean isSecureProcessing = classGen.getParser().getXSLTC().isSecureProcessing();
-
-    if (isSecureProcessing) {
-      final int index = cpg.addMethodref(BASIS_LIBRARY_CLASS, "unallowed_extension_elementF", "(Ljava/lang/String;)V");
-      il.append(new PUSH(cpg, "redirect"));
-      il.append(new INVOKESTATIC(index));
-      return;
-    }
-
-    // Save the current output handler on the stack
-    il.append(methodGen.loadHandler());
-
-    final int open = cpg.addMethodref(TRANSLET_CLASS, "openOutputHandler", "(" + STRING_SIG + "Z)"
-            + TRANSLET_OUTPUT_SIG);
-
-    final int close = cpg.addMethodref(TRANSLET_CLASS, "closeOutputHandler", "(" + TRANSLET_OUTPUT_SIG + ")V");
-
-    // Create the new output handler (leave it on stack)
-    il.append(classGen.loadTranslet());
-    _filename.translate(classGen, methodGen);
-    il.append(new PUSH(cpg, _append));
-    il.append(new INVOKEVIRTUAL(open));
-
-    // Overwrite current handler
-    il.append(methodGen.storeHandler());
-
-    // Translate contents with substituted handler
-    translateContents(classGen, methodGen);
-
-    // Close the output handler (close file)
-    il.append(classGen.loadTranslet());
-    il.append(methodGen.loadHandler());
-    il.append(new INVOKEVIRTUAL(close));
-
-    // Restore old output handler from stack
-    il.append(methodGen.storeHandler());
+  public void translate(JDefinedClass definedClass, JMethod method) {
+//    FIXME
+//    final ConstantPoolGen cpg = classGen.getConstantPool();
+//    final InstructionList il = methodGen.getInstructionList();
+//    final boolean isSecureProcessing = classGen.getParser().getXSLTC().isSecureProcessing();
+//
+//    if (isSecureProcessing) {
+//      final int index = cpg.addMethodref(BASIS_LIBRARY_CLASS, "unallowed_extension_elementF", "(Ljava/lang/String;)V");
+//      il.append(new PUSH(cpg, "redirect"));
+//      il.append(new INVOKESTATIC(index));
+//      return;
+//    }
+//
+//    // Save the current output handler on the stack
+//    il.append(methodGen.loadHandler());
+//
+//    final int open = cpg.addMethodref(TRANSLET_CLASS, "openOutputHandler", "(" + STRING_SIG + "Z)"
+//            + TRANSLET_OUTPUT_SIG);
+//
+//    final int close = cpg.addMethodref(TRANSLET_CLASS, "closeOutputHandler", "(" + TRANSLET_OUTPUT_SIG + ")V");
+//
+//    // Create the new output handler (leave it on stack)
+//    il.append(classGen.loadTranslet());
+//    _filename.translate(classGen, methodGen);
+//    il.append(new PUSH(cpg, _append));
+//    il.append(new INVOKEVIRTUAL(open));
+//
+//    // Overwrite current handler
+//    il.append(methodGen.storeHandler());
+//
+//    // Translate contents with substituted handler
+//    translateContents(classGen, methodGen);
+//
+//    // Close the output handler (close file)
+//    il.append(classGen.loadTranslet());
+//    il.append(methodGen.loadHandler());
+//    il.append(new INVOKEVIRTUAL(close));
+//
+//    // Restore old output handler from stack
+//    il.append(methodGen.storeHandler());
   }
 }

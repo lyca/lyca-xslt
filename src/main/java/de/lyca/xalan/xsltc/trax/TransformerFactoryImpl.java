@@ -164,7 +164,7 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
    * Set to <code>true</code> when we want to generate translet classes from the
    * stylesheet.
    */
-  private boolean _generateTranslet = false;
+  private boolean _generateTranslet = true;
 
   /**
    * If this is set to <code>true</code>, we attempt to use translet classes for

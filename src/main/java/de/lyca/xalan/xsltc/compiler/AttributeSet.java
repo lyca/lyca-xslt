@@ -28,6 +28,9 @@ import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.INVOKESPECIAL;
 import org.apache.bcel.generic.InstructionList;
 
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JMethod;
+
 import de.lyca.xalan.xsltc.compiler.util.AttributeSetMethodGenerator;
 import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
@@ -153,45 +156,46 @@ final class AttributeSet extends TopLevelElement {
    * Compile a method that outputs the attributes in this set
    */
   @Override
-  public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
-
-    if (_ignore)
-      return;
-
-    // Create a new method generator for an attribute set method
-    methodGen = new AttributeSetMethodGenerator(_method, classGen);
-
-    // Generate a reference to previous attribute-set definitions with the
-    // same name first. Those later in the stylesheet take precedence.
-    if (_mergeSet != null) {
-      final ConstantPoolGen cpg = classGen.getConstantPool();
-      final InstructionList il = methodGen.getInstructionList();
-      final String methodName = _mergeSet.getMethodName();
-
-      il.append(classGen.loadTranslet());
-      il.append(methodGen.loadDOM());
-      il.append(methodGen.loadIterator());
-      il.append(methodGen.loadHandler());
-      final int method = cpg.addMethodref(classGen.getClassName(), methodName, ATTR_SET_SIG);
-      il.append(new INVOKESPECIAL(method));
-    }
-
-    // Translate other used attribute sets first, as local attributes
-    // take precedence (last attributes overrides first)
-    if (_useSets != null) {
-      _useSets.translate(classGen, methodGen);
-    }
-
-    // Translate all local attributes
-    for (SyntaxTreeNode element : getContents()) {
-      if (element instanceof XslAttribute) {
-        element.translate(classGen, methodGen);
-      }
-    }
-    final InstructionList il = methodGen.getInstructionList();
-    il.append(RETURN);
-
-    classGen.addMethod(methodGen);
+  public void translate(JDefinedClass definedClass, JMethod method) {
+// FIXME
+//
+//    if (_ignore)
+//      return;
+//
+//    // Create a new method generator for an attribute set method
+//    methodGen = new AttributeSetMethodGenerator(_method, classGen);
+//
+//    // Generate a reference to previous attribute-set definitions with the
+//    // same name first. Those later in the stylesheet take precedence.
+//    if (_mergeSet != null) {
+//      final ConstantPoolGen cpg = classGen.getConstantPool();
+//      final InstructionList il = methodGen.getInstructionList();
+//      final String methodName = _mergeSet.getMethodName();
+//
+//      il.append(classGen.loadTranslet());
+//      il.append(methodGen.loadDOM());
+//      il.append(methodGen.loadIterator());
+//      il.append(methodGen.loadHandler());
+//      final int method = cpg.addMethodref(classGen.getClassName(), methodName, ATTR_SET_SIG);
+//      il.append(new INVOKESPECIAL(method));
+//    }
+//
+//    // Translate other used attribute sets first, as local attributes
+//    // take precedence (last attributes overrides first)
+//    if (_useSets != null) {
+//      _useSets.translate(classGen, methodGen);
+//    }
+//
+//    // Translate all local attributes
+//    for (SyntaxTreeNode element : getContents()) {
+//      if (element instanceof XslAttribute) {
+//        element.translate(classGen, methodGen);
+//      }
+//    }
+//    final InstructionList il = methodGen.getInstructionList();
+//    il.append(RETURN);
+//
+//    classGen.addMethod(methodGen);
   }
 
   @Override

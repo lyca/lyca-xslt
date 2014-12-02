@@ -32,6 +32,9 @@ import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.PUSH;
 
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JMethod;
+
 import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
@@ -316,74 +319,74 @@ final class LiteralElement extends Instruction {
    * attribute may depend on a variable, variables must be compiled first.
    */
   @Override
-  public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
-
-    final ConstantPoolGen cpg = classGen.getConstantPool();
-    final InstructionList il = methodGen.getInstructionList();
-
-    // Check whether all attributes are unique.
-    _allAttributesUnique = checkAttributesUnique();
-
-    // Compile code to emit element start tag
-    il.append(methodGen.loadHandler());
-
-    il.append(new PUSH(cpg, _name));
-    il.append(DUP2); // duplicate these 2 args for endElement
-    il.append(methodGen.startElement());
-
-    // The value of an attribute may depend on a (sibling) variable
-    int j = 0;
-    while (j < elementCount()) {
-      final SyntaxTreeNode item = elementAt(j);
-      if (item instanceof Variable) {
-        item.translate(classGen, methodGen);
-      }
-      j++;
-    }
-
-    // Compile code to emit namespace attributes
-    if (_accessedPrefixes != null) {
-      boolean declaresDefaultNS = false;
-      for (final Map.Entry<String, String> entry : _accessedPrefixes.entrySet()) {
-        final String prefix = entry.getKey();
-        final String uri = entry.getValue();
-        if (uri != Constants.EMPTYSTRING || prefix != Constants.EMPTYSTRING) {
-          if (prefix == Constants.EMPTYSTRING) {
-            declaresDefaultNS = true;
-          }
-          il.append(methodGen.loadHandler());
-          il.append(new PUSH(cpg, prefix));
-          il.append(new PUSH(cpg, uri));
-          il.append(methodGen.namespace());
-        }
-      }
-
-      /*
-       * If our XslElement parent redeclares the default NS, and this element
-       * doesn't, it must be redeclared one more time.
-       */
-      if (!declaresDefaultNS && _parent instanceof XslElement && ((XslElement) _parent).declaresDefaultNS()) {
-        il.append(methodGen.loadHandler());
-        il.append(new PUSH(cpg, Constants.EMPTYSTRING));
-        il.append(new PUSH(cpg, Constants.EMPTYSTRING));
-        il.append(methodGen.namespace());
-      }
-    }
-
-    // Output all attributes
-    if (_attributeElements != null) {
-      for (final SyntaxTreeNode node : _attributeElements) {
-        if (!(node instanceof XslAttribute)) {
-          node.translate(classGen, methodGen);
-        }
-      }
-    }
-
-    // Compile code to emit attributes and child elements
-    translateContents(classGen, methodGen);
-
-    // Compile code to emit element end tag
-    il.append(methodGen.endElement());
+  public void translate(JDefinedClass definedClass, JMethod method) {
+ // FIXME
+//    final ConstantPoolGen cpg = classGen.getConstantPool();
+//    final InstructionList il = methodGen.getInstructionList();
+//
+//    // Check whether all attributes are unique.
+//    _allAttributesUnique = checkAttributesUnique();
+//
+//    // Compile code to emit element start tag
+//    il.append(methodGen.loadHandler());
+//
+//    il.append(new PUSH(cpg, _name));
+//    il.append(DUP2); // duplicate these 2 args for endElement
+//    il.append(methodGen.startElement());
+//
+//    // The value of an attribute may depend on a (sibling) variable
+//    int j = 0;
+//    while (j < elementCount()) {
+//      final SyntaxTreeNode item = elementAt(j);
+//      if (item instanceof Variable) {
+//        item.translate(classGen, methodGen);
+//      }
+//      j++;
+//    }
+//
+//    // Compile code to emit namespace attributes
+//    if (_accessedPrefixes != null) {
+//      boolean declaresDefaultNS = false;
+//      for (final Map.Entry<String, String> entry : _accessedPrefixes.entrySet()) {
+//        final String prefix = entry.getKey();
+//        final String uri = entry.getValue();
+//        if (uri != Constants.EMPTYSTRING || prefix != Constants.EMPTYSTRING) {
+//          if (prefix == Constants.EMPTYSTRING) {
+//            declaresDefaultNS = true;
+//          }
+//          il.append(methodGen.loadHandler());
+//          il.append(new PUSH(cpg, prefix));
+//          il.append(new PUSH(cpg, uri));
+//          il.append(methodGen.namespace());
+//        }
+//      }
+//
+//      /*
+//       * If our XslElement parent redeclares the default NS, and this element
+//       * doesn't, it must be redeclared one more time.
+//       */
+//      if (!declaresDefaultNS && _parent instanceof XslElement && ((XslElement) _parent).declaresDefaultNS()) {
+//        il.append(methodGen.loadHandler());
+//        il.append(new PUSH(cpg, Constants.EMPTYSTRING));
+//        il.append(new PUSH(cpg, Constants.EMPTYSTRING));
+//        il.append(methodGen.namespace());
+//      }
+//    }
+//
+//    // Output all attributes
+//    if (_attributeElements != null) {
+//      for (final SyntaxTreeNode node : _attributeElements) {
+//        if (!(node instanceof XslAttribute)) {
+//          node.translate(classGen, methodGen);
+//        }
+//      }
+//    }
+//
+//    // Compile code to emit attributes and child elements
+//    translateContents(classGen, methodGen);
+//
+//    // Compile code to emit element end tag
+//    il.append(methodGen.endElement());
   }
 
   /**

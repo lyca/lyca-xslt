@@ -29,6 +29,9 @@ import org.apache.bcel.generic.INVOKEINTERFACE;
 import org.apache.bcel.generic.INVOKEVIRTUAL;
 import org.apache.bcel.generic.InstructionList;
 
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JMethod;
+
 import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
@@ -114,78 +117,79 @@ final class ApplyTemplates extends Instruction {
    * in the stylesheet uses parameters.
    */
   @Override
-  public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
-    boolean setStartNodeCalled = false;
-    final Stylesheet stylesheet = classGen.getStylesheet();
-    final ConstantPoolGen cpg = classGen.getConstantPool();
-    final InstructionList il = methodGen.getInstructionList();
-    final int current = methodGen.getLocalIndex("current");
-
-    // check if sorting nodes is required
-    final List<Sort> sortObjects = new ArrayList<>();
-    for (SyntaxTreeNode child : getContents()) {
-      if (child instanceof Sort) {
-        sortObjects.add((Sort) child);
-      }
-    }
-
-    // Push a new parameter frame
-    if (stylesheet.hasLocalParams() || hasContents()) {
-      il.append(classGen.loadTranslet());
-      final int pushFrame = cpg.addMethodref(TRANSLET_CLASS, PUSH_PARAM_FRAME, PUSH_PARAM_FRAME_SIG);
-      il.append(new INVOKEVIRTUAL(pushFrame));
-      // translate with-params
-      translateContents(classGen, methodGen);
-    }
-
-    il.append(classGen.loadTranslet());
-
-    // The 'select' expression is a result-tree
-    if (_type != null && _type instanceof ResultTreeType) {
-      // <xsl:sort> cannot be applied to a result tree - issue warning
-      if (sortObjects.size() > 0) {
-        final ErrorMsg err = new ErrorMsg(ErrorMsg.RESULT_TREE_SORT_ERR, this);
-        getParser().reportError(WARNING, err);
-      }
-      // Put the result tree (a DOM adapter) on the stack
-      _select.translate(classGen, methodGen);
-      // Get back the DOM and iterator (not just iterator!!!)
-      _type.translateTo(classGen, methodGen, Type.NodeSet);
-    } else {
-      il.append(methodGen.loadDOM());
-
-      // compute node iterator for applyTemplates
-      if (sortObjects.size() > 0) {
-        Sort.translateSortIterator(classGen, methodGen, _select, sortObjects);
-        final int setStartNode = cpg.addInterfaceMethodref(NODE_ITERATOR, SET_START_NODE, "(I)" + NODE_ITERATOR_SIG);
-        il.append(methodGen.loadCurrentNode());
-        il.append(new INVOKEINTERFACE(setStartNode, 2));
-        setStartNodeCalled = true;
-      } else {
-        if (_select == null) {
-          Mode.compileGetChildren(classGen, methodGen, current);
-        } else {
-          _select.translate(classGen, methodGen);
-        }
-      }
-    }
-
-    if (_select != null && !setStartNodeCalled) {
-      _select.startIterator(classGen, methodGen);
-    }
-
-    // !!! need to instantiate all needed modes
-    final String className = classGen.getStylesheet().getClassName();
-    il.append(methodGen.loadHandler());
-    final String applyTemplatesSig = classGen.getApplyTemplatesSig();
-    final int applyTemplates = cpg.addMethodref(className, _functionName, applyTemplatesSig);
-    il.append(new INVOKEVIRTUAL(applyTemplates));
-
-    // Pop parameter frame
-    if (stylesheet.hasLocalParams() || hasContents()) {
-      il.append(classGen.loadTranslet());
-      final int popFrame = cpg.addMethodref(TRANSLET_CLASS, POP_PARAM_FRAME, POP_PARAM_FRAME_SIG);
-      il.append(new INVOKEVIRTUAL(popFrame));
-    }
+  public void translate(JDefinedClass definedClass, JMethod method) {
+// FIXME
+//    boolean setStartNodeCalled = false;
+//    final Stylesheet stylesheet = classGen.getStylesheet();
+//    final ConstantPoolGen cpg = classGen.getConstantPool();
+//    final InstructionList il = methodGen.getInstructionList();
+//    final int current = methodGen.getLocalIndex("current");
+//
+//    // check if sorting nodes is required
+//    final List<Sort> sortObjects = new ArrayList<>();
+//    for (SyntaxTreeNode child : getContents()) {
+//      if (child instanceof Sort) {
+//        sortObjects.add((Sort) child);
+//      }
+//    }
+//
+//    // Push a new parameter frame
+//    if (stylesheet.hasLocalParams() || hasContents()) {
+//      il.append(classGen.loadTranslet());
+//      final int pushFrame = cpg.addMethodref(TRANSLET_CLASS, PUSH_PARAM_FRAME, PUSH_PARAM_FRAME_SIG);
+//      il.append(new INVOKEVIRTUAL(pushFrame));
+//      // translate with-params
+//      translateContents(classGen, methodGen);
+//    }
+//
+//    il.append(classGen.loadTranslet());
+//
+//    // The 'select' expression is a result-tree
+//    if (_type != null && _type instanceof ResultTreeType) {
+//      // <xsl:sort> cannot be applied to a result tree - issue warning
+//      if (sortObjects.size() > 0) {
+//        final ErrorMsg err = new ErrorMsg(ErrorMsg.RESULT_TREE_SORT_ERR, this);
+//        getParser().reportError(WARNING, err);
+//      }
+//      // Put the result tree (a DOM adapter) on the stack
+//      _select.translate(classGen, methodGen);
+//      // Get back the DOM and iterator (not just iterator!!!)
+//      _type.translateTo(classGen, methodGen, Type.NodeSet);
+//    } else {
+//      il.append(methodGen.loadDOM());
+//
+//      // compute node iterator for applyTemplates
+//      if (sortObjects.size() > 0) {
+//        Sort.translateSortIterator(classGen, methodGen, _select, sortObjects);
+//        final int setStartNode = cpg.addInterfaceMethodref(NODE_ITERATOR, SET_START_NODE, "(I)" + NODE_ITERATOR_SIG);
+//        il.append(methodGen.loadCurrentNode());
+//        il.append(new INVOKEINTERFACE(setStartNode, 2));
+//        setStartNodeCalled = true;
+//      } else {
+//        if (_select == null) {
+//          Mode.compileGetChildren(classGen, methodGen, current);
+//        } else {
+//          _select.translate(classGen, methodGen);
+//        }
+//      }
+//    }
+//
+//    if (_select != null && !setStartNodeCalled) {
+//      _select.startIterator(classGen, methodGen);
+//    }
+//
+//    // !!! need to instantiate all needed modes
+//    final String className = classGen.getStylesheet().getClassName();
+//    il.append(methodGen.loadHandler());
+//    final String applyTemplatesSig = classGen.getApplyTemplatesSig();
+//    final int applyTemplates = cpg.addMethodref(className, _functionName, applyTemplatesSig);
+//    il.append(new INVOKEVIRTUAL(applyTemplates));
+//
+//    // Pop parameter frame
+//    if (stylesheet.hasLocalParams() || hasContents()) {
+//      il.append(classGen.loadTranslet());
+//      final int popFrame = cpg.addMethodref(TRANSLET_CLASS, POP_PARAM_FRAME, POP_PARAM_FRAME_SIG);
+//      il.append(new INVOKEVIRTUAL(popFrame));
+//    }
   }
 }

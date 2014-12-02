@@ -29,32 +29,32 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
-import org.apache.bcel.generic.ANEWARRAY;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.FieldGen;
-import org.apache.bcel.generic.GETFIELD;
-import org.apache.bcel.generic.GETSTATIC;
-import org.apache.bcel.generic.INVOKEINTERFACE;
-import org.apache.bcel.generic.INVOKESPECIAL;
-import org.apache.bcel.generic.INVOKEVIRTUAL;
-import org.apache.bcel.generic.ISTORE;
-import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.LocalVariableGen;
-import org.apache.bcel.generic.NEW;
-import org.apache.bcel.generic.NEWARRAY;
-import org.apache.bcel.generic.PUSH;
-import org.apache.bcel.generic.PUTFIELD;
-import org.apache.bcel.generic.PUTSTATIC;
+import com.sun.codemodel.JArray;
+import com.sun.codemodel.JBlock;
+import com.sun.codemodel.JClass;
+import com.sun.codemodel.JClassAlreadyExistsException;
+import com.sun.codemodel.JCodeModel;
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JExpr;
+import com.sun.codemodel.JFieldVar;
+import com.sun.codemodel.JInvocation;
+import com.sun.codemodel.JMethod;
+import com.sun.codemodel.JMod;
+import com.sun.codemodel.JType;
+import com.sun.codemodel.JVar;
 
+import de.lyca.xalan.xsltc.DOM;
+import de.lyca.xalan.xsltc.TransletException;
 import de.lyca.xalan.xsltc.compiler.Whitespace.WhitespaceRule;
-import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
-import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
 import de.lyca.xalan.xsltc.compiler.util.Util;
+import de.lyca.xalan.xsltc.dom.MultiDOM;
 import de.lyca.xalan.xsltc.runtime.AbstractTranslet;
 import de.lyca.xml.dtm.DTM;
+import de.lyca.xml.dtm.DTMAxisIterator;
+import de.lyca.xml.serializer.SerializationHandler;
 import de.lyca.xml.utils.SystemIDResolver;
 
 public final class Stylesheet extends SyntaxTreeNode {
@@ -611,10 +611,10 @@ public final class Stylesheet extends SyntaxTreeNode {
     }
   }
 
-  private void compileModes(ClassGenerator classGen) {
-    _defaultMode.compileApplyTemplates(classGen);
+  private void compileModes(JDefinedClass definedClass) {
+    _defaultMode.compileApplyTemplates(definedClass, getXSLTC());
     for (final Mode mode : _modes.values()) {
-      mode.compileApplyTemplates(classGen);
+      mode.compileApplyTemplates(definedClass, getXSLTC());
     }
   }
 
@@ -651,24 +651,19 @@ public final class Stylesheet extends SyntaxTreeNode {
    * Translate the stylesheet into JVM bytecodes.
    */
   @Override
-  public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
+  public void translate(JDefinedClass definedClass, JMethod method) {
     translate();
   }
 
-  private void addDOMField(ClassGenerator classGen) {
-    final FieldGen fgen = new FieldGen(ACC_PUBLIC, Util.getJCRefType(DOM_INTF_SIG), DOM_FIELD,
-            classGen.getConstantPool());
-    classGen.addField(fgen.getField());
+  private JFieldVar addDOMField(JDefinedClass definedClass) {
+    return definedClass.field(JMod.PUBLIC, DOM.class, DOM_FIELD);
   }
 
   /**
    * Add a static field
    */
-  private void addStaticField(ClassGenerator classGen, String type, String name) {
-    final FieldGen fgen = new FieldGen(ACC_PROTECTED | ACC_STATIC, Util.getJCRefType(type), name,
-            classGen.getConstantPool());
-    classGen.addField(fgen.getField());
-
+  private JFieldVar addStaticField(JDefinedClass definedClass, Class<?> type, String name) {
+    return definedClass.field(JMod.PROTECTED | JMod.STATIC, type, name);
   }
 
   /**
@@ -676,50 +671,54 @@ public final class Stylesheet extends SyntaxTreeNode {
    */
   public void translate() {
     _className = getXSLTC().getClassName();
+    JCodeModel jCodeModel = new JCodeModel();
+    try {
+      // Define a new class by extending TRANSLET_CLASS
+      JDefinedClass definedClass = jCodeModel._class(_className)._extends(AbstractTranslet.class);
 
-    // Define a new class by extending TRANSLET_CLASS
-    final ClassGenerator classGen = new ClassGenerator(_className, TRANSLET_CLASS, Constants.EMPTYSTRING, ACC_PUBLIC
-            | ACC_SUPER, null, this);
+      addDOMField(definedClass);
 
-    addDOMField(classGen);
+      // Compile transform() to initialize parameters, globals & output
+      // and run the transformation
+      compileTransform(definedClass);
 
-    // Compile transform() to initialize parameters, globals & output
-    // and run the transformation
-    compileTransform(classGen);
-
-    // Translate all non-template elements and filter out all templates
-    for (SyntaxTreeNode element : getContents()) {
-      // xsl:template
-      if (element instanceof Template) {
-        // Separate templates by modes
-        final Template template = (Template) element;
-        // _templates.addElement(template);
-        getMode(template.getModeName()).addTemplate(template);
-      }
-      // xsl:attribute-set
-      else if (element instanceof AttributeSet) {
-        ((AttributeSet) element).translate(classGen, null);
-      } else if (element instanceof Output) {
-        // save the element for later to pass to compileConstructor
-        final Output output = (Output) element;
-        if (output.enabled()) {
-          _lastOutputElement = output;
+      // Translate all non-template elements and filter out all templates
+      for (SyntaxTreeNode element : getContents()) {
+        // xsl:template
+        if (element instanceof Template) {
+          // Separate templates by modes
+          final Template template = (Template) element;
+          // _templates.addElement(template);
+          getMode(template.getModeName()).addTemplate(template);
         }
-      } else {
-        // Global variables and parameters are handled elsewhere.
-        // Other top-level non-template elements are ignored. Literal
-        // elements outside of templates will never be output.
+        // xsl:attribute-set
+        else if (element instanceof AttributeSet) {
+          ((AttributeSet) element).translate(definedClass, null);
+        } else if (element instanceof Output) {
+          // save the element for later to pass to compileConstructor
+          final Output output = (Output) element;
+          if (output.enabled()) {
+            _lastOutputElement = output;
+          }
+        } else {
+          // Global variables and parameters are handled elsewhere.
+          // Other top-level non-template elements are ignored. Literal
+          // elements outside of templates will never be output.
+        }
       }
-    }
+      checkOutputMethod();
+      processModes();
+      compileModes(definedClass);
+      compileStaticInitializer(definedClass);
+      compileConstructor(definedClass, _lastOutputElement);
 
-    checkOutputMethod();
-    processModes();
-    compileModes(classGen);
-    compileStaticInitializer(classGen);
-    compileConstructor(classGen, _lastOutputElement);
+      if (!getParser().errorsFound()) {
+        getXSLTC().dumpClass(jCodeModel, definedClass);
+      }
 
-    if (!getParser().errorsFound()) {
-      getXSLTC().dumpClass(classGen.getJavaClass());
+    } catch (JClassAlreadyExistsException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
     }
   }
 
@@ -783,22 +782,16 @@ public final class Stylesheet extends SyntaxTreeNode {
    * </ul>
    * </p>
    */
-  private void compileStaticInitializer(ClassGenerator classGen) {
-    final ConstantPoolGen cpg = classGen.getConstantPool();
-    final InstructionList il = new InstructionList();
-
-    final MethodGenerator staticConst = new MethodGenerator(ACC_PUBLIC | ACC_STATIC, org.apache.bcel.generic.Type.VOID,
-            null, null, "<clinit>", _className, il, cpg);
-
-    addStaticField(classGen, "[" + STRING_SIG, STATIC_NAMES_ARRAY_FIELD);
-    addStaticField(classGen, "[" + STRING_SIG, STATIC_URIS_ARRAY_FIELD);
-    addStaticField(classGen, "[I", STATIC_TYPES_ARRAY_FIELD);
-    addStaticField(classGen, "[" + STRING_SIG, STATIC_NAMESPACE_ARRAY_FIELD);
+  private void compileStaticInitializer(JDefinedClass definedClass) {
+    JFieldVar _sNamesArray = addStaticField(definedClass, String[].class, STATIC_NAMES_ARRAY_FIELD);
+    JFieldVar _sUrisArray = addStaticField(definedClass, String[].class, STATIC_URIS_ARRAY_FIELD);
+    JFieldVar _sTypesArray = addStaticField(definedClass, int[].class, STATIC_TYPES_ARRAY_FIELD);
+    JFieldVar _sNamespaceArray = addStaticField(definedClass, String[].class, STATIC_NAMESPACE_ARRAY_FIELD);
     // Create fields of type char[] that will contain literal text from
     // the stylesheet.
     final int charDataFieldCount = getXSLTC().getCharacterDataCount();
     for (int i = 0; i < charDataFieldCount; i++) {
-      addStaticField(classGen, STATIC_CHAR_DATA_FIELD_SIG, STATIC_CHAR_DATA_FIELD + i);
+      addStaticField(definedClass, char[].class, STATIC_CHAR_DATA_FIELD + i);
     }
 
     // Put the names array into the translet - used for dom/translet mapping
@@ -833,232 +826,120 @@ public final class Stylesheet extends SyntaxTreeNode {
       }
     }
 
-    staticConst.markChunkStart();
-    il.append(new PUSH(cpg, size));
-    il.append(new ANEWARRAY(cpg.addClass(STRING)));
-    final int namesArrayRef = cpg.addFieldref(_className, STATIC_NAMES_ARRAY_FIELD, NAMES_INDEX_SIG);
-    il.append(new PUTSTATIC(namesArrayRef));
-    staticConst.markChunkEnd();
+    JBlock staticInit = definedClass.init();
 
+    JArray namesArrayRef = JExpr.newArray(_sNamesArray.type(), size);
     for (int i = 0; i < size; i++) {
       final String name = namesArray[i];
-      staticConst.markChunkStart();
-      il.append(new GETSTATIC(namesArrayRef));
-      il.append(new PUSH(cpg, i));
-      il.append(new PUSH(cpg, name));
-      il.append(AASTORE);
-      staticConst.markChunkEnd();
+      namesArrayRef.add(JExpr.lit(name));
     }
+    staticInit.assign(_sNamesArray, namesArrayRef);
 
-    staticConst.markChunkStart();
-    il.append(new PUSH(cpg, size));
-    il.append(new ANEWARRAY(cpg.addClass(STRING)));
-    final int urisArrayRef = cpg.addFieldref(_className, STATIC_URIS_ARRAY_FIELD, URIS_INDEX_SIG);
-    il.append(new PUTSTATIC(urisArrayRef));
-    staticConst.markChunkEnd();
-
+    JArray urisArrayRef = JExpr.newArray(_sUrisArray.type(), size);
     for (int i = 0; i < size; i++) {
       final String uri = urisArray[i];
-      staticConst.markChunkStart();
-      il.append(new GETSTATIC(urisArrayRef));
-      il.append(new PUSH(cpg, i));
-      il.append(new PUSH(cpg, uri));
-      il.append(AASTORE);
-      staticConst.markChunkEnd();
+      urisArrayRef.add(JExpr.lit(uri));
     }
+    staticInit.assign(_sUrisArray, urisArrayRef);
 
-    staticConst.markChunkStart();
-    il.append(new PUSH(cpg, size));
-    il.append(new NEWARRAY(org.apache.bcel.generic.Type.INT));
-    final int typesArrayRef = cpg.addFieldref(_className, STATIC_TYPES_ARRAY_FIELD, TYPES_INDEX_SIG);
-    il.append(new PUTSTATIC(typesArrayRef));
-    staticConst.markChunkEnd();
-
+    JArray typesArrayRef = JExpr.newArray(_sTypesArray.type(), size);
     for (int i = 0; i < size; i++) {
       final int nodeType = typesArray[i];
-      staticConst.markChunkStart();
-      il.append(new GETSTATIC(typesArrayRef));
-      il.append(new PUSH(cpg, i));
-      il.append(new PUSH(cpg, nodeType));
-      il.append(IASTORE);
-      staticConst.markChunkEnd();
+      typesArrayRef.add(JExpr.lit(nodeType));
     }
+    staticInit.assign(_sTypesArray, typesArrayRef);
 
     // Put the namespace names array into the translet
     final List<String> namespaces = getXSLTC().getNamespaceIndex();
-    staticConst.markChunkStart();
-    il.append(new PUSH(cpg, namespaces.size()));
-    il.append(new ANEWARRAY(cpg.addClass(STRING)));
-    final int namespaceArrayRef = cpg.addFieldref(_className, STATIC_NAMESPACE_ARRAY_FIELD, NAMESPACE_INDEX_SIG);
-    il.append(new PUTSTATIC(namespaceArrayRef));
-    staticConst.markChunkEnd();
-
+    JArray namespaceArrayRef = JExpr.newArray(_sNamespaceArray.type(), namespaces.size());
     for (int i = 0; i < namespaces.size(); i++) {
       final String ns = namespaces.get(i);
-      staticConst.markChunkStart();
-      il.append(new GETSTATIC(namespaceArrayRef));
-      il.append(new PUSH(cpg, i));
-      il.append(new PUSH(cpg, ns));
-      il.append(AASTORE);
-      staticConst.markChunkEnd();
+      namespaceArrayRef.add(JExpr.lit(ns));
     }
+    staticInit.assign(_sNamespaceArray, namespaceArrayRef);
 
     // Put the tree of stylesheet namespace declarations into the translet
     final List<Integer> namespaceAncestors = getXSLTC().getNSAncestorPointers();
     if (namespaceAncestors != null && namespaceAncestors.size() != 0) {
-      addStaticField(classGen, NS_ANCESTORS_INDEX_SIG, STATIC_NS_ANCESTORS_ARRAY_FIELD);
-      staticConst.markChunkStart();
-      il.append(new PUSH(cpg, namespaceAncestors.size()));
-      il.append(new NEWARRAY(org.apache.bcel.generic.Type.INT));
-      final int namespaceAncestorsArrayRef = cpg.addFieldref(_className, STATIC_NS_ANCESTORS_ARRAY_FIELD,
-              NS_ANCESTORS_INDEX_SIG);
-      il.append(new PUTSTATIC(namespaceAncestorsArrayRef));
-      staticConst.markChunkEnd();
+      JFieldVar _sNamespaceAncestorsArray = addStaticField(definedClass, int[].class, STATIC_NS_ANCESTORS_ARRAY_FIELD);
+      JArray namespaceAncestorsArrayRef = JExpr.newArray(_sNamespaceAncestorsArray.type(), namespaceAncestors.size());
       for (int i = 0; i < namespaceAncestors.size(); i++) {
         final int ancestor = namespaceAncestors.get(i).intValue();
-        staticConst.markChunkStart();
-        il.append(new GETSTATIC(namespaceAncestorsArrayRef));
-        il.append(new PUSH(cpg, i));
-        il.append(new PUSH(cpg, ancestor));
-        il.append(IASTORE);
-        staticConst.markChunkEnd();
+        namespaceAncestorsArrayRef.add(JExpr.lit(ancestor));
       }
+      staticInit.assign(_sNamespaceArray, namespaceArrayRef);
     }
+
     // Put the array of indices into the namespace prefix/URI pairs array
     // into the translet
     final List<Integer> prefixURIPairsIdx = getXSLTC().getPrefixURIPairsIdx();
     if (prefixURIPairsIdx != null && prefixURIPairsIdx.size() != 0) {
-      addStaticField(classGen, PREFIX_URIS_IDX_SIG, STATIC_PREFIX_URIS_IDX_ARRAY_FIELD);
-      staticConst.markChunkStart();
-      il.append(new PUSH(cpg, prefixURIPairsIdx.size()));
-      il.append(new NEWARRAY(org.apache.bcel.generic.Type.INT));
-      final int prefixURIPairsIdxArrayRef = cpg.addFieldref(_className, STATIC_PREFIX_URIS_IDX_ARRAY_FIELD,
-              PREFIX_URIS_IDX_SIG);
-      il.append(new PUTSTATIC(prefixURIPairsIdxArrayRef));
-      staticConst.markChunkEnd();
+      JFieldVar _sPrefixURIsIdxArray = addStaticField(definedClass, int[].class, STATIC_PREFIX_URIS_IDX_ARRAY_FIELD);
+      JArray prefixURIPairsIdxArrayRef = JExpr.newArray(_sPrefixURIsIdxArray.type(), prefixURIPairsIdx.size());
       for (int i = 0; i < prefixURIPairsIdx.size(); i++) {
         final int idx = prefixURIPairsIdx.get(i).intValue();
-        staticConst.markChunkStart();
-        il.append(new GETSTATIC(prefixURIPairsIdxArrayRef));
-        il.append(new PUSH(cpg, i));
-        il.append(new PUSH(cpg, idx));
-        il.append(IASTORE);
-        staticConst.markChunkEnd();
+        prefixURIPairsIdxArrayRef.add(JExpr.lit(idx));
       }
+      staticInit.assign(_sPrefixURIsIdxArray, prefixURIPairsIdxArrayRef);
     }
 
     // Put the array of pairs of namespace prefixes and URIs into the
     // translet
     final List<String> prefixURIPairs = getXSLTC().getPrefixURIPairs();
     if (prefixURIPairs != null && prefixURIPairs.size() != 0) {
-      addStaticField(classGen, PREFIX_URIS_ARRAY_SIG, STATIC_PREFIX_URIS_ARRAY_FIELD);
-
-      staticConst.markChunkStart();
-      il.append(new PUSH(cpg, prefixURIPairs.size()));
-      il.append(new ANEWARRAY(cpg.addClass(STRING)));
-      final int prefixURIPairsRef = cpg.addFieldref(_className, STATIC_PREFIX_URIS_ARRAY_FIELD, PREFIX_URIS_ARRAY_SIG);
-      il.append(new PUTSTATIC(prefixURIPairsRef));
-      staticConst.markChunkEnd();
+      JFieldVar _sPrefixURIPairsArray = addStaticField(definedClass, String[].class, STATIC_PREFIX_URIS_ARRAY_FIELD);
+      JArray prefixURIPairsRef = JExpr.newArray(_sPrefixURIPairsArray.type(), prefixURIPairs.size());
       for (int i = 0; i < prefixURIPairs.size(); i++) {
         final String prefixOrURI = prefixURIPairs.get(i);
-        staticConst.markChunkStart();
-        il.append(new GETSTATIC(prefixURIPairsRef));
-        il.append(new PUSH(cpg, i));
-        il.append(new PUSH(cpg, prefixOrURI));
-        il.append(AASTORE);
-        staticConst.markChunkEnd();
+        prefixURIPairsRef.add(JExpr.lit(prefixOrURI));
       }
+      staticInit.assign(_sPrefixURIPairsArray, prefixURIPairsRef);
     }
 
     // Grab all the literal text in the stylesheet and put it in a char[]
     final int charDataCount = getXSLTC().getCharacterDataCount();
-    final int toCharArray = cpg.addMethodref(STRING, "toCharArray", "()[C");
     for (int i = 0; i < charDataCount; i++) {
-      staticConst.markChunkStart();
-      il.append(new PUSH(cpg, getXSLTC().getCharacterData(i)));
-      il.append(new INVOKEVIRTUAL(toCharArray));
-      il.append(new PUTSTATIC(cpg.addFieldref(_className, STATIC_CHAR_DATA_FIELD + i, STATIC_CHAR_DATA_FIELD_SIG)));
-      staticConst.markChunkEnd();
+      String characterData = getXSLTC().getCharacterData(i);
+      JFieldVar _scharData = addStaticField(definedClass, char[].class, STATIC_CHAR_DATA_FIELD + i);
+      _scharData.assign(JExpr.lit(characterData).invoke("toCharArray"));
     }
-
-    il.append(RETURN);
-
-    classGen.addMethod(staticConst);
-
   }
 
   /**
    * Compile the translet's constructor
    */
-  private void compileConstructor(ClassGenerator classGen, Output output) {
+  private void compileConstructor(JDefinedClass definedClass, Output output) {
 
-    final ConstantPoolGen cpg = classGen.getConstantPool();
-    final InstructionList il = new InstructionList();
-
-    final MethodGenerator constructor = new MethodGenerator(ACC_PUBLIC, org.apache.bcel.generic.Type.VOID, null, null,
-            "<init>", _className, il, cpg);
-
+    JMethod constructor = definedClass.constructor(JMod.PUBLIC);
+    JBlock body = constructor.body();
     // Call the constructor in the AbstractTranslet superclass
-    il.append(classGen.loadTranslet());
-    il.append(new INVOKESPECIAL(cpg.addMethodref(TRANSLET_CLASS, "<init>", "()V")));
+    body.invoke("super");
 
-    constructor.markChunkStart();
-    il.append(classGen.loadTranslet());
-    il.append(new GETSTATIC(cpg.addFieldref(_className, STATIC_NAMES_ARRAY_FIELD, NAMES_INDEX_SIG)));
-    il.append(new PUTFIELD(cpg.addFieldref(TRANSLET_CLASS, NAMES_INDEX, NAMES_INDEX_SIG)));
-    constructor.markChunkEnd();
+    body.assign(JExpr.refthis(NAMES_INDEX), definedClass.staticRef(STATIC_NAMES_ARRAY_FIELD));
 
-    constructor.markChunkStart();
-    il.append(classGen.loadTranslet());
-    il.append(new GETSTATIC(cpg.addFieldref(_className, STATIC_URIS_ARRAY_FIELD, URIS_INDEX_SIG)));
-    il.append(new PUTFIELD(cpg.addFieldref(TRANSLET_CLASS, URIS_INDEX, URIS_INDEX_SIG)));
-    constructor.markChunkEnd();
+    body.assign(JExpr.refthis(URIS_INDEX), definedClass.staticRef(STATIC_URIS_ARRAY_FIELD));
 
-    constructor.markChunkStart();
-    il.append(classGen.loadTranslet());
-    il.append(new GETSTATIC(cpg.addFieldref(_className, STATIC_TYPES_ARRAY_FIELD, TYPES_INDEX_SIG)));
-    il.append(new PUTFIELD(cpg.addFieldref(TRANSLET_CLASS, TYPES_INDEX, TYPES_INDEX_SIG)));
-    constructor.markChunkEnd();
+    body.assign(JExpr.refthis(TYPES_INDEX), definedClass.staticRef(STATIC_TYPES_ARRAY_FIELD));
 
-    constructor.markChunkStart();
-    il.append(classGen.loadTranslet());
-    il.append(new GETSTATIC(cpg.addFieldref(_className, STATIC_NAMESPACE_ARRAY_FIELD, NAMESPACE_INDEX_SIG)));
-    il.append(new PUTFIELD(cpg.addFieldref(TRANSLET_CLASS, NAMESPACE_INDEX, NAMESPACE_INDEX_SIG)));
-    constructor.markChunkEnd();
+    body.assign(JExpr.refthis(NAMESPACE_INDEX), definedClass.staticRef(STATIC_NAMESPACE_ARRAY_FIELD));
 
-    constructor.markChunkStart();
-    il.append(classGen.loadTranslet());
-    il.append(new PUSH(cpg, AbstractTranslet.CURRENT_TRANSLET_VERSION));
-    il.append(new PUTFIELD(cpg.addFieldref(TRANSLET_CLASS, TRANSLET_VERSION_INDEX, TRANSLET_VERSION_INDEX_SIG)));
-    constructor.markChunkEnd();
+    body.assign(JExpr.refthis(TRANSLET_VERSION_INDEX), JExpr.lit(AbstractTranslet.CURRENT_TRANSLET_VERSION));
 
     if (_hasIdCall) {
-      constructor.markChunkStart();
-      il.append(classGen.loadTranslet());
-      il.append(new PUSH(cpg, Boolean.TRUE));
-      il.append(new PUTFIELD(cpg.addFieldref(TRANSLET_CLASS, HASIDCALL_INDEX, HASIDCALL_INDEX_SIG)));
-      constructor.markChunkEnd();
+      body.assign(JExpr.refthis(HASIDCALL_INDEX), JExpr.lit(true));
     }
 
     // Compile in code to set the output configuration from <xsl:output>
     if (output != null) {
       // Set all the output settings files in the translet
-      constructor.markChunkStart();
-      output.translate(classGen, constructor);
-      constructor.markChunkEnd();
+      output.translate(definedClass, constructor);
     }
 
     // Compile default decimal formatting symbols.
     // This is an implicit, nameless xsl:decimal-format top-level element.
     if (_numberFormattingUsed) {
-      constructor.markChunkStart();
-      DecimalFormatting.translateDefaultDFS(classGen, constructor);
-      constructor.markChunkEnd();
+      DecimalFormatting.translateDefaultDFS(definedClass, constructor);
     }
-
-    il.append(RETURN);
-
-    classGen.addMethod(constructor);
   }
 
   /**
@@ -1073,31 +954,17 @@ public final class Stylesheet extends SyntaxTreeNode {
    * generated as it is used by the LoadDocument class, but it no longer called
    * from transform().
    */
-  private String compileTopLevel(ClassGenerator classGen) {
-    final ConstantPoolGen cpg = classGen.getConstantPool();
+  private JMethod compileTopLevel(JDefinedClass definedClass) {
+    JMethod topLevel = definedClass.method(JMod.PUBLIC, Void.class, "topLevel")._throws(TransletException.class);
+    JVar document = topLevel.param(DOM.class, DOCUMENT_PNAME);
+    JVar iterator = topLevel.param(DTMAxisIterator.class, ITERATOR_PNAME);
+    JVar handler = topLevel.param(SerializationHandler.class, TRANSLET_OUTPUT_PNAME);
 
-    final org.apache.bcel.generic.Type[] argTypes = { Util.getJCRefType(DOM_INTF_SIG),
-            Util.getJCRefType(NODE_ITERATOR_SIG), Util.getJCRefType(TRANSLET_OUTPUT_SIG) };
-
-    final String[] argNames = { DOCUMENT_PNAME, ITERATOR_PNAME, TRANSLET_OUTPUT_PNAME };
-
-    final InstructionList il = new InstructionList();
-
-    final MethodGenerator toplevel = new MethodGenerator(ACC_PUBLIC, org.apache.bcel.generic.Type.VOID, argTypes,
-            argNames, "topLevel", _className, il, classGen.getConstantPool());
-
-    toplevel.addException("de.lyca.xalan.xsltc.TransletException");
-
+    JBlock block = topLevel.body();
     // Define and initialize 'current' variable with the root node
-    final LocalVariableGen current = toplevel.addLocalVariable("current", org.apache.bcel.generic.Type.INT, null, null);
-
-    final int setFilter = cpg.addInterfaceMethodref(DOM_INTF, "setFilter", "(Lde/lyca/xalan/xsltc/StripFilter;)V");
-
-    final int gitr = cpg.addInterfaceMethodref(DOM_INTF, "getIterator", "()" + NODE_ITERATOR_SIG);
-    il.append(toplevel.loadDOM());
-    il.append(new INVOKEINTERFACE(gitr, 1));
-    il.append(toplevel.nextNode());
-    current.setStart(il.append(new ISTORE(current.getIndex())));
+    JCodeModel owner = definedClass.owner();
+    JVar current = block.decl(owner.INT, "current");
+    block.assign(current, JExpr.invoke(document, "getIterator").invoke("next"));
 
     // Create a new list containing variables/params + keys
     List<TopLevelElement> varDepElements = new ArrayList<TopLevelElement>(_globals);
@@ -1114,7 +981,7 @@ public final class Stylesheet extends SyntaxTreeNode {
     final int count = varDepElements.size();
     for (int i = 0; i < count; i++) {
       final TopLevelElement tle = varDepElements.get(i);
-      tle.translate(classGen, toplevel);
+      tle.translate(definedClass, topLevel);
       if (tle instanceof Key) {
         final Key key = (Key) tle;
         _keys.put(key.getName(), key);
@@ -1126,7 +993,7 @@ public final class Stylesheet extends SyntaxTreeNode {
     for (SyntaxTreeNode element : getContents()) {
       // xsl:decimal-format
       if (element instanceof DecimalFormatting) {
-        ((DecimalFormatting) element).translate(classGen, toplevel);
+        ((DecimalFormatting) element).translate(definedClass, topLevel);
       }
       // xsl:strip/preserve-space
       else if (element instanceof Whitespace) {
@@ -1136,21 +1003,17 @@ public final class Stylesheet extends SyntaxTreeNode {
 
     // Translate all whitespace strip/preserve rules
     if (whitespaceRules.size() > 0) {
-      Whitespace.translateRules(whitespaceRules, classGen);
+      Whitespace.translateRules(whitespaceRules, definedClass);
     }
 
-    if (classGen.containsMethod(STRIP_SPACE, STRIP_SPACE_PARAMS) != null) {
-      il.append(toplevel.loadDOM());
-      il.append(classGen.loadTranslet());
-      il.append(new INVOKEINTERFACE(setFilter, 2));
+    JMethod stripSpace = definedClass.getMethod(STRIP_SPACE,
+        new JType[] { owner._ref(DOM.class), owner.INT, owner.INT });
+    if (stripSpace != null && stripSpace.type() == owner.BOOLEAN) {
+      JFieldVar _dom = definedClass.fields().get(DOM_FIELD);
+      block.invoke(_dom, "setFilter").arg(JExpr._this());
     }
 
-    il.append(RETURN);
-
-    // Compute max locals + stack and add method to class
-    classGen.addMethod(toplevel);
-
-    return "(" + DOM_INTF_SIG + NODE_ITERATOR_SIG + TRANSLET_OUTPUT_SIG + ")V";
+    return topLevel;
   }
 
   /**
@@ -1210,35 +1073,21 @@ public final class Stylesheet extends SyntaxTreeNode {
    * still need this method to create keys for documents loaded via the XPath
    * document() function.
    */
-  private String compileBuildKeys(ClassGenerator classGen) {
-    final org.apache.bcel.generic.Type[] argTypes = { Util.getJCRefType(DOM_INTF_SIG),
-            Util.getJCRefType(NODE_ITERATOR_SIG), Util.getJCRefType(TRANSLET_OUTPUT_SIG),
-            org.apache.bcel.generic.Type.INT };
-
-    final String[] argNames = { DOCUMENT_PNAME, ITERATOR_PNAME, TRANSLET_OUTPUT_PNAME, "current" };
-
-    final InstructionList il = new InstructionList();
-
-    final MethodGenerator buildKeys = new MethodGenerator(ACC_PUBLIC, org.apache.bcel.generic.Type.VOID, argTypes,
-            argNames, "buildKeys", _className, il, classGen.getConstantPool());
-
-    buildKeys.addException("de.lyca.xalan.xsltc.TransletException");
-
+  private JMethod compileBuildKeys(JDefinedClass definedClass) {
+    JMethod buildKeys = definedClass.method(JMod.PUBLIC, Void.class, "buildKeys")._throws(TransletException.class);
+    buildKeys.param(DOM.class, DOCUMENT_PNAME);
+    buildKeys.param(DTMAxisIterator.class, ITERATOR_PNAME);
+    buildKeys.param(SerializationHandler.class, TRANSLET_OUTPUT_PNAME);
+    buildKeys.param(int.class, "current");
     for (SyntaxTreeNode element : getContents()) {
       // xsl:key
       if (element instanceof Key) {
         final Key key = (Key) element;
-        key.translate(classGen, buildKeys);
+        key.translate(definedClass, buildKeys);
         _keys.put(key.getName(), key);
       }
     }
-
-    il.append(RETURN);
-
-    // Add method to class
-    classGen.addMethod(buildKeys);
-
-    return "(" + DOM_INTF_SIG + NODE_ITERATOR_SIG + TRANSLET_OUTPUT_SIG + "I)V";
+    return buildKeys;
   }
 
   /**
@@ -1246,134 +1095,63 @@ public final class Stylesheet extends SyntaxTreeNode {
    * initialize global variables and global parameters. The current node is set
    * to be the document's root node.
    */
-  private void compileTransform(ClassGenerator classGen) {
-    final ConstantPoolGen cpg = classGen.getConstantPool();
-
+  private void compileTransform(JDefinedClass definedClass) {
+    JCodeModel owner = definedClass.owner();
     /*
      * Define the the method transform with the following signature: void
      * transform(DOM, NodeIterator, HandlerBase)
      */
-    final org.apache.bcel.generic.Type[] argTypes = new org.apache.bcel.generic.Type[3];
-    argTypes[0] = Util.getJCRefType(DOM_INTF_SIG);
-    argTypes[1] = Util.getJCRefType(NODE_ITERATOR_SIG);
-    argTypes[2] = Util.getJCRefType(TRANSLET_OUTPUT_SIG);
+    JMethod method = definedClass.method(JMod.PUBLIC, Void.class, "transform")._throws(TransletException.class);
+    JVar document = method.param(DOM.class, DOCUMENT_PNAME);
+    JVar dtmAxisIterator = method.param(DTMAxisIterator.class, ITERATOR_PNAME);
+    JVar serializationHandler = method.param(SerializationHandler.class, TRANSLET_OUTPUT_PNAME);
 
-    final String[] argNames = new String[3];
-    argNames[0] = DOCUMENT_PNAME;
-    argNames[1] = ITERATOR_PNAME;
-    argNames[2] = TRANSLET_OUTPUT_PNAME;
-
-    final InstructionList il = new InstructionList();
-    final MethodGenerator transf = new MethodGenerator(ACC_PUBLIC, org.apache.bcel.generic.Type.VOID, argTypes,
-            argNames, "transform", _className, il, classGen.getConstantPool());
-    transf.addException("de.lyca.xalan.xsltc.TransletException");
-
+    JBlock block = method.body();
+    JInvocation makeDomAdapter = JExpr.invoke("makeDOMAdapter").arg(document);
     // Define and initialize current with the root node
-    final LocalVariableGen current = transf.addLocalVariable("current", org.apache.bcel.generic.Type.INT, null, null);
-    final String applyTemplatesSig = classGen.getApplyTemplatesSig();
-    final int applyTemplates = cpg.addMethodref(getClassName(), "applyTemplates", applyTemplatesSig);
-    final int domField = cpg.addFieldref(getClassName(), DOM_FIELD, DOM_INTF_SIG);
-
-    // push translet for PUTFIELD
-    il.append(classGen.loadTranslet());
-    // prepare appropriate DOM implementation
-
+    JFieldVar _dom = definedClass.fields().get(DOM_FIELD);
+    // Prepare the appropriate DOM implementation
     if (isMultiDocument()) {
-      il.append(new NEW(cpg.addClass(MULTI_DOM_CLASS)));
-      il.append(DUP);
+      // MultiDOM with DomAdapter
+      JClass multiDOM = owner.ref(MultiDOM.class);
+      block.assign(_dom, JExpr._new(multiDOM).arg(makeDomAdapter));
+    } else {
+      // DOMAdapter only
+      block.assign(_dom, makeDomAdapter);
     }
-
-    il.append(classGen.loadTranslet());
-    il.append(transf.loadDOM());
-    il.append(new INVOKEVIRTUAL(cpg.addMethodref(TRANSLET_CLASS, "makeDOMAdapter", "(" + DOM_INTF_SIG + ")"
-            + DOM_ADAPTER_SIG)));
-    // DOMAdapter is on the stack
-
-    if (isMultiDocument()) {
-      final int init = cpg.addMethodref(MULTI_DOM_CLASS, "<init>", "(" + DOM_INTF_SIG + ")V");
-      il.append(new INVOKESPECIAL(init));
-      // MultiDOM is on the stack
-    }
-
-    // store to _dom variable
-    il.append(new PUTFIELD(domField));
 
     // continue with globals initialization
-    final int gitr = cpg.addInterfaceMethodref(DOM_INTF, "getIterator", "()" + NODE_ITERATOR_SIG);
-    il.append(transf.loadDOM());
-    il.append(new INVOKEINTERFACE(gitr, 1));
-    il.append(transf.nextNode());
-    current.setStart(il.append(new ISTORE(current.getIndex())));
+    JVar current = block.decl(owner.INT, "current");
+    block.assign(current, JExpr.invoke(document, "getIterator").invoke("next"));
 
     // Transfer the output settings to the output post-processor
-    il.append(classGen.loadTranslet());
-    il.append(transf.loadHandler());
-    final int index = cpg.addMethodref(TRANSLET_CLASS, "transferOutputSettings", "(" + OUTPUT_HANDLER_SIG + ")V");
-    il.append(new INVOKEVIRTUAL(index));
+    block.invoke(serializationHandler, "transferOutputSettings");
 
     /*
      * Compile buildKeys() method. Note that this method is not invoked here as
      * keys for the input document are now created in topLevel(). However, this
      * method is still needed by the LoadDocument class.
      */
-    final String keySig = compileBuildKeys(classGen);
-    cpg.addMethodref(getClassName(), "buildKeys", keySig);
+    compileBuildKeys(definedClass);
 
     // Look for top-level elements that need handling
     final ListIterator<SyntaxTreeNode> toplevel = elements();
     if (_globals.size() > 0 || toplevel.hasNext()) {
       // Compile method for handling top-level elements
-      final String topLevelSig = compileTopLevel(classGen);
-      // Get a reference to that method
-      final int topLevelIdx = cpg.addMethodref(getClassName(), "topLevel", topLevelSig);
-      // Push all parameters on the stack and call topLevel()
-      il.append(classGen.loadTranslet()); // The 'this' pointer
-      il.append(classGen.loadTranslet());
-      il.append(new GETFIELD(domField)); // The DOM reference
-      il.append(transf.loadIterator());
-      il.append(transf.loadHandler()); // The output handler
-      il.append(new INVOKEVIRTUAL(topLevelIdx));
+      final JMethod topLevel = compileTopLevel(definedClass);
+      // Call topLevel()
+      block.invoke(topLevel).arg(_dom).arg(dtmAxisIterator).arg(serializationHandler);
     }
 
     // start document
-    il.append(transf.loadHandler());
-    il.append(transf.startDocument());
+    block.invoke(serializationHandler, "startDocument");
 
-    // push first arg for applyTemplates
-    il.append(classGen.loadTranslet());
-    // push translet for GETFIELD to get DOM arg
-    il.append(classGen.loadTranslet());
-    il.append(new GETFIELD(domField));
-    // push remaining 2 args
-    il.append(transf.loadIterator());
-    il.append(transf.loadHandler());
-    il.append(new INVOKEVIRTUAL(applyTemplates));
+    // call applyTemplates
+    block.invoke("applyTemplates").arg(_dom).arg(dtmAxisIterator).arg(serializationHandler);
+
     // endDocument
-    il.append(transf.loadHandler());
-    il.append(transf.endDocument());
-
-    il.append(RETURN);
-
-    // Compute max locals + stack and add method to class
-    classGen.addMethod(transf);
+    block.invoke(serializationHandler, "endDocument");
   }
-
-  /**
-   * Peephole optimization: Remove sequences of [ALOAD, POP].
-   */
-  // private void peepHoleOptimization(MethodGenerator methodGen) {
-  // final String pattern = "`aload'`pop'`instruction'";
-  // final InstructionList il = methodGen.getInstructionList();
-  // final InstructionFinder find = new InstructionFinder(il);
-  // for (Iterator iter = find.search(pattern); iter.hasNext();) {
-  // InstructionHandle[] match = (InstructionHandle[]) iter.next();
-  // try {
-  // il.delete(match[0], match[1]);
-  // } catch (TargetLostException e) {
-  // // TODO: move target down into the list
-  // }
-  // }
-  // }
 
   public int addParam(Param param) {
     _globals.add(param);

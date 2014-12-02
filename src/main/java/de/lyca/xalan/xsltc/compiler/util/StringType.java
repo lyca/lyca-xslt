@@ -34,6 +34,9 @@ import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.PUSH;
 
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JMethod;
+
 import de.lyca.xalan.xsltc.compiler.Constants;
 import de.lyca.xalan.xsltc.compiler.FlowList;
 
@@ -78,17 +81,18 @@ public class StringType extends Type {
    * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
    */
   @Override
-  public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, Type type) {
-    if (type == Type.Boolean) {
-      translateTo(classGen, methodGen, (BooleanType) type);
-    } else if (type == Type.Real) {
-      translateTo(classGen, methodGen, (RealType) type);
-    } else if (type == Type.Reference) {
-      translateTo(classGen, methodGen, (ReferenceType) type);
-    } else {
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), type.toString());
-      classGen.getParser().reportError(Constants.FATAL, err);
-    }
+  public void translateTo(JDefinedClass definedClass, JMethod method, Type type) {
+//    FIXME
+//    if (type == Type.Boolean) {
+//      translateTo(classGen, methodGen, (BooleanType) type);
+//    } else if (type == Type.Real) {
+//      translateTo(classGen, methodGen, (RealType) type);
+//    } else if (type == Type.Reference) {
+//      translateTo(classGen, methodGen, (ReferenceType) type);
+//    } else {
+//      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), type.toString());
+//      classGen.getParser().reportError(Constants.FATAL, err);
+//    }
   }
 
   /**
@@ -96,13 +100,14 @@ public class StringType extends Type {
    * 
    * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
    */
-  public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, BooleanType type) {
-    final InstructionList il = methodGen.getInstructionList();
-    final FlowList falsel = translateToDesynthesized(classGen, methodGen, type);
-    il.append(ICONST_1);
-    final BranchHandle truec = il.append(new GOTO(null));
-    falsel.backPatch(il.append(ICONST_0));
-    truec.setTarget(il.append(NOP));
+  public void translateTo(JDefinedClass definedClass, JMethod method, BooleanType type) {
+//    FIXME
+//    final InstructionList il = methodGen.getInstructionList();
+//    final FlowList falsel = translateToDesynthesized(classGen, methodGen, type);
+//    il.append(ICONST_1);
+//    final BranchHandle truec = il.append(new GOTO(null));
+//    falsel.backPatch(il.append(ICONST_0));
+//    truec.setTarget(il.append(NOP));
   }
 
   /**
@@ -111,10 +116,11 @@ public class StringType extends Type {
    * 
    * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
    */
-  public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, RealType type) {
-    final ConstantPoolGen cpg = classGen.getConstantPool();
-    final InstructionList il = methodGen.getInstructionList();
-    il.append(new INVOKESTATIC(cpg.addMethodref(BASIS_LIBRARY_CLASS, STRING_TO_REAL, STRING_TO_REAL_SIG)));
+  public void translateTo(JDefinedClass definedClass, JMethod method, RealType type) {
+//    FIXME
+//    final ConstantPoolGen cpg = classGen.getConstantPool();
+//    final InstructionList il = methodGen.getInstructionList();
+//    il.append(new INVOKESTATIC(cpg.addMethodref(BASIS_LIBRARY_CLASS, STRING_TO_REAL, STRING_TO_REAL_SIG)));
   }
 
   /**
@@ -124,12 +130,14 @@ public class StringType extends Type {
    * @see de.lyca.xalan.xsltc.compiler.util.Type#translateToDesynthesized
    */
   @Override
-  public FlowList translateToDesynthesized(ClassGenerator classGen, MethodGenerator methodGen, BooleanType type) {
-    final ConstantPoolGen cpg = classGen.getConstantPool();
-    final InstructionList il = methodGen.getInstructionList();
-
-    il.append(new INVOKEVIRTUAL(cpg.addMethodref(STRING_CLASS, "length", "()I")));
-    return new FlowList(il.append(new IFEQ(null)));
+  public FlowList translateToDesynthesized(JDefinedClass definedClass, JMethod method, BooleanType type) {
+    return null;
+//    FIXME
+//    final ConstantPoolGen cpg = classGen.getConstantPool();
+//    final InstructionList il = methodGen.getInstructionList();
+//
+//    il.append(new INVOKEVIRTUAL(cpg.addMethodref(STRING_CLASS, "length", "()I")));
+//    return new FlowList(il.append(new IFEQ(null)));
   }
 
   /**
@@ -138,8 +146,9 @@ public class StringType extends Type {
    * 
    * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
    */
-  public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, ReferenceType type) {
-    methodGen.getInstructionList().append(NOP);
+  public void translateTo(JDefinedClass definedClass, JMethod method, ReferenceType type) {
+//    FIXME
+//    methodGen.getInstructionList().append(NOP);
   }
 
   /**
@@ -148,14 +157,15 @@ public class StringType extends Type {
    * @see de.lyca.xalan.xsltc.compiler.util.Type#translateFrom
    */
   @Override
-  public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, Class<?> clazz) {
-    // Is String <: clazz? I.e. clazz in { String, Object }
-    if (clazz.isAssignableFrom(java.lang.String.class)) {
-      methodGen.getInstructionList().append(NOP);
-    } else {
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), clazz.getName());
-      classGen.getParser().reportError(Constants.FATAL, err);
-    }
+  public void translateTo(JDefinedClass definedClass, JMethod method, Class<?> clazz) {
+//    FIXME
+//    // Is String <: clazz? I.e. clazz in { String, Object }
+//    if (clazz.isAssignableFrom(java.lang.String.class)) {
+//      methodGen.getInstructionList().append(NOP);
+//    } else {
+//      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), clazz.getName());
+//      classGen.getParser().reportError(Constants.FATAL, err);
+//    }
   }
 
   /**
@@ -164,37 +174,40 @@ public class StringType extends Type {
    * @see de.lyca.xalan.xsltc.compiler.util.Type#translateFrom
    */
   @Override
-  public void translateFrom(ClassGenerator classGen, MethodGenerator methodGen, Class<?> clazz) {
-    final ConstantPoolGen cpg = classGen.getConstantPool();
-    final InstructionList il = methodGen.getInstructionList();
-
-    if (clazz.getName().equals("java.lang.String")) {
-      // same internal representation, convert null to ""
-      il.append(DUP);
-      final BranchHandle ifNonNull = il.append(new IFNONNULL(null));
-      il.append(POP);
-      il.append(new PUSH(cpg, ""));
-      ifNonNull.setTarget(il.append(NOP));
-    } else {
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), clazz.getName());
-      classGen.getParser().reportError(Constants.FATAL, err);
-    }
+  public void translateFrom(JDefinedClass definedClass, JMethod method, Class<?> clazz) {
+//    FIXME
+//    final ConstantPoolGen cpg = classGen.getConstantPool();
+//    final InstructionList il = methodGen.getInstructionList();
+//
+//    if (clazz.getName().equals("java.lang.String")) {
+//      // same internal representation, convert null to ""
+//      il.append(DUP);
+//      final BranchHandle ifNonNull = il.append(new IFNONNULL(null));
+//      il.append(POP);
+//      il.append(new PUSH(cpg, ""));
+//      ifNonNull.setTarget(il.append(NOP));
+//    } else {
+//      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), clazz.getName());
+//      classGen.getParser().reportError(Constants.FATAL, err);
+//    }
   }
 
   /**
    * Translates an object of this type to its boxed representation.
    */
   @Override
-  public void translateBox(ClassGenerator classGen, MethodGenerator methodGen) {
-    translateTo(classGen, methodGen, Type.Reference);
+  public void translateBox(JDefinedClass definedClass, JMethod method) {
+//    FIXME
+//    translateTo(classGen, methodGen, Type.Reference);
   }
 
   /**
    * Translates an object of this type to its unboxed representation.
    */
   @Override
-  public void translateUnBox(ClassGenerator classGen, MethodGenerator methodGen) {
-    methodGen.getInstructionList().append(NOP);
+  public void translateUnBox(JDefinedClass definedClass, JMethod method) {
+//    FIXME
+//    methodGen.getInstructionList().append(NOP);
   }
 
   /**

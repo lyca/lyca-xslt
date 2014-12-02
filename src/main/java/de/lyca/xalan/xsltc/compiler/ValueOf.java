@@ -27,6 +27,9 @@ import org.apache.bcel.generic.INVOKEVIRTUAL;
 import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.PUSH;
 
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JMethod;
+
 import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
@@ -94,45 +97,46 @@ final class ValueOf extends Instruction {
   }
 
   @Override
-  public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
-    final ConstantPoolGen cpg = classGen.getConstantPool();
-    final InstructionList il = methodGen.getInstructionList();
-    final int setEscaping = cpg.addInterfaceMethodref(OUTPUT_HANDLER, "setEscaping", "(Z)Z");
-
-    // Turn off character escaping if so is wanted.
-    if (!_escaping) {
-      il.append(methodGen.loadHandler());
-      il.append(new PUSH(cpg, false));
-      il.append(new INVOKEINTERFACE(setEscaping, 2));
-    }
-
-    // Translate the contents. If the value is a string, use the
-    // translet.characters(String, TranslatOutputHandler) method.
-    // Otherwise, the value is a node, and the
-    // dom.characters(int node, TransletOutputHandler) method can dispatch
-    // the string value of the node to the output handler more efficiently.
-    if (_isString) {
-      final int characters = cpg.addMethodref(TRANSLET_CLASS, CHARACTERSW, CHARACTERSW_SIG);
-
-      il.append(classGen.loadTranslet());
-      _select.translate(classGen, methodGen);
-      il.append(methodGen.loadHandler());
-      il.append(new INVOKEVIRTUAL(characters));
-    } else {
-      final int characters = cpg.addInterfaceMethodref(DOM_INTF, CHARACTERS, CHARACTERS_SIG);
-
-      il.append(methodGen.loadDOM());
-      _select.translate(classGen, methodGen);
-      il.append(methodGen.loadHandler());
-      il.append(new INVOKEINTERFACE(characters, 3));
-    }
-
-    // Restore character escaping setting to whatever it was.
-    if (!_escaping) {
-      il.append(methodGen.loadHandler());
-      il.append(SWAP);
-      il.append(new INVOKEINTERFACE(setEscaping, 2));
-      il.append(POP);
-    }
+  public void translate(JDefinedClass definedClass, JMethod method) {
+//    FIXME
+//    final ConstantPoolGen cpg = classGen.getConstantPool();
+//    final InstructionList il = methodGen.getInstructionList();
+//    final int setEscaping = cpg.addInterfaceMethodref(OUTPUT_HANDLER, "setEscaping", "(Z)Z");
+//
+//    // Turn off character escaping if so is wanted.
+//    if (!_escaping) {
+//      il.append(methodGen.loadHandler());
+//      il.append(new PUSH(cpg, false));
+//      il.append(new INVOKEINTERFACE(setEscaping, 2));
+//    }
+//
+//    // Translate the contents. If the value is a string, use the
+//    // translet.characters(String, TranslatOutputHandler) method.
+//    // Otherwise, the value is a node, and the
+//    // dom.characters(int node, TransletOutputHandler) method can dispatch
+//    // the string value of the node to the output handler more efficiently.
+//    if (_isString) {
+//      final int characters = cpg.addMethodref(TRANSLET_CLASS, CHARACTERSW, CHARACTERSW_SIG);
+//
+//      il.append(classGen.loadTranslet());
+//      _select.translate(classGen, methodGen);
+//      il.append(methodGen.loadHandler());
+//      il.append(new INVOKEVIRTUAL(characters));
+//    } else {
+//      final int characters = cpg.addInterfaceMethodref(DOM_INTF, CHARACTERS, CHARACTERS_SIG);
+//
+//      il.append(methodGen.loadDOM());
+//      _select.translate(classGen, methodGen);
+//      il.append(methodGen.loadHandler());
+//      il.append(new INVOKEINTERFACE(characters, 3));
+//    }
+//
+//    // Restore character escaping setting to whatever it was.
+//    if (!_escaping) {
+//      il.append(methodGen.loadHandler());
+//      il.append(SWAP);
+//      il.append(new INVOKEINTERFACE(setEscaping, 2));
+//      il.append(POP);
+//    }
   }
 }

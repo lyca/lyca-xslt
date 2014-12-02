@@ -25,6 +25,9 @@ import java.util.List;
 
 import org.apache.bcel.generic.InstructionList;
 
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JMethod;
+
 import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 import de.lyca.xalan.xsltc.compiler.util.Type;
@@ -49,22 +52,22 @@ final class NumberCall extends FunctionCall {
   }
 
   @Override
-  public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
-    final InstructionList il = methodGen.getInstructionList();
-    Type targ;
-
-    if (argumentCount() == 0) {
-      il.append(methodGen.loadContextNode());
-      targ = Type.Node;
-    } else {
-      final Expression arg = argument();
-      arg.translate(classGen, methodGen);
-      arg.startIterator(classGen, methodGen);
-      targ = arg.getType();
-    }
-
-    if (!targ.identicalTo(Type.Real)) {
-      targ.translateTo(classGen, methodGen, Type.Real);
-    }
+  public void translate(JDefinedClass definedClass, JMethod method) {
+//    final InstructionList il = methodGen.getInstructionList();
+//    Type targ;
+//
+//    if (argumentCount() == 0) {
+//      il.append(methodGen.loadContextNode());
+//      targ = Type.Node;
+//    } else {
+//      final Expression arg = argument();
+//      arg.translate(classGen, methodGen);
+//      arg.startIterator(classGen, methodGen);
+//      targ = arg.getType();
+//    }
+//
+//    if (!targ.identicalTo(Type.Real)) {
+//      targ.translateTo(classGen, methodGen, Type.Real);
+//    }
   }
 }

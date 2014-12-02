@@ -29,6 +29,9 @@ import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.LocalVariableGen;
 
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JMethod;
+
 import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 import de.lyca.xalan.xsltc.compiler.util.Type;
@@ -77,66 +80,67 @@ final class ParentPattern extends RelativePathPattern {
   }
 
   @Override
-  public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
-    final ConstantPoolGen cpg = classGen.getConstantPool();
-    final InstructionList il = methodGen.getInstructionList();
-    final LocalVariableGen local = methodGen.addLocalVariable2("ppt", Util.getJCRefType(NODE_SIG), null);
-
-    final org.apache.bcel.generic.Instruction loadLocal = new ILOAD(local.getIndex());
-    final org.apache.bcel.generic.Instruction storeLocal = new ISTORE(local.getIndex());
-
-    if (_right.isWildcard()) {
-      il.append(methodGen.loadDOM());
-      il.append(SWAP);
-    } else if (_right instanceof StepPattern) {
-      il.append(DUP);
-      local.setStart(il.append(storeLocal));
-
-      _right.translate(classGen, methodGen);
-
-      il.append(methodGen.loadDOM());
-      local.setEnd(il.append(loadLocal));
-    } else {
-      _right.translate(classGen, methodGen);
-
-      if (_right instanceof AncestorPattern) {
-        il.append(methodGen.loadDOM());
-        il.append(SWAP);
-      }
-    }
-
-    final int getParent = cpg.addInterfaceMethodref(DOM_INTF, GET_PARENT, GET_PARENT_SIG);
-    il.append(new INVOKEINTERFACE(getParent, 2));
-
-    final SyntaxTreeNode p = getParent();
-    if (p == null || p instanceof Instruction || p instanceof TopLevelElement) {
-      _left.translate(classGen, methodGen);
-    } else {
-      il.append(DUP);
-      final InstructionHandle storeInst = il.append(storeLocal);
-
-      if (local.getStart() == null) {
-        local.setStart(storeInst);
-      }
-      _left.translate(classGen, methodGen);
-
-      il.append(methodGen.loadDOM());
-      local.setEnd(il.append(loadLocal));
-    }
-
-    methodGen.removeLocalVariable(local);
-
-    /*
-     * If _right is an ancestor pattern, backpatch _left false list to the loop
-     * that searches for more ancestors.
-     */
-    if (_right instanceof AncestorPattern) {
-      final AncestorPattern ancestor = (AncestorPattern) _right;
-      _left.backPatchFalseList(ancestor.getLoopHandle()); // clears list
-    }
-
-    _trueList.append(_right._trueList.append(_left._trueList));
-    _falseList.append(_right._falseList.append(_left._falseList));
+  public void translate(JDefinedClass definedClass, JMethod method) {
+ // FIXME
+//    final ConstantPoolGen cpg = classGen.getConstantPool();
+//    final InstructionList il = methodGen.getInstructionList();
+//    final LocalVariableGen local = methodGen.addLocalVariable2("ppt", Util.getJCRefType(NODE_SIG), null);
+//
+//    final org.apache.bcel.generic.Instruction loadLocal = new ILOAD(local.getIndex());
+//    final org.apache.bcel.generic.Instruction storeLocal = new ISTORE(local.getIndex());
+//
+//    if (_right.isWildcard()) {
+//      il.append(methodGen.loadDOM());
+//      il.append(SWAP);
+//    } else if (_right instanceof StepPattern) {
+//      il.append(DUP);
+//      local.setStart(il.append(storeLocal));
+//
+//      _right.translate(classGen, methodGen);
+//
+//      il.append(methodGen.loadDOM());
+//      local.setEnd(il.append(loadLocal));
+//    } else {
+//      _right.translate(classGen, methodGen);
+//
+//      if (_right instanceof AncestorPattern) {
+//        il.append(methodGen.loadDOM());
+//        il.append(SWAP);
+//      }
+//    }
+//
+//    final int getParent = cpg.addInterfaceMethodref(DOM_INTF, GET_PARENT, GET_PARENT_SIG);
+//    il.append(new INVOKEINTERFACE(getParent, 2));
+//
+//    final SyntaxTreeNode p = getParent();
+//    if (p == null || p instanceof Instruction || p instanceof TopLevelElement) {
+//      _left.translate(classGen, methodGen);
+//    } else {
+//      il.append(DUP);
+//      final InstructionHandle storeInst = il.append(storeLocal);
+//
+//      if (local.getStart() == null) {
+//        local.setStart(storeInst);
+//      }
+//      _left.translate(classGen, methodGen);
+//
+//      il.append(methodGen.loadDOM());
+//      local.setEnd(il.append(loadLocal));
+//    }
+//
+//    methodGen.removeLocalVariable(local);
+//
+//    /*
+//     * If _right is an ancestor pattern, backpatch _left false list to the loop
+//     * that searches for more ancestors.
+//     */
+//    if (_right instanceof AncestorPattern) {
+//      final AncestorPattern ancestor = (AncestorPattern) _right;
+//      _left.backPatchFalseList(ancestor.getLoopHandle()); // clears list
+//    }
+//
+//    _trueList.append(_right._trueList.append(_left._trueList));
+//    _falseList.append(_right._falseList.append(_left._falseList));
   }
 
   @Override

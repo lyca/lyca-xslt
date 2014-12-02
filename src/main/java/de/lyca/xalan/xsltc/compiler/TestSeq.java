@@ -29,6 +29,9 @@ import org.apache.bcel.generic.GOTO_W;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InstructionList;
 
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JMethod;
+
 import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 
@@ -199,71 +202,73 @@ final class TestSeq {
    * lowest priority. Note that since patterns can be share by multiple test
    * sequences, instruction lists must be copied before backpatching.
    */
-  public InstructionHandle compile(ClassGenerator classGen, MethodGenerator methodGen, InstructionHandle continuation) {
-    // Returned cached value if already compiled
-    if (_start != null)
-      return _start;
-
-    // If not patterns, then return handle for default template
-    final int count = _patterns.size();
-    if (count == 0)
-      return _start = getTemplateHandle(_default);
-
-    // Init handle to jump when all patterns failed
-    InstructionHandle fail = _default == null ? continuation : getTemplateHandle(_default);
-
-    // Compile all patterns in reverse order
-    for (int n = count - 1; n >= 0; n--) {
-      final LocationPathPattern pattern = getPattern(n);
-      final Template template = pattern.getTemplate();
-      final InstructionList il = new InstructionList();
-
-      // Patterns expect current node on top of stack
-      il.append(methodGen.loadCurrentNode());
-
-      // Apply the test-code compiled for the pattern
-      InstructionList ilist = methodGen.getInstructionList(pattern);
-      if (ilist == null) {
-        ilist = pattern.compile(classGen, methodGen);
-        methodGen.addInstructionList(pattern, ilist);
-      }
-
-      // Make a copy of the instruction list for backpatching
-      final InstructionList copyOfilist = ilist.copy();
-
-      FlowList trueList = pattern.getTrueList();
-      if (trueList != null) {
-        trueList = trueList.copyAndRedirect(ilist, copyOfilist);
-      }
-      FlowList falseList = pattern.getFalseList();
-      if (falseList != null) {
-        falseList = falseList.copyAndRedirect(ilist, copyOfilist);
-      }
-
-      il.append(copyOfilist);
-
-      // On success branch to the template code
-      final InstructionHandle gtmpl = getTemplateHandle(template);
-      final InstructionHandle success = il.append(new GOTO_W(gtmpl));
-
-      if (trueList != null) {
-        trueList.backPatch(success);
-      }
-      if (falseList != null) {
-        falseList.backPatch(fail);
-      }
-
-      // Next pattern's 'fail' target is this pattern's first instruction
-      fail = il.getStart();
-
-      // Append existing instruction list to the end of this one
-      if (_instructionList != null) {
-        il.append(_instructionList);
-      }
-
-      // Set current instruction list to be this one
-      _instructionList = il;
-    }
-    return _start = fail;
+  public InstructionHandle compile(JDefinedClass definedClass, JMethod method, InstructionHandle continuation) {
+    return null;
+//    FIXME
+//    // Returned cached value if already compiled
+//    if (_start != null)
+//      return _start;
+//
+//    // If not patterns, then return handle for default template
+//    final int count = _patterns.size();
+//    if (count == 0)
+//      return _start = getTemplateHandle(_default);
+//
+//    // Init handle to jump when all patterns failed
+//    InstructionHandle fail = _default == null ? continuation : getTemplateHandle(_default);
+//
+//    // Compile all patterns in reverse order
+//    for (int n = count - 1; n >= 0; n--) {
+//      final LocationPathPattern pattern = getPattern(n);
+//      final Template template = pattern.getTemplate();
+//      final InstructionList il = new InstructionList();
+//
+//      // Patterns expect current node on top of stack
+//      il.append(methodGen.loadCurrentNode());
+//
+//      // Apply the test-code compiled for the pattern
+//      InstructionList ilist = methodGen.getInstructionList(pattern);
+//      if (ilist == null) {
+//        ilist = pattern.compile(classGen, methodGen);
+//        methodGen.addInstructionList(pattern, ilist);
+//      }
+//
+//      // Make a copy of the instruction list for backpatching
+//      final InstructionList copyOfilist = ilist.copy();
+//
+//      FlowList trueList = pattern.getTrueList();
+//      if (trueList != null) {
+//        trueList = trueList.copyAndRedirect(ilist, copyOfilist);
+//      }
+//      FlowList falseList = pattern.getFalseList();
+//      if (falseList != null) {
+//        falseList = falseList.copyAndRedirect(ilist, copyOfilist);
+//      }
+//
+//      il.append(copyOfilist);
+//
+//      // On success branch to the template code
+//      final InstructionHandle gtmpl = getTemplateHandle(template);
+//      final InstructionHandle success = il.append(new GOTO_W(gtmpl));
+//
+//      if (trueList != null) {
+//        trueList.backPatch(success);
+//      }
+//      if (falseList != null) {
+//        falseList.backPatch(fail);
+//      }
+//
+//      // Next pattern's 'fail' target is this pattern's first instruction
+//      fail = il.getStart();
+//
+//      // Append existing instruction list to the end of this one
+//      if (_instructionList != null) {
+//        il.append(_instructionList);
+//      }
+//
+//      // Set current instruction list to be this one
+//      _instructionList = il;
+//    }
+//    return _start = fail;
   }
 }

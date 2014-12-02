@@ -25,6 +25,9 @@ import java.util.List;
 
 import org.apache.bcel.generic.INVOKESTATIC;
 
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JMethod;
+
 import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 
@@ -38,9 +41,10 @@ final class FloorCall extends FunctionCall {
   }
 
   @Override
-  public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
-    argument().translate(classGen, methodGen);
-    methodGen.getInstructionList().append(
-            new INVOKESTATIC(classGen.getConstantPool().addMethodref(MATH_CLASS, "floor", "(D)D")));
+  public void translate(JDefinedClass definedClass, JMethod method) {
+ // FIXME
+//    argument().translate(classGen, methodGen);
+//    methodGen.getInstructionList().append(
+//            new INVOKESTATIC(classGen.getConstantPool().addMethodref(MATH_CLASS, "floor", "(D)D")));
   }
 }

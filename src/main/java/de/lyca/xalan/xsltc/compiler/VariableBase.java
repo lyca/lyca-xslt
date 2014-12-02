@@ -32,6 +32,9 @@ import org.apache.bcel.generic.LocalVariableGen;
 import org.apache.bcel.generic.NEW;
 import org.apache.bcel.generic.PUSH;
 
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JMethod;
+
 import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
@@ -95,13 +98,14 @@ class VariableBase extends TopLevelElement {
    * Remove the mapping of this variable to a register. Called when we leave the
    * AST scope of the variable's declaration
    */
-  public void unmapRegister(MethodGenerator methodGen) {
-    if (_local != null) {
-      _local.setEnd(methodGen.getInstructionList().getEnd());
-      methodGen.removeLocalVariable(_local);
-      _refs = null;
-      _local = null;
-    }
+  public void unmapRegister(JMethod method) {
+//    FIXME
+//    if (_local != null) {
+//      _local.setEnd(methodGen.getInstructionList().getEnd());
+//      methodGen.removeLocalVariable(_local);
+//      _refs = null;
+//      _local = null;
+//    }
   }
 
   /**
@@ -233,35 +237,36 @@ class VariableBase extends TopLevelElement {
    * Compile the value of the variable, which is either in an expression in a
    * 'select' attribute, or in the variable elements body
    */
-  public void translateValue(ClassGenerator classGen, MethodGenerator methodGen) {
-    // Compile expression is 'select' attribute if present
-    if (_select != null) {
-      _select.translate(classGen, methodGen);
-      // Create a CachedNodeListIterator for select expressions
-      // in a variable or parameter.
-      if (_select.getType() instanceof NodeSetType) {
-        final ConstantPoolGen cpg = classGen.getConstantPool();
-        final InstructionList il = methodGen.getInstructionList();
-
-        final int initCNI = cpg.addMethodref(CACHED_NODE_LIST_ITERATOR_CLASS, "<init>", "(" + NODE_ITERATOR_SIG + ")V");
-        il.append(new NEW(cpg.addClass(CACHED_NODE_LIST_ITERATOR_CLASS)));
-        il.append(DUP_X1);
-        il.append(SWAP);
-
-        il.append(new INVOKESPECIAL(initCNI));
-      }
-      _select.startIterator(classGen, methodGen);
-    }
-    // If not, compile result tree from parameter body if present.
-    else if (hasContents()) {
-      compileResultTree(classGen, methodGen);
-    }
-    // If neither are present then store empty string in variable
-    else {
-      final ConstantPoolGen cpg = classGen.getConstantPool();
-      final InstructionList il = methodGen.getInstructionList();
-      il.append(new PUSH(cpg, Constants.EMPTYSTRING));
-    }
+  public void translateValue(JDefinedClass definedClass, JMethod method) {
+//    FIXME
+//    // Compile expression is 'select' attribute if present
+//    if (_select != null) {
+//      _select.translate(classGen, methodGen);
+//      // Create a CachedNodeListIterator for select expressions
+//      // in a variable or parameter.
+//      if (_select.getType() instanceof NodeSetType) {
+//        final ConstantPoolGen cpg = classGen.getConstantPool();
+//        final InstructionList il = methodGen.getInstructionList();
+//
+//        final int initCNI = cpg.addMethodref(CACHED_NODE_LIST_ITERATOR_CLASS, "<init>", "(" + NODE_ITERATOR_SIG + ")V");
+//        il.append(new NEW(cpg.addClass(CACHED_NODE_LIST_ITERATOR_CLASS)));
+//        il.append(DUP_X1);
+//        il.append(SWAP);
+//
+//        il.append(new INVOKESPECIAL(initCNI));
+//      }
+//      _select.startIterator(classGen, methodGen);
+//    }
+//    // If not, compile result tree from parameter body if present.
+//    else if (hasContents()) {
+//      compileResultTree(classGen, methodGen);
+//    }
+//    // If neither are present then store empty string in variable
+//    else {
+//      final ConstantPoolGen cpg = classGen.getConstantPool();
+//      final InstructionList il = methodGen.getInstructionList();
+//      il.append(new PUSH(cpg, Constants.EMPTYSTRING));
+//    }
   }
 
 }

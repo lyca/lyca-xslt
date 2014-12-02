@@ -26,6 +26,9 @@ import org.apache.bcel.generic.ILOAD;
 import org.apache.bcel.generic.INVOKEINTERFACE;
 import org.apache.bcel.generic.InstructionList;
 
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JMethod;
+
 import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.CompareGenerator;
 import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
@@ -52,18 +55,19 @@ final class LastCall extends FunctionCall {
   }
 
   @Override
-  public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
-    final InstructionList il = methodGen.getInstructionList();
-
-    if (methodGen instanceof CompareGenerator) {
-      il.append(((CompareGenerator) methodGen).loadLastNode());
-    } else if (methodGen instanceof TestGenerator) {
-      il.append(new ILOAD(LAST_INDEX));
-    } else {
-      final ConstantPoolGen cpg = classGen.getConstantPool();
-      final int getLast = cpg.addInterfaceMethodref(NODE_ITERATOR, "getLast", "()I");
-      il.append(methodGen.loadIterator());
-      il.append(new INVOKEINTERFACE(getLast, 1));
-    }
+  public void translate(JDefinedClass definedClass, JMethod method) {
+ // FIXME
+//    final InstructionList il = methodGen.getInstructionList();
+//
+//    if (methodGen instanceof CompareGenerator) {
+//      il.append(((CompareGenerator) methodGen).loadLastNode());
+//    } else if (methodGen instanceof TestGenerator) {
+//      il.append(new ILOAD(LAST_INDEX));
+//    } else {
+//      final ConstantPoolGen cpg = classGen.getConstantPool();
+//      final int getLast = cpg.addInterfaceMethodref(NODE_ITERATOR, "getLast", "()I");
+//      il.append(methodGen.loadIterator());
+//      il.append(new INVOKEINTERFACE(getLast, 1));
+//    }
   }
 }

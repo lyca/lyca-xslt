@@ -25,6 +25,9 @@ import java.util.List;
 
 import org.apache.bcel.generic.InstructionList;
 
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JMethod;
+
 import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
@@ -55,22 +58,23 @@ final class StringCall extends FunctionCall {
   }
 
   @Override
-  public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
-    final InstructionList il = methodGen.getInstructionList();
-    Type targ;
-
-    if (argumentCount() == 0) {
-      il.append(methodGen.loadContextNode());
-      targ = Type.Node;
-    } else {
-      final Expression arg = argument();
-      arg.translate(classGen, methodGen);
-      arg.startIterator(classGen, methodGen);
-      targ = arg.getType();
-    }
-
-    if (!targ.identicalTo(Type.String)) {
-      targ.translateTo(classGen, methodGen, Type.String);
-    }
+  public void translate(JDefinedClass definedClass, JMethod method) {
+//    FIXME
+//    final InstructionList il = methodGen.getInstructionList();
+//    Type targ;
+//
+//    if (argumentCount() == 0) {
+//      il.append(methodGen.loadContextNode());
+//      targ = Type.Node;
+//    } else {
+//      final Expression arg = argument();
+//      arg.translate(classGen, methodGen);
+//      arg.startIterator(classGen, methodGen);
+//      targ = arg.getType();
+//    }
+//
+//    if (!targ.identicalTo(Type.String)) {
+//      targ.translateTo(classGen, methodGen, Type.String);
+//    }
   }
 }

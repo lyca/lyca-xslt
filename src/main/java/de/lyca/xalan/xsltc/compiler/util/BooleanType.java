@@ -44,6 +44,9 @@ import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.NEW;
 import org.apache.bcel.generic.PUSH;
 
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JMethod;
+
 import de.lyca.xalan.xsltc.compiler.Constants;
 
 /**
@@ -87,16 +90,16 @@ public final class BooleanType extends Type {
    * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
    */
   @Override
-  public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, Type type) {
+  public void translateTo(JDefinedClass definedClass, JMethod method, Type type) {
     if (type == Type.String) {
-      translateTo(classGen, methodGen, (StringType) type);
+      translateTo(definedClass, method, (StringType) type);
     } else if (type == Type.Real) {
-      translateTo(classGen, methodGen, (RealType) type);
+      translateTo(definedClass, method, (RealType) type);
     } else if (type == Type.Reference) {
-      translateTo(classGen, methodGen, (ReferenceType) type);
+      translateTo(definedClass, method, (ReferenceType) type);
     } else {
       final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), type.toString());
-      classGen.getParser().reportError(Constants.FATAL, err);
+      // FIXME classGen.getParser().reportError(Constants.FATAL, err);
     }
   }
 
@@ -107,14 +110,15 @@ public final class BooleanType extends Type {
    * 
    * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
    */
-  public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, StringType type) {
-    final ConstantPoolGen cpg = classGen.getConstantPool();
-    final InstructionList il = methodGen.getInstructionList();
-    final BranchHandle falsec = il.append(new IFEQ(null));
-    il.append(new PUSH(cpg, "true"));
-    final BranchHandle truec = il.append(new GOTO(null));
-    falsec.setTarget(il.append(new PUSH(cpg, "false")));
-    truec.setTarget(il.append(NOP));
+  public void translateTo(JDefinedClass definedClass, JMethod method, StringType type) {
+    // FIXME
+//    final ConstantPoolGen cpg = classGen.getConstantPool();
+//    final InstructionList il = methodGen.getInstructionList();
+//    final BranchHandle falsec = il.append(new IFEQ(null));
+//    il.append(new PUSH(cpg, "true"));
+//    final BranchHandle truec = il.append(new GOTO(null));
+//    falsec.setTarget(il.append(new PUSH(cpg, "false")));
+//    truec.setTarget(il.append(NOP));
   }
 
   /**
@@ -123,8 +127,9 @@ public final class BooleanType extends Type {
    * 
    * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
    */
-  public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, RealType type) {
-    methodGen.getInstructionList().append(I2D);
+  public void translateTo(JDefinedClass definedClass, JMethod method, RealType type) {
+//    FIXME
+//    methodGen.getInstructionList().append(I2D);
   }
 
   /**
@@ -133,57 +138,60 @@ public final class BooleanType extends Type {
    * 
    * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
    */
-  public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, ReferenceType type) {
-    final ConstantPoolGen cpg = classGen.getConstantPool();
-    final InstructionList il = methodGen.getInstructionList();
-    il.append(new NEW(cpg.addClass(BOOLEAN_CLASS)));
-    il.append(DUP_X1);
-    il.append(SWAP);
-    il.append(new INVOKESPECIAL(cpg.addMethodref(BOOLEAN_CLASS, "<init>", "(Z)V")));
+  public void translateTo(JDefinedClass definedClass, JMethod method, ReferenceType type) {
+//    FIXME
+//    final ConstantPoolGen cpg = classGen.getConstantPool();
+//    final InstructionList il = methodGen.getInstructionList();
+//    il.append(new NEW(cpg.addClass(BOOLEAN_CLASS)));
+//    il.append(DUP_X1);
+//    il.append(SWAP);
+//    il.append(new INVOKESPECIAL(cpg.addMethodref(BOOLEAN_CLASS, "<init>", "(Z)V")));
   }
 
   /**
    * Translates an internal boolean into an external (Java) boolean.
    */
   @Override
-  public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, Class<?> clazz) {
-    if (clazz == java.lang.Boolean.TYPE) {
-      methodGen.getInstructionList().append(NOP);
-    }
-    // Is Boolean <: clazz? I.e. clazz in { Boolean, Object }
-    else if (clazz.isAssignableFrom(java.lang.Boolean.class)) {
-      translateTo(classGen, methodGen, Type.Reference);
-    } else {
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), clazz.getName());
-      classGen.getParser().reportError(Constants.FATAL, err);
-    }
+  public void translateTo(JDefinedClass definedClass, JMethod method, Class<?> clazz) {
+//    FIXME
+//    if (clazz == java.lang.Boolean.TYPE) {
+//      methodGen.getInstructionList().append(NOP);
+//    }
+//    // Is Boolean <: clazz? I.e. clazz in { Boolean, Object }
+//    else if (clazz.isAssignableFrom(java.lang.Boolean.class)) {
+//      translateTo(classGen, methodGen, Type.Reference);
+//    } else {
+//      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), clazz.getName());
+//      classGen.getParser().reportError(Constants.FATAL, err);
+//    }
   }
 
   /**
    * Translates an external (Java) boolean into internal boolean.
    */
   @Override
-  public void translateFrom(ClassGenerator classGen, MethodGenerator methodGen, Class<?> clazz) {
-    translateTo(classGen, methodGen, clazz);
+  public void translateFrom(JDefinedClass definedClass, JMethod method, Class<?> clazz) {
+    translateTo(definedClass, method, clazz);
   }
 
   /**
    * Translates an object of this type to its boxed representation.
    */
   @Override
-  public void translateBox(ClassGenerator classGen, MethodGenerator methodGen) {
-    translateTo(classGen, methodGen, Type.Reference);
+  public void translateBox(JDefinedClass definedClass, JMethod method) {
+    translateTo(definedClass, method, Type.Reference);
   }
 
   /**
    * Translates an object of this type to its unboxed representation.
    */
   @Override
-  public void translateUnBox(ClassGenerator classGen, MethodGenerator methodGen) {
-    final ConstantPoolGen cpg = classGen.getConstantPool();
-    final InstructionList il = methodGen.getInstructionList();
-    il.append(new CHECKCAST(cpg.addClass(BOOLEAN_CLASS)));
-    il.append(new INVOKEVIRTUAL(cpg.addMethodref(BOOLEAN_CLASS, BOOLEAN_VALUE, BOOLEAN_VALUE_SIG)));
+  public void translateUnBox(JDefinedClass definedClass, JMethod method) {
+//    FIXME
+//    final ConstantPoolGen cpg = classGen.getConstantPool();
+//    final InstructionList il = methodGen.getInstructionList();
+//    il.append(new CHECKCAST(cpg.addClass(BOOLEAN_CLASS)));
+//    il.append(new INVOKEVIRTUAL(cpg.addMethodref(BOOLEAN_CLASS, BOOLEAN_VALUE, BOOLEAN_VALUE_SIG)));
   }
 
   @Override

@@ -27,6 +27,9 @@ import org.apache.bcel.generic.INVOKESTATIC;
 import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.PUSH;
 
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JMethod;
+
 import de.lyca.xalan.xsltc.compiler.util.BooleanType;
 import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
@@ -201,76 +204,78 @@ final class RelationalExpr extends Expression {
   }
 
   @Override
-  public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
-    if (hasNodeSetArgs() || hasReferenceArgs()) {
-      final ConstantPoolGen cpg = classGen.getConstantPool();
-      final InstructionList il = methodGen.getInstructionList();
-
-      // Call compare() from the BasisLibrary
-      _left.translate(classGen, methodGen);
-      _left.startIterator(classGen, methodGen);
-      _right.translate(classGen, methodGen);
-      _right.startIterator(classGen, methodGen);
-
-      il.append(new PUSH(cpg, _op));
-      il.append(methodGen.loadDOM());
-
-      final int index = cpg.addMethodref(BASIS_LIBRARY_CLASS, "compare", "(" + _left.getType().toSignature()
-              + _right.getType().toSignature() + "I" + DOM_INTF_SIG + ")Z");
-      il.append(new INVOKESTATIC(index));
-    } else {
-      translateDesynthesized(classGen, methodGen);
-      synthesize(classGen, methodGen);
-    }
+  public void translate(JDefinedClass definedClass, JMethod method) {
+ // FIXME
+//    if (hasNodeSetArgs() || hasReferenceArgs()) {
+//      final ConstantPoolGen cpg = classGen.getConstantPool();
+//      final InstructionList il = methodGen.getInstructionList();
+//
+//      // Call compare() from the BasisLibrary
+//      _left.translate(classGen, methodGen);
+//      _left.startIterator(classGen, methodGen);
+//      _right.translate(classGen, methodGen);
+//      _right.startIterator(classGen, methodGen);
+//
+//      il.append(new PUSH(cpg, _op));
+//      il.append(methodGen.loadDOM());
+//
+//      final int index = cpg.addMethodref(BASIS_LIBRARY_CLASS, "compare", "(" + _left.getType().toSignature()
+//              + _right.getType().toSignature() + "I" + DOM_INTF_SIG + ")Z");
+//      il.append(new INVOKESTATIC(index));
+//    } else {
+//      translateDesynthesized(classGen, methodGen);
+//      synthesize(classGen, methodGen);
+//    }
   }
 
   @Override
-  public void translateDesynthesized(ClassGenerator classGen, MethodGenerator methodGen) {
-    if (hasNodeSetArgs() || hasReferenceArgs()) {
-      translate(classGen, methodGen);
-      desynthesize(classGen, methodGen);
-    } else {
-      BranchInstruction bi = null;
-      final InstructionList il = methodGen.getInstructionList();
-
-      _left.translate(classGen, methodGen);
-      _right.translate(classGen, methodGen);
-
-      // TODO: optimize if one of the args is 0
-
-      boolean tozero = false;
-      Type tleft = _left.getType();
-
-      if (tleft instanceof RealType) {
-        il.append(tleft.CMP(_op == Operators.LT || _op == Operators.LE));
-        tleft = Type.Int;
-        tozero = true;
-      }
-
-      switch (_op) {
-        case Operators.LT:
-          bi = tleft.GE(tozero);
-          break;
-
-        case Operators.GT:
-          bi = tleft.LE(tozero);
-          break;
-
-        case Operators.LE:
-          bi = tleft.GT(tozero);
-          break;
-
-        case Operators.GE:
-          bi = tleft.LT(tozero);
-          break;
-
-        default:
-          final ErrorMsg msg = new ErrorMsg(ErrorMsg.ILLEGAL_RELAT_OP_ERR, this);
-          getParser().reportError(Constants.FATAL, msg);
-      }
-
-      _falseList.add(il.append(bi)); // must be backpatched
-    }
+  public void translateDesynthesized(JDefinedClass definedClass, JMethod method) {
+ // FIXME
+//    if (hasNodeSetArgs() || hasReferenceArgs()) {
+//      translate(classGen, methodGen);
+//      desynthesize(classGen, methodGen);
+//    } else {
+//      BranchInstruction bi = null;
+//      final InstructionList il = methodGen.getInstructionList();
+//
+//      _left.translate(classGen, methodGen);
+//      _right.translate(classGen, methodGen);
+//
+//      // TODO: optimize if one of the args is 0
+//
+//      boolean tozero = false;
+//      Type tleft = _left.getType();
+//
+//      if (tleft instanceof RealType) {
+//        il.append(tleft.CMP(_op == Operators.LT || _op == Operators.LE));
+//        tleft = Type.Int;
+//        tozero = true;
+//      }
+//
+//      switch (_op) {
+//        case Operators.LT:
+//          bi = tleft.GE(tozero);
+//          break;
+//
+//        case Operators.GT:
+//          bi = tleft.LE(tozero);
+//          break;
+//
+//        case Operators.LE:
+//          bi = tleft.GT(tozero);
+//          break;
+//
+//        case Operators.GE:
+//          bi = tleft.LT(tozero);
+//          break;
+//
+//        default:
+//          final ErrorMsg msg = new ErrorMsg(ErrorMsg.ILLEGAL_RELAT_OP_ERR, this);
+//          getParser().reportError(Constants.FATAL, msg);
+//      }
+//
+//      _falseList.add(il.append(bi)); // must be backpatched
+//    }
   }
 
   @Override

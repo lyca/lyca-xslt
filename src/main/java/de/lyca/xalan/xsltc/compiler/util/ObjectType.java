@@ -32,6 +32,9 @@ import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.PUSH;
 
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JMethod;
+
 import de.lyca.xalan.xsltc.compiler.Constants;
 
 /**
@@ -116,13 +119,14 @@ public final class ObjectType extends Type {
    * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
    */
   @Override
-  public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, Type type) {
-    if (type == Type.String) {
-      translateTo(classGen, methodGen, (StringType) type);
-    } else {
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), type.toString());
-      classGen.getParser().reportError(Constants.FATAL, err);
-    }
+  public void translateTo(JDefinedClass definedClass, JMethod method, Type type) {
+//    FIXME
+//    if (type == Type.String) {
+//      translateTo(classGen, methodGen, (StringType) type);
+//    } else {
+//      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), type.toString());
+//      classGen.getParser().reportError(Constants.FATAL, err);
+//    }
   }
 
   /**
@@ -131,17 +135,18 @@ public final class ObjectType extends Type {
    * 
    * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
    */
-  public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, StringType type) {
-    final ConstantPoolGen cpg = classGen.getConstantPool();
-    final InstructionList il = methodGen.getInstructionList();
-
-    il.append(DUP);
-    final BranchHandle ifNull = il.append(new IFNULL(null));
-    il.append(new INVOKEVIRTUAL(cpg.addMethodref(_javaClassName, "toString", "()" + STRING_SIG)));
-    final BranchHandle gotobh = il.append(new GOTO(null));
-    ifNull.setTarget(il.append(POP));
-    il.append(new PUSH(cpg, ""));
-    gotobh.setTarget(il.append(NOP));
+  public void translateTo(JDefinedClass definedClass, JMethod method, StringType type) {
+//    FIXME
+//    final ConstantPoolGen cpg = classGen.getConstantPool();
+//    final InstructionList il = methodGen.getInstructionList();
+//
+//    il.append(DUP);
+//    final BranchHandle ifNull = il.append(new IFNULL(null));
+//    il.append(new INVOKEVIRTUAL(cpg.addMethodref(_javaClassName, "toString", "()" + STRING_SIG)));
+//    final BranchHandle gotobh = il.append(new GOTO(null));
+//    ifNull.setTarget(il.append(POP));
+//    il.append(new PUSH(cpg, ""));
+//    gotobh.setTarget(il.append(NOP));
   }
 
   /**
@@ -150,21 +155,23 @@ public final class ObjectType extends Type {
    * external functions are called.
    */
   @Override
-  public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, Class<?> clazz) {
-    if (clazz.isAssignableFrom(_clazz)) {
-      methodGen.getInstructionList().append(NOP);
-    } else {
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), clazz.getClass().toString());
-      classGen.getParser().reportError(Constants.FATAL, err);
-    }
+  public void translateTo(JDefinedClass definedClass, JMethod method, Class<?> clazz) {
+//    FIXME
+//    if (clazz.isAssignableFrom(_clazz)) {
+//      methodGen.getInstructionList().append(NOP);
+//    } else {
+//      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), clazz.getClass().toString());
+//      classGen.getParser().reportError(Constants.FATAL, err);
+//    }
   }
 
   /**
    * Translates an external Java type into an Object type
    */
   @Override
-  public void translateFrom(ClassGenerator classGen, MethodGenerator methodGen, Class<?> clazz) {
-    methodGen.getInstructionList().append(NOP);
+  public void translateFrom(JDefinedClass definedClass, JMethod method, Class<?> clazz) {
+//    FIXME
+//    methodGen.getInstructionList().append(NOP);
   }
 
   @Override

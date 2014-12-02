@@ -26,6 +26,9 @@ import java.util.ListIterator;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JMethod;
+
 import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
@@ -140,7 +143,7 @@ final class Include extends TopLevelElement {
   }
 
   @Override
-  public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
+  public void translate(JDefinedClass definedClass, JMethod method) {
     // do nothing
   }
 }

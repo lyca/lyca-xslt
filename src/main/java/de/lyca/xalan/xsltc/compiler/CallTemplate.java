@@ -27,6 +27,9 @@ import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.INVOKEVIRTUAL;
 import org.apache.bcel.generic.InstructionList;
 
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JMethod;
+
 import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
@@ -102,71 +105,72 @@ final class CallTemplate extends Instruction {
   }
 
   @Override
-  public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
-    final Stylesheet stylesheet = classGen.getStylesheet();
-    final ConstantPoolGen cpg = classGen.getConstantPool();
-    final InstructionList il = methodGen.getInstructionList();
-
-    // If there are Params in the stylesheet or WithParams in this call?
-    if (stylesheet.hasLocalParams() || hasContents()) {
-      _calleeTemplate = getCalleeTemplate();
-
-      // Build the parameter list if the called template is simple named
-      if (_calleeTemplate != null) {
-        buildParameterList();
-      }
-      // This is only needed when the called template is not
-      // a simple named template.
-      else {
-        // Push parameter frame
-        final int push = cpg.addMethodref(TRANSLET_CLASS, PUSH_PARAM_FRAME, PUSH_PARAM_FRAME_SIG);
-        il.append(classGen.loadTranslet());
-        il.append(new INVOKEVIRTUAL(push));
-        translateContents(classGen, methodGen);
-      }
-    }
-
-    // Generate a valid Java method name
-    final String className = stylesheet.getClassName();
-    final String methodName = Util.escape(_name.toString());
-
-    // Load standard arguments
-    il.append(classGen.loadTranslet());
-    il.append(methodGen.loadDOM());
-    il.append(methodGen.loadIterator());
-    il.append(methodGen.loadHandler());
-    il.append(methodGen.loadCurrentNode());
-
-    // Initialize prefix of method signature
-    final StringBuilder methodSig = new StringBuilder("(" + DOM_INTF_SIG + NODE_ITERATOR_SIG + TRANSLET_OUTPUT_SIG
-            + NODE_SIG);
-
-    // If calling a simply named template, push actual arguments
-    if (_calleeTemplate != null) {
-      // List<Param> calleeParams = _calleeTemplate.getParameters();
-      for (final SyntaxTreeNode node : _parameters) {
-        methodSig.append(OBJECT_SIG); // append Object to signature
-        // Push 'null' if Param to indicate no actual parameter specified
-        if (node instanceof Param) {
-          il.append(ACONST_NULL);
-        } else { // translate WithParam
-          node.translate(classGen, methodGen);
-        }
-      }
-    }
-
-    // Complete signature and generate invokevirtual call
-    methodSig.append(")V");
-    il.append(new INVOKEVIRTUAL(cpg.addMethodref(className, methodName, methodSig.toString())));
-
-    // Do not need to call Translet.popParamFrame() if we are
-    // calling a simple named template.
-    if (_calleeTemplate == null && (stylesheet.hasLocalParams() || hasContents())) {
-      // Pop parameter frame
-      final int pop = cpg.addMethodref(TRANSLET_CLASS, POP_PARAM_FRAME, POP_PARAM_FRAME_SIG);
-      il.append(classGen.loadTranslet());
-      il.append(new INVOKEVIRTUAL(pop));
-    }
+  public void translate(JDefinedClass definedClass, JMethod method) {
+    // FIXME
+//    final Stylesheet stylesheet = classGen.getStylesheet();
+//    final ConstantPoolGen cpg = classGen.getConstantPool();
+//    final InstructionList il = methodGen.getInstructionList();
+//
+//    // If there are Params in the stylesheet or WithParams in this call?
+//    if (stylesheet.hasLocalParams() || hasContents()) {
+//      _calleeTemplate = getCalleeTemplate();
+//
+//      // Build the parameter list if the called template is simple named
+//      if (_calleeTemplate != null) {
+//        buildParameterList();
+//      }
+//      // This is only needed when the called template is not
+//      // a simple named template.
+//      else {
+//        // Push parameter frame
+//        final int push = cpg.addMethodref(TRANSLET_CLASS, PUSH_PARAM_FRAME, PUSH_PARAM_FRAME_SIG);
+//        il.append(classGen.loadTranslet());
+//        il.append(new INVOKEVIRTUAL(push));
+//        translateContents(classGen, methodGen);
+//      }
+//    }
+//
+//    // Generate a valid Java method name
+//    final String className = stylesheet.getClassName();
+//    final String methodName = Util.escape(_name.toString());
+//
+//    // Load standard arguments
+//    il.append(classGen.loadTranslet());
+//    il.append(methodGen.loadDOM());
+//    il.append(methodGen.loadIterator());
+//    il.append(methodGen.loadHandler());
+//    il.append(methodGen.loadCurrentNode());
+//
+//    // Initialize prefix of method signature
+//    final StringBuilder methodSig = new StringBuilder("(" + DOM_INTF_SIG + NODE_ITERATOR_SIG + TRANSLET_OUTPUT_SIG
+//            + NODE_SIG);
+//
+//    // If calling a simply named template, push actual arguments
+//    if (_calleeTemplate != null) {
+//      // List<Param> calleeParams = _calleeTemplate.getParameters();
+//      for (final SyntaxTreeNode node : _parameters) {
+//        methodSig.append(OBJECT_SIG); // append Object to signature
+//        // Push 'null' if Param to indicate no actual parameter specified
+//        if (node instanceof Param) {
+//          il.append(ACONST_NULL);
+//        } else { // translate WithParam
+//          node.translate(classGen, methodGen);
+//        }
+//      }
+//    }
+//
+//    // Complete signature and generate invokevirtual call
+//    methodSig.append(")V");
+//    il.append(new INVOKEVIRTUAL(cpg.addMethodref(className, methodName, methodSig.toString())));
+//
+//    // Do not need to call Translet.popParamFrame() if we are
+//    // calling a simple named template.
+//    if (_calleeTemplate == null && (stylesheet.hasLocalParams() || hasContents())) {
+//      // Pop parameter frame
+//      final int pop = cpg.addMethodref(TRANSLET_CLASS, POP_PARAM_FRAME, POP_PARAM_FRAME_SIG);
+//      il.append(classGen.loadTranslet());
+//      il.append(new INVOKEVIRTUAL(pop));
+//    }
   }
 
   /**

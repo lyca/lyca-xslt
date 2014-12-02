@@ -21,6 +21,9 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JMethod;
+
 import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 
@@ -34,7 +37,8 @@ final class CurrentCall extends FunctionCall {
   }
 
   @Override
-  public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
-    methodGen.getInstructionList().append(methodGen.loadCurrentNode());
+  public void translate(JDefinedClass definedClass, JMethod method) {
+    // FIXME
+//    methodGen.getInstructionList().append(methodGen.loadCurrentNode());
   }
 }

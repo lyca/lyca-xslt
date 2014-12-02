@@ -26,6 +26,9 @@ import java.util.List;
 
 import org.apache.bcel.generic.InstructionList;
 
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JMethod;
+
 import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
@@ -53,7 +56,7 @@ class TopLevelElement extends SyntaxTreeNode {
    * Translate this node into JVM bytecodes.
    */
   @Override
-  public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
+  public void translate(JDefinedClass definedClass, JMethod method) {
     final ErrorMsg msg = new ErrorMsg(ErrorMsg.NOT_IMPLEMENTED_ERR, getClass(), this);
     getParser().reportError(FATAL, msg);
   }
@@ -62,12 +65,14 @@ class TopLevelElement extends SyntaxTreeNode {
    * Translate this node into a fresh instruction list. The original instruction
    * list is saved and restored.
    */
-  public InstructionList compile(ClassGenerator classGen, MethodGenerator methodGen) {
-    final InstructionList result, save = methodGen.getInstructionList();
-    methodGen.setInstructionList(result = new InstructionList());
-    translate(classGen, methodGen);
-    methodGen.setInstructionList(save);
-    return result;
+  public InstructionList compile(JDefinedClass definedClass, JMethod method) {
+    return null;
+//    FIXME
+//    final InstructionList result, save = methodGen.getInstructionList();
+//    methodGen.setInstructionList(result = new InstructionList());
+//    translate(classGen, methodGen);
+//    methodGen.setInstructionList(save);
+//    return result;
   }
 
   @Override

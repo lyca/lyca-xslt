@@ -29,6 +29,9 @@ import org.apache.bcel.generic.INVOKEVIRTUAL;
 import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.PUSH;
 
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JMethod;
+
 import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 import de.lyca.xalan.xsltc.compiler.util.RealType;
@@ -82,27 +85,28 @@ final class FormatNumberCall extends FunctionCall {
   }
 
   @Override
-  public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
-    final ConstantPoolGen cpg = classGen.getConstantPool();
-    final InstructionList il = methodGen.getInstructionList();
-
-    _value.translate(classGen, methodGen);
-    _format.translate(classGen, methodGen);
-
-    final int fn3arg = cpg.addMethodref(BASIS_LIBRARY_CLASS, "formatNumber", "(DLjava/lang/String;"
-            + "Ljava/text/DecimalFormat;)" + "Ljava/lang/String;");
-    final int get = cpg.addMethodref(TRANSLET_CLASS, "getDecimalFormat", "(Ljava/lang/String;)"
-            + "Ljava/text/DecimalFormat;");
-
-    il.append(classGen.loadTranslet());
-    if (_name == null) {
-      il.append(new PUSH(cpg, EMPTYSTRING));
-    } else if (_resolvedQName != null) {
-      il.append(new PUSH(cpg, _resolvedQName.toString()));
-    } else {
-      _name.translate(classGen, methodGen);
-    }
-    il.append(new INVOKEVIRTUAL(get));
-    il.append(new INVOKESTATIC(fn3arg));
+  public void translate(JDefinedClass definedClass, JMethod method) {
+    // FIXME
+//    final ConstantPoolGen cpg = classGen.getConstantPool();
+//    final InstructionList il = methodGen.getInstructionList();
+//
+//    _value.translate(classGen, methodGen);
+//    _format.translate(classGen, methodGen);
+//
+//    final int fn3arg = cpg.addMethodref(BASIS_LIBRARY_CLASS, "formatNumber", "(DLjava/lang/String;"
+//            + "Ljava/text/DecimalFormat;)" + "Ljava/lang/String;");
+//    final int get = cpg.addMethodref(TRANSLET_CLASS, "getDecimalFormat", "(Ljava/lang/String;)"
+//            + "Ljava/text/DecimalFormat;");
+//
+//    il.append(classGen.loadTranslet());
+//    if (_name == null) {
+//      il.append(new PUSH(cpg, EMPTYSTRING));
+//    } else if (_resolvedQName != null) {
+//      il.append(new PUSH(cpg, _resolvedQName.toString()));
+//    } else {
+//      _name.translate(classGen, methodGen);
+//    }
+//    il.append(new INVOKEVIRTUAL(get));
+//    il.append(new INVOKESTATIC(fn3arg));
   }
 }

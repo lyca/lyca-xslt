@@ -27,6 +27,9 @@ import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.INVOKESTATIC;
 import org.apache.bcel.generic.InstructionList;
 
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JMethod;
+
 import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 
@@ -41,12 +44,13 @@ final class RoundCall extends FunctionCall {
   }
 
   @Override
-  public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
-    final ConstantPoolGen cpg = classGen.getConstantPool();
-    final InstructionList il = methodGen.getInstructionList();
-
-    // Get two copies of the argument on the stack
-    argument().translate(classGen, methodGen);
-    il.append(new INVOKESTATIC(cpg.addMethodref(BASIS_LIBRARY_CLASS, "roundF", "(D)D")));
+  public void translate(JDefinedClass definedClass, JMethod method) {
+ // FIXME
+//    final ConstantPoolGen cpg = classGen.getConstantPool();
+//    final InstructionList il = methodGen.getInstructionList();
+//
+//    // Get two copies of the argument on the stack
+//    argument().translate(classGen, methodGen);
+//    il.append(new INVOKESTATIC(cpg.addMethodref(BASIS_LIBRARY_CLASS, "roundF", "(D)D")));
   }
 }
