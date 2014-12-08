@@ -25,6 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import javax.swing.JList;
+
 import org.apache.bcel.generic.ALOAD;
 import org.apache.bcel.generic.BranchHandle;
 import org.apache.bcel.generic.ConstantPoolGen;
@@ -36,9 +38,18 @@ import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.PUSH;
 
+import com.sun.codemodel.JBlock;
+import com.sun.codemodel.JConditional;
 import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JExpr;
+import com.sun.codemodel.JExpression;
+import com.sun.codemodel.JInvocation;
 import com.sun.codemodel.JMethod;
+import com.sun.codemodel.JMod;
+import com.sun.codemodel.JVar;
 
+import de.lyca.xalan.xsltc.DOM;
+import de.lyca.xalan.xsltc.StripFilter;
 import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
@@ -214,18 +225,18 @@ final class Whitespace extends TopLevelElement {
        * action then this rule will never win.
        */
       switch (currentRule.getStrength()) {
-        case RULE_ALL:
-          return currentRule;
+      case RULE_ALL:
+        return currentRule;
 
-        case RULE_ELEMENT:
-          if (!rule.getElement().equals(currentRule.getElement())) {
-            break;
-          }
-          // intentional fall-through
-        case RULE_NAMESPACE:
-          if (rule.getNamespace().equals(currentRule.getNamespace()))
-            return currentRule;
+      case RULE_ELEMENT:
+        if (!rule.getElement().equals(currentRule.getElement())) {
           break;
+        }
+        // intentional fall-through
+      case RULE_NAMESPACE:
+        if (rule.getNamespace().equals(currentRule.getNamespace()))
+          return currentRule;
+        break;
       }
     }
     return null;
@@ -297,20 +308,24 @@ final class Whitespace extends TopLevelElement {
     return defaultAction;
   }
 
-  public static void compileStripSpace(BranchHandle strip[], int sCount, InstructionList il) {
-    final InstructionHandle target = il.append(ICONST_1);
-    il.append(IRETURN);
-    for (int i = 0; i < sCount; i++) {
-      strip[i].setTarget(target);
+  public static JExpression compileStripSpace(JExpression[] strip, int sCount) {
+    // final InstructionHandle target = il.append(ICONST_1);
+    // il.append(IRETURN);
+    JExpression result = strip[0];
+    for (int i = 1; i < sCount; i++) {
+      result = result.cor(strip[i]);
     }
+    return result;
   }
 
-  public static void compilePreserveSpace(BranchHandle preserve[], int pCount, InstructionList il) {
-    final InstructionHandle target = il.append(ICONST_0);
-    il.append(IRETURN);
-    for (int i = 0; i < pCount; i++) {
-      preserve[i].setTarget(target);
+  public static JExpression compilePreserveSpace(JExpression preserve[], int pCount) {
+    // final InstructionHandle target = il.append(ICONST_0);
+    // il.append(IRETURN);
+    JExpression result = preserve[0];
+    for (int i = 1; i < pCount; i++) {
+      result = result.cor(preserve[i]);
     }
+    return result;
   }
 
   /*
@@ -324,115 +339,81 @@ final class Whitespace extends TopLevelElement {
   /**
    * Compiles the predicate method
    */
-  private static void compilePredicate(List<WhitespaceRule> rules, int defaultAction, JDefinedClass classGen) {
-//    FIXME
-//
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//    final InstructionList il = new InstructionList();
-//    final XSLTC xsltc = classGen.getParser().getXSLTC();
-//
-//    // private boolean Translet.stripSpace(int type) - cannot be static
-//    final MethodGenerator stripSpace = new MethodGenerator(ACC_PUBLIC | ACC_FINAL,
-//            org.apache.bcel.generic.Type.BOOLEAN, new org.apache.bcel.generic.Type[] { Util.getJCRefType(DOM_INTF_SIG),
-//                    org.apache.bcel.generic.Type.INT, org.apache.bcel.generic.Type.INT }, new String[] { "dom", "node",
-//                    "type" }, "stripSpace", classGen.getClassName(), il, cpg);
-//
-//    classGen.addInterface("de/lyca/xalan/xsltc/StripFilter");
-//
-//    final int paramDom = stripSpace.getLocalIndex("dom");
-//    final int paramCurrent = stripSpace.getLocalIndex("node");
-//    final int paramType = stripSpace.getLocalIndex("type");
-//
-//    final BranchHandle strip[] = new BranchHandle[rules.size()];
-//    final BranchHandle preserve[] = new BranchHandle[rules.size()];
-//    int sCount = 0;
-//    int pCount = 0;
-//
-//    // Traverse all strip/preserve rules
-//    for (int i = 0; i < rules.size(); i++) {
-//      // Get the next rule in the prioritised list
-//      final WhitespaceRule rule = rules.get(i);
-//
-//      // Returns the namespace for a node in the DOM
-//      final int gns = cpg.addInterfaceMethodref(DOM_INTF, "getNamespaceName", "(I)Ljava/lang/String;");
-//
-//      final int strcmp = cpg.addMethodref("java/lang/String", "compareTo", "(Ljava/lang/String;)I");
-//
-//      // Handle elements="ns:*" type rule
-//      if (rule.getStrength() == RULE_NAMESPACE) {
-//        il.append(new ALOAD(paramDom));
-//        il.append(new ILOAD(paramCurrent));
-//        il.append(new INVOKEINTERFACE(gns, 2));
-//        il.append(new PUSH(cpg, rule.getNamespace()));
-//        il.append(new INVOKEVIRTUAL(strcmp));
-//        il.append(ICONST_0);
-//
-//        if (rule.getAction() == STRIP_SPACE) {
-//          strip[sCount++] = il.append(new IF_ICMPEQ(null));
-//        } else {
-//          preserve[pCount++] = il.append(new IF_ICMPEQ(null));
-//        }
-//      }
-//      // Handle elements="ns:el" type rule
-//      else if (rule.getStrength() == RULE_ELEMENT) {
-//        // Create the QName for the element
-//        final Parser parser = classGen.getParser();
-//        QName qname;
-//        if (rule.getNamespace() != Constants.EMPTYSTRING) {
-//          qname = parser.getQName(rule.getNamespace(), null, rule.getElement());
-//        } else {
-//          qname = parser.getQName(rule.getElement());
-//        }
-//
-//        // Register the element.
-//        final int elementType = xsltc.registerElement(qname);
-//        il.append(new ILOAD(paramType));
-//        il.append(new PUSH(cpg, elementType));
-//
-//        // Compare current node type with wanted element type
-//        if (rule.getAction() == STRIP_SPACE) {
-//          strip[sCount++] = il.append(new IF_ICMPEQ(null));
-//        } else {
-//          preserve[pCount++] = il.append(new IF_ICMPEQ(null));
-//        }
-//      }
-//    }
-//
-//    if (defaultAction == STRIP_SPACE) {
-//      compileStripSpace(strip, sCount, il);
-//      compilePreserveSpace(preserve, pCount, il);
-//    } else {
-//      compilePreserveSpace(preserve, pCount, il);
-//      compileStripSpace(strip, sCount, il);
-//    }
-//
-//    classGen.addMethod(stripSpace);
+  private static void compilePredicate(List<WhitespaceRule> rules, int defaultAction, JDefinedClass definedClass,
+      XSLTC xsltc) {
+    JMethod stripSpace = definedClass.method(JMod.PUBLIC | JMod.FINAL, boolean.class, "stripSpace");
+    JVar dom = stripSpace.param(DOM.class, "dom");
+    JVar node = stripSpace.param(int.class, "node");
+    JVar type = stripSpace.param(int.class, "type");
+    definedClass._implements(StripFilter.class);
+
+    final JExpression[] strip = new JExpression[rules.size()];
+    final JExpression[] preserve = new JExpression[rules.size()];
+    int sCount = 0;
+    int pCount = 0;
+
+    // Traverse all strip/preserve rules
+    for (int i = 0; i < rules.size(); i++) {
+      // Get the next rule in the prioritised list
+      final WhitespaceRule rule = rules.get(i);
+
+      // Handle elements="ns:*" type rule
+      if (rule.getStrength() == RULE_NAMESPACE) {
+        // Returns the namespace for a node in the DOM
+        JExpression namespaceRule = JExpr.invoke(dom, "getNamespaceName").arg(node).invoke("compareTo")
+            .arg(rule.getNamespace()).eq(JExpr.lit(0));
+
+        if (rule.getAction() == STRIP_SPACE) {
+          strip[sCount++] = namespaceRule;
+        } else {
+          preserve[pCount++] = namespaceRule;
+        }
+      }
+      // Handle elements="ns:el" type rule
+      else if (rule.getStrength() == RULE_ELEMENT) {
+        // Create the QName for the element
+        final Parser parser = xsltc.getParser();
+        QName qname;
+        if (rule.getNamespace() != Constants.EMPTYSTRING) {
+          qname = parser.getQName(rule.getNamespace(), null, rule.getElement());
+        } else {
+          qname = parser.getQName(rule.getElement());
+        }
+
+        // Register the element.
+        final int elementType = xsltc.registerElement(qname);
+        JExpression elementRule = type.eq(JExpr.lit(elementType));
+
+        // Compare current node type with wanted element type
+        if (rule.getAction() == STRIP_SPACE) {
+          strip[sCount++] = elementRule;
+        } else {
+          preserve[pCount++] = elementRule;
+        }
+      }
+    }
+    JBlock body = stripSpace.body();
+    if (defaultAction == STRIP_SPACE) {
+      JConditional conditional = body._if(compilePreserveSpace(preserve, pCount));
+      conditional._then()._return(JExpr.FALSE);
+      conditional._else()._return(JExpr.TRUE);
+    } else {
+      JConditional conditional = body._if(compileStripSpace(strip, sCount));
+      conditional._then()._return(JExpr.TRUE);
+      conditional._else()._return(JExpr.FALSE);
+    }
   }
 
   /**
    * Compiles the predicate method
    */
   private static void compileDefault(int defaultAction, JDefinedClass definedClass) {
-//    FIXME
-//    final ConstantPoolGen cpg = definedClass.getConstantPool();
-//    final InstructionList il = new InstructionList();
-//
-//    // private boolean Translet.stripSpace(int type) - cannot be static
-//    final MethodGenerator stripSpace = new MethodGenerator(ACC_PUBLIC | ACC_FINAL,
-//            org.apache.bcel.generic.Type.BOOLEAN, new org.apache.bcel.generic.Type[] { Util.getJCRefType(DOM_INTF_SIG),
-//                    org.apache.bcel.generic.Type.INT, org.apache.bcel.generic.Type.INT }, new String[] { "dom", "node",
-//                    "type" }, "stripSpace", definedClass.getClassName(), il, cpg);
-//
-//    definedClass.addInterface("de/lyca/xalan/xsltc/StripFilter");
-//
-//    if (defaultAction == STRIP_SPACE) {
-//      il.append(ICONST_1);
-//    } else {
-//      il.append(ICONST_0);
-//    }
-//    il.append(IRETURN);
-//
-//    definedClass.addMethod(stripSpace);
+    JMethod stripSpace = definedClass.method(JMod.PUBLIC | JMod.FINAL, boolean.class, "stripSpace");
+    stripSpace.param(DOM.class, "dom");
+    stripSpace.param(int.class, "node");
+    stripSpace.param(int.class, "type");
+    stripSpace.body()._return(JExpr.lit(defaultAction == STRIP_SPACE));
+    definedClass._implements(StripFilter.class);
   }
 
   /**
@@ -442,7 +423,7 @@ final class Whitespace extends TopLevelElement {
    * STRIP_SPACE (always strip whitespace text-nodes) - PRESERVE_SPACE (always
    * preserve whitespace text-nodes)
    */
-  public static int translateRules(List<WhitespaceRule> rules, JDefinedClass definedClass) {
+  public static int translateRules(List<WhitespaceRule> rules, JDefinedClass definedClass, XSLTC xsltc) {
     // Get the core rules in prioritized order
     final int defaultAction = prioritizeRules(rules);
     // The rules list may be empty after prioritising
@@ -451,7 +432,7 @@ final class Whitespace extends TopLevelElement {
       return defaultAction;
     }
     // Now - create a predicate method and sequence through rules...
-    compilePredicate(rules, defaultAction, definedClass);
+    compilePredicate(rules, defaultAction, definedClass, xsltc);
     // Return with the translets required action (
     return USE_PREDICATE;
   }

@@ -38,8 +38,14 @@ import org.apache.bcel.generic.LocalVariableGen;
 import org.apache.bcel.generic.NEW;
 import org.apache.bcel.generic.PUSH;
 
+import com.sun.codemodel.JBlock;
+import com.sun.codemodel.JClass;
+import com.sun.codemodel.JCodeModel;
 import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JExpr;
+import com.sun.codemodel.JInvocation;
 import com.sun.codemodel.JMethod;
+import com.sun.codemodel.JVar;
 
 import de.lyca.xalan.xsltc.DOM;
 import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
@@ -201,6 +207,119 @@ final class Step extends RelativeLocationPath {
 
     // Return either Type.Node or Type.NodeSet
     return _type;
+  }
+
+  public JInvocation compile(JDefinedClass definedClass, JMethod method) {
+    final JVar[] params = method.listParams();
+    final JCodeModel owner = definedClass.owner();
+    final JClass axis = owner.ref(Axis.class);
+    JInvocation invocation = null;
+
+    if (hasPredicates()) {
+//      translatePredicates(classGen, methodGen);
+    } else {
+      int star = 0;
+      String name = null;
+      final XSLTC xsltc = getParser().getXSLTC();
+
+      if (_nodeType >= DTM.NTYPES) {
+        final List<String> ni = xsltc.getNamesIndex();
+
+        name = ni.get(_nodeType - DTM.NTYPES);
+        star = name.lastIndexOf('*');
+      }
+
+      // If it is an attribute, but not '@*', '@pre:*' or '@node()',
+      // and has no parent
+      if (_axis == Axis.ATTRIBUTE && _nodeType != NodeTest.ATTRIBUTE && _nodeType != NodeTest.ANODE
+          && !hasParentPattern() && star == 0) {
+        return JExpr.invoke(params[0], "getTypedAxisIterator").arg(axis.staticRef(Axis.ATTRIBUTE.name()))
+            .arg(JExpr.lit(_nodeType));
+      }
+
+      final SyntaxTreeNode parent = getParent();
+      // Special case for '.'
+      if (isAbbreviatedDot()) {
+        if (_type == Type.Node) {
+          // Put context node on stack if using Type.Node
+          // il.append(methodGen.loadContextNode());
+        } else {
+          if (parent instanceof ParentLocationPath) {
+            // Wrap the context node in a singleton iterator if not.
+//            final int init = cpg.addMethodref(SINGLETON_ITERATOR, "<init>", "(" + NODE_SIG + ")V");
+//            il.append(new NEW(cpg.addClass(SINGLETON_ITERATOR)));
+//            il.append(DUP);
+//            il.append(methodGen.loadContextNode());
+//            il.append(new INVOKESPECIAL(init));
+          } else {
+            // DOM.getAxisIterator(int axis);
+//            final int git = cpg.addInterfaceMethodref(DOM_INTF, "getAxisIterator", "(Lde/lyca/xml/dtm/Axis;)"
+//                + NODE_ITERATOR_SIG);
+//            il.append(methodGen.loadDOM());
+//            il.append(factory.createFieldAccess("de.lyca.xml.dtm.Axis", _axis.name(), Type.Axis.toJCType(),
+//                org.apache.bcel.Constants.GETSTATIC));
+//            il.append(new INVOKEINTERFACE(git, 2));
+          }
+        }
+        return invocation;
+      }
+
+      // Special case for /foo/*/bar
+      if (parent instanceof ParentLocationPath && parent.getParent() instanceof ParentLocationPath) {
+        if (_nodeType == NodeTest.ELEMENT && !_hadPredicates) {
+          _nodeType = NodeTest.ANODE;
+        }
+      }
+
+      // "ELEMENT" or "*" or "@*" or ".." or "@attr" with a parent.
+      switch (_nodeType) {
+        case NodeTest.ATTRIBUTE:
+          _axis = Axis.ATTRIBUTE;
+        case NodeTest.ANODE:
+          // DOM.getAxisIterator(int axis);
+//          final int git = cpg.addInterfaceMethodref(DOM_INTF, "getAxisIterator", "(Lde/lyca/xml/dtm/Axis;)"
+//              + NODE_ITERATOR_SIG);
+//          il.append(methodGen.loadDOM());
+//          il.append(factory.createFieldAccess("de.lyca.xml.dtm.Axis", _axis.name(), Type.Axis.toJCType(),
+//              org.apache.bcel.Constants.GETSTATIC));
+//          il.append(new INVOKEINTERFACE(git, 2));
+          break;
+        default:
+          if (star > 1) {
+            final String namespace;
+            if (_axis == Axis.ATTRIBUTE) {
+              namespace = name.substring(0, star - 2);
+            } else {
+              namespace = name.substring(0, star - 1);
+            }
+  
+            final int nsType = xsltc.registerNamespace(namespace);
+//            final int ns = cpg.addInterfaceMethodref(DOM_INTF, "getNamespaceAxisIterator", "(Lde/lyca/xml/dtm/Axis;I)"
+//                + NODE_ITERATOR_SIG);
+//            il.append(methodGen.loadDOM());
+//            il.append(factory.createFieldAccess("de.lyca.xml.dtm.Axis", _axis.name(), Type.Axis.toJCType(),
+//                org.apache.bcel.Constants.GETSTATIC));
+//            il.append(new PUSH(cpg, nsType));
+//            il.append(new INVOKEINTERFACE(ns, 3));
+            break;
+          }
+        case NodeTest.ELEMENT:
+          // DOM.getTypedAxisIterator(int axis, int type);
+          invocation = JExpr.invoke(params[0], "getTypedAxisIterator").arg(axis.staticRef(_axis.name()))
+              .arg(JExpr.lit(_nodeType));
+//          final int ty = cpg.addInterfaceMethodref(DOM_INTF, "getTypedAxisIterator", "(Lde/lyca/xml/dtm/Axis;I)"
+//              + NODE_ITERATOR_SIG);
+//          // Get the typed iterator we're after
+//          il.append(methodGen.loadDOM());
+//          il.append(factory.createFieldAccess("de.lyca.xml.dtm.Axis", _axis.name(), Type.Axis.toJCType(),
+//              org.apache.bcel.Constants.GETSTATIC));
+//          il.append(new PUSH(cpg, _nodeType));
+//          il.append(new INVOKEINTERFACE(ty, 3));
+  
+          break;
+      }
+    }
+    return invocation;
   }
 
   /**

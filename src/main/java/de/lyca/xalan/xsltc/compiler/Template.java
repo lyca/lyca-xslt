@@ -27,12 +27,19 @@ import java.util.List;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.INVOKEVIRTUAL;
 import org.apache.bcel.generic.InstructionList;
+import org.xml.sax.SAXException;
 
 import com.sun.codemodel.JBlock;
+import com.sun.codemodel.JCatchBlock;
+import com.sun.codemodel.JClass;
 import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JExpr;
+import com.sun.codemodel.JInvocation;
 import com.sun.codemodel.JMethod;
+import com.sun.codemodel.JTryBlock;
 import com.sun.codemodel.JVar;
 
+import de.lyca.xalan.xsltc.TransletException;
 import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
@@ -298,6 +305,21 @@ public final class Template extends TopLevelElement implements Comparable<Templa
     return typeCheckContents(stable);
   }
 
+  /**
+   * Translate this node into a fresh instruction list. The original instruction
+   * list is saved and restored.
+   */
+  @Override
+  public JInvocation compile(JDefinedClass definedClass, JMethod method) {
+    final String methodName = Util.escape(_name.toString());
+    JVar[] params = method.listParams();
+    JInvocation template = new JBlock(false, false).invoke(methodName);
+    for (JVar var : params) {
+      template.arg(var);
+    }
+    return template.arg(JExpr.direct("current"));
+  }
+
   @Override
   public void translate(JDefinedClass definedClass, JMethod method) {
     final JBlock block = method.body();
@@ -333,6 +355,7 @@ public final class Template extends TopLevelElement implements Comparable<Templa
     }
 
     translateContents(definedClass, method);
+
     // InstructionList il = null;
     // il.setPositions(true);
   }

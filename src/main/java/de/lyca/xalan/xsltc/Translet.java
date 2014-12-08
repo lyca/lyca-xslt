@@ -32,7 +32,7 @@ public interface Translet {
 
   public void transform(DOM document, SerializationHandler handler) throws TransletException;
 
-  public void transform(DOM document, SerializationHandler[] handlers) throws TransletException;
+  //public void transform(DOM document, SerializationHandler[] handlers) throws TransletException;
 
   public void transform(DOM document, DTMAxisIterator iterator, SerializationHandler handler) throws TransletException;
 

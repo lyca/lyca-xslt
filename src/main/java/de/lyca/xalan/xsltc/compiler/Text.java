@@ -21,17 +21,11 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.GETSTATIC;
-import org.apache.bcel.generic.INVOKEINTERFACE;
-import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.PUSH;
-
 import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JExpr;
 import com.sun.codemodel.JMethod;
+import com.sun.codemodel.JVar;
 
-import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
-import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 import de.lyca.xalan.xsltc.compiler.util.Util;
 
 /**
@@ -168,50 +162,35 @@ final class Text extends Instruction {
 
   @Override
   public void translate(JDefinedClass definedClass, JMethod method) {
-//    FIXME
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//    final InstructionList il = methodGen.getInstructionList();
-//
-//    if (!_ignore) {
-//      // Turn off character escaping if so is wanted.
-//      final int esc = cpg.addInterfaceMethodref(OUTPUT_HANDLER, "setEscaping", "(Z)Z");
-//      if (!_escaping) {
-//        il.append(methodGen.loadHandler());
-//        il.append(new PUSH(cpg, false));
-//        il.append(new INVOKEINTERFACE(esc, 2));
-//      }
-//
-//      il.append(methodGen.loadHandler());
-//
-//      // Call characters(String) or characters(char[],int,int), as
-//      // appropriate.
-//      if (!canLoadAsArrayOffsetLength()) {
-//        final int characters = cpg.addInterfaceMethodref(OUTPUT_HANDLER, "characters", "(" + STRING_SIG + ")V");
-//        il.append(new PUSH(cpg, _text));
-//        il.append(new INVOKEINTERFACE(characters, 2));
-//      } else {
-//        final int characters = cpg.addInterfaceMethodref(OUTPUT_HANDLER, "characters", "([CII)V");
-//        loadAsArrayOffsetLength(classGen, methodGen);
-//        il.append(new INVOKEINTERFACE(characters, 4));
-//      }
-//
-//      // Restore character escaping setting to whatever it was.
-//      // Note: setEscaping(bool) returns the original (old) value
-//      if (!_escaping) {
-//        il.append(methodGen.loadHandler());
-//        il.append(SWAP);
-//        il.append(new INVOKEINTERFACE(esc, 2));
-//        il.append(POP);
-//      }
-//    }
-//    translateContents(classGen, methodGen);
+    if (!_ignore) {
+      JVar handler =  method.listParams()[2];
+      // Turn off character escaping if so is wanted.
+      if (!_escaping) {
+        method.body().add(handler.invoke("setEscaping").arg(JExpr.FALSE));
+      }
+
+      // Call characters(String) or characters(char[],int,int), as
+      // appropriate.
+      if (!canLoadAsArrayOffsetLength()) {
+        method.body().add(handler.invoke("characters").arg(_text));
+      } else {
+        loadAsArrayOffsetLength(definedClass, method);
+      }
+
+      // Restore character escaping setting to whatever it was.
+      // Note: setEscaping(bool) returns the original (old) value
+      if (!_escaping) {
+        method.body().add(handler.invoke("setEscaping").arg(JExpr.TRUE));
+      }
+    }
+    translateContents(definedClass, method);
   }
 
   /**
    * Check whether this Text node can be stored in a char[] in the translet.
    * Calling this is precondition to calling loadAsArrayOffsetLength.
    * 
-   * @see #loadAsArrayOffsetLength(ClassGenerator,MethodGenerator)
+   * @see #loadAsArrayOffsetLength(JDefinedClass,JMethod)
    * @return true if this Text node can be
    */
   public boolean canLoadAsArrayOffsetLength() {
@@ -222,7 +201,6 @@ final class Text extends Instruction {
     // required to represent a Java string as UTF-8 cannot be greater
     // than three times the number of char's in the string, hence the
     // check for 21845.
-
     return _text.length() <= 21845;
   }
 
@@ -237,18 +215,15 @@ final class Text extends Instruction {
    * @see #canLoadArrayOffsetLength()
    */
   public void loadAsArrayOffsetLength(JDefinedClass definedClass, JMethod method) {
-//    FIXME
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//    final InstructionList il = methodGen.getInstructionList();
-//    final XSLTC xsltc = classGen.getParser().getXSLTC();
-//
-//    // The XSLTC object keeps track of character data
-//    // that is to be stored in char arrays.
-//    final int offset = xsltc.addCharacterData(_text);
-//    final String charDataFieldName = STATIC_CHAR_DATA_FIELD + (xsltc.getCharacterDataCount() - 1);
-//
-//    il.append(new GETSTATIC(cpg.addFieldref(xsltc.getClassName(), charDataFieldName, STATIC_CHAR_DATA_FIELD_SIG)));
-//    il.append(new PUSH(cpg, offset));
-//    il.append(new PUSH(cpg, _text.length()));
+    final XSLTC xsltc = getParser().getXSLTC();
+    // The XSLTC object keeps track of character data
+    // that is to be stored in char arrays.
+    final int offset = xsltc.addCharacterData(_text);
+    final String charDataFieldName = STATIC_CHAR_DATA_FIELD + (xsltc.getCharacterDataCount() - 1);
+    JVar handler = method.listParams()[2];
+    method.body().add(
+        handler.invoke("characters").arg(definedClass.staticRef(charDataFieldName)).arg(JExpr.lit(offset))
+            .arg(JExpr.lit(_text.length())));
   }
+
 }

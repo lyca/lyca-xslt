@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -390,7 +391,7 @@ public final class XSLTC {
 
         // Class synchronization is needed for BCEL
         synchronized (getClass()) {
-          _stylesheet.translate();
+          _stylesheet.generate();
         }
       }
     } catch (final Exception e) {
@@ -604,6 +605,14 @@ public final class XSLTC {
   }
 
   /**
+   * Convert for Java source name of local system file name. (Replace '.' with
+   * '/' on UNIX and replace '.' by '\' on Windows/DOS.)
+   */
+  private String sourceFileName(final String className) {
+    return className.replace('.', File.separatorChar) + ".java";
+  }
+
+  /**
    * Generate an output File object to send the translet to
    */
   private File getOutputFile(String className) {
@@ -611,6 +620,16 @@ public final class XSLTC {
       return new File(_destDir, classFileName(className));
     else
       return new File(classFileName(className));
+  }
+
+  /**
+   * Generate an output File object to send the translet to
+   */
+  private File getInputFile(String className) {
+    if (_destDir != null)
+      return new File(_destDir, sourceFileName(className));
+    else
+      return new File(sourceFileName(className));
   }
 
   /**
@@ -882,9 +901,13 @@ public final class XSLTC {
         case BYTEARRAY_AND_FILE_OUTPUT:
         case BYTEARRAY_AND_JAR_OUTPUT:
         case CLASSLOADER_OUTPUT:
+          final File inFile = getInputFile(definedClass.fullName());
+          final Path parentDir = inFile.toPath().getParent();
+          Files.createDirectories(parentDir);
+          jCodeModel.build(parentDir.toFile());
           JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
           StandardJavaFileManager fileManager = compiler.getStandardFileManager(null, null, null);
-          Iterable<? extends JavaFileObject> fileObjects = fileManager.getJavaFileObjects(getOutputFile(definedClass.fullName()));
+          Iterable<? extends JavaFileObject> fileObjects = fileManager.getJavaFileObjects(inFile);
           CompilationTask task = compiler.getTask(null, fileManager, null, null, null, fileObjects);
           Boolean result = task.call();
           if(result == true){
@@ -893,7 +916,7 @@ public final class XSLTC {
           _classes.add(Files.readAllBytes(Paths.get(getOutputFile(definedClass.fullName()).toURI())));
 
           if (_outputType == BYTEARRAY_AND_FILE_OUTPUT) {
-            jCodeModel.build(getOutputFile(definedClass.fullName()));
+            //jCodeModel.build(getOutputFile(definedClass.fullName()));
           } else if (_outputType == BYTEARRAY_AND_JAR_OUTPUT) {
             //_bcelClasses.add(jCodeModel);
           }

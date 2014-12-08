@@ -24,20 +24,16 @@ package de.lyca.xalan.xsltc.compiler;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.INVOKESTATIC;
-import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.PUSH;
-
+import com.sun.codemodel.JClass;
 import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JExpr;
 import com.sun.codemodel.JMethod;
 
-import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
-import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
 import de.lyca.xalan.xsltc.compiler.util.Util;
+import de.lyca.xalan.xsltc.runtime.BasisLibrary;
 
 /**
  * @author Morten Jorgensen
@@ -49,7 +45,7 @@ final class UnsupportedElement extends SyntaxTreeNode {
   private boolean _isExtension = false;
 
   /**
-   * Basic consutrcor - stores element uri/prefix/localname
+   * Basic constructor - stores element uri/prefix/localname
    */
   public UnsupportedElement(String uri, String prefix, String local, boolean isExtension) {
     super(uri, prefix, local);
@@ -129,28 +125,23 @@ final class UnsupportedElement extends SyntaxTreeNode {
    */
   @Override
   public void translate(JDefinedClass definedClass, JMethod method) {
-//    FIXME
-//    if (_fallbacks != null) {
-//      final int count = _fallbacks.size();
-//      for (int i = 0; i < count; i++) {
-//        final Fallback fallback = _fallbacks.get(i);
-//        fallback.translate(classGen, methodGen);
-//      }
-//    }
-//    // We only go into the else block in forward-compatibility mode, when
-//    // the unsupported element has no fallback.
-//    else {
-//      // If the unsupported element does not have any fallback child, then
-//      // at runtime, a runtime error should be raised when the unsupported
-//      // element is instantiated. Otherwise, no error is thrown.
-//      final ConstantPoolGen cpg = classGen.getConstantPool();
-//      final InstructionList il = methodGen.getInstructionList();
-//
-//      final int unsupportedElem = cpg.addMethodref(BASIS_LIBRARY_CLASS, "unsupported_ElementF", "(" + STRING_SIG
-//              + "Z)V");
-//      il.append(new PUSH(cpg, getQName().toString()));
-//      il.append(new PUSH(cpg, _isExtension));
-//      il.append(new INVOKESTATIC(unsupportedElem));
-//    }
+    if (_fallbacks != null) {
+      final int count = _fallbacks.size();
+      for (int i = 0; i < count; i++) {
+        final Fallback fallback = _fallbacks.get(i);
+        fallback.translate(definedClass, method);
+      }
+    }
+    // We only go into the else block in forward-compatibility mode, when
+    // the unsupported element has no fallback.
+    else {
+      // If the unsupported element does not have any fallback child, then
+      // at runtime, a runtime error should be raised when the unsupported
+      // element is instantiated. Otherwise, no error is thrown.
+      JClass basisLibrary = definedClass.owner().ref(BasisLibrary.class);
+      method.body().add(
+          basisLibrary.staticInvoke("unsupported_ElementF").arg(getQName().toString()).arg(JExpr.lit(_isExtension)));
+    }
   }
+
 }

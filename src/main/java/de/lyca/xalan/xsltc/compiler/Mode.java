@@ -43,13 +43,18 @@ import org.apache.bcel.generic.LocalVariableGen;
 import org.apache.bcel.generic.SWITCH;
 import org.apache.bcel.generic.TargetLostException;
 import org.apache.bcel.util.InstructionFinder;
+import org.xml.sax.SAXException;
 
 import com.sun.codemodel.JBlock;
+import com.sun.codemodel.JCase;
 import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JExpr;
 import com.sun.codemodel.JExpression;
+import com.sun.codemodel.JInvocation;
 import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JMod;
+import com.sun.codemodel.JStatement;
+import com.sun.codemodel.JSwitch;
 import com.sun.codemodel.JVar;
 import com.sun.codemodel.JWhileLoop;
 
@@ -135,7 +140,7 @@ final class Mode implements Constants {
   /**
    * A mapping between templates and test sequences.
    */
-  private Map<Template, Mode> _neededTemplates = new HashMap<>();
+  private Map<Template, TestSeq> _neededTemplates = new HashMap<>();
 
   /**
    * A mapping between named templates and Mode objects.
@@ -143,14 +148,9 @@ final class Mode implements Constants {
   private Map<Template, Mode> _namedTemplates = new HashMap<>();
 
   /**
-   * A mapping between templates and instruction handles.
+   * A mapping between templates and statements.
    */
-  private Map<Template, InstructionHandle> _templateIHs = new HashMap<>();
-
-  /**
-   * A mapping between templates and instruction lists.
-   */
-  private Map<Template, InstructionList> _templateILs = new HashMap<>();
+  private Map<Template, JInvocation> _templateStatement = new HashMap<>();
 
   /**
    * A reference to the pattern matching the root node.
@@ -500,7 +500,7 @@ final class Mode implements Constants {
 
     if (_rootPattern != null) {
       // doesn't matter what is 'put', only key matters
-      _neededTemplates.put(_rootPattern.getTemplate(), this);
+      _neededTemplates.put(_rootPattern.getTemplate(), TestSeq.EMPTY);
     }
   }
 
@@ -513,7 +513,7 @@ final class Mode implements Constants {
       numParams = parameters.size();
     }
 
-    JMethod method = definedClass.method(JMod.PUBLIC, Void.class, methodName);
+    JMethod method = definedClass.method(JMod.PUBLIC, void.class, methodName)._throws(SAXException.class);
     // Set the parameters.
     method.param(DOM.class, DOCUMENT_PNAME);
     method.param(DTMAxisIterator.class, ITERATOR_PNAME);
@@ -528,43 +528,42 @@ final class Mode implements Constants {
     template.translate(definedClass, method);
   }
 
-  private void compileTemplates(JDefinedClass definedClass, JMethod method, InstructionHandle next) {
+  private void compileTemplates(JDefinedClass definedClass, JMethod method) {
     for (final Template template : _namedTemplates.keySet()) {
       compileNamedTemplate(template, definedClass);
     }
 
-    // FIXME
-//    for (final Template template : _neededTemplates.keySet()) {
-//      if (template.hasContents()) {
-//        // !!! TODO templates both named and matched
-//        final InstructionList til = template.compile(definedClass, method);
-//        til.append(new GOTO_W(next));
-//        _templateILs.put(template, til);
-//        _templateIHs.put(template, til.getStart());
-//      } else {
-//        // empty template
-//        _templateIHs.put(template, next);
-//      }
-//    }
-  }
-
-  private void appendTemplateCode(InstructionList body) {
     for (final Template template : _neededTemplates.keySet()) {
-      final InstructionList iList = _templateILs.get(template);
-      if (iList != null) {
-        body.append(iList);
+      if (template.hasContents()) {
+        // !!! TODO templates both named and matched
+        final JInvocation statement = template.compile(definedClass, method);
+        _templateStatement.put(template, statement);
+      } else {
+        // empty template
+        _templateStatement.put(template, null);
       }
     }
   }
 
-  private void appendTestSequences(InstructionList body) {
+  private void appendTemplateCode(JSwitch test) {
+    for (final Template template : _neededTemplates.keySet()) {
+      final JInvocation invocation = _templateStatement.get(template);
+      if (invocation == null) {
+      } else {
+        // FIXME
+        // test._case(block);
+      }
+    }
+  }
+
+  private void appendTestSequences(JSwitch test) {
     final int n = _testSeq.length;
     for (int i = 0; i < n; i++) {
       final TestSeq testSeq = _testSeq[i];
       if (testSeq != null) {
-        final InstructionList il = testSeq.getInstructionList();
+        final JStatement il = testSeq.getInstructionList();
         if (il != null) {
-          body.append(il);
+          test._case((JExpression) il);
           // else trivial TestSeq
         }
       }
@@ -584,48 +583,25 @@ final class Mode implements Constants {
   /**
    * Compiles the default handling for DOM elements: traverse all children
    */
-  private InstructionList compileDefaultRecursion(JDefinedClass definedClass, JMethod method,
-          InstructionHandle next) {
-            return null;
- // FIXME
-    final ConstantPoolGen cpg = classGen.getConstantPool();
-    final InstructionList il = new InstructionList();
-    final String applyTemplatesSig = classGen.getApplyTemplatesSig();
-    final int git = cpg.addInterfaceMethodref(DOM_INTF, GET_CHILDREN, GET_CHILDREN_SIG);
-    final int applyTemplates = cpg.addMethodref(getClassName(), functionName(), applyTemplatesSig);
-    il.append(classGen.loadTranslet());
-    il.append(methodGen.loadDOM());
-
-    il.append(methodGen.loadDOM());
-    il.append(new ILOAD(_currentIndex));
-    il.append(new INVOKEINTERFACE(git, 2));
-    il.append(methodGen.loadHandler());
-    il.append(new INVOKEVIRTUAL(applyTemplates));
-    il.append(new GOTO_W(next));
-    return il;
+  private JInvocation compileDefaultRecursion(JDefinedClass definedClass, JMethod method, JVar current) {
+    JVar document = method.listParams()[0];
+    JVar handler = method.listParams()[2];
+    JInvocation getChildren = document.invoke(GET_CHILDREN).arg(current);
+    return JExpr._this().invoke(method).arg(document).arg(getChildren).arg(handler);
   }
 
   /**
    * Compiles the default action for DOM text nodes and attribute nodes: output
    * the node's text value
    */
-  private InstructionList compileDefaultText(JDefinedClass definedClass, JMethod method, InstructionHandle next) {
-    return null;
- // FIXME
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//    final InstructionList il = new InstructionList();
-//
-//    final int chars = cpg.addInterfaceMethodref(DOM_INTF, CHARACTERS, CHARACTERS_SIG);
-//    il.append(methodGen.loadDOM());
-//    il.append(new ILOAD(_currentIndex));
-//    il.append(methodGen.loadHandler());
-//    il.append(new INVOKEINTERFACE(chars, 3));
-//    il.append(new GOTO_W(next));
-//    return il;
+  private JInvocation compileDefaultText(JDefinedClass definedClass, JMethod method, JVar current) {
+    JVar document = method.listParams()[0];
+    JVar handler = method.listParams()[2];
+    return document.invoke(CHARACTERS).arg(current).arg(handler);
   }
 
-  private InstructionList compileNamespaces(JDefinedClass definedClass, JMethod method, boolean[] isNamespace,
-          boolean[] isAttribute, boolean attrFlag, InstructionHandle defaultTarget) {
+  private JInvocation compileNamespaces(JDefinedClass definedClass, JMethod method, boolean[] isNamespace,
+          boolean[] isAttribute, boolean attrFlag, JStatement defaultTarget) {
  // FIXME
 //    final XSLTC xsltc = classGen.getParser().getXSLTC();
 //    final ConstantPoolGen cpg = classGen.getConstantPool();
@@ -684,14 +660,13 @@ final class Mode implements Constants {
    */
   public void compileApplyTemplates(JDefinedClass definedClass, XSLTC xsltc) {
     // Create the applyTemplates() method
-    JMethod method = definedClass.method(JMod.PUBLIC | JMod.FINAL, Void.class, functionName())._throws(
-        TransletException.class);
+    JMethod applyTemplates = definedClass.method(JMod.PUBLIC | JMod.FINAL, void.class, functionName())._throws(SAXException.class);
 
-    JVar document = method.param(DOM.class, DOCUMENT_PNAME);
-    JVar iterator = method.param(DTMAxisIterator.class, ITERATOR_PNAME);
-    JVar handler = method.param(SerializationHandler.class, TRANSLET_OUTPUT_PNAME);
+    JVar document = applyTemplates.param(DOM.class, DOCUMENT_PNAME);
+    JVar iterator = applyTemplates.param(DTMAxisIterator.class, ITERATOR_PNAME);
+    JVar handler = applyTemplates.param(SerializationHandler.class, TRANSLET_OUTPUT_PNAME);
 
-    final JBlock loop = method.body()._while(JExpr.TRUE).body();
+    final JBlock loop = applyTemplates.body()._while(JExpr.TRUE).body();
 
     // Create a local variable to hold the current node
     JVar current = loop.decl(definedClass.owner().INT, "current");
@@ -705,12 +680,10 @@ final class Mode implements Constants {
     loop._if(current.lt(JExpr.lit(0)))._then()._return(); // applyTemplates() ends here!
 
     // Compile default handling of elements (traverse children)
-    final InstructionList ilRecurse = compileDefaultRecursion(definedClass, method, ihLoop);
-    final InstructionHandle ihRecurse = ilRecurse.getStart();
+    final JInvocation defaultRecursion = compileDefaultRecursion(definedClass, applyTemplates, current);
 
     // Compile default handling of text/attribute nodes (output text)
-    final InstructionList ilText = compileDefaultText(definedClass, method, ihLoop);
-    InstructionHandle ihText = ilText.getStart();
+    final JInvocation defaultText = compileDefaultText(definedClass, applyTemplates, current);
 
     // Distinguish attribute/element/namespace tests for further processing
     List<String> names = xsltc.getNamesIndex();
@@ -729,79 +702,75 @@ final class Mode implements Constants {
     }
 
     // Compile all templates - regardless of pattern type
-    compileTemplates(definedClass, method, ihLoop);
+    compileTemplates(definedClass, applyTemplates);
 
     // Handle template with explicit "*" pattern
-    final TestSeq elemTest = _testSeq[DTM.ELEMENT_NODE];
-    InstructionHandle ihElem = ihRecurse;
-    if (elemTest != null) {
-      ihElem = elemTest.compile(definedClass, method, ihRecurse);
+    final TestSeq elementTest = _testSeq[DTM.ELEMENT_NODE];
+    JInvocation elementInvocation = defaultRecursion;
+    if (elementTest != null) {
+      elementInvocation = elementTest.compile(definedClass, applyTemplates, defaultRecursion);
     }
 
     // Handle template with explicit "@*" pattern
     final TestSeq attrTest = _testSeq[DTM.ATTRIBUTE_NODE];
-    InstructionHandle ihAttr = ihText;
+    JInvocation attrInvocation = defaultText;
     if (attrTest != null) {
-      ihAttr = attrTest.compile(definedClass, method, ihAttr);
+      attrInvocation = attrTest.compile(definedClass, applyTemplates, defaultText);
     }
 
     // Do tests for id() and key() patterns first
-    InstructionList ilKey = null;
-    if (_idxTestSeq != null) {
-      loop.setTarget(_idxTestSeq.compile(definedClass, method, body.getStart()));
-      ilKey = _idxTestSeq.getInstructionList();
-    } else {
-      loop.setTarget(body.getStart());
-    }
+//    InstructionList ilKey = null;
+//    if (_idxTestSeq != null) {
+//      loop.setTarget(_idxTestSeq.compile(definedClass, applyTemplates, body.getStart()));
+//      ilKey = _idxTestSeq.getInstructionList();
+//    } else {
+//      loop.setTarget(body.getStart());
+//    }
 
     // If there is a match on node() we need to replace ihElem
     // and ihText if the priority of node() is higher
-    if (_childNodeTestSeq != null) {
-      // Compare priorities of node() and "*"
-      final double nodePrio = _childNodeTestSeq.getPriority();
-      final int nodePos = _childNodeTestSeq.getPosition();
-      double elemPrio = 0 - Double.MAX_VALUE;
-      int elemPos = Integer.MIN_VALUE;
-
-      if (elemTest != null) {
-        elemPrio = elemTest.getPriority();
-        elemPos = elemTest.getPosition();
-      }
-      if (elemPrio == Double.NaN || elemPrio < nodePrio || elemPrio == nodePrio && elemPos < nodePos) {
-        ihElem = _childNodeTestSeq.compile(definedClass, method, ihLoop);
-      }
-
-      // Compare priorities of node() and text()
-      final TestSeq textTest = _testSeq[DTM.TEXT_NODE];
-      double textPrio = 0 - Double.MAX_VALUE;
-      int textPos = Integer.MIN_VALUE;
-
-      if (textTest != null) {
-        textPrio = textTest.getPriority();
-        textPos = textTest.getPosition();
-      }
-      if (Double.isNaN(textPrio) || textPrio < nodePrio || textPrio == nodePrio && textPos < nodePos) {
-        ihText = _childNodeTestSeq.compile(definedClass, method, ihLoop);
-        _testSeq[DTM.TEXT_NODE] = _childNodeTestSeq;
-      }
-    }
+//    if (_childNodeTestSeq != null) {
+//      // Compare priorities of node() and "*"
+//      final double nodePrio = _childNodeTestSeq.getPriority();
+//      final int nodePos = _childNodeTestSeq.getPosition();
+//      double elemPrio = 0 - Double.MAX_VALUE;
+//      int elemPos = Integer.MIN_VALUE;
+//
+//      if (elementTest != null) {
+//        elemPrio = elementTest.getPriority();
+//        elemPos = elementTest.getPosition();
+//      }
+//      if (elemPrio == Double.NaN || elemPrio < nodePrio || elemPrio == nodePrio && elemPos < nodePos) {
+//        elementInvocation = _childNodeTestSeq.compile(definedClass, applyTemplates, ihLoop);
+//      }
+//
+//      // Compare priorities of node() and text()
+//      final TestSeq textTest = _testSeq[DTM.TEXT_NODE];
+//      double textPrio = 0 - Double.MAX_VALUE;
+//      int textPos = Integer.MIN_VALUE;
+//
+//      if (textTest != null) {
+//        textPrio = textTest.getPriority();
+//        textPos = textTest.getPosition();
+//      }
+//      if (Double.isNaN(textPrio) || textPrio < nodePrio || textPrio == nodePrio && textPos < nodePos) {
+//        ihText = _childNodeTestSeq.compile(definedClass, applyTemplates, ihLoop);
+//        _testSeq[DTM.TEXT_NODE] = _childNodeTestSeq;
+//      }
+//    }
 
     // Handle templates with "ns:*" pattern
-    InstructionHandle elemNamespaceHandle = ihElem;
-    final InstructionList nsElem = compileNamespaces(definedClass, method, isNamespace, isAttribute, false, ihElem);
-    if (nsElem != null) {
-      elemNamespaceHandle = nsElem.getStart();
-    }
+    final JInvocation nsElem = compileNamespaces(definedClass, applyTemplates, isNamespace, isAttribute, false,
+        elementInvocation);
+    JInvocation elemNamespaceHandle = nsElem == null ? elementInvocation : nsElem;
 
     // Handle templates with "ns:@*" pattern
-    InstructionHandle attrNamespaceHandle = ihAttr;
-    final InstructionList nsAttr = compileNamespaces(definedClass, method, isNamespace, isAttribute, true, ihAttr);
-    if (nsAttr != null) {
-      attrNamespaceHandle = nsAttr.getStart();
-    }
+    final JInvocation nsAttr = compileNamespaces(definedClass, applyTemplates, isNamespace, isAttribute, true,
+        attrInvocation);
+    JInvocation attrNamespaceHandle = nsAttr == null ? attrInvocation : nsAttr;
 
     // Handle templates with "ns:elem" or "ns:@attr" pattern
-    final InstructionHandle[] targets = new InstructionHandle[types.length];
+    final JStatement[] targets = new JStatement[types.length];
     for (int i = DTM.NTYPES; i < targets.length; i++) {
       final TestSeq testSeq = _testSeq[i];
       // Jump straight to namespace tests ?
@@ -815,29 +784,29 @@ final class Mode implements Constants {
       // Test first, then jump to namespace tests
       else if (testSeq != null) {
         if (isAttribute[i]) {
-          targets[i] = testSeq.compile(definedClass, method, attrNamespaceHandle);
+          targets[i] = testSeq.compile(definedClass, applyTemplates, attrNamespaceHandle);
         } else {
-          targets[i] = testSeq.compile(definedClass, method, elemNamespaceHandle);
+          targets[i] = testSeq.compile(definedClass, applyTemplates, elemNamespaceHandle);
         }
       } else {
-        targets[i] = ihLoop;
+        targets[i] = null;
       }
     }
 
     // Handle pattern with match on root node - default: traverse children
     targets[DTM.ROOT_NODE] = _rootPattern != null ? getTemplateInstructionHandle(_rootPattern.getTemplate())
-            : ihRecurse;
+        : defaultRecursion;
 
     // Handle pattern with match on root node - default: traverse children
     targets[DTM.DOCUMENT_NODE] = _rootPattern != null ? getTemplateInstructionHandle(_rootPattern.getTemplate())
-            : ihRecurse;
+        : defaultRecursion;
 
     // Handle any pattern with match on text nodes - default: output text
-    targets[DTM.TEXT_NODE] = _testSeq[DTM.TEXT_NODE] != null ? _testSeq[DTM.TEXT_NODE].compile(definedClass, method,
-            ihText) : ihText;
+    targets[DTM.TEXT_NODE] = _testSeq[DTM.TEXT_NODE] != null ? _testSeq[DTM.TEXT_NODE].compile(definedClass,
+        applyTemplates, defaultText) : defaultText;
 
     // This DOM-type is not in use - default: process next node
-    targets[DTM.NAMESPACE_NODE] = ihLoop;
+    targets[DTM.NAMESPACE_NODE] = null;
 
     // Match unknown element in DOM - default: check for namespace match
     targets[DTM.ELEMENT_NODE] = elemNamespaceHandle;
@@ -846,42 +815,42 @@ final class Mode implements Constants {
     targets[DTM.ATTRIBUTE_NODE] = attrNamespaceHandle;
 
     // Match on processing instruction - default: process next node
-    InstructionHandle ihPI = ihLoop;
+    JInvocation ihPI = null;
     if (_childNodeTestSeq != null) {
-      ihPI = ihElem;
+      ihPI = elementInvocation;
     }
     if (_testSeq[DTM.PROCESSING_INSTRUCTION_NODE] != null) {
-      targets[DTM.PROCESSING_INSTRUCTION_NODE] = _testSeq[DTM.PROCESSING_INSTRUCTION_NODE].compile(definedClass, method,
+      targets[DTM.PROCESSING_INSTRUCTION_NODE] = _testSeq[DTM.PROCESSING_INSTRUCTION_NODE].compile(definedClass, applyTemplates,
               ihPI);
     } else {
       targets[DTM.PROCESSING_INSTRUCTION_NODE] = ihPI;
     }
 
     // Match on comments - default: process next node
-    InstructionHandle ihComment = ihLoop;
+    JInvocation ihComment = null;
     if (_childNodeTestSeq != null) {
-      ihComment = ihElem;
+      ihComment = elementInvocation;
     }
     targets[DTM.COMMENT_NODE] = _testSeq[DTM.COMMENT_NODE] != null ? _testSeq[DTM.COMMENT_NODE].compile(definedClass,
-        method, ihComment) : ihComment;
+        applyTemplates, ihComment) : ihComment;
 
     // This DOM-type is not in use - default: process next node
-    targets[DTM.CDATA_SECTION_NODE] = ihLoop;
+    targets[DTM.CDATA_SECTION_NODE] = null;
 
     // This DOM-type is not in use - default: process next node
-    targets[DTM.DOCUMENT_FRAGMENT_NODE] = ihLoop;
+    targets[DTM.DOCUMENT_FRAGMENT_NODE] = null;
 
     // This DOM-type is not in use - default: process next node
-    targets[DTM.DOCUMENT_TYPE_NODE] = ihLoop;
+    targets[DTM.DOCUMENT_TYPE_NODE] = null;
 
     // This DOM-type is not in use - default: process next node
-    targets[DTM.ENTITY_NODE] = ihLoop;
+    targets[DTM.ENTITY_NODE] = null;
 
     // This DOM-type is not in use - default: process next node
-    targets[DTM.ENTITY_REFERENCE_NODE] = ihLoop;
+    targets[DTM.ENTITY_REFERENCE_NODE] = null;
 
     // This DOM-type is not in use - default: process next node
-    targets[DTM.NOTATION_NODE] = ihLoop;
+    targets[DTM.NOTATION_NODE] = null;
 
     // Now compile test sequences for various match patterns:
     for (int i = DTM.NTYPES; i < targets.length; i++) {
@@ -897,49 +866,50 @@ final class Mode implements Constants {
       // Match on node type
       else {
         if (isAttribute[i]) {
-          targets[i] = testSeq.compile(definedClass, method, attrNamespaceHandle);
+          targets[i] = testSeq.compile(definedClass, applyTemplates, attrNamespaceHandle);
         } else {
-          targets[i] = testSeq.compile(definedClass, method, elemNamespaceHandle);
+          targets[i] = testSeq.compile(definedClass, applyTemplates, elemNamespaceHandle);
         }
       }
     }
 
-    if (ilKey != null) {
-      body.insert(ilKey);
-    }
+//    if (ilKey != null) {
+//      body.insert(ilKey);
+//    }
 
     // Append first code in applyTemplates() - get type of current node
-    final int getType = cpg.addInterfaceMethodref(DOM_INTF, "getExpandedTypeID", "(I)I");
-    body.append(method.loadDOM());
-    body.append(new ILOAD(_currentIndex));
-    body.append(new INVOKEINTERFACE(getType, 2));
-
+    JInvocation getExpandedTypeID = document.invoke("getExpandedTypeID").arg(current);
+    
     // Append switch() statement - main dispatch loop in applyTemplates()
-    body.append(new SWITCH(types, targets, ihLoop));
+    JSwitch test = loop._switch(getExpandedTypeID);
 
     // Append all the "case:" statements
-    appendTestSequences(body);
+    for (int i = 0; i < targets.length; i++) {
+      JStatement jStatement = targets[i];
+      if (jStatement != null) test._case(JExpr.lit(i)).body().add(jStatement)._break();
+    }
+    // appendTestSequences(test);
     // Append the actual template code
-    appendTemplateCode(body);
+    // appendTemplateCode(test);
 
     // Append NS:* node tests (if any)
-    if (nsElem != null) {
-      body.append(nsElem);
-    }
+//    if (nsElem != null) {
+//      body.append(nsElem);
+//    }
     // Append NS:@* node tests (if any)
-    if (nsAttr != null) {
-      body.append(nsAttr);
-    }
+//    if (nsAttr != null) {
+//      body.append(nsAttr);
+//    }
 
     // Append default action for element and root nodes
-    body.append(ilRecurse);
+//    body.append(ilRecurse);
     // Append default action for text and attribute nodes
-    body.append(ilText);
+//    body.append(ilText);
 
     // putting together constituent instruction lists
-    mainIL.append(body);
+//    mainIL.append(body);
     // fall through to ilLoop
-    mainIL.append(ilLoop);
+//    mainIL.append(ilLoop);
 
     // Compile method(s) for <xsl:apply-imports/> for this mode
     if (_importLevels != null) {
@@ -949,19 +919,17 @@ final class Mode implements Constants {
     }
   }
 
-  private void compileTemplateCalls(JDefinedClass definedClass, JMethod method, InstructionHandle next,
+  private void compileTemplateCalls(JDefinedClass definedClass, JMethod method, JInvocation next,
           int min, int max) {
     for (final Template template : _neededTemplates.keySet()) {
       final int prec = template.getImportPrecedence();
       if (prec >= min && prec < max) {
         if (template.hasContents()) {
-          final InstructionList til = template.compile(definedClass, method);
-          til.append(new GOTO_W(next));
-          _templateILs.put(template, til);
-          _templateIHs.put(template, til.getStart());
+          final JInvocation til = template.compile(definedClass, method);
+          _templateStatement.put(template, til);
         } else {
           // empty template
-          _templateIHs.put(template, next);
+          _templateStatement.put(template, next);
         }
       }
     }
@@ -973,8 +941,7 @@ final class Mode implements Constants {
     // Clear some datastructures
     _namedTemplates = new HashMap<>();
     _neededTemplates = new HashMap<>();
-    _templateIHs = new HashMap<>();
-    _templateILs = new HashMap<>();
+    _templateStatement = new HashMap<>();
     _patternGroups = new ArrayList[32];
     _rootPattern = null;
 
@@ -994,7 +961,7 @@ final class Mode implements Constants {
     processPatterns();
 
     // Create the applyTemplates() method
-    JMethod applyTemplates = definedClass.method(JMod.PUBLIC | JMod.FINAL, Void.class, functionName() + '_' + max)._throws(TransletException.class);
+    JMethod applyTemplates = definedClass.method(JMod.PUBLIC | JMod.FINAL, void.class, functionName() + '_' + max)._throws(TransletException.class);
     applyTemplates.param(DOM.class, DOCUMENT_PNAME);
     applyTemplates.param(DTMAxisIterator.class, ITERATOR_PNAME);
     applyTemplates.param(SerializationHandler.class, TRANSLET_OUTPUT_PNAME);
@@ -1004,267 +971,267 @@ final class Mode implements Constants {
 
     // Create the local variable to hold the current node
     
-    final LocalVariableGen current;
-    current = methodGen.addLocalVariable2("current", org.apache.bcel.generic.Type.INT, null);
-    _currentIndex = current.getIndex();
-
-    mainIL.append(new ILOAD(methodGen.getLocalIndex(NODE_PNAME)));
-    current.setStart(mainIL.append(new ISTORE(_currentIndex)));
-
-    // Create the "body" instruction list that will eventually hold the
-    // code for the entire method (other ILs will be appended).
-    final InstructionList body = new InstructionList();
-    body.append(NOP);
-
-    // Create an instruction list that contains the default next-node
-    // iteration
-    final InstructionList ilLoop = new InstructionList();
-    ilLoop.append(RETURN);
-    final InstructionHandle ihLoop = ilLoop.getStart();
-
-    // Compile default handling of elements (traverse children)
-    final InstructionList ilRecurse = compileDefaultRecursion(definedClass, methodGen, ihLoop);
-    final InstructionHandle ihRecurse = ilRecurse.getStart();
-
-    // Compile default handling of text/attribute nodes (output text)
-    final InstructionList ilText = compileDefaultText(definedClass, methodGen, ihLoop);
-    InstructionHandle ihText = ilText.getStart();
-
-    // Distinguish attribute/element/namespace tests for further processing
-    final int[] types = new int[DTM.NTYPES + names.size()];
-    for (int i = 0; i < types.length; i++) {
-      types[i] = i;
-    }
-
-    final boolean[] isAttribute = new boolean[types.length];
-    final boolean[] isNamespace = new boolean[types.length];
-    for (int i = 0; i < names.size(); i++) {
-      final String name = names.get(i);
-      isAttribute[i + DTM.NTYPES] = isAttributeName(name);
-      isNamespace[i + DTM.NTYPES] = isNamespaceName(name);
-    }
-
-    // Compile all templates - regardless of pattern type
-    compileTemplateCalls(definedClass, methodGen, ihLoop, min, max);
-
-    // Handle template with explicit "*" pattern
-    final TestSeq elemTest = _testSeq[DTM.ELEMENT_NODE];
-    InstructionHandle ihElem = ihRecurse;
-    if (elemTest != null) {
-      ihElem = elemTest.compile(definedClass, methodGen, ihLoop);
-    }
-
-    // Handle template with explicit "@*" pattern
-    final TestSeq attrTest = _testSeq[DTM.ATTRIBUTE_NODE];
-    InstructionHandle ihAttr = ihLoop;
-    if (attrTest != null) {
-      ihAttr = attrTest.compile(definedClass, methodGen, ihAttr);
-    }
-
-    // Do tests for id() and key() patterns first
-    InstructionList ilKey = null;
-    if (_idxTestSeq != null) {
-      ilKey = _idxTestSeq.getInstructionList();
-    }
-
-    // If there is a match on node() we need to replace ihElem
-    // and ihText if the priority of node() is higher
-    if (_childNodeTestSeq != null) {
-      // Compare priorities of node() and "*"
-      final double nodePrio = _childNodeTestSeq.getPriority();
-      final int nodePos = _childNodeTestSeq.getPosition();
-      double elemPrio = 0 - Double.MAX_VALUE;
-      int elemPos = Integer.MIN_VALUE;
-
-      if (elemTest != null) {
-        elemPrio = elemTest.getPriority();
-        elemPos = elemTest.getPosition();
-      }
-
-      if (elemPrio == Double.NaN || elemPrio < nodePrio || elemPrio == nodePrio && elemPos < nodePos) {
-        ihElem = _childNodeTestSeq.compile(definedClass, methodGen, ihLoop);
-      }
-
-      // Compare priorities of node() and text()
-      final TestSeq textTest = _testSeq[DTM.TEXT_NODE];
-      double textPrio = 0 - Double.MAX_VALUE;
-      int textPos = Integer.MIN_VALUE;
-
-      if (textTest != null) {
-        textPrio = textTest.getPriority();
-        textPos = textTest.getPosition();
-      }
-
-      if (Double.isNaN(textPrio) || textPrio < nodePrio || textPrio == nodePrio && textPos < nodePos) {
-        ihText = _childNodeTestSeq.compile(definedClass, methodGen, ihLoop);
-        _testSeq[DTM.TEXT_NODE] = _childNodeTestSeq;
-      }
-    }
-
-    // Handle templates with "ns:*" pattern
-    InstructionHandle elemNamespaceHandle = ihElem;
-    final InstructionList nsElem = compileNamespaces(definedClass, methodGen, isNamespace, isAttribute, false, ihElem);
-    if (nsElem != null) {
-      elemNamespaceHandle = nsElem.getStart();
-    }
-
-    // Handle templates with "ns:@*" pattern
-    final InstructionList nsAttr = compileNamespaces(definedClass, methodGen, isNamespace, isAttribute, true, ihAttr);
-    InstructionHandle attrNamespaceHandle = ihAttr;
-    if (nsAttr != null) {
-      attrNamespaceHandle = nsAttr.getStart();
-    }
-
-    // Handle templates with "ns:elem" or "ns:@attr" pattern
-    final InstructionHandle[] targets = new InstructionHandle[types.length];
-    for (int i = DTM.NTYPES; i < targets.length; i++) {
-      final TestSeq testSeq = _testSeq[i];
-      // Jump straight to namespace tests ?
-      if (isNamespace[i]) {
-        if (isAttribute[i]) {
-          targets[i] = attrNamespaceHandle;
-        } else {
-          targets[i] = elemNamespaceHandle;
-        }
-      }
-      // Test first, then jump to namespace tests
-      else if (testSeq != null) {
-        if (isAttribute[i]) {
-          targets[i] = testSeq.compile(definedClass, methodGen, attrNamespaceHandle);
-        } else {
-          targets[i] = testSeq.compile(definedClass, methodGen, elemNamespaceHandle);
-        }
-      } else {
-        targets[i] = ihLoop;
-      }
-    }
-
-    // Handle pattern with match on root node - default: traverse children
-    targets[DTM.ROOT_NODE] = _rootPattern != null ? getTemplateInstructionHandle(_rootPattern.getTemplate())
-            : ihRecurse;
-    // Handle pattern with match on root node - default: traverse children
-    targets[DTM.DOCUMENT_NODE] = _rootPattern != null ? getTemplateInstructionHandle(_rootPattern.getTemplate())
-            : ihRecurse; // %HZ%: Was ihLoop in XSLTC_DTM branch
-
-    // Handle any pattern with match on text nodes - default: loop
-    targets[DTM.TEXT_NODE] = _testSeq[DTM.TEXT_NODE] != null ? _testSeq[DTM.TEXT_NODE].compile(definedClass, methodGen,
-            ihText) : ihText;
-
-    // This DOM-type is not in use - default: process next node
-    targets[DTM.NAMESPACE_NODE] = ihLoop;
-
-    // Match unknown element in DOM - default: check for namespace match
-    targets[DTM.ELEMENT_NODE] = elemNamespaceHandle;
-
-    // Match unknown attribute in DOM - default: check for namespace match
-    targets[DTM.ATTRIBUTE_NODE] = attrNamespaceHandle;
-
-    // Match on processing instruction - default: loop
-    InstructionHandle ihPI = ihLoop;
-    if (_childNodeTestSeq != null) {
-      ihPI = ihElem;
-    }
-    if (_testSeq[DTM.PROCESSING_INSTRUCTION_NODE] != null) {
-      targets[DTM.PROCESSING_INSTRUCTION_NODE] = _testSeq[DTM.PROCESSING_INSTRUCTION_NODE].compile(definedClass, methodGen,
-              ihPI);
-    } else {
-      targets[DTM.PROCESSING_INSTRUCTION_NODE] = ihPI;
-    }
-
-    // Match on comments - default: process next node
-    InstructionHandle ihComment = ihLoop;
-    if (_childNodeTestSeq != null) {
-      ihComment = ihElem;
-    }
-    targets[DTM.COMMENT_NODE] = _testSeq[DTM.COMMENT_NODE] != null ? _testSeq[DTM.COMMENT_NODE].compile(definedClass,
-            methodGen, ihComment) : ihComment;
-
-    // This DOM-type is not in use - default: process next node
-    targets[DTM.CDATA_SECTION_NODE] = ihLoop;
-
-    // This DOM-type is not in use - default: process next node
-    targets[DTM.DOCUMENT_FRAGMENT_NODE] = ihLoop;
-
-    // This DOM-type is not in use - default: process next node
-    targets[DTM.DOCUMENT_TYPE_NODE] = ihLoop;
-
-    // This DOM-type is not in use - default: process next node
-    targets[DTM.ENTITY_NODE] = ihLoop;
-
-    // This DOM-type is not in use - default: process next node
-    targets[DTM.ENTITY_REFERENCE_NODE] = ihLoop;
-
-    // This DOM-type is not in use - default: process next node
-    targets[DTM.NOTATION_NODE] = ihLoop;
-
-    // Now compile test sequences for various match patterns:
-    for (int i = DTM.NTYPES; i < targets.length; i++) {
-      final TestSeq testSeq = _testSeq[i];
-      // Jump straight to namespace tests ?
-      if (testSeq == null || isNamespace[i]) {
-        if (isAttribute[i]) {
-          targets[i] = attrNamespaceHandle;
-        } else {
-          targets[i] = elemNamespaceHandle;
-        }
-      }
-      // Match on node type
-      else {
-        if (isAttribute[i]) {
-          targets[i] = testSeq.compile(definedClass, methodGen, attrNamespaceHandle);
-        } else {
-          targets[i] = testSeq.compile(definedClass, methodGen, elemNamespaceHandle);
-        }
-      }
-    }
-
-    if (ilKey != null) {
-      body.insert(ilKey);
-    }
-
-    // Append first code in applyTemplates() - get type of current node
-    final int getType = cpg.addInterfaceMethodref(DOM_INTF, "getExpandedTypeID", "(I)I");
-    body.append(methodGen.loadDOM());
-    body.append(new ILOAD(_currentIndex));
-    body.append(new INVOKEINTERFACE(getType, 2));
-
-    // Append switch() statement - main dispatch loop in applyTemplates()
-    body.append(new SWITCH(types, targets, ihLoop));
-
-    // Append all the "case:" statements
-    appendTestSequences(body);
-    // Append the actual template code
-    appendTemplateCode(body);
-
-    // Append NS:* node tests (if any)
-    if (nsElem != null) {
-      body.append(nsElem);
-    }
-    // Append NS:@* node tests (if any)
-    if (nsAttr != null) {
-      body.append(nsAttr);
-    }
-
-    // Append default action for element and root nodes
-    body.append(ilRecurse);
-    // Append default action for text and attribute nodes
-    body.append(ilText);
-
-    // putting together constituent instruction lists
-    mainIL.append(body);
-
-    // Mark the end of the live range for the "current" variable
-    current.setEnd(body.getEnd());
-
-    // fall through to ilLoop
-    mainIL.append(ilLoop);
-
-    //peepHoleOptimization(methodGen);
-
-    definedClass.addMethod(methodGen);
-
-    // Restore original (complete) set of templates for this transformation
-    _templates = oldTemplates;
+//    final LocalVariableGen current;
+//    current = methodGen.addLocalVariable2("current", org.apache.bcel.generic.Type.INT, null);
+//    _currentIndex = current.getIndex();
+//
+//    mainIL.append(new ILOAD(methodGen.getLocalIndex(NODE_PNAME)));
+//    current.setStart(mainIL.append(new ISTORE(_currentIndex)));
+//
+//    // Create the "body" instruction list that will eventually hold the
+//    // code for the entire method (other ILs will be appended).
+//    final InstructionList body = new InstructionList();
+//    body.append(NOP);
+//
+//    // Create an instruction list that contains the default next-node
+//    // iteration
+//    final InstructionList ilLoop = new InstructionList();
+//    ilLoop.append(RETURN);
+//    final InstructionHandle ihLoop = ilLoop.getStart();
+//
+//    // Compile default handling of elements (traverse children)
+//    final InstructionList ilRecurse = compileDefaultRecursion(definedClass, methodGen, ihLoop);
+//    final InstructionHandle ihRecurse = ilRecurse.getStart();
+//
+//    // Compile default handling of text/attribute nodes (output text)
+//    final InstructionList ilText = compileDefaultText(definedClass, methodGen, ihLoop);
+//    InstructionHandle ihText = ilText.getStart();
+//
+//    // Distinguish attribute/element/namespace tests for further processing
+//    final int[] types = new int[DTM.NTYPES + names.size()];
+//    for (int i = 0; i < types.length; i++) {
+//      types[i] = i;
+//    }
+//
+//    final boolean[] isAttribute = new boolean[types.length];
+//    final boolean[] isNamespace = new boolean[types.length];
+//    for (int i = 0; i < names.size(); i++) {
+//      final String name = names.get(i);
+//      isAttribute[i + DTM.NTYPES] = isAttributeName(name);
+//      isNamespace[i + DTM.NTYPES] = isNamespaceName(name);
+//    }
+//
+//    // Compile all templates - regardless of pattern type
+//    compileTemplateCalls(definedClass, methodGen, ihLoop, min, max);
+//
+//    // Handle template with explicit "*" pattern
+//    final TestSeq elemTest = _testSeq[DTM.ELEMENT_NODE];
+//    InstructionHandle ihElem = ihRecurse;
+//    if (elemTest != null) {
+//      ihElem = elemTest.compile(definedClass, methodGen, ihLoop);
+//    }
+//
+//    // Handle template with explicit "@*" pattern
+//    final TestSeq attrTest = _testSeq[DTM.ATTRIBUTE_NODE];
+//    InstructionHandle ihAttr = ihLoop;
+//    if (attrTest != null) {
+//      ihAttr = attrTest.compile(definedClass, methodGen, ihAttr);
+//    }
+//
+//    // Do tests for id() and key() patterns first
+//    InstructionList ilKey = null;
+//    if (_idxTestSeq != null) {
+//      ilKey = _idxTestSeq.getInstructionList();
+//    }
+//
+//    // If there is a match on node() we need to replace ihElem
+//    // and ihText if the priority of node() is higher
+//    if (_childNodeTestSeq != null) {
+//      // Compare priorities of node() and "*"
+//      final double nodePrio = _childNodeTestSeq.getPriority();
+//      final int nodePos = _childNodeTestSeq.getPosition();
+//      double elemPrio = 0 - Double.MAX_VALUE;
+//      int elemPos = Integer.MIN_VALUE;
+//
+//      if (elemTest != null) {
+//        elemPrio = elemTest.getPriority();
+//        elemPos = elemTest.getPosition();
+//      }
+//
+//      if (elemPrio == Double.NaN || elemPrio < nodePrio || elemPrio == nodePrio && elemPos < nodePos) {
+//        ihElem = _childNodeTestSeq.compile(definedClass, methodGen, ihLoop);
+//      }
+//
+//      // Compare priorities of node() and text()
+//      final TestSeq textTest = _testSeq[DTM.TEXT_NODE];
+//      double textPrio = 0 - Double.MAX_VALUE;
+//      int textPos = Integer.MIN_VALUE;
+//
+//      if (textTest != null) {
+//        textPrio = textTest.getPriority();
+//        textPos = textTest.getPosition();
+//      }
+//
+//      if (Double.isNaN(textPrio) || textPrio < nodePrio || textPrio == nodePrio && textPos < nodePos) {
+//        ihText = _childNodeTestSeq.compile(definedClass, methodGen, ihLoop);
+//        _testSeq[DTM.TEXT_NODE] = _childNodeTestSeq;
+//      }
+//    }
+//
+//    // Handle templates with "ns:*" pattern
+//    InstructionHandle elemNamespaceHandle = ihElem;
+//    final InstructionList nsElem = compileNamespaces(definedClass, methodGen, isNamespace, isAttribute, false, ihElem);
+//    if (nsElem != null) {
+//      elemNamespaceHandle = nsElem.getStart();
+//    }
+//
+//    // Handle templates with "ns:@*" pattern
+//    final InstructionList nsAttr = compileNamespaces(definedClass, methodGen, isNamespace, isAttribute, true, ihAttr);
+//    InstructionHandle attrNamespaceHandle = ihAttr;
+//    if (nsAttr != null) {
+//      attrNamespaceHandle = nsAttr.getStart();
+//    }
+//
+//    // Handle templates with "ns:elem" or "ns:@attr" pattern
+//    final InstructionHandle[] targets = new InstructionHandle[types.length];
+//    for (int i = DTM.NTYPES; i < targets.length; i++) {
+//      final TestSeq testSeq = _testSeq[i];
+//      // Jump straight to namespace tests ?
+//      if (isNamespace[i]) {
+//        if (isAttribute[i]) {
+//          targets[i] = attrNamespaceHandle;
+//        } else {
+//          targets[i] = elemNamespaceHandle;
+//        }
+//      }
+//      // Test first, then jump to namespace tests
+//      else if (testSeq != null) {
+//        if (isAttribute[i]) {
+//          targets[i] = testSeq.compile(definedClass, methodGen, attrNamespaceHandle);
+//        } else {
+//          targets[i] = testSeq.compile(definedClass, methodGen, elemNamespaceHandle);
+//        }
+//      } else {
+//        targets[i] = ihLoop;
+//      }
+//    }
+//
+//    // Handle pattern with match on root node - default: traverse children
+//    targets[DTM.ROOT_NODE] = _rootPattern != null ? getTemplateInstructionHandle(_rootPattern.getTemplate())
+//            : ihRecurse;
+//    // Handle pattern with match on root node - default: traverse children
+//    targets[DTM.DOCUMENT_NODE] = _rootPattern != null ? getTemplateInstructionHandle(_rootPattern.getTemplate())
+//            : ihRecurse; // %HZ%: Was ihLoop in XSLTC_DTM branch
+//
+//    // Handle any pattern with match on text nodes - default: loop
+//    targets[DTM.TEXT_NODE] = _testSeq[DTM.TEXT_NODE] != null ? _testSeq[DTM.TEXT_NODE].compile(definedClass, methodGen,
+//            ihText) : ihText;
+//
+//    // This DOM-type is not in use - default: process next node
+//    targets[DTM.NAMESPACE_NODE] = ihLoop;
+//
+//    // Match unknown element in DOM - default: check for namespace match
+//    targets[DTM.ELEMENT_NODE] = elemNamespaceHandle;
+//
+//    // Match unknown attribute in DOM - default: check for namespace match
+//    targets[DTM.ATTRIBUTE_NODE] = attrNamespaceHandle;
+//
+//    // Match on processing instruction - default: loop
+//    InstructionHandle ihPI = ihLoop;
+//    if (_childNodeTestSeq != null) {
+//      ihPI = ihElem;
+//    }
+//    if (_testSeq[DTM.PROCESSING_INSTRUCTION_NODE] != null) {
+//      targets[DTM.PROCESSING_INSTRUCTION_NODE] = _testSeq[DTM.PROCESSING_INSTRUCTION_NODE].compile(definedClass, methodGen,
+//              ihPI);
+//    } else {
+//      targets[DTM.PROCESSING_INSTRUCTION_NODE] = ihPI;
+//    }
+//
+//    // Match on comments - default: process next node
+//    InstructionHandle ihComment = ihLoop;
+//    if (_childNodeTestSeq != null) {
+//      ihComment = ihElem;
+//    }
+//    targets[DTM.COMMENT_NODE] = _testSeq[DTM.COMMENT_NODE] != null ? _testSeq[DTM.COMMENT_NODE].compile(definedClass,
+//            methodGen, ihComment) : ihComment;
+//
+//    // This DOM-type is not in use - default: process next node
+//    targets[DTM.CDATA_SECTION_NODE] = ihLoop;
+//
+//    // This DOM-type is not in use - default: process next node
+//    targets[DTM.DOCUMENT_FRAGMENT_NODE] = ihLoop;
+//
+//    // This DOM-type is not in use - default: process next node
+//    targets[DTM.DOCUMENT_TYPE_NODE] = ihLoop;
+//
+//    // This DOM-type is not in use - default: process next node
+//    targets[DTM.ENTITY_NODE] = ihLoop;
+//
+//    // This DOM-type is not in use - default: process next node
+//    targets[DTM.ENTITY_REFERENCE_NODE] = ihLoop;
+//
+//    // This DOM-type is not in use - default: process next node
+//    targets[DTM.NOTATION_NODE] = ihLoop;
+//
+//    // Now compile test sequences for various match patterns:
+//    for (int i = DTM.NTYPES; i < targets.length; i++) {
+//      final TestSeq testSeq = _testSeq[i];
+//      // Jump straight to namespace tests ?
+//      if (testSeq == null || isNamespace[i]) {
+//        if (isAttribute[i]) {
+//          targets[i] = attrNamespaceHandle;
+//        } else {
+//          targets[i] = elemNamespaceHandle;
+//        }
+//      }
+//      // Match on node type
+//      else {
+//        if (isAttribute[i]) {
+//          targets[i] = testSeq.compile(definedClass, methodGen, attrNamespaceHandle);
+//        } else {
+//          targets[i] = testSeq.compile(definedClass, methodGen, elemNamespaceHandle);
+//        }
+//      }
+//    }
+//
+//    if (ilKey != null) {
+//      body.insert(ilKey);
+//    }
+//
+//    // Append first code in applyTemplates() - get type of current node
+//    final int getType = cpg.addInterfaceMethodref(DOM_INTF, "getExpandedTypeID", "(I)I");
+//    body.append(methodGen.loadDOM());
+//    body.append(new ILOAD(_currentIndex));
+//    body.append(new INVOKEINTERFACE(getType, 2));
+//
+//    // Append switch() statement - main dispatch loop in applyTemplates()
+//    body.append(new SWITCH(types, targets, ihLoop));
+//
+//    // Append all the "case:" statements
+//    appendTestSequences(body);
+//    // Append the actual template code
+//    appendTemplateCode(body);
+//
+//    // Append NS:* node tests (if any)
+//    if (nsElem != null) {
+//      body.append(nsElem);
+//    }
+//    // Append NS:@* node tests (if any)
+//    if (nsAttr != null) {
+//      body.append(nsAttr);
+//    }
+//
+//    // Append default action for element and root nodes
+//    body.append(ilRecurse);
+//    // Append default action for text and attribute nodes
+//    body.append(ilText);
+//
+//    // putting together constituent instruction lists
+//    mainIL.append(body);
+//
+//    // Mark the end of the live range for the "current" variable
+//    current.setEnd(body.getEnd());
+//
+//    // fall through to ilLoop
+//    mainIL.append(ilLoop);
+//
+//    //peepHoleOptimization(methodGen);
+//
+//    definedClass.addMethod(methodGen);
+//
+//    // Restore original (complete) set of templates for this transformation
+//    _templates = oldTemplates;
   }
 
   /**
@@ -1346,8 +1313,8 @@ final class Mode implements Constants {
     }
   }
 
-  public InstructionHandle getTemplateInstructionHandle(Template template) {
-    return _templateIHs.get(template);
+  public JInvocation getTemplateInstructionHandle(Template template) {
+    return _templateStatement.get(template);
   }
 
   /**

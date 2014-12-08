@@ -246,7 +246,7 @@ public class TemplatesHandlerImpl implements ContentHandler, TemplatesHandler, S
 
         // Class synchronization is needed for BCEL
         synchronized (xsltc.getClass()) {
-          stylesheet.translate();
+          stylesheet.generate();
         }
       }
 

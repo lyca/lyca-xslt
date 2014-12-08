@@ -27,28 +27,12 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
-import org.apache.bcel.generic.ANEWARRAY;
-import org.apache.bcel.generic.CHECKCAST;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.DUP_X1;
-import org.apache.bcel.generic.GETFIELD;
-import org.apache.bcel.generic.ICONST;
-import org.apache.bcel.generic.INVOKEINTERFACE;
-import org.apache.bcel.generic.INVOKESPECIAL;
-import org.apache.bcel.generic.INVOKEVIRTUAL;
-import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.NEW;
-import org.apache.bcel.generic.NEWARRAY;
-import org.apache.bcel.generic.PUSH;
 import org.xml.sax.Attributes;
 
 import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JMethod;
 
-import de.lyca.xalan.xsltc.DOM;
-import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
-import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
 import de.lyca.xalan.xsltc.runtime.AttributeList;
@@ -555,7 +539,6 @@ public abstract class SyntaxTreeNode implements Constants {
    * @param methodGen
    *          BCEL Java method generator
    */
-//  protected void translateContents(JDefinedClass definedClass, JMethod method) {
   protected void translateContents(JDefinedClass definedClass, JMethod method) {
     // Call translate() on all child nodes
     for (SyntaxTreeNode item : _contents) {

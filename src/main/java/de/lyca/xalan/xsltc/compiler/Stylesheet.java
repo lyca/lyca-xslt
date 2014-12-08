@@ -29,8 +29,11 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
+import org.xml.sax.SAXException;
+
 import com.sun.codemodel.JArray;
 import com.sun.codemodel.JBlock;
+import com.sun.codemodel.JCatchBlock;
 import com.sun.codemodel.JClass;
 import com.sun.codemodel.JClassAlreadyExistsException;
 import com.sun.codemodel.JCodeModel;
@@ -40,6 +43,7 @@ import com.sun.codemodel.JFieldVar;
 import com.sun.codemodel.JInvocation;
 import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JMod;
+import com.sun.codemodel.JTryBlock;
 import com.sun.codemodel.JType;
 import com.sun.codemodel.JVar;
 
@@ -652,7 +656,7 @@ public final class Stylesheet extends SyntaxTreeNode {
    */
   @Override
   public void translate(JDefinedClass definedClass, JMethod method) {
-    translate();
+    generate();
   }
 
   private JFieldVar addDOMField(JDefinedClass definedClass) {
@@ -667,9 +671,9 @@ public final class Stylesheet extends SyntaxTreeNode {
   }
 
   /**
-   * Translate the stylesheet into JVM bytecodes.
+   * Generates the stylesheet java class.
    */
-  public void translate() {
+  public void generate() {
     _className = getXSLTC().getClassName();
     JCodeModel jCodeModel = new JCodeModel();
     try {
@@ -828,21 +832,21 @@ public final class Stylesheet extends SyntaxTreeNode {
 
     JBlock staticInit = definedClass.init();
 
-    JArray namesArrayRef = JExpr.newArray(_sNamesArray.type(), size);
+    JArray namesArrayRef = JExpr.newArray(_sNamesArray.type().elementType());
     for (int i = 0; i < size; i++) {
       final String name = namesArray[i];
       namesArrayRef.add(JExpr.lit(name));
     }
     staticInit.assign(_sNamesArray, namesArrayRef);
 
-    JArray urisArrayRef = JExpr.newArray(_sUrisArray.type(), size);
+    JArray urisArrayRef = JExpr.newArray(_sUrisArray.type().elementType());
     for (int i = 0; i < size; i++) {
       final String uri = urisArray[i];
-      urisArrayRef.add(JExpr.lit(uri));
+      urisArrayRef.add(uri == null ? JExpr._null() : JExpr.lit(uri));
     }
     staticInit.assign(_sUrisArray, urisArrayRef);
 
-    JArray typesArrayRef = JExpr.newArray(_sTypesArray.type(), size);
+    JArray typesArrayRef = JExpr.newArray(_sTypesArray.type().elementType());
     for (int i = 0; i < size; i++) {
       final int nodeType = typesArray[i];
       typesArrayRef.add(JExpr.lit(nodeType));
@@ -851,7 +855,7 @@ public final class Stylesheet extends SyntaxTreeNode {
 
     // Put the namespace names array into the translet
     final List<String> namespaces = getXSLTC().getNamespaceIndex();
-    JArray namespaceArrayRef = JExpr.newArray(_sNamespaceArray.type(), namespaces.size());
+    JArray namespaceArrayRef = JExpr.newArray(_sNamespaceArray.type().elementType());
     for (int i = 0; i < namespaces.size(); i++) {
       final String ns = namespaces.get(i);
       namespaceArrayRef.add(JExpr.lit(ns));
@@ -862,7 +866,7 @@ public final class Stylesheet extends SyntaxTreeNode {
     final List<Integer> namespaceAncestors = getXSLTC().getNSAncestorPointers();
     if (namespaceAncestors != null && namespaceAncestors.size() != 0) {
       JFieldVar _sNamespaceAncestorsArray = addStaticField(definedClass, int[].class, STATIC_NS_ANCESTORS_ARRAY_FIELD);
-      JArray namespaceAncestorsArrayRef = JExpr.newArray(_sNamespaceAncestorsArray.type(), namespaceAncestors.size());
+      JArray namespaceAncestorsArrayRef = JExpr.newArray(_sNamespaceAncestorsArray.type().elementType());
       for (int i = 0; i < namespaceAncestors.size(); i++) {
         final int ancestor = namespaceAncestors.get(i).intValue();
         namespaceAncestorsArrayRef.add(JExpr.lit(ancestor));
@@ -875,7 +879,7 @@ public final class Stylesheet extends SyntaxTreeNode {
     final List<Integer> prefixURIPairsIdx = getXSLTC().getPrefixURIPairsIdx();
     if (prefixURIPairsIdx != null && prefixURIPairsIdx.size() != 0) {
       JFieldVar _sPrefixURIsIdxArray = addStaticField(definedClass, int[].class, STATIC_PREFIX_URIS_IDX_ARRAY_FIELD);
-      JArray prefixURIPairsIdxArrayRef = JExpr.newArray(_sPrefixURIsIdxArray.type(), prefixURIPairsIdx.size());
+      JArray prefixURIPairsIdxArrayRef = JExpr.newArray(_sPrefixURIsIdxArray.type().elementType());
       for (int i = 0; i < prefixURIPairsIdx.size(); i++) {
         final int idx = prefixURIPairsIdx.get(i).intValue();
         prefixURIPairsIdxArrayRef.add(JExpr.lit(idx));
@@ -888,7 +892,7 @@ public final class Stylesheet extends SyntaxTreeNode {
     final List<String> prefixURIPairs = getXSLTC().getPrefixURIPairs();
     if (prefixURIPairs != null && prefixURIPairs.size() != 0) {
       JFieldVar _sPrefixURIPairsArray = addStaticField(definedClass, String[].class, STATIC_PREFIX_URIS_ARRAY_FIELD);
-      JArray prefixURIPairsRef = JExpr.newArray(_sPrefixURIPairsArray.type(), prefixURIPairs.size());
+      JArray prefixURIPairsRef = JExpr.newArray(_sPrefixURIPairsArray.type().elementType());
       for (int i = 0; i < prefixURIPairs.size(); i++) {
         final String prefixOrURI = prefixURIPairs.get(i);
         prefixURIPairsRef.add(JExpr.lit(prefixOrURI));
@@ -955,7 +959,7 @@ public final class Stylesheet extends SyntaxTreeNode {
    * from transform().
    */
   private JMethod compileTopLevel(JDefinedClass definedClass) {
-    JMethod topLevel = definedClass.method(JMod.PUBLIC, Void.class, "topLevel")._throws(TransletException.class);
+    JMethod topLevel = definedClass.method(JMod.PUBLIC, void.class, "topLevel")._throws(TransletException.class);
     JVar document = topLevel.param(DOM.class, DOCUMENT_PNAME);
     JVar iterator = topLevel.param(DTMAxisIterator.class, ITERATOR_PNAME);
     JVar handler = topLevel.param(SerializationHandler.class, TRANSLET_OUTPUT_PNAME);
@@ -1003,14 +1007,14 @@ public final class Stylesheet extends SyntaxTreeNode {
 
     // Translate all whitespace strip/preserve rules
     if (whitespaceRules.size() > 0) {
-      Whitespace.translateRules(whitespaceRules, definedClass);
+      Whitespace.translateRules(whitespaceRules, definedClass, getXSLTC());
     }
 
     JMethod stripSpace = definedClass.getMethod(STRIP_SPACE,
         new JType[] { owner._ref(DOM.class), owner.INT, owner.INT });
     if (stripSpace != null && stripSpace.type() == owner.BOOLEAN) {
-      JFieldVar _dom = definedClass.fields().get(DOM_FIELD);
-      block.invoke(_dom, "setFilter").arg(JExpr._this());
+//      JFieldVar _dom = definedClass.fields().get(DOM_FIELD);
+      block.invoke(document, "setFilter").arg(JExpr._this());
     }
 
     return topLevel;
@@ -1074,7 +1078,7 @@ public final class Stylesheet extends SyntaxTreeNode {
    * document() function.
    */
   private JMethod compileBuildKeys(JDefinedClass definedClass) {
-    JMethod buildKeys = definedClass.method(JMod.PUBLIC, Void.class, "buildKeys")._throws(TransletException.class);
+    JMethod buildKeys = definedClass.method(JMod.PUBLIC, void.class, "buildKeys")._throws(TransletException.class);
     buildKeys.param(DOM.class, DOCUMENT_PNAME);
     buildKeys.param(DTMAxisIterator.class, ITERATOR_PNAME);
     buildKeys.param(SerializationHandler.class, TRANSLET_OUTPUT_PNAME);
@@ -1101,12 +1105,13 @@ public final class Stylesheet extends SyntaxTreeNode {
      * Define the the method transform with the following signature: void
      * transform(DOM, NodeIterator, HandlerBase)
      */
-    JMethod method = definedClass.method(JMod.PUBLIC, Void.class, "transform")._throws(TransletException.class);
+    JMethod method = definedClass.method(JMod.PUBLIC, void.class, "transform")._throws(TransletException.class);
     JVar document = method.param(DOM.class, DOCUMENT_PNAME);
     JVar dtmAxisIterator = method.param(DTMAxisIterator.class, ITERATOR_PNAME);
     JVar serializationHandler = method.param(SerializationHandler.class, TRANSLET_OUTPUT_PNAME);
 
-    JBlock block = method.body();
+    JTryBlock _try = method.body()._try();
+    JBlock block = _try.body();
     JInvocation makeDomAdapter = JExpr.invoke("makeDOMAdapter").arg(document);
     // Define and initialize current with the root node
     JFieldVar _dom = definedClass.fields().get(DOM_FIELD);
@@ -1125,7 +1130,7 @@ public final class Stylesheet extends SyntaxTreeNode {
     block.assign(current, JExpr.invoke(document, "getIterator").invoke("next"));
 
     // Transfer the output settings to the output post-processor
-    block.invoke(serializationHandler, "transferOutputSettings");
+    block.invoke(JExpr._this(), "transferOutputSettings").arg(serializationHandler);
 
     /*
      * Compile buildKeys() method. Note that this method is not invoked here as
@@ -1151,6 +1156,13 @@ public final class Stylesheet extends SyntaxTreeNode {
 
     // endDocument
     block.invoke(serializationHandler, "endDocument");
+    JClass saxException = owner.ref(SAXException.class);
+    JClass transletException = owner.ref(TransletException.class);
+    // TODO pass SaxException
+    //_try._catch(saxException).body()._throw(JExpr._new(transletException));
+    JCatchBlock _catch = _try._catch(saxException);
+    JVar e = _catch.param("e");
+    _catch.body()._throw(JExpr._new(transletException).arg(e));
   }
 
   public int addParam(Param param) {

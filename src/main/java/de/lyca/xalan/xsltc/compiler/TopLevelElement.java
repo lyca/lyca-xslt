@@ -26,7 +26,10 @@ import java.util.List;
 
 import org.apache.bcel.generic.InstructionList;
 
+import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JExpression;
+import com.sun.codemodel.JInvocation;
 import com.sun.codemodel.JMethod;
 
 import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
@@ -65,7 +68,7 @@ class TopLevelElement extends SyntaxTreeNode {
    * Translate this node into a fresh instruction list. The original instruction
    * list is saved and restored.
    */
-  public InstructionList compile(JDefinedClass definedClass, JMethod method) {
+  public JInvocation compile(JDefinedClass definedClass, JMethod method) {
     return null;
 //    FIXME
 //    final InstructionList result, save = methodGen.getInstructionList();
