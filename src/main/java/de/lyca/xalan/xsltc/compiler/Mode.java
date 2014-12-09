@@ -669,11 +669,9 @@ final class Mode implements Constants {
     final JBlock loop = applyTemplates.body()._while(JExpr.TRUE).body();
 
     // Create a local variable to hold the current node
-    JVar current = loop.decl(definedClass.owner().INT, "current");
-
     // Create an instruction list that contains the default next-node
     // iteration
-    loop.assign(current, JExpr.invoke(iterator, "next"));
+    JVar current = loop.decl(definedClass.owner().INT, "current", JExpr.invoke(iterator, "next"));
 
     // The body of this code can get very large - large than can be handled
     // by a single IFNE(body.getStart()) instruction - need workaround:

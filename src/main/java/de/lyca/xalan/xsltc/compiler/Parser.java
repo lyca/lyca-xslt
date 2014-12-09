@@ -1271,7 +1271,9 @@ public class Parser implements Constants, ContentHandler {
     }
 
     // Add it as a regular text node otherwise
-    parent.addElement(new Text(string));
+    Text text = new Text(string);
+    text.setParser(this);
+    parent.addElement(text);
   }
 
   private String getTokenValue(String token) {

@@ -793,10 +793,11 @@ public final class Stylesheet extends SyntaxTreeNode {
     JFieldVar _sNamespaceArray = addStaticField(definedClass, String[].class, STATIC_NAMESPACE_ARRAY_FIELD);
     // Create fields of type char[] that will contain literal text from
     // the stylesheet.
-    final int charDataFieldCount = getXSLTC().getCharacterDataCount();
-    for (int i = 0; i < charDataFieldCount; i++) {
-      addStaticField(definedClass, char[].class, STATIC_CHAR_DATA_FIELD + i);
-    }
+    // TODO is this really needed
+    // final int charDataFieldCount = getXSLTC().getCharacterDataCount();
+    // for (int i = 0; i < charDataFieldCount; i++) {
+    // addStaticField(definedClass, char[].class, STATIC_CHAR_DATA_FIELD + i);
+    // }
 
     // Put the names array into the translet - used for dom/translet mapping
     final List<String> namesIndex = getXSLTC().getNamesIndex();
@@ -905,7 +906,7 @@ public final class Stylesheet extends SyntaxTreeNode {
     for (int i = 0; i < charDataCount; i++) {
       String characterData = getXSLTC().getCharacterData(i);
       JFieldVar _scharData = addStaticField(definedClass, char[].class, STATIC_CHAR_DATA_FIELD + i);
-      _scharData.assign(JExpr.lit(characterData).invoke("toCharArray"));
+      staticInit.assign(_scharData, JExpr.lit(characterData).invoke("toCharArray"));
     }
   }
 
@@ -967,8 +968,7 @@ public final class Stylesheet extends SyntaxTreeNode {
     JBlock block = topLevel.body();
     // Define and initialize 'current' variable with the root node
     JCodeModel owner = definedClass.owner();
-    JVar current = block.decl(owner.INT, "current");
-    block.assign(current, JExpr.invoke(document, "getIterator").invoke("next"));
+    JVar current = block.decl(owner.INT, "current", JExpr.invoke(document, "getIterator").invoke("next"));
 
     // Create a new list containing variables/params + keys
     List<TopLevelElement> varDepElements = new ArrayList<TopLevelElement>(_globals);
@@ -1126,11 +1126,10 @@ public final class Stylesheet extends SyntaxTreeNode {
     }
 
     // continue with globals initialization
-    JVar current = block.decl(owner.INT, "current");
-    block.assign(current, JExpr.invoke(document, "getIterator").invoke("next"));
+    JVar current = block.decl(owner.INT, "current", JExpr.invoke(document, "getIterator").invoke("next"));
 
     // Transfer the output settings to the output post-processor
-    block.invoke(JExpr._this(), "transferOutputSettings").arg(serializationHandler);
+    block.invoke("transferOutputSettings").arg(serializationHandler);
 
     /*
      * Compile buildKeys() method. Note that this method is not invoked here as

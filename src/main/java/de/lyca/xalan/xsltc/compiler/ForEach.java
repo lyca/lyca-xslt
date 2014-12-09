@@ -31,7 +31,10 @@ import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InstructionList;
 
 import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JExpr;
+import com.sun.codemodel.JInvocation;
 import com.sun.codemodel.JMethod;
+import com.sun.codemodel.JType;
 
 import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
@@ -43,6 +46,7 @@ import de.lyca.xalan.xsltc.compiler.util.ResultTreeType;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
 import de.lyca.xalan.xsltc.compiler.util.Util;
+import de.lyca.xml.dtm.DTMAxisIterator;
 
 /**
  * @author Jacek Ambroziak
@@ -94,76 +98,78 @@ final class ForEach extends Instruction {
   @Override
   public void translate(JDefinedClass definedClass, JMethod method) {
  // FIXME
-//    final InstructionList il = methodGen.getInstructionList();
-//
-//    // Save current node and current iterator on the stack
-//    il.append(methodGen.loadCurrentNode());
-//    il.append(methodGen.loadIterator());
-//
-//    // Collect sort objects associated with this instruction
-//    final List<Sort> sortObjects = new ArrayList<>();
-//    for (SyntaxTreeNode child : getContents()) {
-//      if (child instanceof Sort) {
-//        sortObjects.add((Sort) child);
-//      }
-//    }
-//
-//    if (_type != null && _type instanceof ResultTreeType) {
-//      // Store existing DOM on stack - must be restored when loop is done
-//      il.append(methodGen.loadDOM());
-//
-//      // <xsl:sort> cannot be applied to a result tree - issue warning
-//      if (sortObjects.size() > 0) {
-//        final ErrorMsg msg = new ErrorMsg(ErrorMsg.RESULT_TREE_SORT_ERR, this);
-//        getParser().reportError(WARNING, msg);
-//      }
-//
-//      // Put the result tree on the stack (DOM)
-//      _select.translate(classGen, methodGen);
-//      // Get an iterator for the whole DOM - excluding the root node
-//      _type.translateTo(classGen, methodGen, Type.NodeSet);
-//      // Store the result tree as the default DOM
+//    final InstructionList il = method.getInstructionList();
+
+    // Save current node and current iterator on the stack
+//    il.append(method.loadCurrentNode());
+//    il.append(method.loadIterator());
+
+    // Collect sort objects associated with this instruction
+    final List<Sort> sortObjects = new ArrayList<>();
+    for (SyntaxTreeNode child : getContents()) {
+      if (child instanceof Sort) {
+        sortObjects.add((Sort) child);
+      }
+    }
+
+    if (_type != null && _type instanceof ResultTreeType) {
+      // Store existing DOM on stack - must be restored when loop is done
+//      il.append(method.loadDOM());
+
+      // <xsl:sort> cannot be applied to a result tree - issue warning
+      if (sortObjects.size() > 0) {
+        final ErrorMsg msg = new ErrorMsg(ErrorMsg.RESULT_TREE_SORT_ERR, this);
+        getParser().reportError(WARNING, msg);
+      }
+      JInvocation iterator = _select.compile(definedClass, method);//.invoke("setStartNode").arg(params[3]);
+
+      // Put the result tree on the stack (DOM)
+//      _select.translate(definedClass, method);
+      // Get an iterator for the whole DOM - excluding the root node
+      _type.translateTo(definedClass, method, Type.NodeSet);
+      // Store the result tree as the default DOM
 //      il.append(SWAP);
-//      il.append(methodGen.storeDOM());
-//    } else {
-//      // Compile node iterator
-//      if (sortObjects.size() > 0) {
-//        Sort.translateSortIterator(classGen, methodGen, _select, sortObjects);
-//      } else {
-//        _select.translate(classGen, methodGen);
-//      }
-//
-//      if (_type instanceof ReferenceType == false) {
-//        il.append(methodGen.loadContextNode());
-//        il.append(methodGen.setStartNode());
-//      }
-//    }
-//
-//    // Overwrite current iterator
-//    il.append(methodGen.storeIterator());
-//
-//    // Give local variables (if any) default values before starting loop
-//    initializeVariables(classGen, methodGen);
-//
+//      il.append(method.storeDOM());
+    } else {
+      // Compile node iterator
+      if (sortObjects.size() > 0) {
+//        Sort.translateSortIterator(definedClass, method, _select, sortObjects);
+      } else {
+        method.body().decl(definedClass.owner()._ref(DTMAxisIterator.class), "tmpIterator", _select.compile(definedClass, method));
+//        _select.translate(definedClass, method);
+      }
+
+      if (_type instanceof ReferenceType == false) {
+//        il.append(method.loadContextNode());
+//        il.append(method.setStartNode());
+      }
+    }
+
+    // Overwrite current iterator
+//    il.append(method.storeIterator());
+
+    // Give local variables (if any) default values before starting loop
+    initializeVariables(definedClass, method);
+
 //    final BranchHandle nextNode = il.append(new GOTO(null));
 //    final InstructionHandle loop = il.append(NOP);
-//
-//    translateContents(classGen, methodGen);
-//
-//    nextNode.setTarget(il.append(methodGen.loadIterator()));
-//    il.append(methodGen.nextNode());
+
+    translateContents(definedClass, method);
+
+//    nextNode.setTarget(il.append(method.loadIterator()));
+//    il.append(method.nextNode());
 //    il.append(DUP);
-//    il.append(methodGen.storeCurrentNode());
+//    il.append(method.storeCurrentNode());
 //    il.append(new IFGT(loop));
-//
-//    // Restore current DOM (if result tree was used instead for this loop)
-//    if (_type != null && _type instanceof ResultTreeType) {
-//      il.append(methodGen.storeDOM());
-//    }
-//
-//    // Restore current node and current iterator from the stack
-//    il.append(methodGen.storeIterator());
-//    il.append(methodGen.storeCurrentNode());
+
+    // Restore current DOM (if result tree was used instead for this loop)
+    if (_type != null && _type instanceof ResultTreeType) {
+//      il.append(method.storeDOM());
+    }
+
+    // Restore current node and current iterator from the stack
+//    il.append(method.storeIterator());
+//    il.append(method.storeCurrentNode());
   }
 
   /**
