@@ -32,6 +32,7 @@ import org.apache.bcel.generic.IFEQ;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InstructionList;
 
+import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JMethod;
 
@@ -65,7 +66,7 @@ final class Choose extends Instruction {
    * <xsl:when> elements and default to the <xsl:otherwise> if present.
    */
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method) {
+  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
     // FIXME
 //    final List<When> whenElements = new ArrayList<>();
 //    Otherwise otherwise = null;

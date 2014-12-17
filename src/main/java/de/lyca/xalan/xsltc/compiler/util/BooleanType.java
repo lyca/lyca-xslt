@@ -44,8 +44,12 @@ import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.NEW;
 import org.apache.bcel.generic.PUSH;
 
+import com.sun.codemodel.JCodeModel;
 import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JMethod;
+import com.sun.codemodel.JPrimitiveType;
+import com.sun.codemodel.JType;
+import com.sun.codemodel.JTypeVar;
 
 import de.lyca.xalan.xsltc.compiler.Constants;
 
@@ -78,8 +82,8 @@ public final class BooleanType extends Type {
   }
 
   @Override
-  public org.apache.bcel.generic.Type toJCType() {
-    return org.apache.bcel.generic.Type.BOOLEAN;
+  public JType toJCType() {
+    return JCM.BOOLEAN;
   }
 
   /**

@@ -24,17 +24,12 @@ package de.lyca.xalan.xsltc.compiler;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.bcel.generic.InstructionList;
-
 import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JDefinedClass;
-import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JInvocation;
 import com.sun.codemodel.JMethod;
 
-import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
-import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
 import de.lyca.xalan.xsltc.compiler.util.Util;
@@ -59,7 +54,7 @@ class TopLevelElement extends SyntaxTreeNode {
    * Translate this node into JVM bytecodes.
    */
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method) {
+  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
     final ErrorMsg msg = new ErrorMsg(ErrorMsg.NOT_IMPLEMENTED_ERR, getClass(), this);
     getParser().reportError(FATAL, msg);
   }

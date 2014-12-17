@@ -36,7 +36,9 @@ import org.apache.bcel.generic.NEW;
 import org.apache.bcel.generic.PUSH;
 import org.apache.bcel.generic.PUTFIELD;
 
+import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JMethod;
 
 import de.lyca.xalan.xsltc.compiler.util.BooleanType;
@@ -557,6 +559,20 @@ final class Predicate extends Expression implements Closure {
 //    }
   }
 
+  @Override
+  public JExpression compile(JDefinedClass definedClass, JMethod method) {
+    if (_nthPositionFilter || _nthDescendant) {
+      return _exp.compile(definedClass, method);
+    } else if (isNodeValueTest() && getParent() instanceof Step) {
+      return _value.compile(definedClass, method);
+//      il.append(new CHECKCAST(cpg.addClass(STRING_CLASS)));
+//      il.append(new PUSH(cpg, ((EqualityExpr) _exp).getOp()));
+    } else {
+      translateFilter(definedClass, method);
+    }
+    return super.compile(definedClass, method);
+  }
+
   /**
    * Translate a predicate expression. If non of the optimizations apply then
    * this translation pushes two references on the stack: a reference to a newly
@@ -564,7 +580,7 @@ final class Predicate extends Expression implements Closure {
    * <code>Step</code> for further details.
    */
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method) {
+  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
  // FIXME
 //
 //    final ConstantPoolGen cpg = classGen.getConstantPool();

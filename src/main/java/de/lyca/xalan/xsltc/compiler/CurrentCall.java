@@ -21,6 +21,7 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
+import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JMethod;
 
@@ -37,7 +38,7 @@ final class CurrentCall extends FunctionCall {
   }
 
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method) {
+  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
     // FIXME
 //    methodGen.getInstructionList().append(methodGen.loadCurrentNode());
   }

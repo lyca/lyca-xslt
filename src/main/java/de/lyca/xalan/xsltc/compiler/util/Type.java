@@ -24,8 +24,11 @@ package de.lyca.xalan.xsltc.compiler.util;
 import org.apache.bcel.generic.BranchInstruction;
 import org.apache.bcel.generic.Instruction;
 
+import com.sun.codemodel.JCodeModel;
 import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JMethod;
+import com.sun.codemodel.JType;
 
 import de.lyca.xalan.xsltc.compiler.Constants;
 import de.lyca.xalan.xsltc.compiler.FlowList;
@@ -37,6 +40,8 @@ import de.lyca.xalan.xsltc.compiler.NodeTest;
  * @author Morten Jorgensen
  */
 public abstract class Type implements Constants {
+  protected static final JCodeModel JCM = new JCodeModel();
+
   public static final Type Int = new IntType();
   public static final Type Real = new RealType();
   public static final Type Boolean = new BooleanType();
@@ -116,7 +121,7 @@ public abstract class Type implements Constants {
     return false;
   }
 
-  public abstract org.apache.bcel.generic.Type toJCType();
+  public abstract JType toJCType();
 
   /**
    * Returns the distance between two types. This measure is used to select
@@ -138,9 +143,15 @@ public abstract class Type implements Constants {
    */
   public void translateTo(JDefinedClass definedClass, JMethod method, Type type) {
     final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), type.toString());
-// FIXME
 //    definedClass.getParser().reportError(Constants.FATAL, err);
   }
+
+  public JExpression compileTo(JDefinedClass definedClass, JMethod method, Type type) {
+    final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), type.toString());
+//    definedClass.getParser().reportError(Constants.FATAL, err);
+    return null;
+  }
+  
 
   /**
    * Translates object of this type to an object of type <code>type</code>.

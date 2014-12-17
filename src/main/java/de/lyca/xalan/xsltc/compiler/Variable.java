@@ -21,33 +21,17 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import org.apache.bcel.classfile.Field;
-import org.apache.bcel.generic.ACONST_NULL;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.DCONST;
-import org.apache.bcel.generic.ICONST;
-import org.apache.bcel.generic.InstructionHandle;
-import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.PUTFIELD;
-
+import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JFieldVar;
 import com.sun.codemodel.JMethod;
+import com.sun.codemodel.JMod;
 
-import de.lyca.xalan.xsltc.compiler.util.BooleanType;
-import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
-import de.lyca.xalan.xsltc.compiler.util.IntType;
-import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
-import de.lyca.xalan.xsltc.compiler.util.NodeType;
-import de.lyca.xalan.xsltc.compiler.util.RealType;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
 
 final class Variable extends VariableBase {
-
-  public int getIndex() {
-    return _local != null ? _local.getIndex() : -1;
-  }
 
   /**
    * Parse the contents of the variable
@@ -143,55 +127,34 @@ final class Variable extends VariableBase {
   }
 
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method) {
-//    FIXME
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//    final InstructionList il = methodGen.getInstructionList();
-//
-//    // Don't generate code for unreferenced variables
-//    if (_refs.isEmpty()) {
-//      _ignore = true;
-//    }
-//
-//    // Make sure that a variable instance is only compiled once
-//    if (_ignore)
-//      return;
-//    _ignore = true;
-//
-//    final String name = getEscapedName();
-//
-//    if (isLocal()) {
-//      // Compile variable value computation
-//      translateValue(classGen, methodGen);
-//
-//      // Add a new local variable and store value
-//      final boolean createLocal = _local == null;
-//      if (createLocal) {
-//        mapRegister(methodGen);
-//      }
-//      final InstructionHandle storeInst = il.append(_type.STORE(_local.getIndex()));
-//
-//      // If the local is just being created, mark the store as the start
-//      // of its live range. Note that it might have been created by
-//      // initializeVariables already, which would have set the start of
-//      // the live range already.
-//      if (createLocal) {
-//        _local.setStart(storeInst);
-//      }
-//    } else {
-//      final String signature = _type.toSignature();
-//
-//      // Global variables are store in class fields
-//      if (classGen.containsField(name) == null) {
-//        classGen.addField(new Field(ACC_PUBLIC, cpg.addUtf8(name), cpg.addUtf8(signature), null, cpg.getConstantPool()));
-//
-//        // Push a reference to "this" for putfield
-//        il.append(classGen.loadTranslet());
-//        // Compile variable value computation
-//        translateValue(classGen, methodGen);
-//        // Store the variable in the allocated field
-//        il.append(new PUTFIELD(cpg.addFieldref(classGen.getClassName(), name, signature)));
-//      }
-//    }
+  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
+    // Don't generate code for unreferenced variables
+    if (_refs.isEmpty()) {
+      _ignore = true;
+    }
+
+    // Make sure that a variable instance is only compiled once
+    if (_ignore)
+      return;
+    _ignore = true;
+
+    final String name = getEscapedName();
+
+    if (isLocal()) {
+      // Add a new local variable and store value
+      if (_local == null) {
+        mapRegister(method);
+      }
+      // Compile variable value computation
+      body.assign(_local, compileValue(definedClass, method));
+    } else {
+      // Global variables are store in class fields
+      if (!definedClass.fields().containsKey(name)) {
+        JFieldVar field = definedClass.field(JMod.PUBLIC, _type.toJCType(), name);
+        // Compile variable value computation
+        // Store the variable in the allocated field
+        body.assign(field, compileValue(definedClass, method));
+      }
+    }
   }
 }

@@ -32,6 +32,7 @@ import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.LocalVariableGen;
 
+import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JMethod;
 
@@ -102,7 +103,7 @@ final class AncestorPattern extends RelativePathPattern {
   }
 
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method) {
+  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
 //    FIXME
 //    InstructionHandle parent;
 //    final ConstantPoolGen cpg = classGen.getConstantPool();

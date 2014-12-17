@@ -21,23 +21,20 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
+import static com.sun.codemodel.JExpr._null;
+import static com.sun.codemodel.JExpr.lit;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.INVOKESPECIAL;
-import org.apache.bcel.generic.Instruction;
-import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.LocalVariableGen;
-import org.apache.bcel.generic.NEW;
-import org.apache.bcel.generic.PUSH;
-
 import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JExpression;
+import com.sun.codemodel.JInvocation;
 import com.sun.codemodel.JMethod;
+import com.sun.codemodel.JType;
+import com.sun.codemodel.JVar;
 
-import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
-import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 import de.lyca.xalan.xsltc.compiler.util.NodeSetType;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.Util;
@@ -56,9 +53,7 @@ class VariableBase extends TopLevelElement {
   protected String _escapedName; // The escaped qname of the variable.
   protected Type _type; // The type of this variable.
   protected boolean _isLocal; // True if the variable is local.
-  protected LocalVariableGen _local; // Reference to JVM variable
-  protected Instruction _loadInstruction; // Instruction to load JVM variable
-  protected Instruction _storeInstruction; // Instruction to load JVM variable
+  protected JVar _local; // Reference to JVM variable
   protected Expression _select; // Reference to variable expression
   protected String select; // Textual repr. of variable expr.
 
@@ -86,11 +81,11 @@ class VariableBase extends TopLevelElement {
   /**
    * Map this variable to a register
    */
-  public void mapRegister(MethodGenerator methodGen) {
+  public void mapRegister(JMethod method) {
     if (_local == null) {
       final String name = getEscapedName(); // TODO: namespace ?
-      final org.apache.bcel.generic.Type varType = _type.toJCType();
-      _local = methodGen.addLocalVariable2(name, varType, null);
+      final JType varType = _type.toJCType();
+      _local = method.body().decl(varType, name, _null());
     }
   }
 
@@ -112,22 +107,8 @@ class VariableBase extends TopLevelElement {
    * Returns an instruction for loading the value of this variable onto the JVM
    * stack.
    */
-  public Instruction loadInstruction() {
-    if (_loadInstruction == null) {
-      _loadInstruction = _type.LOAD(_local.getIndex());
-    }
-    return _loadInstruction;
-  }
-
-  /**
-   * Returns an instruction for storing a value from the JVM stack into this
-   * variable.
-   */
-  public Instruction storeInstruction() {
-    if (_storeInstruction == null) {
-      _storeInstruction = _type.STORE(_local.getIndex());
-    }
-    return _storeInstruction;
+  public JVar loadInstruction() {
+    return _local;
   }
 
   /**
@@ -231,6 +212,34 @@ class VariableBase extends TopLevelElement {
 
     // Children must be parsed first -> static scoping
     parseChildren(parser);
+  }
+
+  public JExpression compileValue(JDefinedClass definedClass, JMethod method) {
+    // Compile expression is 'select' attribute if present
+    if (_select != null) {
+      JInvocation select = (JInvocation) _select.compile(definedClass, method);
+      // Create a CachedNodeListIterator for select expressions
+      // in a variable or parameter.
+      if (_select.getType() instanceof NodeSetType) {
+//        
+//        final int initCNI = cpg.addMethodref(CACHED_NODE_LIST_ITERATOR_CLASS, "<init>", "(" + NODE_ITERATOR_SIG + ")V");
+//        il.append(new NEW(cpg.addClass(CACHED_NODE_LIST_ITERATOR_CLASS)));
+//        il.append(DUP_X1);
+//        il.append(SWAP);
+//
+//        il.append(new INVOKESPECIAL(initCNI));
+      }
+      _select.startIterator(definedClass, method);
+      return select;
+    }
+    // If not, compile result tree from parameter body if present.
+    else if (hasContents()) {
+      return compileResultTree(definedClass, method);
+    }
+    // If neither are present then store empty string in variable
+    else {
+      return lit(Constants.EMPTYSTRING);
+    }
   }
 
   /**

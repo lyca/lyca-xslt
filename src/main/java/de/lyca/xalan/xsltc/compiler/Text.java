@@ -21,10 +21,15 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
+import static com.sun.codemodel.JExpr.FALSE;
+import static com.sun.codemodel.JExpr.TRUE;
+import static com.sun.codemodel.JExpr.invoke;
+import static com.sun.codemodel.JExpr.lit;
+
+import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JDefinedClass;
-import com.sun.codemodel.JExpr;
+import com.sun.codemodel.JInvocation;
 import com.sun.codemodel.JMethod;
-import com.sun.codemodel.JVar;
 
 import de.lyca.xalan.xsltc.compiler.util.Util;
 
@@ -161,29 +166,34 @@ final class Text extends Instruction {
   }
 
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method) {
+  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
     if (!_ignore) {
-      JVar handler =  method.listParams()[2];
+//      Object lastStatement = body.getContents().get(body.pos()-1);
+//      if(lastStatement instanceof JTryBlock){
+//        body = ((JTryBlock) lastStatement).body();
+//      }
+
+      JInvocation handler =  invoke("peekHandler");
       // Turn off character escaping if so is wanted.
       if (!_escaping) {
-        method.body().add(handler.invoke("setEscaping").arg(JExpr.FALSE));
+        body.add(handler.invoke("setEscaping").arg(FALSE));
       }
 
       // Call characters(String) or characters(char[],int,int), as
       // appropriate.
       if (!canLoadAsArrayOffsetLength()) {
-        method.body().add(handler.invoke("characters").arg(_text));
+        body.add(handler.invoke("characters").arg(_text));
       } else {
-        loadAsArrayOffsetLength(definedClass, method);
+        loadAsArrayOffsetLength(definedClass, method, body, "characters");
       }
 
       // Restore character escaping setting to whatever it was.
       // Note: setEscaping(bool) returns the original (old) value
       if (!_escaping) {
-        method.body().add(handler.invoke("setEscaping").arg(JExpr.TRUE));
+        body.add(handler.invoke("setEscaping").arg(TRUE));
       }
     }
-    translateContents(definedClass, method);
+    translateContents(definedClass, method, body);
   }
 
   /**
@@ -214,16 +224,19 @@ final class Text extends Instruction {
    * 
    * @see #canLoadArrayOffsetLength()
    */
-  public void loadAsArrayOffsetLength(JDefinedClass definedClass, JMethod method) {
+  public void loadAsArrayOffsetLength(JDefinedClass definedClass, JMethod method, JBlock body, String methodToCall) {
     final XSLTC xsltc = getParser().getXSLTC();
     // The XSLTC object keeps track of character data
     // that is to be stored in char arrays.
     final int offset = xsltc.addCharacterData(_text);
     final String charDataFieldName = STATIC_CHAR_DATA_FIELD + (xsltc.getCharacterDataCount() - 1);
-    JVar handler = method.listParams()[2];
-    method.body().add(
-        handler.invoke("characters").arg(definedClass.staticRef(charDataFieldName)).arg(JExpr.lit(offset))
-            .arg(JExpr.lit(_text.length())));
+    JInvocation handler = invoke("peekHandler");
+//    Object lastStatement = body.getContents().get(body.pos()-1);
+//    if(lastStatement instanceof JTryBlock){
+//      body = ((JTryBlock) lastStatement).body();
+//    }
+    body.add(handler.invoke(methodToCall).arg(definedClass.staticRef(charDataFieldName)).arg(lit(offset))
+        .arg(lit(_text.length())));
   }
 
 }

@@ -21,15 +21,7 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import org.apache.bcel.generic.ALOAD;
-import org.apache.bcel.generic.ASTORE;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.INVOKEINTERFACE;
-import org.apache.bcel.generic.INVOKESPECIAL;
-import org.apache.bcel.generic.INVOKEVIRTUAL;
-import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.LocalVariableGen;
-import org.apache.bcel.generic.NEW;
+import static com.sun.codemodel.JExpr._new;
 
 import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JClass;
@@ -39,11 +31,9 @@ import com.sun.codemodel.JInvocation;
 import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JVar;
 
-import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
-import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
-import de.lyca.xalan.xsltc.compiler.util.Util;
+import de.lyca.xalan.xsltc.dom.StepIterator;
 import de.lyca.xml.dtm.Axis;
 import de.lyca.xml.dtm.DTM;
 
@@ -170,7 +160,7 @@ final class ParentLocationPath extends RelativeLocationPath {
     final JVar[] params = method.listParams();
     final JCodeModel owner = definedClass.owner();
     final JClass axis = owner.ref(Axis.class);
-    JInvocation invocation = null;
+    JInvocation invocation = _new(owner._ref(StepIterator.class));
     // DTMAxisIterator a2 = new StepIterator(dom.getTypedAxisIterator(Axis.CHILD, 14), dom.getTypedAxisIterator(CHILD, 15))).setStartNode(current);
 
     // Backwards branches are prohibited if an uninitialized object is
@@ -183,12 +173,12 @@ final class ParentLocationPath extends RelativeLocationPath {
     // arguments from the temporaries to avoid the problem.
 
     // Compile path iterator
-//    _path.translate(definedClass, method); // iterator on stack....
+    invocation.arg(_path.compile(definedClass, method)); // iterator on stack....
 //    final LocalVariableGen pathTemp = method.addLocalVariable("parent_location_path_tmp1",
 //        Util.getJCRefType(NODE_ITERATOR_SIG), null, null);
 //    pathTemp.setStart(il.append(new ASTORE(pathTemp.getIndex())));
 
-//    _step.translate(definedClass, method);
+    invocation.arg(_step.compile(definedClass, method));
 //    final LocalVariableGen stepTemp = method.addLocalVariable("parent_location_path_tmp2",
 //        Util.getJCRefType(NODE_ITERATOR_SIG), null, null);
 //    stepTemp.setStart(il.append(new ASTORE(stepTemp.getIndex())));
@@ -237,7 +227,8 @@ final class ParentLocationPath extends RelativeLocationPath {
   }
 
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method) {
+  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
+    body.decl(definedClass.owner()._ref(StepIterator.class), "tmpIterator", compile(definedClass, method));
  // FIXME
 //    final ConstantPoolGen cpg = classGen.getConstantPool();
 //    final InstructionList il = methodGen.getInstructionList();

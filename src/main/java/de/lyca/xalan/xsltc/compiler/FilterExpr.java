@@ -33,6 +33,7 @@ import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.LocalVariableGen;
 import org.apache.bcel.generic.NEW;
 
+import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JMethod;
 
@@ -125,11 +126,11 @@ class FilterExpr extends Expression {
    * stack.
    */
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method) {
+  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
     if (_predicates.size() > 0) {
       translatePredicates(definedClass, method);
     } else {
-      _primary.translate(definedClass, method);
+      _primary.translate(definedClass, method, body);
     }
   }
 

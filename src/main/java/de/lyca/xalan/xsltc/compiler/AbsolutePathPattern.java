@@ -33,6 +33,7 @@ import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.LocalVariableGen;
 import org.apache.bcel.generic.PUSH;
 
+import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JMethod;
 
@@ -86,7 +87,7 @@ final class AbsolutePathPattern extends LocationPathPattern {
   }
 
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method) {
+  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
 //    FIXME
 //    final ConstantPoolGen cpg = classGen.getConstantPool();
 //    final InstructionList il = methodGen.getInstructionList();

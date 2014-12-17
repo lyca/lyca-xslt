@@ -28,6 +28,7 @@ import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.INVOKESPECIAL;
 import org.apache.bcel.generic.InstructionList;
 
+import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JMethod;
 
@@ -156,7 +157,7 @@ final class AttributeSet extends TopLevelElement {
    * Compile a method that outputs the attributes in this set
    */
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method) {
+  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
 // FIXME
 //
 //    if (_ignore)

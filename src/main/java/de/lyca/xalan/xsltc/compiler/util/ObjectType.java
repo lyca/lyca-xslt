@@ -34,6 +34,7 @@ import org.apache.bcel.generic.PUSH;
 
 import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JMethod;
+import com.sun.codemodel.JType;
 
 import de.lyca.xalan.xsltc.compiler.Constants;
 
@@ -108,8 +109,8 @@ public final class ObjectType extends Type {
   }
 
   @Override
-  public org.apache.bcel.generic.Type toJCType() {
-    return Util.getJCRefType(toSignature());
+  public JType toJCType() {
+    return JCM._ref(_clazz);
   }
 
   /**

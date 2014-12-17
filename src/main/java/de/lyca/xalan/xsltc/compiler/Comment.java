@@ -21,20 +21,20 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.GETFIELD;
-import org.apache.bcel.generic.INVOKEINTERFACE;
-import org.apache.bcel.generic.INVOKEVIRTUAL;
-import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.PUSH;
+import static com.sun.codemodel.JExpr.cast;
+import static com.sun.codemodel.JExpr.invoke;
+import static com.sun.codemodel.JExpr.ref;
 
+import com.sun.codemodel.JBlock;
+import com.sun.codemodel.JClass;
 import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JMethod;
+import com.sun.codemodel.JVar;
 
-import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
-import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
+import de.lyca.xalan.xsltc.runtime.StringValueHandler;
 
 /**
  * @author Jacek Ambroziak
@@ -55,57 +55,36 @@ final class Comment extends Instruction {
   }
 
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method) {
-    // FIXME
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//    final InstructionList il = methodGen.getInstructionList();
-//
-//    // Shortcut for literal strings
-//    Text rawText = null;
-//    if (elementCount() == 1) {
-//      final SyntaxTreeNode content = elementAt(0);
-//      if (content instanceof Text) {
-//        rawText = (Text) content;
-//      }
-//    }
-//
-//    // If the content is literal text, call comment(char[],int,int) or
-//    // comment(String), as appropriate. Otherwise, use a
-//    // StringValueHandler to gather the textual content of the xsl:comment
-//    // and call comment(String) with the result.
-//    if (rawText != null) {
-//      il.append(methodGen.loadHandler());
-//
-//      if (rawText.canLoadAsArrayOffsetLength()) {
-//        rawText.loadAsArrayOffsetLength(classGen, methodGen);
+  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
+    // Shortcut for literal strings
+    Text rawText = null;
+    if (elementCount() == 1) {
+      final SyntaxTreeNode content = elementAt(0);
+      if (content instanceof Text) {
+        rawText = (Text) content;
+      }
+    }
+
+    // If the content is literal text, call comment(char[],int,int) or
+    // comment(String), as appropriate. Otherwise, use a
+    // StringValueHandler to gather the textual content of the xsl:comment
+    // and call comment(String) with the result.
+    JVar handler = method.listParams()[2];
+    if (rawText != null) {
+      if (rawText.canLoadAsArrayOffsetLength()) {
+        rawText.loadAsArrayOffsetLength(definedClass, method, body, "comment");
 //        final int comment = cpg.addInterfaceMethodref(TRANSLET_OUTPUT_INTERFACE, "comment", "([CII)V");
 //        il.append(new INVOKEINTERFACE(comment, 4));
-//      } else {
-//        il.append(new PUSH(cpg, rawText.getText()));
-//        final int comment = cpg.addInterfaceMethodref(TRANSLET_OUTPUT_INTERFACE, "comment", "(" + STRING_SIG + ")V");
-//        il.append(new INVOKEINTERFACE(comment, 2));
-//      }
-//    } else {
-//      // Save the current handler base on the stack
-//      il.append(methodGen.loadHandler());
-//      il.append(DUP); // first arg to "comment" call
-//
-//      // Get the translet's StringValueHandler
-//      il.append(classGen.loadTranslet());
-//      il.append(new GETFIELD(cpg.addFieldref(TRANSLET_CLASS, "stringValueHandler", STRING_VALUE_HANDLER_SIG)));
-//      il.append(DUP);
-//      il.append(methodGen.storeHandler());
-//
-//      // translate contents with substituted handler
-//      translateContents(classGen, methodGen);
-//
-//      // get String out of the handler
-//      il.append(new INVOKEVIRTUAL(cpg.addMethodref(STRING_VALUE_HANDLER, "getValue", "()" + STRING_SIG)));
-//      // call "comment"
-//      final int comment = cpg.addInterfaceMethodref(TRANSLET_OUTPUT_INTERFACE, "comment", "(" + STRING_SIG + ")V");
-//      il.append(new INVOKEINTERFACE(comment, 2));
-//      // Restore old handler base from stack
-//      il.append(methodGen.storeHandler());
-//    }
+      } else {
+        body.invoke(handler, "comment").arg(rawText.getText());
+      }
+    } else {
+      body.invoke("pushHandler").arg(ref("stringValueHandler"));
+      translateContents(definedClass, method, body);
+      JClass stringValueHandler = definedClass.owner().ref(StringValueHandler.class);
+      body.invoke(handler, "comment").arg(((JExpression)cast(stringValueHandler, invoke("popHandler"))).invoke("getValue"));
+      // translate contents with substituted handler
+      // FIXME
+    }
   }
 }

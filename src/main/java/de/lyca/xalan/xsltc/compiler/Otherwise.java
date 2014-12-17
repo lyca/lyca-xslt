@@ -21,6 +21,7 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
+import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JMethod;
 
@@ -51,7 +52,7 @@ final class Otherwise extends Instruction {
   }
 
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method) {
+  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
     final Parser parser = getParser();
     final ErrorMsg err = new ErrorMsg(ErrorMsg.STRAY_OTHERWISE_ERR, this);
     parser.reportError(Constants.ERROR, err);

@@ -21,24 +21,18 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
+import static com.sun.codemodel.JExpr.direct;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.INVOKEINTERFACE;
-import org.apache.bcel.generic.INVOKEVIRTUAL;
-import org.apache.bcel.generic.InstructionList;
-
 import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JDefinedClass;
-import com.sun.codemodel.JExpr;
 import com.sun.codemodel.JInvocation;
 import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JVar;
 
-import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
-import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 import de.lyca.xalan.xsltc.compiler.util.NodeSetType;
 import de.lyca.xalan.xsltc.compiler.util.NodeType;
 import de.lyca.xalan.xsltc.compiler.util.ReferenceType;
@@ -121,10 +115,9 @@ final class ApplyTemplates extends Instruction {
    * in the stylesheet uses parameters.
    */
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method) {
+  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
     boolean setStartNodeCalled = false;
     final Stylesheet stylesheet = getStylesheet();
-    JBlock block = method.body();
     JVar[] params = method.listParams();
 
 //    final ConstantPoolGen cpg = classGen.getConstantPool();
@@ -141,9 +134,9 @@ final class ApplyTemplates extends Instruction {
 
     // Push a new parameter frame
     if (stylesheet.hasLocalParams() || hasContents()) {
-      block.invoke(PUSH_PARAM_FRAME);
+      body.invoke(PUSH_PARAM_FRAME);
       // translate with-params
-      translateContents(definedClass, method);
+      translateContents(definedClass, method, body);
     }
 //    il.append(classGen.loadTranslet());
 
@@ -156,7 +149,7 @@ final class ApplyTemplates extends Instruction {
         getParser().reportError(WARNING, err);
       }
       // Put the result tree (a DOM adapter) on the stack
-      _select.translate(definedClass, method);
+      _select.translate(definedClass, method, body);
       // Get back the DOM and iterator (not just iterator!!!)
       _type.translateTo(definedClass, method, Type.NodeSet);
     } else {
@@ -165,7 +158,7 @@ final class ApplyTemplates extends Instruction {
       // compute node iterator for applyTemplates
       if (sortObjects.size() > 0) {
         Sort.translateSortIterator(definedClass, method, _select, sortObjects);
-        block.invoke(params[0] ,SET_START_NODE).arg(JExpr.direct("current"));
+        body.invoke(params[0] ,SET_START_NODE).arg(direct("current"));
 //        final int setStartNode = cpg.addInterfaceMethodref(NODE_ITERATOR, SET_START_NODE, "(I)" + NODE_ITERATOR_SIG);
 //        il.append(methodGen.loadCurrentNode());
 //        il.append(new INVOKEINTERFACE(setStartNode, 2));
@@ -174,7 +167,7 @@ final class ApplyTemplates extends Instruction {
         if (_select == null) {
 //          Mode.compileGetChildren(definedClass, method, current);
         } else {
-          select = _select.compile(definedClass, method);
+          select = (JInvocation) _select.compile(definedClass, method);
         }
       }
     }
@@ -186,7 +179,7 @@ final class ApplyTemplates extends Instruction {
 
     // !!! need to instantiate all needed modes
     final String className = getStylesheet().getClassName();
-    block.invoke(APPLY_TEMPLATES).arg(params[0]).arg(select == null ? params[1] : select).arg(params[2]);
+    body.invoke(APPLY_TEMPLATES).arg(params[0]).arg(select == null ? params[1] : select).arg(params[2]);
     
 //    il.append(methodGen.loadHandler());
 //    final String applyTemplatesSig = classGen.getApplyTemplatesSig();
@@ -195,7 +188,7 @@ final class ApplyTemplates extends Instruction {
 
     // Pop parameter frame
     if (stylesheet.hasLocalParams() || hasContents()) {
-      block.invoke(POP_PARAM_FRAME);
+      body.invoke(POP_PARAM_FRAME);
     }
   }
 }

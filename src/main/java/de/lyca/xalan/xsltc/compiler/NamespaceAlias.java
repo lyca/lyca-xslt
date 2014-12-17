@@ -21,6 +21,7 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
+import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JMethod;
 
@@ -55,7 +56,7 @@ final class NamespaceAlias extends TopLevelElement {
   }
 
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method) {
+  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
     // do nada
   }
 }

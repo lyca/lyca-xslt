@@ -21,28 +21,15 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import org.apache.bcel.classfile.Field;
-import org.apache.bcel.generic.BranchHandle;
-import org.apache.bcel.generic.CHECKCAST;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.IFNONNULL;
-import org.apache.bcel.generic.INVOKEVIRTUAL;
-import org.apache.bcel.generic.Instruction;
-import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.PUSH;
-import org.apache.bcel.generic.PUTFIELD;
-
+import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JMethod;
 
-import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
-import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 import de.lyca.xalan.xsltc.compiler.util.ObjectType;
 import de.lyca.xalan.xsltc.compiler.util.ReferenceType;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
-import de.lyca.xalan.xsltc.runtime.BasisLibrary;
 
 /**
  * @author Jacek Ambroziak
@@ -65,26 +52,6 @@ final class Param extends VariableBase {
   @Override
   public String toString() {
     return "param(" + _name + ")";
-  }
-
-  /**
-   * Set the instruction for loading the value of this variable onto the JVM
-   * stack and returns the old instruction.
-   */
-  public Instruction setLoadInstruction(Instruction instruction) {
-    final Instruction tmp = _loadInstruction;
-    _loadInstruction = instruction;
-    return tmp;
-  }
-
-  /**
-   * Set the instruction for storing a value from the stack into this variable
-   * and returns the old instruction.
-   */
-  public Instruction setStoreInstruction(Instruction instruction) {
-    final Instruction tmp = _storeInstruction;
-    _storeInstruction = instruction;
-    return tmp;
   }
 
   /**
@@ -171,7 +138,7 @@ final class Param extends VariableBase {
   }
 
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method) {
+  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
  // FIXME
 //    final ConstantPoolGen cpg = classGen.getConstantPool();
 //    final InstructionList il = methodGen.getInstructionList();

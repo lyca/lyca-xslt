@@ -21,6 +21,7 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
+import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JMethod;
 
@@ -33,6 +34,7 @@ import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
  * @author Santiago Pericas-Geertsen
  */
 abstract class Instruction extends SyntaxTreeNode {
+
   /**
    * Type check all the children of this node.
    */
@@ -45,7 +47,7 @@ abstract class Instruction extends SyntaxTreeNode {
    * Translate this node into JVM bytecodes.
    */
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method) {
+  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
     final ErrorMsg msg = new ErrorMsg(ErrorMsg.NOT_IMPLEMENTED_ERR, getClass(), this);
     getParser().reportError(FATAL, msg);
   }

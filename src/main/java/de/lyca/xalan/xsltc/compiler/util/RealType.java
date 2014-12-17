@@ -40,6 +40,7 @@ import org.apache.bcel.generic.NEW;
 
 import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JMethod;
+import com.sun.codemodel.JType;
 
 import de.lyca.xalan.xsltc.compiler.Constants;
 import de.lyca.xalan.xsltc.compiler.FlowList;
@@ -68,8 +69,8 @@ public final class RealType extends NumberType {
   }
 
   @Override
-  public org.apache.bcel.generic.Type toJCType() {
-    return org.apache.bcel.generic.Type.DOUBLE;
+  public JType toJCType() {
+    return JCM.DOUBLE;
   }
 
   /**

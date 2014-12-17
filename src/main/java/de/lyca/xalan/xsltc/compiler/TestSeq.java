@@ -239,7 +239,7 @@ final class TestSeq {
       // Apply the test-code compiled for the pattern
       // TODO InstructionList ilist = methodGen.getInstructionList(pattern);
       // TODO if (ilist == null) {
-        JInvocation invocation = pattern.compile(definedClass, method);
+        JInvocation invocation = (JInvocation) pattern.compile(definedClass, method);
       // TODO methodGen.addInstructionList(pattern, ilist);
       // TODO }
 

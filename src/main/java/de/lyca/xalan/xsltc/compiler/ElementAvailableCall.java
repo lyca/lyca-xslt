@@ -26,6 +26,7 @@ import java.util.List;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.PUSH;
 
+import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JMethod;
 
@@ -87,7 +88,7 @@ final class ElementAvailableCall extends FunctionCall {
    * Consequently, arguments to this function must be literals.
    */
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method) {
+  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
     // FIXME
 //    final ConstantPoolGen cpg = classGen.getConstantPool();
 //    final boolean result = getResult();

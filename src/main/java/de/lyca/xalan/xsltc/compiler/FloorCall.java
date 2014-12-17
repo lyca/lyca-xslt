@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.apache.bcel.generic.INVOKESTATIC;
 
+import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JMethod;
 
@@ -41,7 +42,7 @@ final class FloorCall extends FunctionCall {
   }
 
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method) {
+  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
  // FIXME
 //    argument().translate(classGen, methodGen);
 //    methodGen.getInstructionList().append(

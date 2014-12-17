@@ -21,41 +21,28 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
+import static com.sun.codemodel.JExpr.FALSE;
+import static com.sun.codemodel.JExpr.TRUE;
+import static com.sun.codemodel.JExpr.invoke;
+import static com.sun.codemodel.JExpr.lit;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import javax.swing.JList;
-
-import org.apache.bcel.generic.ALOAD;
-import org.apache.bcel.generic.BranchHandle;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.IF_ICMPEQ;
-import org.apache.bcel.generic.ILOAD;
-import org.apache.bcel.generic.INVOKEINTERFACE;
-import org.apache.bcel.generic.INVOKEVIRTUAL;
-import org.apache.bcel.generic.InstructionHandle;
-import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.PUSH;
-
 import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JConditional;
 import com.sun.codemodel.JDefinedClass;
-import com.sun.codemodel.JExpr;
 import com.sun.codemodel.JExpression;
-import com.sun.codemodel.JInvocation;
 import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JMod;
 import com.sun.codemodel.JVar;
 
 import de.lyca.xalan.xsltc.DOM;
 import de.lyca.xalan.xsltc.StripFilter;
-import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
-import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
-import de.lyca.xalan.xsltc.compiler.util.Util;
 
 /**
  * @author Morten Jorgensen
@@ -360,8 +347,8 @@ final class Whitespace extends TopLevelElement {
       // Handle elements="ns:*" type rule
       if (rule.getStrength() == RULE_NAMESPACE) {
         // Returns the namespace for a node in the DOM
-        JExpression namespaceRule = JExpr.invoke(dom, "getNamespaceName").arg(node).invoke("compareTo")
-            .arg(rule.getNamespace()).eq(JExpr.lit(0));
+        JExpression namespaceRule = invoke(dom, "getNamespaceName").arg(node).invoke("compareTo")
+            .arg(rule.getNamespace()).eq(lit(0));
 
         if (rule.getAction() == STRIP_SPACE) {
           strip[sCount++] = namespaceRule;
@@ -382,7 +369,7 @@ final class Whitespace extends TopLevelElement {
 
         // Register the element.
         final int elementType = xsltc.registerElement(qname);
-        JExpression elementRule = type.eq(JExpr.lit(elementType));
+        JExpression elementRule = type.eq(lit(elementType));
 
         // Compare current node type with wanted element type
         if (rule.getAction() == STRIP_SPACE) {
@@ -395,12 +382,12 @@ final class Whitespace extends TopLevelElement {
     JBlock body = stripSpace.body();
     if (defaultAction == STRIP_SPACE) {
       JConditional conditional = body._if(compilePreserveSpace(preserve, pCount));
-      conditional._then()._return(JExpr.FALSE);
-      conditional._else()._return(JExpr.TRUE);
+      conditional._then()._return(FALSE);
+      conditional._else()._return(TRUE);
     } else {
       JConditional conditional = body._if(compileStripSpace(strip, sCount));
-      conditional._then()._return(JExpr.TRUE);
-      conditional._else()._return(JExpr.FALSE);
+      conditional._then()._return(TRUE);
+      conditional._else()._return(FALSE);
     }
   }
 
@@ -412,7 +399,7 @@ final class Whitespace extends TopLevelElement {
     stripSpace.param(DOM.class, "dom");
     stripSpace.param(int.class, "node");
     stripSpace.param(int.class, "type");
-    stripSpace.body()._return(JExpr.lit(defaultAction == STRIP_SPACE));
+    stripSpace.body()._return(lit(defaultAction == STRIP_SPACE));
     definedClass._implements(StripFilter.class);
   }
 
@@ -480,6 +467,6 @@ final class Whitespace extends TopLevelElement {
    * This method should not produce any code
    */
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method) {
+  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
   }
 }

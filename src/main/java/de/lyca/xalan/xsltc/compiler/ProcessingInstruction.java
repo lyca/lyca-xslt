@@ -21,25 +21,22 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import org.apache.bcel.generic.ALOAD;
-import org.apache.bcel.generic.ASTORE;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.GETFIELD;
-import org.apache.bcel.generic.INVOKEINTERFACE;
-import org.apache.bcel.generic.INVOKESTATIC;
-import org.apache.bcel.generic.INVOKEVIRTUAL;
-import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.LocalVariableGen;
+import static com.sun.codemodel.JExpr.cast;
+import static com.sun.codemodel.JExpr.invoke;
+import static com.sun.codemodel.JExpr.ref;
 
+import com.sun.codemodel.JBlock;
+import com.sun.codemodel.JClass;
 import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JMethod;
+import com.sun.codemodel.JVar;
 
-import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
-import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
 import de.lyca.xalan.xsltc.compiler.util.Util;
+import de.lyca.xalan.xsltc.runtime.StringValueHandler;
 import de.lyca.xml.utils.XML11Char;
 
 /**
@@ -82,57 +79,48 @@ final class ProcessingInstruction extends Instruction {
   }
 
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method) {
- // FIXME
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//    final InstructionList il = methodGen.getInstructionList();
-//
-//    if (!_isLiteral) {
-//      // if the ncname is an AVT, then the ncname has to be checked at runtime
-//      // if it is a valid ncname
-//      final LocalVariableGen nameValue = methodGen.addLocalVariable2("nameValue", Util.getJCRefType(STRING_SIG), null);
-//
-//      // store the name into a variable first so _name.translate only needs to
-//      // be called once
-//      _name.translate(classGen, methodGen);
+  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
+    JExpression nameValue;
+    if (!_isLiteral) {
+      // if the ncname is an AVT, then the ncname has to be checked at runtime
+      // if it is a valid ncname
+      nameValue = _name.compile(definedClass, method);
+
+      // store the name into a variable first so _name.translate only needs to
+      // be called once
 //      nameValue.setStart(il.append(new ASTORE(nameValue.getIndex())));
 //      il.append(new ALOAD(nameValue.getIndex()));
-//
-//      // call checkNCName if the name is an AVT
+
+      // call checkNCName if the name is an AVT
 //      final int check = cpg.addMethodref(BASIS_LIBRARY_CLASS, "checkNCName", "(" + STRING_SIG + ")V");
 //      il.append(new INVOKESTATIC(check));
-//
-//      // Save the current handler base on the stack
+
+      // Save the current handler base on the stack
 //      il.append(methodGen.loadHandler());
 //      il.append(DUP); // first arg to "attributes" call
-//
-//      // load name value again
+
+      // load name value again
 //      nameValue.setEnd(il.append(new ALOAD(nameValue.getIndex())));
-//    } else {
-//      // Save the current handler base on the stack
+    } else {
+      // Save the current handler base on the stack
 //      il.append(methodGen.loadHandler());
 //      il.append(DUP); // first arg to "attributes" call
-//
-//      // Push attribute name
-//      _name.translate(classGen, methodGen);// 2nd arg
-//
-//    }
-//
-//    il.append(classGen.loadTranslet());
-//    il.append(new GETFIELD(cpg.addFieldref(TRANSLET_CLASS, "stringValueHandler", STRING_VALUE_HANDLER_SIG)));
-//    il.append(DUP);
-//    il.append(methodGen.storeHandler());
-//
-//    // translate contents with substituted handler
-//    translateContents(classGen, methodGen);
-//
-//    // get String out of the handler
-//    il.append(new INVOKEVIRTUAL(cpg.addMethodref(STRING_VALUE_HANDLER, "getValueOfPI", "()" + STRING_SIG)));
-//    // call "processingInstruction"
-//    final int processingInstruction = cpg.addInterfaceMethodref(TRANSLET_OUTPUT_INTERFACE, "processingInstruction", "("
-//            + STRING_SIG + STRING_SIG + ")V");
-//    il.append(new INVOKEINTERFACE(processingInstruction, 3));
-//    // Restore old handler base from stack
-//    il.append(methodGen.storeHandler());
+
+      // Push attribute name
+       nameValue = _name.compile(definedClass, method);// 2nd arg
+
+    }
+
+    JVar handler = body.decl(method.listParamTypes()[2], "curHandler", invoke("peekHandler"));
+
+    body.invoke("pushHandler").arg(ref("stringValueHandler"));
+    // translate contents with substituted handler
+    translateContents(definedClass, method, body);
+
+    // get String out of the handler
+    JClass stringValueHandler = definedClass.owner().ref(StringValueHandler.class);
+    JExpression valOfPI = ((JExpression)cast(stringValueHandler, invoke("popHandler"))).invoke("getValueOfPI");
+    // call "processingInstruction"
+    body.invoke(handler, "processingInstruction").arg(nameValue).arg(valOfPI);
   }
 }

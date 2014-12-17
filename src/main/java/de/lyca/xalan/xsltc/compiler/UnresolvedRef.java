@@ -21,6 +21,7 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
+import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JMethod;
 
@@ -88,9 +89,9 @@ final class UnresolvedRef extends VariableRefBase {
   }
 
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method) {
+  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
     if (_ref != null) {
-      _ref.translate(definedClass, method);
+      _ref.translate(definedClass, method, body);
     } else {
       reportError();
     }

@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashMap;
@@ -129,6 +130,24 @@ public abstract class AbstractTranslet implements Translet {
   public final DOMAdapter makeDOMAdapter(DOM dom) throws TransletException {
     setRootForKeys(dom.getDocument());
     return new DOMAdapter(dom, namesArray, urisArray, typesArray, namespaceArray);
+  }
+
+  /************************************************************************
+   * Serialization handling
+   ************************************************************************/
+
+  private Deque<SerializationHandler> handlers = new ArrayDeque<>(); 
+
+  protected final SerializationHandler peekHandler() {
+    return handlers.peek();
+  }
+
+  protected final void pushHandler(SerializationHandler handler) {
+    handlers.push(handler);
+  }
+
+  protected SerializationHandler popHandler() {
+    return handlers.pop();
   }
 
   /************************************************************************

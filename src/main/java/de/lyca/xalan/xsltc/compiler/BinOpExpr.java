@@ -23,6 +23,7 @@ package de.lyca.xalan.xsltc.compiler;
 
 import org.apache.bcel.generic.InstructionList;
 
+import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JMethod;
 
@@ -103,7 +104,7 @@ final class BinOpExpr extends Expression {
   }
 
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method) {
+  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
 // FIXME
 //    final InstructionList il = methodGen.getInstructionList();
 //

@@ -24,6 +24,8 @@ package de.lyca.xalan.xsltc.compiler.util;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.sun.codemodel.JType;
+
 /**
  * @author Jacek Ambroziak
  * @author Santiago Pericas-Geertsen
@@ -107,7 +109,7 @@ public final class MethodType extends Type {
   }
 
   @Override
-  public org.apache.bcel.generic.Type toJCType() {
+  public JType toJCType() {
     return null; // should never be called
   }
 

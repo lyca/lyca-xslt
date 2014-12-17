@@ -812,52 +812,56 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
       return;
 
     // Transfer only non-default properties
-    final String encoding = getOutputProperty(OutputKeys.ENCODING);
+    final String encoding = getLayeredOutputProperty(OutputKeys.ENCODING, userProperties, stylesheetProperties);
     if (encoding != null) {
       translet._encoding = encoding;
     }
 
-    final String method = getOutputProperty(OutputKeys.METHOD);
+    final String method = getLayeredOutputProperty(OutputKeys.METHOD, userProperties, stylesheetProperties);
     if (method != null) {
       translet._method = method;
     }
 
-    final String doctypePublic = getOutputProperty(OutputKeys.DOCTYPE_PUBLIC);
+    final String doctypePublic = getLayeredOutputProperty(OutputKeys.DOCTYPE_PUBLIC, userProperties,
+            stylesheetProperties);
     if (doctypePublic != null) {
       translet._doctypePublic = doctypePublic;
     }
 
-    final String doctypeSystem = getOutputProperty(OutputKeys.DOCTYPE_SYSTEM);
+    final String doctypeSystem = getLayeredOutputProperty(OutputKeys.DOCTYPE_SYSTEM, userProperties,
+            stylesheetProperties);
     if (doctypeSystem != null) {
       translet._doctypeSystem = doctypeSystem;
     }
 
-    final String mediaType = getOutputProperty(OutputKeys.MEDIA_TYPE);
+    final String mediaType = getLayeredOutputProperty(OutputKeys.MEDIA_TYPE, userProperties, stylesheetProperties);
     if (mediaType != null) {
       translet._mediaType = mediaType;
     }
 
-    final String standalone = getOutputProperty(OutputKeys.STANDALONE);
+    final String standalone = getLayeredOutputProperty(OutputKeys.STANDALONE, userProperties, stylesheetProperties);
     if (standalone != null) {
       translet._standalone = standalone;
     }
 
-    final String version = getOutputProperty(OutputKeys.VERSION);
+    final String version = getLayeredOutputProperty(OutputKeys.VERSION, userProperties, stylesheetProperties);
     if (version != null) {
       translet._version = version;
     }
 
-    final String omitHeader = getOutputProperty(OutputKeys.OMIT_XML_DECLARATION);
+    final String omitHeader = getLayeredOutputProperty(OutputKeys.OMIT_XML_DECLARATION, userProperties,
+            stylesheetProperties);
     if (omitHeader != null) {
       translet._omitHeader = YES.equalsIgnoreCase(omitHeader);
     }
 
-    final String indent = getOutputProperty(OutputKeys.INDENT);
+    final String indent = getLayeredOutputProperty(OutputKeys.INDENT, userProperties, stylesheetProperties);
     if (indent != null) {
       translet._indent = YES.equalsIgnoreCase(indent);
     }
 
-    final String cdata = getOutputProperty(OutputKeys.CDATA_SECTION_ELEMENTS);
+    final String cdata = getLayeredOutputProperty(OutputKeys.CDATA_SECTION_ELEMENTS, userProperties,
+            stylesheetProperties);
     if (cdata != null) {
       translet._cdata = null; // clear previous setting
       final StringTokenizer e = new StringTokenizer(cdata);
@@ -877,35 +881,39 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
       return;
 
     // Transfer only non-default properties
-    final String doctypePublic = getOutputProperty(OutputKeys.DOCTYPE_PUBLIC);
-    final String doctypeSystem = getOutputProperty(OutputKeys.DOCTYPE_SYSTEM);
+    final String doctypePublic = getLayeredOutputProperty(OutputKeys.DOCTYPE_PUBLIC, userProperties,
+            stylesheetProperties);
+    final String doctypeSystem = getLayeredOutputProperty(OutputKeys.DOCTYPE_SYSTEM, userProperties,
+            stylesheetProperties);
 
-    final String mediaType = getOutputProperty(OutputKeys.MEDIA_TYPE);
+    final String mediaType = getLayeredOutputProperty(OutputKeys.MEDIA_TYPE, userProperties, stylesheetProperties);
     if (mediaType != null) {
       handler.setMediaType(mediaType);
     }
 
-    final String standalone = getOutputProperty(OutputKeys.STANDALONE);
+    final String standalone = getLayeredOutputProperty(OutputKeys.STANDALONE, userProperties, stylesheetProperties);
     if (standalone != null) {
       handler.setStandalone(standalone);
     }
 
-    final String version = getOutputProperty(OutputKeys.VERSION);
+    final String version = getLayeredOutputProperty(OutputKeys.VERSION, userProperties, stylesheetProperties);
     if (version != null) {
       handler.setVersion(version);
     }
 
-    final String omitHeader = getOutputProperty(OutputKeys.OMIT_XML_DECLARATION);
+    final String omitHeader = getLayeredOutputProperty(OutputKeys.OMIT_XML_DECLARATION, userProperties,
+            stylesheetProperties);
     if (omitHeader != null) {
       handler.setOmitXMLDeclaration(YES.equalsIgnoreCase(omitHeader));
     }
 
-    final String indent = getOutputProperty(OutputKeys.INDENT);
+    final String indent = getLayeredOutputProperty(OutputKeys.INDENT, userProperties, stylesheetProperties);
     if (indent != null) {
       handler.setIndent(YES.equalsIgnoreCase(indent));
     }
 
-    final String cdata = getOutputProperty(OutputKeys.CDATA_SECTION_ELEMENTS);
+    final String cdata = getLayeredOutputProperty(OutputKeys.CDATA_SECTION_ELEMENTS, userProperties,
+            stylesheetProperties);
     if (cdata != null) {
       final StringTokenizer e = new StringTokenizer(cdata);
       List<String> uriAndLocalNames = null;

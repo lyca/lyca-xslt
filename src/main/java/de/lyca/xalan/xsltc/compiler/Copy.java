@@ -21,26 +21,11 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import org.apache.bcel.generic.ALOAD;
-import org.apache.bcel.generic.ASTORE;
-import org.apache.bcel.generic.BranchHandle;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.IFEQ;
-import org.apache.bcel.generic.IFNULL;
-import org.apache.bcel.generic.ILOAD;
-import org.apache.bcel.generic.INVOKEINTERFACE;
-import org.apache.bcel.generic.INVOKEVIRTUAL;
-import org.apache.bcel.generic.ISTORE;
-import org.apache.bcel.generic.InstructionHandle;
-import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.LocalVariableGen;
-
+import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JMethod;
 
-import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
-import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
 import de.lyca.xalan.xsltc.compiler.util.Util;
@@ -83,7 +68,7 @@ final class Copy extends Instruction {
   }
 
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method) {
+  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
     // FIXME
 //    final ConstantPoolGen cpg = classGen.getConstantPool();
 //    final InstructionList il = methodGen.getInstructionList();

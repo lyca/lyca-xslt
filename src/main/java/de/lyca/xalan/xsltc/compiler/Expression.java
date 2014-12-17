@@ -29,7 +29,9 @@ import org.apache.bcel.generic.IFEQ;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InstructionList;
 
+import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JInvocation;
 import com.sun.codemodel.JMethod;
 
@@ -101,7 +103,7 @@ abstract class Expression extends SyntaxTreeNode {
    * Translate this node into JVM bytecodes.
    */
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method) {
+  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
     final ErrorMsg msg = new ErrorMsg(ErrorMsg.NOT_IMPLEMENTED_ERR, getClass(), this);
     getParser().reportError(FATAL, msg);
   }
@@ -110,7 +112,7 @@ abstract class Expression extends SyntaxTreeNode {
    * Translate this node into a fresh instruction list. The original instruction
    * list is saved and restored.
    */
-  public JInvocation compile(JDefinedClass definedClass, JMethod method) {
+  public JExpression compile(JDefinedClass definedClass, JMethod method) {
     return null;
     // FIXME
 //    final InstructionList result, save = methodGen.getInstructionList();
@@ -123,8 +125,8 @@ abstract class Expression extends SyntaxTreeNode {
   /**
    * Redefined by expressions of type boolean that use flow lists.
    */
-  public void translateDesynthesized(JDefinedClass definedClass, JMethod method) {
-    translate(definedClass, method);
+  public void translateDesynthesized(JDefinedClass definedClass, JMethod method, JBlock body) {
+    translate(definedClass, method, body);
     if (_type instanceof BooleanType) {
       desynthesize(definedClass, method);
     }

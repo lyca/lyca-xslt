@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JVar;
@@ -314,20 +315,20 @@ final class LiteralElement extends Instruction {
    * attribute may depend on a variable, variables must be compiled first.
    */
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method) {
+  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
     // Check whether all attributes are unique.
     _allAttributesUnique = checkAttributesUnique();
 
     // Compile code to emit element start tag
     JVar handler = method.listParams()[2];
-    method.body().add(handler.invoke("startElement").arg(_name));
+    body.add(handler.invoke("startElement").arg(_name));
 
     // The value of an attribute may depend on a (sibling) variable
     int j = 0;
     while (j < elementCount()) {
       final SyntaxTreeNode item = elementAt(j);
       if (item instanceof Variable) {
-        item.translate(definedClass, method);
+        item.translate(definedClass, method, body);
       }
       j++;
     }
@@ -342,7 +343,7 @@ final class LiteralElement extends Instruction {
           if (prefix == Constants.EMPTYSTRING) {
             declaresDefaultNS = true;
           }
-          method.body().add(handler.invoke("namespaceAfterStartElement").arg(prefix).arg(uri));
+          body.add(handler.invoke("namespaceAfterStartElement").arg(prefix).arg(uri));
         }
       }
 
@@ -351,7 +352,7 @@ final class LiteralElement extends Instruction {
        * doesn't, it must be redeclared one more time.
        */
       if (!declaresDefaultNS && _parent instanceof XslElement && ((XslElement) _parent).declaresDefaultNS()) {
-        method.body().add(
+        body.add(
             handler.invoke("namespaceAfterStartElement").arg(Constants.EMPTYSTRING).arg(Constants.EMPTYSTRING));
       }
     }
@@ -360,16 +361,16 @@ final class LiteralElement extends Instruction {
     if (_attributeElements != null) {
       for (final SyntaxTreeNode node : _attributeElements) {
         if (!(node instanceof XslAttribute)) {
-          node.translate(definedClass, method);
+          node.translate(definedClass, method, body);
         }
       }
     }
 
     // Compile code to emit attributes and child elements
-    translateContents(definedClass, method);
+    translateContents(definedClass, method, body);
 
     // Compile code to emit element end tag
-    method.body().add(handler.invoke("endElement").arg(_name));
+    body.add(handler.invoke("endElement").arg(_name));
   }
 
   /**

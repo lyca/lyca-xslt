@@ -21,27 +21,26 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
+import static com.sun.codemodel.JExpr.cast;
+import static com.sun.codemodel.JExpr.invoke;
+import static com.sun.codemodel.JExpr.lit;
+import static com.sun.codemodel.JExpr.ref;
+
 import java.util.List;
 
-import org.apache.bcel.generic.ALOAD;
-import org.apache.bcel.generic.ASTORE;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.GETFIELD;
-import org.apache.bcel.generic.INVOKESTATIC;
-import org.apache.bcel.generic.INVOKEVIRTUAL;
-import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.LocalVariableGen;
-import org.apache.bcel.generic.PUSH;
-
+import com.sun.codemodel.JBlock;
+import com.sun.codemodel.JClass;
 import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JMethod;
+import com.sun.codemodel.JVar;
 
-import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
-import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
 import de.lyca.xalan.xsltc.compiler.util.Util;
+import de.lyca.xalan.xsltc.runtime.BasisLibrary;
+import de.lyca.xalan.xsltc.runtime.StringValueHandler;
 import de.lyca.xml.serializer.ElemDesc;
 import de.lyca.xml.serializer.ExtendedContentHandler;
 import de.lyca.xml.utils.XML11Char;
@@ -209,93 +208,98 @@ final class XslAttribute extends Instruction {
      *
      */
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method) {
-//    FIXME
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//    final InstructionList il = methodGen.getInstructionList();
-//
-//    if (_ignore)
-//      return;
-//    _ignore = true;
-//
-//    // Compile code that emits any needed namespace declaration
-//    if (_namespace != null) {
-//      // public void attribute(final String name, final String value)
+  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
+    if (_ignore)
+      return;
+    _ignore = true;
+
+    // Compile code that emits any needed namespace declaration
+    if (_namespace != null) {
+      // public void attribute(final String name, final String value)
+      
 //      il.append(methodGen.loadHandler());
 //      il.append(new PUSH(cpg, _prefix));
 //      _namespace.translate(classGen, methodGen);
 //      il.append(methodGen.namespace());
-//    }
-//
-//    if (!_isLiteral) {
-//      // if the qname is an AVT, then the qname has to be checked at runtime if
-//      // it is a valid qname
-//      final LocalVariableGen nameValue = methodGen.addLocalVariable2("nameValue", Util.getJCRefType(STRING_SIG), null);
-//
-//      // store the name into a variable first so _name.translate only needs to
-//      // be called once
-//      _name.translate(classGen, methodGen);
+    }
+
+    JExpression secondArg = null;
+    if (!_isLiteral) {
+      // if the qname is an AVT, then the qname has to be checked at runtime if
+      // it is a valid qname
+      final JVar nameValue = body.decl(definedClass.owner()._ref(String.class), "nameValue", _name.compile(definedClass, method));
+      
+      // store the name into a variable first so _name.translate only needs to
+      // be called once
 //      nameValue.setStart(il.append(new ASTORE(nameValue.getIndex())));
 //      il.append(new ALOAD(nameValue.getIndex()));
-//
-//      // call checkQName if the name is an AVT
+
+      // call checkQName if the name is an AVT
+      body.staticInvoke(definedClass.owner().ref(BasisLibrary.class), "checkAttribQName");
 //      final int check = cpg.addMethodref(BASIS_LIBRARY_CLASS, "checkAttribQName", "(" + STRING_SIG + ")V");
 //      il.append(new INVOKESTATIC(check));
-//
-//      // Save the current handler base on the stack
+
+      // Save the current handler base on the stack
 //      il.append(methodGen.loadHandler());
 //      il.append(DUP); // first arg to "attributes" call
-//
-//      // load name value again
+
+      // load name value again
 //      nameValue.setEnd(il.append(new ALOAD(nameValue.getIndex())));
-//    } else {
-//      // Save the current handler base on the stack
+    } else {
+      // Save the current handler base on the stack
 //      il.append(methodGen.loadHandler());
 //      il.append(DUP); // first arg to "attributes" call
-//
-//      // Push attribute name
-//      _name.translate(classGen, methodGen);// 2nd arg
-//
-//    }
-//
-//    // Push attribute value - shortcut for literal strings
-//    if (elementCount() == 1 && elementAt(0) instanceof Text) {
+
+      // Push attribute name
+      secondArg = _name.compile(definedClass, method);// 2nd arg
+
+    }
+
+    // Push attribute value - shortcut for literal strings
+    JExpression text = null;
+    if (elementCount() == 1 && elementAt(0) instanceof Text) {
+      text = lit(((Text) elementAt(0)).getText());
 //      il.append(new PUSH(cpg, ((Text) elementAt(0)).getText()));
-//    } else {
+    } else {
 //      il.append(classGen.loadTranslet());
 //      il.append(new GETFIELD(cpg.addFieldref(TRANSLET_CLASS, "stringValueHandler", STRING_VALUE_HANDLER_SIG)));
 //      il.append(DUP);
 //      il.append(methodGen.storeHandler());
-//      // translate contents with substituted handler
-//      translateContents(classGen, methodGen);
-//      // get String out of the handler
+      body.invoke("pushHandler").arg(ref("stringValueHandler"));
+      // translate contents with substituted handler
+      translateContents(definedClass, method, body);
+      // get String out of the handler
 //      il.append(new INVOKEVIRTUAL(cpg.addMethodref(STRING_VALUE_HANDLER, "getValue", "()" + STRING_SIG)));
-//    }
-//
-//    final SyntaxTreeNode parent = getParent();
-//    if (parent instanceof LiteralElement && ((LiteralElement) parent).allAttributesUnique()) {
-//      int flags = 0;
-//      final ElemDesc elemDesc = ((LiteralElement) parent).getElemDesc();
-//
-//      // Set the HTML flags
-//      if (elemDesc != null && _name instanceof SimpleAttributeValue) {
-//        final String attrName = ((SimpleAttributeValue) _name).toString();
-//        if (elemDesc.isAttrFlagSet(attrName, ElemDesc.ATTREMPTY)) {
-//          flags = flags | ExtendedContentHandler.HTML_ATTREMPTY;
-//        } else if (elemDesc.isAttrFlagSet(attrName, ElemDesc.ATTRURL)) {
-//          flags = flags | ExtendedContentHandler.HTML_ATTRURL;
-//        }
-//      }
+      JClass stringValueHandler = definedClass.owner().ref(StringValueHandler.class);
+      text = invoke(((JExpression) cast(stringValueHandler, invoke("popHandler"))), "getValue");
+    }
+
+    final SyntaxTreeNode parent = getParent();
+    if (parent instanceof LiteralElement && ((LiteralElement) parent).allAttributesUnique()) {
+      int flags = 0;
+      final ElemDesc elemDesc = ((LiteralElement) parent).getElemDesc();
+
+      // Set the HTML flags
+      if (elemDesc != null && _name instanceof SimpleAttributeValue) {
+        final String attrName = ((SimpleAttributeValue) _name).toString();
+        if (elemDesc.isAttrFlagSet(attrName, ElemDesc.ATTREMPTY)) {
+          flags = flags | ExtendedContentHandler.HTML_ATTREMPTY;
+        } else if (elemDesc.isAttrFlagSet(attrName, ElemDesc.ATTRURL)) {
+          flags = flags | ExtendedContentHandler.HTML_ATTRURL;
+        }
+      }
+      body.invoke(method.listParams()[2] ,"addUniqueAttribute").arg(secondArg).arg(text).arg(lit(flags));
 //      il.append(new PUSH(cpg, flags));
 //      il.append(methodGen.uniqueAttribute());
-//    } else {
-//      // call "attribute"
+    } else {
+      // call "attribute"
+      body.invoke(method.listParams()[2] ,"addAttribute").arg(secondArg).arg(text);
 //      il.append(methodGen.attribute());
-//    }
-//
-//    // Restore old handler base from stack
+    }
+
+    // Restore old handler base from stack
 //    il.append(methodGen.storeHandler());
-//
+
   }
 
 }

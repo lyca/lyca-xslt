@@ -21,34 +21,27 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
+import static com.sun.codemodel.JExpr.TRUE;
+import static com.sun.codemodel.JExpr._this;
+import static com.sun.codemodel.JExpr.invoke;
+import static com.sun.codemodel.JExpr.lit;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.bcel.generic.BranchHandle;
-import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.DUP;
-import org.apache.bcel.generic.GOTO_W;
-import org.apache.bcel.generic.IFLT;
-import org.apache.bcel.generic.ILOAD;
-import org.apache.bcel.generic.INVOKEINTERFACE;
-import org.apache.bcel.generic.INVOKEVIRTUAL;
-import org.apache.bcel.generic.ISTORE;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.LocalVariableGen;
-import org.apache.bcel.generic.SWITCH;
 import org.apache.bcel.generic.TargetLostException;
 import org.apache.bcel.util.InstructionFinder;
 import org.xml.sax.SAXException;
 
 import com.sun.codemodel.JBlock;
-import com.sun.codemodel.JCase;
 import com.sun.codemodel.JDefinedClass;
-import com.sun.codemodel.JExpr;
 import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JInvocation;
 import com.sun.codemodel.JMethod;
@@ -56,13 +49,10 @@ import com.sun.codemodel.JMod;
 import com.sun.codemodel.JStatement;
 import com.sun.codemodel.JSwitch;
 import com.sun.codemodel.JVar;
-import com.sun.codemodel.JWhileLoop;
 
 import de.lyca.xalan.xsltc.DOM;
 import de.lyca.xalan.xsltc.TransletException;
-import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
-import de.lyca.xalan.xsltc.compiler.util.NamedMethodGenerator;
 import de.lyca.xalan.xsltc.compiler.util.Util;
 import de.lyca.xml.dtm.Axis;
 import de.lyca.xml.dtm.DTM;
@@ -525,7 +515,7 @@ final class Mode implements Constants {
     for (int i = 0; i < numParams; i++) {
       method.param(Object.class, "param" + i);
     }
-    template.translate(definedClass, method);
+    template.translate(definedClass, method, method.body());
   }
 
   private void compileTemplates(JDefinedClass definedClass, JMethod method) {
@@ -587,7 +577,7 @@ final class Mode implements Constants {
     JVar document = method.listParams()[0];
     JVar handler = method.listParams()[2];
     JInvocation getChildren = document.invoke(GET_CHILDREN).arg(current);
-    return JExpr._this().invoke(method).arg(document).arg(getChildren).arg(handler);
+    return _this().invoke(method).arg(document).arg(getChildren).arg(handler);
   }
 
   /**
@@ -666,16 +656,16 @@ final class Mode implements Constants {
     JVar iterator = applyTemplates.param(DTMAxisIterator.class, ITERATOR_PNAME);
     JVar handler = applyTemplates.param(SerializationHandler.class, TRANSLET_OUTPUT_PNAME);
 
-    final JBlock loop = applyTemplates.body()._while(JExpr.TRUE).body();
+    final JBlock loop = applyTemplates.body()._while(TRUE).body();
 
     // Create a local variable to hold the current node
     // Create an instruction list that contains the default next-node
     // iteration
-    JVar current = loop.decl(definedClass.owner().INT, "current", JExpr.invoke(iterator, "next"));
+    JVar current = loop.decl(definedClass.owner().INT, "current", invoke(iterator, "next"));
 
     // The body of this code can get very large - large than can be handled
     // by a single IFNE(body.getStart()) instruction - need workaround:
-    loop._if(current.lt(JExpr.lit(0)))._then()._return(); // applyTemplates() ends here!
+    loop._if(current.lt(lit(0)))._then()._return(); // applyTemplates() ends here!
 
     // Compile default handling of elements (traverse children)
     final JInvocation defaultRecursion = compileDefaultRecursion(definedClass, applyTemplates, current);
@@ -884,7 +874,7 @@ final class Mode implements Constants {
     // Append all the "case:" statements
     for (int i = 0; i < targets.length; i++) {
       JStatement jStatement = targets[i];
-      if (jStatement != null) test._case(JExpr.lit(i)).body().add(jStatement)._break();
+      if (jStatement != null) test._case(lit(i)).body().add(jStatement)._break();
     }
     // appendTestSequences(test);
     // Append the actual template code

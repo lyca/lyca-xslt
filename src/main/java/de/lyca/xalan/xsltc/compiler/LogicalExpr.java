@@ -25,6 +25,7 @@ import org.apache.bcel.generic.GOTO;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InstructionList;
 
+import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JMethod;
 
@@ -161,8 +162,8 @@ final class LogicalExpr extends Expression {
    * Compile the expression - leave boolean expression on stack
    */
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method) {
-    translateDesynthesized(definedClass, method);
+  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
+    translateDesynthesized(definedClass, method, null);
     synthesize(definedClass, method);
   }
 
@@ -170,7 +171,7 @@ final class LogicalExpr extends Expression {
    * Compile expression and update true/false-lists
    */
   @Override
-  public void translateDesynthesized(JDefinedClass definedClass, JMethod method) {
+  public void translateDesynthesized(JDefinedClass definedClass, JMethod method, JBlock body) {
  // FIXME
 //    final InstructionList il = methodGen.getInstructionList();
 //

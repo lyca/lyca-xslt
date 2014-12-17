@@ -21,21 +21,14 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.INVOKEINTERFACE;
-import org.apache.bcel.generic.INVOKESTATIC;
-import org.apache.bcel.generic.INVOKEVIRTUAL;
-import org.apache.bcel.generic.InstructionList;
-
 import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JInvocation;
 import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JVar;
 
-import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
-import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 import de.lyca.xalan.xsltc.compiler.util.NodeSetType;
 import de.lyca.xalan.xsltc.compiler.util.NodeType;
 import de.lyca.xalan.xsltc.compiler.util.ReferenceType;
@@ -82,9 +75,8 @@ final class CopyOf extends Instruction {
   }
 
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method) {
+  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
     final Type tselect = _select.getType();
-    final JBlock body = method.body();
     final JVar[] params = method.listParams();
 //    final String CPY1_SIG = "(" + NODE_ITERATOR_SIG + TRANSLET_OUTPUT_SIG + ")V";
 //    final int cpy1 = cpg.addInterfaceMethodref(DOM_INTF, "copy", CPY1_SIG);
@@ -111,22 +103,27 @@ final class CopyOf extends Instruction {
 //      il.append(new INVOKEINTERFACE(cpy1, 3));
     } else if (tselect instanceof NodeType) {
       JInvocation copy = body.invoke(params[0], "copy");
-      JInvocation dom = _select.compile(definedClass, method);
+      JInvocation dom = (JInvocation) _select.compile(definedClass, method);
       copy.arg(dom).arg(params[2]);
 
 //      il.append(method.loadDOM());
-      _select.translate(definedClass, method);
+      _select.translate(definedClass, method, body);
 //      il.append(method.loadHandler());
 //      il.append(new INVOKEINTERFACE(cpy2, 3));
     } else if (tselect instanceof ResultTreeType) {
-      _select.translate(definedClass, method);
+      JExpression dom = _select.compile(definedClass, method);
+      JInvocation document = dom.invoke("getDocument");
+      JInvocation copy = body.invoke(dom, "copy");
+      copy.arg(document).arg(params[2]);
+
+      _select.translate(definedClass, method, body);
       // We want the whole tree, so we start with the root node
 //      il.append(DUP); // need a pointer to the DOM ;
 //      il.append(new INVOKEINTERFACE(getDoc, 1)); // ICONST_0);
 //      il.append(method.loadHandler());
 //      il.append(new INVOKEINTERFACE(cpy2, 3));
     } else if (tselect instanceof ReferenceType) {
-      _select.translate(definedClass, method);
+      _select.translate(definedClass, method, body);
 //      il.append(method.loadHandler());
 //      il.append(method.loadCurrentNode());
 //      il.append(method.loadDOM());
@@ -135,7 +132,7 @@ final class CopyOf extends Instruction {
 //      il.append(new INVOKESTATIC(copy));
     } else {
 //      il.append(definedClass.loadTranslet());
-      _select.translate(definedClass, method);
+      _select.translate(definedClass, method, body);
 //      il.append(method.loadHandler());
 //      il.append(new INVOKEVIRTUAL(cpg.addMethodref(TRANSLET_CLASS, CHARACTERSW, CHARACTERSW_SIG)));
     }

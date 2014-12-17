@@ -21,7 +21,6 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -32,9 +31,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -872,13 +871,14 @@ public final class XSLTC {
    * Returns a unique name for every helper class needed to execute a translet.
    */
   public String getHelperClassName() {
-    return getClassName() + '$' + _helperClassSerial++;
+    return getClassName() + '_' + _helperClassSerial++;
   }
 
   public void dumpClass(JCodeModel jCodeModel, JDefinedClass definedClass) {
 
+    String fullName = definedClass.fullName();
     if (_outputType == FILE_OUTPUT || _outputType == BYTEARRAY_AND_FILE_OUTPUT) {
-      final File outFile = getOutputFile(definedClass.fullName());
+      final File outFile = getOutputFile(fullName);
       final String parentDir = outFile.getParent();
       if (parentDir != null) {
         final File parentFile = new File(parentDir);
@@ -891,7 +891,7 @@ public final class XSLTC {
     try {
       switch (_outputType) {
         case FILE_OUTPUT:
-          jCodeModel.build(getOutputFile(definedClass.fullName()));
+          jCodeModel.build(getOutputFile(fullName));
           break;
         case JAR_OUTPUT:
           // FIXME
@@ -901,7 +901,7 @@ public final class XSLTC {
         case BYTEARRAY_AND_FILE_OUTPUT:
         case BYTEARRAY_AND_JAR_OUTPUT:
         case CLASSLOADER_OUTPUT:
-          final File inFile = getInputFile(definedClass.fullName());
+          final File inFile = getInputFile(fullName);
           final Path parentDir = inFile.toPath().getParent();
           Files.createDirectories(parentDir);
           jCodeModel.build(parentDir.toFile());
@@ -913,8 +913,11 @@ public final class XSLTC {
           if(result == true){
             System.out.println("Compilation has succeeded");
           }
-          _classes.add(Files.readAllBytes(Paths.get(getOutputFile(definedClass.fullName()).toURI())));
-
+          _classes.add(Files.readAllBytes(Paths.get(getOutputFile(fullName).toURI())));
+          for (Iterator<JDefinedClass> iterator = definedClass.classes(); iterator.hasNext();) {
+            JDefinedClass definedInnerClass = iterator.next();
+            _classes.add(Files.readAllBytes(Paths.get(getOutputFile(definedInnerClass.binaryName()).toURI())));
+          }
           if (_outputType == BYTEARRAY_AND_FILE_OUTPUT) {
             //jCodeModel.build(getOutputFile(definedClass.fullName()));
           } else if (_outputType == BYTEARRAY_AND_JAR_OUTPUT) {

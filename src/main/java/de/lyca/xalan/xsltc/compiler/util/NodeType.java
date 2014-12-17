@@ -38,6 +38,7 @@ import org.apache.bcel.generic.PUSH;
 
 import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JMethod;
+import com.sun.codemodel.JType;
 
 import de.lyca.xalan.xsltc.compiler.Constants;
 import de.lyca.xalan.xsltc.compiler.FlowList;
@@ -83,8 +84,8 @@ public final class NodeType extends Type {
   }
 
   @Override
-  public org.apache.bcel.generic.Type toJCType() {
-    return org.apache.bcel.generic.Type.INT;
+  public JType toJCType() {
+    return JCM.INT;
   }
 
   /**

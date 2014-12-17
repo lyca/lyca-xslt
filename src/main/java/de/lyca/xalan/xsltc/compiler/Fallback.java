@@ -21,6 +21,7 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
+import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JMethod;
 
@@ -75,9 +76,9 @@ final class Fallback extends Instruction {
    * unsupported element or non-XSLTC extension element
    */
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method) {
+  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
     if (_active) {
-      translateContents(definedClass, method);
+      translateContents(definedClass, method, body);
     }
   }
 }

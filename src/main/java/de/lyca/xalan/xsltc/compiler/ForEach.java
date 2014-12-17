@@ -21,24 +21,21 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
+import static com.sun.codemodel.JExpr.TRUE;
+import static com.sun.codemodel.JExpr.direct;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.bcel.generic.BranchHandle;
-import org.apache.bcel.generic.GOTO;
-import org.apache.bcel.generic.IFGT;
-import org.apache.bcel.generic.InstructionHandle;
-import org.apache.bcel.generic.InstructionList;
-
+import com.sun.codemodel.JBlock;
+import com.sun.codemodel.JConditional;
 import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JExpr;
-import com.sun.codemodel.JInvocation;
+import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JMethod;
-import com.sun.codemodel.JType;
+import com.sun.codemodel.JVar;
 
-import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
-import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 import de.lyca.xalan.xsltc.compiler.util.NodeSetType;
 import de.lyca.xalan.xsltc.compiler.util.NodeType;
 import de.lyca.xalan.xsltc.compiler.util.ReferenceType;
@@ -96,7 +93,7 @@ final class ForEach extends Instruction {
   }
 
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method) {
+  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
  // FIXME
 //    final InstructionList il = method.getInstructionList();
 
@@ -112,6 +109,7 @@ final class ForEach extends Instruction {
       }
     }
 
+    JExpression iterator;
     if (_type != null && _type instanceof ResultTreeType) {
       // Store existing DOM on stack - must be restored when loop is done
 //      il.append(method.loadDOM());
@@ -121,7 +119,7 @@ final class ForEach extends Instruction {
         final ErrorMsg msg = new ErrorMsg(ErrorMsg.RESULT_TREE_SORT_ERR, this);
         getParser().reportError(WARNING, msg);
       }
-      JInvocation iterator = _select.compile(definedClass, method);//.invoke("setStartNode").arg(params[3]);
+      iterator = _select.compile(definedClass, method);//.invoke("setStartNode").arg(params[3]);
 
       // Put the result tree on the stack (DOM)
 //      _select.translate(definedClass, method);
@@ -133,9 +131,9 @@ final class ForEach extends Instruction {
     } else {
       // Compile node iterator
       if (sortObjects.size() > 0) {
-//        Sort.translateSortIterator(definedClass, method, _select, sortObjects);
+        iterator = Sort.translateSortIterator(definedClass, method, _select, sortObjects);
       } else {
-        method.body().decl(definedClass.owner()._ref(DTMAxisIterator.class), "tmpIterator", _select.compile(definedClass, method));
+        iterator = body.decl(definedClass.owner()._ref(DTMAxisIterator.class), "tmpIterator", _select.compile(definedClass, method));
 //        _select.translate(definedClass, method);
       }
 
@@ -153,9 +151,14 @@ final class ForEach extends Instruction {
 
 //    final BranchHandle nextNode = il.append(new GOTO(null));
 //    final InstructionHandle loop = il.append(NOP);
+    final JBlock loop = body._while(TRUE).body();
+    JVar current = loop.decl(definedClass.owner().INT, "current", iterator.invoke("next"));
+    final JConditional _if = loop._if(current.gt(JExpr.lit(0)));
+    final JBlock _then = _if._then();
 
-    translateContents(definedClass, method);
+    translateContents(definedClass, method, _then);
 
+    _if._else()._break();
 //    nextNode.setTarget(il.append(method.loadIterator()));
 //    il.append(method.nextNode());
 //    il.append(DUP);

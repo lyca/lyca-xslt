@@ -26,6 +26,7 @@ import org.apache.bcel.generic.GOTO;
 import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.PUSH;
 
+import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JMethod;
 
@@ -69,7 +70,7 @@ final class BooleanExpr extends Expression {
   }
 
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method) {
+  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
 // FIXME
 //    final ConstantPoolGen cpg = classGen.getConstantPool();
 //    final InstructionList il = methodGen.getInstructionList();
@@ -77,7 +78,7 @@ final class BooleanExpr extends Expression {
   }
 
   @Override
-  public void translateDesynthesized(JDefinedClass definedClass, JMethod method) {
+  public void translateDesynthesized(JDefinedClass definedClass, JMethod method, JBlock body) {
 // FIXME
 //    final InstructionList il = methodGen.getInstructionList();
 //    if (_value) {

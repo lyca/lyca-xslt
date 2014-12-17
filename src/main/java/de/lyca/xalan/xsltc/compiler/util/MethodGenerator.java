@@ -1239,7 +1239,7 @@ public class MethodGenerator extends MethodGen implements de.lyca.xalan.xsltc.co
 
     final XSLTC xsltc = classGen.getParser().getXSLTC();
     final String argTypeName = xsltc.getHelperClassName();
-    final Type[] argTypes = new Type[] { new ObjectType(argTypeName).toJCType() };
+    final Type[] argTypes = new Type[] {};//{ ObjectType(argTypeName).toJCType() };
     final String argName = "copyLocals";
     final String[] argNames = new String[] { argName };
 

@@ -27,6 +27,7 @@ import org.apache.bcel.generic.PUSH;
 
 import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JMethod;
+import com.sun.codemodel.JType;
 
 import de.lyca.xalan.xsltc.compiler.Constants;
 
@@ -54,8 +55,8 @@ public final class VoidType extends Type {
   }
 
   @Override
-  public org.apache.bcel.generic.Type toJCType() {
-    return null; // should never be called
+  public JType toJCType() {
+    return JCM.VOID; // should never be called
   }
 
   @Override

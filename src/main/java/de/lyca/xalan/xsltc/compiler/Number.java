@@ -42,6 +42,7 @@ import org.apache.bcel.generic.NEW;
 import org.apache.bcel.generic.PUSH;
 import org.apache.bcel.generic.PUTFIELD;
 
+import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JMethod;
 
@@ -426,7 +427,7 @@ final class Number extends Instruction implements Closure {
   }
 
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method) {
+  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
  // FIXME
 //    int index;
 //    final ConstantPoolGen cpg = classGen.getConstantPool();

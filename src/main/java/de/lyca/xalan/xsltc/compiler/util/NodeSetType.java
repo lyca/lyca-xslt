@@ -21,23 +21,19 @@
 
 package de.lyca.xalan.xsltc.compiler.util;
 
+import static com.sun.codemodel.JExpr.invoke;
+
 import org.apache.bcel.generic.ALOAD;
 import org.apache.bcel.generic.ASTORE;
-import org.apache.bcel.generic.BranchHandle;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.GOTO;
-import org.apache.bcel.generic.IFLT;
-import org.apache.bcel.generic.INVOKEINTERFACE;
-import org.apache.bcel.generic.INVOKESTATIC;
 import org.apache.bcel.generic.Instruction;
-import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.PUSH;
 
 import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JMethod;
+import com.sun.codemodel.JType;
 
-import de.lyca.xalan.xsltc.compiler.Constants;
 import de.lyca.xalan.xsltc.compiler.FlowList;
+import de.lyca.xml.dtm.DTMAxisIterator;
 
 /**
  * @author Jacek Ambroziak
@@ -63,8 +59,8 @@ public final class NodeSetType extends Type {
   }
 
   @Override
-  public org.apache.bcel.generic.Type toJCType() {
-    return new org.apache.bcel.generic.ObjectType(NODE_ITERATOR);
+  public JType toJCType() {
+    return JCM._ref(DTMAxisIterator.class);
   }
 
   /**
@@ -94,6 +90,27 @@ public final class NodeSetType extends Type {
     }
   }
 
+  @Override
+  public JExpression compileTo(JDefinedClass definedClass, JMethod method, Type type) {
+    if (type == Type.String) {
+      return compileTo(definedClass, method, (StringType) type);
+    } else if (type == Type.Boolean) {
+      return compileTo(definedClass, method, (BooleanType) type);
+    } else if (type == Type.Real) {
+      return compileTo(definedClass, method, (RealType) type);
+    } else if (type == Type.Node) {
+      return compileTo(definedClass, method, (NodeType) type);
+    } else if (type == Type.Reference) {
+      return compileTo(definedClass, method, (ReferenceType) type);
+    } else if (type == Type.Object) {
+      return compileTo(definedClass, method, (ObjectType) type);
+    } else {
+      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), type.toString());
+      // FIXME classGen.getParser().reportError(Constants.FATAL, err);
+      return null;
+    }
+  }
+  
   /**
    * Translates an external Java Class into an internal type. Expects the Java
    * object on the stack, pushes the internal type
@@ -181,10 +198,15 @@ public final class NodeSetType extends Type {
    * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
    */
   public void translateTo(JDefinedClass definedClass, JMethod method, NodeType type) {
-//    FIXME
-//    getFirstNode(classGen, methodGen);
+    getFirstNode(definedClass, method);
   }
 
+  public JExpression compileTo(JDefinedClass definedClass, JMethod method, NodeType type) {
+//  il.append(new INVOKEINTERFACE(cpg.addInterfaceMethodref(NODE_ITERATOR, NEXT, NEXT_SIG), 1));
+    return invoke(NEXT);
+  }
+
+  
   /**
    * Subsume node-set into ObjectType.
    * 

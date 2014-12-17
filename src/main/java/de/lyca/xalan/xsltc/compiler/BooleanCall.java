@@ -23,6 +23,7 @@ package de.lyca.xalan.xsltc.compiler;
 
 import java.util.List;
 
+import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JMethod;
 
@@ -51,8 +52,8 @@ final class BooleanCall extends FunctionCall {
   }
 
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method) {
-    _arg.translate(definedClass, method);
+  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
+    _arg.translate(definedClass, method, body);
     final Type targ = _arg.getType();
     if (!targ.identicalTo(Type.Boolean)) {
       _arg.startIterator(definedClass, method);

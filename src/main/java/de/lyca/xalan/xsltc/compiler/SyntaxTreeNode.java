@@ -21,6 +21,9 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
+import static com.sun.codemodel.JExpr.invoke;
+import static com.sun.codemodel.JExpr.lit;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,10 +31,18 @@ import java.util.ListIterator;
 import java.util.Map;
 
 import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
 
+import com.sun.codemodel.JBlock;
+import com.sun.codemodel.JClass;
 import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JExpression;
+import com.sun.codemodel.JInvocation;
 import com.sun.codemodel.JMethod;
+import com.sun.codemodel.JVar;
 
+import de.lyca.xalan.xsltc.DOM;
+import de.lyca.xalan.xsltc.TransletException;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
@@ -529,7 +540,7 @@ public abstract class SyntaxTreeNode implements Constants {
    *          BCEL Java method generator
    */
 //  public abstract void translate(JDefinedClass definedClass, JMethod method);
-  public abstract void translate(JDefinedClass definedClass, JMethod method);
+  public abstract void translate(JDefinedClass definedClass, JMethod method, JBlock body);
 
   /**
    * Call translate() on all child syntax tree nodes.
@@ -539,10 +550,10 @@ public abstract class SyntaxTreeNode implements Constants {
    * @param methodGen
    *          BCEL Java method generator
    */
-  protected void translateContents(JDefinedClass definedClass, JMethod method) {
+  protected void translateContents(JDefinedClass definedClass, JMethod method, JBlock body) {
     // Call translate() on all child nodes
     for (SyntaxTreeNode item : _contents) {
-      item.translate(definedClass, method);
+      item.translate(definedClass, method, body);
     }
 
     // After translation, unmap any registers for any variables/parameters
@@ -638,58 +649,77 @@ public abstract class SyntaxTreeNode implements Constants {
    * @param methodGen
    *          BCEL Java method generator
    */
-  protected void compileResultTree(JDefinedClass definedClass, JMethod method) {
-//    FIXME
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//    final InstructionList il = methodGen.getInstructionList();
-//    final Stylesheet stylesheet = classGen.getStylesheet();
-//
-//    final boolean isSimple = isSimpleRTF(this);
-//    boolean isAdaptive = false;
-//    if (!isSimple) {
-//      isAdaptive = isAdaptiveRTF(this);
-//    }
-//
-//    final int rtfType = isSimple ? DOM.SIMPLE_RTF : isAdaptive ? DOM.ADAPTIVE_RTF : DOM.TREE_RTF;
-//
-//    // Save the current handler base on the stack
+  protected JExpression compileResultTree(JDefinedClass definedClass, JMethod method) {
+    JVar dom = method.listParams()[0];
+    JVar handler = method.listParams()[2];
+    final Stylesheet stylesheet = getStylesheet();
+
+    final boolean isSimple = isSimpleRTF(this);
+    boolean isAdaptive = false;
+    if (!isSimple) {
+      isAdaptive = isAdaptiveRTF(this);
+    }
+
+    final int rtfType = isSimple ? DOM.SIMPLE_RTF : isAdaptive ? DOM.ADAPTIVE_RTF : DOM.TREE_RTF;
+
+    // Save the current handler base on the stack
 //    il.append(methodGen.loadHandler());
-//
+
 //    final String DOM_CLASS = classGen.getDOMClass();
-//
-//    // Create new instance of DOM class (with RTF_INITIAL_SIZE nodes)
-//    // int index = cpg.addMethodref(DOM_IMPL, "<init>", "(I)V");
-//    // il.append(new NEW(cpg.addClass(DOM_IMPL)));
-//
+
+    // Create new instance of DOM class (with RTF_INITIAL_SIZE nodes)
+    // int index = cpg.addMethodref(DOM_IMPL, "<init>", "(I)V");
+    // il.append(new NEW(cpg.addClass(DOM_IMPL)));
+
 //    il.append(methodGen.loadDOM());
 //    int index = cpg.addInterfaceMethodref(DOM_INTF, "getResultTreeFrag", "(IIZ)" + DOM_INTF_SIG);
 //    il.append(new PUSH(cpg, RTF_INITIAL_SIZE));
 //    il.append(new PUSH(cpg, rtfType));
 //    il.append(new PUSH(cpg, stylesheet.callsNodeset()));
 //    il.append(new INVOKEINTERFACE(index, 4));
-//
+
+    JBlock body = method.body();
+    JVar resultTreeFrag = body.decl(
+        dom.type(),
+        "resultTreeFrag",
+        dom.invoke("getResultTreeFrag").arg(lit(RTF_INITIAL_SIZE)).arg(lit(rtfType))
+            .arg(lit(stylesheet.callsNodeset())));
+
 //    il.append(DUP);
-//
-//    // Overwrite old handler with DOM handler
+
+    // Overwrite old handler with DOM handler
 //    index = cpg.addInterfaceMethodref(DOM_INTF, "getOutputDomBuilder", "()" + TRANSLET_OUTPUT_SIG);
 //
 //    il.append(new INVOKEINTERFACE(index, 1));
 //    il.append(DUP);
 //    il.append(methodGen.storeHandler());
-//
-//    // Call startDocument on the new handler
+
+
+    body.invoke("pushHandler").arg(resultTreeFrag.invoke("getOutputDomBuilder"));
+    JInvocation outputDomBuilder = invoke("peekHandler");
+    
+    // Call startDocument on the new handler
 //    il.append(methodGen.startDocument());
-//
-//    // Instantiate result tree fragment
-//    translateContents(classGen, methodGen);
-//
-//    // Call endDocument on the new handler
+//    JTryBlock _try = method.body()._try();
+//    JBlock block = _try.body();
+    body.invoke(outputDomBuilder, "startDocument");
+
+    // Instantiate result tree fragment
+    translateContents(definedClass, method, body);
+
+    // Call endDocument on the new handler
 //    il.append(methodGen.loadHandler());
 //    il.append(methodGen.endDocument());
-//
-//    // Check if we need to wrap the DOMImpl object in a DOMAdapter object.
-//    // DOMAdapter is not needed if the RTF is a simple RTF and the nodeset()
-//    // function is not used.
+    body.invoke(invoke("popHandler"), "endDocument");
+    JClass saxException = definedClass.owner().ref(SAXException.class);
+    JClass transletException = definedClass.owner().ref(TransletException.class);
+//    JCatchBlock _catch = _try._catch(saxException);
+//    JVar e = _catch.param("e");
+//    _catch.body()._throw(_new(transletException).arg(e));
+
+    // Check if we need to wrap the DOMImpl object in a DOMAdapter object.
+    // DOMAdapter is not needed if the RTF is a simple RTF and the nodeset()
+    // function is not used.
 //    if (stylesheet.callsNodeset() && !DOM_CLASS.equals(DOM_IMPL_CLASS)) {
 //      // new de.lyca.xalan.xsltc.dom.DOMAdapter(DOMImpl,String[]);
 //      index = cpg.addMethodref(DOM_ADAPTER_CLASS, "<init>", "(" + DOM_INTF_SIG + "[" + STRING_SIG + "[" + STRING_SIG
@@ -735,10 +765,11 @@ public abstract class SyntaxTreeNode implements Constants {
 //        il.append(POP); // ignore mask returned by addDOMAdapter
 //      }
 //    }
-//
-//    // Restore old handler base from stack
+
+    // Restore old handler base from stack
 //    il.append(SWAP);
 //    il.append(methodGen.storeHandler());
+    return resultTreeFrag;
   }
 
   /**

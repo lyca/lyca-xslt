@@ -21,20 +21,18 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import org.apache.bcel.generic.BranchInstruction;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.INVOKESTATIC;
-import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.PUSH;
+import static com.sun.codemodel.JExpr._null;
+import static com.sun.codemodel.JExpr.lit;
 
+import com.sun.codemodel.JBlock;
+import com.sun.codemodel.JClass;
 import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JMethod;
 
 import de.lyca.xalan.xsltc.compiler.util.BooleanType;
-import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.IntType;
-import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 import de.lyca.xalan.xsltc.compiler.util.MethodType;
 import de.lyca.xalan.xsltc.compiler.util.NodeSetType;
 import de.lyca.xalan.xsltc.compiler.util.NodeType;
@@ -43,6 +41,7 @@ import de.lyca.xalan.xsltc.compiler.util.ReferenceType;
 import de.lyca.xalan.xsltc.compiler.util.ResultTreeType;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
+import de.lyca.xalan.xsltc.runtime.BasisLibrary;
 import de.lyca.xalan.xsltc.runtime.Operators;
 
 /**
@@ -204,78 +203,94 @@ final class RelationalExpr extends Expression {
   }
 
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method) {
- // FIXME
-//    if (hasNodeSetArgs() || hasReferenceArgs()) {
-//      final ConstantPoolGen cpg = classGen.getConstantPool();
-//      final InstructionList il = methodGen.getInstructionList();
-//
-//      // Call compare() from the BasisLibrary
-//      _left.translate(classGen, methodGen);
-//      _left.startIterator(classGen, methodGen);
-//      _right.translate(classGen, methodGen);
-//      _right.startIterator(classGen, methodGen);
-//
-//      il.append(new PUSH(cpg, _op));
-//      il.append(methodGen.loadDOM());
-//
-//      final int index = cpg.addMethodref(BASIS_LIBRARY_CLASS, "compare", "(" + _left.getType().toSignature()
-//              + _right.getType().toSignature() + "I" + DOM_INTF_SIG + ")Z");
-//      il.append(new INVOKESTATIC(index));
-//    } else {
-//      translateDesynthesized(classGen, methodGen);
-//      synthesize(classGen, methodGen);
-//    }
+  public JExpression compile(JDefinedClass definedClass, JMethod method) {
+    // FIXME
+    if (hasNodeSetArgs() || hasReferenceArgs()) {
+      // Call compare() from the BasisLibrary
+      JExpression leftExp = _left.compile(definedClass, method);
+      JExpression rightExp = _right.compile(definedClass, method);
+      JClass basisLib = definedClass.owner().ref(BasisLibrary.class);
+      return basisLib.staticInvoke("compare").arg(leftExp).arg(rightExp).arg(lit(_op)).arg(method.listParams()[0]);
+    } else {
+//      translateDesynthesized(definedClass, method, method.body());
+//      synthesize(definedClass, method);
+    }
+    return _null();
   }
 
   @Override
-  public void translateDesynthesized(JDefinedClass definedClass, JMethod method) {
+  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
  // FIXME
-//    if (hasNodeSetArgs() || hasReferenceArgs()) {
-//      translate(classGen, methodGen);
-//      desynthesize(classGen, methodGen);
-//    } else {
+    if (hasNodeSetArgs() || hasReferenceArgs()) {
+//      final ConstantPoolGen cpg = classGen.getConstantPool();
+//      final InstructionList il = methodGen.getInstructionList();
+
+      // Call compare() from the BasisLibrary
+      _left.translate(definedClass, method, body);
+//      _left.startIterator(definedClass, method);
+      _right.translate(definedClass, method, body);
+//      _right.startIterator(definedClass, method);
+
+//      il.append(new PUSH(cpg, _op));
+//      il.append(method.loadDOM());
+
+//      final int index = cpg.addMethodref(BASIS_LIBRARY_CLASS, "compare", "(" + _left.getType().toSignature()
+//              + _right.getType().toSignature() + "I" + DOM_INTF_SIG + ")Z");
+//      il.append(new INVOKESTATIC(index));
+    } else {
+      translateDesynthesized(definedClass, method, body);
+      synthesize(definedClass, method);
+    }
+  }
+
+  @Override
+  public void translateDesynthesized(JDefinedClass definedClass, JMethod method, JBlock body) {
+//  FIXME
+    if (hasNodeSetArgs() || hasReferenceArgs()) {
+      translate(definedClass, method, body);
+      desynthesize(definedClass, method);
+    } else {
 //      BranchInstruction bi = null;
 //      final InstructionList il = methodGen.getInstructionList();
-//
-//      _left.translate(classGen, methodGen);
-//      _right.translate(classGen, methodGen);
-//
-//      // TODO: optimize if one of the args is 0
-//
-//      boolean tozero = false;
-//      Type tleft = _left.getType();
-//
-//      if (tleft instanceof RealType) {
+
+      _left.translate(definedClass, method, body);
+      _right.translate(definedClass, method, body);
+
+      // TODO: optimize if one of the args is 0
+
+      boolean tozero = false;
+      Type tleft = _left.getType();
+
+      if (tleft instanceof RealType) {
 //        il.append(tleft.CMP(_op == Operators.LT || _op == Operators.LE));
-//        tleft = Type.Int;
-//        tozero = true;
-//      }
-//
-//      switch (_op) {
-//        case Operators.LT:
+        tleft = Type.Int;
+        tozero = true;
+      }
+
+      switch (_op) {
+        case Operators.LT:
 //          bi = tleft.GE(tozero);
-//          break;
-//
-//        case Operators.GT:
+          break;
+
+        case Operators.GT:
 //          bi = tleft.LE(tozero);
-//          break;
-//
-//        case Operators.LE:
+          break;
+
+        case Operators.LE:
 //          bi = tleft.GT(tozero);
-//          break;
-//
-//        case Operators.GE:
+          break;
+
+        case Operators.GE:
 //          bi = tleft.LT(tozero);
-//          break;
-//
-//        default:
-//          final ErrorMsg msg = new ErrorMsg(ErrorMsg.ILLEGAL_RELAT_OP_ERR, this);
-//          getParser().reportError(Constants.FATAL, msg);
-//      }
-//
+          break;
+
+        default:
+          final ErrorMsg msg = new ErrorMsg(ErrorMsg.ILLEGAL_RELAT_OP_ERR, this);
+          getParser().reportError(Constants.FATAL, msg);
+      }
+
 //      _falseList.add(il.append(bi)); // must be backpatched
-//    }
+    }
   }
 
   @Override

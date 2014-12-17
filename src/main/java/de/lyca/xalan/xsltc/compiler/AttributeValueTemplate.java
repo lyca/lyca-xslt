@@ -32,7 +32,10 @@ import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.NEW;
 
+import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JExpression;
+import com.sun.codemodel.JInvocation;
 import com.sun.codemodel.JMethod;
 
 import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
@@ -218,7 +221,35 @@ final class AttributeValueTemplate extends AttributeValue {
   }
 
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method) {
+  public JExpression compile(JDefinedClass definedClass, JMethod method) {
+    if (elementCount() == 1) {
+      final Expression exp = (Expression) elementAt(0);
+      return exp.compile(definedClass, method);
+    } else {
+//      final ConstantPoolGen cpg = classGen.getConstantPool();
+//      final InstructionList il = methodGen.getInstructionList();
+//      final int initBuffer = cpg.addMethodref(STRING_BUILDER_CLASS, "<init>", "()V");
+//      final Instruction append = new INVOKEVIRTUAL(cpg.addMethodref(STRING_BUILDER_CLASS, "append", "(" + STRING_SIG
+//          + ")" + STRING_BUILDER_SIG));
+//
+//      final int toString = cpg.addMethodref(STRING_BUILDER_CLASS, "toString", "()" + STRING_SIG);
+//      il.append(new NEW(cpg.addClass(STRING_BUILDER_CLASS)));
+//      il.append(DUP);
+//      il.append(new INVOKESPECIAL(initBuffer));
+//      // StringBuilder is on the stack
+//      final ListIterator<SyntaxTreeNode> elements = elements();
+//      while (elements.hasNext()) {
+//        final Expression exp = (Expression) elements.next();
+//        exp.translate(classGen, methodGen);
+//        il.append(append);
+//      }
+//      il.append(new INVOKEVIRTUAL(toString));
+      return null;
+    }
+  }
+
+  @Override
+  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
 // FIXME
 //    if (elementCount() == 1) {
 //      final Expression exp = (Expression) elementAt(0);

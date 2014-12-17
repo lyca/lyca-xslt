@@ -21,15 +21,12 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.PUSH;
+import static com.sun.codemodel.JExpr.lit;
 
+import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JMethod;
 
-import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
-import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
 import de.lyca.xalan.xsltc.compiler.util.Util;
@@ -81,51 +78,49 @@ final class LiteralAttribute extends Instruction {
   }
 
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method) {
- // FIXME
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//    final InstructionList il = methodGen.getInstructionList();
-//
-//    // push handler
+  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
+    // push handler
 //    il.append(methodGen.loadHandler());
-//    // push attribute name - namespace prefix set by parent node
+    // push attribute name - namespace prefix set by parent node
 //    il.append(new PUSH(cpg, _name));
-//    // push attribute value
+    // push attribute value
 //    _value.translate(classGen, methodGen);
-//
-//    // Generate code that calls SerializationHandler.addUniqueAttribute()
-//    // if all attributes are unique.
-//    final SyntaxTreeNode parent = getParent();
-//    if (parent instanceof LiteralElement && ((LiteralElement) parent).allAttributesUnique()) {
-//
-//      int flags = 0;
-//      boolean isHTMLAttrEmpty = false;
-//      final ElemDesc elemDesc = ((LiteralElement) parent).getElemDesc();
-//
-//      // Set the HTML flags
-//      if (elemDesc != null) {
-//        if (elemDesc.isAttrFlagSet(_name, ElemDesc.ATTREMPTY)) {
-//          flags = flags | ExtendedContentHandler.HTML_ATTREMPTY;
-//          isHTMLAttrEmpty = true;
-//        } else if (elemDesc.isAttrFlagSet(_name, ElemDesc.ATTRURL)) {
-//          flags = flags | ExtendedContentHandler.HTML_ATTRURL;
-//        }
-//      }
-//
-//      if (_value instanceof SimpleAttributeValue) {
-//        final String attrValue = ((SimpleAttributeValue) _value).toString();
-//
-//        if (!hasBadChars(attrValue) && !isHTMLAttrEmpty) {
-//          flags = flags | ExtendedContentHandler.NO_BAD_CHARS;
-//        }
-//      }
-//
+
+    // Generate code that calls SerializationHandler.addUniqueAttribute()
+    // if all attributes are unique.
+    final SyntaxTreeNode parent = getParent();
+    if (parent instanceof LiteralElement && ((LiteralElement) parent).allAttributesUnique()) {
+
+      int flags = 0;
+      boolean isHTMLAttrEmpty = false;
+      final ElemDesc elemDesc = ((LiteralElement) parent).getElemDesc();
+
+      // Set the HTML flags
+      if (elemDesc != null) {
+        if (elemDesc.isAttrFlagSet(_name, ElemDesc.ATTREMPTY)) {
+          flags = flags | ExtendedContentHandler.HTML_ATTREMPTY;
+          isHTMLAttrEmpty = true;
+        } else if (elemDesc.isAttrFlagSet(_name, ElemDesc.ATTRURL)) {
+          flags = flags | ExtendedContentHandler.HTML_ATTRURL;
+        }
+      }
+
+      if (_value instanceof SimpleAttributeValue) {
+        final String attrValue = ((SimpleAttributeValue) _value).toString();
+
+        if (!hasBadChars(attrValue) && !isHTMLAttrEmpty) {
+          flags = flags | ExtendedContentHandler.NO_BAD_CHARS;
+        }
+        // addUniqueAttribute(String qName, String value, int flags) throws SAXException;
+      }
+      body.invoke(method.listParams()[2], "addUniqueAttribute").arg(_name).arg(_value.compile(definedClass, method)).arg(lit(flags));
+
 //      il.append(new PUSH(cpg, flags));
 //      il.append(methodGen.uniqueAttribute());
-//    } else {
-//      // call attribute
+    } else {
+      // call attribute
 //      il.append(methodGen.attribute());
-//    }
+    }
   }
 
 /**

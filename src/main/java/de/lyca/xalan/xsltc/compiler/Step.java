@@ -21,38 +21,25 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import java.util.List;
+import static com.sun.codemodel.JExpr._new;
+import static com.sun.codemodel.JExpr.invoke;
+import static com.sun.codemodel.JExpr.lit;
 
-import org.apache.bcel.generic.ALOAD;
-import org.apache.bcel.generic.ASTORE;
-import org.apache.bcel.generic.CHECKCAST;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.ICONST;
-import org.apache.bcel.generic.ILOAD;
-import org.apache.bcel.generic.INVOKEINTERFACE;
-import org.apache.bcel.generic.INVOKESPECIAL;
-import org.apache.bcel.generic.ISTORE;
-import org.apache.bcel.generic.InstructionFactory;
-import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.LocalVariableGen;
-import org.apache.bcel.generic.NEW;
-import org.apache.bcel.generic.PUSH;
+import java.util.List;
 
 import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JClass;
 import com.sun.codemodel.JCodeModel;
 import com.sun.codemodel.JDefinedClass;
-import com.sun.codemodel.JExpr;
+import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JInvocation;
 import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JVar;
 
 import de.lyca.xalan.xsltc.DOM;
-import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
-import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
-import de.lyca.xalan.xsltc.compiler.util.Util;
+import de.lyca.xalan.xsltc.dom.NthIterator;
 import de.lyca.xml.dtm.Axis;
 import de.lyca.xml.dtm.DTM;
 
@@ -209,14 +196,14 @@ final class Step extends RelativeLocationPath {
     return _type;
   }
 
-  public JInvocation compile(JDefinedClass definedClass, JMethod method) {
+  public JExpression compile(JDefinedClass definedClass, JMethod method) {
     final JVar[] params = method.listParams();
     final JCodeModel owner = definedClass.owner();
     final JClass axis = owner.ref(Axis.class);
     JInvocation invocation = null;
 
     if (hasPredicates()) {
-//      translatePredicates(classGen, methodGen);
+      invocation = compilePredicates(definedClass, method);
     } else {
       int star = 0;
       String name = null;
@@ -233,8 +220,8 @@ final class Step extends RelativeLocationPath {
       // and has no parent
       if (_axis == Axis.ATTRIBUTE && _nodeType != NodeTest.ATTRIBUTE && _nodeType != NodeTest.ANODE
           && !hasParentPattern() && star == 0) {
-        return JExpr.invoke(params[0], "getTypedAxisIterator").arg(axis.staticRef(Axis.ATTRIBUTE.name()))
-            .arg(JExpr.lit(_nodeType));
+        return invoke(params[0], "getTypedAxisIterator").arg(axis.staticRef(Axis.ATTRIBUTE.name()))
+            .arg(lit(_nodeType));
       }
 
       final SyntaxTreeNode parent = getParent();
@@ -242,6 +229,7 @@ final class Step extends RelativeLocationPath {
       if (isAbbreviatedDot()) {
         if (_type == Type.Node) {
           // Put context node on stack if using Type.Node
+          return params[3];
           // il.append(methodGen.loadContextNode());
         } else {
           if (parent instanceof ParentLocationPath) {
@@ -277,6 +265,7 @@ final class Step extends RelativeLocationPath {
           _axis = Axis.ATTRIBUTE;
         case NodeTest.ANODE:
           // DOM.getAxisIterator(int axis);
+          invocation = invoke(params[0], "getAxisIterator").arg(axis.staticRef(_axis.name()));
 //          final int git = cpg.addInterfaceMethodref(DOM_INTF, "getAxisIterator", "(Lde/lyca/xml/dtm/Axis;)"
 //              + NODE_ITERATOR_SIG);
 //          il.append(methodGen.loadDOM());
@@ -305,8 +294,8 @@ final class Step extends RelativeLocationPath {
           }
         case NodeTest.ELEMENT:
           // DOM.getTypedAxisIterator(int axis, int type);
-          invocation = JExpr.invoke(params[0], "getTypedAxisIterator").arg(axis.staticRef(_axis.name()))
-              .arg(JExpr.lit(_nodeType));
+          invocation = invoke(params[0], "getTypedAxisIterator").arg(axis.staticRef(_axis.name()))
+              .arg(lit(_nodeType));
 //          final int ty = cpg.addInterfaceMethodref(DOM_INTF, "getTypedAxisIterator", "(Lde/lyca/xml/dtm/Axis;I)"
 //              + NODE_ITERATOR_SIG);
 //          // Get the typed iterator we're after
@@ -329,7 +318,7 @@ final class Step extends RelativeLocationPath {
    * instead of an iterator is pushed onto the stack.
    */
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method) {
+  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
 // FIXME
 //    final ConstantPoolGen cpg = classGen.getConstantPool();
 //    final InstructionList il = methodGen.getInstructionList();
@@ -441,119 +430,123 @@ final class Step extends RelativeLocationPath {
    * initialized from another iterator (recursive call), a filter and a closure
    * (call to translate on the predicate) and "this".
    */
-  public void translatePredicates(JDefinedClass definedClass, JMethod method) {
-//    FIXME
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//    final InstructionList il = methodGen.getInstructionList();
-//
-//    int idx = 0;
-//
-//    if (_predicates.size() == 0) {
-//      translate(classGen, methodGen);
-//    } else {
-//      final Predicate predicate = _predicates.get(_predicates.size() - 1);
-//      _predicates.remove(predicate);
-//
-//      // Special case for predicates that can use the NodeValueIterator
-//      // instead of an auxiliary class. Certain path/predicates pairs
-//      // are translated into a base path, on top of which we place a
-//      // node value iterator that tests for the desired value:
-//      // foo[@attr = 'str'] -> foo/@attr + test(value='str')
-//      // foo[bar = 'str'] -> foo/bar + test(value='str')
-//      // foo/bar[. = 'str'] -> foo/bar + test(value='str')
-//      if (predicate.isNodeValueTest()) {
-//        final Step step = predicate.getStep();
-//
+  public JInvocation compilePredicates(JDefinedClass definedClass, JMethod method) {
+    int idx = 0;
+
+    if (_predicates.size() == 0) {
+      return (JInvocation) compile(definedClass, method);
+    } else {
+      final Predicate predicate = _predicates.get(_predicates.size() - 1);
+      _predicates.remove(predicate);
+
+      // Special case for predicates that can use the NodeValueIterator
+      // instead of an auxiliary class. Certain path/predicates pairs
+      // are translated into a base path, on top of which we place a
+      // node value iterator that tests for the desired value:
+      // foo[@attr = 'str'] -> foo/@attr + test(value='str')
+      // foo[bar = 'str'] -> foo/bar + test(value='str')
+      // foo/bar[. = 'str'] -> foo/bar + test(value='str')
+      if (predicate.isNodeValueTest()) {
+        final Step step = predicate.getStep();
+
 //        il.append(methodGen.loadDOM());
-//        // If the predicate's Step is simply '.' we translate this Step
-//        // and place the node test on top of the resulting iterator
-//        if (step.isAbbreviatedDot()) {
-//          translate(classGen, methodGen);
+        // If the predicate's Step is simply '.' we translate this Step
+        // and place the node test on top of the resulting iterator
+        JExpression iter;
+        int rType;
+        if (step.isAbbreviatedDot()) {
+          iter = compile(definedClass, method);
+          rType=DOM.RETURN_CURRENT;
 //          il.append(new ICONST(DOM.RETURN_CURRENT));
-//        }
-//        // Otherwise we create a parent location path with this Step and
-//        // the predicates Step, and place the node test on top of that
-//        else {
-//          final ParentLocationPath path = new ParentLocationPath(this, step);
-//          try {
-//            path.typeCheck(getParser().getSymbolTable());
-//          } catch (final TypeCheckError e) {
-//          }
-//          path.translate(classGen, methodGen);
+        }
+        // Otherwise we create a parent location path with this Step and
+        // the predicates Step, and place the node test on top of that
+        else {
+          final ParentLocationPath path = new ParentLocationPath(this, step);
+          try {
+            path.typeCheck(getParser().getSymbolTable());
+          } catch (final TypeCheckError e) {
+          }
+          iter =path.compile(definedClass, method);
+          rType=DOM.RETURN_PARENT;
 //          il.append(new ICONST(DOM.RETURN_PARENT));
-//        }
-//        predicate.translate(classGen, methodGen);
+        }
+//        predicate.translate(definedClass, method);
+        return invoke(method.listParams()[0], GET_NODE_VALUE_ITERATOR).arg(iter).arg(lit(rType)).arg(predicate.compile(definedClass, method)).arg(lit(((EqualityExpr)predicate.getExpr()).getOp()));
 //        idx = cpg.addInterfaceMethodref(DOM_INTF, GET_NODE_VALUE_ITERATOR, GET_NODE_VALUE_ITERATOR_SIG);
 //        il.append(new INVOKEINTERFACE(idx, 5));
-//      }
-//      // Handle '//*[n]' expression
-//      else if (predicate.isNthDescendant()) {
-//        il.append(methodGen.loadDOM());
+      }
+      // Handle '//*[n]' expression
+      else if (predicate.isNthDescendant()) {
+//        return invoke(method.listParams()[0], "getNthDescendant").arg(lit(NodeTest.ELEMENT)).arg(lit(rType)).arg(predicate.compile(definedClass, method)).arg(lit(((EqualityExpr)predicate.getExpr()).getOp()));
+
+        //        il.append(methodGen.loadDOM());
 //        // il.append(new ICONST(NodeTest.ELEMENT));
 //        il.append(new ICONST(predicate.getPosType()));
-//        predicate.translate(classGen, methodGen);
+        predicate.translate(definedClass, method, method.body());
 //        il.append(new ICONST(0));
 //        idx = cpg.addInterfaceMethodref(DOM_INTF, "getNthDescendant", "(IIZ)" + NODE_ITERATOR_SIG);
 //        il.append(new INVOKEINTERFACE(idx, 4));
-//      }
-//      // Handle 'elem[n]' expression
-//      else if (predicate.isNthPositionFilter()) {
+      }
+      // Handle 'elem[n]' expression
+      else if (predicate.isNthPositionFilter()) {
+        return _new(definedClass.owner()._ref(NthIterator.class)).arg(compilePredicates(definedClass, method)).arg(predicate.compile(definedClass, method));
 //        idx = cpg.addMethodref(NTH_ITERATOR_CLASS, "<init>", "(" + NODE_ITERATOR_SIG + "I)V");
-//
-//        // Backwards branches are prohibited if an uninitialized object
-//        // is on the stack by section 4.9.4 of the JVM Specification,
-//        // 2nd Ed. We don't know whether this code might contain
-//        // backwards branches, so we mustn't create the new object until
-//        // after we've created the suspect arguments to its constructor.
-//        // Instead we calculate the values of the arguments to the
-//        // constructor first, store them in temporary variables, create
-//        // the object and reload the arguments from the temporaries to
-//        // avoid the problem.
-//        translatePredicates(classGen, methodGen); // recursive call
+
+        // Backwards branches are prohibited if an uninitialized object
+        // is on the stack by section 4.9.4 of the JVM Specification,
+        // 2nd Ed. We don't know whether this code might contain
+        // backwards branches, so we mustn't create the new object until
+        // after we've created the suspect arguments to its constructor.
+        // Instead we calculate the values of the arguments to the
+        // constructor first, store them in temporary variables, create
+        // the object and reload the arguments from the temporaries to
+        // avoid the problem.
+//        compilePredicates(definedClass, method); // recursive call
 //        final LocalVariableGen iteratorTemp = methodGen.addLocalVariable("step_tmp1",
 //                Util.getJCRefType(NODE_ITERATOR_SIG), null, null);
 //        iteratorTemp.setStart(il.append(new ASTORE(iteratorTemp.getIndex())));
-//
-//        predicate.translate(classGen, methodGen);
+
+//        predicate.compile(definedClass, method);
 //        final LocalVariableGen predicateValueTemp = methodGen.addLocalVariable("step_tmp2", Util.getJCRefType("I"),
 //                null, null);
 //        predicateValueTemp.setStart(il.append(new ISTORE(predicateValueTemp.getIndex())));
-//
+
 //        il.append(new NEW(cpg.addClass(NTH_ITERATOR_CLASS)));
 //        il.append(DUP);
 //        iteratorTemp.setEnd(il.append(new ALOAD(iteratorTemp.getIndex())));
 //        predicateValueTemp.setEnd(il.append(new ILOAD(predicateValueTemp.getIndex())));
 //        il.append(new INVOKESPECIAL(idx));
-//      } else {
+      } else {
 //        idx = cpg.addMethodref(CURRENT_NODE_LIST_ITERATOR, "<init>", "(" + NODE_ITERATOR_SIG
 //                + CURRENT_NODE_LIST_FILTER_SIG + NODE_SIG + TRANSLET_SIG + ")V");
-//
-//        // Backwards branches are prohibited if an uninitialized object
-//        // is on the stack by section 4.9.4 of the JVM Specification,
-//        // 2nd Ed. We don't know whether this code might contain
-//        // backwards branches, so we mustn't create the new object until
-//        // after we've created the suspect arguments to its constructor.
-//        // Instead we calculate the values of the arguments to the
-//        // constructor first, store them in temporary variables, create
-//        // the object and reload the arguments from the temporaries to
-//        // avoid the problem.
-//        translatePredicates(classGen, methodGen); // recursive call
+
+        // Backwards branches are prohibited if an uninitialized object
+        // is on the stack by section 4.9.4 of the JVM Specification,
+        // 2nd Ed. We don't know whether this code might contain
+        // backwards branches, so we mustn't create the new object until
+        // after we've created the suspect arguments to its constructor.
+        // Instead we calculate the values of the arguments to the
+        // constructor first, store them in temporary variables, create
+        // the object and reload the arguments from the temporaries to
+        // avoid the problem.
+        compilePredicates(definedClass, method); // recursive call
 //        final LocalVariableGen iteratorTemp = methodGen.addLocalVariable("step_tmp1",
 //                Util.getJCRefType(NODE_ITERATOR_SIG), null, null);
 //        iteratorTemp.setStart(il.append(new ASTORE(iteratorTemp.getIndex())));
-//
-//        predicate.translateFilter(classGen, methodGen);
+
+        predicate.translateFilter(definedClass, method);
 //        final LocalVariableGen filterTemp = methodGen.addLocalVariable("step_tmp2",
 //                Util.getJCRefType(CURRENT_NODE_LIST_FILTER_SIG), null, null);
 //        filterTemp.setStart(il.append(new ASTORE(filterTemp.getIndex())));
-//
-//        // create new CurrentNodeListIterator
+
+        // create new CurrentNodeListIterator
 //        il.append(new NEW(cpg.addClass(CURRENT_NODE_LIST_ITERATOR)));
 //        il.append(DUP);
-//
+
 //        iteratorTemp.setEnd(il.append(new ALOAD(iteratorTemp.getIndex())));
 //        filterTemp.setEnd(il.append(new ALOAD(filterTemp.getIndex())));
-//
+
 //        il.append(methodGen.loadCurrentNode());
 //        il.append(classGen.loadTranslet());
 //        if (classGen.isExternal()) {
@@ -561,8 +554,9 @@ final class Step extends RelativeLocationPath {
 //          il.append(new CHECKCAST(cpg.addClass(className)));
 //        }
 //        il.append(new INVOKESPECIAL(idx));
-//      }
-//    }
+      }
+    }
+    return null;
   }
 
   /**

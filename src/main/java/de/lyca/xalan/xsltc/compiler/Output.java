@@ -21,24 +21,21 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
+import static com.sun.codemodel.JExpr._null;
+import static com.sun.codemodel.JExpr.lit;
+import static com.sun.codemodel.JExpr.ref;
+
 import java.io.OutputStreamWriter;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
 import javax.xml.transform.OutputKeys;
 
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.INVOKEVIRTUAL;
-import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.PUSH;
-import org.apache.bcel.generic.PUTFIELD;
-
+import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JMethod;
 
-import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
-import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 import de.lyca.xalan.xsltc.compiler.util.Util;
 import de.lyca.xml.serializer.Encodings;
 import de.lyca.xml.utils.XML11Char;
@@ -126,7 +123,7 @@ final class Output extends TopLevelElement {
     if (previous.hasAttribute("cdata-section-elements")) {
       // addAttribute works as a setter if it already exists
       addAttribute("cdata-section-elements", previous.getAttribute("cdata-section-elements") + ' '
-              + getAttribute("cdata-section-elements"));
+          + getAttribute("cdata-section-elements"));
     }
 
     // Transfer non-standard attributes as well
@@ -172,7 +169,7 @@ final class Output extends TopLevelElement {
     if (_method != null) {
       _method = _method.toLowerCase();
       if (_method.equals("xml") || _method.equals("html") || _method.equals("xhtml") || _method.equals("text")
-              || XML11Char.isXML11ValidQName(_method) && _method.indexOf(":") > 0) {
+          || XML11Char.isXML11ValidQName(_method) && _method.indexOf(":") > 0) {
         outputProperties.setProperty(OutputKeys.METHOD, _method);
       } else {
         reportError(this, parser, ErrorMsg.INVALID_METHOD_IN_OUTPUT, _method);
@@ -303,104 +300,68 @@ final class Output extends TopLevelElement {
    * the appropriate fields in the translet
    */
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method) {
- // FIXME
-//    // Do nothing if other <xsl:output> element has higher precedence
-//    if (_disabled)
-//      return;
-//
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//    final InstructionList il = methodGen.getInstructionList();
-//
-//    int field = 0;
-//    il.append(classGen.loadTranslet());
-//
-//    // Only update _version field if set and different from default
-//    if (_version != null && !_version.equals(XML_VERSION)) {
-//      field = cpg.addFieldref(TRANSLET_CLASS, "_version", STRING_SIG);
-//      il.append(DUP);
-//      il.append(new PUSH(cpg, _version));
-//      il.append(new PUTFIELD(field));
-//    }
-//
-//    // Only update _method field if "method" attribute used
-//    if (_method != null) {
-//      field = cpg.addFieldref(TRANSLET_CLASS, "_method", STRING_SIG);
-//      il.append(DUP);
-//      il.append(new PUSH(cpg, _method));
-//      il.append(new PUTFIELD(field));
-//    }
-//
-//    // Only update if _encoding field is "encoding" attribute used
-//    if (_encoding != null) {
-//      field = cpg.addFieldref(TRANSLET_CLASS, "_encoding", STRING_SIG);
-//      il.append(DUP);
-//      il.append(new PUSH(cpg, _encoding));
-//      il.append(new PUTFIELD(field));
-//    }
-//
-//    // Only update if "omit-xml-declaration" used and set to 'yes'
-//    if (_omitHeader) {
-//      field = cpg.addFieldref(TRANSLET_CLASS, "_omitHeader", "Z");
-//      il.append(DUP);
-//      il.append(new PUSH(cpg, _omitHeader));
-//      il.append(new PUTFIELD(field));
-//    }
-//
-//    // Add 'standalone' decaration to output - use text as is
-//    if (_standalone != null) {
-//      field = cpg.addFieldref(TRANSLET_CLASS, "_standalone", STRING_SIG);
-//      il.append(DUP);
-//      il.append(new PUSH(cpg, _standalone));
-//      il.append(new PUTFIELD(field));
-//    }
-//
-//    // Set system/public doctype only if both are set
-//    field = cpg.addFieldref(TRANSLET_CLASS, "_doctypeSystem", STRING_SIG);
-//    il.append(DUP);
-//    il.append(new PUSH(cpg, _doctypeSystem));
-//    il.append(new PUTFIELD(field));
-//    field = cpg.addFieldref(TRANSLET_CLASS, "_doctypePublic", STRING_SIG);
-//    il.append(DUP);
-//    il.append(new PUSH(cpg, _doctypePublic));
-//    il.append(new PUTFIELD(field));
-//
-//    // Add 'medye-type' decaration to output - if used
-//    if (_mediaType != null) {
-//      field = cpg.addFieldref(TRANSLET_CLASS, "_mediaType", STRING_SIG);
-//      il.append(DUP);
-//      il.append(new PUSH(cpg, _mediaType));
-//      il.append(new PUTFIELD(field));
-//    }
-//
-//    // Compile code to set output indentation on/off
-//    if (_indent) {
-//      field = cpg.addFieldref(TRANSLET_CLASS, "_indent", "Z");
-//      il.append(DUP);
-//      il.append(new PUSH(cpg, _indent));
-//      il.append(new PUTFIELD(field));
-//    }
-//
-//    // Compile code to set indent amount.
-//    if (_indentamount != null && !_indentamount.equals(EMPTYSTRING)) {
-//      field = cpg.addFieldref(TRANSLET_CLASS, "_indentamount", "I");
-//      il.append(DUP);
-//      il.append(new PUSH(cpg, Integer.parseInt(_indentamount)));
-//      il.append(new PUTFIELD(field));
-//    }
-//
-//    // Forward to the translet any elements that should be output as CDATA
-//    if (_cdata != null) {
-//      final int index = cpg.addMethodref(TRANSLET_CLASS, "addCdataElement", "(Ljava/lang/String;)V");
-//
-//      final StringTokenizer tokens = new StringTokenizer(_cdata);
-//      while (tokens.hasMoreTokens()) {
-//        il.append(DUP);
-//        il.append(new PUSH(cpg, tokens.nextToken()));
-//        il.append(new INVOKEVIRTUAL(index));
-//      }
-//    }
-//    il.append(POP); // Cleanup - pop last translet reference off stack
+  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
+    // Do nothing if other <xsl:output> element has higher precedence
+    if (_disabled)
+      return;
+
+    // Only update _version field if set and different from default
+    if (_version != null && !_version.equals(XML_VERSION)) {
+      body.assign(ref("_version"), lit(_version));
+    }
+
+    // Only update _method field if "method" attribute used
+    if (_method != null) {
+      body.assign(ref("_method"), lit(_method));
+    }
+
+    // Only update if _encoding field is "encoding" attribute used
+    if (_encoding != null) {
+      body.assign(ref("_encoding"), lit(_encoding));
+    }
+
+    // Only update if "omit-xml-declaration" used and set to 'yes'
+    if (_omitHeader) {
+      body.assign(ref("_omitHeader"), lit(_omitHeader));
+    }
+
+    // Add 'standalone' decaration to output - use text as is
+    if (_standalone != null) {
+      body.assign(ref("_standalone"), lit(_standalone));
+    }
+
+    // Set system/public doctype only if both are set
+    body.assign(ref("_doctypeSystem"), _doctypeSystem == null ? _null() : lit(_doctypeSystem));
+    body.assign(ref("_doctypePublic"), _doctypePublic == null ? _null() : lit(_doctypePublic));
+
+    // Add 'medye-type' decaration to output - if used
+    if (_mediaType != null) {
+      body.assign(ref("_mediaType"), lit(_mediaType));
+    }
+
+    // Compile code to set output indentation on/off
+    if (_indent) {
+      body.assign(ref("_indent"), lit(_indent));
+    }
+
+    // Compile code to set indent amount.
+    if (_indentamount != null && !_indentamount.equals(EMPTYSTRING)) {
+      body.assign(ref("_indentamount"), lit(_indentamount));
+    }
+
+    // Forward to the translet any elements that should be output as CDATA
+    if (_cdata != null) {
+      // final int index = cpg.addMethodref(TRANSLET_CLASS, "addCdataElement",
+      // "(Ljava/lang/String;)V");
+      //
+      // final StringTokenizer tokens = new StringTokenizer(_cdata);
+      // while (tokens.hasMoreTokens()) {
+      // il.append(DUP);
+      // il.append(new PUSH(cpg, tokens.nextToken()));
+      // il.append(new INVOKEVIRTUAL(index));
+      // }
+      // il.append(POP); // Cleanup - pop last translet reference off stack
+    }
   }
 
 }

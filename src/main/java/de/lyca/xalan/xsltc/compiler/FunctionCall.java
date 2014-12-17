@@ -35,31 +35,23 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.IFEQ;
-import org.apache.bcel.generic.INVOKEINTERFACE;
-import org.apache.bcel.generic.INVOKESPECIAL;
 import org.apache.bcel.generic.INVOKESTATIC;
-import org.apache.bcel.generic.INVOKEVIRTUAL;
-import org.apache.bcel.generic.InstructionConstants;
 import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.LocalVariableGen;
-import org.apache.bcel.generic.NEW;
 import org.apache.bcel.generic.PUSH;
 
+import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JMethod;
 
-import de.lyca.xalan.xsltc.compiler.util.BooleanType;
-import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
-import de.lyca.xalan.xsltc.compiler.util.IntType;
-import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 import de.lyca.xalan.xsltc.compiler.util.MethodType;
 import de.lyca.xalan.xsltc.compiler.util.ObjectType;
 import de.lyca.xalan.xsltc.compiler.util.ReferenceType;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
+import de.lyca.xalan.xsltc.runtime.BasisLibrary;
 
 /**
  * @author Jacek Ambroziak
@@ -655,7 +647,7 @@ class FunctionCall extends Expression {
    * true/false-lists.
    */
   @Override
-  public void translateDesynthesized(JDefinedClass definedClass, JMethod method) {
+  public void translateDesynthesized(JDefinedClass definedClass, JMethod method, JBlock body) {
  // FIXME
 //    Type type = Type.Boolean;
 //    if (_chosenMethodType != null) {
@@ -670,12 +662,150 @@ class FunctionCall extends Expression {
 //    }
   }
 
+  @Override
+  public JExpression compile(JDefinedClass definedClass, JMethod method) {
+    final int n = argumentCount();
+    final boolean isSecureProcessing = getParser().getXSLTC().isSecureProcessing();
+    int index;
+
+    // Translate calls to methods in the BasisLibrary
+    if (isStandard() || isExtension()) {
+      JExpression[] compiledExps = new JExpression[3];
+      for (int i = 0,size=_arguments.size();i<size;i++) {
+        compiledExps[i] =_arguments.get(i).compile(definedClass, method);
+//        exp.startIterator(definedClass, method);
+      }
+
+      // append "F" to the function's name
+      final String name = _fname.toString().replace('-', '_') + "F";
+      String args = Constants.EMPTYSTRING;
+
+      // Special precautions for some method calls
+      if (name.equals("sumF")) {
+        args = DOM_INTF_SIG;
+//        il.append(method.loadDOM());
+      } else if (name.equals("normalize_spaceF")) {
+        if (_chosenMethodType.toSignature(args).equals("()Ljava/lang/String;")) {
+          args = "I" + DOM_INTF_SIG;
+//          il.append(methodGen.loadContextNode());
+//          il.append(methodGen.loadDOM());
+        }
+      }
+
+      // Invoke the method in the basis library
+      return definedClass.owner().ref(BasisLibrary.class).staticInvoke(name).arg(compiledExps[0]).arg(compiledExps[1]).arg(compiledExps[2]);
+//      index = cpg.addMethodref(BASIS_LIBRARY_CLASS, name, _chosenMethodType.toSignature(args));
+//      il.append(new INVOKESTATIC(index));
+    }
+    // Add call to BasisLibrary.unresolved_externalF() to generate
+    // run-time error message for unsupported external functions
+    else if (unresolvedExternal) {
+//      index = cpg.addMethodref(BASIS_LIBRARY_CLASS, "unresolved_externalF", "(Ljava/lang/String;)V");
+//      il.append(new PUSH(cpg, _fname.toString()));
+//      il.append(new INVOKESTATIC(index));
+    } else if (_isExtConstructor) {
+      if (isSecureProcessing) {
+//        translateUnallowedExtension(cpg, il);
+      }
+
+      final String clazz = _chosenConstructor.getDeclaringClass().getName();
+      final Class<?>[] paramTypes = _chosenConstructor.getParameterTypes();
+      final LocalVariableGen[] paramTemp = new LocalVariableGen[n];
+
+      // Backwards branches are prohibited if an uninitialized object is
+      // on the stack by section 4.9.4 of the JVM Specification, 2nd Ed.
+      // We don't know whether this code might contain backwards branches
+      // so we mustn't create the new object until after we've created
+      // the suspect arguments to its constructor. Instead we calculate
+      // the values of the arguments to the constructor first, store them
+      // in temporary variables, create the object and reload the
+      // arguments from the temporaries to avoid the problem.
+
+      for (int i = 0; i < n; i++) {
+        final Expression exp = argument(i);
+        final Type expType = exp.getType();
+        exp.translate(definedClass, method, method.body());
+        // Convert the argument to its Java type
+        exp.startIterator(definedClass, method);
+        expType.translateTo(definedClass, method, paramTypes[i]);
+//        paramTemp[i] = methodGen.addLocalVariable("function_call_tmp" + i, expType.toJCType(), null, null);
+//        paramTemp[i].setStart(il.append(expType.STORE(paramTemp[i].getIndex())));
+      }
+
+//      il.append(new NEW(cpg.addClass(_className)));
+//      il.append(InstructionConstants.DUP);
+
+      for (int i = 0; i < n; i++) {
+        final Expression arg = argument(i);
+//        paramTemp[i].setEnd(il.append(arg.getType().LOAD(paramTemp[i].getIndex())));
+      }
+
+      final StringBuilder buffer = new StringBuilder();
+      buffer.append('(');
+      for (int i = 0; i < paramTypes.length; i++) {
+        buffer.append(getSignature(paramTypes[i]));
+      }
+      buffer.append(')');
+      buffer.append("V");
+
+//      index = cpg.addMethodref(clazz, "<init>", buffer.toString());
+//      il.append(new INVOKESPECIAL(index));
+
+      // Convert the return type back to our internal type
+      Type.Object.translateFrom(definedClass, method, _chosenConstructor.getDeclaringClass());
+
+    }
+    // Invoke function calls that are handled in separate classes
+    else {
+      if (isSecureProcessing) {
+//        translateUnallowedExtension(cpg, il);
+      }
+
+      final String clazz = _chosenMethod.getDeclaringClass().getName();
+      final Class<?>[] paramTypes = _chosenMethod.getParameterTypes();
+
+      // Push "this" if it is an instance method
+      if (_thisArgument != null) {
+        _thisArgument.translate(definedClass, method, method.body());
+      }
+
+      for (int i = 0; i < n; i++) {
+        final Expression exp = argument(i);
+        exp.translate(definedClass, method, method.body());
+        // Convert the argument to its Java type
+        exp.startIterator(definedClass, method);
+        exp.getType().translateTo(definedClass, method, paramTypes[i]);
+      }
+
+      final StringBuilder buffer = new StringBuilder();
+      buffer.append('(');
+      for (int i = 0; i < paramTypes.length; i++) {
+        buffer.append(getSignature(paramTypes[i]));
+      }
+      buffer.append(')');
+      buffer.append(getSignature(_chosenMethod.getReturnType()));
+
+      if (_thisArgument != null && _clazz.isInterface()) {
+//        index = cpg.addInterfaceMethodref(clazz, _fname.getLocalPart(), buffer.toString());
+//        il.append(new INVOKEINTERFACE(index, n + 1));
+      } else {
+//        index = cpg.addMethodref(clazz, _fname.getLocalPart(), buffer.toString());
+//        il.append(_thisArgument != null ? (InvokeInstruction) new INVOKEVIRTUAL(index)
+//            : (InvokeInstruction) new INVOKESTATIC(index));
+      }
+
+      // Convert the return type back to our internal type
+      _type.translateFrom(definedClass, method, _chosenMethod.getReturnType());
+    }
+    return null;
+  }
+  
   /**
    * Translate a function call. The compiled code will leave the function's
    * return value on the JVM's stack.
    */
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method) {
+  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
  // FIXME
 //    final int n = argumentCount();
 //    final ConstantPoolGen cpg = classGen.getConstantPool();

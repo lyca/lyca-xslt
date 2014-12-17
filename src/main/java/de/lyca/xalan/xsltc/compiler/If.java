@@ -21,16 +21,15 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import org.apache.bcel.generic.InstructionHandle;
-import org.apache.bcel.generic.InstructionList;
+import static com.sun.codemodel.JExpr.ref;
 
+import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JMethod;
 
 import de.lyca.xalan.xsltc.compiler.util.BooleanType;
-import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
-import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
 import de.lyca.xalan.xsltc.compiler.util.Util;
@@ -104,15 +103,16 @@ final class If extends Instruction {
    * will be ignored if we know the test will always fail.
    */
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method) {
- // FIXME
+  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
 //    final InstructionList il = methodGen.getInstructionList();
-//    _test.translateDesynthesized(classGen, methodGen);
-//    // remember end of condition
+    //_test.translateDesynthesized(definedClass, method, body);
+    JExpression testExp = _test.compile(definedClass, method);
+    // remember end of condition
 //    final InstructionHandle truec = il.getEnd();
-//    if (!_ignore) {
-//      translateContents(classGen, methodGen);
-//    }
+    if (!_ignore) {
+      JBlock _then = body._if(testExp)._then();
+      translateContents(definedClass, method, _then);
+    }
 //    _test.backPatchFalseList(il.append(NOP));
 //    _test.backPatchTrueList(truec.getNext());
   }
