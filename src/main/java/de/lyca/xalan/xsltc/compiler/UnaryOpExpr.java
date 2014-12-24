@@ -21,14 +21,11 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import org.apache.bcel.generic.InstructionList;
+import static com.sun.codemodel.JOp.minus;
 
-import com.sun.codemodel.JBlock;
-import com.sun.codemodel.JDefinedClass;
-import com.sun.codemodel.JMethod;
+import com.sun.codemodel.JExpression;
 
-import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
-import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
+import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.MethodType;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
@@ -89,10 +86,15 @@ final class UnaryOpExpr extends Expression {
   }
 
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
-//    FIXME
-//    final InstructionList il = methodGen.getInstructionList();
-//    _left.translate(classGen, methodGen);
-//    il.append(_type.NEG());
+  public JExpression compile(CompilerContext ctx) {
+    return minus(_left.compile(ctx));
+  }
+
+  @Override
+  public void translate(CompilerContext ctx) {
+    // FIXME
+    // final InstructionList il = methodGen.getInstructionList();
+    // _left.translate(classGen, methodGen);
+    // il.append(_type.NEG());
   }
 }

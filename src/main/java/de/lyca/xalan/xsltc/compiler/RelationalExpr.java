@@ -23,14 +23,16 @@ package de.lyca.xalan.xsltc.compiler;
 
 import static com.sun.codemodel.JExpr._null;
 import static com.sun.codemodel.JExpr.lit;
+import static com.sun.codemodel.JOp.gt;
+import static com.sun.codemodel.JOp.gte;
+import static com.sun.codemodel.JOp.lt;
+import static com.sun.codemodel.JOp.lte;
 
-import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JClass;
-import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JExpression;
-import com.sun.codemodel.JMethod;
 
 import de.lyca.xalan.xsltc.compiler.util.BooleanType;
+import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.IntType;
 import de.lyca.xalan.xsltc.compiler.util.MethodType;
@@ -203,32 +205,57 @@ final class RelationalExpr extends Expression {
   }
 
   @Override
-  public JExpression compile(JDefinedClass definedClass, JMethod method) {
+  public JExpression compile(CompilerContext ctx) {
     // FIXME
     if (hasNodeSetArgs() || hasReferenceArgs()) {
       // Call compare() from the BasisLibrary
-      JExpression leftExp = _left.compile(definedClass, method);
-      JExpression rightExp = _right.compile(definedClass, method);
-      JClass basisLib = definedClass.owner().ref(BasisLibrary.class);
-      return basisLib.staticInvoke("compare").arg(leftExp).arg(rightExp).arg(lit(_op)).arg(method.listParams()[0]);
+      JExpression leftExp = _left.compile(ctx).invoke("setStartNode").arg(ctx.currentNode());
+      JExpression rightExp = _right.compile(ctx);
+      JClass basisLib = ctx.ref(BasisLibrary.class);
+      return basisLib.staticInvoke("compare").arg(leftExp).arg(rightExp).arg(lit(_op)).arg(ctx.currentDom());
     } else {
-//      translateDesynthesized(definedClass, method, method.body());
-//      synthesize(definedClass, method);
+      JExpression leftExp = _left.compile(ctx);
+      JExpression rightExp = _right.compile(ctx);
+
+      // TODO: optimize if one of the args is 0
+
+      boolean tozero = false;
+      Type tleft = _left.getType();
+
+      if (tleft instanceof RealType) {
+//        il.append(tleft.CMP(_op == Operators.LT || _op == Operators.LE));
+        tleft = Type.Int;
+        tozero = true;
+      }
+
+      switch (_op) {
+        case Operators.LT:
+          return lt(leftExp, rightExp);
+        case Operators.GT:
+          return gt(leftExp, rightExp);
+        case Operators.LE:
+          return lte(leftExp, rightExp);
+        case Operators.GE:
+          return gte(leftExp, rightExp);
+        default:
+          final ErrorMsg msg = new ErrorMsg(ErrorMsg.ILLEGAL_RELAT_OP_ERR, this);
+          getParser().reportError(Constants.FATAL, msg);
+      }
     }
     return _null();
   }
 
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
+  public void translate(CompilerContext ctx) {
  // FIXME
     if (hasNodeSetArgs() || hasReferenceArgs()) {
 //      final ConstantPoolGen cpg = classGen.getConstantPool();
 //      final InstructionList il = methodGen.getInstructionList();
 
       // Call compare() from the BasisLibrary
-      _left.translate(definedClass, method, body);
+      _left.translate(ctx);
 //      _left.startIterator(definedClass, method);
-      _right.translate(definedClass, method, body);
+      _right.translate(ctx);
 //      _right.startIterator(definedClass, method);
 
 //      il.append(new PUSH(cpg, _op));
@@ -238,23 +265,23 @@ final class RelationalExpr extends Expression {
 //              + _right.getType().toSignature() + "I" + DOM_INTF_SIG + ")Z");
 //      il.append(new INVOKESTATIC(index));
     } else {
-      translateDesynthesized(definedClass, method, body);
-      synthesize(definedClass, method);
+      translateDesynthesized(ctx);
+      synthesize(ctx);
     }
   }
 
   @Override
-  public void translateDesynthesized(JDefinedClass definedClass, JMethod method, JBlock body) {
+  public void translateDesynthesized(CompilerContext ctx) {
 //  FIXME
     if (hasNodeSetArgs() || hasReferenceArgs()) {
-      translate(definedClass, method, body);
-      desynthesize(definedClass, method);
+      translate(ctx);
+      desynthesize(ctx);
     } else {
 //      BranchInstruction bi = null;
 //      final InstructionList il = methodGen.getInstructionList();
 
-      _left.translate(definedClass, method, body);
-      _right.translate(definedClass, method, body);
+      _left.translate(ctx);
+      _right.translate(ctx);
 
       // TODO: optimize if one of the args is 0
 

@@ -22,16 +22,12 @@
 package de.lyca.xalan.xsltc.compiler;
 
 import static com.sun.codemodel.JExpr.cast;
-import static com.sun.codemodel.JExpr.invoke;
 import static com.sun.codemodel.JExpr.ref;
 
-import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JClass;
-import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JExpression;
-import com.sun.codemodel.JMethod;
-import com.sun.codemodel.JVar;
 
+import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
 import de.lyca.xalan.xsltc.runtime.StringValueHandler;
@@ -55,7 +51,7 @@ final class Comment extends Instruction {
   }
 
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
+  public void translate(CompilerContext ctx) {
     // Shortcut for literal strings
     Text rawText = null;
     if (elementCount() == 1) {
@@ -69,22 +65,18 @@ final class Comment extends Instruction {
     // comment(String), as appropriate. Otherwise, use a
     // StringValueHandler to gather the textual content of the xsl:comment
     // and call comment(String) with the result.
-    JVar handler = method.listParams()[2];
+    JExpression handler = ctx.currentHandler();
     if (rawText != null) {
       if (rawText.canLoadAsArrayOffsetLength()) {
-        rawText.loadAsArrayOffsetLength(definedClass, method, body, "comment");
-//        final int comment = cpg.addInterfaceMethodref(TRANSLET_OUTPUT_INTERFACE, "comment", "([CII)V");
-//        il.append(new INVOKEINTERFACE(comment, 4));
+        rawText.loadAsArrayOffsetLength(ctx, "comment");
       } else {
-        body.invoke(handler, "comment").arg(rawText.getText());
+        ctx.currentBlock().invoke(ctx.currentHandler(), "comment").arg(rawText.getText());
       }
     } else {
-      body.invoke("pushHandler").arg(ref("stringValueHandler"));
-      translateContents(definedClass, method, body);
-      JClass stringValueHandler = definedClass.owner().ref(StringValueHandler.class);
-      body.invoke(handler, "comment").arg(((JExpression)cast(stringValueHandler, invoke("popHandler"))).invoke("getValue"));
-      // translate contents with substituted handler
-      // FIXME
+      ctx.pushHandler(ref("stringValueHandler"));
+      translateContents(ctx);
+      JClass stringValueHandler = ctx.ref(StringValueHandler.class);
+      ctx.currentBlock().invoke(handler, "comment").arg(((JExpression)cast(stringValueHandler, ctx.popHandler())).invoke("getValue"));
     }
   }
 }

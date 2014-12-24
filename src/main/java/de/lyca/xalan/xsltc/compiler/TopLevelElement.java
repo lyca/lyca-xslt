@@ -24,11 +24,9 @@ package de.lyca.xalan.xsltc.compiler;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.sun.codemodel.JBlock;
-import com.sun.codemodel.JDefinedClass;
-import com.sun.codemodel.JInvocation;
-import com.sun.codemodel.JMethod;
+import com.sun.codemodel.JStatement;
 
+import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
@@ -54,7 +52,7 @@ class TopLevelElement extends SyntaxTreeNode {
    * Translate this node into JVM bytecodes.
    */
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
+  public void translate(CompilerContext ctx) {
     final ErrorMsg msg = new ErrorMsg(ErrorMsg.NOT_IMPLEMENTED_ERR, getClass(), this);
     getParser().reportError(FATAL, msg);
   }
@@ -63,7 +61,7 @@ class TopLevelElement extends SyntaxTreeNode {
    * Translate this node into a fresh instruction list. The original instruction
    * list is saved and restored.
    */
-  public JInvocation compile(JDefinedClass definedClass, JMethod method) {
+  public JStatement compile(CompilerContext ctx) {
     return null;
 //    FIXME
 //    final InstructionList result, save = methodGen.getInstructionList();

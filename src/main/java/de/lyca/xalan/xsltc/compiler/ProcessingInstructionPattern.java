@@ -21,23 +21,9 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import org.apache.bcel.generic.BranchHandle;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.GOTO;
-import org.apache.bcel.generic.IFEQ;
-import org.apache.bcel.generic.IF_ICMPEQ;
-import org.apache.bcel.generic.INVOKEINTERFACE;
-import org.apache.bcel.generic.INVOKEVIRTUAL;
-import org.apache.bcel.generic.InstructionHandle;
-import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.PUSH;
+import com.sun.codemodel.JExpression;
 
-import com.sun.codemodel.JBlock;
-import com.sun.codemodel.JDefinedClass;
-import com.sun.codemodel.JMethod;
-
-import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
-import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
+import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
 import de.lyca.xml.dtm.Axis;
@@ -98,7 +84,13 @@ final class ProcessingInstructionPattern extends StepPattern {
   }
 
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
+  public JExpression compile(CompilerContext ctx) {
+    // TODO Auto-generated method stub
+    return super.compile(ctx);
+  }
+  
+  @Override
+  public void translate(CompilerContext ctx) {
  // FIXME
 //    final ConstantPoolGen cpg = classGen.getConstantPool();
 //    final InstructionList il = methodGen.getInstructionList();

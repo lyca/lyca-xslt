@@ -21,7 +21,6 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import static com.sun.codemodel.JExpr.invoke;
 import static com.sun.codemodel.JExpr.lit;
 
 import java.util.ArrayList;
@@ -31,18 +30,13 @@ import java.util.ListIterator;
 import java.util.Map;
 
 import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
 
 import com.sun.codemodel.JBlock;
-import com.sun.codemodel.JClass;
-import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JExpression;
-import com.sun.codemodel.JInvocation;
-import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JVar;
 
 import de.lyca.xalan.xsltc.DOM;
-import de.lyca.xalan.xsltc.TransletException;
+import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
@@ -533,27 +527,27 @@ public abstract class SyntaxTreeNode implements Constants {
 
   /**
    * Translate this abstract syntax tree node into JVM bytecodes.
-   * 
+   * @param ctx TODO
    * @param classGen
    *          BCEL Java class generator
    * @param methodGen
    *          BCEL Java method generator
    */
 //  public abstract void translate(JDefinedClass definedClass, JMethod method);
-  public abstract void translate(JDefinedClass definedClass, JMethod method, JBlock body);
+  public abstract void translate(CompilerContext ctx);
 
   /**
    * Call translate() on all child syntax tree nodes.
-   * 
+   * @param ctx TODO
    * @param classGen
    *          BCEL Java class generator
    * @param methodGen
    *          BCEL Java method generator
    */
-  protected void translateContents(JDefinedClass definedClass, JMethod method, JBlock body) {
+  protected void translateContents(CompilerContext ctx) {
     // Call translate() on all child nodes
     for (SyntaxTreeNode item : _contents) {
-      item.translate(definedClass, method, body);
+      item.translate(ctx);
     }
 
     // After translation, unmap any registers for any variables/parameters
@@ -563,7 +557,7 @@ public abstract class SyntaxTreeNode implements Constants {
     // (the cause of which being 'lazy' register allocation for references)
     for (SyntaxTreeNode item : _contents) {
       if (item instanceof VariableBase) {
-        ((VariableBase) item).unmapRegister(method);
+//        ((VariableBase) item).unmapRegister(ctx.method);
       }
     }
   }
@@ -649,9 +643,9 @@ public abstract class SyntaxTreeNode implements Constants {
    * @param methodGen
    *          BCEL Java method generator
    */
-  protected JExpression compileResultTree(JDefinedClass definedClass, JMethod method) {
-    JVar dom = method.listParams()[0];
-    JVar handler = method.listParams()[2];
+  protected JExpression compileResultTree(CompilerContext ctx) {
+    JExpression dom = ctx.currentDom();
+    JVar handler = ctx.param(TRANSLET_OUTPUT_PNAME);
     final Stylesheet stylesheet = getStylesheet();
 
     final boolean isSimple = isSimpleRTF(this);
@@ -678,10 +672,8 @@ public abstract class SyntaxTreeNode implements Constants {
 //    il.append(new PUSH(cpg, stylesheet.callsNodeset()));
 //    il.append(new INVOKEINTERFACE(index, 4));
 
-    JBlock body = method.body();
-    JVar resultTreeFrag = body.decl(
-        dom.type(),
-        "resultTreeFrag",
+    JBlock body = ctx.currentBlock();
+    JVar resultTreeFrag = body.decl(ctx.ref(DOM.class), "resultTreeFrag",
         dom.invoke("getResultTreeFrag").arg(lit(RTF_INITIAL_SIZE)).arg(lit(rtfType))
             .arg(lit(stylesheet.callsNodeset())));
 
@@ -695,27 +687,17 @@ public abstract class SyntaxTreeNode implements Constants {
 //    il.append(methodGen.storeHandler());
 
 
-    body.invoke("pushHandler").arg(resultTreeFrag.invoke("getOutputDomBuilder"));
-    JInvocation outputDomBuilder = invoke("peekHandler");
+    ctx.pushHandler(resultTreeFrag.invoke("getOutputDomBuilder"));// body.invoke("pushHandler").arg(resultTreeFrag.invoke("getOutputDomBuilder"));
+//    JInvocation outputDomBuilder = invoke("peekHandler");
     
     // Call startDocument on the new handler
-//    il.append(methodGen.startDocument());
-//    JTryBlock _try = method.body()._try();
-//    JBlock block = _try.body();
-    body.invoke(outputDomBuilder, "startDocument");
+    body.invoke(ctx.currentHandler(), "startDocument");
 
     // Instantiate result tree fragment
-    translateContents(definedClass, method, body);
+    translateContents(ctx);
 
     // Call endDocument on the new handler
-//    il.append(methodGen.loadHandler());
-//    il.append(methodGen.endDocument());
-    body.invoke(invoke("popHandler"), "endDocument");
-    JClass saxException = definedClass.owner().ref(SAXException.class);
-    JClass transletException = definedClass.owner().ref(TransletException.class);
-//    JCatchBlock _catch = _try._catch(saxException);
-//    JVar e = _catch.param("e");
-//    _catch.body()._throw(_new(transletException).arg(e));
+    body.invoke(ctx.popHandler(), "endDocument");
 
     // Check if we need to wrap the DOMImpl object in a DOMAdapter object.
     // DOMAdapter is not needed if the RTF is a simple RTF and the nodeset()

@@ -25,20 +25,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.bcel.generic.GOTO_W;
-import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InstructionList;
 
 import com.sun.codemodel.JBlock;
-import com.sun.codemodel.JDefinedClass;
-import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JInvocation;
-import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JStatement;
-import com.sun.codemodel.JSwitch;
 
-import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
-import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
+import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 
 /**
  * A test sequence is a sequence of patterns that
@@ -88,7 +81,7 @@ final class TestSeq {
   /**
    * Cached handle to avoid compiling more than once.
    */
-  private JInvocation _start = null;
+  private JStatement _start = null;
 
   /**
    * Creates a new test sequence given a set of patterns and a mode.
@@ -197,7 +190,7 @@ final class TestSeq {
    * template occurs in several test sequences; that is, if its pattern is a
    * union of patterns (e.g. match="A/B | A/C").
    */
-  private JInvocation getTemplateHandle(Template template) {
+  private JStatement getTemplateHandle(Template template) {
     return _mode.getTemplateInstructionHandle(template);
   }
 
@@ -212,8 +205,9 @@ final class TestSeq {
    * Compile the code for this test sequence. Compile patterns from highest to
    * lowest priority. Note that since patterns can be share by multiple test
    * sequences, instruction lists must be copied before backpatching.
+   * @param ctx TODO
    */
-  public JInvocation compile(JDefinedClass definedClass, JMethod method, JInvocation defaultStatement) {
+  public JStatement compile(CompilerContext ctx, JStatement defaultStatement) {
     // Returned cached value if already compiled
     if (_start != null)
       return _start;
@@ -224,14 +218,13 @@ final class TestSeq {
       return _start = getTemplateHandle(_default);
 
     // Init handle to jump when all patterns failed
-    JInvocation fail = _default == null ? defaultStatement : getTemplateHandle(_default);
+    JStatement fail = _default == null ? defaultStatement : getTemplateHandle(_default);
 
     // Compile all patterns in reverse order
     for (int n = count - 1; n >= 0; n--) {
       final LocationPathPattern pattern = getPattern(n);
       final Template template = pattern.getTemplate();
-      JBlock block = new JBlock(false, false);
-      final InstructionList il = new InstructionList();
+      JBlock block = new JBlock();
 
       // Patterns expect current node on top of stack
       // il.append(methodGen.loadCurrentNode());
@@ -239,7 +232,8 @@ final class TestSeq {
       // Apply the test-code compiled for the pattern
       // TODO InstructionList ilist = methodGen.getInstructionList(pattern);
       // TODO if (ilist == null) {
-        JInvocation invocation = (JInvocation) pattern.compile(definedClass, method);
+        JInvocation invocation = (JInvocation) pattern.compile(ctx);
+        block.add(invocation);
       // TODO methodGen.addInstructionList(pattern, ilist);
       // TODO }
 
@@ -272,13 +266,15 @@ final class TestSeq {
 //      fail = il.getStart();
 //
 //      // Append existing instruction list to the end of this one
-//      if (_instructionList != null) {
-//        il.append(_instructionList);
-//      }
+      if (_instructionList != null) {
+        block.add(_instructionList);
+      }
 //
 //      // Set current instruction list to be this one
 //      _instructionList = il;
+      _instructionList = block;
     }
+//    if(_instructionList != null) return _instructionList;
     return _start = fail;
   }
 }

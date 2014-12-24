@@ -21,17 +21,15 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import static com.sun.codemodel.JExpr.direct;
+import static com.sun.codemodel.JExpr.invoke;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import com.sun.codemodel.JBlock;
-import com.sun.codemodel.JDefinedClass;
-import com.sun.codemodel.JInvocation;
-import com.sun.codemodel.JMethod;
-import com.sun.codemodel.JVar;
+import com.sun.codemodel.JStatement;
 
+import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
@@ -299,19 +297,22 @@ public final class Template extends TopLevelElement implements Comparable<Templa
    * list is saved and restored.
    */
   @Override
-  public JInvocation compile(JDefinedClass definedClass, JMethod method) {
-    if(!isNamed()) return null;
-    final String methodName = Util.escape(_name.toString());
-    JVar[] params = method.listParams();
-    JInvocation template = new JBlock(false, false).invoke(methodName);
-    for (JVar var : params) {
-      template.arg(var);
+  public JStatement compile(CompilerContext ctx) {
+    if(!isNamed()){
+      CompilerContext newCtx = new CompilerContext(ctx.owner(), ctx.clazz(), ctx.stylesheet(), ctx.xsltc());
+      newCtx.pushMethodContext(ctx.currentMethodContext());
+      newCtx.pushNode(ctx.currentNode());
+      newCtx.pushHandler(ctx.param(TRANSLET_OUTPUT_PNAME));
+      newCtx.pushBlock(new JBlock());
+      translate(newCtx);
+      return newCtx.popBlock();
     }
-    return template.arg(direct("current"));
+    final String methodName = Util.escape(_name.toString());
+    return invoke(methodName).arg(ctx.currentDom()).arg(ctx.param(ITERATOR_PNAME)).arg(ctx.param(TRANSLET_OUTPUT_PNAME)).arg(ctx.currentNode());
   }
 
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
+  public void translate(CompilerContext ctx) {
 
     if (_disabled)
       return;
@@ -320,8 +321,8 @@ public final class Template extends TopLevelElement implements Comparable<Templa
 
     if (_compiled && isNamed()) {
       final String methodName = Util.escape(_name.toString());
-      JVar[] params = method.listParams();
-      body.invoke(methodName).arg(params[0]).arg(params[1]).arg(params[2]).arg("current");
+      ctx.currentBlock().invoke(methodName).arg(ctx.currentDom()).arg(ctx.param(ITERATOR_PNAME))
+          .arg(ctx.param(TRANSLET_OUTPUT_PNAME)).arg(ctx.currentNode());
       return;
     }
 
@@ -343,7 +344,7 @@ public final class Template extends TopLevelElement implements Comparable<Templa
       }
     }
 
-    translateContents(definedClass, method, body);
+    translateContents(ctx);
 
     // InstructionList il = null;
     // il.setPositions(true);

@@ -146,7 +146,7 @@ public abstract class Type implements Constants {
 //    definedClass.getParser().reportError(Constants.FATAL, err);
   }
 
-  public JExpression compileTo(JDefinedClass definedClass, JMethod method, Type type) {
+  public JExpression compileTo(CompilerContext ctx, JExpression expr, Type type) {
     final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), type.toString());
 //    definedClass.getParser().reportError(Constants.FATAL, err);
     return null;

@@ -27,14 +27,14 @@ import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.INVOKESTATIC;
 import org.apache.bcel.generic.InstructionList;
 
-import com.sun.codemodel.JBlock;
-import com.sun.codemodel.JDefinedClass;
-import com.sun.codemodel.JMethod;
+import com.sun.codemodel.JExpression;
 
 import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
+import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
+import de.lyca.xalan.xsltc.runtime.BasisLibrary;
 
 /**
  * @author Morten Jorgensen
@@ -91,12 +91,32 @@ class NameBase extends FunctionCall {
     return _type;
   }
 
+  @Override
+  public JExpression compile(CompilerContext ctx) {
+    // Function was called with no parameters
+    JExpression expr;
+    if (argumentCount() == 0) {
+      expr = ctx.currentNode();
+    }
+    // Function was called with node parameter
+    else if (_paramType == Type.Node) {
+      expr = _param.compile(ctx);
+    } else if (_paramType == Type.Reference) {
+      expr = ctx.ref(BasisLibrary.class).staticInvoke("referenceToNodeSet").arg(_param.compile(ctx)).invoke(NEXT);
+    }
+    // Function was called with node-set parameter
+    else {
+      expr = _param.startIterator(ctx, _param.compile(ctx)).invoke(NEXT);
+    }
+    return expr;
+  }
+
   /**
    * Translate the code required for getting the node for which the QName,
    * local-name or namespace URI should be extracted.
    */
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
+  public void translate(CompilerContext ctx) {
 // // FIXME
 //    final ConstantPoolGen cpg = classGen.getConstantPool();
 //    final InstructionList il = methodGen.getInstructionList();

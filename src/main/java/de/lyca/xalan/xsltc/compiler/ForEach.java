@@ -22,7 +22,6 @@
 package de.lyca.xalan.xsltc.compiler;
 
 import static com.sun.codemodel.JExpr.TRUE;
-import static com.sun.codemodel.JExpr.direct;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +34,7 @@ import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JVar;
 
+import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.NodeSetType;
 import de.lyca.xalan.xsltc.compiler.util.NodeType;
@@ -93,7 +93,7 @@ final class ForEach extends Instruction {
   }
 
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
+  public void translate(CompilerContext ctx) {
  // FIXME
 //    final InstructionList il = method.getInstructionList();
 
@@ -119,25 +119,32 @@ final class ForEach extends Instruction {
         final ErrorMsg msg = new ErrorMsg(ErrorMsg.RESULT_TREE_SORT_ERR, this);
         getParser().reportError(WARNING, msg);
       }
-      iterator = _select.compile(definedClass, method);//.invoke("setStartNode").arg(params[3]);
+      iterator = _select.compile(ctx);//.invoke("setStartNode").arg(params[3]);
 
       // Put the result tree on the stack (DOM)
 //      _select.translate(definedClass, method);
       // Get an iterator for the whole DOM - excluding the root node
-      _type.translateTo(definedClass, method, Type.NodeSet);
+      _type.translateTo(ctx.clazz(), ctx.currentMethod(), Type.NodeSet);
       // Store the result tree as the default DOM
 //      il.append(SWAP);
 //      il.append(method.storeDOM());
     } else {
       // Compile node iterator
       if (sortObjects.size() > 0) {
-        iterator = Sort.translateSortIterator(definedClass, method, _select, sortObjects);
+        iterator = Sort.translateSortIterator(ctx, _select, sortObjects);
       } else {
-        iterator = body.decl(definedClass.owner()._ref(DTMAxisIterator.class), "tmpIterator", _select.compile(definedClass, method));
+        JExpression select;
+        if(_type instanceof ReferenceType){
+          select = _select.compile(ctx);
+        }else{
+          select = _select.compile(ctx).invoke("setStartNode").arg(ctx.currentNode());
+        }
+        iterator = ctx.currentBlock().decl(ctx.ref(DTMAxisIterator.class), ctx.nextTmpIterator(), select);
 //        _select.translate(definedClass, method);
       }
 
       if (_type instanceof ReferenceType == false) {
+//        iterator = iterator.invoke("setStartNode").arg(ctx.currentNode());
 //        il.append(method.loadContextNode());
 //        il.append(method.setStartNode());
       }
@@ -147,16 +154,19 @@ final class ForEach extends Instruction {
 //    il.append(method.storeIterator());
 
     // Give local variables (if any) default values before starting loop
-    initializeVariables(definedClass, method);
+    initializeVariables(ctx);
 
 //    final BranchHandle nextNode = il.append(new GOTO(null));
 //    final InstructionHandle loop = il.append(NOP);
-    final JBlock loop = body._while(TRUE).body();
-    JVar current = loop.decl(definedClass.owner().INT, "current", iterator.invoke("next"));
+    final JBlock loop = ctx.currentBlock()._while(TRUE).body();
+    JVar current = loop.decl(ctx.owner().INT, "current", iterator.invoke("next"));
     final JConditional _if = loop._if(current.gt(JExpr.lit(0)));
-    final JBlock _then = _if._then();
 
-    translateContents(definedClass, method, _then);
+    ctx.pushNode(current);
+    ctx.pushBlock(_if._then());
+    translateContents(ctx);
+    ctx.popBlock();
+    ctx.popNode();
 
     _if._else()._break();
 //    nextNode.setTarget(il.append(method.loadIterator()));
@@ -186,11 +196,11 @@ final class ForEach extends Instruction {
    * (code for <xsl:for-each> contents) : Iterate: node = iterator.next(); if
    * (node != END) goto Loop
    */
-  public void initializeVariables(JDefinedClass definedClass, JMethod method) {
+  public void initializeVariables(CompilerContext ctx) {
     for (SyntaxTreeNode child : getContents()) {
       if (child instanceof Variable) {
         final Variable var = (Variable) child;
-        var.initialize(definedClass, method);
+        var.initialize(ctx);
       }
     }
   }

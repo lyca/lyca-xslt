@@ -22,16 +22,12 @@
 package de.lyca.xalan.xsltc.compiler;
 
 import static com.sun.codemodel.JExpr.cast;
-import static com.sun.codemodel.JExpr.invoke;
 import static com.sun.codemodel.JExpr.ref;
 
-import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JClass;
-import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JExpression;
-import com.sun.codemodel.JMethod;
-import com.sun.codemodel.JVar;
 
+import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
@@ -79,12 +75,12 @@ final class ProcessingInstruction extends Instruction {
   }
 
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
+  public void translate(CompilerContext ctx) {
     JExpression nameValue;
     if (!_isLiteral) {
       // if the ncname is an AVT, then the ncname has to be checked at runtime
       // if it is a valid ncname
-      nameValue = _name.compile(definedClass, method);
+      nameValue = _name.compile(ctx);
 
       // store the name into a variable first so _name.translate only needs to
       // be called once
@@ -107,20 +103,20 @@ final class ProcessingInstruction extends Instruction {
 //      il.append(DUP); // first arg to "attributes" call
 
       // Push attribute name
-       nameValue = _name.compile(definedClass, method);// 2nd arg
+       nameValue = _name.compile(ctx);// 2nd arg
 
     }
 
-    JVar handler = body.decl(method.listParamTypes()[2], "curHandler", invoke("peekHandler"));
+    JExpression handler = ctx.currentHandler();
 
-    body.invoke("pushHandler").arg(ref("stringValueHandler"));
+    ctx.pushHandler(ref("stringValueHandler"));
     // translate contents with substituted handler
-    translateContents(definedClass, method, body);
+    translateContents(ctx);
 
     // get String out of the handler
-    JClass stringValueHandler = definedClass.owner().ref(StringValueHandler.class);
-    JExpression valOfPI = ((JExpression)cast(stringValueHandler, invoke("popHandler"))).invoke("getValueOfPI");
+    JClass stringValueHandler = ctx.ref(StringValueHandler.class);
+    JExpression valOfPI = ((JExpression)cast(stringValueHandler, ctx.popHandler())).invoke("getValueOfPI");
     // call "processingInstruction"
-    body.invoke(handler, "processingInstruction").arg(nameValue).arg(valOfPI);
+    ctx.currentBlock().invoke(handler, "processingInstruction").arg(nameValue).arg(valOfPI);
   }
 }

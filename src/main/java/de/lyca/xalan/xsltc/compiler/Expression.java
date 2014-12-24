@@ -23,22 +23,13 @@ package de.lyca.xalan.xsltc.compiler;
 
 import java.util.List;
 
-import org.apache.bcel.generic.BranchHandle;
-import org.apache.bcel.generic.GOTO_W;
-import org.apache.bcel.generic.IFEQ;
 import org.apache.bcel.generic.InstructionHandle;
-import org.apache.bcel.generic.InstructionList;
 
-import com.sun.codemodel.JBlock;
-import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JExpression;
-import com.sun.codemodel.JInvocation;
-import com.sun.codemodel.JMethod;
 
 import de.lyca.xalan.xsltc.compiler.util.BooleanType;
-import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
+import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
-import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 import de.lyca.xalan.xsltc.compiler.util.MethodType;
 import de.lyca.xalan.xsltc.compiler.util.NodeSetType;
 import de.lyca.xalan.xsltc.compiler.util.Type;
@@ -103,7 +94,7 @@ abstract class Expression extends SyntaxTreeNode {
    * Translate this node into JVM bytecodes.
    */
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
+  public void translate(CompilerContext ctx) {
     final ErrorMsg msg = new ErrorMsg(ErrorMsg.NOT_IMPLEMENTED_ERR, getClass(), this);
     getParser().reportError(FATAL, msg);
   }
@@ -111,8 +102,9 @@ abstract class Expression extends SyntaxTreeNode {
   /**
    * Translate this node into a fresh instruction list. The original instruction
    * list is saved and restored.
+   * @param ctx TODO
    */
-  public JExpression compile(JDefinedClass definedClass, JMethod method) {
+  public JExpression compile(CompilerContext ctx) {
     return null;
     // FIXME
 //    final InstructionList result, save = methodGen.getInstructionList();
@@ -124,42 +116,44 @@ abstract class Expression extends SyntaxTreeNode {
 
   /**
    * Redefined by expressions of type boolean that use flow lists.
+   * @param ctx TODO
    */
-  public void translateDesynthesized(JDefinedClass definedClass, JMethod method, JBlock body) {
-    translate(definedClass, method, body);
+  public void translateDesynthesized(CompilerContext ctx) {
+    translate(ctx);
     if (_type instanceof BooleanType) {
-      desynthesize(definedClass, method);
+      desynthesize(ctx);
     }
   }
 
   /**
    * If this expression is of type node-set and it is not a variable reference,
    * then call setStartNode() passing the context node.
+   * @param ctx TODO
+   * @return TODO
    */
-  public void startIterator(JDefinedClass definedClass, JMethod method) {
+  public JExpression startIterator(CompilerContext ctx, JExpression iter) {
     // Ignore if type is not node-set
-    if (_type instanceof NodeSetType == false)
-      return;
+    if (!(_type instanceof NodeSetType))
+      return iter;
 
     // setStartNode() should not be called if expr is a variable ref
     Expression expr = this;
     if (expr instanceof CastExpr) {
       expr = ((CastExpr) expr).getExpr();
     }
-    if (expr instanceof VariableRefBase == false) {
-// FIXME
-//      final InstructionList il = method.getInstructionList();
-//      il.append(method.loadContextNode());
-//      il.append(method.setStartNode());
+    if (!(expr instanceof VariableRefBase)) {
+      return iter.invoke("setStartNode").arg(ctx.currentNode());
     }
+    return iter;
   }
 
   /**
    * Synthesize a boolean expression, i.e., either push a 0 or 1 onto the
    * operand stack for the next statement to succeed. Returns the handle of the
    * instruction to be backpatched.
+   * @param ctx TODO
    */
-  public void synthesize(JDefinedClass definedClass, JMethod method) {
+  public void synthesize(CompilerContext ctx) {
     // FIXME
 //    final InstructionList il = methodGen.getInstructionList();
 //    _trueList.backPatch(il.append(ICONST_1));
@@ -168,7 +162,7 @@ abstract class Expression extends SyntaxTreeNode {
 //    truec.setTarget(il.append(NOP));
   }
 
-  public void desynthesize(JDefinedClass definedClass, JMethod method) {
+  public void desynthesize(CompilerContext ctx) {
  // FIXME
 //    final InstructionList il = methodGen.getInstructionList();
 //    _falseList.add(il.append(new IFEQ(null)));

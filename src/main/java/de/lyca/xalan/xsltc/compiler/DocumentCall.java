@@ -21,23 +21,18 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
+import static com.sun.codemodel.JExpr._this;
+
 import java.util.List;
 
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.GETFIELD;
-import org.apache.bcel.generic.INVOKESTATIC;
-import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.PUSH;
+import com.sun.codemodel.JExpression;
+import com.sun.codemodel.JFieldVar;
 
-import com.sun.codemodel.JBlock;
-import com.sun.codemodel.JDefinedClass;
-import com.sun.codemodel.JMethod;
-
-import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
+import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
-import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
+import de.lyca.xalan.xsltc.dom.LoadDocument;
 
 /**
  * @author Jacek Ambroziak
@@ -111,12 +106,38 @@ final class DocumentCall extends FunctionCall {
     return _type = Type.NodeSet;
   }
 
+  @Override
+  public JExpression compile(CompilerContext ctx) {
+    final int ac = argumentCount();
+
+    JFieldVar domField = ctx.field(DOM_FIELD);
+    // The URI can be either a node-set or something else cast to a string
+    JExpression arg1 = _arg1.compile(ctx);
+    if (_arg1Type == Type.NodeSet) {
+      arg1 = _arg1.startIterator(ctx, arg1);
+    }
+
+    if (ac == 2) {
+      // _arg2 == null was tested in typeChec()
+      JExpression arg2 = _arg2.startIterator(ctx, _arg2.compile(ctx));
+      // public static DTMAxisIterator documentF(Object arg1, DTMAxisIterator
+      // arg2, String xslURI, AbstractTranslet translet, DOM dom)
+      return ctx.ref(LoadDocument.class).staticInvoke("documentF").arg(arg1).arg(arg2).arg(getStylesheet().getSystemId())
+          .arg(_this()).arg(domField);
+    }
+
+    // public static DTMAxisIterator documentF(Object arg, String xslURI,
+    // AbstractTranslet translet, DOM dom)
+    return ctx.ref(LoadDocument.class).staticInvoke("documentF").arg(arg1).arg(getStylesheet().getSystemId())
+        .arg(_this()).arg(domField);
+  }
+
   /**
    * Translates the document() function call to a call to LoadDocument()'s
    * static method document().
    */
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
+  public void translate(CompilerContext ctx) {
     // FIXME
 //    final ConstantPoolGen cpg = classGen.getConstantPool();
 //    final InstructionList il = methodGen.getInstructionList();

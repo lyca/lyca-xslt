@@ -32,9 +32,8 @@ import java.util.StringTokenizer;
 import javax.xml.transform.OutputKeys;
 
 import com.sun.codemodel.JBlock;
-import com.sun.codemodel.JDefinedClass;
-import com.sun.codemodel.JMethod;
 
+import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.Util;
 import de.lyca.xml.serializer.Encodings;
@@ -300,11 +299,12 @@ final class Output extends TopLevelElement {
    * the appropriate fields in the translet
    */
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
+  public void translate(CompilerContext ctx) {
     // Do nothing if other <xsl:output> element has higher precedence
     if (_disabled)
       return;
 
+    JBlock body = ctx.currentBlock();
     // Only update _version field if set and different from default
     if (_version != null && !_version.equals(XML_VERSION)) {
       body.assign(ref("_version"), lit(_version));

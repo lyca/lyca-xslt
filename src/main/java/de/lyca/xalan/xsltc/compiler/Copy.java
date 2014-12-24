@@ -21,10 +21,13 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import com.sun.codemodel.JBlock;
-import com.sun.codemodel.JDefinedClass;
-import com.sun.codemodel.JMethod;
+import static com.sun.codemodel.JExpr._null;
+import static com.sun.codemodel.JExpr.lit;
 
+import com.sun.codemodel.JBlock;
+import com.sun.codemodel.JVar;
+
+import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
@@ -68,63 +71,54 @@ final class Copy extends Instruction {
   }
 
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
+  public void translate(CompilerContext ctx) {
     // FIXME
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//    final InstructionList il = methodGen.getInstructionList();
-//
-//    final LocalVariableGen name = methodGen.addLocalVariable2("name", Util.getJCRefType(STRING_SIG), null);
-//    final LocalVariableGen length = methodGen.addLocalVariable2("length", Util.getJCRefType("I"), null);
-//
-//    // Get the name of the node to copy and save for later
-//    il.append(methodGen.loadDOM());
-//    il.append(methodGen.loadCurrentNode());
-//    il.append(methodGen.loadHandler());
-//    final int cpy = cpg.addInterfaceMethodref(DOM_INTF, "shallowCopy", "(" + NODE_SIG + TRANSLET_OUTPUT_SIG + ")"
-//            + STRING_SIG);
-//    il.append(new INVOKEINTERFACE(cpy, 3));
-//    il.append(DUP);
-//    name.setStart(il.append(new ASTORE(name.getIndex())));
-//    final BranchHandle ifBlock1 = il.append(new IFNULL(null));
-//
-//    // Get the length of the node name and save for later
-//    il.append(new ALOAD(name.getIndex()));
-//    final int lengthMethod = cpg.addMethodref(STRING_CLASS, "length", "()I");
-//    il.append(new INVOKEVIRTUAL(lengthMethod));
-//    length.setStart(il.append(new ISTORE(length.getIndex())));
-//
-//    // Copy in attribute sets if specified
-//    if (_useSets != null) {
-//      // If the parent of this element will result in an element being
-//      // output then we know that it is safe to copy out the attributes
-//      final SyntaxTreeNode parent = getParent();
-//      if (parent instanceof LiteralElement || parent instanceof LiteralElement) {
-//        _useSets.translate(classGen, methodGen);
-//      }
-//      // If not we have to check to see if the copy will result in an
-//      // element being output.
-//      else {
-//        // check if element; if not skip to translate body
+    JBlock body = ctx.currentBlock();
+
+    // Get the name of the node to copy and save for later
+    JVar name = body.decl(ctx.ref(String.class), "name", ctx.currentDom().invoke("shallowCopy").arg(ctx.currentNode()).arg(ctx.currentHandler()));
+
+    // final BranchHandle ifBlock1 = il.append(new IFNULL(null));
+    JBlock _if1 = body._if(name.ne(_null()))._then();
+
+    // Get the length of the node name and save for later
+    JVar length = _if1.decl(ctx.owner().INT, "length", name.invoke("length"));
+
+    // Copy in attribute sets if specified
+    if (_useSets != null) {
+      // If the parent of this element will result in an element being
+      // output then we know that it is safe to copy out the attributes
+      final SyntaxTreeNode parent = getParent();
+      if (parent instanceof LiteralElement || parent instanceof LiteralElement) {
+        _useSets.translate(ctx);
+      }
+      // If not we have to check to see if the copy will result in an
+      // element being output.
+      else {
+        // check if element; if not skip to translate body
 //        il.append(new ILOAD(length.getIndex()));
 //        final BranchHandle ifBlock2 = il.append(new IFEQ(null));
-//        // length != 0 -> element -> do attribute sets
-//        _useSets.translate(classGen, methodGen);
-//        // not an element; root
+        // length != 0 -> element -> do attribute sets
+        _useSets.translate(ctx);
+        // not an element; root
 //        ifBlock2.setTarget(il.append(NOP));
-//      }
-//    }
-//
-//    // Instantiate body of xsl:copy
-//    translateContents(classGen, methodGen);
-//
-//    // Call the output handler's endElement() if we copied an element
-//    // (The DOM.shallowCopy() method calls startElement().)
+      }
+    }
+
+    ctx.pushBlock(_if1);
+    // Instantiate body of xsl:copy
+    translateContents(ctx);
+    ctx.popBlock();
+    // Call the output handler's endElement() if we copied an element
+    // (The DOM.shallowCopy() method calls startElement().)
 //    length.setEnd(il.append(new ILOAD(length.getIndex())));
 //    final BranchHandle ifBlock3 = il.append(new IFEQ(null));
 //    il.append(methodGen.loadHandler());
 //    name.setEnd(il.append(new ALOAD(name.getIndex())));
 //    il.append(methodGen.endElement());
-//
+    
+    JBlock _if3 = _if1._if(length.ne(lit(0)))._then();
+    _if3.invoke(ctx.currentHandler(), "endElement").arg(name);
 //    final InstructionHandle end = il.append(NOP);
 //    ifBlock1.setTarget(end);
 //    ifBlock3.setTarget(end);

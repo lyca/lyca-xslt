@@ -24,21 +24,13 @@ package de.lyca.xalan.xsltc.compiler;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.INVOKEINTERFACE;
-import org.apache.bcel.generic.INVOKESPECIAL;
-import org.apache.bcel.generic.INVOKEVIRTUAL;
-import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.NEW;
+import com.sun.codemodel.JExpr;
+import com.sun.codemodel.JExpression;
 
-import com.sun.codemodel.JBlock;
-import com.sun.codemodel.JDefinedClass;
-import com.sun.codemodel.JMethod;
-
-import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
-import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
+import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
+import de.lyca.xalan.xsltc.dom.UnionIterator;
 import de.lyca.xml.dtm.Axis;
 import de.lyca.xml.dtm.DTM;
 
@@ -120,7 +112,29 @@ final class UnionPathExpr extends Expression {
   }
 
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
+  public JExpression compile(CompilerContext ctx) {
+    // Create the UnionIterator and leave it on the stack
+    JExpression unionIterator = JExpr._new(ctx.ref(UnionIterator.class)).arg(ctx.currentDom());
+
+    // Add the various iterators to the UnionIterator
+    for (final Expression expression : _components) {
+      unionIterator = unionIterator.invoke(ADD_ITERATOR).arg(expression.compile(ctx));
+    }
+
+    // Order the iterator only if strictly needed
+    if (_reverse) {
+      // FIXME
+//      final int order = cpg.addInterfaceMethodref(DOM_INTF, ORDER_ITERATOR, ORDER_ITERATOR_SIG);
+//      il.append(methodGen.loadDOM());
+//      il.append(SWAP);
+//      il.append(methodGen.loadContextNode());
+//      il.append(new INVOKEINTERFACE(order, 3));
+    }
+    return unionIterator;
+  }
+
+  @Override
+  public void translate(CompilerContext ctx) {
 //    FIXME
 //    final ConstantPoolGen cpg = classGen.getConstantPool();
 //    final InstructionList il = methodGen.getInstructionList();

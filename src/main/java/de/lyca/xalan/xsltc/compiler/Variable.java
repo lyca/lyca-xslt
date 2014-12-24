@@ -21,13 +21,23 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import com.sun.codemodel.JBlock;
+import static com.sun.codemodel.JExpr.FALSE;
+import static com.sun.codemodel.JExpr._null;
+import static com.sun.codemodel.JExpr.lit;
+
 import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JExpr;
+import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JFieldVar;
 import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JMod;
 
+import de.lyca.xalan.xsltc.compiler.util.BooleanType;
+import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
+import de.lyca.xalan.xsltc.compiler.util.IntType;
+import de.lyca.xalan.xsltc.compiler.util.NodeType;
+import de.lyca.xalan.xsltc.compiler.util.RealType;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
 
@@ -102,32 +112,32 @@ final class Variable extends VariableBase {
    * inside nested for-each loops. See the initializeVariables() method in the
    * ForEach class for an explanation
    */
-  public void initialize(JDefinedClass definedClass, JMethod method) {
-// FIXME
-//    final InstructionList il = methodGen.getInstructionList();
-//
-//    // This is only done for local variables that are actually used
-//    if (isLocal() && !_refs.isEmpty()) {
-//      // Create a variable slot if none is allocated
-//      if (_local == null) {
-//        _local = methodGen.addLocalVariable2(getEscapedName(), _type.toJCType(), null);
-//      }
-//      // Push the default value on the JVM's stack
-//      if (_type instanceof IntType || _type instanceof NodeType || _type instanceof BooleanType) {
-//        il.append(new ICONST(0)); // 0 for node-id, integer and boolean
-//      } else if (_type instanceof RealType) {
-//        il.append(new DCONST(0)); // 0.0 for floating point numbers
-//      } else {
-//        il.append(new ACONST_NULL()); // and 'null' for anything else
-//      }
-//
-//      // Mark the store as the start of the live range of the variable
-//      _local.setStart(il.append(_type.STORE(_local.getIndex())));
-//    }
+  public void initialize(CompilerContext ctx) {
+    // This is only done for local variables that are actually used
+    if (isLocal() && !_refs.isEmpty()) {
+      // Create the default value
+      JExpression defaultValue;
+      if (_type instanceof IntType || _type instanceof NodeType) {
+        defaultValue = lit(0); // 0 for node-id, integer
+      } else if (_type instanceof BooleanType) {
+        defaultValue = FALSE; // false for boolean
+      } else if (_type instanceof RealType) {
+        defaultValue = lit(0.0); // 0.0 for floating point numbers
+      } else {
+        defaultValue = _null(); // and 'null' for anything else
+      }
+
+      // Create a variable slot if none is allocated
+      if (_local == null) {
+        _local = ctx.currentBlock().decl(_type.toJCType(), getEscapedName(), defaultValue);
+      } else {
+        ctx.currentBlock().assign(_local, defaultValue);
+      }
+    }
   }
 
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
+  public void translate(CompilerContext ctx) {
     // Don't generate code for unreferenced variables
     if (_refs.isEmpty()) {
       _ignore = true;
@@ -143,17 +153,17 @@ final class Variable extends VariableBase {
     if (isLocal()) {
       // Add a new local variable and store value
       if (_local == null) {
-        mapRegister(method);
+        mapRegister(ctx.currentMethod());
       }
       // Compile variable value computation
-      body.assign(_local, compileValue(definedClass, method));
+      ctx.currentBlock().assign(_local, compileValue(ctx));
     } else {
       // Global variables are store in class fields
-      if (!definedClass.fields().containsKey(name)) {
-        JFieldVar field = definedClass.field(JMod.PUBLIC, _type.toJCType(), name);
+      if (ctx.field(name) == null) {
+        JFieldVar field = ctx.field(JMod.PUBLIC, _type.toJCType(), name);
         // Compile variable value computation
         // Store the variable in the allocated field
-        body.assign(field, compileValue(definedClass, method));
+        ctx.currentBlock().assign(field, compileValue(ctx));
       }
     }
   }

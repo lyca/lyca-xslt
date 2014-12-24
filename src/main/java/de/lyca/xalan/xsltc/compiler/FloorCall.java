@@ -23,14 +23,9 @@ package de.lyca.xalan.xsltc.compiler;
 
 import java.util.List;
 
-import org.apache.bcel.generic.INVOKESTATIC;
+import com.sun.codemodel.JExpression;
 
-import com.sun.codemodel.JBlock;
-import com.sun.codemodel.JDefinedClass;
-import com.sun.codemodel.JMethod;
-
-import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
-import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
+import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 
 /**
  * @author Jacek Ambroziak
@@ -42,7 +37,12 @@ final class FloorCall extends FunctionCall {
   }
 
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
+  public JExpression compile(CompilerContext ctx) {
+    return ctx.ref(Math.class).staticInvoke("floor").arg(argument().compile(ctx));
+  }
+
+  @Override
+  public void translate(CompilerContext ctx) {
  // FIXME
 //    argument().translate(classGen, methodGen);
 //    methodGen.getInstructionList().append(

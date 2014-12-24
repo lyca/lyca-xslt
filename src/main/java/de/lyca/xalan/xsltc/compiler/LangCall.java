@@ -23,21 +23,13 @@ package de.lyca.xalan.xsltc.compiler;
 
 import java.util.List;
 
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.ILOAD;
-import org.apache.bcel.generic.INVOKESTATIC;
-import org.apache.bcel.generic.InstructionList;
+import com.sun.codemodel.JExpression;
 
-import com.sun.codemodel.JBlock;
-import com.sun.codemodel.JDefinedClass;
-import com.sun.codemodel.JMethod;
-
-import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
-import de.lyca.xalan.xsltc.compiler.util.FilterGenerator;
-import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
+import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.StringType;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
+import de.lyca.xalan.xsltc.runtime.BasisLibrary;
 
 /**
  * @author Morten Jorgensen
@@ -74,12 +66,26 @@ final class LangCall extends FunctionCall {
     return Type.Boolean;
   }
 
+  @Override
+  public JExpression compile(CompilerContext ctx) {
+    // final int tst = cpg.addMethodref(BASIS_LIBRARY_CLASS, "testLanguage", "("
+    // + STRING_SIG + DOM_INTF_SIG + "I)Z");
+    JExpression lang = _lang.compile(ctx);
+    // il.append(methodGen.loadDOM());
+    // if (classGen instanceof FilterGenerator) {
+    // il.append(new ILOAD(1));
+    // } else {
+    // il.append(methodGen.loadContextNode());
+    // }
+    return ctx.ref(BasisLibrary.class).staticInvoke("testLanguage").arg(lang).arg(ctx.currentDom()).arg(ctx.currentNode());
+  }
+
   /**
    * This method is called when the constructor is compiled in
    * Stylesheet.compileConstructor() and not as the syntax tree is traversed.
    */
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
+  public void translate(CompilerContext ctx) {
  // FIXME
 //    final ConstantPoolGen cpg = classGen.getConstantPool();
 //    final InstructionList il = methodGen.getInstructionList();

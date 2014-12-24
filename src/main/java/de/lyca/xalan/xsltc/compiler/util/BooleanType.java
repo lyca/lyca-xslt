@@ -21,12 +21,10 @@
 
 package de.lyca.xalan.xsltc.compiler.util;
 
-import org.apache.bcel.generic.BranchHandle;
+import static com.sun.codemodel.JExpr.lit;
+import static com.sun.codemodel.JOp.cond;
+
 import org.apache.bcel.generic.BranchInstruction;
-import org.apache.bcel.generic.CHECKCAST;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.GOTO;
-import org.apache.bcel.generic.IFEQ;
 import org.apache.bcel.generic.IFGE;
 import org.apache.bcel.generic.IFGT;
 import org.apache.bcel.generic.IFLE;
@@ -36,22 +34,13 @@ import org.apache.bcel.generic.IF_ICMPGT;
 import org.apache.bcel.generic.IF_ICMPLE;
 import org.apache.bcel.generic.IF_ICMPLT;
 import org.apache.bcel.generic.ILOAD;
-import org.apache.bcel.generic.INVOKESPECIAL;
-import org.apache.bcel.generic.INVOKEVIRTUAL;
 import org.apache.bcel.generic.ISTORE;
 import org.apache.bcel.generic.Instruction;
-import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.NEW;
-import org.apache.bcel.generic.PUSH;
 
-import com.sun.codemodel.JCodeModel;
 import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JMethod;
-import com.sun.codemodel.JPrimitiveType;
 import com.sun.codemodel.JType;
-import com.sun.codemodel.JTypeVar;
-
-import de.lyca.xalan.xsltc.compiler.Constants;
 
 /**
  * @author Jacek Ambroziak
@@ -106,6 +95,21 @@ public final class BooleanType extends Type {
       // FIXME classGen.getParser().reportError(Constants.FATAL, err);
     }
   }
+  
+  @Override
+  public JExpression compileTo(CompilerContext ctx, JExpression expr, Type type) {
+    if (type == Type.String) {
+      return compileTo(ctx, expr, (StringType) type);
+    } else if (type == Type.Real) {
+      return compileTo(ctx, expr, (RealType) type);
+    } else if (type == Type.Reference) {
+      return compileTo(ctx, expr, (ReferenceType) type);
+    } else {
+      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), type.toString());
+      ctx.xsltc().getParser().reportError(FATAL, err);
+      return null;
+    }
+  }
 
   /**
    * Expects a boolean on the stack and pushes a string. If the value on the
@@ -125,6 +129,10 @@ public final class BooleanType extends Type {
 //    truec.setTarget(il.append(NOP));
   }
 
+  public JExpression compileTo(CompilerContext ctx, JExpression expr, StringType type) {
+    return cond(expr, lit("true"), lit("false"));
+  }
+
   /**
    * Expects a boolean on the stack and pushes a real. The value "true" is
    * converted to 1.0 and the value "false" to 0.0.
@@ -134,6 +142,10 @@ public final class BooleanType extends Type {
   public void translateTo(JDefinedClass definedClass, JMethod method, RealType type) {
 //    FIXME
 //    methodGen.getInstructionList().append(I2D);
+  }
+
+  public JExpression compileTo(CompilerContext ctx, JExpression expr, RealType type) {
+    return cond(expr, lit(1.0), lit(0.0));
   }
 
   /**
@@ -150,6 +162,10 @@ public final class BooleanType extends Type {
 //    il.append(DUP_X1);
 //    il.append(SWAP);
 //    il.append(new INVOKESPECIAL(cpg.addMethodref(BOOLEAN_CLASS, "<init>", "(Z)V")));
+  }
+
+  public JExpression compileTo(CompilerContext ctx, JExpression expr, ReferenceType type) {
+    return ctx.ref(Boolean.class).staticInvoke("valueOf").arg(expr);
   }
 
   /**

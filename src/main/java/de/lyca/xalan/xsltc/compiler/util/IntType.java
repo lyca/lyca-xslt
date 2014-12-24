@@ -21,12 +21,12 @@
 
 package de.lyca.xalan.xsltc.compiler.util;
 
-import org.apache.bcel.generic.BranchHandle;
+import static com.sun.codemodel.JExpr.cast;
+import static com.sun.codemodel.JExpr.lit;
+import static com.sun.codemodel.JOp.minus;
+import static com.sun.codemodel.JOp.ne;
+
 import org.apache.bcel.generic.BranchInstruction;
-import org.apache.bcel.generic.CHECKCAST;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.GOTO;
-import org.apache.bcel.generic.IFEQ;
 import org.apache.bcel.generic.IFGE;
 import org.apache.bcel.generic.IFGT;
 import org.apache.bcel.generic.IFLE;
@@ -36,20 +36,15 @@ import org.apache.bcel.generic.IF_ICMPGT;
 import org.apache.bcel.generic.IF_ICMPLE;
 import org.apache.bcel.generic.IF_ICMPLT;
 import org.apache.bcel.generic.ILOAD;
-import org.apache.bcel.generic.INVOKESPECIAL;
-import org.apache.bcel.generic.INVOKESTATIC;
-import org.apache.bcel.generic.INVOKEVIRTUAL;
 import org.apache.bcel.generic.ISTORE;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionConstants;
-import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.NEW;
 
 import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JType;
 
-import de.lyca.xalan.xsltc.compiler.Constants;
 import de.lyca.xalan.xsltc.compiler.FlowList;
 
 /**
@@ -112,6 +107,39 @@ public final class IntType extends NumberType {
       final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), type.toString());
       // FIXME classGen.getParser().reportError(Constants.FATAL, err);
     }
+  }
+
+  @Override
+  public JExpression compileTo(CompilerContext ctx, JExpression expr, Type type) {
+    if (type == Type.Real) {
+      return compileTo(ctx, expr, (RealType) type);
+    } else if (type == Type.String) {
+      return compileTo(ctx, expr, (StringType) type);
+    } else if (type == Type.Boolean) {
+      return compileTo(ctx, expr, (BooleanType) type);
+    } else if (type == Type.Reference) {
+      return compileTo(ctx, expr, (ReferenceType) type);
+    } else {
+      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), type.toString());
+      ctx.xsltc().getParser().reportError(FATAL, err);
+      return null;
+    }
+  }
+
+  public JExpression compileTo(CompilerContext ctx, JExpression expr, RealType type) {
+    return cast(type.toJCType(), expr);
+  }
+
+  public JExpression compileTo(CompilerContext ctx, JExpression expr, StringType type) {
+    return ctx.ref(Integer.class).staticInvoke("toString").arg(expr);
+  }
+
+  public JExpression compileTo(CompilerContext ctx, JExpression expr, BooleanType type) {
+    return ne(expr, lit(0)).cand(ne(expr, minus(lit(0))));
+  }
+
+  public JExpression compileTo(CompilerContext ctx, JExpression expr, ReferenceType type) {
+    return ctx.ref(Integer.class).staticInvoke("valueOf").arg(expr);
   }
 
   /**

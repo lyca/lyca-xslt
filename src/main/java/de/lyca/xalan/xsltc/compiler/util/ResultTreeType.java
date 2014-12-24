@@ -21,22 +21,14 @@
 
 package de.lyca.xalan.xsltc.compiler.util;
 
+import static com.sun.codemodel.JExpr.TRUE;
+
 import org.apache.bcel.generic.ALOAD;
 import org.apache.bcel.generic.ASTORE;
-import org.apache.bcel.generic.CHECKCAST;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.GETFIELD;
-import org.apache.bcel.generic.IFEQ;
-import org.apache.bcel.generic.INVOKEINTERFACE;
-import org.apache.bcel.generic.INVOKESPECIAL;
-import org.apache.bcel.generic.INVOKEVIRTUAL;
 import org.apache.bcel.generic.Instruction;
-import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.LocalVariableGen;
-import org.apache.bcel.generic.NEW;
-import org.apache.bcel.generic.PUSH;
 
 import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JType;
 
@@ -123,6 +115,28 @@ public final class ResultTreeType extends Type {
 //    }
   }
 
+  @Override
+  public JExpression compileTo(CompilerContext ctx, JExpression expr, Type type) {
+    // FIXME
+    if (type == Type.String) {
+      return compileTo(ctx, expr, (StringType) type);
+    } else if (type == Type.Boolean) {
+      return compileTo(ctx, expr, (BooleanType) type);
+    } else if (type == Type.Real) {
+      return compileTo(ctx, expr, (RealType) type);
+    } else if (type == Type.NodeSet) {
+      return compileTo(ctx, expr, (NodeSetType) type);
+    } else if (type == Type.Reference) {
+      return compileTo(ctx, expr, (ReferenceType) type);
+    } else if (type == Type.Object) {
+      return compileTo(ctx, expr, (ObjectType) type);
+    } else {
+      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), type.toString());
+      ctx.xsltc().getParser().reportError(FATAL, err);
+      return null;
+    }
+  }
+
   /**
    * Expects an result tree on the stack and pushes a boolean. Translates a
    * result tree to a boolean by first converting it to string.
@@ -142,6 +156,10 @@ public final class ResultTreeType extends Type {
 //    final InstructionList il = methodGen.getInstructionList();
 //    il.append(POP); // don't need the DOM reference
 //    il.append(ICONST_1); // push 'true' on the stack
+  }
+
+  public JExpression compileTo(CompilerContext ctx, JExpression expr, BooleanType type) {
+    return TRUE;
   }
 
   /**
@@ -197,6 +215,45 @@ public final class ResultTreeType extends Type {
 //    }
   }
 
+  public JExpression compileTo(CompilerContext ctx, JExpression expr, StringType type) {
+    if (_methodName == null) {
+      return expr.invoke("getStringValue");
+    } else {
+//    FIXME
+//      final String className = classGen.getClassName();
+//
+//      // Push required parameters
+//      il.append(classGen.loadTranslet());
+//      if (classGen.isExternal()) {
+//        il.append(new CHECKCAST(cpg.addClass(className)));
+//      }
+//      il.append(DUP);
+//      il.append(new GETFIELD(cpg.addFieldref(className, "_dom", DOM_INTF_SIG)));
+//
+//      // Create a new instance of a StringValueHandler
+//      int index = cpg.addMethodref(STRING_VALUE_HANDLER, "<init>", "()V");
+//      il.append(new NEW(cpg.addClass(STRING_VALUE_HANDLER)));
+//      il.append(DUP);
+//      il.append(DUP);
+//      il.append(new INVOKESPECIAL(index));
+//
+//      // Store new Handler into a local variable
+//      final LocalVariableGen handler = methodGen.addLocalVariable("rt_to_string_handler",
+//              Util.getJCRefType(STRING_VALUE_HANDLER_SIG), null, null);
+//      handler.setStart(il.append(new ASTORE(handler.getIndex())));
+//
+//      // Call the method that implements this result tree
+//      index = cpg.addMethodref(className, _methodName, "(" + DOM_INTF_SIG + TRANSLET_OUTPUT_SIG + ")V");
+//      il.append(new INVOKEVIRTUAL(index));
+//
+//      // Restore new handler and call getValue()
+//      handler.setEnd(il.append(new ALOAD(handler.getIndex())));
+//      index = cpg.addMethodref(STRING_VALUE_HANDLER, "getValue", "()" + STRING_SIG);
+//      il.append(new INVOKEVIRTUAL(index));
+      return null;
+    }
+  }
+
   /**
    * Expects an result tree on the stack and pushes a real. Translates a result
    * tree into a real by first converting it to string.
@@ -213,6 +270,10 @@ public final class ResultTreeType extends Type {
 //    FIXME
 //    translateTo(classGen, methodGen, Type.String);
 //    Type.String.translateTo(classGen, methodGen, Type.Real);
+  }
+
+  public JExpression compileTo(CompilerContext ctx, JExpression expr, RealType type) {
+    return Type.String.compileTo(ctx, compileTo(ctx, expr, Type.String), Type.Real);
   }
 
   /**

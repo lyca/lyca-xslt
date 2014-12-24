@@ -21,35 +21,22 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import org.apache.bcel.generic.BranchHandle;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.GOTO;
-import org.apache.bcel.generic.IFEQ;
-import org.apache.bcel.generic.IFGE;
-import org.apache.bcel.generic.IFGT;
-import org.apache.bcel.generic.ILOAD;
-import org.apache.bcel.generic.INVOKEINTERFACE;
-import org.apache.bcel.generic.INVOKEVIRTUAL;
-import org.apache.bcel.generic.ISTORE;
-import org.apache.bcel.generic.InstructionFactory;
-import org.apache.bcel.generic.InstructionHandle;
-import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.LocalVariableGen;
-import org.apache.bcel.generic.PUSH;
+import static com.sun.codemodel.JExpr.TRUE;
+import static com.sun.codemodel.JExpr.lit;
 
 import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JMethod;
+import com.sun.codemodel.JVar;
 
-import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
+import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
-import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 import de.lyca.xalan.xsltc.compiler.util.NodeSetType;
 import de.lyca.xalan.xsltc.compiler.util.StringType;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
-import de.lyca.xalan.xsltc.compiler.util.Util;
 import de.lyca.xml.dtm.Axis;
+import de.lyca.xml.dtm.DTMAxisIterator;
 import de.lyca.xml.utils.XML11Char;
 
 /**
@@ -212,65 +199,61 @@ final class Key extends TopLevelElement {
    * one (or more) entries in this key's index.
    */
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
- // FIXME
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//    final InstructionList il = methodGen.getInstructionList();
-//    final InstructionFactory factory = new InstructionFactory(classGen, cpg);
-//
-//    // AbstractTranslet.buildKeyIndex(name,node_id,value) => void
-//    final int key = cpg.addMethodref(TRANSLET_CLASS, "buildKeyIndex", "(" + STRING_SIG + "I" + OBJECT_SIG + ")V");
-//
-//    // AbstractTranslet.SetKeyIndexDom(name, Dom) => void
-//    final int keyDom = cpg.addMethodref(TRANSLET_CLASS, "setKeyIndexDom", "(" + STRING_SIG + DOM_INTF_SIG + ")V");
-//
+  public void translate(CompilerContext ctx) {
+    // FIXME
+
 //    cpg.addInterfaceMethodref(DOM_INTF, "getNodeIdent", "(I)" + NODE_SIG);
-//
-//    // DOM.getAxisIterator(root) => NodeIterator
-//    final int git = cpg.addInterfaceMethodref(DOM_INTF, "getAxisIterator", "(Lde/lyca/xml/dtm/Axis;)" + NODE_ITERATOR_SIG);
-//
+
+    // DOM.getAxisIterator(root) => NodeIterator
+//    final int git = cpg.addInterfaceMethodref(DOM_INTF, "getAxisIterator", "(Lde/lyca/xml/dtm/Axis;)"
+//        + NODE_ITERATOR_SIG);
+
 //    il.append(methodGen.loadCurrentNode());
 //    il.append(methodGen.loadIterator());
-//
-//    // Get an iterator for all nodes in the DOM
+
+    // Get an iterator for all nodes in the DOM
+    // and reset the iterator to start with the root node
 //    il.append(methodGen.loadDOM());
-//    il.append(factory.createFieldAccess("de.lyca.xml.dtm.Axis", Axis.DESCENDANT.name(), Type.Axis.toJCType(), org.apache.bcel.Constants.GETSTATIC));
+//    il.append(factory.createFieldAccess("de.lyca.xml.dtm.Axis", Axis.DESCENDANT.name(), Type.Axis.toJCType(),
+//        org.apache.bcel.Constants.GETSTATIC));
 //    il.append(new INVOKEINTERFACE(git, 2));
-//
-//    // Reset the iterator to start with the root node
 //    il.append(methodGen.loadCurrentNode());
 //    il.append(methodGen.setStartNode());
 //    il.append(methodGen.storeIterator());
-//
-//    // Loop for traversing all nodes in the DOM
-//    final BranchHandle nextNode = il.append(new GOTO(null));
-//    final InstructionHandle loop = il.append(NOP);
-//
-//    // Check if the current node matches the pattern in "match"
-//    il.append(methodGen.loadCurrentNode());
-//    _match.translate(classGen, methodGen);
-//    _match.synthesize(classGen, methodGen); // Leaves 0 or 1 on stack
-//    final BranchHandle skipNode = il.append(new IFEQ(null));
-//
-//    // If this is a node-set we must go through each node in the set
-//    if (_useType instanceof NodeSetType) {
-//      // Pass current node as parameter (we're indexing on that node)
-//      il.append(methodGen.loadCurrentNode());
-//      traverseNodeSet(classGen, methodGen, key);
-//    } else {
-//      il.append(classGen.loadTranslet());
-//      il.append(DUP);
-//      il.append(new PUSH(cpg, _name.toString()));
-//      il.append(DUP_X1);
-//      il.append(methodGen.loadCurrentNode());
-//      _use.translate(classGen, methodGen);
-//      il.append(new INVOKEVIRTUAL(key));
-//
-//      il.append(methodGen.loadDOM());
-//      il.append(new INVOKEVIRTUAL(keyDom));
-//    }
-//
-//    // Get the next node from the iterator and do loop again...
+    JVar axisIterator = ctx.currentBlock().decl(
+        ctx.ref(DTMAxisIterator.class),
+        "axisIterator",
+        ctx.currentDom().invoke("getAxisIterator").arg(ctx.ref(Axis.class).staticRef(Axis.DESCENDANT.name()))
+            .invoke("setStartNode").arg(ctx.currentNode()));
+
+    // Loop for traversing all nodes in the DOM
+    final JBlock loop = ctx.currentBlock()._while(TRUE).body();
+    JVar current = loop.decl(ctx.owner().INT, "node", axisIterator.invoke("next"));
+    loop._if(current.lte(lit(0)))._then()._return();
+    ctx.pushBlock(loop);
+    ctx.pushNode(current);
+
+    // Check if the current node matches the pattern in "match"
+    JBlock _if = loop._if(_match.compile(ctx))._then();
+    ctx.pushBlock(_if);
+
+    // If this is a node-set we must go through each node in the set
+    if (_useType instanceof NodeSetType) {
+      // Pass current node as parameter (we're indexing on that node)
+      // il.append(methodGen.loadCurrentNode());
+//       traverseNodeSet(classGen, methodGen, key);
+    } else {
+      // AbstractTranslet.buildKeyIndex(name,node_id,value) => void
+      _if.invoke("buildKeyIndex").arg(_name.toString()).arg(ctx.currentNode()).arg(_use.compile(ctx));
+      // AbstractTranslet.SetKeyIndexDom(name, Dom) => void
+      _if.invoke("setKeyIndexDom").arg(_name.toString()).arg(ctx.currentDom());
+    }
+    
+    ctx.popBlock();
+    ctx.popNode();
+    ctx.popBlock();
+
+    // Get the next node from the iterator and do loop again...
 //    final InstructionHandle skip = il.append(NOP);
 //
 //    il.append(methodGen.loadIterator());
@@ -286,4 +269,5 @@ final class Key extends TopLevelElement {
 //    nextNode.setTarget(skip);
 //    skipNode.setTarget(skip);
   }
+
 }

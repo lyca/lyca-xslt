@@ -28,11 +28,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.sun.codemodel.JBlock;
-import com.sun.codemodel.JDefinedClass;
-import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JVar;
 
+import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
@@ -315,20 +313,20 @@ final class LiteralElement extends Instruction {
    * attribute may depend on a variable, variables must be compiled first.
    */
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
+  public void translate(CompilerContext ctx) {
     // Check whether all attributes are unique.
     _allAttributesUnique = checkAttributesUnique();
 
     // Compile code to emit element start tag
-    JVar handler = method.listParams()[2];
-    body.add(handler.invoke("startElement").arg(_name));
+    JVar handler = ctx.param(TRANSLET_OUTPUT_PNAME);
+    ctx.currentBlock().add(handler.invoke("startElement").arg(_name));
 
     // The value of an attribute may depend on a (sibling) variable
     int j = 0;
     while (j < elementCount()) {
       final SyntaxTreeNode item = elementAt(j);
       if (item instanceof Variable) {
-        item.translate(definedClass, method, body);
+        item.translate(ctx);
       }
       j++;
     }
@@ -343,7 +341,7 @@ final class LiteralElement extends Instruction {
           if (prefix == Constants.EMPTYSTRING) {
             declaresDefaultNS = true;
           }
-          body.add(handler.invoke("namespaceAfterStartElement").arg(prefix).arg(uri));
+          ctx.currentBlock().add(handler.invoke("namespaceAfterStartElement").arg(prefix).arg(uri));
         }
       }
 
@@ -352,7 +350,7 @@ final class LiteralElement extends Instruction {
        * doesn't, it must be redeclared one more time.
        */
       if (!declaresDefaultNS && _parent instanceof XslElement && ((XslElement) _parent).declaresDefaultNS()) {
-        body.add(
+        ctx.currentBlock().add(
             handler.invoke("namespaceAfterStartElement").arg(Constants.EMPTYSTRING).arg(Constants.EMPTYSTRING));
       }
     }
@@ -361,16 +359,16 @@ final class LiteralElement extends Instruction {
     if (_attributeElements != null) {
       for (final SyntaxTreeNode node : _attributeElements) {
         if (!(node instanceof XslAttribute)) {
-          node.translate(definedClass, method, body);
+          node.translate(ctx);
         }
       }
     }
 
     // Compile code to emit attributes and child elements
-    translateContents(definedClass, method, body);
+    translateContents(ctx);
 
     // Compile code to emit element end tag
-    body.add(handler.invoke("endElement").arg(_name));
+    ctx.currentBlock().add(handler.invoke("endElement").arg(_name));
   }
 
   /**

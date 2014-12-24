@@ -22,23 +22,20 @@
 package de.lyca.xalan.xsltc.compiler;
 
 import static com.sun.codemodel.JExpr._new;
+import static com.sun.codemodel.JExpr._this;
 import static com.sun.codemodel.JExpr.invoke;
 import static com.sun.codemodel.JExpr.lit;
 
 import java.util.List;
 
-import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JClass;
-import com.sun.codemodel.JCodeModel;
-import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JExpression;
-import com.sun.codemodel.JInvocation;
-import com.sun.codemodel.JMethod;
-import com.sun.codemodel.JVar;
 
 import de.lyca.xalan.xsltc.DOM;
+import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
+import de.lyca.xalan.xsltc.dom.CurrentNodeListIterator;
 import de.lyca.xalan.xsltc.dom.NthIterator;
 import de.lyca.xml.dtm.Axis;
 import de.lyca.xml.dtm.DTM;
@@ -196,14 +193,12 @@ final class Step extends RelativeLocationPath {
     return _type;
   }
 
-  public JExpression compile(JDefinedClass definedClass, JMethod method) {
-    final JVar[] params = method.listParams();
-    final JCodeModel owner = definedClass.owner();
-    final JClass axis = owner.ref(Axis.class);
-    JInvocation invocation = null;
+  public JExpression compile(CompilerContext ctx) {
+    final JClass axis = ctx.ref(Axis.class);
+    JExpression invocation = null;
 
     if (hasPredicates()) {
-      invocation = compilePredicates(definedClass, method);
+      invocation = compilePredicates(ctx);
     } else {
       int star = 0;
       String name = null;
@@ -220,7 +215,7 @@ final class Step extends RelativeLocationPath {
       // and has no parent
       if (_axis == Axis.ATTRIBUTE && _nodeType != NodeTest.ATTRIBUTE && _nodeType != NodeTest.ANODE
           && !hasParentPattern() && star == 0) {
-        return invoke(params[0], "getTypedAxisIterator").arg(axis.staticRef(Axis.ATTRIBUTE.name()))
+        return invoke(ctx.currentDom(), "getTypedAxisIterator").arg(axis.staticRef(Axis.ATTRIBUTE.name()))
             .arg(lit(_nodeType));
       }
 
@@ -229,7 +224,7 @@ final class Step extends RelativeLocationPath {
       if (isAbbreviatedDot()) {
         if (_type == Type.Node) {
           // Put context node on stack if using Type.Node
-          return params[3];
+          return ctx.currentNode();
           // il.append(methodGen.loadContextNode());
         } else {
           if (parent instanceof ParentLocationPath) {
@@ -265,7 +260,7 @@ final class Step extends RelativeLocationPath {
           _axis = Axis.ATTRIBUTE;
         case NodeTest.ANODE:
           // DOM.getAxisIterator(int axis);
-          invocation = invoke(params[0], "getAxisIterator").arg(axis.staticRef(_axis.name()));
+          invocation = invoke(ctx.currentDom(), "getAxisIterator").arg(axis.staticRef(_axis.name()));
 //          final int git = cpg.addInterfaceMethodref(DOM_INTF, "getAxisIterator", "(Lde/lyca/xml/dtm/Axis;)"
 //              + NODE_ITERATOR_SIG);
 //          il.append(methodGen.loadDOM());
@@ -294,7 +289,7 @@ final class Step extends RelativeLocationPath {
           }
         case NodeTest.ELEMENT:
           // DOM.getTypedAxisIterator(int axis, int type);
-          invocation = invoke(params[0], "getTypedAxisIterator").arg(axis.staticRef(_axis.name()))
+          invocation = invoke(ctx.currentDom(), "getTypedAxisIterator").arg(axis.staticRef(_axis.name()))
               .arg(lit(_nodeType));
 //          final int ty = cpg.addInterfaceMethodref(DOM_INTF, "getTypedAxisIterator", "(Lde/lyca/xml/dtm/Axis;I)"
 //              + NODE_ITERATOR_SIG);
@@ -318,7 +313,7 @@ final class Step extends RelativeLocationPath {
    * instead of an iterator is pushed onto the stack.
    */
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
+  public void translate(CompilerContext ctx) {
 // FIXME
 //    final ConstantPoolGen cpg = classGen.getConstantPool();
 //    final InstructionList il = methodGen.getInstructionList();
@@ -429,12 +424,13 @@ final class Step extends RelativeLocationPath {
    * constructing an instance of <code>CurrentNodeListIterator</code> which is
    * initialized from another iterator (recursive call), a filter and a closure
    * (call to translate on the predicate) and "this".
+   * @param ctx TODO
    */
-  public JInvocation compilePredicates(JDefinedClass definedClass, JMethod method) {
+  public JExpression compilePredicates(CompilerContext ctx) {
     int idx = 0;
 
     if (_predicates.size() == 0) {
-      return (JInvocation) compile(definedClass, method);
+      return compile(ctx);
     } else {
       final Predicate predicate = _predicates.get(_predicates.size() - 1);
       _predicates.remove(predicate);
@@ -455,7 +451,7 @@ final class Step extends RelativeLocationPath {
         JExpression iter;
         int rType;
         if (step.isAbbreviatedDot()) {
-          iter = compile(definedClass, method);
+          iter = compile(ctx);
           rType=DOM.RETURN_CURRENT;
 //          il.append(new ICONST(DOM.RETURN_CURRENT));
         }
@@ -467,12 +463,12 @@ final class Step extends RelativeLocationPath {
             path.typeCheck(getParser().getSymbolTable());
           } catch (final TypeCheckError e) {
           }
-          iter =path.compile(definedClass, method);
+          iter =path.compile(ctx);
           rType=DOM.RETURN_PARENT;
 //          il.append(new ICONST(DOM.RETURN_PARENT));
         }
 //        predicate.translate(definedClass, method);
-        return invoke(method.listParams()[0], GET_NODE_VALUE_ITERATOR).arg(iter).arg(lit(rType)).arg(predicate.compile(definedClass, method)).arg(lit(((EqualityExpr)predicate.getExpr()).getOp()));
+        return invoke(ctx.currentDom(), GET_NODE_VALUE_ITERATOR).arg(iter).arg(lit(rType)).arg(predicate.compile(ctx)).arg(lit(((EqualityExpr)predicate.getExpr()).getOp()));
 //        idx = cpg.addInterfaceMethodref(DOM_INTF, GET_NODE_VALUE_ITERATOR, GET_NODE_VALUE_ITERATOR_SIG);
 //        il.append(new INVOKEINTERFACE(idx, 5));
       }
@@ -483,14 +479,14 @@ final class Step extends RelativeLocationPath {
         //        il.append(methodGen.loadDOM());
 //        // il.append(new ICONST(NodeTest.ELEMENT));
 //        il.append(new ICONST(predicate.getPosType()));
-        predicate.translate(definedClass, method, method.body());
+//        predicate.translate(ctx);
 //        il.append(new ICONST(0));
 //        idx = cpg.addInterfaceMethodref(DOM_INTF, "getNthDescendant", "(IIZ)" + NODE_ITERATOR_SIG);
 //        il.append(new INVOKEINTERFACE(idx, 4));
       }
       // Handle 'elem[n]' expression
       else if (predicate.isNthPositionFilter()) {
-        return _new(definedClass.owner()._ref(NthIterator.class)).arg(compilePredicates(definedClass, method)).arg(predicate.compile(definedClass, method));
+        return _new(ctx.ref(NthIterator.class)).arg(compilePredicates(ctx)).arg(predicate.compile(ctx));
 //        idx = cpg.addMethodref(NTH_ITERATOR_CLASS, "<init>", "(" + NODE_ITERATOR_SIG + "I)V");
 
         // Backwards branches are prohibited if an uninitialized object
@@ -530,12 +526,15 @@ final class Step extends RelativeLocationPath {
         // constructor first, store them in temporary variables, create
         // the object and reload the arguments from the temporaries to
         // avoid the problem.
-        compilePredicates(definedClass, method); // recursive call
+        // public CurrentNodeListIterator(DTMAxisIterator source, CurrentNodeListFilter filter, int currentNode, AbstractTranslet translet)
+
+        JExpression recursive = compilePredicates(ctx); // recursive call
+        JExpression currentPredicate = predicate.compile(ctx);
 //        final LocalVariableGen iteratorTemp = methodGen.addLocalVariable("step_tmp1",
 //                Util.getJCRefType(NODE_ITERATOR_SIG), null, null);
 //        iteratorTemp.setStart(il.append(new ASTORE(iteratorTemp.getIndex())));
-
-        predicate.translateFilter(definedClass, method);
+        // FIXME predicate.translateFilter(ctx.clazz(), ctx.currentMethod());
+        return _new(ctx.ref(CurrentNodeListIterator.class)).arg(recursive).arg(currentPredicate).arg(ctx.currentNode()).arg(_this());
 //        final LocalVariableGen filterTemp = methodGen.addLocalVariable("step_tmp2",
 //                Util.getJCRefType(CURRENT_NODE_LIST_FILTER_SIG), null, null);
 //        filterTemp.setStart(il.append(new ASTORE(filterTemp.getIndex())));

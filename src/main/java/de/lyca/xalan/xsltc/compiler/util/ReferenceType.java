@@ -21,23 +21,19 @@
 
 package de.lyca.xalan.xsltc.compiler.util;
 
+import static com.sun.codemodel.JExpr.lit;
+
 import org.apache.bcel.generic.ALOAD;
 import org.apache.bcel.generic.ASTORE;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.IFEQ;
-import org.apache.bcel.generic.ILOAD;
-import org.apache.bcel.generic.INVOKEINTERFACE;
-import org.apache.bcel.generic.INVOKESTATIC;
 import org.apache.bcel.generic.Instruction;
-import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.PUSH;
 
 import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JType;
 
-import de.lyca.xalan.xsltc.compiler.Constants;
 import de.lyca.xalan.xsltc.compiler.FlowList;
+import de.lyca.xalan.xsltc.runtime.BasisLibrary;
 import de.lyca.xml.dtm.DTM;
 
 /**
@@ -99,6 +95,31 @@ public final class ReferenceType extends Type {
     }
   }
 
+  @Override
+  public JExpression compileTo(CompilerContext ctx, JExpression expr, Type type) {
+    if (type == Type.String) {
+      return compileTo(ctx, expr, (StringType) type);
+    } else if (type == Type.Real) {
+      return compileTo(ctx, expr, (RealType) type);
+    } else if (type == Type.Boolean) {
+      return compileTo(ctx, expr, (BooleanType) type);
+    } else if (type == Type.NodeSet) {
+      return compileTo(ctx, expr, (NodeSetType) type);
+    } else if (type == Type.Node) {
+      return compileTo(ctx, expr, (NodeType) type);
+    } else if (type == Type.ResultTree) {
+      return compileTo(ctx, expr, (ResultTreeType) type);
+    } else if (type == Type.Object) {
+      return compileTo(ctx, expr, (ObjectType) type);
+    } else if (type == Type.Reference) {
+      return expr;
+    } else {
+      final ErrorMsg err = new ErrorMsg(ErrorMsg.INTERNAL_ERR, type.toString());
+      ctx.xsltc().getParser().reportError(FATAL, err);
+      return null;
+    }
+  }
+
   /**
    * Translates reference into object of internal type <code>type</code>.
    * 
@@ -122,6 +143,22 @@ public final class ReferenceType extends Type {
 //    il.append(new INVOKESTATIC(stringF));
   }
 
+  public JExpression compileTo(CompilerContext ctx, JExpression expr, StringType type) {
+    // FIXME final int current = methodGen.getLocalIndex("current");
+    // If no current, conversion is a top-level
+    // if (current < 0) {
+    // il.append(new PUSH(cpg, DTM.ROOT_NODE)); // push root node
+    // } else {
+    // il.append(new ILOAD(current));
+    // }
+    JExpression currentNode = ctx.currentNode();
+    if(currentNode == null) {
+      currentNode = lit(DTM.ROOT_NODE);
+    }
+    return ctx.ref(BasisLibrary.class).staticInvoke("stringF").arg(expr).arg(currentNode)
+        .arg(ctx.currentDom());
+  }
+
   /**
    * Translates a reference into an object of internal type <code>type</code>.
    * 
@@ -137,6 +174,10 @@ public final class ReferenceType extends Type {
 //    il.append(new INVOKESTATIC(index));
   }
 
+  public JExpression compileTo(CompilerContext ctx, JExpression expr, RealType type) {
+    return ctx.ref(BasisLibrary.class).staticInvoke("numberF").arg(expr).arg(ctx.currentDom());
+  }
+
   /**
    * Translates a reference to an object of internal type <code>type</code>.
    * 
@@ -149,6 +190,10 @@ public final class ReferenceType extends Type {
 //
 //    final int index = cpg.addMethodref(BASIS_LIBRARY_CLASS, "booleanF", "(" + OBJECT_SIG + ")Z");
 //    il.append(new INVOKESTATIC(index));
+  }
+
+  public JExpression compileTo(CompilerContext ctx, JExpression expr, BooleanType type) {
+    return ctx.ref(BasisLibrary.class).staticInvoke("booleanF").arg(expr);
   }
 
   /**
@@ -168,6 +213,10 @@ public final class ReferenceType extends Type {
 //    il.append(new INVOKEINTERFACE(index, 1));
   }
 
+  public JExpression compileTo(CompilerContext ctx, JExpression expr, NodeSetType type) {
+    return ctx.ref(BasisLibrary.class).staticInvoke("referenceToNodeSet").arg(expr).invoke(RESET);
+  }
+
   /**
    * Casts a reference into a Node.
    * 
@@ -177,6 +226,10 @@ public final class ReferenceType extends Type {
 //    FIXME
 //    translateTo(classGen, methodGen, Type.NodeSet);
 //    Type.NodeSet.translateTo(classGen, methodGen, type);
+  }
+
+  public JExpression compileTo(CompilerContext ctx, JExpression expr, NodeType type) {
+    return Type.NodeSet.compileTo(ctx, compileTo(ctx, expr, Type.NodeSet), type);
   }
 
   /**
@@ -193,6 +246,10 @@ public final class ReferenceType extends Type {
 //    il.append(new INVOKESTATIC(index));
   }
 
+  public JExpression compileTo(CompilerContext ctx, JExpression expr, ResultTreeType type) {
+    return ctx.ref(BasisLibrary.class).staticInvoke("referenceToResultTree").arg(expr);
+  }
+
   /**
    * Subsume reference into ObjectType.
    * 
@@ -201,6 +258,10 @@ public final class ReferenceType extends Type {
   public void translateTo(JDefinedClass definedClass, JMethod method, ObjectType type) {
 //    FIXME
 //    methodGen.getInstructionList().append(NOP);
+  }
+
+  public JExpression compileTo(CompilerContext ctx, JExpression expr, ObjectType type) {
+    return expr;
   }
 
   /**

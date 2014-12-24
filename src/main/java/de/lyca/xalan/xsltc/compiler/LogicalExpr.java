@@ -21,16 +21,12 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import org.apache.bcel.generic.GOTO;
-import org.apache.bcel.generic.InstructionHandle;
-import org.apache.bcel.generic.InstructionList;
+import static com.sun.codemodel.JOp.cand;
 
-import com.sun.codemodel.JBlock;
-import com.sun.codemodel.JDefinedClass;
-import com.sun.codemodel.JMethod;
+import com.sun.codemodel.JExpression;
+import com.sun.codemodel.JOp;
 
-import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
-import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
+import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.MethodType;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
@@ -158,20 +154,27 @@ final class LogicalExpr extends Expression {
     throw new TypeCheckError(this);
   }
 
+  @Override
+  public JExpression compile(CompilerContext ctx) {
+    JExpression left = _left.compile(ctx);
+    JExpression right = _right.compile(ctx);
+    return _op == AND ? cand(left, right) : JOp.cor(left, right);
+  }
+
   /**
    * Compile the expression - leave boolean expression on stack
    */
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
-    translateDesynthesized(definedClass, method, null);
-    synthesize(definedClass, method);
+  public void translate(CompilerContext ctx) {
+    translateDesynthesized(ctx);
+    synthesize(ctx);
   }
 
   /**
    * Compile expression and update true/false-lists
    */
   @Override
-  public void translateDesynthesized(JDefinedClass definedClass, JMethod method, JBlock body) {
+  public void translateDesynthesized(CompilerContext ctx) {
  // FIXME
 //    final InstructionList il = methodGen.getInstructionList();
 //

@@ -23,14 +23,13 @@ package de.lyca.xalan.xsltc.compiler;
 
 import static com.sun.codemodel.JExpr.FALSE;
 import static com.sun.codemodel.JExpr.TRUE;
-import static com.sun.codemodel.JExpr.invoke;
 import static com.sun.codemodel.JExpr.lit;
 
-import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JDefinedClass;
-import com.sun.codemodel.JInvocation;
+import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JMethod;
 
+import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.Util;
 
 /**
@@ -166,34 +165,34 @@ final class Text extends Instruction {
   }
 
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
+  public void translate(CompilerContext ctx) {
     if (!_ignore) {
 //      Object lastStatement = body.getContents().get(body.pos()-1);
 //      if(lastStatement instanceof JTryBlock){
 //        body = ((JTryBlock) lastStatement).body();
 //      }
 
-      JInvocation handler =  invoke("peekHandler");
+      JExpression handler = ctx.currentHandler();
       // Turn off character escaping if so is wanted.
       if (!_escaping) {
-        body.add(handler.invoke("setEscaping").arg(FALSE));
+        ctx.currentBlock().add(handler.invoke("setEscaping").arg(FALSE));
       }
 
       // Call characters(String) or characters(char[],int,int), as
       // appropriate.
       if (!canLoadAsArrayOffsetLength()) {
-        body.add(handler.invoke("characters").arg(_text));
+        ctx.currentBlock().add(handler.invoke("characters").arg(_text));
       } else {
-        loadAsArrayOffsetLength(definedClass, method, body, "characters");
+        loadAsArrayOffsetLength(ctx, "characters");
       }
 
       // Restore character escaping setting to whatever it was.
       // Note: setEscaping(bool) returns the original (old) value
       if (!_escaping) {
-        body.add(handler.invoke("setEscaping").arg(TRUE));
+        ctx.currentBlock().add(handler.invoke("setEscaping").arg(TRUE));
       }
     }
-    translateContents(definedClass, method, body);
+    translateContents(ctx);
   }
 
   /**
@@ -224,18 +223,18 @@ final class Text extends Instruction {
    * 
    * @see #canLoadArrayOffsetLength()
    */
-  public void loadAsArrayOffsetLength(JDefinedClass definedClass, JMethod method, JBlock body, String methodToCall) {
+  public void loadAsArrayOffsetLength(CompilerContext ctx, String methodToCall) {
     final XSLTC xsltc = getParser().getXSLTC();
     // The XSLTC object keeps track of character data
     // that is to be stored in char arrays.
     final int offset = xsltc.addCharacterData(_text);
     final String charDataFieldName = STATIC_CHAR_DATA_FIELD + (xsltc.getCharacterDataCount() - 1);
-    JInvocation handler = invoke("peekHandler");
+    JExpression handler = ctx.currentHandler();
 //    Object lastStatement = body.getContents().get(body.pos()-1);
 //    if(lastStatement instanceof JTryBlock){
 //      body = ((JTryBlock) lastStatement).body();
 //    }
-    body.add(handler.invoke(methodToCall).arg(definedClass.staticRef(charDataFieldName)).arg(lit(offset))
+    ctx.currentBlock().add(handler.invoke(methodToCall).arg(ctx.clazz().staticRef(charDataFieldName)).arg(lit(offset))
         .arg(lit(_text.length())));
   }
 

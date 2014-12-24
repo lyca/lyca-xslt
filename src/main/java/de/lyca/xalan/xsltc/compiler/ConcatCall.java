@@ -21,23 +21,15 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
+import static com.sun.codemodel.JExpr._new;
+import static com.sun.codemodel.JExpr.lit;
+
 import java.util.List;
 import java.util.ListIterator;
 
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.INVOKESPECIAL;
-import org.apache.bcel.generic.INVOKEVIRTUAL;
-import org.apache.bcel.generic.Instruction;
-import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.NEW;
-import org.apache.bcel.generic.PUSH;
+import com.sun.codemodel.JExpression;
 
-import com.sun.codemodel.JBlock;
-import com.sun.codemodel.JDefinedClass;
-import com.sun.codemodel.JMethod;
-
-import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
-import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
+import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
 
@@ -62,9 +54,27 @@ final class ConcatCall extends FunctionCall {
     return _type = Type.String;
   }
 
+  @Override
+  public JExpression compile(CompilerContext ctx) {
+    final int nArgs = argumentCount();
+
+    switch (nArgs) {
+    case 0:
+      return lit(EMPTYSTRING);
+    case 1:
+      return argument().compile(ctx);
+    default:
+      JExpression stringBuilder = _new(ctx.ref(StringBuilder.class));
+      for (int i = 0; i < nArgs; i++) {
+        stringBuilder = stringBuilder.invoke("append").arg(argument(i).compile(ctx));
+      }
+      return stringBuilder.invoke("toString");
+    }
+  }
+  
   /** translate leaves a String on the stack */
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
+  public void translate(CompilerContext ctx) {
     // FIXME
 //    final ConstantPoolGen cpg = classGen.getConstantPool();
 //    final InstructionList il = methodGen.getInstructionList();

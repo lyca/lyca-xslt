@@ -41,7 +41,6 @@ import org.apache.bcel.util.InstructionFinder;
 import org.xml.sax.SAXException;
 
 import com.sun.codemodel.JBlock;
-import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JInvocation;
 import com.sun.codemodel.JMethod;
@@ -52,6 +51,7 @@ import com.sun.codemodel.JVar;
 
 import de.lyca.xalan.xsltc.DOM;
 import de.lyca.xalan.xsltc.TransletException;
+import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 import de.lyca.xalan.xsltc.compiler.util.Util;
 import de.lyca.xml.dtm.Axis;
@@ -140,7 +140,7 @@ final class Mode implements Constants {
   /**
    * A mapping between templates and statements.
    */
-  private Map<Template, JInvocation> _templateStatement = new HashMap<>();
+  private Map<Template, JStatement> _templateStatement = new HashMap<>();
 
   /**
    * A reference to the pattern matching the root node.
@@ -494,7 +494,7 @@ final class Mode implements Constants {
     }
   }
 
-  private void compileNamedTemplate(Template template, JDefinedClass definedClass) {
+  private void compileNamedTemplate(Template template, CompilerContext ctx) {
     final String methodName = Util.escape(template.getName().toString());
 
     int numParams = 0;
@@ -503,30 +503,37 @@ final class Mode implements Constants {
       numParams = parameters.size();
     }
 
-    JMethod method = definedClass.method(JMod.PUBLIC, void.class, methodName)._throws(SAXException.class);
+    JMethod method = ctx.method(JMod.PUBLIC, void.class, methodName)._throws(SAXException.class);
     // Set the parameters.
-    method.param(DOM.class, DOCUMENT_PNAME);
-    method.param(DTMAxisIterator.class, ITERATOR_PNAME);
-    method.param(SerializationHandler.class, TRANSLET_OUTPUT_PNAME);
-    method.param(int.class, NODE_PNAME);
+    ctx.param(DOM.class, DOCUMENT_PNAME);
+    ctx.param(DTMAxisIterator.class, ITERATOR_PNAME);
+    JVar handler = ctx.param(SerializationHandler.class, TRANSLET_OUTPUT_PNAME);
+    JVar current = ctx.param(int.class, NODE_PNAME);
     // For simple named templates, the signature of the generated method
     // is not fixed. It depends on the number of parameters declared in the
     // template.
     for (int i = 0; i < numParams; i++) {
-      method.param(Object.class, "param" + i);
+      ctx.param(Object.class, "param" + i);
     }
-    template.translate(definedClass, method, method.body());
+    ctx.pushBlock(method.body());
+    ctx.pushHandler(handler);
+    ctx.pushNode(current);
+    template.translate(ctx);
+    ctx.popNode();
+    ctx.popHandler();
+    ctx.popBlock();
+    ctx.popMethodContext();
   }
 
-  private void compileTemplates(JDefinedClass definedClass, JMethod method) {
+  private void compileTemplates(CompilerContext ctx) {
     for (final Template template : _namedTemplates.keySet()) {
-      compileNamedTemplate(template, definedClass);
+      compileNamedTemplate(template, ctx);
     }
 
     for (final Template template : _neededTemplates.keySet()) {
       if (template.hasContents()) {
         // !!! TODO templates both named and matched
-        final JInvocation statement = template.compile(definedClass, method);
+        final JStatement statement = template.compile(ctx);
         _templateStatement.put(template, statement);
       } else {
         // empty template
@@ -537,7 +544,7 @@ final class Mode implements Constants {
 
   private void appendTemplateCode(JSwitch test) {
     for (final Template template : _neededTemplates.keySet()) {
-      final JInvocation invocation = _templateStatement.get(template);
+      final JStatement invocation = _templateStatement.get(template);
       if (invocation == null) {
       } else {
         // FIXME
@@ -560,87 +567,81 @@ final class Mode implements Constants {
     }
   }
 
-  public static void compileGetChildren(JDefinedClass definedClass, JMethod method, int node) {
- // FIXME
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//    final InstructionList il = methodGen.getInstructionList();
-//    final int git = cpg.addInterfaceMethodref(DOM_INTF, GET_CHILDREN, GET_CHILDREN_SIG);
-//    il.append(methodGen.loadDOM());
-//    il.append(new ILOAD(node));
-//    il.append(new INVOKEINTERFACE(git, 2));
+  public static JInvocation compileGetChildren(CompilerContext ctx) {
+    return ctx.currentDom().invoke(GET_CHILDREN).arg(ctx.currentNode());
   }
 
   /**
    * Compiles the default handling for DOM elements: traverse all children
    */
-  private JInvocation compileDefaultRecursion(JDefinedClass definedClass, JMethod method, JVar current) {
-    JVar document = method.listParams()[0];
-    JVar handler = method.listParams()[2];
-    JInvocation getChildren = document.invoke(GET_CHILDREN).arg(current);
-    return _this().invoke(method).arg(document).arg(getChildren).arg(handler);
+  private JInvocation compileDefaultRecursion(CompilerContext ctx) {
+    JExpression document = ctx.currentDom();
+    JVar handler = ctx.param(TRANSLET_OUTPUT_PNAME);
+    JInvocation getChildren = document.invoke(GET_CHILDREN).arg(ctx.currentNode());
+    return _this().invoke(ctx.currentMethod()).arg(document).arg(getChildren).arg(handler);
   }
 
   /**
    * Compiles the default action for DOM text nodes and attribute nodes: output
    * the node's text value
    */
-  private JInvocation compileDefaultText(JDefinedClass definedClass, JMethod method, JVar current) {
-    JVar document = method.listParams()[0];
-    JVar handler = method.listParams()[2];
-    return document.invoke(CHARACTERS).arg(current).arg(handler);
+  private JInvocation compileDefaultText(CompilerContext ctx) {
+    JExpression document = ctx.currentDom();
+    JVar handler = ctx.param(TRANSLET_OUTPUT_PNAME);
+    return document.invoke(CHARACTERS).arg(ctx.currentNode()).arg(handler);
   }
 
-  private JInvocation compileNamespaces(JDefinedClass definedClass, JMethod method, boolean[] isNamespace,
-          boolean[] isAttribute, boolean attrFlag, JStatement defaultTarget) {
- // FIXME
-//    final XSLTC xsltc = classGen.getParser().getXSLTC();
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//
-//    // Append switch() statement - namespace test dispatch loop
-//    final List<String> namespaces = xsltc.getNamespaceIndex();
-//    final List<String> names = xsltc.getNamesIndex();
-//    final int namespaceCount = namespaces.size() + 1;
-//    final int namesCount = names.size();
-//
-//    final InstructionList il = new InstructionList();
-//    final int[] types = new int[namespaceCount];
-//    final InstructionHandle[] targets = new InstructionHandle[types.length];
-//
-//    if (namespaceCount > 0) {
-//      boolean compiled = false;
-//
-//      // Initialize targets for namespace() switch statement
-//      for (int i = 0; i < namespaceCount; i++) {
-//        targets[i] = defaultTarget;
-//        types[i] = i;
-//      }
-//
-//      // Add test sequences for known namespace types
-//      for (int i = DTM.NTYPES; i < DTM.NTYPES + namesCount; i++) {
-//        if (isNamespace[i] && isAttribute[i] == attrFlag) {
-//          final String name = names.get(i - DTM.NTYPES);
-//          final String namespace = name.substring(0, name.lastIndexOf(':'));
-//          final int type = xsltc.registerNamespace(namespace);
-//
-//          if (i < _testSeq.length && _testSeq[i] != null) {
-//            targets[type] = _testSeq[i].compile(classGen, methodGen, defaultTarget);
-//            compiled = true;
-//          }
-//        }
-//      }
-//
-//      // Return "null" if no test sequences were compiled
-//      if (!compiled)
-//        return null;
-//
-//      // Append first code in applyTemplates() - get type of current node
+  private JStatement compileNamespaces(CompilerContext ctx, boolean[] isNamespace, boolean[] isAttribute,
+      boolean attrFlag, JStatement defaultTarget) {
+    final XSLTC xsltc = ctx.xsltc();
+
+    // Append switch() statement - namespace test dispatch loop
+    final List<String> namespaces = xsltc.getNamespaceIndex();
+    final List<String> names = xsltc.getNamesIndex();
+    final int namespaceCount = namespaces.size() + 1;
+    final int namesCount = names.size();
+
+    final JBlock body = new JBlock();
+    final int[] types = new int[namespaceCount];
+    final JStatement[] targets = new JStatement[types.length];
+
+    if (namespaceCount > 0) {
+      boolean compiled = false;
+
+      // Initialize targets for namespace() switch statement
+      for (int i = 0; i < namespaceCount; i++) {
+        targets[i] = defaultTarget;
+        types[i] = i;
+      }
+
+      // Add test sequences for known namespace types
+      for (int i = DTM.NTYPES; i < DTM.NTYPES + namesCount; i++) {
+        if (isNamespace[i] && isAttribute[i] == attrFlag) {
+          final String name = names.get(i - DTM.NTYPES);
+          final String namespace = name.substring(0, name.lastIndexOf(':'));
+          final int type = xsltc.registerNamespace(namespace);
+
+          if (i < _testSeq.length && _testSeq[i] != null) {
+            targets[type] = _testSeq[i].compile(ctx, defaultTarget);
+            compiled = true;
+          }
+        }
+      }
+
+      // Return "null" if no test sequences were compiled
+      if (!compiled)
+        return null;
+
+      // Append first code in applyTemplates() - get type of current node
+      
+      body.invoke("getNamespaceType").arg(ctx.currentNode());
 //      final int getNS = cpg.addInterfaceMethodref(DOM_INTF, "getNamespaceType", "(I)I");
-//      il.append(methodGen.loadDOM());
-//      il.append(new ILOAD(_currentIndex));
-//      il.append(new INVOKEINTERFACE(getNS, 2));
-//      il.append(new SWITCH(types, targets, defaultTarget));
-//      return il;
-//    } else
+//      body.append(methodGen.loadDOM());
+//      body.append(new ILOAD(_currentIndex));
+//      body.append(new INVOKEINTERFACE(getNS, 2));
+//      body.append(new SWITCH(types, targets, defaultTarget));
+      return body;
+    } else
       return null;
   }
 
@@ -648,30 +649,31 @@ final class Mode implements Constants {
    * Compiles the applyTemplates() method and adds it to the translet. This is
    * the main dispatch method.
    */
-  public void compileApplyTemplates(JDefinedClass definedClass, XSLTC xsltc) {
+  public void compileApplyTemplates(CompilerContext ctx, XSLTC xsltc) {
     // Create the applyTemplates() method
-    JMethod applyTemplates = definedClass.method(JMod.PUBLIC | JMod.FINAL, void.class, functionName())._throws(SAXException.class);
+    JMethod applyTemplates = ctx.method(JMod.PUBLIC | JMod.FINAL, void.class, functionName())._throws(SAXException.class);
 
-    JVar document = applyTemplates.param(DOM.class, DOCUMENT_PNAME);
-    JVar iterator = applyTemplates.param(DTMAxisIterator.class, ITERATOR_PNAME);
-    JVar handler = applyTemplates.param(SerializationHandler.class, TRANSLET_OUTPUT_PNAME);
+    JVar document = ctx.param(DOM.class, DOCUMENT_PNAME);
+    JVar iterator = ctx.param(DTMAxisIterator.class, ITERATOR_PNAME);
+    JVar handler = ctx.param(SerializationHandler.class, TRANSLET_OUTPUT_PNAME);
 
     final JBlock loop = applyTemplates.body()._while(TRUE).body();
 
     // Create a local variable to hold the current node
     // Create an instruction list that contains the default next-node
     // iteration
-    JVar current = loop.decl(definedClass.owner().INT, "current", invoke(iterator, "next"));
-
+    JVar current = loop.decl(ctx.owner().INT, "current", invoke(iterator, "next"));
+    ctx.pushNode(current);
     // The body of this code can get very large - large than can be handled
     // by a single IFNE(body.getStart()) instruction - need workaround:
     loop._if(current.lt(lit(0)))._then()._return(); // applyTemplates() ends here!
 
+    ctx.pushBlock(loop);
     // Compile default handling of elements (traverse children)
-    final JInvocation defaultRecursion = compileDefaultRecursion(definedClass, applyTemplates, current);
+    final JInvocation defaultRecursion = compileDefaultRecursion(ctx);
 
     // Compile default handling of text/attribute nodes (output text)
-    final JInvocation defaultText = compileDefaultText(definedClass, applyTemplates, current);
+    JStatement defaultText = compileDefaultText(ctx);
 
     // Distinguish attribute/element/namespace tests for further processing
     List<String> names = xsltc.getNamesIndex();
@@ -690,20 +692,20 @@ final class Mode implements Constants {
     }
 
     // Compile all templates - regardless of pattern type
-    compileTemplates(definedClass, applyTemplates);
+    compileTemplates(ctx);
 
     // Handle template with explicit "*" pattern
     final TestSeq elementTest = _testSeq[DTM.ELEMENT_NODE];
-    JInvocation elementInvocation = defaultRecursion;
+    JStatement elementInvocation = defaultRecursion;
     if (elementTest != null) {
-      elementInvocation = elementTest.compile(definedClass, applyTemplates, defaultRecursion);
+      elementInvocation = elementTest.compile(ctx, defaultRecursion);
     }
 
     // Handle template with explicit "@*" pattern
     final TestSeq attrTest = _testSeq[DTM.ATTRIBUTE_NODE];
-    JInvocation attrInvocation = defaultText;
+    JStatement attrInvocation = defaultText;
     if (attrTest != null) {
-      attrInvocation = attrTest.compile(definedClass, applyTemplates, defaultText);
+      attrInvocation = attrTest.compile(ctx, defaultText);
     }
 
     // Do tests for id() and key() patterns first
@@ -717,45 +719,45 @@ final class Mode implements Constants {
 
     // If there is a match on node() we need to replace ihElem
     // and ihText if the priority of node() is higher
-//    if (_childNodeTestSeq != null) {
-//      // Compare priorities of node() and "*"
-//      final double nodePrio = _childNodeTestSeq.getPriority();
-//      final int nodePos = _childNodeTestSeq.getPosition();
-//      double elemPrio = 0 - Double.MAX_VALUE;
-//      int elemPos = Integer.MIN_VALUE;
-//
-//      if (elementTest != null) {
-//        elemPrio = elementTest.getPriority();
-//        elemPos = elementTest.getPosition();
-//      }
-//      if (elemPrio == Double.NaN || elemPrio < nodePrio || elemPrio == nodePrio && elemPos < nodePos) {
-//        elementInvocation = _childNodeTestSeq.compile(definedClass, applyTemplates, ihLoop);
-//      }
-//
-//      // Compare priorities of node() and text()
-//      final TestSeq textTest = _testSeq[DTM.TEXT_NODE];
-//      double textPrio = 0 - Double.MAX_VALUE;
-//      int textPos = Integer.MIN_VALUE;
-//
-//      if (textTest != null) {
-//        textPrio = textTest.getPriority();
-//        textPos = textTest.getPosition();
-//      }
-//      if (Double.isNaN(textPrio) || textPrio < nodePrio || textPrio == nodePrio && textPos < nodePos) {
-//        ihText = _childNodeTestSeq.compile(definedClass, applyTemplates, ihLoop);
-//        _testSeq[DTM.TEXT_NODE] = _childNodeTestSeq;
-//      }
-//    }
+    if (_childNodeTestSeq != null) {
+      // Compare priorities of node() and "*"
+      final double nodePrio = _childNodeTestSeq.getPriority();
+      final int nodePos = _childNodeTestSeq.getPosition();
+      double elemPrio = 0 - Double.MAX_VALUE;
+      int elemPos = Integer.MIN_VALUE;
+
+      if (elementTest != null) {
+        elemPrio = elementTest.getPriority();
+        elemPos = elementTest.getPosition();
+      }
+      if (elemPrio == Double.NaN || elemPrio < nodePrio || elemPrio == nodePrio && elemPos < nodePos) {
+        elementInvocation = _childNodeTestSeq.compile(ctx, null);
+      }
+
+      // Compare priorities of node() and text()
+      final TestSeq textTest = _testSeq[DTM.TEXT_NODE];
+      double textPrio = 0 - Double.MAX_VALUE;
+      int textPos = Integer.MIN_VALUE;
+
+      if (textTest != null) {
+        textPrio = textTest.getPriority();
+        textPos = textTest.getPosition();
+      }
+      if (Double.isNaN(textPrio) || textPrio < nodePrio || textPrio == nodePrio && textPos < nodePos) {
+        defaultText = _childNodeTestSeq.compile(ctx, null);
+        _testSeq[DTM.TEXT_NODE] = _childNodeTestSeq;
+      }
+    }
 
     // Handle templates with "ns:*" pattern
-    final JInvocation nsElem = compileNamespaces(definedClass, applyTemplates, isNamespace, isAttribute, false,
+    final JStatement nsElem = compileNamespaces(ctx, isNamespace, isAttribute, false,
         elementInvocation);
-    JInvocation elemNamespaceHandle = nsElem == null ? elementInvocation : nsElem;
+    JStatement elemNamespaceHandle = nsElem == null ? elementInvocation : nsElem;
 
     // Handle templates with "ns:@*" pattern
-    final JInvocation nsAttr = compileNamespaces(definedClass, applyTemplates, isNamespace, isAttribute, true,
+    final JStatement nsAttr = compileNamespaces(ctx, isNamespace, isAttribute, true,
         attrInvocation);
-    JInvocation attrNamespaceHandle = nsAttr == null ? attrInvocation : nsAttr;
+    JStatement attrNamespaceHandle = nsAttr == null ? attrInvocation : nsAttr;
 
     // Handle templates with "ns:elem" or "ns:@attr" pattern
     final JStatement[] targets = new JStatement[types.length];
@@ -772,9 +774,9 @@ final class Mode implements Constants {
       // Test first, then jump to namespace tests
       else if (testSeq != null) {
         if (isAttribute[i]) {
-          targets[i] = testSeq.compile(definedClass, applyTemplates, attrNamespaceHandle);
+          targets[i] = testSeq.compile(ctx, attrNamespaceHandle);
         } else {
-          targets[i] = testSeq.compile(definedClass, applyTemplates, elemNamespaceHandle);
+          targets[i] = testSeq.compile(ctx, elemNamespaceHandle);
         }
       } else {
         targets[i] = null;
@@ -790,8 +792,8 @@ final class Mode implements Constants {
         : defaultRecursion;
 
     // Handle any pattern with match on text nodes - default: output text
-    targets[DTM.TEXT_NODE] = _testSeq[DTM.TEXT_NODE] != null ? _testSeq[DTM.TEXT_NODE].compile(definedClass,
-        applyTemplates, defaultText) : defaultText;
+    targets[DTM.TEXT_NODE] = _testSeq[DTM.TEXT_NODE] != null ? _testSeq[DTM.TEXT_NODE].compile(ctx,
+        defaultText) : defaultText;
 
     // This DOM-type is not in use - default: process next node
     targets[DTM.NAMESPACE_NODE] = null;
@@ -803,24 +805,23 @@ final class Mode implements Constants {
     targets[DTM.ATTRIBUTE_NODE] = attrNamespaceHandle;
 
     // Match on processing instruction - default: process next node
-    JInvocation ihPI = null;
+    JStatement ihPI = null;
     if (_childNodeTestSeq != null) {
       ihPI = elementInvocation;
     }
     if (_testSeq[DTM.PROCESSING_INSTRUCTION_NODE] != null) {
-      targets[DTM.PROCESSING_INSTRUCTION_NODE] = _testSeq[DTM.PROCESSING_INSTRUCTION_NODE].compile(definedClass, applyTemplates,
-              ihPI);
+      targets[DTM.PROCESSING_INSTRUCTION_NODE] = _testSeq[DTM.PROCESSING_INSTRUCTION_NODE].compile(ctx, ihPI);
     } else {
       targets[DTM.PROCESSING_INSTRUCTION_NODE] = ihPI;
     }
 
     // Match on comments - default: process next node
-    JInvocation ihComment = null;
+    JStatement ihComment = null;
     if (_childNodeTestSeq != null) {
       ihComment = elementInvocation;
     }
-    targets[DTM.COMMENT_NODE] = _testSeq[DTM.COMMENT_NODE] != null ? _testSeq[DTM.COMMENT_NODE].compile(definedClass,
-        applyTemplates, ihComment) : ihComment;
+    targets[DTM.COMMENT_NODE] = _testSeq[DTM.COMMENT_NODE] != null ? _testSeq[DTM.COMMENT_NODE].compile(ctx,
+        ihComment) : ihComment;
 
     // This DOM-type is not in use - default: process next node
     targets[DTM.CDATA_SECTION_NODE] = null;
@@ -854,9 +855,9 @@ final class Mode implements Constants {
       // Match on node type
       else {
         if (isAttribute[i]) {
-          targets[i] = testSeq.compile(definedClass, applyTemplates, attrNamespaceHandle);
+          targets[i] = testSeq.compile(ctx, attrNamespaceHandle);
         } else {
-          targets[i] = testSeq.compile(definedClass, applyTemplates, elemNamespaceHandle);
+          targets[i] = testSeq.compile(ctx, elemNamespaceHandle);
         }
       }
     }
@@ -902,18 +903,18 @@ final class Mode implements Constants {
     // Compile method(s) for <xsl:apply-imports/> for this mode
     if (_importLevels != null) {
       for (final Map.Entry<Integer, Integer> entry : _importLevels.entrySet()) {
-        compileApplyImports(definedClass, entry.getValue().intValue(), entry.getKey().intValue(), xsltc);
+        compileApplyImports(ctx, entry.getValue().intValue(), entry.getKey().intValue(), xsltc);
       }
     }
+    ctx.popNode();
   }
 
-  private void compileTemplateCalls(JDefinedClass definedClass, JMethod method, JInvocation next,
-          int min, int max) {
+  private void compileTemplateCalls(CompilerContext ctx, JInvocation next, int min, int max) {
     for (final Template template : _neededTemplates.keySet()) {
       final int prec = template.getImportPrecedence();
       if (prec >= min && prec < max) {
         if (template.hasContents()) {
-          final JInvocation til = template.compile(definedClass, method);
+          final JStatement til = template.compile(ctx);
           _templateStatement.put(template, til);
         } else {
           // empty template
@@ -923,7 +924,7 @@ final class Mode implements Constants {
     }
   }
 
-  public void compileApplyImports(JDefinedClass definedClass, int min, int max, XSLTC xsltc) {
+  public void compileApplyImports(CompilerContext ctx, int min, int max, XSLTC xsltc) {
     final List<String> names = xsltc.getNamesIndex();
 
     // Clear some datastructures
@@ -949,7 +950,7 @@ final class Mode implements Constants {
     processPatterns();
 
     // Create the applyTemplates() method
-    JMethod applyTemplates = definedClass.method(JMod.PUBLIC | JMod.FINAL, void.class, functionName() + '_' + max)._throws(TransletException.class);
+    JMethod applyTemplates = ctx.method(JMod.PUBLIC | JMod.FINAL, void.class, functionName() + '_' + max)._throws(TransletException.class);
     applyTemplates.param(DOM.class, DOCUMENT_PNAME);
     applyTemplates.param(DTMAxisIterator.class, ITERATOR_PNAME);
     applyTemplates.param(SerializationHandler.class, TRANSLET_OUTPUT_PNAME);
@@ -1301,7 +1302,7 @@ final class Mode implements Constants {
     }
   }
 
-  public JInvocation getTemplateInstructionHandle(Template template) {
+  public JStatement getTemplateInstructionHandle(Template template) {
     return _templateStatement.get(template);
   }
 

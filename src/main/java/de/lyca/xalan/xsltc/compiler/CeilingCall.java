@@ -23,16 +23,9 @@ package de.lyca.xalan.xsltc.compiler;
 
 import java.util.List;
 
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.INVOKESTATIC;
-import org.apache.bcel.generic.InstructionList;
+import com.sun.codemodel.JExpression;
 
-import com.sun.codemodel.JBlock;
-import com.sun.codemodel.JDefinedClass;
-import com.sun.codemodel.JMethod;
-
-import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
-import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
+import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 
 /**
  * @author Jacek Ambroziak
@@ -44,7 +37,12 @@ final class CeilingCall extends FunctionCall {
   }
 
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
+  public JExpression compile(CompilerContext ctx) {
+    return ctx.ref(Math.class).staticInvoke("ceil").arg(argument().compile(ctx));
+  }
+
+  @Override
+  public void translate(CompilerContext ctx) {
 //    final ConstantPoolGen cpg = classGen.getConstantPool();
 //    final InstructionList il = methodGen.getInstructionList();
 //    argument(0).translate(classGen, methodGen);

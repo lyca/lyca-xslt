@@ -21,17 +21,12 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import static com.sun.codemodel.JExpr.direct;
-
 import java.util.ArrayList;
 import java.util.List;
 
-import com.sun.codemodel.JBlock;
-import com.sun.codemodel.JDefinedClass;
-import com.sun.codemodel.JInvocation;
-import com.sun.codemodel.JMethod;
-import com.sun.codemodel.JVar;
+import com.sun.codemodel.JExpression;
 
+import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.NodeSetType;
 import de.lyca.xalan.xsltc.compiler.util.NodeType;
@@ -115,10 +110,9 @@ final class ApplyTemplates extends Instruction {
    * in the stylesheet uses parameters.
    */
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
+  public void translate(CompilerContext ctx) {
     boolean setStartNodeCalled = false;
     final Stylesheet stylesheet = getStylesheet();
-    JVar[] params = method.listParams();
 
 //    final ConstantPoolGen cpg = classGen.getConstantPool();
 //    final InstructionList il = methodGen.getInstructionList();
@@ -134,13 +128,13 @@ final class ApplyTemplates extends Instruction {
 
     // Push a new parameter frame
     if (stylesheet.hasLocalParams() || hasContents()) {
-      body.invoke(PUSH_PARAM_FRAME);
+      ctx.currentBlock().invoke(PUSH_PARAM_FRAME);
       // translate with-params
-      translateContents(definedClass, method, body);
+      translateContents(ctx);
     }
 //    il.append(classGen.loadTranslet());
 
-    JInvocation select = null;
+    JExpression select = null;
     // The 'select' expression is a result-tree
     if (_type != null && _type instanceof ResultTreeType) {
       // <xsl:sort> cannot be applied to a result tree - issue warning
@@ -149,37 +143,36 @@ final class ApplyTemplates extends Instruction {
         getParser().reportError(WARNING, err);
       }
       // Put the result tree (a DOM adapter) on the stack
-      _select.translate(definedClass, method, body);
+      _select.translate(ctx);
       // Get back the DOM and iterator (not just iterator!!!)
-      _type.translateTo(definedClass, method, Type.NodeSet);
+      _type.translateTo(ctx.clazz(), ctx.currentMethod(), Type.NodeSet);
     } else {
 //      il.append(methodGen.loadDOM());
 
       // compute node iterator for applyTemplates
       if (sortObjects.size() > 0) {
-        Sort.translateSortIterator(definedClass, method, _select, sortObjects);
-        body.invoke(params[0] ,SET_START_NODE).arg(direct("current"));
+        Sort.translateSortIterator(ctx, _select, sortObjects);
+        ctx.currentBlock().invoke(ctx.param(DOM_PNAME) ,SET_START_NODE).arg(ctx.currentNode());
 //        final int setStartNode = cpg.addInterfaceMethodref(NODE_ITERATOR, SET_START_NODE, "(I)" + NODE_ITERATOR_SIG);
 //        il.append(methodGen.loadCurrentNode());
 //        il.append(new INVOKEINTERFACE(setStartNode, 2));
         setStartNodeCalled = true;
       } else {
         if (_select == null) {
-//          Mode.compileGetChildren(definedClass, method, current);
+          select = Mode.compileGetChildren(ctx);
         } else {
-          select = (JInvocation) _select.compile(definedClass, method);
+          select = _select.compile(ctx);
         }
       }
     }
 
     if (_select != null && !setStartNodeCalled) {
-      select = select.invoke("setStartNode").arg(params[3]);
-//      _select.startIterator(definedClass, method);
+      select = _select.startIterator(ctx, select);
     }
 
     // !!! need to instantiate all needed modes
     final String className = getStylesheet().getClassName();
-    body.invoke(APPLY_TEMPLATES).arg(params[0]).arg(select == null ? params[1] : select).arg(params[2]);
+    ctx.currentBlock().invoke(_functionName).arg(ctx.currentDom()).arg(select == null ? ctx.param(ITERATOR_PNAME) : select).arg(ctx.currentHandler());
     
 //    il.append(methodGen.loadHandler());
 //    final String applyTemplatesSig = classGen.getApplyTemplatesSig();
@@ -188,7 +181,7 @@ final class ApplyTemplates extends Instruction {
 
     // Pop parameter frame
     if (stylesheet.hasLocalParams() || hasContents()) {
-      body.invoke(POP_PARAM_FRAME);
+      ctx.currentBlock().invoke(POP_PARAM_FRAME);
     }
   }
 }

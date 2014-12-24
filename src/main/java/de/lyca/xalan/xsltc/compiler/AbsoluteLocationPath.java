@@ -21,25 +21,14 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import org.apache.bcel.generic.ALOAD;
-import org.apache.bcel.generic.ASTORE;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.INVOKEINTERFACE;
-import org.apache.bcel.generic.INVOKESPECIAL;
-import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.LocalVariableGen;
-import org.apache.bcel.generic.NEW;
+import com.sun.codemodel.JExpr;
+import com.sun.codemodel.JExpression;
 
-import com.sun.codemodel.JBlock;
-import com.sun.codemodel.JDefinedClass;
-import com.sun.codemodel.JMethod;
-
-import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
-import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
+import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.NodeType;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
-import de.lyca.xalan.xsltc.compiler.util.Util;
+import de.lyca.xalan.xsltc.dom.AbsoluteIterator;
 
 /**
  * @author Jacek Ambroziak
@@ -88,7 +77,19 @@ final class AbsoluteLocationPath extends Expression {
   }
 
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
+  public JExpression compile(CompilerContext ctx) {
+    if (_path != null) {
+      // Compile relative path iterator(s)
+      JExpression path = _path.compile(ctx);
+      // Create and initialize AbsoluteIterator with iterator from the stack
+      return JExpr._new(ctx.ref(AbsoluteIterator.class)).arg(path);
+    } else {
+      return ctx.currentDom().invoke("getIterator");
+    }
+  }
+
+  @Override
+  public void translate(CompilerContext ctx) {
 // FIXME
 //    final ConstantPoolGen cpg = classGen.getConstantPool();
 //    final InstructionList il = methodGen.getInstructionList();

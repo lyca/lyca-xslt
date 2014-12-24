@@ -21,29 +21,22 @@
 
 package de.lyca.xalan.xsltc.compiler.util;
 
-import org.apache.bcel.generic.BranchHandle;
-import org.apache.bcel.generic.CHECKCAST;
-import org.apache.bcel.generic.ConstantPoolGen;
+import static com.sun.codemodel.JExpr.lit;
+import static com.sun.codemodel.JOp.ne;
+import static com.sun.codemodel.JOp.not;
+
 import org.apache.bcel.generic.DLOAD;
 import org.apache.bcel.generic.DSTORE;
-import org.apache.bcel.generic.GOTO;
-import org.apache.bcel.generic.IFEQ;
-import org.apache.bcel.generic.IFNE;
-import org.apache.bcel.generic.INVOKESPECIAL;
-import org.apache.bcel.generic.INVOKESTATIC;
-import org.apache.bcel.generic.INVOKEVIRTUAL;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionConstants;
-import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.LocalVariableGen;
-import org.apache.bcel.generic.NEW;
 
 import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JType;
 
-import de.lyca.xalan.xsltc.compiler.Constants;
 import de.lyca.xalan.xsltc.compiler.FlowList;
+import de.lyca.xalan.xsltc.runtime.BasisLibrary;
 
 /**
  * @author Jacek Ambroziak
@@ -109,6 +102,23 @@ public final class RealType extends NumberType {
 //    }
   }
 
+  @Override
+  public JExpression compileTo(CompilerContext ctx, JExpression expr, Type type) {
+    if (type == Type.String) {
+      return compileTo(ctx, expr, (StringType) type);
+    } else if (type == Type.Boolean) {
+      return compileTo(ctx, expr, (BooleanType) type);
+    } else if (type == Type.Reference) {
+      return compileTo(ctx, expr, (ReferenceType) type);
+    } else if (type == Type.Int) {
+      return compileTo(ctx, expr, (IntType) type);
+    } else {
+      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), type.toString());
+      ctx.xsltc().getParser().reportError(FATAL, err);
+      return null;
+    }
+  }
+
   /**
    * Expects a real on the stack and pushes its string value by calling
    * <code>Double.toString(double d)</code>.
@@ -120,6 +130,10 @@ public final class RealType extends NumberType {
 //    final ConstantPoolGen cpg = classGen.getConstantPool();
 //    final InstructionList il = methodGen.getInstructionList();
 //    il.append(new INVOKESTATIC(cpg.addMethodref(BASIS_LIBRARY_CLASS, "realToString", "(D)" + STRING_SIG)));
+  }
+
+  public JExpression compileTo(CompilerContext ctx, JExpression expr, StringType type) {
+    return ctx.ref(BasisLibrary.class).staticInvoke("realToString").arg(expr);
   }
 
   /**
@@ -138,6 +152,11 @@ public final class RealType extends NumberType {
 //    truec.setTarget(il.append(NOP));
   }
 
+  public JExpression compileTo(CompilerContext ctx, JExpression expr, BooleanType type) {
+    return ne(expr, lit(0.0)).cand(ne(expr, lit(-0.0)))
+        .cand(not(ctx.ref(Double.class).staticInvoke("isNaN").arg(expr)));
+  }
+
   /**
    * Expects a real on the stack and pushes a truncated integer value
    * 
@@ -148,6 +167,10 @@ public final class RealType extends NumberType {
 //    final ConstantPoolGen cpg = classGen.getConstantPool();
 //    final InstructionList il = methodGen.getInstructionList();
 //    il.append(new INVOKESTATIC(cpg.addMethodref(BASIS_LIBRARY_CLASS, "realToInt", "(D)I")));
+  }
+
+  public JExpression compileTo(CompilerContext ctx, JExpression expr, IntType type) {
+    return ctx.ref(BasisLibrary.class).staticInvoke("realToInt").arg(expr);
   }
 
   /**

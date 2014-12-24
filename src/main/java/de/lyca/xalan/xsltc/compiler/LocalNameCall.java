@@ -23,17 +23,10 @@ package de.lyca.xalan.xsltc.compiler;
 
 import java.util.List;
 
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.INVOKEINTERFACE;
-import org.apache.bcel.generic.INVOKESTATIC;
-import org.apache.bcel.generic.InstructionList;
+import com.sun.codemodel.JExpression;
 
-import com.sun.codemodel.JBlock;
-import com.sun.codemodel.JDefinedClass;
-import com.sun.codemodel.JMethod;
-
-import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
-import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
+import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
+import de.lyca.xalan.xsltc.runtime.BasisLibrary;
 
 /**
  * @author Morten Jorgensen
@@ -54,12 +47,19 @@ final class LocalNameCall extends NameBase {
     super(fname, arguments);
   }
 
+  @Override
+  public JExpression compile(CompilerContext ctx) {
+    // Returns the local name of a node in the DOM
+    return ctx.ref(BasisLibrary.class).staticInvoke("getLocalName")
+        .arg(ctx.currentDom().invoke("getNodeName").arg(super.compile(ctx)));
+  }
+
   /**
    * This method is called when the constructor is compiled in
    * Stylesheet.compileConstructor() and not as the syntax tree is traversed.
    */
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
+  public void translate(CompilerContext ctx) {
  // FIXME
 //    final ConstantPoolGen cpg = classGen.getConstantPool();
 //    final InstructionList il = methodGen.getInstructionList();

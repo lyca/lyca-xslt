@@ -57,6 +57,7 @@ import com.sun.codemodel.JVar;
 import de.lyca.xalan.xsltc.DOM;
 import de.lyca.xalan.xsltc.TransletException;
 import de.lyca.xalan.xsltc.compiler.Whitespace.WhitespaceRule;
+import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
@@ -622,10 +623,10 @@ public final class Stylesheet extends SyntaxTreeNode {
     }
   }
 
-  private void compileModes(JDefinedClass definedClass) {
-    _defaultMode.compileApplyTemplates(definedClass, getXSLTC());
+  private void compileModes(CompilerContext ctx) {
+    _defaultMode.compileApplyTemplates(ctx, getXSLTC());
     for (final Mode mode : _modes.values()) {
-      mode.compileApplyTemplates(definedClass, getXSLTC());
+      mode.compileApplyTemplates(ctx, getXSLTC());
     }
   }
 
@@ -662,19 +663,8 @@ public final class Stylesheet extends SyntaxTreeNode {
    * Translate the stylesheet into JVM bytecodes.
    */
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
+  public void translate(CompilerContext ctx) {
     generate();
-  }
-
-  private JFieldVar addDOMField(JDefinedClass definedClass) {
-    return definedClass.field(JMod.PUBLIC, DOM.class, DOM_FIELD);
-  }
-
-  /**
-   * Add a static field
-   */
-  private JFieldVar addStaticField(JDefinedClass definedClass, Class<?> type, String name) {
-    return definedClass.field(JMod.PROTECTED | JMod.STATIC, type, name);
   }
 
   /**
@@ -687,11 +677,12 @@ public final class Stylesheet extends SyntaxTreeNode {
       // Define a new class by extending TRANSLET_CLASS
       JDefinedClass definedClass = jCodeModel._class(_className)._extends(AbstractTranslet.class);
 
-      addDOMField(definedClass);
+      CompilerContext ctx = new CompilerContext(jCodeModel, definedClass, this, getXSLTC());
+      ctx.addPublicField(DOM.class, DOM_FIELD);
 
       // Compile transform() to initialize parameters, globals & output
       // and run the transformation
-      compileTransform(definedClass);
+      createTransformMethod(ctx);
 
       // Translate all non-template elements and filter out all templates
       for (SyntaxTreeNode element : getContents()) {
@@ -704,7 +695,7 @@ public final class Stylesheet extends SyntaxTreeNode {
         }
         // xsl:attribute-set
         else if (element instanceof AttributeSet) {
-          ((AttributeSet) element).translate(definedClass, null, null);
+          ((AttributeSet) element).translate(ctx);
         } else if (element instanceof Output) {
           // save the element for later to pass to compileConstructor
           final Output output = (Output) element;
@@ -719,9 +710,9 @@ public final class Stylesheet extends SyntaxTreeNode {
       }
       checkOutputMethod();
       processModes();
-      compileModes(definedClass);
-      compileStaticInitializer(definedClass);
-      compileConstructor(definedClass, _lastOutputElement);
+      compileModes(ctx);
+      compileStaticInitializer(ctx);
+      compileConstructor(ctx, _lastOutputElement);
 
       if (!getParser().errorsFound()) {
         getXSLTC().dumpClass(jCodeModel, definedClass);
@@ -793,11 +784,11 @@ public final class Stylesheet extends SyntaxTreeNode {
    * </ul>
    * </p>
    */
-  private void compileStaticInitializer(JDefinedClass definedClass) {
-    JFieldVar _sNamesArray = addStaticField(definedClass, String[].class, STATIC_NAMES_ARRAY_FIELD);
-    JFieldVar _sUrisArray = addStaticField(definedClass, String[].class, STATIC_URIS_ARRAY_FIELD);
-    JFieldVar _sTypesArray = addStaticField(definedClass, int[].class, STATIC_TYPES_ARRAY_FIELD);
-    JFieldVar _sNamespaceArray = addStaticField(definedClass, String[].class, STATIC_NAMESPACE_ARRAY_FIELD);
+  private void compileStaticInitializer(CompilerContext ctx) {
+    JFieldVar _sNamesArray = ctx.addProtectedStaticField(String[].class, STATIC_NAMES_ARRAY_FIELD);
+    JFieldVar _sUrisArray = ctx.addProtectedStaticField(String[].class, STATIC_URIS_ARRAY_FIELD);
+    JFieldVar _sTypesArray = ctx.addProtectedStaticField(int[].class, STATIC_TYPES_ARRAY_FIELD);
+    JFieldVar _sNamespaceArray = ctx.addProtectedStaticField(String[].class, STATIC_NAMESPACE_ARRAY_FIELD);
     // Create fields of type char[] that will contain literal text from
     // the stylesheet.
     // TODO is this really needed
@@ -838,8 +829,9 @@ public final class Stylesheet extends SyntaxTreeNode {
       }
     }
 
-    JBlock staticInit = definedClass.init();
+    JBlock staticInit = ctx.clazz().init();
 
+//    initArray(namesArray, _sNamesArray, staticInit);
     JArray namesArrayRef = newArray(_sNamesArray.type().elementType());
     for (int i = 0; i < size; i++) {
       final String name = namesArray[i];
@@ -847,6 +839,7 @@ public final class Stylesheet extends SyntaxTreeNode {
     }
     staticInit.assign(_sNamesArray, namesArrayRef);
 
+//    initArray(urisArray, _sUrisArray, staticInit);
     JArray urisArrayRef = newArray(_sUrisArray.type().elementType());
     for (int i = 0; i < size; i++) {
       final String uri = urisArray[i];
@@ -854,6 +847,7 @@ public final class Stylesheet extends SyntaxTreeNode {
     }
     staticInit.assign(_sUrisArray, urisArrayRef);
 
+//    initArray(typesArray, _sTypesArray, staticInit);
     JArray typesArrayRef = newArray(_sTypesArray.type().elementType());
     for (int i = 0; i < size; i++) {
       final int nodeType = typesArray[i];
@@ -873,20 +867,20 @@ public final class Stylesheet extends SyntaxTreeNode {
     // Put the tree of stylesheet namespace declarations into the translet
     final List<Integer> namespaceAncestors = getXSLTC().getNSAncestorPointers();
     if (namespaceAncestors != null && namespaceAncestors.size() != 0) {
-      JFieldVar _sNamespaceAncestorsArray = addStaticField(definedClass, int[].class, STATIC_NS_ANCESTORS_ARRAY_FIELD);
+      JFieldVar _sNamespaceAncestorsArray = ctx.addProtectedStaticField(int[].class, STATIC_NS_ANCESTORS_ARRAY_FIELD);
       JArray namespaceAncestorsArrayRef = newArray(_sNamespaceAncestorsArray.type().elementType());
       for (int i = 0; i < namespaceAncestors.size(); i++) {
         final int ancestor = namespaceAncestors.get(i).intValue();
         namespaceAncestorsArrayRef.add(lit(ancestor));
       }
-      staticInit.assign(_sNamespaceArray, namespaceArrayRef);
+      staticInit.assign(_sNamespaceAncestorsArray, namespaceAncestorsArrayRef);
     }
 
     // Put the array of indices into the namespace prefix/URI pairs array
     // into the translet
     final List<Integer> prefixURIPairsIdx = getXSLTC().getPrefixURIPairsIdx();
     if (prefixURIPairsIdx != null && prefixURIPairsIdx.size() != 0) {
-      JFieldVar _sPrefixURIsIdxArray = addStaticField(definedClass, int[].class, STATIC_PREFIX_URIS_IDX_ARRAY_FIELD);
+      JFieldVar _sPrefixURIsIdxArray = ctx.addProtectedStaticField(int[].class, STATIC_PREFIX_URIS_IDX_ARRAY_FIELD);
       JArray prefixURIPairsIdxArrayRef = newArray(_sPrefixURIsIdxArray.type().elementType());
       for (int i = 0; i < prefixURIPairsIdx.size(); i++) {
         final int idx = prefixURIPairsIdx.get(i).intValue();
@@ -899,7 +893,7 @@ public final class Stylesheet extends SyntaxTreeNode {
     // translet
     final List<String> prefixURIPairs = getXSLTC().getPrefixURIPairs();
     if (prefixURIPairs != null && prefixURIPairs.size() != 0) {
-      JFieldVar _sPrefixURIPairsArray = addStaticField(definedClass, String[].class, STATIC_PREFIX_URIS_ARRAY_FIELD);
+      JFieldVar _sPrefixURIPairsArray = ctx.addProtectedStaticField(String[].class, STATIC_PREFIX_URIS_ARRAY_FIELD);
       JArray prefixURIPairsRef = newArray(_sPrefixURIPairsArray.type().elementType());
       for (int i = 0; i < prefixURIPairs.size(); i++) {
         final String prefixOrURI = prefixURIPairs.get(i);
@@ -912,29 +906,42 @@ public final class Stylesheet extends SyntaxTreeNode {
     final int charDataCount = getXSLTC().getCharacterDataCount();
     for (int i = 0; i < charDataCount; i++) {
       String characterData = getXSLTC().getCharacterData(i);
-      JFieldVar _scharData = addStaticField(definedClass, char[].class, STATIC_CHAR_DATA_FIELD + i);
+      JFieldVar _scharData = ctx.addProtectedStaticField(char[].class, STATIC_CHAR_DATA_FIELD + i);
       staticInit.assign(_scharData, lit(characterData).invoke("toCharArray"));
     }
+  }
+
+  private void initArray(String[] values, JFieldVar arrayVar, JBlock body) {
+    JArray jArray = newArray(arrayVar.type().elementType());
+    for (int i = 0, size = values.length; i < size; i++) {
+      final String value = values[i];
+      jArray.add(lit(value));
+    }
+    body.assign(arrayVar, jArray);
+  }
+
+  private void initArray(int[] values, JFieldVar arrayVar, JBlock body) {
+    JArray jArray = newArray(arrayVar.type().elementType());
+    for (int i = 0, size = values.length; i < size; i++) {
+      final int value = values[i];
+      jArray.add(lit(value));
+    }
+    body.assign(arrayVar, jArray);
   }
 
   /**
    * Compile the translet's constructor
    */
-  private void compileConstructor(JDefinedClass definedClass, Output output) {
+  private void compileConstructor(CompilerContext ctx, Output output) {
 
-    JMethod constructor = definedClass.constructor(JMod.PUBLIC);
+    JMethod constructor = ctx.clazz().constructor(JMod.PUBLIC);
     JBlock body = constructor.body();
     // Call the constructor in the AbstractTranslet superclass
     body.invoke("super");
-
-    body.assign(refthis(NAMES_INDEX), definedClass.staticRef(STATIC_NAMES_ARRAY_FIELD));
-
-    body.assign(refthis(URIS_INDEX), definedClass.staticRef(STATIC_URIS_ARRAY_FIELD));
-
-    body.assign(refthis(TYPES_INDEX), definedClass.staticRef(STATIC_TYPES_ARRAY_FIELD));
-
-    body.assign(refthis(NAMESPACE_INDEX), definedClass.staticRef(STATIC_NAMESPACE_ARRAY_FIELD));
-
+    body.assign(refthis(NAMES_INDEX), ctx.clazz().staticRef(STATIC_NAMES_ARRAY_FIELD));
+    body.assign(refthis(URIS_INDEX), ctx.clazz().staticRef(STATIC_URIS_ARRAY_FIELD));
+    body.assign(refthis(TYPES_INDEX), ctx.clazz().staticRef(STATIC_TYPES_ARRAY_FIELD));
+    body.assign(refthis(NAMESPACE_INDEX), ctx.clazz().staticRef(STATIC_NAMESPACE_ARRAY_FIELD));
     body.assign(refthis(TRANSLET_VERSION_INDEX), lit(AbstractTranslet.CURRENT_TRANSLET_VERSION));
 
     if (_hasIdCall) {
@@ -944,13 +951,15 @@ public final class Stylesheet extends SyntaxTreeNode {
     // Compile in code to set the output configuration from <xsl:output>
     if (output != null) {
       // Set all the output settings files in the translet
-      output.translate(definedClass, constructor, body);
+      ctx.pushBlock(body);
+      output.translate(ctx);
+      ctx.popBlock();
     }
 
     // Compile default decimal formatting symbols.
     // This is an implicit, nameless xsl:decimal-format top-level element.
     if (_numberFormattingUsed) {
-      DecimalFormatting.translateDefaultDFS(definedClass, constructor);
+      DecimalFormatting.translateDefaultDFS(ctx.clazz(), constructor);
     }
   }
 
@@ -966,16 +975,17 @@ public final class Stylesheet extends SyntaxTreeNode {
    * generated as it is used by the LoadDocument class, but it no longer called
    * from transform().
    */
-  private JMethod compileTopLevel(JDefinedClass definedClass) {
-    JMethod topLevel = definedClass.method(JMod.PUBLIC, void.class, "topLevel")._throws(TransletException.class);
-    JVar document = topLevel.param(DOM.class, DOCUMENT_PNAME);
-    JVar iterator = topLevel.param(DTMAxisIterator.class, ITERATOR_PNAME);
-    JVar handler = topLevel.param(SerializationHandler.class, TRANSLET_OUTPUT_PNAME);
+  private JMethod compileTopLevel(CompilerContext ctx) {
+    JMethod topLevel = ctx.method(JMod.PUBLIC, void.class, "topLevel")._throws(TransletException.class)._throws(SAXException.class);
+    JVar document = ctx.param(DOM.class, DOCUMENT_PNAME);
+    JVar iterator = ctx.param(DTMAxisIterator.class, ITERATOR_PNAME);
+    JVar handler = ctx.param(SerializationHandler.class, TRANSLET_OUTPUT_PNAME);
 
     JBlock body = topLevel.body();
+    ctx.pushBlock(body);
     // Define and initialize 'current' variable with the root node
-    JCodeModel owner = definedClass.owner();
-    JVar current = body.decl(owner.INT, "current", invoke(document, "getIterator").invoke("next"));
+    JVar current = body.decl(ctx.owner().INT, "current", invoke(document, "getIterator").invoke("next"));
+    ctx.pushNode(current);
 
     // Create a new list containing variables/params + keys
     List<TopLevelElement> varDepElements = new ArrayList<TopLevelElement>(_globals);
@@ -992,7 +1002,7 @@ public final class Stylesheet extends SyntaxTreeNode {
     final int count = varDepElements.size();
     for (int i = 0; i < count; i++) {
       final TopLevelElement tle = varDepElements.get(i);
-      tle.translate(definedClass, topLevel, body);
+      tle.translate(ctx);
       if (tle instanceof Key) {
         final Key key = (Key) tle;
         _keys.put(key.getName(), key);
@@ -1004,7 +1014,7 @@ public final class Stylesheet extends SyntaxTreeNode {
     for (SyntaxTreeNode element : getContents()) {
       // xsl:decimal-format
       if (element instanceof DecimalFormatting) {
-        ((DecimalFormatting) element).translate(definedClass, topLevel, body);
+        ((DecimalFormatting) element).translate(ctx);
       }
       // xsl:strip/preserve-space
       else if (element instanceof Whitespace) {
@@ -1014,16 +1024,17 @@ public final class Stylesheet extends SyntaxTreeNode {
 
     // Translate all whitespace strip/preserve rules
     if (whitespaceRules.size() > 0) {
-      Whitespace.translateRules(whitespaceRules, definedClass, getXSLTC());
+      Whitespace.translateRules(whitespaceRules, ctx.clazz(), getXSLTC());
     }
 
-    JMethod stripSpace = definedClass.getMethod(STRIP_SPACE,
-        new JType[] { owner._ref(DOM.class), owner.INT, owner.INT });
-    if (stripSpace != null && stripSpace.type() == owner.BOOLEAN) {
+    JMethod stripSpace = ctx.clazz().getMethod(STRIP_SPACE,
+        new JType[] { ctx.ref(DOM.class), ctx.owner().INT, ctx.owner().INT });
+    if (stripSpace != null && stripSpace.type() == ctx.owner().BOOLEAN) {
 //      JFieldVar _dom = definedClass.fields().get(DOM_FIELD);
       body.invoke(document, "setFilter").arg(_this());
     }
-
+    ctx.popNode();
+    ctx.popBlock();
     return topLevel;
   }
 
@@ -1084,22 +1095,25 @@ public final class Stylesheet extends SyntaxTreeNode {
    * still need this method to create keys for documents loaded via the XPath
    * document() function.
    */
-  private JMethod compileBuildKeys(JDefinedClass definedClass) {
-    JMethod buildKeys = definedClass.method(JMod.PUBLIC, void.class, "buildKeys")._throws(TransletException.class);
-    buildKeys.param(DOM.class, DOCUMENT_PNAME);
-    buildKeys.param(DTMAxisIterator.class, ITERATOR_PNAME);
-    buildKeys.param(SerializationHandler.class, TRANSLET_OUTPUT_PNAME);
-    buildKeys.param(int.class, "current");
-    JBlock body = buildKeys.body();
+  private void compileBuildKeys(CompilerContext ctx) {
+    JMethod buildKeys = ctx.method(JMod.PUBLIC, void.class, "buildKeys")._throws(TransletException.class);
+    ctx.param(DOM.class, DOCUMENT_PNAME);
+    ctx.param(DTMAxisIterator.class, ITERATOR_PNAME);
+    ctx.param(SerializationHandler.class, TRANSLET_OUTPUT_PNAME);
+    JVar current = ctx.param(int.class, "current");
+    ctx.pushBlock(buildKeys.body());
+    ctx.pushNode(current);
     for (SyntaxTreeNode element : getContents()) {
       // xsl:key
       if (element instanceof Key) {
         final Key key = (Key) element;
-        key.translate(definedClass, buildKeys, body);
+        key.translate(ctx);
         _keys.put(key.getName(), key);
       }
     }
-    return buildKeys;
+    ctx.popNode();
+    ctx.popBlock();
+    ctx.popMethodContext();
   }
 
   /**
@@ -1107,28 +1121,27 @@ public final class Stylesheet extends SyntaxTreeNode {
    * initialize global variables and global parameters. The current node is set
    * to be the document's root node.
    */
-  private void compileTransform(JDefinedClass definedClass) {
-    JCodeModel owner = definedClass.owner();
+  private void createTransformMethod(CompilerContext ctx) {
     /*
      * Define the the method transform with the following signature: void
      * transform(DOM, NodeIterator, HandlerBase)
      */
-    JMethod method = definedClass.method(JMod.PUBLIC, void.class, "transform")._throws(TransletException.class);
-    JVar document = method.param(DOM.class, DOCUMENT_PNAME);
-    JVar dtmAxisIterator = method.param(DTMAxisIterator.class, ITERATOR_PNAME);
-    JVar serializationHandler = method.param(SerializationHandler.class, TRANSLET_OUTPUT_PNAME);
-    JBlock body = method.body();
-    body.invoke("pushHandler").arg(serializationHandler);
+    JMethod method = ctx.method(JMod.PUBLIC, void.class, "transform")._throws(TransletException.class);
+    JVar document = ctx.param(DOM.class, DOCUMENT_PNAME);
+    JVar dtmAxisIterator = ctx.param(DTMAxisIterator.class, ITERATOR_PNAME);
+    JVar serializationHandler = ctx.param(SerializationHandler.class, TRANSLET_OUTPUT_PNAME);
 
-    JTryBlock _try = body._try();
+    // Start with try block
+    JTryBlock _try = method.body()._try();
     JBlock block = _try.body();
+
     JInvocation makeDomAdapter = invoke("makeDOMAdapter").arg(document);
     // Define and initialize current with the root node
-    JFieldVar _dom = definedClass.fields().get(DOM_FIELD);
+    JFieldVar _dom = ctx.field(DOM_FIELD);
     // Prepare the appropriate DOM implementation
     if (isMultiDocument()) {
       // MultiDOM with DomAdapter
-      JClass multiDOM = owner.ref(MultiDOM.class);
+      JClass multiDOM = ctx.ref(MultiDOM.class);
       block.assign(_dom, _new(multiDOM).arg(makeDomAdapter));
     } else {
       // DOMAdapter only
@@ -1136,7 +1149,7 @@ public final class Stylesheet extends SyntaxTreeNode {
     }
 
     // continue with globals initialization
-    JVar current = block.decl(owner.INT, "current", invoke(document, "getIterator").invoke("next"));
+    JVar current = block.decl(ctx.owner().INT, "current", invoke(document, "getIterator").invoke("next"));
 
     // Transfer the output settings to the output post-processor
     block.invoke("transferOutputSettings").arg(serializationHandler);
@@ -1146,13 +1159,13 @@ public final class Stylesheet extends SyntaxTreeNode {
      * keys for the input document are now created in topLevel(). However, this
      * method is still needed by the LoadDocument class.
      */
-    compileBuildKeys(definedClass);
+    compileBuildKeys(ctx);
 
     // Look for top-level elements that need handling
     final ListIterator<SyntaxTreeNode> toplevel = elements();
     if (_globals.size() > 0 || toplevel.hasNext()) {
       // Compile method for handling top-level elements
-      final JMethod topLevel = compileTopLevel(definedClass);
+      final JMethod topLevel = compileTopLevel(ctx);
       // Call topLevel()
       block.invoke(topLevel).arg(_dom).arg(dtmAxisIterator).arg(serializationHandler);
     }
@@ -1165,14 +1178,13 @@ public final class Stylesheet extends SyntaxTreeNode {
 
     // endDocument
     block.invoke(serializationHandler, "endDocument");
-    JClass saxException = owner.ref(SAXException.class);
-    JClass transletException = owner.ref(TransletException.class);
-    // TODO pass SaxException
-    //_try._catch(saxException).body()._throw(_new(transletException));
+
+    // End try-block with catch
+    JClass saxException = ctx.ref(SAXException.class);
+    JClass transletException = ctx.ref(TransletException.class);
     JCatchBlock _catch = _try._catch(saxException);
     JVar e = _catch.param("e");
     _catch.body()._throw(_new(transletException).arg(e));
-    body.invoke("popHandler");
   }
 
   public int addParam(Param param) {

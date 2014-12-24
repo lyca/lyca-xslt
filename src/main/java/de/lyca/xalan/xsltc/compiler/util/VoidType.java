@@ -22,14 +22,10 @@
 package de.lyca.xalan.xsltc.compiler.util;
 
 import org.apache.bcel.generic.Instruction;
-import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.PUSH;
 
 import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JType;
-
-import de.lyca.xalan.xsltc.compiler.Constants;
 
 /**
  * @author Jacek Ambroziak

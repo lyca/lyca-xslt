@@ -32,13 +32,11 @@ import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.NEW;
 
-import com.sun.codemodel.JBlock;
-import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JInvocation;
-import com.sun.codemodel.JMethod;
 
 import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
+import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 import de.lyca.xalan.xsltc.compiler.util.Type;
@@ -221,10 +219,10 @@ final class AttributeValueTemplate extends AttributeValue {
   }
 
   @Override
-  public JExpression compile(JDefinedClass definedClass, JMethod method) {
+  public JExpression compile(CompilerContext ctx) {
     if (elementCount() == 1) {
       final Expression exp = (Expression) elementAt(0);
-      return exp.compile(definedClass, method);
+      return exp.compile(ctx);
     } else {
 //      final ConstantPoolGen cpg = classGen.getConstantPool();
 //      final InstructionList il = methodGen.getInstructionList();
@@ -249,7 +247,7 @@ final class AttributeValueTemplate extends AttributeValue {
   }
 
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
+  public void translate(CompilerContext ctx) {
 // FIXME
 //    if (elementCount() == 1) {
 //      final Expression exp = (Expression) elementAt(0);

@@ -26,11 +26,9 @@ import static com.sun.codemodel.JExpr.lit;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JClass;
-import com.sun.codemodel.JDefinedClass;
-import com.sun.codemodel.JMethod;
 
+import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
@@ -126,12 +124,12 @@ final class UnsupportedElement extends SyntaxTreeNode {
    * Translate the fallback element (if any).
    */
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
+  public void translate(CompilerContext ctx) {
     if (_fallbacks != null) {
       final int count = _fallbacks.size();
       for (int i = 0; i < count; i++) {
         final Fallback fallback = _fallbacks.get(i);
-        fallback.translate(definedClass, method, body);
+        fallback.translate(ctx);
       }
     }
     // We only go into the else block in forward-compatibility mode, when
@@ -140,8 +138,8 @@ final class UnsupportedElement extends SyntaxTreeNode {
       // If the unsupported element does not have any fallback child, then
       // at runtime, a runtime error should be raised when the unsupported
       // element is instantiated. Otherwise, no error is thrown.
-      JClass basisLibrary = definedClass.owner().ref(BasisLibrary.class);
-      body.add(basisLibrary.staticInvoke("unsupported_ElementF").arg(getQName().toString()).arg(lit(_isExtension)));
+      JClass basisLibrary = ctx.ref(BasisLibrary.class);
+      ctx.currentBlock().add(basisLibrary.staticInvoke("unsupported_ElementF").arg(getQName().toString()).arg(lit(_isExtension)));
     }
   }
 

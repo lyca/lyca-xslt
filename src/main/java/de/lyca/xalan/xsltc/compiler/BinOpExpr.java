@@ -21,15 +21,11 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import org.apache.bcel.generic.InstructionList;
+import com.sun.codemodel.JExpression;
+import com.sun.codemodel.JOp;
 
-import com.sun.codemodel.JBlock;
-import com.sun.codemodel.JDefinedClass;
-import com.sun.codemodel.JMethod;
-
-import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
+import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
-import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 import de.lyca.xalan.xsltc.compiler.util.MethodType;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
@@ -104,7 +100,30 @@ final class BinOpExpr extends Expression {
   }
 
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
+  public JExpression compile(CompilerContext ctx) {
+    JExpression leftExpr = _left.compile(ctx);
+    JExpression rightExpr = _right.compile(ctx);
+
+    switch (_op) {
+    case PLUS:
+      return JOp.plus(leftExpr, rightExpr);
+    case MINUS:
+      return JOp.minus(leftExpr, rightExpr);
+    case TIMES:
+      return JOp.mul(leftExpr, rightExpr);
+    case DIV:
+      return JOp.div(leftExpr, rightExpr);
+    case MOD:
+      return JOp.mod(leftExpr, rightExpr);
+    default:
+      final ErrorMsg msg = new ErrorMsg(ErrorMsg.ILLEGAL_BINARY_OP_ERR, this);
+      getParser().reportError(Constants.ERROR, msg);
+      return null;
+    }
+  }
+
+  @Override
+  public void translate(CompilerContext ctx) {
 // FIXME
 //    final InstructionList il = methodGen.getInstructionList();
 //

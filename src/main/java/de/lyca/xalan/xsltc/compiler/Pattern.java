@@ -21,11 +21,8 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import com.sun.codemodel.JBlock;
-import com.sun.codemodel.JDefinedClass;
-import com.sun.codemodel.JMethod;
-
 import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
+import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
@@ -55,7 +52,7 @@ public abstract class Pattern extends Expression {
    * <code>translate</code>.
    */
   @Override
-  public abstract void translate(JDefinedClass definedClass, JMethod method, JBlock body);
+  public abstract void translate(CompilerContext ctx);
 
   /**
    * Returns the priority of this pattern (section 5.5 in the XSLT spec).

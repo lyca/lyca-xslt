@@ -21,28 +21,20 @@
 
 package de.lyca.xalan.xsltc.compiler.util;
 
-import org.apache.bcel.generic.BranchHandle;
-import org.apache.bcel.generic.CHECKCAST;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.GETFIELD;
-import org.apache.bcel.generic.GOTO;
-import org.apache.bcel.generic.IFEQ;
+import static com.sun.codemodel.JExpr._new;
+
 import org.apache.bcel.generic.ILOAD;
-import org.apache.bcel.generic.INVOKEINTERFACE;
-import org.apache.bcel.generic.INVOKESPECIAL;
 import org.apache.bcel.generic.ISTORE;
 import org.apache.bcel.generic.Instruction;
-import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.NEW;
-import org.apache.bcel.generic.PUSH;
 
 import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JType;
 
-import de.lyca.xalan.xsltc.compiler.Constants;
 import de.lyca.xalan.xsltc.compiler.FlowList;
 import de.lyca.xalan.xsltc.compiler.NodeTest;
+import de.lyca.xalan.xsltc.dom.SingletonIterator;
 
 /**
  * @author Jacek Ambroziak
@@ -115,6 +107,27 @@ public final class NodeType extends Type {
     }
   }
 
+  @Override
+  public JExpression compileTo(CompilerContext ctx, JExpression expr, Type type) {
+    if (type == Type.String) {
+      return compileTo(ctx, expr, (StringType) type);
+    } else if (type == Type.Boolean) {
+      return compileTo(ctx, expr, (BooleanType) type);
+    } else if (type == Type.Real) {
+      return compileTo(ctx, expr, (RealType) type);
+    } else if (type == Type.NodeSet) {
+      return compileTo(ctx, expr, (NodeSetType) type);
+    } else if (type == Type.Reference) {
+      return compileTo(ctx, expr, (ReferenceType) type);
+    } else if (type == Type.Object) {
+      return compileTo(ctx, expr, (ObjectType) type);
+    } else {
+      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), type.toString());
+      ctx.xsltc().getParser().reportError(FATAL, err);
+      return null;
+    }
+  }
+  
   /**
    * Expects a node on the stack and pushes its string value.
    * 
@@ -150,6 +163,23 @@ public final class NodeType extends Type {
 //        break;
 //    }
   }
+  
+  public JExpression compileTo(CompilerContext ctx, JExpression expr, StringType type) {
+    switch (_type) {
+    case NodeTest.ROOT:
+    case NodeTest.ELEMENT:
+      return ctx.currentDom().invoke(GET_ELEMENT_VALUE).arg(expr);
+    case NodeTest.ANODE:
+    case NodeTest.COMMENT:
+    case NodeTest.ATTRIBUTE:
+    case NodeTest.PI:
+      return ctx.currentDom().invoke(GET_NODE_VALUE).arg(expr);
+    default:
+      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), type.toString());
+      ctx.xsltc().getParser().reportError(FATAL, err);
+      return null;
+    }
+  }
 
   /**
    * Translates a node into a synthesized boolean. If the expression is "@attr",
@@ -180,6 +210,10 @@ public final class NodeType extends Type {
 //    Type.String.translateTo(classGen, methodGen, Type.Real);
   }
 
+  public JExpression compileTo(CompilerContext ctx, JExpression expr, RealType type) {
+    return Type.String.compileTo(ctx, compileTo(ctx, expr, Type.String), Type.Real);
+  }
+
   /**
    * Expects a node on the stack and pushes a singleton node-set. Singleton
    * iterators are already started after construction.
@@ -197,6 +231,10 @@ public final class NodeType extends Type {
 //    il.append(SWAP);
 //    final int init = cpg.addMethodref(SINGLETON_ITERATOR, "<init>", "(" + NODE_SIG + ")V");
 //    il.append(new INVOKESPECIAL(init));
+  }
+
+  public JExpression compileTo(CompilerContext ctx, JExpression expr, NodeSetType type) {
+    return _new(ctx.ref(SingletonIterator.class)).arg(expr);
   }
 
   /**

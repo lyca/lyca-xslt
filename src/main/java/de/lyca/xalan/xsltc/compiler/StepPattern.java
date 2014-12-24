@@ -21,42 +21,18 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
+import static com.sun.codemodel.JExpr.TRUE;
+import static com.sun.codemodel.JExpr.invoke;
+import static com.sun.codemodel.JExpr.lit;
+
 import java.util.List;
 
-import org.apache.bcel.classfile.Field;
-import org.apache.bcel.generic.ALOAD;
-import org.apache.bcel.generic.ASTORE;
-import org.apache.bcel.generic.BranchHandle;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.GETFIELD;
-import org.apache.bcel.generic.GOTO;
-import org.apache.bcel.generic.GOTO_W;
-import org.apache.bcel.generic.IFLT;
-import org.apache.bcel.generic.IFNE;
-import org.apache.bcel.generic.IFNONNULL;
-import org.apache.bcel.generic.IF_ICMPEQ;
-import org.apache.bcel.generic.IF_ICMPLT;
-import org.apache.bcel.generic.IF_ICMPNE;
-import org.apache.bcel.generic.ILOAD;
-import org.apache.bcel.generic.INVOKEINTERFACE;
-import org.apache.bcel.generic.INVOKESPECIAL;
-import org.apache.bcel.generic.ISTORE;
-import org.apache.bcel.generic.InstructionHandle;
-import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.LocalVariableGen;
-import org.apache.bcel.generic.NEW;
-import org.apache.bcel.generic.PUSH;
-import org.apache.bcel.generic.PUTFIELD;
+import com.sun.codemodel.JExpr;
+import com.sun.codemodel.JExpression;
 
-import com.sun.codemodel.JBlock;
-import com.sun.codemodel.JDefinedClass;
-import com.sun.codemodel.JMethod;
-
-import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
-import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
+import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
-import de.lyca.xalan.xsltc.compiler.util.Util;
 import de.lyca.xml.dtm.Axis;
 import de.lyca.xml.dtm.DTM;
 
@@ -226,47 +202,60 @@ class StepPattern extends RelativePathPattern {
     return _axis == Axis.CHILD ? Type.Element : Type.Attribute;
   }
 
-  private void translateKernel(JDefinedClass definedClass, JMethod method) {
-//    FIXME
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//    final InstructionList il = methodGen.getInstructionList();
-//
-//    if (_nodeType == DTM.ELEMENT_NODE) {
+  private JExpression compileKernel(CompilerContext ctx) {
+    if (_nodeType == DTM.ELEMENT_NODE) {
+      return invoke(ctx.currentDom(), "isElement").arg(ctx.currentNode());
+    } else if (_nodeType == DTM.ATTRIBUTE_NODE) {
+      return invoke(ctx.currentDom(), "isAttribute").arg(ctx.currentNode());
+    } else {
+      return invoke(ctx.currentDom(), "getExpandedTypeID").arg(ctx.currentNode()).eq(lit(_nodeType));
+    }
+  }
+
+  private void translateKernel(CompilerContext ctx) {
+    if (_nodeType == DTM.ELEMENT_NODE) {
+      ctx.currentBlock()._if(invoke(ctx.currentDom(), "isElement").arg(ctx.currentNode()));
 //      final int check = cpg.addInterfaceMethodref(DOM_INTF, "isElement", "(I)Z");
 //      il.append(methodGen.loadDOM());
 //      il.append(SWAP);
 //      il.append(new INVOKEINTERFACE(check, 2));
-//
-//      // Need to allow for long jumps here
+
+      // Need to allow for long jumps here
 //      final BranchHandle icmp = il.append(new IFNE(null));
 //      _falseList.add(il.append(new GOTO_W(null)));
 //      icmp.setTarget(il.append(NOP));
-//    } else if (_nodeType == DTM.ATTRIBUTE_NODE) {
+    } else if (_nodeType == DTM.ATTRIBUTE_NODE) {
+      ctx.currentBlock()._if(invoke(ctx.currentDom(), "isAttribute").arg(ctx.currentNode()));
 //      final int check = cpg.addInterfaceMethodref(DOM_INTF, "isAttribute", "(I)Z");
 //      il.append(methodGen.loadDOM());
 //      il.append(SWAP);
 //      il.append(new INVOKEINTERFACE(check, 2));
-//
-//      // Need to allow for long jumps here
+
+      // Need to allow for long jumps here
 //      final BranchHandle icmp = il.append(new IFNE(null));
 //      _falseList.add(il.append(new GOTO_W(null)));
 //      icmp.setTarget(il.append(NOP));
-//    } else {
-//      // context node is on the stack
+    } else {
+      // context node is on the stack
+      ctx.currentBlock()._if(invoke(ctx.currentDom(), "getExpandedTypeID").arg(ctx.currentNode()).eq(lit(_nodeType)));
 //      final int getEType = cpg.addInterfaceMethodref(DOM_INTF, "getExpandedTypeID", "(I)I");
 //      il.append(methodGen.loadDOM());
 //      il.append(SWAP);
 //      il.append(new INVOKEINTERFACE(getEType, 2));
 //      il.append(new PUSH(cpg, _nodeType));
-//
-//      // Need to allow for long jumps here
+
+      // Need to allow for long jumps here
 //      final BranchHandle icmp = il.append(new IF_ICMPEQ(null));
 //      _falseList.add(il.append(new GOTO_W(null)));
 //      icmp.setTarget(il.append(NOP));
-//    }
+    }
   }
 
-  private void translateNoContext(JDefinedClass definedClass, JMethod method) {
+  private JExpression compileNoContext(CompilerContext ctx) {
+    return null;
+  }
+
+  private void translateNoContext(CompilerContext ctx) {
 //    FIXME
 //    final InstructionList il = methodGen.getInstructionList();
 //
@@ -306,7 +295,11 @@ class StepPattern extends RelativePathPattern {
 //    skipFalse.setTarget(il.append(NOP));
   }
 
-  private void translateSimpleContext(JDefinedClass definedClass, JMethod method) {
+  private JExpression compileSimpleContext(CompilerContext ctx) {
+    return null;
+  }
+
+  private void translateSimpleContext(CompilerContext ctx) {
 //    FIXME
 //    int index;
 //    final ConstantPoolGen cpg = classGen.getConstantPool();
@@ -385,7 +378,11 @@ class StepPattern extends RelativePathPattern {
 //    skipFalse.setTarget(il.append(NOP));
   }
 
-  private void translateGeneralContext(JDefinedClass definedClass, JMethod method) {
+  private JExpression compileGeneralContext(CompilerContext ctx) {
+    return null;
+  }
+
+  private void translateGeneralContext(CompilerContext ctx) {
 //    FIXME
 //    final ConstantPoolGen cpg = classGen.getConstantPool();
 //    final InstructionList il = methodGen.getInstructionList();
@@ -473,28 +470,42 @@ class StepPattern extends RelativePathPattern {
   }
 
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
-//    FIXME
-//    final InstructionList il = methodGen.getInstructionList();
-//
-//    if (hasPredicates()) {
-//      switch (_contextCase) {
-//        case NO_CONTEXT:
-//          translateNoContext(classGen, methodGen);
-//          break;
-//
-//        case SIMPLE_CONTEXT:
-//          translateSimpleContext(classGen, methodGen);
-//          break;
-//
-//        default:
-//          translateGeneralContext(classGen, methodGen);
-//          break;
-//      }
-//    } else if (isWildcard()) {
-//      il.append(POP); // true list falls through
-//    } else {
-//      translateKernel(classGen, methodGen);
-//    }
+  public JExpression compile(CompilerContext ctx) {
+    if (hasPredicates()) {
+      switch (_contextCase) {
+      case NO_CONTEXT:
+        return compileNoContext(ctx);
+      case SIMPLE_CONTEXT:
+        return compileSimpleContext(ctx);
+      default:
+        return compileGeneralContext(ctx);
+      }
+    } else if (isWildcard()) {
+      return TRUE;
+      // il.append(POP); // true list falls through
+    } else {
+      return compileKernel(ctx);
+    }
+  }
+  @Override
+  public void translate(CompilerContext ctx) {
+    if (hasPredicates()) {
+      switch (_contextCase) {
+      case NO_CONTEXT:
+        translateNoContext(ctx);
+        break;
+      case SIMPLE_CONTEXT:
+        translateSimpleContext(ctx);
+        break;
+
+      default:
+        translateGeneralContext(ctx);
+        break;
+      }
+    } else if (isWildcard()) {
+      // il.append(POP); // true list falls through
+    } else {
+      translateKernel(ctx);
+    }
   }
 }

@@ -21,18 +21,13 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
+import static com.sun.codemodel.JOp.not;
+
 import java.util.List;
 
-import org.apache.bcel.generic.BranchHandle;
-import org.apache.bcel.generic.GOTO;
-import org.apache.bcel.generic.InstructionList;
+import com.sun.codemodel.JExpression;
 
-import com.sun.codemodel.JBlock;
-import com.sun.codemodel.JDefinedClass;
-import com.sun.codemodel.JMethod;
-
-import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
-import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
+import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 
 /**
  * @author Jacek Ambroziak
@@ -44,7 +39,12 @@ final class NotCall extends FunctionCall {
   }
 
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
+  public JExpression compile(CompilerContext ctx) {
+    return not(argument().compile(ctx));
+  }
+
+  @Override
+  public void translate(CompilerContext ctx) {
  // FIXME
 //    final InstructionList il = methodGen.getInstructionList();
 //    argument().translate(classGen, methodGen);
@@ -53,7 +53,7 @@ final class NotCall extends FunctionCall {
   }
 
   @Override
-  public void translateDesynthesized(JDefinedClass definedClass, JMethod method, JBlock body) {
+  public void translateDesynthesized(CompilerContext ctx) {
  // FIXME
 //    final InstructionList il = methodGen.getInstructionList();
 //    final Expression exp = argument();

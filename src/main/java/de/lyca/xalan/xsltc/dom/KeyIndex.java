@@ -490,7 +490,7 @@ public class KeyIndex extends DTMAxisIteratorBase {
     return other;
   }
 
-  public void setDom(DOM dom) {
+  public KeyIndex setDom(DOM dom) {
     _dom = dom;
     if (dom instanceof DOMEnhancedForDTM) {
       _enhancedDOM = (DOMEnhancedForDTM) dom;
@@ -500,6 +500,7 @@ public class KeyIndex extends DTMAxisIteratorBase {
         _enhancedDOM = (DOMEnhancedForDTM) idom;
       }
     }
+    return this;
   }
 
   /**

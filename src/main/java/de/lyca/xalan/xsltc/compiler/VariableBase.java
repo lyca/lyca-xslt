@@ -21,7 +21,7 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import static com.sun.codemodel.JExpr._null;
+import static com.sun.codemodel.JExpr._new;
 import static com.sun.codemodel.JExpr.lit;
 
 import java.util.ArrayList;
@@ -29,15 +29,16 @@ import java.util.List;
 
 import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JExpression;
-import com.sun.codemodel.JInvocation;
 import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JType;
 import com.sun.codemodel.JVar;
 
+import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.NodeSetType;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.Util;
+import de.lyca.xalan.xsltc.dom.CachedNodeListIterator;
 import de.lyca.xml.utils.XML11Char;
 
 /**
@@ -85,7 +86,7 @@ class VariableBase extends TopLevelElement {
     if (_local == null) {
       final String name = getEscapedName(); // TODO: namespace ?
       final JType varType = _type.toJCType();
-      _local = method.body().decl(varType, name, _null());
+      _local = method.body().decl(varType, name);
     }
   }
 
@@ -214,27 +215,19 @@ class VariableBase extends TopLevelElement {
     parseChildren(parser);
   }
 
-  public JExpression compileValue(JDefinedClass definedClass, JMethod method) {
+  public JExpression compileValue(CompilerContext ctx) {
     // Compile expression is 'select' attribute if present
     if (_select != null) {
-      JInvocation select = (JInvocation) _select.compile(definedClass, method);
-      // Create a CachedNodeListIterator for select expressions
-      // in a variable or parameter.
+      JExpression select = _select.compile(ctx);
+      // Create a CachedNodeListIterator for select expressions in a variable or parameter.
       if (_select.getType() instanceof NodeSetType) {
-//        
-//        final int initCNI = cpg.addMethodref(CACHED_NODE_LIST_ITERATOR_CLASS, "<init>", "(" + NODE_ITERATOR_SIG + ")V");
-//        il.append(new NEW(cpg.addClass(CACHED_NODE_LIST_ITERATOR_CLASS)));
-//        il.append(DUP_X1);
-//        il.append(SWAP);
-//
-//        il.append(new INVOKESPECIAL(initCNI));
+        select = _new(ctx.ref(CachedNodeListIterator.class)).arg(select);
       }
-      _select.startIterator(definedClass, method);
-      return select;
+      return _select.startIterator(ctx, select);
     }
     // If not, compile result tree from parameter body if present.
     else if (hasContents()) {
-      return compileResultTree(definedClass, method);
+      return compileResultTree(ctx);
     }
     // If neither are present then store empty string in variable
     else {

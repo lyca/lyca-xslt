@@ -23,16 +23,10 @@ package de.lyca.xalan.xsltc.compiler;
 
 import java.util.List;
 
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.INVOKESTATIC;
-import org.apache.bcel.generic.InstructionList;
+import com.sun.codemodel.JExpression;
 
-import com.sun.codemodel.JBlock;
-import com.sun.codemodel.JDefinedClass;
-import com.sun.codemodel.JMethod;
-
-import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
-import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
+import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
+import de.lyca.xalan.xsltc.runtime.BasisLibrary;
 
 /**
  * @author Jacek Ambroziak
@@ -44,7 +38,13 @@ final class GenerateIdCall extends FunctionCall {
   }
 
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
+  public JExpression compile(CompilerContext ctx) {
+    JExpression arg = argumentCount() == 0 ? ctx.currentNode() : argument().compile(ctx);
+    return ctx.ref(BasisLibrary.class).staticInvoke("generate_idF").arg(arg);
+  }
+
+  @Override
+  public void translate(CompilerContext ctx) {
  // FIXME
 //    final InstructionList il = methodGen.getInstructionList();
 //    if (argumentCount() == 0) {

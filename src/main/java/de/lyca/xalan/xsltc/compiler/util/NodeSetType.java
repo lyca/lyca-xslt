@@ -21,7 +21,8 @@
 
 package de.lyca.xalan.xsltc.compiler.util;
 
-import static com.sun.codemodel.JExpr.invoke;
+import static com.sun.codemodel.JExpr.lit;
+import static com.sun.codemodel.JOp.cond;
 
 import org.apache.bcel.generic.ALOAD;
 import org.apache.bcel.generic.ASTORE;
@@ -29,6 +30,7 @@ import org.apache.bcel.generic.Instruction;
 
 import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JExpression;
+import com.sun.codemodel.JInvocation;
 import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JType;
 
@@ -91,22 +93,22 @@ public final class NodeSetType extends Type {
   }
 
   @Override
-  public JExpression compileTo(JDefinedClass definedClass, JMethod method, Type type) {
+  public JExpression compileTo(CompilerContext ctx, JExpression expr, Type type) {
     if (type == Type.String) {
-      return compileTo(definedClass, method, (StringType) type);
+      return compileTo(ctx, expr, (StringType) type);
     } else if (type == Type.Boolean) {
-      return compileTo(definedClass, method, (BooleanType) type);
+      return compileTo(ctx, expr, (BooleanType) type);
     } else if (type == Type.Real) {
-      return compileTo(definedClass, method, (RealType) type);
+      return compileTo(ctx, expr, (RealType) type);
     } else if (type == Type.Node) {
-      return compileTo(definedClass, method, (NodeType) type);
+      return compileTo(ctx, expr, (NodeType) type);
     } else if (type == Type.Reference) {
-      return compileTo(definedClass, method, (ReferenceType) type);
+      return compileTo(ctx, expr, (ReferenceType) type);
     } else if (type == Type.Object) {
-      return compileTo(definedClass, method, (ObjectType) type);
+      return compileTo(ctx, expr, (ObjectType) type);
     } else {
       final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), type.toString());
-      // FIXME classGen.getParser().reportError(Constants.FATAL, err);
+      ctx.xsltc().getParser().reportError(FATAL, err);
       return null;
     }
   }
@@ -161,6 +163,11 @@ public final class NodeSetType extends Type {
 //    truec.setTarget(il.append(NOP));
   }
 
+  public JExpression compileTo(CompilerContext ctx, JExpression expr, BooleanType type) {
+    JInvocation next = expr.invoke(NEXT);
+    return next.gte(lit(0));
+  }
+
   /**
    * Translates a node-set into a string. The string value of a node-set is
    * value of its first element.
@@ -180,6 +187,11 @@ public final class NodeSetType extends Type {
 //    truec.setTarget(il.append(NOP));
   }
 
+  public JExpression compileTo(CompilerContext ctx, JExpression expr, StringType type) {
+    JInvocation next = expr.invoke(NEXT);
+    return cond(next.gte(lit(0)), Type.Node.compileTo(ctx, next, type), lit(""));
+  }
+
   /**
    * Expects a node-set on the stack and pushes a real. First the node-set is
    * converted to string, and from string to real.
@@ -192,6 +204,10 @@ public final class NodeSetType extends Type {
 //    Type.String.translateTo(classGen, methodGen, Type.Real);
   }
 
+  public JExpression compileTo(CompilerContext ctx, JExpression expr, RealType type) {
+    return Type.String.compileTo(ctx, compileTo(ctx, expr, Type.String), Type.Real);
+  }
+
   /**
    * Expects a node-set on the stack and pushes a node.
    * 
@@ -201,9 +217,9 @@ public final class NodeSetType extends Type {
     getFirstNode(definedClass, method);
   }
 
-  public JExpression compileTo(JDefinedClass definedClass, JMethod method, NodeType type) {
+  public JExpression compileTo(CompilerContext ctx, JExpression expr, NodeType type) {
 //  il.append(new INVOKEINTERFACE(cpg.addInterfaceMethodref(NODE_ITERATOR, NEXT, NEXT_SIG), 1));
-    return invoke(NEXT);
+    return expr.invoke(NEXT);
   }
 
   

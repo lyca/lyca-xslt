@@ -21,27 +21,15 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import org.apache.bcel.generic.BranchHandle;
-import org.apache.bcel.generic.BranchInstruction;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.GOTO;
-import org.apache.bcel.generic.IFEQ;
-import org.apache.bcel.generic.IFNE;
-import org.apache.bcel.generic.IF_ICMPEQ;
-import org.apache.bcel.generic.IF_ICMPNE;
-import org.apache.bcel.generic.INVOKESTATIC;
-import org.apache.bcel.generic.INVOKEVIRTUAL;
-import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.PUSH;
+import static com.sun.codemodel.JExpr.lit;
+import static com.sun.codemodel.JOp.not;
 
-import com.sun.codemodel.JBlock;
-import com.sun.codemodel.JDefinedClass;
-import com.sun.codemodel.JMethod;
+import com.sun.codemodel.JExpression;
+import com.sun.codemodel.JOp;
 
 import de.lyca.xalan.xsltc.compiler.util.BooleanType;
-import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
+import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.IntType;
-import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 import de.lyca.xalan.xsltc.compiler.util.NodeSetType;
 import de.lyca.xalan.xsltc.compiler.util.NodeType;
 import de.lyca.xalan.xsltc.compiler.util.NumberType;
@@ -51,6 +39,7 @@ import de.lyca.xalan.xsltc.compiler.util.ResultTreeType;
 import de.lyca.xalan.xsltc.compiler.util.StringType;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
+import de.lyca.xalan.xsltc.runtime.BasisLibrary;
 import de.lyca.xalan.xsltc.runtime.Operators;
 
 /**
@@ -189,7 +178,7 @@ final class EqualityExpr extends Expression {
   }
 
   @Override
-  public void translateDesynthesized(JDefinedClass definedClass, JMethod method, JBlock body) {
+  public void translateDesynthesized(CompilerContext ctx) {
     // FIXME
 //    final Type tleft = _left.getType();
 //    final InstructionList il = methodGen.getInstructionList();
@@ -218,7 +207,80 @@ final class EqualityExpr extends Expression {
   }
 
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
+  public JExpression compile(CompilerContext ctx) {
+    final Type tleft = _left.getType();
+    Type tright = _right.getType();
+
+    JExpression leftExpr = _left.compile(ctx);
+    JExpression rightExpr = _right.compile(ctx);
+
+    if (tleft instanceof BooleanType || tleft instanceof NumberType) {
+      return _op == Operators.EQ ? JOp.eq(leftExpr, rightExpr) : JOp.ne(leftExpr, rightExpr);
+    }
+
+    if (tleft instanceof StringType) {
+      JExpression result = leftExpr.invoke("equals").arg(rightExpr);
+      if (_op == Operators.NE) {
+        return JOp.not(result);
+      }
+      return result;
+    }
+
+    if (tleft instanceof ResultTreeType) {
+      if (tright instanceof BooleanType) {
+        if (_op == Operators.NE) {
+          return not(rightExpr);
+        }
+        return rightExpr;
+      }
+
+      if (tright instanceof RealType) {
+        leftExpr = tleft.compileTo(ctx, leftExpr, Type.Real);
+        return _op == Operators.EQ ? JOp.eq(leftExpr, rightExpr) : JOp.ne(leftExpr, rightExpr);
+      }
+
+      // Next, result-tree/string and result-tree/result-tree comparisons
+      leftExpr = tleft.compileTo(ctx, leftExpr, Type.String);
+
+      if (tright instanceof ResultTreeType) {
+        rightExpr = tright.compileTo(ctx, rightExpr, Type.String);
+      }
+
+      JExpression result = leftExpr.invoke("equals").arg(rightExpr);
+      if (_op == Operators.NE) {
+        return JOp.not(result);
+      }
+      return result;
+    }
+
+    if (tleft instanceof NodeSetType && tright instanceof BooleanType) {
+      leftExpr = _left.startIterator(ctx, leftExpr);
+      leftExpr = Type.NodeSet.compileTo(ctx,leftExpr, Type.Boolean);
+
+      return _op == Operators.NE ? leftExpr.ne(rightExpr) : leftExpr.eq(rightExpr);
+    }
+
+    if (tleft instanceof NodeSetType && tright instanceof StringType) {
+      leftExpr = _left.startIterator(ctx, leftExpr); // needed ?
+      return ctx.ref(BasisLibrary.class).staticInvoke("compare").arg(leftExpr).arg(rightExpr).arg(lit(_op)).arg(ctx.currentDom());
+    }
+
+    // Next, node-set/t for t in {real, string, node-set, result-tree}
+    leftExpr = _left.startIterator(ctx, leftExpr);
+    rightExpr = _right.startIterator(ctx, rightExpr);
+
+    // Cast a result tree to a string to use an existing compare
+    if (tright instanceof ResultTreeType) {
+      rightExpr = tright.compileTo(ctx, rightExpr, Type.String);
+      tright = Type.String;
+    }
+
+    // Call the appropriate compare() from the BasisLibrary
+    return ctx.ref(BasisLibrary.class).staticInvoke("compare").arg(leftExpr).arg(rightExpr).arg(lit(_op)).arg(ctx.currentDom());
+  }
+
+  @Override
+  public void translate(CompilerContext ctx) {
     // FIXME
 //    final ConstantPoolGen cpg = classGen.getConstantPool();
 //    final InstructionList il = methodGen.getInstructionList();

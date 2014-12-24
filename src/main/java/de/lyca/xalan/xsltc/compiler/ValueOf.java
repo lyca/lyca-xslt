@@ -23,14 +23,10 @@ package de.lyca.xalan.xsltc.compiler;
 
 import static com.sun.codemodel.JExpr.FALSE;
 import static com.sun.codemodel.JExpr.TRUE;
-import static com.sun.codemodel.JExpr.invoke;
 
-import com.sun.codemodel.JBlock;
-import com.sun.codemodel.JDefinedClass;
-import com.sun.codemodel.JInvocation;
-import com.sun.codemodel.JMethod;
-import com.sun.codemodel.JVar;
+import com.sun.codemodel.JExpression;
 
+import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
@@ -96,16 +92,16 @@ final class ValueOf extends Instruction {
   }
 
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
-    JVar document =  method.listParams()[0];
-    JInvocation handler = invoke("peekHandler");
+  public void translate(CompilerContext ctx) {
+    JExpression document =  ctx.currentDom();
+    JExpression handler = ctx.currentHandler();
 //    JVar handler = method.listParams()[2];
     
 //    JFieldRef handler = ref("stringValueHandler");
 
     // Turn off character escaping if so is wanted.
     if (!_escaping) {
-      body.add(handler.invoke("setEscaping").arg(FALSE));
+      ctx.currentBlock().add(handler.invoke("setEscaping").arg(FALSE));
     }
 
     // Translate the contents. If the value is a string, use the
@@ -114,9 +110,9 @@ final class ValueOf extends Instruction {
     // dom.characters(int node, TransletOutputHandler) method can dispatch
     // the string value of the node to the output handler more efficiently.
     if (_isString) {
-      body.invoke(CHARACTERS).arg(_select.compile(definedClass, method)).arg(handler);
+      ctx.currentBlock().invoke(CHARACTERS).arg(_select.compile(ctx)).arg(handler);
     } else {
-      body.invoke(document, CHARACTERS).arg(_select.compile(definedClass, method)).arg(handler);
+      ctx.currentBlock().invoke(document, CHARACTERS).arg(_select.compile(ctx)).arg(handler);
 //      il.append(methodGen.loadDOM());
 //      _select.translate(classGen, methodGen);
 //      il.append(methodGen.loadHandler());
@@ -125,7 +121,7 @@ final class ValueOf extends Instruction {
 
     // Restore character escaping setting to whatever it was.
     if (!_escaping) {
-      body.add(handler.invoke("setEscaping").arg(TRUE));
+      ctx.currentBlock().add(handler.invoke("setEscaping").arg(TRUE));
     }
   }
 }

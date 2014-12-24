@@ -23,18 +23,8 @@ package de.lyca.xalan.xsltc.compiler;
 
 import java.util.List;
 
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.IFLT;
-import org.apache.bcel.generic.INVOKEVIRTUAL;
-import org.apache.bcel.generic.InstructionList;
-
-import com.sun.codemodel.JBlock;
-import com.sun.codemodel.JDefinedClass;
-import com.sun.codemodel.JMethod;
-
-import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
+import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
-import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
 
@@ -93,7 +83,7 @@ final class ContainsCall extends FunctionCall {
    * Compile the expression - leave boolean expression on stack
    */
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
+  public void translate(CompilerContext ctx) {
     // FIXME
 //    translateDesynthesized(classGen, methodGen);
 //    synthesize(classGen, methodGen);
@@ -103,7 +93,7 @@ final class ContainsCall extends FunctionCall {
    * Compile expression and update true/false-lists
    */
   @Override
-  public void translateDesynthesized(JDefinedClass definedClass, JMethod method, JBlock body) {
+  public void translateDesynthesized(CompilerContext ctx) {
     // FIXME
 //    final ConstantPoolGen cpg = classGen.getConstantPool();
 //    final InstructionList il = methodGen.getInstructionList();

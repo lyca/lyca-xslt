@@ -21,12 +21,9 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import com.sun.codemodel.JBlock;
-import com.sun.codemodel.JDefinedClass;
-import com.sun.codemodel.JMethod;
+import com.sun.codemodel.JExpression;
 
-import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
-import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
+import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 
 /**
  * @author Jacek Ambroziak
@@ -38,7 +35,12 @@ final class CurrentCall extends FunctionCall {
   }
 
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
+  public JExpression compile(CompilerContext ctx) {
+    return ctx.currentNode();
+  }
+
+  @Override
+  public void translate(CompilerContext ctx) {
     // FIXME
 //    methodGen.getInstructionList().append(methodGen.loadCurrentNode());
   }

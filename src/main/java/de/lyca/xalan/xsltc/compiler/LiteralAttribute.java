@@ -22,11 +22,7 @@
 package de.lyca.xalan.xsltc.compiler;
 
 import static com.sun.codemodel.JExpr.lit;
-
-import com.sun.codemodel.JBlock;
-import com.sun.codemodel.JDefinedClass;
-import com.sun.codemodel.JMethod;
-
+import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
 import de.lyca.xalan.xsltc.compiler.util.Util;
@@ -78,7 +74,7 @@ final class LiteralAttribute extends Instruction {
   }
 
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
+  public void translate(CompilerContext ctx) {
     // push handler
 //    il.append(methodGen.loadHandler());
     // push attribute name - namespace prefix set by parent node
@@ -113,7 +109,7 @@ final class LiteralAttribute extends Instruction {
         }
         // addUniqueAttribute(String qName, String value, int flags) throws SAXException;
       }
-      body.invoke(method.listParams()[2], "addUniqueAttribute").arg(_name).arg(_value.compile(definedClass, method)).arg(lit(flags));
+      ctx.currentBlock().invoke(ctx.param(TRANSLET_OUTPUT_PNAME), "addUniqueAttribute").arg(_name).arg(_value.compile(ctx)).arg(lit(flags));
 
 //      il.append(new PUSH(cpg, flags));
 //      il.append(methodGen.uniqueAttribute());

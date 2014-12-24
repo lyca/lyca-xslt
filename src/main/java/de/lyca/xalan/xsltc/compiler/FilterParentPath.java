@@ -21,28 +21,18 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import org.apache.bcel.generic.ALOAD;
-import org.apache.bcel.generic.ASTORE;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.INVOKEINTERFACE;
-import org.apache.bcel.generic.INVOKESPECIAL;
-import org.apache.bcel.generic.INVOKEVIRTUAL;
-import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.LocalVariableGen;
-import org.apache.bcel.generic.NEW;
+import static com.sun.codemodel.JExpr._new;
 
-import com.sun.codemodel.JBlock;
-import com.sun.codemodel.JDefinedClass;
-import com.sun.codemodel.JMethod;
+import com.sun.codemodel.JExpr;
+import com.sun.codemodel.JExpression;
 
-import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
-import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
+import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.NodeSetType;
 import de.lyca.xalan.xsltc.compiler.util.NodeType;
 import de.lyca.xalan.xsltc.compiler.util.ReferenceType;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
-import de.lyca.xalan.xsltc.compiler.util.Util;
+import de.lyca.xalan.xsltc.dom.StepIterator;
 
 /**
  * @author Jacek Ambroziak
@@ -107,7 +97,38 @@ final class FilterParentPath extends Expression {
   }
 
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
+  public JExpression compile(CompilerContext ctx) {
+    // Recursively compile 2 iterators
+    JExpression filter = _filterExpr.compile(ctx);
+    JExpression path = _path.compile(ctx);
+
+    // Create new StepIterator
+    // Initialize StepIterator with iterators from the stack
+    JExpression stepIterator = _new(ctx.ref(StepIterator.class)).arg(filter).arg(path);
+
+    // This is a special case for the //* path with or without predicates
+    if (_hasDescendantAxis) {
+      stepIterator = stepIterator.invoke("includeSelf");
+    }
+
+    final SyntaxTreeNode parent = getParent();
+
+    final boolean parentAlreadyOrdered = parent instanceof RelativeLocationPath || parent instanceof FilterParentPath
+        || parent instanceof KeyCall || parent instanceof CurrentCall || parent instanceof DocumentCall;
+
+    if (!parentAlreadyOrdered) {
+      return JExpr.invoke(ctx.currentDom(), ORDER_ITERATOR).arg(stepIterator).arg(ctx.currentNode());
+//      final int order = cpg.addInterfaceMethodref(DOM_INTF, ORDER_ITERATOR, ORDER_ITERATOR_SIG);
+//      il.append(methodGen.loadDOM());
+//      il.append(SWAP);
+//      il.append(methodGen.loadContextNode());
+//      il.append(new INVOKEINTERFACE(order, 3));
+    }
+    return stepIterator;
+  }
+
+  @Override
+  public void translate(CompilerContext ctx) {
  // FIXME
 //    final ConstantPoolGen cpg = classGen.getConstantPool();
 //    final InstructionList il = methodGen.getInstructionList();

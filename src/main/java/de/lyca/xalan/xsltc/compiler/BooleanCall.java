@@ -23,12 +23,9 @@ package de.lyca.xalan.xsltc.compiler;
 
 import java.util.List;
 
-import com.sun.codemodel.JBlock;
-import com.sun.codemodel.JDefinedClass;
-import com.sun.codemodel.JMethod;
+import com.sun.codemodel.JExpression;
 
-import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
-import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
+import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
 
@@ -52,12 +49,23 @@ final class BooleanCall extends FunctionCall {
   }
 
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
-    _arg.translate(definedClass, method, body);
+  public JExpression compile(CompilerContext ctx) {
+    JExpression expr = _arg.compile(ctx);
     final Type targ = _arg.getType();
     if (!targ.identicalTo(Type.Boolean)) {
-      _arg.startIterator(definedClass, method);
-      targ.translateTo(definedClass, method, Type.Boolean);
+      expr = _arg.startIterator(ctx, expr);
+      expr = targ.compileTo(ctx, expr, Type.Boolean);
+    }
+    return expr;
+  }
+
+  @Override
+  public void translate(CompilerContext ctx) {
+    _arg.translate(ctx);
+    final Type targ = _arg.getType();
+    if (!targ.identicalTo(Type.Boolean)) {
+      // FIXME _arg.startIterator(ctx);
+      targ.translateTo(ctx.clazz(), ctx.currentMethod(), Type.Boolean);
     }
   }
 }

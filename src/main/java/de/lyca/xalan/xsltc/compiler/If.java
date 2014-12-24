@@ -21,14 +21,10 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import static com.sun.codemodel.JExpr.ref;
-
-import com.sun.codemodel.JBlock;
-import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JExpression;
-import com.sun.codemodel.JMethod;
 
 import de.lyca.xalan.xsltc.compiler.util.BooleanType;
+import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
@@ -103,15 +99,16 @@ final class If extends Instruction {
    * will be ignored if we know the test will always fail.
    */
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
+  public void translate(CompilerContext ctx) {
 //    final InstructionList il = methodGen.getInstructionList();
     //_test.translateDesynthesized(definedClass, method, body);
-    JExpression testExp = _test.compile(definedClass, method);
+    JExpression testExp = _test.compile(ctx);
     // remember end of condition
 //    final InstructionHandle truec = il.getEnd();
     if (!_ignore) {
-      JBlock _then = body._if(testExp)._then();
-      translateContents(definedClass, method, _then);
+      ctx.pushBlock(ctx.currentBlock()._if(testExp)._then());
+      translateContents(ctx);
+      ctx.popBlock();
     }
 //    _test.backPatchFalseList(il.append(NOP));
 //    _test.backPatchTrueList(truec.getNext());

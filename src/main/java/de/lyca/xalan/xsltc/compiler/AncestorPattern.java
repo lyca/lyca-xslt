@@ -21,26 +21,21 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import org.apache.bcel.generic.BranchHandle;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.GOTO;
-import org.apache.bcel.generic.IFLT;
-import org.apache.bcel.generic.ILOAD;
-import org.apache.bcel.generic.INVOKEINTERFACE;
-import org.apache.bcel.generic.ISTORE;
+import static com.sun.codemodel.JExpr.TRUE;
+import static com.sun.codemodel.JExpr.invoke;
+import static com.sun.codemodel.JExpr.lit;
+
 import org.apache.bcel.generic.InstructionHandle;
-import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.LocalVariableGen;
 
 import com.sun.codemodel.JBlock;
-import com.sun.codemodel.JDefinedClass;
-import com.sun.codemodel.JMethod;
+import com.sun.codemodel.JExpr;
+import com.sun.codemodel.JExpression;
+import com.sun.codemodel.JInvocation;
+import com.sun.codemodel.JVar;
 
-import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
-import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
+import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
-import de.lyca.xalan.xsltc.compiler.util.Util;
 
 /**
  * @author Jacek Ambroziak
@@ -102,8 +97,82 @@ final class AncestorPattern extends RelativePathPattern {
     return _right.typeCheck(stable);
   }
 
+//  @Override
+//  public JExpression compile(CompilerContext ctx) {
+//    // FIXME
+//    JInvocation parent;
+//
+//    /*
+//     * The scope of this local var must be the entire method since a another
+//     * pattern may decide to jump back into the loop
+//     */
+////    final LocalVariableGen local = methodGen.addLocalVariable2("app", Util.getJCRefType(NODE_SIG), il.getEnd());
+//
+////    final org.apache.bcel.generic.Instruction loadLocal = new ILOAD(local.getIndex());
+////    final org.apache.bcel.generic.Instruction storeLocal = new ISTORE(local.getIndex());
+//
+//    JExpression right = _right.compile(ctx);
+//
+//    if (_left != null) {
+//      final JBlock loop = new JBlock()._while(TRUE).body();
+//
+//      // Create a local variable to hold the current node
+//      // Create an instruction list that contains the default next-node
+//      // iteration
+//      parent = invoke(ctx.param(DOCUMENT_PNAME), GET_PARENT).arg(ctx.currentNode());
+//      JVar current = loop.decl(ctx.owner().INT, "app", parent);
+//      ctx.pushNode(current);
+//      // The body of this code can get very large - large than can be handled
+//      // by a single IFNE(body.getStart()) instruction - need workaround:
+//      loop._if(current.lt(lit(0)))._then()._return(); // applyTemplates() ends here!
+//
+//      
+//      
+//      final int getParent = cpg.addInterfaceMethodref(DOM_INTF, GET_PARENT, GET_PARENT_SIG);
+//
+//      il.append(DUP);
+//      il.append(storeLocal);
+//      _falseList.add(il.append(new IFLT(null)));
+//      il.append(loadLocal);
+//
+//      _left.translate(classGen, methodGen);
+//
+//      final SyntaxTreeNode p = getParent();
+//      if (p == null || p instanceof Instruction || p instanceof TopLevelElement) {
+//        // do nothing
+//      } else {
+//        il.append(loadLocal);
+//      }
+//
+//      final BranchHandle exit = il.append(new GOTO(null));
+//      _loop = il.append(methodGen.loadDOM());
+//      il.append(loadLocal);
+//      local.setEnd(_loop);
+//      il.append(new GOTO(parent));
+//      exit.setTarget(il.append(NOP));
+//      _left.backPatchFalseList(_loop);
+//
+//      _trueList.append(_left._trueList);
+//    } else {
+//      il.append(POP2);
+//    }
+//
+//    /*
+//     * If _right is an ancestor pattern, backpatch this pattern's false list to
+//     * the loop that searches for more ancestors.
+//     */
+//    if (_right instanceof AncestorPattern) {
+//      final AncestorPattern ancestor = (AncestorPattern) _right;
+//      _falseList.backPatch(ancestor.getLoopHandle()); // clears list
+//    }
+//
+//    _trueList.append(_right._trueList);
+//    _falseList.append(_right._falseList);
+//    return super.compile(ctx);
+//  }
+
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
+  public void translate(CompilerContext ctx) {
 //    FIXME
 //    InstructionHandle parent;
 //    final ConstantPoolGen cpg = classGen.getConstantPool();

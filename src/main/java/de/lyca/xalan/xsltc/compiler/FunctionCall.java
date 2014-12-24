@@ -40,11 +40,10 @@ import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.LocalVariableGen;
 import org.apache.bcel.generic.PUSH;
 
-import com.sun.codemodel.JBlock;
-import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JExpression;
-import com.sun.codemodel.JMethod;
+import com.sun.codemodel.JInvocation;
 
+import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.MethodType;
 import de.lyca.xalan.xsltc.compiler.util.ObjectType;
@@ -647,7 +646,7 @@ class FunctionCall extends Expression {
    * true/false-lists.
    */
   @Override
-  public void translateDesynthesized(JDefinedClass definedClass, JMethod method, JBlock body) {
+  public void translateDesynthesized(CompilerContext ctx) {
  // FIXME
 //    Type type = Type.Boolean;
 //    if (_chosenMethodType != null) {
@@ -663,17 +662,17 @@ class FunctionCall extends Expression {
   }
 
   @Override
-  public JExpression compile(JDefinedClass definedClass, JMethod method) {
+  public JExpression compile(CompilerContext ctx) {
     final int n = argumentCount();
     final boolean isSecureProcessing = getParser().getXSLTC().isSecureProcessing();
     int index;
 
     // Translate calls to methods in the BasisLibrary
     if (isStandard() || isExtension()) {
-      JExpression[] compiledExps = new JExpression[3];
-      for (int i = 0,size=_arguments.size();i<size;i++) {
-        compiledExps[i] =_arguments.get(i).compile(definedClass, method);
-//        exp.startIterator(definedClass, method);
+      List<JExpression> compiledExps = new ArrayList<>();
+      for (int i = 0, size = _arguments.size(); i < size; i++) {
+        Expression exp = _arguments.get(i);
+        compiledExps.add(exp.startIterator(ctx, exp.compile(ctx)));
       }
 
       // append "F" to the function's name
@@ -683,17 +682,24 @@ class FunctionCall extends Expression {
       // Special precautions for some method calls
       if (name.equals("sumF")) {
         args = DOM_INTF_SIG;
+        compiledExps.add(ctx.currentDom());
 //        il.append(method.loadDOM());
       } else if (name.equals("normalize_spaceF")) {
         if (_chosenMethodType.toSignature(args).equals("()Ljava/lang/String;")) {
           args = "I" + DOM_INTF_SIG;
+          compiledExps.add(ctx.currentNode());
+          compiledExps.add(ctx.currentDom());
 //          il.append(methodGen.loadContextNode());
 //          il.append(methodGen.loadDOM());
         }
       }
 
       // Invoke the method in the basis library
-      return definedClass.owner().ref(BasisLibrary.class).staticInvoke(name).arg(compiledExps[0]).arg(compiledExps[1]).arg(compiledExps[2]);
+      JInvocation result = ctx.ref(BasisLibrary.class).staticInvoke(name);
+      for (JExpression exp : compiledExps) {
+        result = result.arg(exp);
+      }
+      return result;
 //      index = cpg.addMethodref(BASIS_LIBRARY_CLASS, name, _chosenMethodType.toSignature(args));
 //      il.append(new INVOKESTATIC(index));
     }
@@ -724,10 +730,10 @@ class FunctionCall extends Expression {
       for (int i = 0; i < n; i++) {
         final Expression exp = argument(i);
         final Type expType = exp.getType();
-        exp.translate(definedClass, method, method.body());
+//        exp.translate(ctx);
         // Convert the argument to its Java type
-        exp.startIterator(definedClass, method);
-        expType.translateTo(definedClass, method, paramTypes[i]);
+//        exp.startIterator(ctx);
+        expType.translateTo(ctx.clazz(), ctx.currentMethod(), paramTypes[i]);
 //        paramTemp[i] = methodGen.addLocalVariable("function_call_tmp" + i, expType.toJCType(), null, null);
 //        paramTemp[i].setStart(il.append(expType.STORE(paramTemp[i].getIndex())));
       }
@@ -752,7 +758,7 @@ class FunctionCall extends Expression {
 //      il.append(new INVOKESPECIAL(index));
 
       // Convert the return type back to our internal type
-      Type.Object.translateFrom(definedClass, method, _chosenConstructor.getDeclaringClass());
+      Type.Object.translateFrom(ctx.clazz(), ctx.currentMethod(), _chosenConstructor.getDeclaringClass());
 
     }
     // Invoke function calls that are handled in separate classes
@@ -766,15 +772,15 @@ class FunctionCall extends Expression {
 
       // Push "this" if it is an instance method
       if (_thisArgument != null) {
-        _thisArgument.translate(definedClass, method, method.body());
+//        _thisArgument.translate(ctx);
       }
 
       for (int i = 0; i < n; i++) {
         final Expression exp = argument(i);
-        exp.translate(definedClass, method, method.body());
+//        exp.translate(ctx);
         // Convert the argument to its Java type
-        exp.startIterator(definedClass, method);
-        exp.getType().translateTo(definedClass, method, paramTypes[i]);
+//        exp.startIterator(ctx);
+        exp.getType().translateTo(ctx.clazz(), ctx.currentMethod(), paramTypes[i]);
       }
 
       final StringBuilder buffer = new StringBuilder();
@@ -795,7 +801,7 @@ class FunctionCall extends Expression {
       }
 
       // Convert the return type back to our internal type
-      _type.translateFrom(definedClass, method, _chosenMethod.getReturnType());
+      _type.translateFrom(ctx.clazz(), ctx.currentMethod(), _chosenMethod.getReturnType());
     }
     return null;
   }
@@ -805,7 +811,7 @@ class FunctionCall extends Expression {
    * return value on the JVM's stack.
    */
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
+  public void translate(CompilerContext ctx) {
  // FIXME
 //    final int n = argumentCount();
 //    final ConstantPoolGen cpg = classGen.getConstantPool();

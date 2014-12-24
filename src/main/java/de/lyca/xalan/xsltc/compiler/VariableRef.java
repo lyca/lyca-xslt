@@ -23,12 +23,10 @@ package de.lyca.xalan.xsltc.compiler;
 
 import static com.sun.codemodel.JExpr.ref;
 
-import com.sun.codemodel.JBlock;
-import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JInvocation;
-import com.sun.codemodel.JMethod;
 
+import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.NodeSetType;
 
 /**
@@ -44,7 +42,7 @@ final class VariableRef extends VariableRefBase {
   }
 
   @Override
-  public JExpression compile(JDefinedClass definedClass, JMethod method) {
+  public JExpression compile(CompilerContext ctx) {
     // Fall-through for variables that are implemented as methods
     if (_type.implementedAsMethod())
       return null;
@@ -73,7 +71,7 @@ final class VariableRef extends VariableRefBase {
 //        il.append(_variable.loadInstruction());
       }
     } else {
-      final String className = definedClass.fullName();
+      final String className = ctx.clazz().fullName();
       exp = ref(name);
 //      il.append(classGen.loadTranslet());
 //      if (classGen.isExternal()) {
@@ -84,14 +82,13 @@ final class VariableRef extends VariableRefBase {
 
     if (_variable.getType() instanceof NodeSetType) {
       // The method cloneIterator() also does resetting
-//      final int clone = cpg.addInterfaceMethodref(NODE_ITERATOR, "cloneIterator", "()" + NODE_ITERATOR_SIG);
-//      il.append(new INVOKEINTERFACE(clone, 1));
+      exp = exp.invoke("cloneIterator");
     }
-    return exp;//.invoke("getStringValue");
+    return exp;
   }
   
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
+  public void translate(CompilerContext ctx) {
 //    FIXME
 
     // Fall-through for variables that are implemented as methods
@@ -121,7 +118,7 @@ final class VariableRef extends VariableRefBase {
 //        il.append(_variable.loadInstruction());
       }
     } else {
-      final String className = definedClass.fullName();
+      final String className = ctx.clazz().fullName();
 //      il.append(classGen.loadTranslet());
 //      if (classGen.isExternal()) {
 //        il.append(new CHECKCAST(cpg.addClass(className)));

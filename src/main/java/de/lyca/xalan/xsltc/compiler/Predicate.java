@@ -21,39 +21,33 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
+import static com.sun.codemodel.JExpr._new;
+import static com.sun.codemodel.JMod.FINAL;
+import static com.sun.codemodel.JMod.PUBLIC;
+import static com.sun.codemodel.JMod.STATIC;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.bcel.classfile.Field;
-import org.apache.bcel.generic.ASTORE;
-import org.apache.bcel.generic.CHECKCAST;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.GETFIELD;
-import org.apache.bcel.generic.INVOKESPECIAL;
-import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.LocalVariableGen;
-import org.apache.bcel.generic.NEW;
-import org.apache.bcel.generic.PUSH;
-import org.apache.bcel.generic.PUTFIELD;
-
-import com.sun.codemodel.JBlock;
+import com.sun.codemodel.JClassAlreadyExistsException;
 import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JMethod;
+import com.sun.codemodel.JMod;
+import com.sun.codemodel.JVar;
 
 import de.lyca.xalan.xsltc.compiler.util.BooleanType;
-import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
-import de.lyca.xalan.xsltc.compiler.util.FilterGenerator;
+import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.IntType;
-import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 import de.lyca.xalan.xsltc.compiler.util.NumberType;
 import de.lyca.xalan.xsltc.compiler.util.ReferenceType;
 import de.lyca.xalan.xsltc.compiler.util.ResultTreeType;
-import de.lyca.xalan.xsltc.compiler.util.TestGenerator;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
-import de.lyca.xalan.xsltc.compiler.util.Util;
+import de.lyca.xalan.xsltc.dom.CurrentNodeListFilter;
+import de.lyca.xalan.xsltc.runtime.AbstractTranslet;
 import de.lyca.xalan.xsltc.runtime.Operators;
+import de.lyca.xml.dtm.DTMAxisIterator;
 
 /**
  * @author Jacek Ambroziak
@@ -355,34 +349,44 @@ final class Predicate extends Expression implements Closure {
    * . Allocate registers for local variables and local parameters passed in the
    * closure to test(). Notice that local variables need to be "unboxed".
    */
-  private void compileFilter(JDefinedClass definedClass, JMethod method) {
+  private CompilerContext createFilter(CompilerContext ctx) {
  // FIXME
-//    TestGenerator testGen;
-//    LocalVariableGen local;
-//    FilterGenerator filterGen;
-//
-//    _className = getXSLTC().getHelperClassName();
-//    filterGen = new FilterGenerator(_className, "java.lang.Object", toString(), ACC_PUBLIC | ACC_SUPER,
-//            new String[] { CURRENT_NODE_LIST_FILTER }, classGen.getStylesheet());
-//
-//    final ConstantPoolGen cpg = filterGen.getConstantPool();
-//
-//    // Add a new instance variable for each var in closure
-//    if (_closureVars != null) {
-//      for (final VariableRefBase varRefBase : _closureVars) {
-//        final VariableBase var = varRefBase.getVariable();
-//        filterGen.addField(new Field(ACC_PUBLIC, cpg.addUtf8(var.getEscapedName()), cpg.addUtf8(var.getType()
-//                .toSignature()), null, cpg.getConstantPool()));
-//      }
-//    }
-//
-//    final InstructionList il = new InstructionList();
-//    testGen = new TestGenerator(ACC_PUBLIC | ACC_FINAL, org.apache.bcel.generic.Type.BOOLEAN,
-//            new org.apache.bcel.generic.Type[] { org.apache.bcel.generic.Type.INT, org.apache.bcel.generic.Type.INT,
-//                    org.apache.bcel.generic.Type.INT, org.apache.bcel.generic.Type.INT,
-//                    Util.getJCRefType(TRANSLET_SIG), Util.getJCRefType(NODE_ITERATOR_SIG) }, new String[] { "node",
-//                    "position", "last", "current", "translet", "iterator" }, "test", _className, il, cpg);
-//
+    final XSLTC xsltc = ctx.xsltc();
+    _className = xsltc.getHelperClassName();
+
+    // This generates a new class for handling this specific sort
+    CompilerContext filterCtx;
+    JDefinedClass nodeListFilter;
+    try {
+      nodeListFilter = ctx.clazz()._class(PUBLIC | STATIC | FINAL, _className)._implements(CurrentNodeListFilter.class);
+    } catch (JClassAlreadyExistsException e) {
+      throw new RuntimeException(e);
+    }
+    filterCtx = new CompilerContext(ctx.owner(), nodeListFilter, ctx.stylesheet(), xsltc);
+
+    // Add a new instance variable for each var in closure
+    if (_closureVars != null) {
+      for (final VariableRefBase varRefBase : _closureVars) {
+        final VariableBase var = varRefBase.getVariable();
+        filterCtx.addPublicField(var.getType().toJCType(), var.getEscapedName());
+      }
+    }
+
+    filterCtx.clazz().constructor(PUBLIC).body().invoke("super");
+
+    // public boolean test(int node, int position, int last, int current, AbstractTranslet translet, DTMAxisIterator iter);
+    JMethod test = filterCtx.method(JMod.PUBLIC | JMod.FINAL, boolean.class, "test");
+    JVar nodeParam = filterCtx.param(int.class, "node");
+    JVar positionParam = filterCtx.param(int.class, "position");
+    JVar lastParam = filterCtx.param(int.class, "last");
+    JVar currentParam = filterCtx.param(int.class, "current");
+    JVar transletParam = filterCtx.param(AbstractTranslet.class, "translet");
+    JVar iteratorParam = filterCtx.param(DTMAxisIterator.class, "iterator");
+    filterCtx.pushBlock(test.body());
+    filterCtx.pushNode(nodeParam);
+
+    test.body()._return(_exp.compile(filterCtx));
+    
 //    // Store the dom in a local variable
 //    local = testGen.addLocalVariable("document", Util.getJCRefType(DOM_INTF_SIG), null, null);
 //    final String className = classGen.getClassName();
@@ -394,13 +398,12 @@ final class Predicate extends Expression implements Closure {
 //    // Store the dom index in the test generator
 //    testGen.setDomIndex(local.getIndex());
 //
-//    _exp.translate(filterGen, testGen);
+//    test.
+//    _exp.translate(filterCtx);
 //    il.append(IRETURN);
-//
-//    filterGen.addEmptyConstructor(ACC_PUBLIC);
-//    filterGen.addMethod(testGen);
-//
+
 //    getXSLTC().dumpClass(filterGen.getJavaClass());
+    return filterCtx;
   }
 
   /**
@@ -507,13 +510,55 @@ final class Predicate extends Expression implements Closure {
     return null;
   }
 
+  public JExpression compileFilter(CompilerContext ctx) {
+    // Create auxiliary class for filter
+    CompilerContext filterCtx = createFilter(ctx);
+
+    // Create new instance of filter
+    return _new(filterCtx.clazz());
+
+    // Initialize closure variables
+    // FIXME
+//    final int length = _closureVars == null ? 0 : _closureVars.size();
+//
+//    for (int i = 0; i < length; i++) {
+//      final VariableRefBase varRef = _closureVars.get(i);
+//      final VariableBase var = varRef.getVariable();
+//      final Type varType = var.getType();
+//
+//      il.append(DUP);
+//
+//      // Find nearest closure implemented as an inner class
+//      Closure variableClosure = _parentClosure;
+//      while (variableClosure != null) {
+//        if (variableClosure.inInnerClass()) {
+//          break;
+//        }
+//        variableClosure = variableClosure.getParentClosure();
+//      }
+//
+//      // Use getfield if in an inner class
+//      if (variableClosure != null) {
+//        il.append(ALOAD_0);
+//        il.append(new GETFIELD(cpg.addFieldref(variableClosure.getInnerClassName(), var.getEscapedName(),
+//                varType.toSignature())));
+//      } else {
+//        // Use a load of instruction if in translet class
+//        il.append(var.loadInstruction());
+//      }
+//
+//      // Store variable in new closure
+//      il.append(new PUTFIELD(cpg.addFieldref(_className, var.getEscapedName(), varType.toSignature())));
+//    }
+  }
+
   /**
    * Translate a predicate expression. This translation pushes two references on
    * the stack: a reference to a newly created filter object and a reference to
    * the predicate's closure.
    */
   public void translateFilter(JDefinedClass definedClass, JMethod method) {
- // FIXME
+    // FIXME
 //    final ConstantPoolGen cpg = classGen.getConstantPool();
 //    final InstructionList il = methodGen.getInstructionList();
 //
@@ -560,17 +605,18 @@ final class Predicate extends Expression implements Closure {
   }
 
   @Override
-  public JExpression compile(JDefinedClass definedClass, JMethod method) {
+  public JExpression compile(CompilerContext ctx) {
     if (_nthPositionFilter || _nthDescendant) {
-      return _exp.compile(definedClass, method);
+      return _exp.compile(ctx);
     } else if (isNodeValueTest() && getParent() instanceof Step) {
-      return _value.compile(definedClass, method);
+      return _value.compile(ctx);
+      // FIXME
 //      il.append(new CHECKCAST(cpg.addClass(STRING_CLASS)));
 //      il.append(new PUSH(cpg, ((EqualityExpr) _exp).getOp()));
     } else {
-      translateFilter(definedClass, method);
+      return compileFilter(ctx);
     }
-    return super.compile(definedClass, method);
+//    return super.compile(ctx);
   }
 
   /**
@@ -580,7 +626,7 @@ final class Predicate extends Expression implements Closure {
    * <code>Step</code> for further details.
    */
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
+  public void translate(CompilerContext ctx) {
  // FIXME
 //
 //    final ConstantPoolGen cpg = classGen.getConstantPool();

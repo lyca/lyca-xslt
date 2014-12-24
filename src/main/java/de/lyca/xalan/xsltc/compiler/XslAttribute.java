@@ -28,13 +28,10 @@ import static com.sun.codemodel.JExpr.ref;
 
 import java.util.List;
 
-import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JClass;
-import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JExpression;
-import com.sun.codemodel.JMethod;
-import com.sun.codemodel.JVar;
 
+import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
@@ -208,7 +205,7 @@ final class XslAttribute extends Instruction {
      *
      */
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
+  public void translate(CompilerContext ctx) {
     if (_ignore)
       return;
     _ignore = true;
@@ -227,7 +224,7 @@ final class XslAttribute extends Instruction {
     if (!_isLiteral) {
       // if the qname is an AVT, then the qname has to be checked at runtime if
       // it is a valid qname
-      final JVar nameValue = body.decl(definedClass.owner()._ref(String.class), "nameValue", _name.compile(definedClass, method));
+      secondArg = ctx.currentBlock().decl(ctx.ref(String.class), "nameValue", _name.compile(ctx));
       
       // store the name into a variable first so _name.translate only needs to
       // be called once
@@ -235,7 +232,7 @@ final class XslAttribute extends Instruction {
 //      il.append(new ALOAD(nameValue.getIndex()));
 
       // call checkQName if the name is an AVT
-      body.staticInvoke(definedClass.owner().ref(BasisLibrary.class), "checkAttribQName");
+      ctx.currentBlock().staticInvoke(ctx.ref(BasisLibrary.class), "checkAttribQName").arg(secondArg);
 //      final int check = cpg.addMethodref(BASIS_LIBRARY_CLASS, "checkAttribQName", "(" + STRING_SIG + ")V");
 //      il.append(new INVOKESTATIC(check));
 
@@ -251,7 +248,7 @@ final class XslAttribute extends Instruction {
 //      il.append(DUP); // first arg to "attributes" call
 
       // Push attribute name
-      secondArg = _name.compile(definedClass, method);// 2nd arg
+      secondArg = _name.compile(ctx);// 2nd arg
 
     }
 
@@ -265,13 +262,13 @@ final class XslAttribute extends Instruction {
 //      il.append(new GETFIELD(cpg.addFieldref(TRANSLET_CLASS, "stringValueHandler", STRING_VALUE_HANDLER_SIG)));
 //      il.append(DUP);
 //      il.append(methodGen.storeHandler());
-      body.invoke("pushHandler").arg(ref("stringValueHandler"));
+      ctx.pushHandler(ref("stringValueHandler"));
       // translate contents with substituted handler
-      translateContents(definedClass, method, body);
+      translateContents(ctx);
       // get String out of the handler
 //      il.append(new INVOKEVIRTUAL(cpg.addMethodref(STRING_VALUE_HANDLER, "getValue", "()" + STRING_SIG)));
-      JClass stringValueHandler = definedClass.owner().ref(StringValueHandler.class);
-      text = invoke(((JExpression) cast(stringValueHandler, invoke("popHandler"))), "getValue");
+      JClass stringValueHandler = ctx.ref(StringValueHandler.class);
+      text = invoke(((JExpression) cast(stringValueHandler, ctx.popHandler())), "getValue");
     }
 
     final SyntaxTreeNode parent = getParent();
@@ -288,12 +285,12 @@ final class XslAttribute extends Instruction {
           flags = flags | ExtendedContentHandler.HTML_ATTRURL;
         }
       }
-      body.invoke(method.listParams()[2] ,"addUniqueAttribute").arg(secondArg).arg(text).arg(lit(flags));
+      ctx.currentBlock().invoke(ctx.param(TRANSLET_OUTPUT_PNAME) ,"addUniqueAttribute").arg(secondArg).arg(text).arg(lit(flags));
 //      il.append(new PUSH(cpg, flags));
 //      il.append(methodGen.uniqueAttribute());
     } else {
       // call "attribute"
-      body.invoke(method.listParams()[2] ,"addAttribute").arg(secondArg).arg(text);
+      ctx.currentBlock().invoke(ctx.param(TRANSLET_OUTPUT_PNAME) ,"addAttribute").arg(secondArg).arg(text);
 //      il.append(methodGen.attribute());
     }
 

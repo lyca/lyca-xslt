@@ -21,25 +21,19 @@
 
 package de.lyca.xalan.xsltc.compiler.util;
 
+import static com.sun.codemodel.JExpr.lit;
+
 import org.apache.bcel.generic.ALOAD;
 import org.apache.bcel.generic.ASTORE;
-import org.apache.bcel.generic.BranchHandle;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.GOTO;
-import org.apache.bcel.generic.IFEQ;
-import org.apache.bcel.generic.IFNONNULL;
-import org.apache.bcel.generic.INVOKESTATIC;
-import org.apache.bcel.generic.INVOKEVIRTUAL;
 import org.apache.bcel.generic.Instruction;
-import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.PUSH;
 
 import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JType;
 
-import de.lyca.xalan.xsltc.compiler.Constants;
 import de.lyca.xalan.xsltc.compiler.FlowList;
+import de.lyca.xalan.xsltc.runtime.BasisLibrary;
 
 /**
  * @author Jacek Ambroziak
@@ -96,6 +90,21 @@ public class StringType extends Type {
 //    }
   }
 
+  @Override
+  public JExpression compileTo(CompilerContext ctx, JExpression expr, Type type) {
+    if (type == Type.Boolean) {
+      return compileTo(ctx, expr, (BooleanType) type);
+    } else if (type == Type.Real) {
+      return compileTo(ctx, expr, (RealType) type);
+    } else if (type == Type.Reference) {
+      return compileTo(ctx, expr, (ReferenceType) type);
+    } else {
+      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), type.toString());
+      ctx.xsltc().getParser().reportError(FATAL, err);
+      return null;
+    }
+  }
+  
   /**
    * Translates a string into a synthesized boolean.
    * 
@@ -111,6 +120,10 @@ public class StringType extends Type {
 //    truec.setTarget(il.append(NOP));
   }
 
+  public JExpression compileTo(CompilerContext ctx, JExpression expr, BooleanType type) {
+    return expr.invoke("length").gt(lit(0));
+  }
+
   /**
    * Translates a string into a real by calling stringToReal() from the basis
    * library.
@@ -122,6 +135,10 @@ public class StringType extends Type {
 //    final ConstantPoolGen cpg = classGen.getConstantPool();
 //    final InstructionList il = methodGen.getInstructionList();
 //    il.append(new INVOKESTATIC(cpg.addMethodref(BASIS_LIBRARY_CLASS, STRING_TO_REAL, STRING_TO_REAL_SIG)));
+  }
+
+  public JExpression compileTo(CompilerContext ctx, JExpression expr, RealType type) {
+    return ctx.ref(BasisLibrary.class).staticInvoke(STRING_TO_REAL).arg(expr);
   }
 
   /**
@@ -150,6 +167,10 @@ public class StringType extends Type {
   public void translateTo(JDefinedClass definedClass, JMethod method, ReferenceType type) {
 //    FIXME
 //    methodGen.getInstructionList().append(NOP);
+  }
+
+  public JExpression compileTo(CompilerContext ctx, JExpression expr, ReferenceType type) {
+    return expr;
   }
 
   /**

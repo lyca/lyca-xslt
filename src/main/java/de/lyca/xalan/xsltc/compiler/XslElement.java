@@ -21,26 +21,20 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import org.apache.bcel.generic.ALOAD;
-import org.apache.bcel.generic.ASTORE;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.GETSTATIC;
-import org.apache.bcel.generic.INVOKESTATIC;
-import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.LocalVariableGen;
-import org.apache.bcel.generic.PUSH;
+import static com.sun.codemodel.JExpr.FALSE;
+import static com.sun.codemodel.JExpr.direct;
+import static com.sun.codemodel.JExpr.lit;
 
-import com.sun.codemodel.JBlock;
-import com.sun.codemodel.JDefinedClass;
-import com.sun.codemodel.JMethod;
+import com.sun.codemodel.JExpr;
+import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JVar;
 
-import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
+import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
-import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
 import de.lyca.xalan.xsltc.compiler.util.Util;
+import de.lyca.xalan.xsltc.runtime.BasisLibrary;
 import de.lyca.xml.utils.XML11Char;
 
 /**
@@ -181,13 +175,13 @@ final class XslElement extends Instruction {
    * time. In this case, there is no need to inspect the element name at runtime
    * to determine if a prefix exists, needs to be generated, etc.
    */
-  public void translateLiteral(JDefinedClass definedClass, JMethod method, JBlock body) {
-    JVar handler = method.listParams()[2];
+  public void translateLiteral(CompilerContext ctx) {
+    JVar handler = ctx.param(TRANSLET_OUTPUT_PNAME);
     if (!_ignore) {
       if (_name.elementCount() == 1) {
-        body.invoke(handler, "startElement").arg(_name.compile(definedClass, method));
+        ctx.currentBlock().invoke(handler, "startElement").arg(_name.compile(ctx));
       } else {
-        body.invoke(handler, "startElement").arg(_name.compile(definedClass, method));
+        ctx.currentBlock().invoke(handler, "startElement").arg(_name.compile(ctx));
       }
       if (_namespace != null) {
         // il.append(methodGen.loadHandler());
@@ -197,13 +191,13 @@ final class XslElement extends Instruction {
       }
     }
 
-    translateContents(definedClass, method, body);
+    translateContents(ctx);
 
     if (!_ignore) {
       if (_name.elementCount() == 1) {
-        body.invoke(handler, "endElement").arg(_name.compile(definedClass, method));
+        ctx.currentBlock().invoke(handler, "endElement").arg(_name.compile(ctx));
       } else {
-        body.invoke(handler, "endElement").arg(_name.compile(definedClass, method));
+        ctx.currentBlock().invoke(handler, "endElement").arg(_name.compile(ctx));
       }
     }
   }
@@ -217,87 +211,95 @@ final class XslElement extends Instruction {
    * evaluates the contents (viii) calls endElement().
    */
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
+  public void translate(CompilerContext ctx) {
     // FIXME
     // final ConstantPoolGen cpg = classGen.getConstantPool();
     // final InstructionList il = methodGen.getInstructionList();
     //
     // // Optimize translation if element name is a literal
     if (_isLiteralName) {
-      translateLiteral(definedClass, method, body);
+      translateLiteral(ctx);
       return;
     }
 
-    // if (!_ignore) {
-    //
-    // // if the qname is an AVT, then the qname has to be checked at runtime if
-    // // it is a valid qname
-    // final LocalVariableGen nameValue =
-    // methodGen.addLocalVariable2("nameValue", Util.getJCRefType(STRING_SIG),
-    // null);
-    //
-    // // store the name into a variable first so _name.translate only needs to
-    // // be called once
-    // _name.translate(classGen, methodGen);
-    // nameValue.setStart(il.append(new ASTORE(nameValue.getIndex())));
-    // il.append(new ALOAD(nameValue.getIndex()));
-    //
-    // // call checkQName if the name is an AVT
-    // final int check = cpg.addMethodref(BASIS_LIBRARY_CLASS, "checkQName", "("
-    // + STRING_SIG + ")V");
-    // il.append(new INVOKESTATIC(check));
-    //
-    // // Push handler for call to endElement()
-    // il.append(methodGen.loadHandler());
-    //
-    // // load name value again
-    // nameValue.setEnd(il.append(new ALOAD(nameValue.getIndex())));
-    //
-    // if (_namespace != null) {
-    // _namespace.translate(classGen, methodGen);
-    // } else {
-    // // If name is an AVT and namespace is not specified, need to
-    // // look up any prefix in the stylesheet by calling
-    // // BasisLibrary.lookupStylesheetQNameNamespace(
-    // // name, stylesheetNode, ancestorsArray,
-    // // prefixURIsIndexArray, prefixURIPairsArray,
-    // // !ignoreDefaultNamespace)
-    // final String transletClassName = getXSLTC().getClassName();
-    // il.append(DUP);
-    // il.append(new PUSH(cpg, getNodeIDForStylesheetNSLookup()));
-    // il.append(new GETSTATIC(cpg.addFieldref(transletClassName,
-    // STATIC_NS_ANCESTORS_ARRAY_FIELD,
-    // NS_ANCESTORS_INDEX_SIG)));
-    // il.append(new GETSTATIC(cpg.addFieldref(transletClassName,
-    // STATIC_PREFIX_URIS_IDX_ARRAY_FIELD,
-    // PREFIX_URIS_IDX_SIG)));
-    // il.append(new GETSTATIC(cpg.addFieldref(transletClassName,
-    // STATIC_PREFIX_URIS_ARRAY_FIELD,
-    // PREFIX_URIS_ARRAY_SIG)));
-    // // Default namespace is significant
-    // il.append(ICONST_0);
-    // il.append(new INVOKESTATIC(cpg.addMethodref(BASIS_LIBRARY_CLASS,
-    // LOOKUP_STYLESHEET_QNAME_NS_REF,
-    // LOOKUP_STYLESHEET_QNAME_NS_SIG)));
-    // }
-    //
-    // // Push additional arguments
-    // il.append(methodGen.loadHandler());
-    // il.append(methodGen.loadDOM());
-    // il.append(methodGen.loadCurrentNode());
-    //
-    // // Invoke BasisLibrary.startXslElemCheckQName()
-    // il.append(new INVOKESTATIC(cpg.addMethodref(BASIS_LIBRARY_CLASS,
-    // "startXslElement", "(" + STRING_SIG + STRING_SIG
-    // + TRANSLET_OUTPUT_SIG + DOM_INTF_SIG + "I)" + STRING_SIG)));
-    //
-    // }
-    //
-    // translateContents(classGen, methodGen);
-    //
-    // if (!_ignore) {
-    // il.append(methodGen.endElement());
-    // }
+    JVar nameValue = null;
+    if (!_ignore) {
+
+      // if the qname is an AVT, then the qname has to be checked at runtime if
+      // it is a valid qname
+//      final LocalVariableGen nameValue = methodGen.addLocalVariable2("nameValue", Util.getJCRefType(STRING_SIG), null);
+
+      // store the name into a variable first so _name.translate only needs to
+      // be called once
+      
+      nameValue = ctx.currentBlock().decl(ctx.ref(String.class), "nameValue", _name.compile(ctx));
+
+      //      nameValue.setStart(il.append(new ASTORE(nameValue.getIndex())));
+//      il.append(new ALOAD(nameValue.getIndex()));
+
+      // call checkQName if the name is an AVT
+//      final int check = cpg.addMethodref(BASIS_LIBRARY_CLASS, "checkQName", "(" + STRING_SIG + ")V");
+//      il.append(new INVOKESTATIC(check));
+
+      ctx.currentBlock().add(ctx.ref(BasisLibrary.class).staticInvoke("checkQName").arg(nameValue));
+
+      // Push handler for call to endElement()
+//      il.append(methodGen.loadHandler());
+
+      // load name value again
+//      nameValue.setEnd(il.append(new ALOAD(nameValue.getIndex())));
+
+      JExpression namespace;
+      if (_namespace != null) {
+        namespace = _namespace.compile(ctx);
+      } else {
+        // If name is an AVT and namespace is not specified, need to
+        // look up any prefix in the stylesheet by calling
+        // BasisLibrary.lookupStylesheetQNameNamespace(
+        // name, stylesheetNode, ancestorsArray,
+        // prefixURIsIndexArray, prefixURIPairsArray,
+        // !ignoreDefaultNamespace)
+        namespace = ctx.ref(BasisLibrary.class).staticInvoke("lookupStylesheetQNameNamespace").arg(nameValue)
+            .arg(lit(getNodeIDForStylesheetNSLookup())).arg(direct(STATIC_NS_ANCESTORS_ARRAY_FIELD))
+            .arg(direct(STATIC_PREFIX_URIS_IDX_ARRAY_FIELD)).arg(direct(STATIC_PREFIX_URIS_ARRAY_FIELD)).arg(FALSE);
+        //        final String transletClassName = getXSLTC().getClassName();
+//        il.append(DUP);
+//        il.append(new PUSH(cpg, getNodeIDForStylesheetNSLookup()));
+//        il.append(new GETSTATIC(cpg.addFieldref(transletClassName, STATIC_NS_ANCESTORS_ARRAY_FIELD,
+//            NS_ANCESTORS_INDEX_SIG)));
+//        il.append(new GETSTATIC(cpg.addFieldref(transletClassName, STATIC_PREFIX_URIS_IDX_ARRAY_FIELD,
+//            PREFIX_URIS_IDX_SIG)));
+//        il.append(new GETSTATIC(cpg.addFieldref(transletClassName, STATIC_PREFIX_URIS_ARRAY_FIELD,
+//            PREFIX_URIS_ARRAY_SIG)));
+//        // Default namespace is significant
+//        il.append(ICONST_0);
+//        il.append(new INVOKESTATIC(cpg.addMethodref(BASIS_LIBRARY_CLASS, LOOKUP_STYLESHEET_QNAME_NS_REF,
+//            LOOKUP_STYLESHEET_QNAME_NS_SIG)));
+      }
+
+      // Push additional arguments
+//      il.append(methodGen.loadHandler());
+//      il.append(methodGen.loadDOM());
+//      il.append(methodGen.loadCurrentNode());
+
+      ctx.currentBlock().decl(
+          ctx.ref(String.class),
+          "elementName",
+          ctx.ref(BasisLibrary.class).staticInvoke("startXslElement").arg(nameValue).arg(namespace)
+              .arg(ctx.currentHandler()).arg(ctx.currentDom()).arg(ctx.currentNode()));
+
+      // Invoke BasisLibrary.startXslElemCheckQName()
+//      il.append(new INVOKESTATIC(cpg.addMethodref(BASIS_LIBRARY_CLASS, "startXslElement", "(" + STRING_SIG + STRING_SIG
+//          + TRANSLET_OUTPUT_SIG + DOM_INTF_SIG + "I)" + STRING_SIG)));
+
+    }
+
+    translateContents(ctx);
+
+    if (!_ignore) {
+      ctx.currentBlock().invoke(ctx.currentHandler(), "endElement").arg(nameValue);
+//      il.append(methodGen.endElement());
+    }
   }
 
   /**
@@ -305,12 +307,12 @@ final class XslElement extends Instruction {
    * output if this xsl:element is to be ignored
    */
   @Override
-  public void translateContents(JDefinedClass definedClass, JMethod method, JBlock body) {
+  public void translateContents(CompilerContext ctx) {
     for (final SyntaxTreeNode item : getContents()) {
       if (_ignore && item instanceof XslAttribute) {
         continue;
       }
-      item.translate(definedClass, method, body);
+      item.translate(ctx);
     }
   }
 

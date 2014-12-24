@@ -21,19 +21,13 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.ILOAD;
-import org.apache.bcel.generic.INVOKEINTERFACE;
-import org.apache.bcel.generic.InstructionList;
+import java.util.Iterator;
 
-import com.sun.codemodel.JBlock;
-import com.sun.codemodel.JDefinedClass;
-import com.sun.codemodel.JMethod;
+import com.sun.codemodel.JClass;
+import com.sun.codemodel.JExpression;
 
-import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
-import de.lyca.xalan.xsltc.compiler.util.CompareGenerator;
-import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
-import de.lyca.xalan.xsltc.compiler.util.TestGenerator;
+import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
+import de.lyca.xalan.xsltc.dom.CurrentNodeListFilter;
 
 /**
  * @author Jacek Ambroziak
@@ -56,7 +50,21 @@ final class LastCall extends FunctionCall {
   }
 
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
+  public JExpression compile(CompilerContext ctx) {
+    for (Iterator<JClass> classes = ctx.clazz()._implements(); classes.hasNext();) {
+      if (classes.next().isAssignableFrom(ctx.ref(CurrentNodeListFilter.class))) {
+        return ctx.param("last");
+      }
+    }
+    JExpression currentNode = ctx.currentNode();
+    if (currentNode == null) {
+      currentNode = ctx.param(ITERATOR_PNAME).invoke("getLast");
+    }
+    return currentNode;
+  }
+
+  @Override
+  public void translate(CompilerContext ctx) {
  // FIXME
 //    final InstructionList il = methodGen.getInstructionList();
 //

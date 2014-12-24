@@ -21,8 +21,6 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import static com.sun.codemodel.JExpr.direct;
-
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -30,13 +28,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import com.sun.codemodel.JBlock;
-import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JExpression;
-import com.sun.codemodel.JMethod;
 
+import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
-import de.lyca.xalan.xsltc.compiler.util.NodeSetType;
 import de.lyca.xalan.xsltc.compiler.util.NodeType;
 import de.lyca.xalan.xsltc.compiler.util.ResultTreeType;
 import de.lyca.xalan.xsltc.compiler.util.Type;
@@ -183,29 +178,41 @@ final class CastExpr extends Expression {
     throw new TypeCheckError(new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, tleft.toString(), _type.toString()));
   }
 
-  @Override
-  public JExpression compile(JDefinedClass definedClass, JMethod method) {
-    final Type ltype = _left.getType();
-    JExpression left =  _left.compile(definedClass, method);// TODO .invoke("getStringValue");
-    if (!_type.identicalTo(ltype) && ltype instanceof NodeSetType) {
-      Expression expr = _left;
-      if (expr instanceof CastExpr) {
-        expr = ((CastExpr) expr).getExpr();
-      }
-      if (!(expr instanceof VariableRefBase)) {
-//        ltype.translateTo(definedClass, method, _type);
-        return left.invoke("setStartNode").arg(direct("node")).invoke("next");
-        //_left.startIterator(definedClass, method);
-//      il.append(method.loadContextNode());
-//      il.append(method.setStartNode());
+//  @Override
+//  public JExpression compile(CompilerContext ctx) {
+//    final Type ltype = _left.getType();
+//    JExpression left = _left.compile(ctx);// TODO .invoke("getStringValue");
+//    if (!_type.identicalTo(ltype) && ltype instanceof NodeSetType) {
+//      Expression expr = _left;
+//      if (expr instanceof CastExpr) {
+//        expr = ((CastExpr) expr).getExpr();
+//      }
+//      if (!(expr instanceof VariableRefBase)) {
+//        // ltype.translateTo(definedClass, method, _type);
+//        return left.invoke("setStartNode").arg(ctx.currentNode()).invoke("next");
+//        // _left.startIterator(definedClass, method);
+//        // il.append(method.loadContextNode());
+//        // il.append(method.setStartNode());
+//
+//      }
+//    }
+//    return left;
+//  }
 
-      }
+  @Override
+  public JExpression compile(CompilerContext ctx) {
+    final Type ltype = _left.getType();
+    JExpression left = _left.compile(ctx);
+    if (!_type.identicalTo(ltype)) {
+      left = _left.startIterator(ctx, left);
+      left = ltype.compileTo(ctx, left, _type);
+      // ltype.translateTo(classGen, methodGen, _type);
     }
     return left;
   }
 
   @Override
-  public void translateDesynthesized(JDefinedClass definedClass, JMethod method, JBlock body) {
+  public void translateDesynthesized(CompilerContext ctx) {
     // FIXME
 //    FlowList fl;
 //    final Type ltype = _left.getType();
@@ -241,7 +248,7 @@ final class CastExpr extends Expression {
   }
 
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
+  public void translate(CompilerContext ctx) {
     // FIXME
 //    final Type ltype = _left.getType();
 //    _left.translate(classGen, methodGen);

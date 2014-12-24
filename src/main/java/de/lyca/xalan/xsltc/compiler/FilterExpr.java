@@ -21,29 +21,23 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
+import static com.sun.codemodel.JExpr.TRUE;
+import static com.sun.codemodel.JExpr._new;
+import static com.sun.codemodel.JExpr._this;
+
 import java.util.List;
 
-import org.apache.bcel.generic.ALOAD;
-import org.apache.bcel.generic.ASTORE;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.ILOAD;
-import org.apache.bcel.generic.INVOKESPECIAL;
-import org.apache.bcel.generic.ISTORE;
-import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.LocalVariableGen;
-import org.apache.bcel.generic.NEW;
-
-import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JMethod;
 
-import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
-import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
+import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.NodeSetType;
 import de.lyca.xalan.xsltc.compiler.util.ReferenceType;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
-import de.lyca.xalan.xsltc.compiler.util.Util;
+import de.lyca.xalan.xsltc.dom.CurrentNodeListIterator;
+import de.lyca.xalan.xsltc.dom.NthIterator;
 
 /**
  * @author Jacek Ambroziak
@@ -121,16 +115,50 @@ class FilterExpr extends Expression {
     return _type = Type.NodeSet;
   }
 
+  @Override
+  public JExpression compile(CompilerContext ctx) {
+    if (_predicates.size() > 0) {
+      return compilePredicates(ctx);
+    } else {
+      return _primary.compile(ctx);
+    }
+  }
+
   /**
    * Translate a filter expression by pushing the appropriate iterator onto the
    * stack.
    */
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
+  public void translate(CompilerContext ctx) {
     if (_predicates.size() > 0) {
-      translatePredicates(definedClass, method);
+      translatePredicates(ctx.clazz(), ctx.currentMethod());
     } else {
-      _primary.translate(definedClass, method, body);
+      _primary.translate(ctx);
+    }
+  }
+
+  public JExpression compilePredicates(CompilerContext ctx) {
+    // If not predicates left, translate primary expression
+    if (_predicates.size() == 0) {
+      return compile(ctx);
+    } else {
+      // Remove the next predicate to be translated
+      final Predicate predicate = (Predicate) _predicates.get(_predicates.size() - 1);
+      _predicates.remove(predicate);
+
+      // Translate the rest of the predicates from right to left
+      JExpression predicateExpressions = compilePredicates(ctx);
+      JExpression predicateExpression = predicate.compile(ctx);
+
+      if (predicate.isNthPositionFilter()) {
+        // public NthIterator(DTMAxisIterator, int)
+        return _new(ctx.ref(NthIterator.class)).arg(predicateExpressions).arg(predicateExpression);
+      } else {
+        // public CurrentNodeListIterator(DTMAxisIterator, boolean,
+        // CurrentNodeListFilter, int, AbstractTranslet)
+        return _new(ctx.ref(CurrentNodeListIterator.class)).arg(predicateExpressions).arg(TRUE)
+            .arg(predicateExpression).arg(ctx.currentNode()).arg(_this());
+      }
     }
   }
 

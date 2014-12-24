@@ -21,19 +21,17 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
+import static com.sun.codemodel.JExpr.FALSE;
+import static com.sun.codemodel.JExpr.TRUE;
+import static com.sun.codemodel.JExpr.invoke;
+import static com.sun.codemodel.JExpr.lit;
+
 import java.util.List;
 
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.INVOKEVIRTUAL;
-import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.PUSH;
+import com.sun.codemodel.JExpression;
+import com.sun.codemodel.JInvocation;
 
-import com.sun.codemodel.JBlock;
-import com.sun.codemodel.JDefinedClass;
-import com.sun.codemodel.JMethod;
-
-import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
-import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
+import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.StringType;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
@@ -169,20 +167,44 @@ final class KeyCall extends FunctionCall {
     return returnType;
   }
 
+  @Override
+  public JExpression compile(CompilerContext ctx) {
+    // Initialise the index specified in the first parameter of key()
+    JExpression name;
+    if (_name == null) {
+      name = lit("##id");
+    } else if (_resolvedQName != null) {
+      name = lit(_resolvedQName.toString());
+    } else {
+      name = _name.compile(ctx);
+    }
+    JExpression value = _value.compile(ctx);
+
+    // Generate following byte code:
+    //
+    // KeyIndex ki = translet.getKeyIndex(_name)
+    // ki.setDom(translet.dom);
+    // ki.getKeyIndexIterator(_value, true) - for key()
+    // OR
+    // ki.getKeyIndexIterator(_value, false) - for id()
+    JInvocation result = invoke("getKeyIndex").arg(name).invoke("setDom").arg(ctx.currentDom())
+        .invoke("getKeyIndexIterator").arg(value);
+    return _name == null ? result.arg(FALSE) : result.arg(TRUE);
+  }
+
   /**
    * This method is called when the constructor is compiled in
    * Stylesheet.compileConstructor() and not as the syntax tree is traversed.
    * <p>
    * This method will generate byte code that produces an iterator for the nodes
    * in the node set for the key or id function call.
-   * 
    * @param classGen
    *          The Java class generator
    * @param methodGen
    *          The method generator
    */
   @Override
-  public void translate(JDefinedClass definedClass, JMethod method, JBlock body) {
+  public void translate(CompilerContext ctx) {
  // FIXME
 //    final ConstantPoolGen cpg = classGen.getConstantPool();
 //    final InstructionList il = methodGen.getInstructionList();
