@@ -21,7 +21,12 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
+import static com.sun.codemodel.JExpr.lit;
+
 import java.util.List;
+
+import com.sun.codemodel.JExpr;
+import com.sun.codemodel.JExpression;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
@@ -77,6 +82,13 @@ final class ContainsCall extends FunctionCall {
     }
 
     return _type = Type.Boolean;
+  }
+
+  @Override
+  public JExpression compile(CompilerContext ctx) {
+    JExpression base = _base.compile(ctx);
+    JExpression token = _token.compile(ctx);
+    return base.invoke("indexOf").arg(token).gte(lit(0));
   }
 
   /**

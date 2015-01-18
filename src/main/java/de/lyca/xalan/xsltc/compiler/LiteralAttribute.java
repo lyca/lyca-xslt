@@ -109,12 +109,13 @@ final class LiteralAttribute extends Instruction {
         }
         // addUniqueAttribute(String qName, String value, int flags) throws SAXException;
       }
-      ctx.currentBlock().invoke(ctx.param(TRANSLET_OUTPUT_PNAME), "addUniqueAttribute").arg(_name).arg(_value.compile(ctx)).arg(lit(flags));
+      ctx.currentBlock().invoke(ctx.currentHandler(), "addUniqueAttribute").arg(_name).arg(_value.compile(ctx)).arg(lit(flags));
 
 //      il.append(new PUSH(cpg, flags));
 //      il.append(methodGen.uniqueAttribute());
     } else {
       // call attribute
+      ctx.currentBlock().invoke(ctx.currentHandler() ,"addAttribute").arg(_name).arg(_value.compile(ctx));
 //      il.append(methodGen.attribute());
     }
   }

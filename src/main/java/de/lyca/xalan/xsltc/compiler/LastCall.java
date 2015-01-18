@@ -21,13 +21,12 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import java.util.Iterator;
-
-import com.sun.codemodel.JClass;
+import com.sun.codemodel.JExpr;
 import com.sun.codemodel.JExpression;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.dom.CurrentNodeListFilter;
+import de.lyca.xalan.xsltc.dom.NodeSortRecord;
 
 /**
  * @author Jacek Ambroziak
@@ -51,16 +50,17 @@ final class LastCall extends FunctionCall {
 
   @Override
   public JExpression compile(CompilerContext ctx) {
-    for (Iterator<JClass> classes = ctx.clazz()._implements(); classes.hasNext();) {
-      if (classes.next().isAssignableFrom(ctx.ref(CurrentNodeListFilter.class))) {
-        return ctx.param("last");
-      }
+    if (ctx.ref(NodeSortRecord.class).isAssignableFrom(ctx.clazz())) {
+      return ctx.param("last");
     }
-    JExpression currentNode = ctx.currentNode();
-    if (currentNode == null) {
-      currentNode = ctx.param(ITERATOR_PNAME).invoke("getLast");
+    if (ctx.ref(CurrentNodeListFilter.class).isAssignableFrom(ctx.clazz())) {
+      return ctx.param("last");
     }
-    return currentNode;
+    // FIXME
+    if ("iterator0".equals(ctx.currentTmpIterator())) {
+      return ctx.param(ITERATOR_PNAME).invoke("getLast");
+    }
+    return JExpr.direct(ctx.currentTmpIterator()).invoke("getLast");
   }
 
   @Override

@@ -21,6 +21,9 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
+import static com.sun.codemodel.JExpr._new;
+import static com.sun.codemodel.JExpr.cast;
+import static com.sun.codemodel.JExpr.direct;
 import static com.sun.codemodel.JExpr.lit;
 
 import java.util.ArrayList;
@@ -40,7 +43,10 @@ import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
+import de.lyca.xalan.xsltc.dom.DOMAdapter;
+import de.lyca.xalan.xsltc.dom.MultiDOM;
 import de.lyca.xalan.xsltc.runtime.AttributeList;
+import de.lyca.xml.serializer.SerializationHandler;
 
 /**
  * @author Jacek Ambroziak
@@ -673,7 +679,8 @@ public abstract class SyntaxTreeNode implements Constants {
 //    il.append(new INVOKEINTERFACE(index, 4));
 
     JBlock body = ctx.currentBlock();
-    JVar resultTreeFrag = body.decl(ctx.ref(DOM.class), "resultTreeFrag",
+    String nextResultTreeFrag = ctx.nextResultTreeFrag();
+    JVar resultTreeFrag = body.decl(ctx.ref(DOM.class), nextResultTreeFrag,
         dom.invoke("getResultTreeFrag").arg(lit(RTF_INITIAL_SIZE)).arg(lit(rtfType))
             .arg(lit(stylesheet.callsNodeset())));
 
@@ -685,16 +692,19 @@ public abstract class SyntaxTreeNode implements Constants {
 //    il.append(new INVOKEINTERFACE(index, 1));
 //    il.append(DUP);
 //    il.append(methodGen.storeHandler());
+    JVar resultTreeFragHandler = body.decl(ctx.ref(SerializationHandler.class), nextResultTreeFrag + "handler",
+        resultTreeFrag.invoke("getOutputDomBuilder"));
 
-
-    ctx.pushHandler(resultTreeFrag.invoke("getOutputDomBuilder"));// body.invoke("pushHandler").arg(resultTreeFrag.invoke("getOutputDomBuilder"));
+    ctx.pushHandler(resultTreeFragHandler);// body.invoke("pushHandler").arg(resultTreeFrag.invoke("getOutputDomBuilder"));
 //    JInvocation outputDomBuilder = invoke("peekHandler");
     
     // Call startDocument on the new handler
     body.invoke(ctx.currentHandler(), "startDocument");
 
     // Instantiate result tree fragment
+    ctx.pushBlock(body.block());
     translateContents(ctx);
+    ctx.popBlock();
 
     // Call endDocument on the new handler
     body.invoke(ctx.popHandler(), "endDocument");
@@ -702,7 +712,7 @@ public abstract class SyntaxTreeNode implements Constants {
     // Check if we need to wrap the DOMImpl object in a DOMAdapter object.
     // DOMAdapter is not needed if the RTF is a simple RTF and the nodeset()
     // function is not used.
-//    if (stylesheet.callsNodeset() && !DOM_CLASS.equals(DOM_IMPL_CLASS)) {
+    if (stylesheet.callsNodeset()){// && !DOM_CLASS.equals(DOM_IMPL_CLASS)) {
 //      // new de.lyca.xalan.xsltc.dom.DOMAdapter(DOMImpl,String[]);
 //      index = cpg.addMethodref(DOM_ADAPTER_CLASS, "<init>", "(" + DOM_INTF_SIG + "[" + STRING_SIG + "[" + STRING_SIG
 //              + "[I" + "[" + STRING_SIG + ")V");
@@ -724,8 +734,13 @@ public abstract class SyntaxTreeNode implements Constants {
 //        il.append(SWAP);
 //        il.append(new INVOKESPECIAL(index));
 //      } else {
-//        // Push name arrays on the stack
-//        il.append(ALOAD_0);
+        // Push name arrays on the stack
+      JExpression adapter = _new(ctx.ref(DOMAdapter.class)).arg(resultTreeFrag).arg(direct(NAMES_INDEX)).arg(direct(URIS_INDEX))
+          .arg(direct(TYPES_INDEX)).arg(direct(NAMESPACE_INDEX));
+      ctx.currentBlock().assign(resultTreeFrag, adapter);
+      ctx.currentBlock().invoke(cast(ctx.ref(MultiDOM.class), ctx.currentDom()), "addDOMAdapter")
+          .arg(cast(ctx.ref(DOMAdapter.class), resultTreeFrag));
+      //        il.append(ALOAD_0);
 //        il.append(new GETFIELD(cpg.addFieldref(TRANSLET_CLASS, NAMES_INDEX, NAMES_INDEX_SIG)));
 //        il.append(ALOAD_0);
 //        il.append(new GETFIELD(cpg.addFieldref(TRANSLET_CLASS, URIS_INDEX, URIS_INDEX_SIG)));
@@ -746,7 +761,7 @@ public abstract class SyntaxTreeNode implements Constants {
 //        il.append(new INVOKEVIRTUAL(index));
 //        il.append(POP); // ignore mask returned by addDOMAdapter
 //      }
-//    }
+    }
 
     // Restore old handler base from stack
 //    il.append(SWAP);

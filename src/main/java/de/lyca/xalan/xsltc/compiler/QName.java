@@ -38,8 +38,7 @@ final class QName {
     _prefix = prefix;
     _localname = localname;
 
-    _stringRep = namespace != null && !namespace.equals(Constants.EMPTYSTRING) ? namespace + ':' + localname
-            : localname;
+    _stringRep = namespace != null && !namespace.isEmpty() ? namespace + ':' + localname : localname;
 
     _hashCode = _stringRep.hashCode() + 19; // cached for speed
   }

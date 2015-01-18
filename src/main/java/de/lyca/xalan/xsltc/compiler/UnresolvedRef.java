@@ -21,6 +21,11 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
+import static com.sun.codemodel.JExpr._null;
+
+import com.sun.codemodel.JExpr;
+import com.sun.codemodel.JExpression;
+
 import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
@@ -85,6 +90,16 @@ final class UnresolvedRef extends VariableRefBase {
     throw new TypeCheckError(reportError());
   }
 
+  @Override
+  public JExpression compile(CompilerContext ctx) {
+    if (_ref != null) {
+      return _ref.compile(ctx);
+    } else {
+      reportError();
+      return _null();
+    }
+  }
+  
   @Override
   public void translate(CompilerContext ctx) {
     if (_ref != null) {

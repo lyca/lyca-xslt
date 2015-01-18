@@ -21,17 +21,16 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
+import static com.sun.codemodel.JExpr.lit;
+
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.List;
 
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.PUSH;
+import com.sun.codemodel.JExpression;
 
-import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
-import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
 import de.lyca.xalan.xsltc.compiler.util.Util;
@@ -171,6 +170,11 @@ final class FunctionAvailableCall extends FunctionCall {
     return _namespaceOfFunct == null || _namespaceOfFunct.equals(EMPTYSTRING) || _namespaceOfFunct.equals(TRANSLET_URI);
   }
 
+  @Override
+  public JExpression compile(CompilerContext ctx) {
+    return lit(getResult());
+  }
+  
   /**
    * Calls to 'function-available' are resolved at compile time since the
    * namespaces declared in the stylsheet are not available at run time.

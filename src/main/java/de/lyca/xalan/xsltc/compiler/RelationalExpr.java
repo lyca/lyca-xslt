@@ -209,7 +209,7 @@ final class RelationalExpr extends Expression {
     // FIXME
     if (hasNodeSetArgs() || hasReferenceArgs()) {
       // Call compare() from the BasisLibrary
-      JExpression leftExp = _left.compile(ctx).invoke("setStartNode").arg(ctx.currentNode());
+      JExpression leftExp = _left.startIterator(ctx, _left.compile(ctx));
       JExpression rightExp = _right.compile(ctx);
       JClass basisLib = ctx.ref(BasisLibrary.class);
       return basisLib.staticInvoke("compare").arg(leftExp).arg(rightExp).arg(lit(_op)).arg(ctx.currentDom());

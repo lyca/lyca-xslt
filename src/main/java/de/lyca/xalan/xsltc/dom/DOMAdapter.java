@@ -33,6 +33,7 @@ import de.lyca.xalan.xsltc.TransletException;
 import de.lyca.xml.dtm.Axis;
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xml.dtm.DTMAxisIterator;
+import de.lyca.xml.dtm.DTMManager;
 import de.lyca.xml.serializer.SerializationHandler;
 
 /**
@@ -222,6 +223,8 @@ public final class DOMAdapter implements DOM {
 
   @Override
   public int getExpandedTypeID(final int node) {
+//  TODO  if (node == DTM.NULL) return DTM.NULL;
+
     final short[] mapping = getMapping();
     final int type;
     if (_enhancedDOM != null) {

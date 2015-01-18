@@ -24,6 +24,8 @@ package de.lyca.xalan.xsltc.compiler;
 import com.sun.codemodel.JExpression;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
+import de.lyca.xalan.xsltc.dom.CurrentNodeListFilter;
+import de.lyca.xalan.xsltc.dom.NodeSortRecord;
 
 /**
  * @author Jacek Ambroziak
@@ -36,6 +38,12 @@ final class CurrentCall extends FunctionCall {
 
   @Override
   public JExpression compile(CompilerContext ctx) {
+    if (ctx.ref(NodeSortRecord.class).isAssignableFrom(ctx.clazz())) {
+      return ctx.param("current");
+    }
+    if (ctx.ref(CurrentNodeListFilter.class).isAssignableFrom(ctx.clazz())) {
+      return ctx.param("current");
+    }
     return ctx.currentNode();
   }
 

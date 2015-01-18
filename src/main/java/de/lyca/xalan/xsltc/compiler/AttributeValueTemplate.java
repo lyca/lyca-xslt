@@ -21,6 +21,8 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
+import static com.sun.codemodel.JExpr._new;
+
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
@@ -224,25 +226,36 @@ final class AttributeValueTemplate extends AttributeValue {
       final Expression exp = (Expression) elementAt(0);
       return exp.compile(ctx);
     } else {
-//      final ConstantPoolGen cpg = classGen.getConstantPool();
-//      final InstructionList il = methodGen.getInstructionList();
-//      final int initBuffer = cpg.addMethodref(STRING_BUILDER_CLASS, "<init>", "()V");
-//      final Instruction append = new INVOKEVIRTUAL(cpg.addMethodref(STRING_BUILDER_CLASS, "append", "(" + STRING_SIG
-//          + ")" + STRING_BUILDER_SIG));
-//
-//      final int toString = cpg.addMethodref(STRING_BUILDER_CLASS, "toString", "()" + STRING_SIG);
-//      il.append(new NEW(cpg.addClass(STRING_BUILDER_CLASS)));
-//      il.append(DUP);
-//      il.append(new INVOKESPECIAL(initBuffer));
-//      // StringBuilder is on the stack
-//      final ListIterator<SyntaxTreeNode> elements = elements();
-//      while (elements.hasNext()) {
-//        final Expression exp = (Expression) elements.next();
-//        exp.translate(classGen, methodGen);
-//        il.append(append);
-//      }
-//      il.append(new INVOKEVIRTUAL(toString));
-      return null;
+      JExpression stringBuilder = _new(ctx.ref(StringBuilder.class));
+      final ListIterator<SyntaxTreeNode> elements = elements();
+      while (elements.hasNext()) {
+        final Expression exp = (Expression) elements.next();
+        stringBuilder = stringBuilder.invoke("append").arg(exp.compile(ctx));
+      }
+      return stringBuilder.invoke("toString");
+
+      // final ConstantPoolGen cpg = classGen.getConstantPool();
+      // final InstructionList il = methodGen.getInstructionList();
+      // final int initBuffer = cpg.addMethodref(STRING_BUILDER_CLASS, "<init>",
+      // "()V");
+      // final Instruction append = new
+      // INVOKEVIRTUAL(cpg.addMethodref(STRING_BUILDER_CLASS, "append", "(" +
+      // STRING_SIG
+      // + ")" + STRING_BUILDER_SIG));
+      //
+      // final int toString = cpg.addMethodref(STRING_BUILDER_CLASS, "toString",
+      // "()" + STRING_SIG);
+      // il.append(new NEW(cpg.addClass(STRING_BUILDER_CLASS)));
+      // il.append(DUP);
+      // il.append(new INVOKESPECIAL(initBuffer));
+      // // StringBuilder is on the stack
+      // final ListIterator<SyntaxTreeNode> elements = elements();
+      // while (elements.hasNext()) {
+      // final Expression exp = (Expression) elements.next();
+      // exp.translate(classGen, methodGen);
+      // il.append(append);
+      // }
+      // il.append(new INVOKEVIRTUAL(toString));
     }
   }
 

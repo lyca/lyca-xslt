@@ -21,9 +21,9 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
+import com.sun.codemodel.JStatement;
+
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
-import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
 import de.lyca.xml.dtm.Axis;
@@ -48,6 +48,8 @@ public abstract class LocationPathPattern extends Pattern {
   public void translate(CompilerContext ctx) {
     // TODO: What does it mean to translate a Pattern ?
   }
+
+  public abstract void compilePattern(CompilerContext testCtx, JStatement fail);
 
   public void setTemplate(final Template template) {
     _template = template;

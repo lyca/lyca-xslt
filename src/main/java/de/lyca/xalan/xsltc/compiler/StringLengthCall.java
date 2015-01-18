@@ -23,13 +23,9 @@ package de.lyca.xalan.xsltc.compiler;
 
 import java.util.List;
 
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.INVOKEVIRTUAL;
-import org.apache.bcel.generic.InstructionList;
+import com.sun.codemodel.JExpression;
 
-import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
-import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 
 /**
@@ -39,6 +35,17 @@ import de.lyca.xalan.xsltc.compiler.util.Type;
 final class StringLengthCall extends FunctionCall {
   public StringLengthCall(QName fname, List<Expression> arguments) {
     super(fname, arguments);
+  }
+
+  @Override
+  public JExpression compile(CompilerContext ctx) {
+    JExpression expr;
+    if (argumentCount() > 0) {
+      expr = argument().compile(ctx);
+    } else {
+      expr = Type.Node.compileTo(ctx, ctx.currentNode(), Type.String);
+    }
+    return expr.invoke("length");
   }
 
   @Override

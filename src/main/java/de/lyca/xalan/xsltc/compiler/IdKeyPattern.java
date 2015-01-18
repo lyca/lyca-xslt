@@ -21,18 +21,21 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.GOTO;
-import org.apache.bcel.generic.IFNE;
-import org.apache.bcel.generic.INVOKEVIRTUAL;
-import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.PUSH;
+import static com.sun.codemodel.JExpr._this;
+import static com.sun.codemodel.JExpr.direct;
+import static com.sun.codemodel.JExpr.lit;
 
-import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
+import com.sun.codemodel.JBlock;
+import com.sun.codemodel.JExpr;
+import com.sun.codemodel.JExpression;
+import com.sun.codemodel.JInvocation;
+import com.sun.codemodel.JStatement;
+
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
-import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
+import de.lyca.xalan.xsltc.dom.NodeCounter;
+import de.lyca.xalan.xsltc.dom.NodeSortRecord;
 
 /**
  * @author Jacek Ambroziak
@@ -79,6 +82,52 @@ abstract class IdKeyPattern extends LocationPathPattern {
   @Override
   public String toString() {
     return "id/keyPattern(" + _index + ", " + _value + ')';
+  }
+
+  @Override
+  public void compilePattern(CompilerContext ctx, JStatement fail) {
+    // Call getKeyIndex in AbstractTranslet with the name of the key
+    // to get the index for this key (which is also a node iterator).
+    JInvocation getKeyIndex = JExpr.invoke("getKeyIndex").arg(_index);
+
+    // Now use the value in the second argument to determine what nodes
+    // the iterator should return.
+    JInvocation result;
+    if (this instanceof IdPattern) {
+      result = getKeyIndex.invoke("containsID").arg(ctx.currentNode()).arg(_value);
+    } else {
+      result = getKeyIndex.invoke("containsKey").arg(ctx.currentNode()).arg(_value);
+    }
+    JBlock _then = ctx.currentBlock()._if(result.ne(lit(0)))._then();
+    _then.add(getTemplate().compile(ctx));
+    _then._continue();
+//    _then._break();
+  }
+
+  @Override
+  public JExpression compile(CompilerContext ctx) {
+    // FIXME
+    // Call getKeyIndex in AbstractTranslet with the name of the key
+    // to get the index for this key (which is also a node iterator).
+    JExpression clazzCtx = _this();
+
+    if (ctx.ref(NodeCounter.class).isAssignableFrom(ctx.clazz())) {
+      clazzCtx = direct("_translet");
+    }
+    if (ctx.ref(NodeSortRecord.class).isAssignableFrom(ctx.clazz())) {
+      clazzCtx = direct("_translet");
+    }
+    JInvocation getKeyIndex = clazzCtx.invoke("getKeyIndex").arg(_index);
+
+    // Now use the value in the second argument to determine what nodes
+    // the iterator should return.
+    JExpression result;
+    if (this instanceof IdPattern) {
+      result = getKeyIndex.invoke("containsID").arg(ctx.currentNode()).arg(_value).ne(lit(0));
+    } else {
+      result = getKeyIndex.invoke("containsKey").arg(ctx.currentNode()).arg(_value).ne(lit(0));
+    }
+    return result;
   }
 
   /**

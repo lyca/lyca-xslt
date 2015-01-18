@@ -75,6 +75,13 @@ public class TransformerApiTest {
   }
 
   @Test
+  public void testSetGetNamespacedParam() throws Exception {
+    final Transformer identityTransformer = TransformerFactory.newInstance().newTransformer();
+    identityTransformer.setParameter("{http://www.acme.com}foo", "bar");
+    Assert.assertEquals("bar", identityTransformer.getParameter("{http://www.acme.com}foo"));
+  }
+  
+  @Test
   public void testResetParameter() throws Exception {
     final String name = PACKAGE + "TransformerAPIParam";
     final Templates templates = TransformerFactory.newInstance().newTemplates(getSource(name + ".xsl"));
@@ -89,6 +96,10 @@ public class TransformerApiTest {
     Assert.assertEquals(99, transformer.getParameter("param3s"));
     transformer.setParameter("param3s", "new value3s");
     Assert.assertEquals("new value3s", transformer.getParameter("param3s"));
+    transformer.setParameter("{http://www.acme.com}param4s", "value4s");
+    Assert.assertEquals("value4s", transformer.getParameter("{http://www.acme.com}param4s"));
+    transformer.setParameter("{http://www.acme.com}param4s", "new value4s");
+    Assert.assertEquals("new value4s", transformer.getParameter("{http://www.acme.com}param4s"));
   }
 
   @Test

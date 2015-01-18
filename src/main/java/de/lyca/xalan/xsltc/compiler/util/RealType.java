@@ -21,9 +21,11 @@
 
 package de.lyca.xalan.xsltc.compiler.util;
 
+import static com.sun.codemodel.JExpr.cast;
 import static com.sun.codemodel.JExpr.lit;
 import static com.sun.codemodel.JOp.ne;
 import static com.sun.codemodel.JOp.not;
+import static de.lyca.xalan.xsltc.compiler.util.ErrorMsg.DATA_CONVERSION_ERR;
 
 import org.apache.bcel.generic.DLOAD;
 import org.apache.bcel.generic.DSTORE;
@@ -224,6 +226,10 @@ public final class RealType extends NumberType {
 //    il.append(new INVOKESPECIAL(cpg.addMethodref(DOUBLE_CLASS, "<init>", "(D)V")));
   }
 
+  public JExpression compileTo(CompilerContext ctx, JExpression expr, ReferenceType type) {
+    return ctx.ref(Double.class).staticInvoke("valueOf").arg(expr);
+  }
+
   /**
    * Translates a real into the Java type denoted by <code>clazz</code>. Expects
    * a real on the stack and pushes a number of the appropriate type after
@@ -259,6 +265,33 @@ public final class RealType extends NumberType {
 //      classGen.getParser().reportError(Constants.FATAL, err);
 //    }
   }
+  
+  @Override
+  public JExpression compileTo(CompilerContext ctx, JExpression expr, Class<?> clazz) {
+    if (clazz == Character.TYPE) {
+      return cast(ctx.owner().CHAR, expr);
+    } else if (clazz == Byte.TYPE) {
+      return cast(ctx.owner().BYTE, expr);
+    } else if (clazz == Short.TYPE) {
+      return cast(ctx.owner().SHORT, expr);
+    } else if (clazz == Integer.TYPE) {
+      return cast(ctx.owner().INT, expr);
+    } else if (clazz == Long.TYPE) {
+      return cast(ctx.owner().LONG, expr);
+    } else if (clazz == Float.TYPE) {
+      return cast(ctx.owner().FLOAT, expr);
+    } else if (clazz == Double.TYPE) {
+      return expr;
+    }
+    // Is Double <: clazz? I.e. clazz in { Double, Number, Object }
+    else if (clazz.isAssignableFrom(java.lang.Double.class)) {
+      return cast(ctx.ref(Double.class), expr);
+    } else {
+      final ErrorMsg err = new ErrorMsg(DATA_CONVERSION_ERR, toString(), clazz.getName());
+      ctx.xsltc().getParser().reportError(FATAL, err);
+      return expr;
+    }
+  }
 
   /**
    * Translates an external (primitive) Java type into a real. Expects a java
@@ -281,6 +314,23 @@ public final class RealType extends NumberType {
 //      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), clazz.getName());
 //      classGen.getParser().reportError(Constants.FATAL, err);
 //    }
+  }
+
+  @Override
+  public JExpression compileFrom(CompilerContext ctx, JExpression expr, Class<?> clazz) {
+    if (clazz == Character.TYPE || clazz == Byte.TYPE || clazz == Short.TYPE || clazz == Integer.TYPE) {
+      return cast(ctx.owner().DOUBLE, expr);
+    } else if (clazz == Long.TYPE) {
+      return cast(ctx.owner().DOUBLE, expr);
+    } else if (clazz == Float.TYPE) {
+      return cast(ctx.owner().DOUBLE, expr);
+    } else if (clazz == Double.TYPE) {
+      return expr;
+    } else {
+      final ErrorMsg err = new ErrorMsg(DATA_CONVERSION_ERR, toString(), clazz.getName());
+      ctx.xsltc().getParser().reportError(FATAL, err);
+      return expr;
+    }
   }
 
   /**

@@ -26,8 +26,10 @@ import static com.sun.codemodel.JExpr.TRUE;
 import static com.sun.codemodel.JExpr.invoke;
 import static com.sun.codemodel.JExpr.lit;
 
+import java.util.Iterator;
 import java.util.List;
 
+import com.sun.codemodel.JClass;
 import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JInvocation;
 
@@ -35,6 +37,8 @@ import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.StringType;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
+import de.lyca.xalan.xsltc.dom.CurrentNodeListFilter;
+import de.lyca.xalan.xsltc.dom.NodeSortRecord;
 
 /**
  * @author Morten Jorgensen
@@ -187,7 +191,14 @@ final class KeyCall extends FunctionCall {
     // ki.getKeyIndexIterator(_value, true) - for key()
     // OR
     // ki.getKeyIndexIterator(_value, false) - for id()
-    JInvocation result = invoke("getKeyIndex").arg(name).invoke("setDom").arg(ctx.currentDom())
+    JInvocation getKeyIndex = invoke("getKeyIndex");
+    if (ctx.ref(CurrentNodeListFilter.class).isAssignableFrom(ctx.clazz())) {
+      getKeyIndex = invoke(ctx.param(TRANSLET_PNAME), "getKeyIndex");
+    }
+    if (ctx.ref(NodeSortRecord.class).isAssignableFrom(ctx.clazz())) {
+      getKeyIndex = invoke(ctx.param(TRANSLET_PNAME), "getKeyIndex");
+    }
+    JInvocation result = getKeyIndex.arg(name).invoke("setDom").arg(ctx.currentDom())
         .invoke("getKeyIndexIterator").arg(value);
     return _name == null ? result.arg(FALSE) : result.arg(TRUE);
   }

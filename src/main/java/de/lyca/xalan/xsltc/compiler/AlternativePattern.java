@@ -21,6 +21,8 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
+import com.sun.codemodel.JExpression;
+
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
@@ -82,9 +84,14 @@ final class AlternativePattern extends Pattern {
   public String toString() {
     return "alternative(" + _left + ", " + _right + ')';
   }
+@Override
+  public JExpression compile(CompilerContext ctx) {
+    return _left.compile(ctx).cor(_right.compile(ctx));
+  }
 
-  @Override
+@Override
   public void translate(CompilerContext ctx) {
+    ctx.currentBlock()._return(compile(ctx));
 //    FIXME
 //
 //    final InstructionList il = methodGen.getInstructionList();

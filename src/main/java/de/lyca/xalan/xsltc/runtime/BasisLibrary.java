@@ -38,6 +38,7 @@ import org.xml.sax.SAXException;
 
 import de.lyca.xalan.xsltc.DOM;
 import de.lyca.xalan.xsltc.Translet;
+import de.lyca.xalan.xsltc.compiler.util.Util;
 import de.lyca.xalan.xsltc.dom.AbsoluteIterator;
 import de.lyca.xalan.xsltc.dom.ArrayNodeListIterator;
 import de.lyca.xalan.xsltc.dom.DOMAdapter;
@@ -885,6 +886,8 @@ public final class BasisLibrary {
     try {
       final StringBuffer result = new StringBuffer();
       if (pattern != defaultPattern) {
+        // TODO
+//        formatter = (DecimalFormat) formatter.clone();
         formatter.applyLocalizedPattern(pattern);
       }
       formatter.format(number, result, _fieldPosition);
@@ -1560,9 +1563,8 @@ public final class BasisLibrary {
    * mapQNametoJavaName and thus get mapped to legal java variable names
    */
   public static String mapQNameToJavaName(String base) {
-    return replace(base, ".-:/{}?#%*", new String[] { "$dot$", "$dash$", "$colon$", "$slash$", "", "$colon$", "$ques$",
-            "$hash$", "$per$", "$aster$" });
-
+    return replace(Util.escape(base), "{}?#%*",
+        new String[] { "$lcb$", "$rcb$", "$ques$", "$hash$", "$per$", "$aster$" });
   }
 
   // -- End utility functions

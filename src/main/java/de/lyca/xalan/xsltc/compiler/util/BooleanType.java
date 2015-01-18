@@ -21,8 +21,10 @@
 
 package de.lyca.xalan.xsltc.compiler.util;
 
+import static com.sun.codemodel.JExpr.cast;
 import static com.sun.codemodel.JExpr.lit;
 import static com.sun.codemodel.JOp.cond;
+import static de.lyca.xalan.xsltc.compiler.util.ErrorMsg.DATA_CONVERSION_ERR;
 
 import org.apache.bcel.generic.BranchInstruction;
 import org.apache.bcel.generic.IFGE;
@@ -41,6 +43,8 @@ import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JType;
+
+import de.lyca.xalan.xsltc.compiler.Constants;
 
 /**
  * @author Jacek Ambroziak
@@ -192,6 +196,21 @@ public final class BooleanType extends Type {
   @Override
   public void translateFrom(JDefinedClass definedClass, JMethod method, Class<?> clazz) {
     translateTo(definedClass, method, clazz);
+  }
+
+  @Override
+  public JExpression compileFrom(CompilerContext ctx, JExpression expr, Class<?> clazz) {
+    if (clazz == java.lang.Boolean.TYPE) {
+      return expr;
+    }
+    // Is Boolean <: clazz? I.e. clazz in { Boolean, Object }
+    else if (clazz.isAssignableFrom(java.lang.Boolean.class)) {
+      return cast(ctx.ref(Boolean.class), expr);
+    } else {
+      final ErrorMsg err = new ErrorMsg(DATA_CONVERSION_ERR, toString(), clazz.getName());
+      ctx.xsltc().getParser().reportError(FATAL, err);
+      return super.compileFrom(ctx, expr, clazz);
+    }
   }
 
   /**

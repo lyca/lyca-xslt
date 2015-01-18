@@ -21,7 +21,12 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
+import static com.sun.codemodel.JExpr._null;
+import static com.sun.codemodel.JExpr.invoke;
+
 import java.util.List;
+
+import com.sun.codemodel.JInvocation;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
@@ -132,25 +137,28 @@ final class CallTemplate extends Instruction {
 //    final StringBuilder methodSig = new StringBuilder("(" + DOM_INTF_SIG + NODE_ITERATOR_SIG + TRANSLET_OUTPUT_SIG
 //            + NODE_SIG);
 
+    JInvocation callTemplate = invoke(methodName).arg(ctx.currentDom()).arg(ctx.param(ITERATOR_PNAME)).arg(ctx.currentHandler()).arg(ctx.currentNode());
     // If calling a simply named template, push actual arguments
-//    if (_calleeTemplate != null) {
-//      // List<Param> calleeParams = _calleeTemplate.getParameters();
-//      for (final SyntaxTreeNode node : _parameters) {
+    if (_calleeTemplate != null) {
+//       List<Param> calleeParams = _calleeTemplate.getParameters();
+      for (final SyntaxTreeNode node : _parameters) {
 //        methodSig.append(OBJECT_SIG); // append Object to signature
-//        // Push 'null' if Param to indicate no actual parameter specified
-//        if (node instanceof Param) {
-//          il.append(ACONST_NULL);
-//        } else { // translate WithParam
-//          node.translate(classGen, methodGen);
-//        }
-//      }
-//    }
+        // Push 'null' if Param to indicate no actual parameter specified
+        if (node instanceof Param) {
+          callTemplate = callTemplate.arg(_null());
+        } else {
+          // translate WithParam
+//          callTemplate = callTemplate.arg(_null());
+          callTemplate = callTemplate.arg(((WithParam)node).translateValue(ctx));
+        }
+      }
+    }
 
     // Complete signature and generate invokevirtual call
 //    methodSig.append(")V");
 //    il.append(new INVOKEVIRTUAL(cpg.addMethodref(className, methodName, methodSig.toString())));
 
-    ctx.currentBlock().invoke(methodName).arg(ctx.currentDom()).arg(ctx.param(ITERATOR_PNAME)).arg(ctx.currentHandler()).arg(ctx.currentNode());
+    ctx.currentBlock().add(callTemplate);
 
     // Do not need to call Translet.popParamFrame() if we are
     // calling a simple named template.

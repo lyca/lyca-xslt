@@ -21,8 +21,11 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
+import static com.sun.codemodel.JExpr._this;
+import static com.sun.codemodel.JExpr.cast;
 import static com.sun.codemodel.JExpr.ref;
 
+import com.sun.codemodel.JExpr;
 import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JInvocation;
 
@@ -71,8 +74,11 @@ final class VariableRef extends VariableRefBase {
 //        il.append(_variable.loadInstruction());
       }
     } else {
-      final String className = ctx.clazz().fullName();
-      exp = ref(name);
+      JExpression classCtx = _this();
+      if (ctx.isInnerClass()) {
+        classCtx = ((JExpression) cast(ctx.clazz().outer(), ctx.param(TRANSLET_PNAME)));
+      }
+      exp = classCtx.ref(name);
 //      il.append(classGen.loadTranslet());
 //      if (classGen.isExternal()) {
 //        il.append(new CHECKCAST(cpg.addClass(className)));

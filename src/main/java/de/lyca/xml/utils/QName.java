@@ -472,10 +472,13 @@ public class QName implements java.io.Serializable {
    * @return the string representation of the namespace
    */
   public String toNamespacedString() {
-
     return _namespaceURI != null ? "{" + _namespaceURI + "}" + _localName : _localName;
   }
 
+  public String toStringRep() {
+    return _namespaceURI != null ? _namespaceURI + ':' + _localName : _localName;
+  }
+  
   /**
    * Get the namespace of the qualified name.
    * 

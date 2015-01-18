@@ -84,6 +84,7 @@ final class Copy extends Instruction {
     // Get the length of the node name and save for later
     JVar length = _if1.decl(ctx.owner().INT, "length", name.invoke("length"));
 
+    ctx.pushBlock(_if1);
     // Copy in attribute sets if specified
     if (_useSets != null) {
       // If the parent of this element will result in an element being
@@ -105,7 +106,6 @@ final class Copy extends Instruction {
       }
     }
 
-    ctx.pushBlock(_if1);
     // Instantiate body of xsl:copy
     translateContents(ctx);
     ctx.popBlock();

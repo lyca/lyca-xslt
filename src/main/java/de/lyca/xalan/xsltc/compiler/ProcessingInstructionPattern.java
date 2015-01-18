@@ -21,7 +21,14 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
+import static com.sun.codemodel.JExpr.lit;
+
+import com.sun.codemodel.JBlock;
+import com.sun.codemodel.JConditional;
+import com.sun.codemodel.JExpr;
 import com.sun.codemodel.JExpression;
+import com.sun.codemodel.JInvocation;
+import com.sun.codemodel.JStatement;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.Type;
@@ -85,10 +92,79 @@ final class ProcessingInstructionPattern extends StepPattern {
 
   @Override
   public JExpression compile(CompilerContext ctx) {
-    // TODO Auto-generated method stub
-    return super.compile(ctx);
+    JExpression result = lit(_name).invoke("equals").arg(ctx.currentDom().invoke("getNodeName").arg(ctx.currentNode()));
+    if (hasPredicates()) {
+      for (Predicate pred : _predicates) {
+        final Expression exp = pred.getExpr();
+        result = result.cand(exp.compile(ctx));
+      }
+    }
+    return result;
   }
-  
+
+  @Override
+  public void compilePattern(CompilerContext ctx, JStatement fail) {
+//    final ConstantPoolGen cpg = classGen.getConstantPool();
+//    final InstructionList il = methodGen.getInstructionList();
+
+    // context node is on the stack
+//    final int gname = cpg.addInterfaceMethodref(DOM_INTF, "getNodeName", "(I)Ljava/lang/String;");
+//    final int cmp = cpg.addMethodref(STRING_CLASS, "equals", "(Ljava/lang/Object;)Z");
+
+    // Push current node on the stack
+//    il.append(methodGen.loadCurrentNode());
+//    il.append(SWAP);
+
+    // Overwrite current node with matching node
+//    il.append(methodGen.storeCurrentNode());
+
+    // If pattern not reduced then check kernel
+    if (!_typeChecked) {
+//      il.append(methodGen.loadCurrentNode());
+//      final int getType = cpg.addInterfaceMethodref(DOM_INTF, "getExpandedTypeID", "(I)I");
+//      il.append(methodGen.loadDOM());
+//      il.append(methodGen.loadCurrentNode());
+//      il.append(new INVOKEINTERFACE(getType, 2));
+//      il.append(new PUSH(cpg, DTM.PROCESSING_INSTRUCTION_NODE));
+//      _falseList.add(il.append(new IF_ICMPEQ(null)));
+    }
+
+    // Load the requested processing instruction name
+//    il.append(new PUSH(cpg, _name));
+    // Load the current processing instruction's name
+//    il.append(methodGen.loadDOM());
+//    il.append(methodGen.loadCurrentNode());
+//    il.append(new INVOKEINTERFACE(gname, 2));
+    // Compare the two strings
+//    il.append(new INVOKEVIRTUAL(cmp));
+//    _falseList.add(il.append(new IFEQ(null)));
+
+    // Compile the expressions within the predicates
+//    if (hasPredicates()) {
+//      for (Predicate pred : _predicates) {
+//        final Expression exp = pred.getExpr();
+//        exp.translateDesynthesized(classGen, methodGen);
+//        _trueList.append(exp._trueList);
+//        _falseList.append(exp._falseList);
+//      }
+//    }
+
+    // Backpatch true list and restore current iterator/node
+//    InstructionHandle restore;
+//    restore = il.append(methodGen.storeCurrentNode());
+//    backPatchTrueList(restore);
+//    final BranchHandle skipFalse = il.append(new GOTO(null));
+
+    // Backpatch false list and restore current iterator/node
+//    restore = il.append(methodGen.storeCurrentNode());
+//    backPatchFalseList(restore);
+//    _falseList.add(il.append(new GOTO(null)));
+
+    // True list falls through
+//    skipFalse.setTarget(il.append(NOP));
+    super.compilePattern(ctx, fail);
+  }
+
   @Override
   public void translate(CompilerContext ctx) {
  // FIXME

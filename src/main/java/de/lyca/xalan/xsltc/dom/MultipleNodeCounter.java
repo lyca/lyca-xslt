@@ -22,7 +22,7 @@
 package de.lyca.xalan.xsltc.dom;
 
 import de.lyca.xalan.xsltc.DOM;
-import de.lyca.xalan.xsltc.Translet;
+import de.lyca.xalan.xsltc.runtime.AbstractTranslet;
 import de.lyca.xalan.xsltc.util.IntegerArray;
 import de.lyca.xml.dtm.Axis;
 import de.lyca.xml.dtm.DTMAxisIterator;
@@ -34,7 +34,7 @@ import de.lyca.xml.dtm.DTMAxisIterator;
 public abstract class MultipleNodeCounter extends NodeCounter {
   private DTMAxisIterator _precSiblings = null;
 
-  public MultipleNodeCounter(Translet translet, DOM document, DTMAxisIterator iterator) {
+  public MultipleNodeCounter(AbstractTranslet translet, DOM document, DTMAxisIterator iterator) {
     super(translet, document, iterator);
   }
 
@@ -96,12 +96,12 @@ public abstract class MultipleNodeCounter extends NodeCounter {
     return formatNumbers(counters);
   }
 
-  public static NodeCounter getDefaultNodeCounter(Translet translet, DOM document, DTMAxisIterator iterator) {
+  public static NodeCounter getDefaultNodeCounter(AbstractTranslet translet, DOM document, DTMAxisIterator iterator) {
     return new DefaultMultipleNodeCounter(translet, document, iterator);
   }
 
   static class DefaultMultipleNodeCounter extends MultipleNodeCounter {
-    public DefaultMultipleNodeCounter(Translet translet, DOM document, DTMAxisIterator iterator) {
+    public DefaultMultipleNodeCounter(AbstractTranslet translet, DOM document, DTMAxisIterator iterator) {
       super(translet, document, iterator);
     }
   }

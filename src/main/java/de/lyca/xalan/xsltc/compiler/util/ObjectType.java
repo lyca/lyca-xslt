@@ -26,6 +26,7 @@ import org.apache.bcel.generic.ASTORE;
 import org.apache.bcel.generic.Instruction;
 
 import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JType;
 
@@ -72,6 +73,11 @@ public final class ObjectType extends Type {
   @Override
   public boolean equals(Object obj) {
     return obj instanceof ObjectType;
+  }
+
+  @Override
+  public String getClassName() {
+    return _javaClassName;
   }
 
   public String getJavaClassName() {
@@ -155,6 +161,14 @@ public final class ObjectType extends Type {
 //      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), clazz.getClass().toString());
 //      classGen.getParser().reportError(Constants.FATAL, err);
 //    }
+  }
+
+  @Override
+  public JExpression compileTo(CompilerContext ctx, JExpression expr, Class<?> clazz) {
+    if (clazz.isAssignableFrom(_clazz)) {
+      return expr;
+    }
+    return super.compileTo(ctx, expr, clazz);
   }
 
   /**

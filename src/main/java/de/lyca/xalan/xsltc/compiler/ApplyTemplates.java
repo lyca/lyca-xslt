@@ -151,8 +151,8 @@ final class ApplyTemplates extends Instruction {
 
       // compute node iterator for applyTemplates
       if (sortObjects.size() > 0) {
-        Sort.translateSortIterator(ctx, _select, sortObjects);
-        ctx.currentBlock().invoke(ctx.param(DOM_PNAME) ,SET_START_NODE).arg(ctx.currentNode());
+        select = Sort.translateSortIterator(ctx, _select, sortObjects);
+//        ctx.currentBlock().invoke(ctx.param(DOM_PNAME) ,SET_START_NODE).arg(ctx.currentNode());
 //        final int setStartNode = cpg.addInterfaceMethodref(NODE_ITERATOR, SET_START_NODE, "(I)" + NODE_ITERATOR_SIG);
 //        il.append(methodGen.loadCurrentNode());
 //        il.append(new INVOKEINTERFACE(setStartNode, 2));

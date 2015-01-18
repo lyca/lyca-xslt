@@ -33,6 +33,7 @@ import de.lyca.xalan.xsltc.compiler.util.ResultTreeType;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
 import de.lyca.xalan.xsltc.compiler.util.Util;
+import de.lyca.xalan.xsltc.runtime.BasisLibrary;
 
 /**
  * @author Jacek Ambroziak
@@ -86,7 +87,7 @@ final class CopyOf extends Instruction {
     if (tselect instanceof NodeSetType) {
       JInvocation copy = ctx.currentBlock().invoke(ctx.currentDom(), "copy");
       JInvocation iterator = _select.compile(ctx).invoke("setStartNode").arg(ctx.currentNode());
-      copy.arg(iterator).arg(ctx.param(TRANSLET_OUTPUT_PNAME));
+      copy.arg(iterator).arg(ctx.currentHandler());
       
 //      il.append(method.loadDOM());
       
@@ -100,7 +101,7 @@ final class CopyOf extends Instruction {
     } else if (tselect instanceof NodeType) {
       JInvocation copy = ctx.currentBlock().invoke(ctx.currentDom(), "copy");
       JExpression dom = _select.compile(ctx);
-      copy.arg(dom).arg(ctx.param(TRANSLET_OUTPUT_PNAME));
+      copy.arg(dom).arg(ctx.currentHandler());
 
 //      il.append(method.loadDOM());
 //      _select.translate(ctx);
@@ -110,7 +111,7 @@ final class CopyOf extends Instruction {
       JExpression dom = _select.compile(ctx);
       JInvocation document = dom.invoke("getDocument");
       JInvocation copy = ctx.currentBlock().invoke(dom, "copy");
-      copy.arg(document).arg(ctx.param(TRANSLET_OUTPUT_PNAME));
+      copy.arg(document).arg(ctx.currentHandler());
 
 //      _select.translate(ctx);
       // We want the whole tree, so we start with the root node
@@ -119,7 +120,10 @@ final class CopyOf extends Instruction {
 //      il.append(method.loadHandler());
 //      il.append(new INVOKEINTERFACE(cpy2, 3));
     } else if (tselect instanceof ReferenceType) {
-      _select.translate(ctx);
+      ctx.currentBlock().add(
+          ctx.ref(BasisLibrary.class).staticInvoke("copy").arg(_select.compile(ctx)).arg(ctx.currentHandler())
+              .arg(ctx.currentNode()).arg(ctx.currentDom()));
+//      _select.translate(ctx);
 //      il.append(method.loadHandler());
 //      il.append(method.loadCurrentNode());
 //      il.append(method.loadDOM());
@@ -127,7 +131,7 @@ final class CopyOf extends Instruction {
 //              + DOM_INTF_SIG + ")V");
 //      il.append(new INVOKESTATIC(copy));
     } else {
-      ctx.currentBlock().invoke(CHARACTERSW).arg(_select.compile(ctx)).arg(ctx.param(TRANSLET_OUTPUT_PNAME));
+      ctx.currentBlock().invoke(CHARACTERSW).arg(_select.compile(ctx)).arg(ctx.currentHandler());
 //      il.append(definedClass.loadTranslet());
 //      _select.translate(ctx);
 //      il.append(method.loadHandler());

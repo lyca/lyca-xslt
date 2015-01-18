@@ -28,10 +28,8 @@ import java.util.List;
 
 import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JConditional;
-import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JExpr;
 import com.sun.codemodel.JExpression;
-import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JVar;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
@@ -159,7 +157,7 @@ final class ForEach extends Instruction {
 //    final BranchHandle nextNode = il.append(new GOTO(null));
 //    final InstructionHandle loop = il.append(NOP);
     final JBlock loop = ctx.currentBlock()._while(TRUE).body();
-    JVar current = loop.decl(ctx.owner().INT, "current", iterator.invoke("next"));
+    JVar current = loop.decl(ctx.owner().INT, ctx.nextCurrent(), iterator.invoke("next"));
     final JConditional _if = loop._if(current.gt(JExpr.lit(0)));
 
     ctx.pushNode(current);

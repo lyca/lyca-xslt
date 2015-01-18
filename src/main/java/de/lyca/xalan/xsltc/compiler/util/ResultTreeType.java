@@ -22,12 +22,15 @@
 package de.lyca.xalan.xsltc.compiler.util;
 
 import static com.sun.codemodel.JExpr.TRUE;
+import static com.sun.codemodel.JExpr.direct;
+import static com.sun.codemodel.JExpr.invoke;
 
 import org.apache.bcel.generic.ALOAD;
 import org.apache.bcel.generic.ASTORE;
 import org.apache.bcel.generic.Instruction;
 
 import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JExpr;
 import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JType;
@@ -353,6 +356,68 @@ public final class ResultTreeType extends Type {
 //    }
   }
 
+  public JExpression compileTo(CompilerContext ctx, JExpression expr, ReferenceType type) {
+    if (_methodName == null) {
+      return expr;
+    } else {
+//      LocalVariableGen domBuilder, newDom;
+//      final String className = classGen.getClassName();
+//
+//      // Push required parameters
+//      il.append(classGen.loadTranslet());
+//      if (classGen.isExternal()) {
+//        il.append(new CHECKCAST(cpg.addClass(className)));
+//      }
+//      il.append(methodGen.loadDOM());
+//
+//      // Create new instance of DOM class (with RTF_INITIAL_SIZE nodes)
+//      il.append(methodGen.loadDOM());
+//      int index = cpg.addInterfaceMethodref(DOM_INTF, "getResultTreeFrag", "(IZ)" + DOM_INTF_SIG);
+//      il.append(new PUSH(cpg, RTF_INITIAL_SIZE));
+//      il.append(new PUSH(cpg, false));
+//      il.append(new INVOKEINTERFACE(index, 3));
+//      il.append(DUP);
+//
+//      // Store new DOM into a local variable
+//      newDom = methodGen.addLocalVariable("rt_to_reference_dom", Util.getJCRefType(DOM_INTF_SIG), null, null);
+//      il.append(new CHECKCAST(cpg.addClass(DOM_INTF_SIG)));
+//      newDom.setStart(il.append(new ASTORE(newDom.getIndex())));
+//
+//      // Overwrite old handler with DOM handler
+//      index = cpg.addInterfaceMethodref(DOM_INTF, "getOutputDomBuilder", "()" + TRANSLET_OUTPUT_SIG);
+//
+//      il.append(new INVOKEINTERFACE(index, 1));
+//      // index = cpg.addMethodref(DOM_IMPL,
+//      // "getOutputDomBuilder",
+//      // "()" + TRANSLET_OUTPUT_SIG);
+//      // il.append(new INVOKEVIRTUAL(index));
+//      il.append(DUP);
+//      il.append(DUP);
+//
+//      // Store DOM handler in a local in order to call endDocument()
+//      domBuilder = methodGen.addLocalVariable("rt_to_reference_handler", Util.getJCRefType(TRANSLET_OUTPUT_SIG), null,
+//          null);
+//      domBuilder.setStart(il.append(new ASTORE(domBuilder.getIndex())));
+//
+//      // Call startDocument on the new handler
+//      index = cpg.addInterfaceMethodref(TRANSLET_OUTPUT_INTERFACE, "startDocument", "()V");
+//      il.append(new INVOKEINTERFACE(index, 1));
+//
+//      // Call the method that implements this result tree
+//      index = cpg.addMethodref(className, _methodName, "(" + DOM_INTF_SIG + TRANSLET_OUTPUT_SIG + ")V");
+//      il.append(new INVOKEVIRTUAL(index));
+//
+//      // Call endDocument on the DOM handler
+//      domBuilder.setEnd(il.append(new ALOAD(domBuilder.getIndex())));
+//      index = cpg.addInterfaceMethodref(TRANSLET_OUTPUT_INTERFACE, "endDocument", "()V");
+//      il.append(new INVOKEINTERFACE(index, 1));
+//
+//      // Push the new DOM on the stack
+//      newDom.setEnd(il.append(new ALOAD(newDom.getIndex())));
+      return JExpr._null();
+    }
+  }
+
   /**
    * Expects a result tree on the stack and pushes a node-set (iterator). Note
    * that the produced iterator is an iterator for the DOM that contains the
@@ -397,6 +462,18 @@ public final class ResultTreeType extends Type {
 //    // Create an iterator for the root node of the DOM adapter
 //    final int iter = cpg.addInterfaceMethodref(DOM_INTF, "getIterator", "()" + NODE_ITERATOR_SIG);
 //    il.append(new INVOKEINTERFACE(iter, 1));
+  }
+  
+  public JExpression compileTo(CompilerContext ctx, JExpression expr, NodeSetType type) {
+    // DOM adapters containing a result tree are not initialised with
+    // translet-type to DOM-type mapping. This must be done now for
+    // XPath expressions and patterns to work for the iterator we create.
+    // Pass the type mappings to the DOM adapter
+    ctx.currentBlock().invoke(expr, "setupMapping").arg(direct(NAMES_INDEX)).arg(direct(URIS_INDEX))
+        .arg(direct(TYPES_INDEX)).arg(direct(NAMESPACE_INDEX));
+
+    // Create an iterator for the root node of the DOM adapter
+    return expr.invoke("getIterator");
   }
 
   /**
@@ -468,6 +545,24 @@ public final class ResultTreeType extends Type {
 //      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), className);
 //      classGen.getParser().reportError(Constants.FATAL, err);
 //    }
+  }
+
+  @Override
+  public JExpression compileTo(CompilerContext ctx, JExpression expr, Class<?> clazz) {
+    final String className = clazz.getName();
+    if (className.equals("org.w3c.dom.Node")) {
+      return invoke(expr,MAKE_NODE).arg(compileTo(ctx, expr, Type.NodeSet));
+    } else if (className.equals("org.w3c.dom.NodeList")) {
+      return invoke(expr, MAKE_NODE_LIST).arg(compileTo(ctx, expr, Type.NodeSet));
+    } else if (className.equals("java.lang.Object")) {
+      return expr;
+    } else if (className.equals("java.lang.String")) {
+      return compileTo(ctx, expr, Type.String);
+    } else {
+      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), className);
+      ctx.xsltc().getParser().reportError(Constants.FATAL, err);
+      return expr;
+    }
   }
 
   /**

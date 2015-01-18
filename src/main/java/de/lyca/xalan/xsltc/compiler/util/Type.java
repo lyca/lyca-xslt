@@ -194,6 +194,12 @@ public abstract class Type implements Constants {
 //    classGen.getParser().reportError(Constants.FATAL, err);
   }
 
+  public JExpression compileTo(CompilerContext ctx, JExpression expr, Class<?> clazz) {
+    final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), clazz.toString());
+    ctx.xsltc().getParser().reportError(Constants.FATAL, err);
+    return expr;
+  }
+
   /**
    * Translates an external (Java) type denoted by <code>clazz</code> to an
    * object of this type. This method is used to translate return values when
@@ -203,6 +209,12 @@ public abstract class Type implements Constants {
 //    FIXME
 //    final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, clazz.getClass().toString(), toString());
 //    classGen.getParser().reportError(Constants.FATAL, err);
+  }
+
+  public JExpression compileFrom(CompilerContext ctx, JExpression expr, Class<?> clazz) {
+    final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, clazz.toString(), toString());
+    ctx.xsltc().getParser().reportError(Constants.FATAL, err);
+    return expr;
   }
 
   /**

@@ -54,6 +54,7 @@ import org.xml.sax.XMLReader;
 
 import com.sun.codemodel.JCodeModel;
 import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JFieldVar;
 
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.Util;
@@ -88,7 +89,7 @@ public final class XSLTC {
   private int _helperClassSerial = 0;
   private int _attributeSetSerial = 0;
 
-  private int[] _numberFieldIndexes;
+  private JFieldVar[] _numberFieldIndexes;
 
   // Name index tables
   private int _nextGType; // Next available element type
@@ -221,9 +222,9 @@ public final class XSLTC {
     _stylesheetNSAncestorPointers = null;
     _prefixURIPairs = null;
     _prefixURIPairsIdx = null;
-    _numberFieldIndexes = new int[] { -1, // LEVEL_SINGLE
-            -1, // LEVEL_MULTIPLE
-            -1 // LEVEL_ANY
+    _numberFieldIndexes = new JFieldVar[] { null, // LEVEL_SINGLE
+            null, // LEVEL_MULTIPLE
+            null // LEVEL_ANY
     };
   }
 
@@ -847,7 +848,7 @@ public final class XSLTC {
     return _stepPatternSerial++;
   }
 
-  public int[] getNumberFieldIndexes() {
+  public JFieldVar[] getNumberFieldIndexes() {
     return _numberFieldIndexes;
   }
 
@@ -902,7 +903,10 @@ public final class XSLTC {
         case BYTEARRAY_AND_JAR_OUTPUT:
         case CLASSLOADER_OUTPUT:
           final File inFile = getInputFile(fullName);
-          final Path parentDir = inFile.toPath().getParent();
+          Path parentDir = inFile.toPath().getParent();
+          if(parentDir == null){
+            parentDir = Paths.get(System.getProperty("user.dir"));
+          }
           Files.createDirectories(parentDir);
           jCodeModel.build(parentDir.toFile());
           JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();

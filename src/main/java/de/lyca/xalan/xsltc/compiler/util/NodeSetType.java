@@ -21,12 +21,14 @@
 
 package de.lyca.xalan.xsltc.compiler.util;
 
+import static com.sun.codemodel.JExpr._this;
 import static com.sun.codemodel.JExpr.lit;
 import static com.sun.codemodel.JOp.cond;
 
 import org.apache.bcel.generic.ALOAD;
 import org.apache.bcel.generic.ASTORE;
 import org.apache.bcel.generic.Instruction;
+import org.w3c.dom.NodeList;
 
 import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JExpression;
@@ -35,6 +37,7 @@ import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JType;
 
 import de.lyca.xalan.xsltc.compiler.FlowList;
+import de.lyca.xalan.xsltc.runtime.BasisLibrary;
 import de.lyca.xml.dtm.DTMAxisIterator;
 
 /**
@@ -144,6 +147,19 @@ public final class NodeSetType extends Type {
 //      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), clazz.getName());
 //      classGen.getParser().reportError(Constants.FATAL, err);
 //    }
+  }
+
+  @Override
+  public JExpression compileFrom(CompilerContext ctx, JExpression expr, Class<?> clazz) {
+    if (clazz == NodeList.class) {
+      return ctx.ref(BasisLibrary.class).staticInvoke("nodeList2Iterator").arg(expr).arg(_this()).arg(ctx.currentDom());
+    } else if (clazz == org.w3c.dom.Node.class) {
+      return ctx.ref(BasisLibrary.class).staticInvoke("node2Iterator").arg(expr).arg(_this()).arg(ctx.currentDom());
+    } else {
+      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), clazz.getName());
+      ctx.xsltc().getParser().reportError(FATAL, err);
+      return expr;
+    }
   }
 
   /**
@@ -260,6 +276,10 @@ public final class NodeSetType extends Type {
 //    methodGen.getInstructionList().append(NOP);
   }
 
+  public JExpression compileTo(CompilerContext ctx, JExpression expr, ReferenceType type) {
+    return expr;
+  }
+
   /**
    * Translates a node-set into the Java type denoted by <code>clazz</code>.
    * Expects a node-set on the stack and pushes an object of the appropriate
@@ -294,6 +314,17 @@ public final class NodeSetType extends Type {
 //      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), className);
 //      classGen.getParser().reportError(Constants.FATAL, err);
 //    }
+  }
+
+  public JExpression compileTo(CompilerContext ctx, JExpression expr, Class<?> clazz) {
+    if (String.class.equals(clazz)) {
+      return compileTo(ctx, expr, Type.String);
+    } else if (org.w3c.dom.Node.class.equals(clazz)) {
+      return ctx.currentDom().invoke(MAKE_NODE).arg(expr);
+    } else if (NodeList.class.equals(clazz)) {
+      return ctx.currentDom().invoke(MAKE_NODE_LIST).arg(expr);
+    }
+    return expr;
   }
 
   /**

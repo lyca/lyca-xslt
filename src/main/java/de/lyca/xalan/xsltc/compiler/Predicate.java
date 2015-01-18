@@ -22,6 +22,7 @@
 package de.lyca.xalan.xsltc.compiler;
 
 import static com.sun.codemodel.JExpr._new;
+import static com.sun.codemodel.JExpr._this;
 import static com.sun.codemodel.JMod.FINAL;
 import static com.sun.codemodel.JMod.PUBLIC;
 import static com.sun.codemodel.JMod.STATIC;
@@ -31,9 +32,12 @@ import java.util.List;
 
 import com.sun.codemodel.JClassAlreadyExistsException;
 import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JExpr;
 import com.sun.codemodel.JExpression;
+import com.sun.codemodel.JInvocation;
 import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JMod;
+import com.sun.codemodel.JType;
 import com.sun.codemodel.JVar;
 
 import de.lyca.xalan.xsltc.compiler.util.BooleanType;
@@ -357,22 +361,29 @@ final class Predicate extends Expression implements Closure {
     // This generates a new class for handling this specific sort
     CompilerContext filterCtx;
     JDefinedClass nodeListFilter;
+    JDefinedClass currentClazz = ctx.clazz();
+    if(currentClazz.outer()!=null) currentClazz = (JDefinedClass) currentClazz.outer();
     try {
-      nodeListFilter = ctx.clazz()._class(PUBLIC | STATIC | FINAL, _className)._implements(CurrentNodeListFilter.class);
+      nodeListFilter = currentClazz._class(PUBLIC | STATIC | FINAL, _className)._implements(CurrentNodeListFilter.class);
     } catch (JClassAlreadyExistsException e) {
       throw new RuntimeException(e);
     }
     filterCtx = new CompilerContext(ctx.owner(), nodeListFilter, ctx.stylesheet(), xsltc);
 
+    JMethod constructor = filterCtx.clazz().constructor(PUBLIC);
+    constructor.body().invoke("super");
     // Add a new instance variable for each var in closure
     if (_closureVars != null) {
       for (final VariableRefBase varRefBase : _closureVars) {
         final VariableBase var = varRefBase.getVariable();
-        filterCtx.addPublicField(var.getType().toJCType(), var.getEscapedName());
+        JType jcType = var.getType().toJCType();
+        String escapedName = var.getEscapedName();
+        JVar field = filterCtx.addPublicField(jcType, escapedName);
+        JVar param = constructor.param(jcType, escapedName);
+        constructor.body().assign(_this().ref(field), param);
       }
     }
 
-    filterCtx.clazz().constructor(PUBLIC).body().invoke("super");
 
     // public boolean test(int node, int position, int last, int current, AbstractTranslet translet, DTMAxisIterator iter);
     JMethod test = filterCtx.method(JMod.PUBLIC | JMod.FINAL, boolean.class, "test");
@@ -515,7 +526,12 @@ final class Predicate extends Expression implements Closure {
     CompilerContext filterCtx = createFilter(ctx);
 
     // Create new instance of filter
-    return _new(filterCtx.clazz());
+    JDefinedClass clazz = filterCtx.clazz();
+    JInvocation _new = _new(clazz);
+    for (JVar param : clazz.constructors().next().listParams()) {
+      _new.arg(param);
+    }
+    return _new;
 
     // Initialize closure variables
     // FIXME

@@ -24,9 +24,7 @@ package de.lyca.xalan.xsltc.compiler;
 import static com.sun.codemodel.JExpr._new;
 
 import com.sun.codemodel.JClass;
-import com.sun.codemodel.JCodeModel;
 import com.sun.codemodel.JInvocation;
-import com.sun.codemodel.JVar;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.Type;
@@ -201,6 +199,7 @@ final class ParentLocationPath extends RelativeLocationPath {
       final Axis path = ((Step) _path).getAxis();
       final Axis step = ((Step) stp).getAxis();
       if (path == Axis.DESCENDANTORSELF && step == Axis.CHILD || path == Axis.PRECEDING && step == Axis.PARENT) {
+        invocation = invocation.invoke("includeSelf");
 //        final int incl = cpg.addMethodref(NODE_ITERATOR_BASE, "includeSelf", "()" + NODE_ITERATOR_SIG);
 //        il.append(new INVOKEVIRTUAL(incl));
       }
@@ -213,6 +212,7 @@ final class ParentLocationPath extends RelativeLocationPath {
      * single node multiple times.
      */
     if (_orderNodes) {
+      invocation = ctx.currentDom().invoke(ORDER_ITERATOR).arg(invocation).arg(ctx.currentNode());
 //      final int order = cpg.addInterfaceMethodref(DOM_INTF, ORDER_ITERATOR, ORDER_ITERATOR_SIG);
 //      il.append(method.loadDOM());
 //      il.append(SWAP);

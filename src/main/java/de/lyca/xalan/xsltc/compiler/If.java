@@ -21,6 +21,8 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
+import static com.sun.codemodel.JExpr.FALSE;
+
 import com.sun.codemodel.JExpression;
 
 import de.lyca.xalan.xsltc.compiler.util.BooleanType;
@@ -105,7 +107,7 @@ final class If extends Instruction {
     JExpression testExp = _test.compile(ctx);
     // remember end of condition
 //    final InstructionHandle truec = il.getEnd();
-    if (!_ignore) {
+    if (!_ignore && testExp != FALSE) {
       ctx.pushBlock(ctx.currentBlock()._if(testExp)._then());
       translateContents(ctx);
       ctx.popBlock();

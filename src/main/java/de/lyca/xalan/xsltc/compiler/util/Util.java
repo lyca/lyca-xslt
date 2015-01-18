@@ -21,6 +21,8 @@
 
 package de.lyca.xalan.xsltc.compiler.util;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.apache.bcel.generic.Type;
@@ -35,7 +37,68 @@ import de.lyca.xml.utils.XML11Char;
 public final class Util {
   private static char filesep;
 
+  private static final Map<String, String> KEYWORDS = new HashMap();
   static {
+    KEYWORDS.put("abstract", "$abstract");
+    KEYWORDS.put("assert", "$assert");
+    KEYWORDS.put("boolean", "$boolean");
+    KEYWORDS.put("break", "$break");
+    KEYWORDS.put("byte", "$byte");
+    KEYWORDS.put("case", "$case");
+    KEYWORDS.put("catch", "$catch");
+    KEYWORDS.put("char", "$char");
+    KEYWORDS.put("class", "$class");
+    KEYWORDS.put("const", "$const");
+    KEYWORDS.put("continue", "$continue");
+    KEYWORDS.put("default", "$default");
+    KEYWORDS.put("do", "$do");
+    KEYWORDS.put("double", "$double");
+    KEYWORDS.put("else", "$else");
+    KEYWORDS.put("enum", "$enum");
+    KEYWORDS.put("extends", "$extends");
+    KEYWORDS.put("final", "$final");
+    KEYWORDS.put("finally", "$finally");
+    KEYWORDS.put("float", "$float");
+    KEYWORDS.put("for", "$for");
+    KEYWORDS.put("goto", "$goto");
+    KEYWORDS.put("if", "$if");
+    KEYWORDS.put("implements", "$implements");
+    KEYWORDS.put("import", "$import");
+    KEYWORDS.put("instanceof", "$instanceof");
+    KEYWORDS.put("int", "$int");
+    KEYWORDS.put("interface", "$interface");
+    KEYWORDS.put("long", "$long");
+    KEYWORDS.put("native", "$native");
+    KEYWORDS.put("new", "$new");
+    KEYWORDS.put("package", "$package");
+    KEYWORDS.put("private", "$private");
+    KEYWORDS.put("protected", "$protected");
+    KEYWORDS.put("public", "$public");
+    KEYWORDS.put("return", "$return");
+    KEYWORDS.put("short", "$short");
+    KEYWORDS.put("static", "$static");
+    KEYWORDS.put("strictfp", "$strictfp");
+    KEYWORDS.put("super", "$super");
+    KEYWORDS.put("switch", "$switch");
+    KEYWORDS.put("synchronized", "$synchronized");
+    KEYWORDS.put("this", "$this");
+    KEYWORDS.put("throw", "$throw");
+    KEYWORDS.put("throws", "$throws");
+    KEYWORDS.put("transient", "$transient");
+    KEYWORDS.put("try", "$try");
+    KEYWORDS.put("void", "$void");
+    KEYWORDS.put("volatile", "$volatile");
+    KEYWORDS.put("while", "$while");
+
+    KEYWORDS.put("true", "$true");
+    KEYWORDS.put("false", "$false");
+    KEYWORDS.put("null", "$null");
+
+    KEYWORDS.put("node", "$node");
+    KEYWORDS.put("translet", "$null");
+    KEYWORDS.put("iterator", "$iterator");
+    KEYWORDS.put("document", "$document");
+
     final String temp = System.getProperty("file.separator", "/");
     filesep = temp.charAt(0);
   }
@@ -152,7 +215,8 @@ public final class Util {
    * Replace occurances of '.', '-', '/' and ':'
    */
   public static String escape(String input) {
-    return replace(input, ".-/:", new String[] { "$dot$", "$dash$", "$slash$", "$colon$" });
+    return KEYWORDS.containsKey(input) ? KEYWORDS.get(input) : '$' + replace(input, ".-/:", new String[] { "$dot$",
+        "$dash$", "$slash$", "$colon$" });
   }
 
   public static String getLocalName(String qname) {

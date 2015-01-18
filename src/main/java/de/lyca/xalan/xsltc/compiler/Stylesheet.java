@@ -948,19 +948,19 @@ public final class Stylesheet extends SyntaxTreeNode {
       body.assign(refthis(HASIDCALL_INDEX), lit(true));
     }
 
+    ctx.pushBlock(body);
     // Compile in code to set the output configuration from <xsl:output>
     if (output != null) {
       // Set all the output settings files in the translet
-      ctx.pushBlock(body);
       output.translate(ctx);
-      ctx.popBlock();
     }
 
     // Compile default decimal formatting symbols.
     // This is an implicit, nameless xsl:decimal-format top-level element.
     if (_numberFormattingUsed) {
-      DecimalFormatting.translateDefaultDFS(ctx.clazz(), constructor);
+      DecimalFormatting.translateDefaultDFS(ctx);
     }
+    ctx.popBlock();
   }
 
   /**

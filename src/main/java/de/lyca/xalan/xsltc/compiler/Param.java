@@ -21,12 +21,22 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
+import static com.sun.codemodel.JExpr._null;
+import static com.sun.codemodel.JExpr.invoke;
+
+import com.sun.codemodel.JConditional;
+import com.sun.codemodel.JExpr;
+import com.sun.codemodel.JExpression;
+import com.sun.codemodel.JInvocation;
+import com.sun.codemodel.JVar;
+
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.ObjectType;
 import de.lyca.xalan.xsltc.compiler.util.ReferenceType;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
+import de.lyca.xalan.xsltc.runtime.BasisLibrary;
 
 /**
  * @author Jacek Ambroziak
@@ -50,6 +60,26 @@ final class Param extends VariableBase {
   public String toString() {
     return "param(" + _name + ")";
   }
+
+//  /**
+//   * Set the instruction for loading the value of this variable onto the JVM
+//   * stack and returns the old instruction.
+//   */
+//  public Instruction setLoadInstruction(Instruction instruction) {
+//    final Instruction tmp = _loadInstruction;
+//    _loadInstruction = instruction;
+//    return tmp;
+//  }
+//
+//  /**
+//   * Set the instruction for storing a value from the stack into this variable
+//   * and returns the old instruction.
+//   */
+//  public Instruction setStoreInstruction(Instruction instruction) {
+//    final Instruction tmp = _storeInstruction;
+//    _storeInstruction = instruction;
+//    return tmp;
+//  }
 
   /**
    * Display variable in a full AST dump
@@ -137,77 +167,67 @@ final class Param extends VariableBase {
   @Override
   public void translate(CompilerContext ctx) {
  // FIXME
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//    final InstructionList il = methodGen.getInstructionList();
-//
-//    if (_ignore)
-//      return;
-//    _ignore = true;
-//
-//    /*
-//     * To fix bug 24518 related to setting parameters of the form
-//     * {namespaceuri}localName which will get mapped to an instance variable in
-//     * the class.
-//     */
-//    final String name = BasisLibrary.mapQNameToJavaName(_name.toString());
-//    final String signature = _type.toSignature();
-//    final String className = _type.getClassName();
-//
-//    if (isLocal()) {
-//      /*
-//       * If simple named template then generate a conditional init of the param
-//       * using its default value: if (param == null) param = <default-value>
-//       */
-//      if (_isInSimpleNamedTemplate) {
-//        il.append(loadInstruction());
-//        final BranchHandle ifBlock = il.append(new IFNONNULL(null));
-//        translateValue(classGen, methodGen);
-//        il.append(storeInstruction());
-//        ifBlock.setTarget(il.append(NOP));
-//        return;
-//      }
-//
-//      il.append(classGen.loadTranslet());
-//      il.append(new PUSH(cpg, name));
-//      translateValue(classGen, methodGen);
-//      il.append(new PUSH(cpg, true));
-//
-//      // Call addParameter() from this class
-//      il.append(new INVOKEVIRTUAL(cpg.addMethodref(TRANSLET_CLASS, ADD_PARAMETER, ADD_PARAMETER_SIG)));
-//      if (className != EMPTYSTRING) {
+
+    if (_ignore)
+      return;
+    _ignore = true;
+
+    /*
+     * To fix bug 24518 related to setting parameters of the form
+     * {namespaceuri}localName which will get mapped to an instance variable in
+     * the class.
+     */
+    final String name = _escapedName;// BasisLibrary.mapQNameToJavaName(_name.toString());
+    final String signature = _type.toSignature();
+    final String className = _type.getClassName();
+
+    if (isLocal()) {
+      /*
+       * If simple named template then generate a conditional init of the param
+       * using its default value: if (param == null) param = <default-value>
+       */
+      if (_isInSimpleNamedTemplate) {
+        _local = ctx.param(name);
+        JConditional _if =  ctx.currentBlock()._if(_local.eq(_null()));
+        ctx.pushBlock(_if._then());
+        ctx.currentBlock().assign(_local, compileValue(ctx));
+        ctx.popBlock();
+        return;
+      }
+
+      if (className != EMPTYSTRING) {
+        // FIXME
 //        il.append(new CHECKCAST(cpg.addClass(className)));
-//      }
-//
+      }
+
 //      _type.translateUnBox(classGen, methodGen);
-//
-//      if (_refs.isEmpty()) { // nobody uses the value
+
+      if (_refs.isEmpty()) { // nobody uses the value
 //        il.append(_type.POP());
-//        _local = null;
-//      } else { // normal case
-//        _local = methodGen.addLocalVariable2(name, _type.toJCType(), null);
-//        // Cache the result of addParameter() in a local variable
+        _local = null;
+      } else { // normal case
+        // Call addParameter() from this class
+        JExpression addParameter = invoke(ADD_PARAMETER).arg(name).arg(compileValue(ctx)).arg(JExpr.TRUE);
+
+        _local = ctx.currentBlock().decl(_type.toJCType(), name, addParameter);
+        // Cache the result of addParameter() in a local variable
 //        _local.setStart(il.append(_type.STORE(_local.getIndex())));
-//      }
-//    } else {
-//      if (classGen.containsField(name) == null) {
-//        classGen.addField(new Field(ACC_PUBLIC, cpg.addUtf8(name), cpg.addUtf8(signature), null, cpg.getConstantPool()));
-//        il.append(classGen.loadTranslet());
-//        il.append(DUP);
-//        il.append(new PUSH(cpg, name));
-//        translateValue(classGen, methodGen);
-//        il.append(new PUSH(cpg, true));
-//
-//        // Call addParameter() from this class
-//        il.append(new INVOKEVIRTUAL(cpg.addMethodref(TRANSLET_CLASS, ADD_PARAMETER, ADD_PARAMETER_SIG)));
-//
+      }
+    } else {
+      if (ctx.field(name) == null) {
+        JVar field = ctx.addPublicField(_type.toJCType(), name);
+
+        // Call addParameter() from this class
+        JExpression addParameter = invoke(ADD_PARAMETER).arg(name).arg(compileValue(ctx)).arg(JExpr.TRUE);
+        ctx.currentBlock().assign(field, addParameter);
+
 //        _type.translateUnBox(classGen, methodGen);
-//
-//        // Cache the result of addParameter() in a field
-//        if (className != EMPTYSTRING) {
+
+        // Cache the result of addParameter() in a field
+        if (className != EMPTYSTRING) {
 //          il.append(new CHECKCAST(cpg.addClass(className)));
-//        }
-//        il.append(new PUTFIELD(cpg.addFieldref(classGen.getClassName(), name, signature)));
-//      }
-//    }
+        }
+      }
+    }
   }
 }

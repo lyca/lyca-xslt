@@ -21,15 +21,14 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
+import static com.sun.codemodel.JExpr.lit;
+
 import java.util.List;
 
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.PUSH;
+import com.sun.codemodel.JExpression;
 
-import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
-import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
 
@@ -77,6 +76,11 @@ final class ElementAvailableCall extends FunctionCall {
     } catch (final ClassCastException e) {
       return false;
     }
+  }
+
+  @Override
+  public JExpression compile(CompilerContext ctx) {
+    return lit(getResult());
   }
 
   /**

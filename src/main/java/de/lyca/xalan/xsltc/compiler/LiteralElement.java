@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JVar;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
@@ -318,7 +319,7 @@ final class LiteralElement extends Instruction {
     _allAttributesUnique = checkAttributesUnique();
 
     // Compile code to emit element start tag
-    JVar handler = ctx.param(TRANSLET_OUTPUT_PNAME);
+    JExpression handler = ctx.currentHandler();// param(TRANSLET_OUTPUT_PNAME);
     ctx.currentBlock().add(handler.invoke("startElement").arg(_name));
 
     // The value of an attribute may depend on a (sibling) variable

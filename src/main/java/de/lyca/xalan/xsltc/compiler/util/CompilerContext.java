@@ -17,6 +17,7 @@
 
 package de.lyca.xalan.xsltc.compiler.util;
 
+import static com.sun.codemodel.JExpr.direct;
 import static de.lyca.xalan.xsltc.compiler.Constants.DOCUMENT_PNAME;
 import static de.lyca.xalan.xsltc.compiler.Constants.DOM_FIELD;
 import static de.lyca.xalan.xsltc.compiler.Constants.TRANSLET_PNAME;
@@ -52,7 +53,13 @@ public class CompilerContext {
   private final Deque<JExpression> handlers = new ArrayDeque<>();
   private final Deque<MethodContext> methods = new ArrayDeque<>();
 
-  private final AtomicInteger tmpIterator = new AtomicInteger();
+  private final AtomicInteger resultTreeFrag = new AtomicInteger();
+  private final AtomicInteger nameValue = new AtomicInteger();
+  private final AtomicInteger elementName = new AtomicInteger();
+  private final AtomicInteger current = new AtomicInteger();
+  private final AtomicInteger parent = new AtomicInteger();
+  private final AtomicInteger sortFactory = new AtomicInteger();
+  private final AtomicInteger decimalFormatting = new AtomicInteger();
 
   public CompilerContext(JCodeModel owner, JDefinedClass clazz, Stylesheet stylesheet, XSLTC xsltc) {
     this.owner = owner;
@@ -85,6 +92,14 @@ public class CompilerContext {
     return clazz.field(JMod.PUBLIC, type, name);
   }
 
+  public JFieldVar addPrivateField(Class<?> type, String name) {
+    return clazz.field(JMod.PRIVATE, type, name);
+  }
+  
+  public JFieldVar addPrivateField(JType type, String name) {
+    return clazz.field(JMod.PRIVATE, type, name);
+  }
+  
   public JFieldVar addProtectedStaticField(Class<?> type, String name) {
     return clazz.field(JMod.PROTECTED | JMod.STATIC, type, name);
   }
@@ -119,8 +134,8 @@ public class CompilerContext {
     return methods.peek() == null ? null : methods.peek().method;
   }
 
-  public void popMethodContext() {
-    methods.pop();
+  public MethodContext popMethodContext() {
+    return methods.pop();
   }
 
   public JVar param(Class<?> type, String name) {
@@ -177,31 +192,106 @@ public class CompilerContext {
     return methods.peek().currentNodes.peek();
   }
 
+  public void addParent(JVar node) {
+    methods.peek().currentParents.add(node);
+  }
+  
+  public JVar pollParent() {
+    return methods.peek().currentParents.poll();
+  }
+  
+  public JVar currentParent() {
+    return methods.peek().currentParents.peekLast();
+  }
+  
   public String currentTmpIterator() {
-    return "tmpIterator" + tmpIterator.get();
+    return currentMethodContext().currentTmpIterator();
   }
 
   public String nextTmpIterator() {
-    return "tmpIterator" + tmpIterator.incrementAndGet();
+    return currentMethodContext().nextTmpIterator();
+  }
+
+  public String currentResultTreeFrag() {
+    return "resultTreeFrag" + resultTreeFrag.get();
+  }
+
+  public String nextResultTreeFrag() {
+    return "resultTreeFrag" + resultTreeFrag.incrementAndGet();
+  }
+
+  public String currentNameValue() {
+    return "nameValue" + nameValue.get();
+  }
+
+  public String nextNameValue() {
+    return "nameValue" + nameValue.incrementAndGet();
+  }
+
+  public String currentElementName() {
+    return "elementName" + elementName.get();
+  }
+
+  public String nextElementName() {
+    return "elementName" + elementName.incrementAndGet();
+  }
+
+  public String currentCurrent() {
+    return "current" + current.get();
+  }
+
+  public String nextCurrent() {
+    return "current" + current.incrementAndGet();
+  }
+
+  public String nextParent() {
+    return "parent" + parent.incrementAndGet();
+  }
+
+  public String nextSortFactory() {
+    return "sortFactory" + sortFactory.incrementAndGet();
+  }
+
+  public String nextDecimalFormatting() {
+    return "__$dfs" + decimalFormatting.incrementAndGet();
   }
 
   public JExpression currentDom() {
     // FIXME find better way
     JExpression document = param(DOCUMENT_PNAME);
     if (document == null) {
-      document = ((JExpression) JExpr.cast(clazz().outer(), param(TRANSLET_PNAME))).ref(DOM_FIELD);
+      if (param(TRANSLET_PNAME) == null) {
+        document = direct("_document");
+      } else {
+        document = ((JExpression) JExpr.cast(clazz().outer(), param(TRANSLET_PNAME))).ref(DOM_FIELD);
+      }
     }
     return document;
   }
 
-  private static class MethodContext {
+  public boolean isInnerClass() {
+    return clazz().outer() != null;
+  }
+
+  public static class MethodContext {
     private final JMethod method;
     private final HashMap<String, JVar> methodParams = new HashMap<>();
     private final Deque<JVar> currentNodes = new ArrayDeque<>();
+    private final Deque<JVar> currentParents = new ArrayDeque<>();
+    private final AtomicInteger iterator = new AtomicInteger();
 
     public MethodContext(JMethod method) {
       this.method = method;
     }
+
+    public String currentTmpIterator() {
+      return "iterator" + iterator.get();
+    }
+
+    public String nextTmpIterator() {
+      return "iterator" + iterator.incrementAndGet();
+    }
+
   }
 
 }

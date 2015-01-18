@@ -21,21 +21,19 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
+import static com.sun.codemodel.JExpr.invoke;
+import static com.sun.codemodel.JExpr.lit;
+
 import java.util.List;
 
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.INVOKESTATIC;
-import org.apache.bcel.generic.INVOKEVIRTUAL;
-import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.PUSH;
+import com.sun.codemodel.JExpression;
 
-import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
-import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 import de.lyca.xalan.xsltc.compiler.util.RealType;
 import de.lyca.xalan.xsltc.compiler.util.StringType;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
+import de.lyca.xalan.xsltc.runtime.BasisLibrary;
 
 /**
  * @author Jacek Ambroziak
@@ -80,6 +78,22 @@ final class FormatNumberCall extends FunctionCall {
       }
     }
     return _type = Type.String;
+  }
+
+  @Override
+  public JExpression compile(CompilerContext ctx) {
+    JExpression value = _value.compile(ctx);
+    JExpression format = _format.compile(ctx);
+    JExpression name;
+    if (_name == null) {
+      name = lit(EMPTYSTRING);
+    } else if (_resolvedQName != null) {
+      name = lit(_resolvedQName.toString());
+    } else {
+      name = _name.compile(ctx);
+    }
+    return ctx.ref(BasisLibrary.class).staticInvoke("formatNumber").arg(value).arg(format)
+        .arg(invoke("getDecimalFormat").arg(name));
   }
 
   @Override

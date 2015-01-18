@@ -27,14 +27,20 @@ import static com.sun.codemodel.JExpr.lit;
 
 import java.util.List;
 
+import com.sun.codemodel.JBlock;
+import com.sun.codemodel.JConditional;
 import com.sun.codemodel.JExpr;
 import com.sun.codemodel.JExpression;
+import com.sun.codemodel.JStatement;
+import com.sun.codemodel.JVar;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
+import de.lyca.xalan.xsltc.dom.MatchingIterator;
 import de.lyca.xml.dtm.Axis;
 import de.lyca.xml.dtm.DTM;
+import de.lyca.xml.dtm.DTMAxisIterator;
 
 /**
  * @author Jacek Ambroziak
@@ -252,7 +258,49 @@ class StepPattern extends RelativePathPattern {
   }
 
   private JExpression compileNoContext(CompilerContext ctx) {
-    return null;
+//  final InstructionList il = methodGen.getInstructionList();
+
+  // Push current node on the stack
+//  il.append(methodGen.loadCurrentNode());
+//  il.append(SWAP);
+
+  // Overwrite current node with matching node
+//  il.append(methodGen.storeCurrentNode());
+
+  // If pattern not reduced then check kernel
+  JExpression result = null;
+  if (!_isEpsilon) {
+//    il.append(methodGen.loadCurrentNode());
+    result = compileKernel(ctx);
+  }
+
+  // Compile the expressions within the predicates
+  for (final Predicate pred : _predicates) {
+    final Expression exp = pred.getExpr();
+    if(result ==null){
+      result = exp.compile(ctx);
+    }else{
+      result = result.cand(exp.compile(ctx));
+    }
+//    exp.translateDesynthesized(classGen, methodGen);
+//    _trueList.append(exp._trueList);
+//    _falseList.append(exp._falseList);
+  }
+
+  // Backpatch true list and restore current iterator/node
+//  InstructionHandle restore;
+//  restore = il.append(methodGen.storeCurrentNode());
+//  backPatchTrueList(restore);
+//  final BranchHandle skipFalse = il.append(new GOTO(null));
+
+  // Backpatch false list and restore current iterator/node
+//  restore = il.append(methodGen.storeCurrentNode());
+//  backPatchFalseList(restore);
+//  _falseList.add(il.append(new GOTO(null)));
+
+  // True list falls through
+//  skipFalse.setTarget(il.append(NOP));
+    return result;
   }
 
   private void translateNoContext(CompilerContext ctx) {
@@ -296,7 +344,92 @@ class StepPattern extends RelativePathPattern {
   }
 
   private JExpression compileSimpleContext(CompilerContext ctx) {
-    return null;
+//  int index;
+//  final ConstantPoolGen cpg = classGen.getConstantPool();
+//  final InstructionList il = methodGen.getInstructionList();
+
+  // Store matching node into a local variable
+//  LocalVariableGen match;
+//  match = methodGen.addLocalVariable("step_pattern_tmp1", Util.getJCRefType(NODE_SIG), null, null);
+//  match.setStart(il.append(new ISTORE(match.getIndex())));
+
+  // If pattern not reduced then check kernel
+  JExpression kernel = null;
+  if (!_isEpsilon) {
+//    il.append(new ILOAD(match.getIndex()));
+//    translateKernel(classGen, methodGen);
+    kernel = compileKernel(ctx);
+  }
+
+  // Push current iterator and current node on the stack
+//  il.append(methodGen.loadCurrentNode());
+//  il.append(methodGen.loadIterator());
+
+  // Create a new matching iterator using the matching node
+//  index = cpg.addMethodref(MATCHING_ITERATOR, "<init>", "(I" + NODE_ITERATOR_SIG + ")V");
+
+  // Backwards branches are prohibited if an uninitialized object is
+  // on the stack by section 4.9.4 of the JVM Specification, 2nd Ed.
+  // We don't know whether this code might contain backwards branches,
+  // so we mustn't create the new object until after we've created
+  // the suspect arguments to its constructor. Instead we calculate
+  // the values of the arguments to the constructor first, store them
+  // in temporary variables, create the object and reload the
+  // arguments from the temporaries to avoid the problem.
+
+//  _step.translate(classGen, methodGen);
+//  final LocalVariableGen stepIteratorTemp = methodGen.addLocalVariable("step_pattern_tmp2",
+//          Util.getJCRefType(NODE_ITERATOR_SIG), null, null);
+//  stepIteratorTemp.setStart(il.append(new ASTORE(stepIteratorTemp.getIndex())));
+
+  JExpression step = _step.compile(ctx);
+  
+//  il.append(new NEW(cpg.addClass(MATCHING_ITERATOR)));
+//  il.append(DUP);
+//  il.append(new ILOAD(match.getIndex()));
+//  stepIteratorTemp.setEnd(il.append(new ALOAD(stepIteratorTemp.getIndex())));
+//  il.append(new INVOKESPECIAL(index));
+  JExpression match = JExpr._new(ctx.ref(MatchingIterator.class)).arg(ctx.currentNode()).arg(step);
+
+  // Get the parent of the matching node
+//  il.append(methodGen.loadDOM());
+//  il.append(new ILOAD(match.getIndex()));
+//  index = cpg.addInterfaceMethodref(DOM_INTF, GET_PARENT, GET_PARENT_SIG);
+//  il.append(new INVOKEINTERFACE(index, 2));
+  JExpression parent = ctx.currentDom().invoke(GET_PARENT).arg(ctx.currentNode());
+
+  // Start the iterator with the parent
+//  il.append(methodGen.setStartNode());
+  match = match.invoke("setStartNode").arg(parent);
+
+  ctx.currentBlock().decl(ctx.ref(DTMAxisIterator.class), ctx.nextTmpIterator(), match);
+  // Overwrite current iterator and current node
+//  il.append(methodGen.storeIterator());
+//  match.setEnd(il.append(new ILOAD(match.getIndex())));
+//  il.append(methodGen.storeCurrentNode());
+
+  // Translate the expression of the predicate
+  final Predicate pred = _predicates.get(0);
+  final Expression exp = pred.getExpr();
+  return kernel ==null ? exp.compile(ctx):kernel.cand(exp.compile(ctx));
+  
+//  exp.translateDesynthesized(classGen, methodGen);
+
+  // Backpatch true list and restore current iterator/node
+//  InstructionHandle restore = il.append(methodGen.storeIterator());
+//  il.append(methodGen.storeCurrentNode());
+//  exp.backPatchTrueList(restore);
+//  final BranchHandle skipFalse = il.append(new GOTO(null));
+
+  // Backpatch false list and restore current iterator/node
+//  restore = il.append(methodGen.storeIterator());
+//  il.append(methodGen.storeCurrentNode());
+//  exp.backPatchFalseList(restore);
+//  _falseList.add(il.append(new GOTO(null)));
+
+  // True list falls through
+//  skipFalse.setTarget(il.append(NOP));
+//    return match;
   }
 
   private void translateSimpleContext(CompilerContext ctx) {
@@ -379,7 +512,99 @@ class StepPattern extends RelativePathPattern {
   }
 
   private JExpression compileGeneralContext(CompilerContext ctx) {
-    return null;
+//    final ConstantPoolGen cpg = classGen.getConstantPool();
+//    final InstructionList il = methodGen.getInstructionList();
+
+//    int iteratorIndex = 0;
+//    BranchHandle ifBlock = null;
+//    LocalVariableGen iter, node, node2;
+//    final String iteratorName = getNextFieldName();
+
+    // Store node on the stack into a local variable
+//    node = methodGen.addLocalVariable("step_pattern_tmp1", Util.getJCRefType(NODE_SIG), null, null);
+//    node.setStart(il.append(new ISTORE(node.getIndex())));
+
+    // Create a new local to store the iterator
+//    iter = methodGen.addLocalVariable("step_pattern_tmp2", Util.getJCRefType(NODE_ITERATOR_SIG), null, null);
+
+    // Add a new private field if this is the main class
+//    if (!classGen.isExternal()) {
+//      final Field iterator = new Field(ACC_PRIVATE, cpg.addUtf8(iteratorName), cpg.addUtf8(NODE_ITERATOR_SIG), null,
+//          cpg.getConstantPool());
+//      classGen.addField(iterator);
+//      iteratorIndex = cpg.addFieldref(classGen.getClassName(), iteratorName, NODE_ITERATOR_SIG);
+//
+//      il.append(classGen.loadTranslet());
+//      il.append(new GETFIELD(iteratorIndex));
+//      il.append(DUP);
+//      iter.setStart(il.append(new ASTORE(iter.getIndex())));
+//      ifBlock = il.append(new IFNONNULL(null));
+//      il.append(classGen.loadTranslet());
+//    }
+
+    // Compile the step created at type checking time
+    JExpression step = _step.compile(ctx);
+//    final InstructionHandle iterStore = il.append(new ASTORE(iter.getIndex()));
+
+    // If in the main class update the field too
+//    if (!classGen.isExternal()) {
+//      il.append(new ALOAD(iter.getIndex()));
+//      il.append(new PUTFIELD(iteratorIndex));
+//      ifBlock.setTarget(il.append(NOP));
+//    } else {
+      // If class is not external, start of range for iter variable was
+      // set above
+//      iter.setStart(iterStore);
+//    }
+
+    // Get the parent of the node on the stack
+//    il.append(methodGen.loadDOM());
+//    il.append(new ILOAD(node.getIndex()));
+//    final int index = cpg.addInterfaceMethodref(DOM_INTF, GET_PARENT, GET_PARENT_SIG);
+//    il.append(new INVOKEINTERFACE(index, 2));
+    JExpression parent = ctx.currentDom().invoke(GET_PARENT).arg(ctx.currentNode());
+
+    // Initialize the iterator with the parent
+//    il.append(new ALOAD(iter.getIndex()));
+//    il.append(SWAP);
+//    il.append(methodGen.setStartNode());
+
+//    JVar iter = ctx.currentBlock().decl(ctx.ref(DTMAxisIterator.class), ctx.nextTmpIterator(),
+//        step.invoke(SET_START_NODE).arg(parent));
+
+    /*
+     * Inline loop:
+     * 
+     * int node2; while ((node2 = iter.next()) != NodeIterator.END && node2 <
+     * node); return node2 == node;
+     */
+//    BranchHandle skipNext;
+//    InstructionHandle begin, next;
+//    node2 = methodGen.addLocalVariable("step_pattern_tmp3", Util.getJCRefType(NODE_SIG), null, null);
+
+//    skipNext = il.append(new GOTO(null));
+//    next = il.append(new ALOAD(iter.getIndex()));
+//    node2.setStart(next);
+//    begin = il.append(methodGen.nextNode());
+//    il.append(DUP);
+//    il.append(new ISTORE(node2.getIndex()));
+//    _falseList.add(il.append(new IFLT(null))); // NodeIterator.END
+
+//    il.append(new ILOAD(node2.getIndex()));
+//    il.append(new ILOAD(node.getIndex()));
+//    iter.setEnd(il.append(new IF_ICMPLT(next)));
+
+//    node2.setEnd(il.append(new ILOAD(node2.getIndex())));
+//    node.setEnd(il.append(new ILOAD(node.getIndex())));
+//    _falseList.add(il.append(new IF_ICMPNE(null)));
+
+//    skipNext.setTarget(begin);
+    JVar iterator = ctx.currentBlock().decl(ctx.ref(DTMAxisIterator.class), ctx.nextTmpIterator(),
+        step.invoke(SET_START_NODE).arg(parent));
+    JVar current = ctx.currentBlock().decl(ctx.owner().INT, ctx.nextCurrent(), iterator.invoke(NEXT));
+    ctx.currentBlock()._while(current.gte(JExpr.lit(0)).cand(current.lt(ctx.currentNode()))).body()
+        .assign(current, iterator.invoke(NEXT));
+    return current.eq(ctx.currentNode());
   }
 
   private void translateGeneralContext(CompilerContext ctx) {
@@ -467,6 +692,15 @@ class StepPattern extends RelativePathPattern {
 //    _falseList.add(il.append(new IF_ICMPNE(null)));
 //
 //    skipNext.setTarget(begin);
+  }
+
+  @Override
+  public void compilePattern(CompilerContext ctx, JStatement fail) {
+    JConditional _if = ctx.currentBlock()._if(compile(ctx));
+    JBlock _then = _if._then();
+    _then.add(getTemplate().compile(ctx));
+    _then._break();
+    if(fail != null) _if._else().add(fail);
   }
 
   @Override

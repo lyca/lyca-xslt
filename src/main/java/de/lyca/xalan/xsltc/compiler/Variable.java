@@ -153,7 +153,7 @@ final class Variable extends VariableBase {
     if (isLocal()) {
       // Add a new local variable and store value
       if (_local == null) {
-        mapRegister(ctx.currentMethod());
+        mapRegister(ctx);
       }
       // Compile variable value computation
       ctx.currentBlock().assign(_local, compileValue(ctx));

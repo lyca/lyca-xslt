@@ -21,21 +21,25 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
+import static com.sun.codemodel.JExpr.invoke;
+
 import java.util.List;
 import java.util.ListIterator;
 
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.INVOKESPECIAL;
-import org.apache.bcel.generic.InstructionList;
+import com.sun.codemodel.JMethod;
+import com.sun.codemodel.JMod;
+import com.sun.codemodel.JStatement;
+import com.sun.codemodel.JVar;
 
-import de.lyca.xalan.xsltc.compiler.util.AttributeSetMethodGenerator;
-import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
+import de.lyca.xalan.xsltc.DOM;
+import de.lyca.xalan.xsltc.TransletException;
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
-import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
 import de.lyca.xalan.xsltc.compiler.util.Util;
+import de.lyca.xml.dtm.DTMAxisIterator;
+import de.lyca.xml.serializer.SerializationHandler;
 import de.lyca.xml.utils.XML11Char;
 
 /**
@@ -150,50 +154,65 @@ final class AttributeSet extends TopLevelElement {
     return Type.Void;
   }
 
+  @Override
+  public JStatement compile(CompilerContext ctx) {
+    return invoke(_method).arg(ctx.currentDom()).arg(ctx.param(ITERATOR_PNAME)).arg(ctx.currentHandler());
+  }
+  
   /**
    * Compile a method that outputs the attributes in this set
    */
   @Override
   public void translate(CompilerContext ctx) {
 // FIXME
-//
-//    if (_ignore)
-//      return;
-//
-//    // Create a new method generator for an attribute set method
+
+    if (_ignore)
+      return;
+
+    JMethod method = ctx.method(JMod.PRIVATE, void.class, _method)._throws(TransletException.class);
+    ctx.param(DOM.class, DOCUMENT_PNAME);
+    ctx.param(DTMAxisIterator.class, ITERATOR_PNAME);
+    JVar handler = ctx.param(SerializationHandler.class, TRANSLET_OUTPUT_PNAME);
+    ctx.pushBlock(method.body());
+    ctx.pushHandler(handler);
+    // Create a new method generator for an attribute set method
 //    methodGen = new AttributeSetMethodGenerator(_method, classGen);
-//
-//    // Generate a reference to previous attribute-set definitions with the
-//    // same name first. Those later in the stylesheet take precedence.
-//    if (_mergeSet != null) {
+
+    // Generate a reference to previous attribute-set definitions with the
+    // same name first. Those later in the stylesheet take precedence.
+    if (_mergeSet != null) {
 //      final ConstantPoolGen cpg = classGen.getConstantPool();
 //      final InstructionList il = methodGen.getInstructionList();
-//      final String methodName = _mergeSet.getMethodName();
-//
+      final String methodName = _mergeSet.getMethodName();
+
+      ctx.currentBlock().add(_mergeSet.compile(ctx));
 //      il.append(classGen.loadTranslet());
 //      il.append(methodGen.loadDOM());
 //      il.append(methodGen.loadIterator());
 //      il.append(methodGen.loadHandler());
 //      final int method = cpg.addMethodref(classGen.getClassName(), methodName, ATTR_SET_SIG);
 //      il.append(new INVOKESPECIAL(method));
-//    }
-//
-//    // Translate other used attribute sets first, as local attributes
-//    // take precedence (last attributes overrides first)
-//    if (_useSets != null) {
-//      _useSets.translate(classGen, methodGen);
-//    }
-//
-//    // Translate all local attributes
-//    for (SyntaxTreeNode element : getContents()) {
-//      if (element instanceof XslAttribute) {
-//        element.translate(classGen, methodGen);
-//      }
-//    }
+    }
+
+    // Translate other used attribute sets first, as local attributes
+    // take precedence (last attributes overrides first)
+    if (_useSets != null) {
+      _useSets.translate(ctx);
+    }
+
+    // Translate all local attributes
+    for (SyntaxTreeNode element : getContents()) {
+      if (element instanceof XslAttribute) {
+        element.translate(ctx);
+      }
+    }
 //    final InstructionList il = methodGen.getInstructionList();
 //    il.append(RETURN);
-//
+
 //    classGen.addMethod(methodGen);
+    ctx.popHandler();
+    ctx.popBlock();
+    ctx.popMethodContext();
   }
 
   @Override

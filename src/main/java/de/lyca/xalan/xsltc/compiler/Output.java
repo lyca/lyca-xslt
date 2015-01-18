@@ -346,7 +346,7 @@ final class Output extends TopLevelElement {
 
     // Compile code to set indent amount.
     if (_indentamount != null && !_indentamount.equals(EMPTYSTRING)) {
-      body.assign(ref("_indentamount"), lit(_indentamount));
+      body.assign(ref("_indentamount"), lit(Integer.parseInt(_indentamount)));
     }
 
     // Forward to the translet any elements that should be output as CDATA

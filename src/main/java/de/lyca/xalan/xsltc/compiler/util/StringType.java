@@ -28,10 +28,13 @@ import org.apache.bcel.generic.ASTORE;
 import org.apache.bcel.generic.Instruction;
 
 import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JExpr;
 import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JMethod;
+import com.sun.codemodel.JOp;
 import com.sun.codemodel.JType;
 
+import de.lyca.xalan.xsltc.compiler.Constants;
 import de.lyca.xalan.xsltc.compiler.FlowList;
 import de.lyca.xalan.xsltc.runtime.BasisLibrary;
 
@@ -190,6 +193,17 @@ public class StringType extends Type {
 //    }
   }
 
+  public JExpression compileTo(CompilerContext ctx, JExpression expr, Class<?> clazz) {
+    // Is String <: clazz? I.e. clazz in { String, Object }
+    if (clazz.isAssignableFrom(java.lang.String.class)) {
+      return expr;
+    } else {
+      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), clazz.getName());
+      ctx.xsltc().getParser().reportError(Constants.FATAL, err);
+      return null;
+    }
+  }
+  
   /**
    * Translates an external (primitive) Java type into a string.
    * 
@@ -212,6 +226,17 @@ public class StringType extends Type {
 //      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), clazz.getName());
 //      classGen.getParser().reportError(Constants.FATAL, err);
 //    }
+  }
+
+  public JExpression compileFrom(CompilerContext ctx, JExpression expr, Class<?> clazz) {
+    if (String.class.equals(clazz)) {
+      // same internal representation, convert null to ""
+      return JOp.cond(expr.eq(JExpr._null()), JExpr.lit(""), expr);
+    } else {
+      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), clazz.getName());
+      ctx.xsltc().getParser().reportError(Constants.FATAL, err);
+      return null;
+    }
   }
 
   /**

@@ -21,6 +21,8 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
+import static com.sun.codemodel.JExpr._new;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -37,7 +39,6 @@ import java.util.Set;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.INVOKESTATIC;
 import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.LocalVariableGen;
 import org.apache.bcel.generic.PUSH;
 
 import com.sun.codemodel.JExpression;
@@ -714,28 +715,21 @@ class FunctionCall extends Expression {
 //        translateUnallowedExtension(cpg, il);
       }
 
+      JInvocation invocation = _new(ctx.ref(_chosenConstructor.getDeclaringClass()));
       final String clazz = _chosenConstructor.getDeclaringClass().getName();
       final Class<?>[] paramTypes = _chosenConstructor.getParameterTypes();
-      final LocalVariableGen[] paramTemp = new LocalVariableGen[n];
-
-      // Backwards branches are prohibited if an uninitialized object is
-      // on the stack by section 4.9.4 of the JVM Specification, 2nd Ed.
-      // We don't know whether this code might contain backwards branches
-      // so we mustn't create the new object until after we've created
-      // the suspect arguments to its constructor. Instead we calculate
-      // the values of the arguments to the constructor first, store them
-      // in temporary variables, create the object and reload the
-      // arguments from the temporaries to avoid the problem.
 
       for (int i = 0; i < n; i++) {
         final Expression exp = argument(i);
-        final Type expType = exp.getType();
+//        final Type expType = exp.getType();
 //        exp.translate(ctx);
         // Convert the argument to its Java type
 //        exp.startIterator(ctx);
-        expType.translateTo(ctx.clazz(), ctx.currentMethod(), paramTypes[i]);
+//        expType.translateTo(ctx.clazz(), ctx.currentMethod(), paramTypes[i]);
 //        paramTemp[i] = methodGen.addLocalVariable("function_call_tmp" + i, expType.toJCType(), null, null);
 //        paramTemp[i].setStart(il.append(expType.STORE(paramTemp[i].getIndex())));
+        JExpression expr = exp.getType().compileTo(ctx, exp.startIterator(ctx, exp.compile(ctx)), paramTypes[i]);
+        invocation.arg(expr);
       }
 
 //      il.append(new NEW(cpg.addClass(_className)));
@@ -758,7 +752,8 @@ class FunctionCall extends Expression {
 //      il.append(new INVOKESPECIAL(index));
 
       // Convert the return type back to our internal type
-      Type.Object.translateFrom(ctx.clazz(), ctx.currentMethod(), _chosenConstructor.getDeclaringClass());
+      return _type.getClassName().equals(_chosenConstructor.getDeclaringClass().getName()) ? invocation : _type.compileFrom(ctx, invocation,
+          _chosenConstructor.getDeclaringClass());
 
     }
     // Invoke function calls that are handled in separate classes
@@ -771,16 +766,24 @@ class FunctionCall extends Expression {
       final Class<?>[] paramTypes = _chosenMethod.getParameterTypes();
 
       // Push "this" if it is an instance method
+      JExpression thisArgument = null;
       if (_thisArgument != null) {
 //        _thisArgument.translate(ctx);
+          thisArgument = _thisArgument.compile(ctx);
       }
 
+      JInvocation invocation = thisArgument == null ? ctx.ref(_chosenMethod.getDeclaringClass()).staticInvoke(
+          _chosenMethod.getName()) : thisArgument.invoke(_chosenMethod.getName());
+
+      JExpression[] expressions = new JExpression[n];
       for (int i = 0; i < n; i++) {
         final Expression exp = argument(i);
 //        exp.translate(ctx);
         // Convert the argument to its Java type
 //        exp.startIterator(ctx);
-        exp.getType().translateTo(ctx.clazz(), ctx.currentMethod(), paramTypes[i]);
+//        exp.getType().translateTo(ctx.clazz(), ctx.currentMethod(), paramTypes[i]);
+        expressions[i] = exp.getType().compileTo(ctx, exp.startIterator(ctx, exp.compile(ctx)), paramTypes[i]);
+        invocation.arg(expressions[i]);
       }
 
       final StringBuilder buffer = new StringBuilder();
@@ -801,7 +804,8 @@ class FunctionCall extends Expression {
       }
 
       // Convert the return type back to our internal type
-      _type.translateFrom(ctx.clazz(), ctx.currentMethod(), _chosenMethod.getReturnType());
+      return _type.getClassName().equals(_chosenMethod.getReturnType().getName()) ? invocation : _type.compileFrom(ctx, invocation,
+          _chosenMethod.getReturnType());
     }
     return null;
   }

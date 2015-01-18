@@ -22,8 +22,11 @@
 package de.lyca.xalan.xsltc.compiler;
 
 import static com.sun.codemodel.JExpr._new;
+import static com.sun.codemodel.JExpr._super;
 import static com.sun.codemodel.JExpr._this;
+import static com.sun.codemodel.JExpr.cast;
 import static com.sun.codemodel.JExpr.direct;
+import static com.sun.codemodel.JExpr.lit;
 import static com.sun.codemodel.JExpr.newArray;
 import static com.sun.codemodel.JMod.FINAL;
 import static com.sun.codemodel.JMod.PUBLIC;
@@ -32,36 +35,27 @@ import static com.sun.codemodel.JMod.STATIC;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.bcel.classfile.Field;
-import org.apache.bcel.generic.ALOAD;
-import org.apache.bcel.generic.CHECKCAST;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.GETFIELD;
-import org.apache.bcel.generic.INVOKESPECIAL;
-import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.PUTFIELD;
-
 import com.sun.codemodel.JArray;
 import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JClass;
 import com.sun.codemodel.JClassAlreadyExistsException;
 import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JExpression;
-import com.sun.codemodel.JInvocation;
 import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JMod;
+import com.sun.codemodel.JSwitch;
+import com.sun.codemodel.JType;
 import com.sun.codemodel.JVar;
 
 import de.lyca.xalan.xsltc.DOM;
+import de.lyca.xalan.xsltc.Translet;
+import de.lyca.xalan.xsltc.TransletException;
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.IntType;
-import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
-import de.lyca.xalan.xsltc.compiler.util.NodeSortRecordFactGenerator;
 import de.lyca.xalan.xsltc.compiler.util.StringType;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
-import de.lyca.xalan.xsltc.compiler.util.Util;
 import de.lyca.xalan.xsltc.dom.NodeSortRecord;
 import de.lyca.xalan.xsltc.dom.NodeSortRecordFactory;
 import de.lyca.xalan.xsltc.dom.SortingIterator;
@@ -311,7 +305,7 @@ final class Sort extends Instruction implements Closure {
    */
   public static JExpression compileSortRecordFactory(List<Sort> sortObjects, CompilerContext ctx) {
  // FIXME
-    final String sortRecordClass = compileSortRecord(sortObjects, ctx);
+    final JClass sortRecordClass = compileSortRecord(sortObjects, ctx);
 
     boolean needsSortRecordFactory = false;
     final int nsorts = sortObjects.size();
@@ -320,9 +314,9 @@ final class Sort extends Instruction implements Closure {
       needsSortRecordFactory |= sort._needsSortRecordFactory;
     }
 
-    String sortRecordFactoryClass = NODE_SORT_FACTORY;
+    JClass nodeSortRecordFactory = ctx.ref(NodeSortRecordFactory.class);
     if (needsSortRecordFactory) {
-      sortRecordFactoryClass = compileSortRecordFactory(sortObjects, ctx.clazz(), ctx.currentMethod(), sortRecordClass);
+      nodeSortRecordFactory = compileSortRecordFactory(sortObjects, ctx, sortRecordClass);
     }
 
 //    final ConstantPoolGen cpg = definedClass.getConstantPool();
@@ -349,7 +343,7 @@ final class Sort extends Instruction implements Closure {
       final Sort sort = sortObjects.get(level);
       sortOrderArray.add(sort._order.compile(ctx));
     }
-    JVar sortOrderRef = ctx.currentBlock().decl(stringArray, "sort_order_tmp", sortOrderArray);
+//    JVar sortOrderRef = ctx.currentBlock().decl(stringArray, "sort_order_tmp", sortOrderArray);
 
     
 //    for (int level = 0; level < nsorts; level++) {
@@ -370,7 +364,7 @@ final class Sort extends Instruction implements Closure {
       final Sort sort = sortObjects.get(level);
       sortTypeArray.add(sort._dataType.compile(ctx));
     }
-    JVar sortTypeRef = ctx.currentBlock().decl(stringArray, "sort_type_tmp", sortTypeArray);
+//    JVar sortTypeRef = ctx.currentBlock().decl(stringArray, "sort_type_tmp", sortTypeArray);
 
 //    for (int level = 0; level < nsorts; level++) {
 //      final Sort sort = sortObjects.get(level);
@@ -390,7 +384,7 @@ final class Sort extends Instruction implements Closure {
       final Sort sort = sortObjects.get(level);
       sortLangArray.add(sort._lang.compile(ctx));
     }
-    JVar sortLangRef = ctx.currentBlock().decl(stringArray, "sort_lang_tmp", sortLangArray);
+//    JVar sortLangRef = ctx.currentBlock().decl(stringArray, "sort_lang_tmp", sortLangArray);
 
 //    for (int level = 0; level < nsorts; level++) {
 //      final Sort sort = sortObjects.get(level);
@@ -410,7 +404,7 @@ final class Sort extends Instruction implements Closure {
       final Sort sort = sortObjects.get(level);
       sortCaseOrderArray.add(sort._caseOrder.compile(ctx));
     }
-    JVar sortCaseOrderRef = ctx.currentBlock().decl(stringArray, "sort_case_tmp", sortCaseOrderArray);
+//    JVar sortCaseOrderRef = ctx.currentBlock().decl(stringArray, "sort_case_tmp", sortCaseOrderArray);
 
 //    for (int level = 0; level < nsorts; level++) {
 //      final Sort sort = sortObjects.get(level);
@@ -422,11 +416,7 @@ final class Sort extends Instruction implements Closure {
 //    sortCaseOrderTemp.setStart(il.append(new ASTORE(sortCaseOrderTemp.getIndex())));
 
     JClass sortingIterator = ctx.ref(SortingIterator.class);
-    JClass nodeSortRecordFactory = ctx.ref(NodeSortRecordFactory.class);
     JClass dtmAxisIterator = ctx.ref(DTMAxisIterator.class);
-    JInvocation nsrf = _new(nodeSortRecordFactory).arg(ctx.currentDom()).arg(sortRecordClass).arg(_this()).arg(sortOrderRef).arg(sortTypeRef).arg(sortLangRef).arg(sortCaseOrderRef);
-    String currentTmpIterator = ctx.currentTmpIterator();
-    JVar iterator = ctx.currentBlock().decl(dtmAxisIterator, ctx.nextTmpIterator(), _new(sortingIterator).arg(direct(currentTmpIterator)).arg(nsrf).invoke("setStartNode").arg(direct("node")));
 //    il.append(new NEW(cpg.addClass(sortRecordFactoryClass)));
 //    il.append(DUP);
 //    il.append(method.loadDOM());
@@ -440,6 +430,7 @@ final class Sort extends Instruction implements Closure {
 
 //    il.append(new INVOKESPECIAL(cpg.addMethodref(sortRecordFactoryClass, "<init>", "(" + DOM_INTF_SIG + STRING_SIG
 //            + TRANSLET_INTF_SIG + "[" + STRING_SIG + "[" + STRING_SIG + "[" + STRING_SIG + "[" + STRING_SIG + ")V")));
+    JVar nsrf = ctx.currentBlock().decl(nodeSortRecordFactory,ctx.nextSortFactory(), _new(nodeSortRecordFactory).arg(ctx.currentDom()).arg(sortRecordClass.binaryName()).arg(_this()).arg(sortOrderArray).arg(sortTypeArray).arg(sortLangArray).arg(sortCaseOrderArray));
 
     // Initialize closure variables in sortRecordFactory
     final List<VariableRefBase> dups = new ArrayList<>();
@@ -458,6 +449,7 @@ final class Sort extends Instruction implements Closure {
 
         final VariableBase var = varRef.getVariable();
 
+        ctx.currentBlock().assign(nsrf.ref(var.getEscapedName()), var._select.compile(ctx));
         // Store variable in new closure
 //        il.append(DUP);
 //        il.append(var.loadInstruction());
@@ -466,18 +458,29 @@ final class Sort extends Instruction implements Closure {
         dups.add(varRef);
       }
     }
+    String currentTmpIterator = ctx.currentTmpIterator();
+    JVar iterator = ctx.currentBlock().decl(dtmAxisIterator, ctx.nextTmpIterator(), _new(sortingIterator).arg(direct(currentTmpIterator)).arg(nsrf).invoke("setStartNode").arg(ctx.currentNode()));
     return iterator;
   }
 
-  public static String compileSortRecordFactory(List<Sort> sortObjects, JDefinedClass definedClass,
-          JMethod method, String sortRecordClass) {
-    final XSLTC xsltc = sortObjects.get(0).getXSLTC();
+  public static JClass compileSortRecordFactory(List<Sort> sortObjects, CompilerContext ctx, JClass sortRecordClass) {
+    final XSLTC xsltc = ctx.xsltc();
     final String className = xsltc.getHelperClassName();
 
-    final NodeSortRecordFactGenerator sortRecordFactory = new NodeSortRecordFactGenerator(className, NODE_SORT_FACTORY,
-            className + ".java", ACC_PUBLIC | ACC_SUPER | ACC_FINAL, new String[] {}, xsltc.getStylesheet());
+    // This generates a new class for handling this specific sort
+    CompilerContext factoryCtx;
+    JDefinedClass nodeSortRecordFactory;
+    try {
+      nodeSortRecordFactory = ctx.clazz()._class(PUBLIC | STATIC | FINAL, className)._extends(NodeSortRecordFactory.class);
+    } catch (JClassAlreadyExistsException e) {
+      throw new RuntimeException(e);
+    }
+    factoryCtx = new CompilerContext(ctx.owner(), nodeSortRecordFactory, ctx.stylesheet(), xsltc);
 
-    final ConstantPoolGen cpg = sortRecordFactory.getConstantPool();
+//    final NodeSortRecordFactGenerator sortRecordFactory = new NodeSortRecordFactGenerator(className, NODE_SORT_FACTORY,
+//            className + ".java", ACC_PUBLIC | ACC_SUPER | ACC_FINAL, new String[] {}, xsltc.getStylesheet());
+//
+//    final ConstantPoolGen cpg = sortRecordFactory.getConstantPool();
 
     // Add a new instance variable for each var in closure
     final int nsorts = sortObjects.size();
@@ -495,117 +498,142 @@ final class Sort extends Instruction implements Closure {
           continue;
         }
 
+        JType jcType = varRef.getType().toJCType();
         final VariableBase var = varRef.getVariable();
-        sortRecordFactory.addField(new Field(ACC_PUBLIC, cpg.addUtf8(var.getEscapedName()), cpg.addUtf8(var.getType()
-                .toSignature()), null, cpg.getConstantPool()));
+        String escapedName = var.getEscapedName();
+        JVar field = factoryCtx.addPublicField(jcType, escapedName);
+//        sortRecordFactory.addField(new Field(ACC_PUBLIC, cpg.addUtf8(var.getEscapedName()), cpg.addUtf8(var.getType()
+//                .toSignature()), null, cpg.getConstantPool()));
         dups.add(varRef);
       }
     }
 
     // Define a constructor for this class
-    final org.apache.bcel.generic.Type[] argTypes = new org.apache.bcel.generic.Type[7];
-    argTypes[0] = Util.getJCRefType(DOM_INTF_SIG);
-    argTypes[1] = Util.getJCRefType(STRING_SIG);
-    argTypes[2] = Util.getJCRefType(TRANSLET_INTF_SIG);
-    argTypes[3] = Util.getJCRefType("[" + STRING_SIG);
-    argTypes[4] = Util.getJCRefType("[" + STRING_SIG);
-    argTypes[5] = Util.getJCRefType("[" + STRING_SIG);
-    argTypes[6] = Util.getJCRefType("[" + STRING_SIG);
+    JMethod constructor = nodeSortRecordFactory.constructor(PUBLIC)._throws(TransletException.class);
+    JVar document = constructor.param(ctx.ref(DOM.class), DOCUMENT_PNAME);
+    JVar clazzName = constructor.param(ctx.ref(String.class), "className");
+    JVar translet = constructor.param(ctx.ref(Translet.class), TRANSLET_PNAME);
+    JVar order = constructor.param(ctx.ref(String[].class), "order");
+    JVar type = constructor.param(ctx.ref(String[].class), "type");
+    JVar lang = constructor.param(ctx.ref(String[].class), "lang");
+    JVar caseOrder = constructor.param(ctx.ref(String[].class), "caseOrder");
+    constructor.body().invoke("super").arg(document).arg(clazzName).arg(translet).arg(order).arg(type).arg(lang)
+        .arg(caseOrder);
 
-    final String[] argNames = new String[7];
-    argNames[0] = DOCUMENT_PNAME;
-    argNames[1] = "className";
-    argNames[2] = TRANSLET_PNAME;
-    argNames[3] = "order";
-    argNames[4] = "type";
-    argNames[5] = "lang";
-    argNames[6] = "case_order";
+//    final org.apache.bcel.generic.Type[] argTypes = new org.apache.bcel.generic.Type[7];
+//    argTypes[0] = Util.getJCRefType(DOM_INTF_SIG);
+//    argTypes[1] = Util.getJCRefType(STRING_SIG);
+//    argTypes[2] = Util.getJCRefType(TRANSLET_INTF_SIG);
+//    argTypes[3] = Util.getJCRefType("[" + STRING_SIG);
+//    argTypes[4] = Util.getJCRefType("[" + STRING_SIG);
+//    argTypes[5] = Util.getJCRefType("[" + STRING_SIG);
+//    argTypes[6] = Util.getJCRefType("[" + STRING_SIG);
 
-    InstructionList il = new InstructionList();
-    final MethodGenerator constructor = new MethodGenerator(ACC_PUBLIC, org.apache.bcel.generic.Type.VOID, argTypes,
-            argNames, "<init>", className, il, cpg);
+//    final String[] argNames = new String[7];
+//    argNames[0] = DOCUMENT_PNAME;
+//    argNames[1] = "className";
+//    argNames[2] = TRANSLET_PNAME;
+//    argNames[3] = "order";
+//    argNames[4] = "type";
+//    argNames[5] = "lang";
+//    argNames[6] = "case_order";
+
+//    InstructionList il = new InstructionList();
+//    final MethodGenerator constructor = new MethodGenerator(ACC_PUBLIC, org.apache.bcel.generic.Type.VOID, argTypes,
+//            argNames, "<init>", className, il, cpg);
 
     // Push all parameters onto the stack and called super.<init>()
-    il.append(ALOAD_0);
-    il.append(ALOAD_1);
-    il.append(ALOAD_2);
-    il.append(new ALOAD(3));
-    il.append(new ALOAD(4));
-    il.append(new ALOAD(5));
-    il.append(new ALOAD(6));
-    il.append(new ALOAD(7));
-    il.append(new INVOKESPECIAL(cpg.addMethodref(NODE_SORT_FACTORY, "<init>", "(" + DOM_INTF_SIG + STRING_SIG
-            + TRANSLET_INTF_SIG + "[" + STRING_SIG + "[" + STRING_SIG + "[" + STRING_SIG + "[" + STRING_SIG + ")V")));
-    il.append(RETURN);
+//    il.append(ALOAD_0);
+//    il.append(ALOAD_1);
+//    il.append(ALOAD_2);
+//    il.append(new ALOAD(3));
+//    il.append(new ALOAD(4));
+//    il.append(new ALOAD(5));
+//    il.append(new ALOAD(6));
+//    il.append(new ALOAD(7));
+//    il.append(new INVOKESPECIAL(cpg.addMethodref(NODE_SORT_FACTORY, "<init>", "(" + DOM_INTF_SIG + STRING_SIG
+//            + TRANSLET_INTF_SIG + "[" + STRING_SIG + "[" + STRING_SIG + "[" + STRING_SIG + "[" + STRING_SIG + ")V")));
+//    il.append(RETURN);
 
     // Override the definition of makeNodeSortRecord()
-    il = new InstructionList();
-    final MethodGenerator makeNodeSortRecord = new MethodGenerator(ACC_PUBLIC, Util.getJCRefType(NODE_SORT_RECORD_SIG),
-            new org.apache.bcel.generic.Type[] { org.apache.bcel.generic.Type.INT, org.apache.bcel.generic.Type.INT },
-            new String[] { "node", "last" }, "makeNodeSortRecord", className, il, cpg);
+    JMethod makeNodeSortRecord = factoryCtx
+        .method(JMod.PUBLIC | JMod.FINAL, NodeSortRecord.class, "makeNodeSortRecord")
+        ._throws(ExceptionInInitializerError.class)._throws(LinkageError.class)._throws(IllegalAccessException.class)
+        ._throws(InstantiationException.class)._throws(SecurityException.class)._throws(TransletException.class);
+    JVar node = factoryCtx.param(int.class, "node");
+    JVar last = factoryCtx.param(int.class, "last");
+//    il = new InstructionList();
+//    final MethodGenerator makeNodeSortRecord = new MethodGenerator(ACC_PUBLIC, Util.getJCRefType(NODE_SORT_RECORD_SIG),
+//            new org.apache.bcel.generic.Type[] { org.apache.bcel.generic.Type.INT, org.apache.bcel.generic.Type.INT },
+//            new String[] { "node", "last" }, "makeNodeSortRecord", className, il, cpg);
 
-    il.append(ALOAD_0);
-    il.append(ILOAD_1);
-    il.append(ILOAD_2);
-    il.append(new INVOKESPECIAL(cpg
-            .addMethodref(NODE_SORT_FACTORY, "makeNodeSortRecord", "(II)" + NODE_SORT_RECORD_SIG)));
-    il.append(DUP);
-    il.append(new CHECKCAST(cpg.addClass(sortRecordClass)));
+    JVar nsr = makeNodeSortRecord.body().decl(sortRecordClass, "nsr", cast(sortRecordClass, _super().invoke("makeNodeSortRecord").arg(node).arg(last)));
+//    il.append(ALOAD_0);
+//    il.append(ILOAD_1);
+//    il.append(ILOAD_2);
+//    il.append(new INVOKESPECIAL(cpg
+//            .addMethodref(NODE_SORT_FACTORY, "makeNodeSortRecord", "(II)" + NODE_SORT_RECORD_SIG)));
+//    il.append(DUP);
+//    il.append(new CHECKCAST(cpg.addClass(sortRecordClass)));
 
     // Initialize closure in record class
     final int ndups = dups.size();
     for (int i = 0; i < ndups; i++) {
       final VariableRefBase varRef = dups.get(i);
       final VariableBase var = varRef.getVariable();
-      final Type varType = var.getType();
+      JType jcType = varRef.getType().toJCType();
 
-      il.append(DUP);
+      String escapedName = var.getEscapedName();
+      makeNodeSortRecord.body().assign(nsr.ref(escapedName), _this().ref(escapedName));
+//      il.append(DUP);
 
       // Get field from factory class
-      il.append(ALOAD_0);
-      il.append(new GETFIELD(cpg.addFieldref(className, var.getEscapedName(), varType.toSignature())));
+//      il.append(ALOAD_0);
+//      il.append(new GETFIELD(cpg.addFieldref(className, var.getEscapedName(), varType.toSignature())));
 
       // Put field in record class
-      il.append(new PUTFIELD(cpg.addFieldref(sortRecordClass, var.getEscapedName(), varType.toSignature())));
+//      il.append(new PUTFIELD(cpg.addFieldref(sortRecordClass, var.getEscapedName(), varType.toSignature())));
     }
-    il.append(POP);
-    il.append(ARETURN);
+//    il.append(POP);
+//    il.append(ARETURN);
+    makeNodeSortRecord.body()._return(nsr);
 
-    constructor.setMaxLocals();
-    constructor.setMaxStack();
-    sortRecordFactory.addMethod(constructor);
-    makeNodeSortRecord.setMaxLocals();
-    makeNodeSortRecord.setMaxStack();
-    sortRecordFactory.addMethod(makeNodeSortRecord);
+//    constructor.setMaxLocals();
+//    constructor.setMaxStack();
+//    sortRecordFactory.addMethod(constructor);
+//    makeNodeSortRecord.setMaxLocals();
+//    makeNodeSortRecord.setMaxStack();
+//    sortRecordFactory.addMethod(makeNodeSortRecord);
     // FIXME
     // xsltc.dumpClass(sortRecordFactory.getJavaClass());
 
-    return className;
+    return nodeSortRecordFactory;
   }
 
   /**
    * Create a new auxillary class extending NodeSortRecord.
    * @param ctx TODO
    */
-  private static String compileSortRecord(List<Sort> sortObjects, CompilerContext ctx) {
+  private static JClass compileSortRecord(List<Sort> sortObjects, CompilerContext ctx) {
  // FIXME
     final XSLTC xsltc = ctx.xsltc();
     final String className = xsltc.getHelperClassName();
 
     // This generates a new class for handling this specific sort
-    CompilerContext sortContext;
+    CompilerContext sortCtx;
     JDefinedClass nodeSortRecord;
     try {
       nodeSortRecord = ctx.clazz()._class(PUBLIC | STATIC | FINAL, className)._extends(NodeSortRecord.class);
     } catch (JClassAlreadyExistsException e) {
       throw new RuntimeException(e);
     }
-    sortContext = new CompilerContext(ctx.owner(), nodeSortRecord, ctx.stylesheet(), xsltc);
+    sortCtx = new CompilerContext(ctx.owner(), nodeSortRecord, ctx.stylesheet(), xsltc);
     //    final NodeSortRecordGenerator sortRecord = new NodeSortRecordGenerator(className, NODE_SORT_RECORD, "sort$0.java",
 //            ACC_PUBLIC | ACC_SUPER | ACC_FINAL, new String[] {}, classGen.getStylesheet());
 
 //    final ConstantPoolGen cpg = sortRecord.getConstantPool();
 
+    JMethod constructor = compileInit(sortObjects, sortCtx, className);
     // Add a new instance variable for each var in closure
     final int nsorts = sortObjects.size();
     final List<VariableRefBase> dups = new ArrayList<>();
@@ -625,19 +653,24 @@ final class Sort extends Instruction implements Closure {
           continue;
         }
 
+        JType jcType = varRef.getType().toJCType();
         final VariableBase var = varRef.getVariable();
-        nodeSortRecord.field(JMod.PUBLIC, var.getType().toJCType(), var.getEscapedName());
+        String escapedName = var.getEscapedName();
+        JVar field = sortCtx.addPublicField(jcType, escapedName);
+//        JVar param = constructor.param(jcType, escapedName);
+//        constructor.body().assign(_this().ref(field), param);
+
+//        nodeSortRecord.field(JMod.PUBLIC, var.getType().toJCType(), var.getEscapedName());
 //        sortRecord.addField(new Field(ACC_PUBLIC, cpg.addUtf8(var.getEscapedName()), cpg.addUtf8(var.getType()
 //                .toSignature()), null, cpg.getConstantPool()));
         dups.add(varRef);
       }
     }
 
-    compileInit(sortObjects, sortContext, className);
-    compileExtract(sortObjects, sortContext, className);
+    compileExtract(sortObjects, sortCtx, className);
 
 //    xsltc.dumpClass(nodeSortRecord.owner(), nodeSortRecord);
-    return nodeSortRecord.binaryName();
+    return nodeSortRecord;
   }
 
   /**
@@ -645,68 +678,47 @@ final class Sort extends Instruction implements Closure {
    * collator in the super calls only when the stylesheet specifies a new
    * language in xsl:sort.
    */
-  private static void compileInit(List<Sort> sortObjects, CompilerContext sortCtx, String className) {
-    sortCtx.clazz().constructor(PUBLIC).body().invoke("super");
+  private static JMethod compileInit(List<Sort> sortObjects, CompilerContext sortCtx, String className) {
+    JMethod constructor = sortCtx.clazz().constructor(PUBLIC);
+    constructor.body().invoke("super");
+    return constructor;
   }
 
   /**
    * Compiles a method that overloads NodeSortRecord.extractValueFromDOM()
    */
   private static void compileExtract(List<Sort> sortObjects, CompilerContext sortCtx, String className) {
- // FIXME
-//    final InstructionList il = new InstructionList();
-    // String NodeSortRecord.extractValueFromDOM(DOM dom, int current, int level, AbstractTranslet translet, int last);
+    // FIXME
+    // String NodeSortRecord.extractValueFromDOM(DOM dom, int current, int
+    // level, AbstractTranslet translet, int last);
     JMethod extractValueFromDOM = sortCtx.method(JMod.PUBLIC | JMod.FINAL, String.class, "extractValueFromDOM");
-    JVar domParam = sortCtx.param(DOM.class, DOCUMENT_PNAME);
+    sortCtx.param(DOM.class, DOCUMENT_PNAME);
     JVar currentParam = sortCtx.param(int.class, "current");
     JVar levelParam = sortCtx.param(int.class, "level");
-    JVar transletParam = sortCtx.param(AbstractTranslet.class, "translet");
-    JVar lastParam = sortCtx.param(int.class, "last");
+    sortCtx.param(AbstractTranslet.class, "translet");
+    sortCtx.param(int.class, "last");
+
     sortCtx.pushBlock(extractValueFromDOM.body());
     sortCtx.pushNode(currentParam);
-//    final CompareGenerator extractMethod = new CompareGenerator(ACC_PUBLIC | ACC_FINAL,
-//            org.apache.bcel.generic.Type.STRING, new org.apache.bcel.generic.Type[] { Util.getJCRefType(DOM_INTF_SIG),
-//                    org.apache.bcel.generic.Type.INT, org.apache.bcel.generic.Type.INT,
-//                    Util.getJCRefType(TRANSLET_SIG), org.apache.bcel.generic.Type.INT }, new String[] { "dom",
-//                    "current", "level", "translet", "last" }, "extractValueFromDOM", className, il, cpg);
 
     // Values needed for the switch statement
     final int levels = sortObjects.size();
-    final int match[] = new int[levels];
-    final JExpression[] target = new JExpression[levels];
-//    InstructionHandle tblswitch = null;
 
     // Compile switch statement only if the key has multiple levels
     if (levels > 1) {
-      // Put the parameter to the swtich statement on the stack
-//      il.append(new ILOAD(extractMethod.getLocalIndex("level")));
-      // Append the switch statement here later on
-//      tblswitch = il.append(new NOP());o
-    }
-
-    // Append all the cases for the switch statment
-    for (int level = 0; level < levels; level++) {
-      match[level] = level;
-      final Sort sort = sortObjects.get(level);
-      target[level] = sort.compileSelect(sortCtx);
-//      il.append(ARETURN);
-    }
-
-    // Compile def. target for switch statement if key has multiple levels
-    if (levels > 1) {
-      // Append the default target - it will _NEVER_ be reached
-//      final InstructionHandle defaultTarget = il.append(new PUSH(cpg, EMPTYSTRING));
-//      il.insert(tblswitch, new TABLESWITCH(match, target, defaultTarget));
-//      il.append(ARETURN);
-    } else{
+      JSwitch _switch = sortCtx.currentBlock()._switch(levelParam);
+      for (int level = 0; level < levels; level++) {
+        final Sort sort = sortObjects.get(level);
+        _switch._case(lit(level)).body()._return(sort.compileSelect(sortCtx));
+      }
+      // Will never be reached
+      _switch._default().body()._return(lit(""));
+    } else {
       JBlock body = extractValueFromDOM.body();
-      body._return(target[0]);
-//      JVar currentTarget = body.decl(sortCtx.owner().INT, "target0", target[0]);
-//      JConditional _if = body._if(currentTarget.lt(lit(0)));
-//      _if._then()._return(lit(""));
-//      _if._else()._return(domParam.invoke("getStringValueX").arg(currentTarget));
+      body._return(sortObjects.get(0).compileSelect(sortCtx));
     }
     sortCtx.popNode();
     sortCtx.popBlock();
   }
+
 }

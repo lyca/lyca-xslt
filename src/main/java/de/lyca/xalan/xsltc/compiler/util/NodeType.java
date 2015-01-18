@@ -22,14 +22,18 @@
 package de.lyca.xalan.xsltc.compiler.util;
 
 import static com.sun.codemodel.JExpr._new;
+import static com.sun.codemodel.JExpr._null;
+import static com.sun.codemodel.JExpr.lit;
 
 import org.apache.bcel.generic.ILOAD;
 import org.apache.bcel.generic.ISTORE;
 import org.apache.bcel.generic.Instruction;
 
 import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JExpr;
 import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JMethod;
+import com.sun.codemodel.JOp;
 import com.sun.codemodel.JType;
 
 import de.lyca.xalan.xsltc.compiler.FlowList;
@@ -198,6 +202,10 @@ public final class NodeType extends Type {
 //    truec.setTarget(il.append(NOP));
   }
 
+  public JExpression compileTo(CompilerContext ctx, JExpression expr, BooleanType type) {
+    return expr.ne(lit(0));
+  }
+
   /**
    * Expects a node on the stack and pushes a real. First the node is converted
    * to string, and from string to real.
@@ -276,6 +284,10 @@ public final class NodeType extends Type {
 //    il.append(SWAP);
 //    il.append(new PUSH(cpg, _type));
 //    il.append(new INVOKESPECIAL(cpg.addMethodref(RUNTIME_NODE_CLASS, "<init>", "(II)V")));
+  }
+
+  public JExpression compileTo(CompilerContext ctx, JExpression expr, ReferenceType type) {
+    return _new(ctx.ref(de.lyca.xalan.xsltc.runtime.Node.class)).arg(expr).arg(lit(_type));
   }
 
   /**

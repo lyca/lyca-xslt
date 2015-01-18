@@ -50,6 +50,7 @@ import de.lyca.xalan.xsltc.runtime.output.TransletOutputHandlerFactory;
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xml.dtm.DTMAxisIterator;
 import de.lyca.xml.serializer.SerializationHandler;
+import de.lyca.xml.utils.QName;
 
 /**
  * @author Jacek Ambroziak
@@ -166,8 +167,8 @@ public abstract class AbstractTranslet implements Translet {
    */
   @Override
   public final Object addParameter(String name, Object value) {
-    name = BasisLibrary.mapQNameToJavaName(name);
-    return addParameter(name, value, false);
+    String qName = QName.getQNameFromString(name).toStringRep();
+    return addParameter(BasisLibrary.mapQNameToJavaName(qName), value, false);
   }
 
   /**
@@ -214,7 +215,8 @@ public abstract class AbstractTranslet implements Translet {
    * undefined.
    */
   public final Object getParameter(String name) {
-    name = BasisLibrary.mapQNameToJavaName(name);
+    String qName = QName.getQNameFromString(name).toStringRep();
+    name = BasisLibrary.mapQNameToJavaName(qName);
     final List<Parameter> parameters = paramsStack.peek();
     if (parameters != null) {
       for (final Parameter param : parameters) {

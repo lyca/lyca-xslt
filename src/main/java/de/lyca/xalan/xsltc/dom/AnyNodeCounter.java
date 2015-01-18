@@ -22,7 +22,7 @@
 package de.lyca.xalan.xsltc.dom;
 
 import de.lyca.xalan.xsltc.DOM;
-import de.lyca.xalan.xsltc.Translet;
+import de.lyca.xalan.xsltc.runtime.AbstractTranslet;
 import de.lyca.xml.dtm.DTMAxisIterator;
 
 /**
@@ -30,7 +30,7 @@ import de.lyca.xml.dtm.DTMAxisIterator;
  * @author Santiago Pericas-Geertsen
  */
 public abstract class AnyNodeCounter extends NodeCounter {
-  public AnyNodeCounter(Translet translet, DOM document, DTMAxisIterator iterator) {
+  public AnyNodeCounter(AbstractTranslet translet, DOM document, DTMAxisIterator iterator) {
     super(translet, document, iterator);
   }
 
@@ -75,12 +75,12 @@ public abstract class AnyNodeCounter extends NodeCounter {
     return formatNumbers(result);
   }
 
-  public static NodeCounter getDefaultNodeCounter(Translet translet, DOM document, DTMAxisIterator iterator) {
+  public static NodeCounter getDefaultNodeCounter(AbstractTranslet translet, DOM document, DTMAxisIterator iterator) {
     return new DefaultAnyNodeCounter(translet, document, iterator);
   }
 
   static class DefaultAnyNodeCounter extends AnyNodeCounter {
-    public DefaultAnyNodeCounter(Translet translet, DOM document, DTMAxisIterator iterator) {
+    public DefaultAnyNodeCounter(AbstractTranslet translet, DOM document, DTMAxisIterator iterator) {
       super(translet, document, iterator);
     }
 

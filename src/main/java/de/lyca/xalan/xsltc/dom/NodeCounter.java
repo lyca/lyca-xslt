@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.lyca.xalan.xsltc.DOM;
-import de.lyca.xalan.xsltc.Translet;
+import de.lyca.xalan.xsltc.runtime.AbstractTranslet;
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xml.dtm.DTMAxisIterator;
 
@@ -43,7 +43,7 @@ public abstract class NodeCounter {
 
   public final DOM _document;
   public final DTMAxisIterator _iterator;
-  public final Translet _translet;
+  public final AbstractTranslet _translet;
 
   protected String _format;
   protected String _lang;
@@ -65,7 +65,7 @@ public abstract class NodeCounter {
 
   private final StringBuilder _tempBuffer = new StringBuilder();
 
-  protected NodeCounter(Translet translet, DOM document, DTMAxisIterator iterator) {
+  protected NodeCounter(AbstractTranslet translet, DOM document, DTMAxisIterator iterator) {
     _translet = translet;
     _document = document;
     _iterator = iterator;

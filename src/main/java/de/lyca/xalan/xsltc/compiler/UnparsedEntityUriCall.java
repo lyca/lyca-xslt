@@ -23,13 +23,10 @@ package de.lyca.xalan.xsltc.compiler;
 
 import java.util.List;
 
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.INVOKEINTERFACE;
-import org.apache.bcel.generic.InstructionList;
+import com.sun.codemodel.JExpr;
+import com.sun.codemodel.JExpression;
 
-import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
-import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 import de.lyca.xalan.xsltc.compiler.util.StringType;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
@@ -54,6 +51,11 @@ final class UnparsedEntityUriCall extends FunctionCall {
       _entity = new CastExpr(_entity, Type.String);
     }
     return _type = Type.String;
+  }
+
+  @Override
+  public JExpression compile(CompilerContext ctx) {
+    return ctx.currentDom().invoke(GET_UNPARSED_ENTITY_URI).arg(_entity.compile(ctx));
   }
 
   @Override

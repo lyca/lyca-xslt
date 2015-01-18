@@ -23,6 +23,7 @@ package de.lyca.xalan.xsltc.compiler;
 
 import static com.sun.codemodel.JExpr._new;
 import static com.sun.codemodel.JExpr._this;
+import static com.sun.codemodel.JExpr.cast;
 import static com.sun.codemodel.JExpr.invoke;
 import static com.sun.codemodel.JExpr.lit;
 
@@ -35,8 +36,10 @@ import de.lyca.xalan.xsltc.DOM;
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
+import de.lyca.xalan.xsltc.dom.CurrentNodeListFilter;
 import de.lyca.xalan.xsltc.dom.CurrentNodeListIterator;
 import de.lyca.xalan.xsltc.dom.NthIterator;
+import de.lyca.xalan.xsltc.dom.SingletonIterator;
 import de.lyca.xml.dtm.Axis;
 import de.lyca.xml.dtm.DTM;
 
@@ -229,6 +232,7 @@ final class Step extends RelativeLocationPath {
         } else {
           if (parent instanceof ParentLocationPath) {
             // Wrap the context node in a singleton iterator if not.
+            return _new(ctx.ref(SingletonIterator.class)).arg(ctx.currentNode());
 //            final int init = cpg.addMethodref(SINGLETON_ITERATOR, "<init>", "(" + NODE_SIG + ")V");
 //            il.append(new NEW(cpg.addClass(SINGLETON_ITERATOR)));
 //            il.append(DUP);
@@ -236,6 +240,7 @@ final class Step extends RelativeLocationPath {
 //            il.append(new INVOKESPECIAL(init));
           } else {
             // DOM.getAxisIterator(int axis);
+            return ctx.currentDom().invoke("getAxisIterator").arg(axis.staticRef(_axis.name()));
 //            final int git = cpg.addInterfaceMethodref(DOM_INTF, "getAxisIterator", "(Lde/lyca/xml/dtm/Axis;)"
 //                + NODE_ITERATOR_SIG);
 //            il.append(methodGen.loadDOM());
@@ -244,7 +249,6 @@ final class Step extends RelativeLocationPath {
 //            il.append(new INVOKEINTERFACE(git, 2));
           }
         }
-        return invocation;
       }
 
       // Special case for /foo/*/bar
@@ -534,7 +538,20 @@ final class Step extends RelativeLocationPath {
 //                Util.getJCRefType(NODE_ITERATOR_SIG), null, null);
 //        iteratorTemp.setStart(il.append(new ASTORE(iteratorTemp.getIndex())));
         // FIXME predicate.translateFilter(ctx.clazz(), ctx.currentMethod());
-        return _new(ctx.ref(CurrentNodeListIterator.class)).arg(recursive).arg(currentPredicate).arg(ctx.currentNode()).arg(_this());
+        JExpression translet;
+        if (ctx.isInnerClass()) {
+          translet = cast(ctx.clazz().outer(), ctx.param(TRANSLET_PNAME));
+        } else {
+          translet = _this();
+        }
+        JExpression current;
+        if (ctx.ref(CurrentNodeListFilter.class).isAssignableFrom(ctx.clazz())) {
+          current = ctx.param("current");
+        } else {
+          current = ctx.currentNode();
+        }
+        return _new(ctx.ref(CurrentNodeListIterator.class)).arg(recursive).arg(currentPredicate).arg(current)
+            .arg(translet);
 //        final LocalVariableGen filterTemp = methodGen.addLocalVariable("step_tmp2",
 //                Util.getJCRefType(CURRENT_NODE_LIST_FILTER_SIG), null, null);
 //        filterTemp.setStart(il.append(new ASTORE(filterTemp.getIndex())));

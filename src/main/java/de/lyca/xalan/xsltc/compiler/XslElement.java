@@ -176,7 +176,7 @@ final class XslElement extends Instruction {
    * to determine if a prefix exists, needs to be generated, etc.
    */
   public void translateLiteral(CompilerContext ctx) {
-    JVar handler = ctx.param(TRANSLET_OUTPUT_PNAME);
+    JExpression handler = ctx.currentHandler();
     if (!_ignore) {
       if (_name.elementCount() == 1) {
         ctx.currentBlock().invoke(handler, "startElement").arg(_name.compile(ctx));
@@ -184,6 +184,7 @@ final class XslElement extends Instruction {
         ctx.currentBlock().invoke(handler, "startElement").arg(_name.compile(ctx));
       }
       if (_namespace != null) {
+        ctx.currentBlock().add(ctx.currentHandler().invoke("namespaceAfterStartElement").arg(_prefix).arg(_namespace.compile(ctx)));
         // il.append(methodGen.loadHandler());
         // il.append(new PUSH(cpg, _prefix));
         // _namespace.translate(classGen, methodGen);
@@ -222,7 +223,7 @@ final class XslElement extends Instruction {
       return;
     }
 
-    JVar nameValue = null;
+    JVar elementValue = null;
     if (!_ignore) {
 
       // if the qname is an AVT, then the qname has to be checked at runtime if
@@ -232,7 +233,7 @@ final class XslElement extends Instruction {
       // store the name into a variable first so _name.translate only needs to
       // be called once
       
-      nameValue = ctx.currentBlock().decl(ctx.ref(String.class), "nameValue", _name.compile(ctx));
+      JVar nameValue = ctx.currentBlock().decl(ctx.ref(String.class), ctx.nextNameValue(), _name.compile(ctx));
 
       //      nameValue.setStart(il.append(new ASTORE(nameValue.getIndex())));
 //      il.append(new ALOAD(nameValue.getIndex()));
@@ -282,9 +283,9 @@ final class XslElement extends Instruction {
 //      il.append(methodGen.loadDOM());
 //      il.append(methodGen.loadCurrentNode());
 
-      ctx.currentBlock().decl(
+      elementValue = ctx.currentBlock().decl(
           ctx.ref(String.class),
-          "elementName",
+          ctx.nextElementName(),
           ctx.ref(BasisLibrary.class).staticInvoke("startXslElement").arg(nameValue).arg(namespace)
               .arg(ctx.currentHandler()).arg(ctx.currentDom()).arg(ctx.currentNode()));
 
@@ -297,7 +298,7 @@ final class XslElement extends Instruction {
     translateContents(ctx);
 
     if (!_ignore) {
-      ctx.currentBlock().invoke(ctx.currentHandler(), "endElement").arg(nameValue);
+      ctx.currentBlock().invoke(ctx.currentHandler(), "endElement").arg(elementValue);
 //      il.append(methodGen.endElement());
     }
   }

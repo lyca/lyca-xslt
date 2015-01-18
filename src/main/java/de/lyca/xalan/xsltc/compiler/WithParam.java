@@ -21,7 +21,13 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
+import static com.sun.codemodel.JExpr.FALSE;
+import static com.sun.codemodel.JExpr.invoke;
+import static com.sun.codemodel.JExpr.lit;
+
 import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JExpr;
+import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JMethod;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
@@ -152,24 +158,22 @@ final class WithParam extends Instruction {
    * Compile the value of the parameter, which is either in an expression in a
    * 'select' attribute, or in the with-param element's body
    */
-  public void translateValue(JDefinedClass definedClass, JMethod method) {
-//    FIXME
-//
-//    // Compile expression is 'select' attribute if present
-//    if (_select != null) {
-//      _select.translate(classGen, methodGen);
-//      _select.startIterator(classGen, methodGen);
-//    }
-//    // If not, compile result tree from parameter body if present.
-//    else if (hasContents()) {
-//      compileResultTree(classGen, methodGen);
-//    }
-//    // If neither are present then store empty string in parameter slot
-//    else {
-//      final ConstantPoolGen cpg = classGen.getConstantPool();
-//      final InstructionList il = methodGen.getInstructionList();
-//      il.append(new PUSH(cpg, Constants.EMPTYSTRING));
-//    }
+  public JExpression translateValue(CompilerContext ctx) {
+    // FIXME
+
+    // Compile expression is 'select' attribute if present
+    if (_select != null) {
+      JExpression select = _select.compile(ctx);
+      return _select.startIterator(ctx, select);
+    }
+    // If not, compile result tree from parameter body if present.
+    else if (hasContents()) {
+      return compileResultTree(ctx);
+    }
+    // If neither are present then store empty string in parameter slot
+    else {
+      return lit(EMPTYSTRING);
+    }
   }
 
   /**
@@ -180,28 +184,27 @@ final class WithParam extends Instruction {
   @Override
   public void translate(CompilerContext ctx) {
 //    FIXME
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//    final InstructionList il = methodGen.getInstructionList();
-//
-//    // Translate the value and put it on the stack
-//    if (_doParameterOptimization) {
+    // Translate the value and put it on the stack
+    if (_doParameterOptimization) {
 //      translateValue(classGen, methodGen);
-//      return;
-//    }
-//
-//    // Make name acceptable for use as field name in class
-//    final String name = Util.escape(getEscapedName());
-//
-//    // Load reference to the translet (method is in AbstractTranslet)
+      return;
+    }
+
+    // Make name acceptable for use as field name in class
+    final String name = getEscapedName();
+    JExpression translateValue = translateValue(ctx);
+    ctx.currentBlock().invoke(ADD_PARAMETER).arg(name).arg(translateValue).arg(FALSE);
+
+    // Load reference to the translet (method is in AbstractTranslet)
 //    il.append(classGen.loadTranslet());
-//
-//    // Load the name of the parameter
+
+    // Load the name of the parameter
 //    il.append(new PUSH(cpg, name)); // TODO: namespace ?
-//    // Generete the value of the parameter (use value in 'select' by def.)
+    // Generete the value of the parameter (use value in 'select' by def.)
 //    translateValue(classGen, methodGen);
-//    // Mark this parameter value is not being the default value
+    // Mark this parameter value is not being the default value
 //    il.append(new PUSH(cpg, false));
-//    // Pass the parameter to the template
+    // Pass the parameter to the template
 //    il.append(new INVOKEVIRTUAL(cpg.addMethodref(TRANSLET_CLASS, ADD_PARAMETER, ADD_PARAMETER_SIG)));
 //    il.append(POP); // cleanup stack
   }

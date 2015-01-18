@@ -25,10 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.bcel.generic.InstructionList;
-
 import com.sun.codemodel.JBlock;
-import com.sun.codemodel.JInvocation;
 import com.sun.codemodel.JStatement;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
@@ -221,19 +218,23 @@ final class TestSeq {
     JStatement fail = _default == null ? defaultStatement : getTemplateHandle(_default);
 
     // Compile all patterns in reverse order
-    for (int n = count - 1; n >= 0; n--) {
+    JBlock patternBlock = new JBlock(false, false);
+    ctx.pushBlock(patternBlock);
+//    for (int n = count - 1; n >= 0; n--) {
+    for (int n = 0; n <count; n++) {
       final LocationPathPattern pattern = getPattern(n);
       final Template template = pattern.getTemplate();
-      JBlock block = new JBlock();
-
       // Patterns expect current node on top of stack
       // il.append(methodGen.loadCurrentNode());
 
       // Apply the test-code compiled for the pattern
       // TODO InstructionList ilist = methodGen.getInstructionList(pattern);
       // TODO if (ilist == null) {
-        JInvocation invocation = (JInvocation) pattern.compile(ctx);
-        block.add(invocation);
+      JBlock currentBlock = new JBlock();
+      ctx.pushBlock(currentBlock);
+      pattern.compilePattern(ctx, n + 1 == count ? fail : null);
+      patternBlock.add(ctx.popBlock());
+//      block.add(fail);
       // TODO methodGen.addInstructionList(pattern, ilist);
       // TODO }
 
@@ -266,15 +267,16 @@ final class TestSeq {
 //      fail = il.getStart();
 //
 //      // Append existing instruction list to the end of this one
-      if (_instructionList != null) {
-        block.add(_instructionList);
-      }
+//      if (_instructionList != null) {
+//        block.add(_instructionList);
+//      }
 //
 //      // Set current instruction list to be this one
 //      _instructionList = il;
-      _instructionList = block;
     }
-//    if(_instructionList != null) return _instructionList;
+    ctx.popBlock();
+    _instructionList = patternBlock;
+    if(_instructionList != null) return _instructionList;
     return _start = fail;
   }
 }

@@ -44,6 +44,7 @@ import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JType;
+import com.sun.org.apache.xalan.internal.xsltc.compiler.Constants;
 
 import de.lyca.xalan.xsltc.compiler.FlowList;
 
@@ -244,6 +245,33 @@ public final class IntType extends NumberType {
 //      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), clazz.getName());
 //      classGen.getParser().reportError(Constants.FATAL, err);
 //    }
+  }
+
+  @Override
+  public JExpression compileTo(CompilerContext ctx, JExpression expr, Class<?> clazz) {
+    if (clazz == Character.TYPE) {
+      return cast(ctx.owner().CHAR, expr);
+    } else if (clazz == Byte.TYPE) {
+      return cast(ctx.owner().BYTE, expr);
+    } else if (clazz == Short.TYPE) {
+      return cast(ctx.owner().SHORT, expr);
+    } else if (clazz == Integer.TYPE) {
+      return expr;
+    } else if (clazz == Long.TYPE) {
+      return cast(ctx.owner().LONG, expr);
+    } else if (clazz == Float.TYPE) {
+      return cast(ctx.owner().FLOAT, expr);
+    } else if (clazz == Double.TYPE) {
+      return cast(ctx.owner().DOUBLE, expr);
+    }
+    // Is Double <: clazz? I.e. clazz in { Double, Number, Object }
+    else if (clazz.isAssignableFrom(java.lang.Double.class)) {
+      return cast(ctx.ref(Double.class), expr);
+    } else {
+      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), clazz.getName());
+      ctx.xsltc().getParser().reportError(Constants.FATAL, err);
+      return expr;
+    }
   }
 
   /**

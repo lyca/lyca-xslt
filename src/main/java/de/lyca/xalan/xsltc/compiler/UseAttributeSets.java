@@ -25,14 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.INVOKESPECIAL;
-import org.apache.bcel.generic.InstructionList;
-
-import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
-import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
 
@@ -85,32 +79,23 @@ final class UseAttributeSets extends Instruction {
    */
   @Override
   public void translate(CompilerContext ctx) {
-//    FIXME
-//
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//    final InstructionList il = methodGen.getInstructionList();
-//    final SymbolTable symbolTable = getParser().getSymbolTable();
-//
-//    // Go through each attribute set and generate a method call
-//    for (QName name : _sets) {
-//      // Get the AttributeSet reference from the symbol table
-//      final AttributeSet attrs = symbolTable.lookupAttributeSet(name);
-//      // Compile the call to the set's method if the set exists
-//      if (attrs != null) {
-//        final String methodName = attrs.getMethodName();
-//        il.append(classGen.loadTranslet());
-//        il.append(methodGen.loadDOM());
-//        il.append(methodGen.loadIterator());
-//        il.append(methodGen.loadHandler());
-//        final int method = cpg.addMethodref(classGen.getClassName(), methodName, ATTR_SET_SIG);
-//        il.append(new INVOKESPECIAL(method));
-//      }
-//      // Generate an error if the attribute set does not exist
-//      else {
-//        final Parser parser = getParser();
-//        final String atrs = name.toString();
-//        reportError(this, parser, ErrorMsg.ATTRIBSET_UNDEF_ERR, atrs);
-//      }
-//    }
+    // FIXME
+    final SymbolTable symbolTable = getParser().getSymbolTable();
+
+    // Go through each attribute set and generate a method call
+    for (QName name : _sets) {
+      // Get the AttributeSet reference from the symbol table
+      final AttributeSet attrs = symbolTable.lookupAttributeSet(name);
+      // Compile the call to the set's method if the set exists
+      if (attrs != null) {
+        ctx.currentBlock().add(attrs.compile(ctx));
+      }
+      // Generate an error if the attribute set does not exist
+      else {
+        final Parser parser = getParser();
+        final String atrs = name.toString();
+        reportError(this, parser, ErrorMsg.ATTRIBSET_UNDEF_ERR, atrs);
+      }
+    }
   }
 }

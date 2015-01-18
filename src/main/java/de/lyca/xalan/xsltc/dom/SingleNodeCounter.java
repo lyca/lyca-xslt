@@ -22,7 +22,7 @@
 package de.lyca.xalan.xsltc.dom;
 
 import de.lyca.xalan.xsltc.DOM;
-import de.lyca.xalan.xsltc.Translet;
+import de.lyca.xalan.xsltc.runtime.AbstractTranslet;
 import de.lyca.xml.dtm.Axis;
 import de.lyca.xml.dtm.DTMAxisIterator;
 
@@ -34,7 +34,7 @@ public abstract class SingleNodeCounter extends NodeCounter {
   static private final int[] EmptyArray = new int[] {};
   DTMAxisIterator _countSiblings = null;
 
-  public SingleNodeCounter(Translet translet, DOM document, DTMAxisIterator iterator) {
+  public SingleNodeCounter(AbstractTranslet translet, DOM document, DTMAxisIterator iterator) {
     super(translet, document, iterator);
   }
 
@@ -91,12 +91,12 @@ public abstract class SingleNodeCounter extends NodeCounter {
     return formatNumbers(result);
   }
 
-  public static NodeCounter getDefaultNodeCounter(Translet translet, DOM document, DTMAxisIterator iterator) {
+  public static NodeCounter getDefaultNodeCounter(AbstractTranslet translet, DOM document, DTMAxisIterator iterator) {
     return new DefaultSingleNodeCounter(translet, document, iterator);
   }
 
   static class DefaultSingleNodeCounter extends SingleNodeCounter {
-    public DefaultSingleNodeCounter(Translet translet, DOM document, DTMAxisIterator iterator) {
+    public DefaultSingleNodeCounter(AbstractTranslet translet, DOM document, DTMAxisIterator iterator) {
       super(translet, document, iterator);
     }
 

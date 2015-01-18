@@ -8,6 +8,7 @@ import javax.xml.transform.Source;
 
 import org.custommonkey.xmlunit.Transform;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class ConfVariableTests {
@@ -206,6 +207,7 @@ public class ConfVariableTests {
   }
 
   @Test
+  @Ignore("Redefinition of variables is not supported anymore.")
   public void variable20() throws Exception {
     final String name = PACKAGE + "variable20";
     final Source xsl = getSource(name + ".xsl");
@@ -566,6 +568,7 @@ public class ConfVariableTests {
   }
 
   @Test
+  @Ignore("Redefinition of variables is not supported anymore.")
   public void variable56() throws Exception {
     final String name = PACKAGE + "variable56";
     final Source xsl = getSource(name + ".xsl");

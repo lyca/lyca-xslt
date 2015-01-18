@@ -213,7 +213,8 @@ final class XslAttribute extends Instruction {
     // Compile code that emits any needed namespace declaration
     if (_namespace != null) {
       // public void attribute(final String name, final String value)
-      
+      ctx.currentBlock().add(ctx.currentHandler().invoke("namespaceAfterStartElement").arg(_prefix).arg(_namespace.compile(ctx)));
+
 //      il.append(methodGen.loadHandler());
 //      il.append(new PUSH(cpg, _prefix));
 //      _namespace.translate(classGen, methodGen);
@@ -224,7 +225,7 @@ final class XslAttribute extends Instruction {
     if (!_isLiteral) {
       // if the qname is an AVT, then the qname has to be checked at runtime if
       // it is a valid qname
-      secondArg = ctx.currentBlock().decl(ctx.ref(String.class), "nameValue", _name.compile(ctx));
+      secondArg = ctx.currentBlock().decl(ctx.ref(String.class), ctx.nextNameValue(), _name.compile(ctx));
       
       // store the name into a variable first so _name.translate only needs to
       // be called once
@@ -267,8 +268,7 @@ final class XslAttribute extends Instruction {
       translateContents(ctx);
       // get String out of the handler
 //      il.append(new INVOKEVIRTUAL(cpg.addMethodref(STRING_VALUE_HANDLER, "getValue", "()" + STRING_SIG)));
-      JClass stringValueHandler = ctx.ref(StringValueHandler.class);
-      text = invoke(((JExpression) cast(stringValueHandler, ctx.popHandler())), "getValue");
+      text = invoke(ctx.popHandler(), "getValue");
     }
 
     final SyntaxTreeNode parent = getParent();
@@ -285,18 +285,17 @@ final class XslAttribute extends Instruction {
           flags = flags | ExtendedContentHandler.HTML_ATTRURL;
         }
       }
-      ctx.currentBlock().invoke(ctx.param(TRANSLET_OUTPUT_PNAME) ,"addUniqueAttribute").arg(secondArg).arg(text).arg(lit(flags));
+      ctx.currentBlock().invoke(ctx.currentHandler() ,"addUniqueAttribute").arg(secondArg).arg(text).arg(lit(flags));
 //      il.append(new PUSH(cpg, flags));
 //      il.append(methodGen.uniqueAttribute());
     } else {
       // call "attribute"
-      ctx.currentBlock().invoke(ctx.param(TRANSLET_OUTPUT_PNAME) ,"addAttribute").arg(secondArg).arg(text);
+      ctx.currentBlock().invoke(ctx.currentHandler() ,"addAttribute").arg(secondArg).arg(text);
 //      il.append(methodGen.attribute());
     }
 
     // Restore old handler base from stack
 //    il.append(methodGen.storeHandler());
-
   }
 
 }

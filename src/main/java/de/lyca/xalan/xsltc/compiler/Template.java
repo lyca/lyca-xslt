@@ -338,7 +338,8 @@ public final class Template extends TopLevelElement implements Comparable<Templa
       // Update load/store instructions to access Params from the stack
       for (int i = 0; i < numParams; i++) {
         // FIXME
-//        final Param param = _parameters.get(i);
+        final Param param = _parameters.get(i);
+        param.storeInstruction(ctx.param(param.getEscapedName()));
 //        param.setLoadInstruction(namedMethodGen.loadParameter(i));
 //        param.setStoreInstruction(namedMethodGen.storeParameter(i));
       }
