@@ -23,6 +23,7 @@ package de.lyca.xalan.xsltc.compiler;
 
 import static com.sun.codemodel.JExpr._new;
 import static com.sun.codemodel.JExpr.lit;
+import static de.lyca.xalan.xsltc.compiler.Constants.EMPTYSTRING;
 
 import java.util.List;
 import java.util.ListIterator;

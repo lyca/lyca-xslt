@@ -68,8 +68,6 @@ public interface Constants extends InstructionConstants {
   public static final String MULTI_DOM_CLASS = "de.lyca.xalan.xsltc.dom.MultiDOM";
   public static final String MULTI_DOM_SIG = "Lde/lyca/xalan/xsltc/dom/MultiDOM;";
 
-  public static final String STRING = "java.lang.String";
-
   public static final int ACC_PUBLIC = org.apache.bcel.Constants.ACC_PUBLIC;
   public static final int ACC_SUPER = org.apache.bcel.Constants.ACC_SUPER;
   public static final int ACC_FINAL = org.apache.bcel.Constants.ACC_FINAL;
@@ -78,48 +76,10 @@ public interface Constants extends InstructionConstants {
   public static final int ACC_STATIC = org.apache.bcel.Constants.ACC_STATIC;
 
   public static final String STRING_SIG = "Ljava/lang/String;";
-  public static final String STRING_BUFFER_SIG = "Ljava/lang/StringBuffer;";
-  public static final String STRING_BUILDER_SIG = "Ljava/lang/StringBuilder;";
-  public static final String OBJECT_SIG = "Ljava/lang/Object;";
-  public static final String DOUBLE_SIG = "Ljava/lang/Double;";
-  public static final String INTEGER_SIG = "Ljava/lang/Integer;";
-  public static final String COLLATOR_CLASS = "java/text/Collator";
-  public static final String COLLATOR_SIG = "Ljava/text/Collator;";
 
-  public static final String NODE = "int";
   public static final String NODE_ITERATOR = "de.lyca.xml.dtm.DTMAxisIterator";
-  public static final String NODE_ITERATOR_BASE = "de.lyca.xml.dtm.ref.DTMAxisIteratorBase";
-  public static final String SORT_ITERATOR = "de.lyca.xalan.xsltc.dom.SortingIterator";
-  public static final String SORT_ITERATOR_SIG = "Lde.lyca.xalan.xsltc.dom.SortingIterator;";
-  public static final String NODE_SORT_RECORD = "de.lyca.xalan.xsltc.dom.NodeSortRecord";
-  public static final String NODE_SORT_FACTORY = "de/lyca/xalan/xsltc/dom/NodeSortRecordFactory";
-  public static final String NODE_SORT_RECORD_SIG = "Lde/lyca/xalan/xsltc/dom/NodeSortRecord;";
-  public static final String NODE_SORT_FACTORY_SIG = "Lde/lyca/xalan/xsltc/dom/NodeSortRecordFactory;";
-  public static final String LOCALE_CLASS = "java.util.Locale";
-  public static final String LOCALE_SIG = "Ljava/util/Locale;";
-  public static final String STRING_VALUE_HANDLER = "de.lyca.xalan.xsltc.runtime.StringValueHandler";
-  public static final String STRING_VALUE_HANDLER_SIG = "Lde/lyca/xalan/xsltc/runtime/StringValueHandler;";
-  public static final String OUTPUT_HANDLER = SerializerBase.PKG_PATH + "/SerializationHandler";
-  public static final String OUTPUT_HANDLER_SIG = "L" + SerializerBase.PKG_PATH + "/SerializationHandler;";
-  public static final String FILTER_INTERFACE = "de.lyca.xalan.xsltc.dom.Filter";
-  public static final String FILTER_INTERFACE_SIG = "Lde/lyca/xalan/xsltc/dom/Filter;";
-  public static final String UNION_ITERATOR_CLASS = "de.lyca.xalan.xsltc.dom.UnionIterator";
-  public static final String STEP_ITERATOR_CLASS = "de.lyca.xalan.xsltc.dom.StepIterator";
-  public static final String CACHED_NODE_LIST_ITERATOR_CLASS = "de.lyca.xalan.xsltc.dom.CachedNodeListIterator";
-  public static final String NTH_ITERATOR_CLASS = "de.lyca.xalan.xsltc.dom.NthIterator";
-  public static final String ABSOLUTE_ITERATOR = "de.lyca.xalan.xsltc.dom.AbsoluteIterator";
-  public static final String DUP_FILTERED_ITERATOR = "de.lyca.xalan.xsltc.dom.DupFilterIterator";
-  public static final String CURRENT_NODE_LIST_ITERATOR = "de.lyca.xalan.xsltc.dom.CurrentNodeListIterator";
-  public static final String CURRENT_NODE_LIST_FILTER = "de.lyca.xalan.xsltc.dom.CurrentNodeListFilter";
-  public static final String CURRENT_NODE_LIST_ITERATOR_SIG = "Lde/lyca/xalan/xsltc/dom/CurrentNodeListIterator;";
-  public static final String CURRENT_NODE_LIST_FILTER_SIG = "Lde/lyca/xalan/xsltc/dom/CurrentNodeListFilter;";
-  public static final String FILTER_STEP_ITERATOR = "de.lyca.xalan.xsltc.dom.FilteredStepIterator";
-  public static final String FILTER_ITERATOR = "de.lyca.xalan.xsltc.dom.FilterIterator";
-  public static final String SINGLETON_ITERATOR = "de.lyca.xalan.xsltc.dom.SingletonIterator";
-  public static final String MATCHING_ITERATOR = "de.lyca.xalan.xsltc.dom.MatchingIterator";
   public static final String NODE_SIG = "I";
   public static final String GET_PARENT = "getParent";
-  public static final String GET_PARENT_SIG = "(" + NODE_SIG + ")" + NODE_SIG;
   public static final String NEXT_SIG = "()" + NODE_SIG;
   public static final String NEXT = "next";
   public static final String NEXTID = "nextNodeID";
@@ -127,9 +87,7 @@ public interface Constants extends InstructionConstants {
   public static final String MAKE_NODE_LIST = "makeNodeList";
   public static final String GET_UNPARSED_ENTITY_URI = "getUnparsedEntityURI";
   public static final String STRING_TO_REAL = "stringToReal";
-  public static final String STRING_TO_REAL_SIG = "(" + STRING_SIG + ")D";
   public static final String STRING_TO_INT = "stringToInt";
-  public static final String STRING_TO_INT_SIG = "(" + STRING_SIG + ")I";
 
   public static final String XSLT_PACKAGE = "de.lyca.xalan.xsltc";
   public static final String COMPILER_PACKAGE = XSLT_PACKAGE + ".compiler";
@@ -137,33 +95,11 @@ public interface Constants extends InstructionConstants {
   public static final String TRANSLET_CLASS = RUNTIME_PACKAGE + ".AbstractTranslet";
 
   public static final String TRANSLET_SIG = "Lde/lyca/xalan/xsltc/runtime/AbstractTranslet;";
-  public static final String UNION_ITERATOR_SIG = "Lde/lyca/xalan/xsltc/dom/UnionIterator;";
   public static final String TRANSLET_OUTPUT_SIG = "L" + SerializerBase.PKG_PATH + "/SerializationHandler;";
-  public static final String MAKE_NODE_SIG = "(I)Lorg/w3c/dom/Node;";
-  public static final String MAKE_NODE_SIG2 = "(" + NODE_ITERATOR_SIG + ")Lorg/w3c/dom/Node;";
-  public static final String MAKE_NODE_LIST_SIG = "(I)Lorg/w3c/dom/NodeList;";
-  public static final String MAKE_NODE_LIST_SIG2 = "(" + NODE_ITERATOR_SIG + ")Lorg/w3c/dom/NodeList;";
-
-  public static final String STREAM_XML_OUTPUT = SerializerBase.PKG_NAME + ".ToXMLStream";
-
-  public static final String OUTPUT_BASE = SerializerBase.PKG_NAME + ".SerializerBase";
-
-  public static final String LOAD_DOCUMENT_CLASS = "de.lyca.xalan.xsltc.dom.LoadDocument";
-
-  public static final String KEY_INDEX_CLASS = "de/lyca/xalan/xsltc/dom/KeyIndex";
-  public static final String KEY_INDEX_SIG = "Lde/lyca/xalan/xsltc/dom/KeyIndex;";
-  public static final String KEY_INDEX_ITERATOR_SIG = "Lde/lyca/xalan/xsltc/dom/KeyIndex$KeyIndexIterator;";
 
   public static final String DOM_INTF = "de.lyca.xalan.xsltc.DOM";
-  public static final String DOM_IMPL = "de.lyca.xalan.xsltc.dom.SAXImpl";
-  public static final String SAX_IMPL = "de.lyca.xalan.xsltc.dom.SAXImpl";
   public static final String STRING_CLASS = "java.lang.String";
   public static final String OBJECT_CLASS = "java.lang.Object";
-  public static final String BOOLEAN_CLASS = "java.lang.Boolean";
-  public static final String STRING_BUFFER_CLASS = "java.lang.StringBuffer";
-  public static final String STRING_BUILDER_CLASS = "java.lang.StringBuilder";
-  public static final String STRING_WRITER = "java.io.StringWriter";
-  public static final String WRITER_SIG = "Ljava/io/Writer;";
 
   public static final String TRANSLET_OUTPUT_BASE = "de.lyca.xalan.xsltc.TransletOutputBase";
   // output interface
@@ -220,13 +156,13 @@ public interface Constants extends InstructionConstants {
   public static final String GET_ITERATOR_SIG = "()" + NODE_ITERATOR_SIG;
 
   public static final String NAMES_INDEX = "namesArray";
-  public static final String NAMES_INDEX_SIG = "[" + STRING_SIG;
+//  public static final String NAMES_INDEX_SIG = "[" + STRING_SIG;
   public static final String URIS_INDEX = "urisArray";
-  public static final String URIS_INDEX_SIG = "[" + STRING_SIG;
+//  public static final String URIS_INDEX_SIG = "[" + STRING_SIG;
   public static final String TYPES_INDEX = "typesArray";
-  public static final String TYPES_INDEX_SIG = "[I";
+//  public static final String TYPES_INDEX_SIG = "[I";
   public static final String NAMESPACE_INDEX = "namespaceArray";
-  public static final String NAMESPACE_INDEX_SIG = "[" + STRING_SIG;
+//  public static final String NAMESPACE_INDEX_SIG = "[" + STRING_SIG;
   public static final String NS_ANCESTORS_INDEX_SIG = "[I";
   public static final String PREFIX_URIS_IDX_SIG = "[I";
   public static final String PREFIX_URIS_ARRAY_SIG = "[" + STRING_SIG;
@@ -250,7 +186,6 @@ public interface Constants extends InstructionConstants {
   public static final String STATIC_PREFIX_URIS_IDX_ARRAY_FIELD = "_sPrefixURIsIdxArray";
   public static final String STATIC_PREFIX_URIS_ARRAY_FIELD = "_sPrefixURIPairsArray";
   public static final String STATIC_CHAR_DATA_FIELD = "_scharData";
-  public static final String STATIC_CHAR_DATA_FIELD_SIG = "[C";
   public static final String FORMAT_SYMBOLS_FIELD = "format_symbols";
 
   public static final String ITERATOR_FIELD_SIG = NODE_ITERATOR_SIG;
@@ -261,44 +196,23 @@ public interface Constants extends InstructionConstants {
   public static final String ATTRIBUTE_LIST_FIELD = "attributeList";
   public static final String CLEAR_ATTRIBUTES = "clear";
   public static final String ADD_ATTRIBUTE = "addAttribute";
-  public static final String ATTRIBUTE_LIST_IMPL_SIG = "Lde/lyca/xalan/xsltc/runtime/AttributeListImpl;";
-  public static final String CLEAR_ATTRIBUTES_SIG = "()" + ATTRIBUTE_LIST_IMPL_SIG;
-  public static final String ADD_ATTRIBUTE_SIG = "(" + STRING_SIG + STRING_SIG + ")" + ATTRIBUTE_LIST_IMPL_SIG;
-
-  public static final String ADD_ITERATOR_SIG = "(" + NODE_ITERATOR_SIG + ")" + UNION_ITERATOR_SIG;
 
   public static final String ORDER_ITERATOR = "orderNodes";
-  public static final String ORDER_ITERATOR_SIG = "(" + NODE_ITERATOR_SIG + "I)" + NODE_ITERATOR_SIG;
 
   public static final String SET_START_NODE_SIG = "(" + NODE_SIG + ")" + NODE_ITERATOR_SIG;
 
   public static final String NODE_COUNTER = "de.lyca.xalan.xsltc.dom.NodeCounter";
-  public static final String NODE_COUNTER_SIG = "Lde/lyca/xalan/xsltc/dom/NodeCounter;";
   public static final String DEFAULT_NODE_COUNTER = "de.lyca.xalan.xsltc.dom.DefaultNodeCounter";
-  public static final String DEFAULT_NODE_COUNTER_SIG = "Lde/lyca/xalan/xsltc/dom/DefaultNodeCounter;";
   public static final String TRANSLET_FIELD = "translet";
-  public static final String TRANSLET_FIELD_SIG = TRANSLET_SIG;
 
-  public static final String RESET_SIG = "()" + NODE_ITERATOR_SIG;
   public static final String GET_PARAMETER = "getParameter";
   public static final String ADD_PARAMETER = "addParameter";
   public static final String PUSH_PARAM_FRAME = "pushParamFrame";
-  public static final String PUSH_PARAM_FRAME_SIG = "()V";
   public static final String POP_PARAM_FRAME = "popParamFrame";
-  public static final String POP_PARAM_FRAME_SIG = "()V";
-  public static final String GET_PARAMETER_SIG = "(" + STRING_SIG + ")" + OBJECT_SIG;
-  public static final String ADD_PARAMETER_SIG = "(" + STRING_SIG + OBJECT_SIG + "Z)" + OBJECT_SIG;
 
   public static final String STRIP_SPACE = "stripSpace";
-  public static final String STRIP_SPACE_INTF = "de/lyca/xalan/xsltc/StripFilter";
-  public static final String STRIP_SPACE_SIG = "Lde/lyca/xalan/xsltc/StripFilter;";
-  public static final String STRIP_SPACE_PARAMS = "(Lde/lyca/xalan/xsltc/DOM;II)Z";
 
   public static final String GET_NODE_VALUE_ITERATOR = "getNodeValueIterator";
-  public static final String GET_NODE_VALUE_ITERATOR_SIG = "(" + NODE_ITERATOR_SIG + "I" + STRING_SIG + "Z)"
-          + NODE_ITERATOR_SIG;
-
-  public static final String GET_UNPARSED_ENTITY_URI_SIG = "(" + STRING_SIG + ")" + STRING_SIG;
 
   public static final int POSITION_INDEX = 2;
   public static final int LAST_INDEX = 3;

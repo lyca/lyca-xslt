@@ -23,6 +23,7 @@ package de.lyca.xalan.xsltc.compiler;
 
 import static com.sun.codemodel.JExpr.lit;
 import static com.sun.codemodel.JOp.not;
+import static de.lyca.xalan.xsltc.compiler.Constants.GET_PARENT;
 
 import org.apache.bcel.generic.InstructionHandle;
 

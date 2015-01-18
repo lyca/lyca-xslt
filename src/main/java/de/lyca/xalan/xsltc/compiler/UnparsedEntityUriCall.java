@@ -21,9 +21,10 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
+import static de.lyca.xalan.xsltc.compiler.Constants.GET_UNPARSED_ENTITY_URI;
+
 import java.util.List;
 
-import com.sun.codemodel.JExpr;
 import com.sun.codemodel.JExpression;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;

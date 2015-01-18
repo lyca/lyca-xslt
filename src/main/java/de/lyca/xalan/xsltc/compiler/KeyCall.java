@@ -25,11 +25,10 @@ import static com.sun.codemodel.JExpr.FALSE;
 import static com.sun.codemodel.JExpr.TRUE;
 import static com.sun.codemodel.JExpr.invoke;
 import static com.sun.codemodel.JExpr.lit;
+import static de.lyca.xalan.xsltc.compiler.Constants.TRANSLET_PNAME;
 
-import java.util.Iterator;
 import java.util.List;
 
-import com.sun.codemodel.JClass;
 import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JInvocation;
 

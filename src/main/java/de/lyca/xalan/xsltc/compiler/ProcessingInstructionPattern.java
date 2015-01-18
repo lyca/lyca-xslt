@@ -23,11 +23,7 @@ package de.lyca.xalan.xsltc.compiler;
 
 import static com.sun.codemodel.JExpr.lit;
 
-import com.sun.codemodel.JBlock;
-import com.sun.codemodel.JConditional;
-import com.sun.codemodel.JExpr;
 import com.sun.codemodel.JExpression;
-import com.sun.codemodel.JInvocation;
 import com.sun.codemodel.JStatement;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;

@@ -23,9 +23,8 @@ package de.lyca.xalan.xsltc.compiler;
 
 import static com.sun.codemodel.JExpr._this;
 import static com.sun.codemodel.JExpr.cast;
-import static com.sun.codemodel.JExpr.ref;
+import static de.lyca.xalan.xsltc.compiler.Constants.TRANSLET_PNAME;
 
-import com.sun.codemodel.JExpr;
 import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JInvocation;
 

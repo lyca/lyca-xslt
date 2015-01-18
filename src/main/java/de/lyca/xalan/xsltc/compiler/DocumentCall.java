@@ -22,6 +22,7 @@
 package de.lyca.xalan.xsltc.compiler;
 
 import static com.sun.codemodel.JExpr._this;
+import static de.lyca.xalan.xsltc.compiler.Constants.DOM_FIELD;
 
 import java.util.List;
 

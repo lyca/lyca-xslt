@@ -22,13 +22,11 @@
 package de.lyca.xalan.xsltc.compiler;
 
 import static com.sun.codemodel.JExpr.FALSE;
-import static com.sun.codemodel.JExpr.invoke;
 import static com.sun.codemodel.JExpr.lit;
+import static de.lyca.xalan.xsltc.compiler.Constants.ADD_PARAMETER;
+import static de.lyca.xalan.xsltc.compiler.Constants.EMPTYSTRING;
 
-import com.sun.codemodel.JDefinedClass;
-import com.sun.codemodel.JExpr;
 import com.sun.codemodel.JExpression;
-import com.sun.codemodel.JMethod;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;

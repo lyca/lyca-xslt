@@ -21,6 +21,9 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
+import static de.lyca.xalan.xsltc.compiler.Constants.FATAL;
+import static de.lyca.xalan.xsltc.compiler.util.ErrorMsg.NOT_IMPLEMENTED_ERR;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,7 +56,7 @@ class TopLevelElement extends SyntaxTreeNode {
    */
   @Override
   public void translate(CompilerContext ctx) {
-    final ErrorMsg msg = new ErrorMsg(ErrorMsg.NOT_IMPLEMENTED_ERR, getClass(), this);
+    final ErrorMsg msg = new ErrorMsg(NOT_IMPLEMENTED_ERR, getClass(), this);
     getParser().reportError(FATAL, msg);
   }
 

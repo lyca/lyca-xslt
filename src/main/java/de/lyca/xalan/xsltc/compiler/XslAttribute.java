@@ -21,14 +21,14 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import static com.sun.codemodel.JExpr.cast;
 import static com.sun.codemodel.JExpr.invoke;
 import static com.sun.codemodel.JExpr.lit;
 import static com.sun.codemodel.JExpr.ref;
+import static de.lyca.xalan.xsltc.compiler.Constants.XMLNS_PREFIX;
+import static de.lyca.xalan.xsltc.compiler.util.ErrorMsg.ILLEGAL_ATTR_NAME_ERR;
 
 import java.util.List;
 
-import com.sun.codemodel.JClass;
 import com.sun.codemodel.JExpression;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
@@ -37,7 +37,6 @@ import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
 import de.lyca.xalan.xsltc.compiler.util.Util;
 import de.lyca.xalan.xsltc.runtime.BasisLibrary;
-import de.lyca.xalan.xsltc.runtime.StringValueHandler;
 import de.lyca.xml.serializer.ElemDesc;
 import de.lyca.xml.serializer.ExtendedContentHandler;
 import de.lyca.xml.utils.XML11Char;
@@ -88,14 +87,14 @@ final class XslAttribute extends Instruction {
     final String prefix = qname.getPrefix();
 
     if (prefix != null && prefix.equals(XMLNS_PREFIX) || name.equals(XMLNS_PREFIX)) {
-      reportError(this, parser, ErrorMsg.ILLEGAL_ATTR_NAME_ERR, name);
+      reportError(this, parser, ILLEGAL_ATTR_NAME_ERR, name);
       return;
     }
 
     _isLiteral = Util.isLiteral(name);
     if (_isLiteral) {
       if (!XML11Char.isXML11ValidQName(name)) {
-        reportError(this, parser, ErrorMsg.ILLEGAL_ATTR_NAME_ERR, name);
+        reportError(this, parser, ILLEGAL_ATTR_NAME_ERR, name);
         return;
       }
     }

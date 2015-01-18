@@ -21,17 +21,13 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import java.util.List;
+import static de.lyca.xalan.xsltc.compiler.Constants.NEXT;
 
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.INVOKESTATIC;
-import org.apache.bcel.generic.InstructionList;
+import java.util.List;
 
 import com.sun.codemodel.JExpression;
 
-import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
-import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
 import de.lyca.xalan.xsltc.runtime.BasisLibrary;

@@ -50,7 +50,6 @@ import com.sun.codemodel.JSwitch;
 import com.sun.codemodel.JVar;
 
 import de.lyca.xalan.xsltc.DOM;
-import de.lyca.xalan.xsltc.TransletException;
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext.MethodContext;
 import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;

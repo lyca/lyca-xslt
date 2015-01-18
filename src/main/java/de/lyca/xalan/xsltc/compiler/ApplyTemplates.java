@@ -21,6 +21,12 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
+import static de.lyca.xalan.xsltc.compiler.Constants.ITERATOR_PNAME;
+import static de.lyca.xalan.xsltc.compiler.Constants.POP_PARAM_FRAME;
+import static de.lyca.xalan.xsltc.compiler.Constants.PUSH_PARAM_FRAME;
+import static de.lyca.xalan.xsltc.compiler.Constants.WARNING;
+import static de.lyca.xalan.xsltc.compiler.util.ErrorMsg.RESULT_TREE_SORT_ERR;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -139,7 +145,7 @@ final class ApplyTemplates extends Instruction {
     if (_type != null && _type instanceof ResultTreeType) {
       // <xsl:sort> cannot be applied to a result tree - issue warning
       if (sortObjects.size() > 0) {
-        final ErrorMsg err = new ErrorMsg(ErrorMsg.RESULT_TREE_SORT_ERR, this);
+        final ErrorMsg err = new ErrorMsg(RESULT_TREE_SORT_ERR, this);
         getParser().reportError(WARNING, err);
       }
       // Put the result tree (a DOM adapter) on the stack

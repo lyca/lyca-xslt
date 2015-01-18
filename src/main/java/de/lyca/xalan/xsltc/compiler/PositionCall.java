@@ -21,6 +21,8 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
+import static de.lyca.xalan.xsltc.compiler.Constants.ITERATOR_PNAME;
+
 import com.sun.codemodel.JExpr;
 import com.sun.codemodel.JExpression;
 

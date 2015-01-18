@@ -31,6 +31,8 @@ import static com.sun.codemodel.JExpr.newArray;
 import static com.sun.codemodel.JMod.FINAL;
 import static com.sun.codemodel.JMod.PUBLIC;
 import static com.sun.codemodel.JMod.STATIC;
+import static de.lyca.xalan.xsltc.compiler.Constants.DOCUMENT_PNAME;
+import static de.lyca.xalan.xsltc.compiler.Constants.TRANSLET_PNAME;
 
 import java.util.ArrayList;
 import java.util.List;

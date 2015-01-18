@@ -24,6 +24,9 @@ package de.lyca.xalan.xsltc.compiler;
 import static com.sun.codemodel.JExpr.TRUE;
 import static com.sun.codemodel.JExpr.invoke;
 import static com.sun.codemodel.JExpr.lit;
+import static de.lyca.xalan.xsltc.compiler.Constants.GET_PARENT;
+import static de.lyca.xalan.xsltc.compiler.Constants.NEXT;
+import static de.lyca.xalan.xsltc.compiler.Constants.SET_START_NODE;
 
 import java.util.List;
 

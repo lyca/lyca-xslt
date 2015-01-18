@@ -21,6 +21,8 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
+import static de.lyca.xalan.xsltc.compiler.Constants.CHARACTERSW;
+
 import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JInvocation;
 

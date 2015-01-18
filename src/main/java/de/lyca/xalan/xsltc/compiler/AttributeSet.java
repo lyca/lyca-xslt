@@ -22,12 +22,20 @@
 package de.lyca.xalan.xsltc.compiler;
 
 import static com.sun.codemodel.JExpr.invoke;
+import static com.sun.codemodel.JMod.PRIVATE;
+import static de.lyca.xalan.xsltc.compiler.Constants.DOCUMENT_PNAME;
+import static de.lyca.xalan.xsltc.compiler.Constants.EMPTYSTRING;
+import static de.lyca.xalan.xsltc.compiler.Constants.ERROR;
+import static de.lyca.xalan.xsltc.compiler.Constants.ITERATOR_PNAME;
+import static de.lyca.xalan.xsltc.compiler.Constants.TRANSLET_OUTPUT_PNAME;
+import static de.lyca.xalan.xsltc.compiler.util.ErrorMsg.ILLEGAL_CHILD_ERR;
+import static de.lyca.xalan.xsltc.compiler.util.ErrorMsg.INVALID_QNAME_ERR;
+import static de.lyca.xalan.xsltc.compiler.util.ErrorMsg.UNNAMED_ATTRIBSET_ERR;
 
 import java.util.List;
 import java.util.ListIterator;
 
 import com.sun.codemodel.JMethod;
-import com.sun.codemodel.JMod;
 import com.sun.codemodel.JStatement;
 import com.sun.codemodel.JVar;
 
@@ -100,16 +108,16 @@ final class AttributeSet extends TopLevelElement {
     }
     _name = parser.getQNameIgnoreDefaultNs(name);
     if (_name == null || _name.equals(EMPTYSTRING)) {
-      final ErrorMsg msg = new ErrorMsg(ErrorMsg.UNNAMED_ATTRIBSET_ERR, this);
-      parser.reportError(Constants.ERROR, msg);
+      final ErrorMsg msg = new ErrorMsg(UNNAMED_ATTRIBSET_ERR, this);
+      parser.reportError(ERROR, msg);
     }
 
     // Get any included attribute sets (similar to inheritance...)
     final String useSets = getAttribute("use-attribute-sets");
     if (useSets.length() > 0) {
       if (!Util.isValidQNames(useSets)) {
-        final ErrorMsg err = new ErrorMsg(ErrorMsg.INVALID_QNAME_ERR, useSets, this);
-        parser.reportError(Constants.ERROR, err);
+        final ErrorMsg err = new ErrorMsg(INVALID_QNAME_ERR, useSets, this);
+        parser.reportError(ERROR, err);
       }
       _useSets = new UseAttributeSets(useSets, parser);
     }
@@ -124,8 +132,8 @@ final class AttributeSet extends TopLevelElement {
       } else if (child instanceof Text) {
         // ignore
       } else {
-        final ErrorMsg msg = new ErrorMsg(ErrorMsg.ILLEGAL_CHILD_ERR, this);
-        parser.reportError(Constants.ERROR, msg);
+        final ErrorMsg msg = new ErrorMsg(ILLEGAL_CHILD_ERR, this);
+        parser.reportError(ERROR, msg);
       }
     }
 
@@ -169,7 +177,7 @@ final class AttributeSet extends TopLevelElement {
     if (_ignore)
       return;
 
-    JMethod method = ctx.method(JMod.PRIVATE, void.class, _method)._throws(TransletException.class);
+    JMethod method = ctx.method(PRIVATE, void.class, _method)._throws(TransletException.class);
     ctx.param(DOM.class, DOCUMENT_PNAME);
     ctx.param(DTMAxisIterator.class, ITERATOR_PNAME);
     JVar handler = ctx.param(SerializationHandler.class, TRANSLET_OUTPUT_PNAME);

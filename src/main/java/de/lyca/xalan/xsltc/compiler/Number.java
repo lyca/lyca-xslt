@@ -27,6 +27,16 @@ import static com.sun.codemodel.JExpr.lit;
 import static com.sun.codemodel.JMod.FINAL;
 import static com.sun.codemodel.JMod.PUBLIC;
 import static com.sun.codemodel.JMod.STATIC;
+import static de.lyca.xalan.xsltc.compiler.Constants.CHARACTERSW;
+import static de.lyca.xalan.xsltc.compiler.Constants.DOM_INTF_SIG;
+import static de.lyca.xalan.xsltc.compiler.Constants.EMPTYSTRING;
+import static de.lyca.xalan.xsltc.compiler.Constants.ITERATOR_FIELD_SIG;
+import static de.lyca.xalan.xsltc.compiler.Constants.ITERATOR_PNAME;
+import static de.lyca.xalan.xsltc.compiler.Constants.NODE_COUNTER;
+import static de.lyca.xalan.xsltc.compiler.Constants.NODE_ITERATOR_SIG;
+import static de.lyca.xalan.xsltc.compiler.Constants.TRANSLET_CLASS;
+import static de.lyca.xalan.xsltc.compiler.Constants.TRANSLET_SIG;
+import static org.apache.bcel.generic.InstructionConstants.ALOAD_0;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,7 +59,6 @@ import com.sun.codemodel.JMod;
 import com.sun.codemodel.JVar;
 
 import de.lyca.xalan.xsltc.DOM;
-import de.lyca.xalan.xsltc.Translet;
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.MatchGenerator;
 import de.lyca.xalan.xsltc.compiler.util.NodeCounterGenerator;
@@ -529,14 +538,14 @@ final class Number extends Instruction implements Closure {
       if (_letterValue != null) {
         letterValue = _letterValue.compile(ctx);
       } else {
-        letterValue = lit(Constants.EMPTYSTRING);
+        letterValue = lit(EMPTYSTRING);
       }
 
       JExpression groupingSeparator;
       if (_groupingSeparator != null) {
         groupingSeparator = _groupingSeparator.compile(ctx);
       } else {
-        groupingSeparator = lit(Constants.EMPTYSTRING);
+        groupingSeparator = lit(EMPTYSTRING);
       }
 
       JExpression groupingSize;

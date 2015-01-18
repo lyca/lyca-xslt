@@ -25,11 +25,8 @@ import static com.sun.codemodel.JExpr.FALSE;
 import static com.sun.codemodel.JExpr._null;
 import static com.sun.codemodel.JExpr.lit;
 
-import com.sun.codemodel.JDefinedClass;
-import com.sun.codemodel.JExpr;
 import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JFieldVar;
-import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JMod;
 
 import de.lyca.xalan.xsltc.compiler.util.BooleanType;

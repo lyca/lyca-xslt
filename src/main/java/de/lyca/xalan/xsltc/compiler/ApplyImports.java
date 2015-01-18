@@ -21,6 +21,9 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
+import static de.lyca.xalan.xsltc.compiler.Constants.ITERATOR_PNAME;
+import static de.lyca.xalan.xsltc.compiler.Constants.POP_PARAM_FRAME;
+import static de.lyca.xalan.xsltc.compiler.Constants.PUSH_PARAM_FRAME;
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;

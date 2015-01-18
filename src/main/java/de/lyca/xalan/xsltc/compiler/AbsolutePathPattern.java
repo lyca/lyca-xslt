@@ -24,12 +24,12 @@ package de.lyca.xalan.xsltc.compiler;
 import static com.sun.codemodel.JExpr.TRUE;
 import static com.sun.codemodel.JExpr.invoke;
 import static com.sun.codemodel.JExpr.lit;
+import static de.lyca.xalan.xsltc.compiler.Constants.GET_PARENT;
+import static de.lyca.xml.dtm.DTM.DOCUMENT_NODE;
 
 import com.sun.codemodel.JConditional;
-import com.sun.codemodel.JExpr;
 import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JStatement;
-import com.sun.codemodel.JVar;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.Type;
@@ -109,13 +109,13 @@ final class AbsolutePathPattern extends LocationPathPattern {
 //    il.append(new PUSH(cpg, DTM.DOCUMENT_NODE));
     if (_left == null) {
       ctx.currentBlock().invoke(ctx.currentDom(), "getExpandedTypeID")
-          .arg(ctx.currentDom().invoke(GET_PARENT).arg(ctx.currentNode())).eq(lit(DTM.DOCUMENT_NODE));
+          .arg(ctx.currentDom().invoke(GET_PARENT).arg(ctx.currentNode())).eq(lit(DOCUMENT_NODE));
     } else {
       if (getTemplate() != null) {
         JExpression absPath = TRUE;
         if (_left instanceof StepPattern) {
           absPath = ctx.currentDom().invoke("getExpandedTypeID")
-              .arg(ctx.currentDom().invoke(GET_PARENT).arg(ctx.currentNode())).eq(lit(DTM.DOCUMENT_NODE));
+              .arg(ctx.currentDom().invoke(GET_PARENT).arg(ctx.currentNode())).eq(lit(DOCUMENT_NODE));
         }
         JExpression left = _left.compile(ctx);
         JConditional _if = ctx.currentBlock()._if(left.cand(absPath));

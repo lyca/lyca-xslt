@@ -26,6 +26,8 @@ import static com.sun.codemodel.JExpr._this;
 import static com.sun.codemodel.JExpr.cast;
 import static com.sun.codemodel.JExpr.invoke;
 import static com.sun.codemodel.JExpr.lit;
+import static de.lyca.xalan.xsltc.compiler.Constants.GET_NODE_VALUE_ITERATOR;
+import static de.lyca.xalan.xsltc.compiler.Constants.TRANSLET_PNAME;
 
 import java.util.List;
 

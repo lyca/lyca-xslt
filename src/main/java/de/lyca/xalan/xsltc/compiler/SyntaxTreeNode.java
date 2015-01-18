@@ -25,6 +25,13 @@ import static com.sun.codemodel.JExpr._new;
 import static com.sun.codemodel.JExpr.cast;
 import static com.sun.codemodel.JExpr.direct;
 import static com.sun.codemodel.JExpr.lit;
+import static de.lyca.xalan.xsltc.compiler.Constants.EMPTYSTRING;
+import static de.lyca.xalan.xsltc.compiler.Constants.NAMESPACE_INDEX;
+import static de.lyca.xalan.xsltc.compiler.Constants.NAMES_INDEX;
+import static de.lyca.xalan.xsltc.compiler.Constants.RTF_INITIAL_SIZE;
+import static de.lyca.xalan.xsltc.compiler.Constants.TRANSLET_OUTPUT_PNAME;
+import static de.lyca.xalan.xsltc.compiler.Constants.TYPES_INDEX;
+import static de.lyca.xalan.xsltc.compiler.Constants.URIS_INDEX;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -56,7 +63,7 @@ import de.lyca.xml.serializer.SerializationHandler;
  * @author Erwin Bolwidt <ejb@klomp.org>
  * @author John Howard <JohnH@schemasoft.com>
  */
-public abstract class SyntaxTreeNode implements Constants {
+public abstract class SyntaxTreeNode {
 
   // Reference to the AST parser
   private Parser _parser;

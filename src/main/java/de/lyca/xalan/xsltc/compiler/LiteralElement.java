@@ -21,6 +21,9 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
+import static de.lyca.xalan.xsltc.compiler.Constants.XMLNS_PREFIX;
+import static de.lyca.xalan.xsltc.compiler.Constants.XSLT_URI;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -29,7 +32,6 @@ import java.util.Map;
 import java.util.Set;
 
 import com.sun.codemodel.JExpression;
-import com.sun.codemodel.JVar;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;

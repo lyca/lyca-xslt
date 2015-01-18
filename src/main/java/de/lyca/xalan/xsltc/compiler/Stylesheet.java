@@ -28,6 +28,31 @@ import static com.sun.codemodel.JExpr.invoke;
 import static com.sun.codemodel.JExpr.lit;
 import static com.sun.codemodel.JExpr.newArray;
 import static com.sun.codemodel.JExpr.refthis;
+import static com.sun.codemodel.JMod.PUBLIC;
+import static de.lyca.xalan.xsltc.compiler.Constants.DOCUMENT_PNAME;
+import static de.lyca.xalan.xsltc.compiler.Constants.DOM_FIELD;
+import static de.lyca.xalan.xsltc.compiler.Constants.EMPTYSTRING;
+import static de.lyca.xalan.xsltc.compiler.Constants.ERROR;
+import static de.lyca.xalan.xsltc.compiler.Constants.HASIDCALL_INDEX;
+import static de.lyca.xalan.xsltc.compiler.Constants.ITERATOR_PNAME;
+import static de.lyca.xalan.xsltc.compiler.Constants.NAMESPACE_INDEX;
+import static de.lyca.xalan.xsltc.compiler.Constants.NAMES_INDEX;
+import static de.lyca.xalan.xsltc.compiler.Constants.STATIC_CHAR_DATA_FIELD;
+import static de.lyca.xalan.xsltc.compiler.Constants.STATIC_NAMESPACE_ARRAY_FIELD;
+import static de.lyca.xalan.xsltc.compiler.Constants.STATIC_NAMES_ARRAY_FIELD;
+import static de.lyca.xalan.xsltc.compiler.Constants.STATIC_NS_ANCESTORS_ARRAY_FIELD;
+import static de.lyca.xalan.xsltc.compiler.Constants.STATIC_PREFIX_URIS_ARRAY_FIELD;
+import static de.lyca.xalan.xsltc.compiler.Constants.STATIC_PREFIX_URIS_IDX_ARRAY_FIELD;
+import static de.lyca.xalan.xsltc.compiler.Constants.STATIC_TYPES_ARRAY_FIELD;
+import static de.lyca.xalan.xsltc.compiler.Constants.STATIC_URIS_ARRAY_FIELD;
+import static de.lyca.xalan.xsltc.compiler.Constants.STRIP_SPACE;
+import static de.lyca.xalan.xsltc.compiler.Constants.TRANSLET_OUTPUT_PNAME;
+import static de.lyca.xalan.xsltc.compiler.Constants.TRANSLET_VERSION_INDEX;
+import static de.lyca.xalan.xsltc.compiler.Constants.TYPES_INDEX;
+import static de.lyca.xalan.xsltc.compiler.Constants.URIS_INDEX;
+import static de.lyca.xalan.xsltc.compiler.Constants.XHTML_URI;
+import static de.lyca.xalan.xsltc.compiler.Constants.XSLT_URI;
+import static de.lyca.xalan.xsltc.compiler.util.ErrorMsg.MULTIPLE_STYLESHEET_ERR;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -546,8 +571,8 @@ public final class Stylesheet extends SyntaxTreeNode {
     final Stylesheet sheet = stable.addStylesheet(_name, this);
     if (sheet != null) {
       // Error: more that one stylesheet defined
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.MULTIPLE_STYLESHEET_ERR, this);
-      parser.reportError(Constants.ERROR, err);
+      final ErrorMsg err = new ErrorMsg(MULTIPLE_STYLESHEET_ERR, this);
+      parser.reportError(ERROR, err);
     }
 
     // If this is a simplified stylesheet we must create a template that
@@ -633,7 +658,7 @@ public final class Stylesheet extends SyntaxTreeNode {
   public Mode getMode(QName modeName) {
     if (modeName == null) {
       if (_defaultMode == null) {
-        _defaultMode = new Mode(null, this, Constants.EMPTYSTRING);
+        _defaultMode = new Mode(null, this, EMPTYSTRING);
       }
       return _defaultMode;
     } else {
@@ -976,7 +1001,7 @@ public final class Stylesheet extends SyntaxTreeNode {
    * from transform().
    */
   private JMethod compileTopLevel(CompilerContext ctx) {
-    JMethod topLevel = ctx.method(JMod.PUBLIC, void.class, "topLevel")._throws(TransletException.class)._throws(SAXException.class);
+    JMethod topLevel = ctx.method(PUBLIC, void.class, "topLevel")._throws(TransletException.class)._throws(SAXException.class);
     JVar document = ctx.param(DOM.class, DOCUMENT_PNAME);
     JVar iterator = ctx.param(DTMAxisIterator.class, ITERATOR_PNAME);
     JVar handler = ctx.param(SerializationHandler.class, TRANSLET_OUTPUT_PNAME);

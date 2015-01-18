@@ -22,6 +22,8 @@
 package de.lyca.xalan.xsltc.compiler;
 
 import static com.sun.codemodel.JExpr.lit;
+import static de.lyca.xalan.xsltc.compiler.Constants.EMPTYSTRING;
+import static de.lyca.xalan.xsltc.compiler.Constants.TRANSLET_URI;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;

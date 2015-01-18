@@ -22,6 +22,11 @@
 package de.lyca.xalan.xsltc.compiler;
 
 import static com.sun.codemodel.JExpr._new;
+import static de.lyca.xalan.xsltc.compiler.Constants.BASIS_LIBRARY_CLASS;
+import static de.lyca.xalan.xsltc.compiler.Constants.DOM_INTF_SIG;
+import static de.lyca.xalan.xsltc.compiler.Constants.EMPTYSTRING;
+import static de.lyca.xalan.xsltc.compiler.Constants.ERROR;
+import static de.lyca.xalan.xsltc.compiler.Constants.TRANSLET_URI;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;

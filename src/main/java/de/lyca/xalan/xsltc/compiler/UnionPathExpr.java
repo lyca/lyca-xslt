@@ -21,6 +21,8 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
+import static de.lyca.xalan.xsltc.compiler.Constants.ADD_ITERATOR;
+
 import java.util.ArrayList;
 import java.util.List;
 

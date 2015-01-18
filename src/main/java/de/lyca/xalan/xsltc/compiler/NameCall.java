@@ -21,6 +21,8 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
+import static de.lyca.xalan.xsltc.compiler.Constants.GET_NODE_NAME;
+
 import java.util.List;
 
 import com.sun.codemodel.JExpression;

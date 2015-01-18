@@ -24,6 +24,7 @@ package de.lyca.xalan.xsltc.compiler;
 import static com.sun.codemodel.JExpr._null;
 import static com.sun.codemodel.JExpr.lit;
 import static com.sun.codemodel.JExpr.ref;
+import static de.lyca.xalan.xsltc.compiler.Constants.EMPTYSTRING;
 
 import java.io.OutputStreamWriter;
 import java.util.Properties;

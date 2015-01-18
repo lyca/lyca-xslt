@@ -22,30 +22,18 @@
 package de.lyca.xalan.xsltc.compiler;
 
 import static com.sun.codemodel.JExpr._new;
+import static de.lyca.xalan.xsltc.compiler.Constants.EMPTYSTRING;
+import static de.lyca.xalan.xsltc.compiler.util.ErrorMsg.SYMBOLS_REDEF_ERR;
 
-import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.GETSTATIC;
-import org.apache.bcel.generic.INVOKESPECIAL;
-import org.apache.bcel.generic.INVOKEVIRTUAL;
-import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.NEW;
-import org.apache.bcel.generic.PUSH;
-
 import com.sun.codemodel.JClass;
-import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JExpr;
-import com.sun.codemodel.JInvocation;
-import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JVar;
 
-import de.lyca.xalan.xsltc.compiler.util.ClassGenerator;
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
-import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
 import de.lyca.xml.utils.XML11Char;
@@ -91,7 +79,7 @@ final class DecimalFormatting extends TopLevelElement {
     // Check if a set of symbols has already been registered under this name
     final SymbolTable stable = parser.getSymbolTable();
     if (stable.getDecimalFormatting(_name) != null) {
-      reportWarning(this, parser, ErrorMsg.SYMBOLS_REDEF_ERR, _name.toString());
+      reportWarning(this, parser, SYMBOLS_REDEF_ERR, _name.toString());
     } else {
       stable.addDecimalFormatting(_name, this);
     }

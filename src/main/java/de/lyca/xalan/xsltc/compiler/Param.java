@@ -23,11 +23,12 @@ package de.lyca.xalan.xsltc.compiler;
 
 import static com.sun.codemodel.JExpr._null;
 import static com.sun.codemodel.JExpr.invoke;
+import static de.lyca.xalan.xsltc.compiler.Constants.ADD_PARAMETER;
+import static de.lyca.xalan.xsltc.compiler.Constants.EMPTYSTRING;
 
 import com.sun.codemodel.JConditional;
 import com.sun.codemodel.JExpr;
 import com.sun.codemodel.JExpression;
-import com.sun.codemodel.JInvocation;
 import com.sun.codemodel.JVar;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
@@ -36,7 +37,6 @@ import de.lyca.xalan.xsltc.compiler.util.ObjectType;
 import de.lyca.xalan.xsltc.compiler.util.ReferenceType;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
-import de.lyca.xalan.xsltc.runtime.BasisLibrary;
 
 /**
  * @author Jacek Ambroziak

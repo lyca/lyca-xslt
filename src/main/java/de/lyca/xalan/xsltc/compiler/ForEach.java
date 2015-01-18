@@ -22,6 +22,7 @@
 package de.lyca.xalan.xsltc.compiler;
 
 import static com.sun.codemodel.JExpr.TRUE;
+import static de.lyca.xalan.xsltc.compiler.Constants.WARNING;
 
 import java.util.ArrayList;
 import java.util.List;

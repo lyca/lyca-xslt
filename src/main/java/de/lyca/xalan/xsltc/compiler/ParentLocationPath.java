@@ -22,6 +22,7 @@
 package de.lyca.xalan.xsltc.compiler;
 
 import static com.sun.codemodel.JExpr._new;
+import static de.lyca.xalan.xsltc.compiler.Constants.ORDER_ITERATOR;
 
 import com.sun.codemodel.JClass;
 import com.sun.codemodel.JInvocation;
