@@ -22,7 +22,6 @@
 package de.lyca.xalan.xsltc.compiler;
 
 import static com.sun.codemodel.JExpr.lit;
-import static de.lyca.xalan.xsltc.compiler.Constants.EMPTYSTRING;
 import static de.lyca.xalan.xsltc.compiler.Constants.TRANSLET_URI;
 
 import java.lang.reflect.Method;
@@ -169,24 +168,18 @@ final class FunctionAvailableCall extends FunctionCall {
    * Return true if the namespace uri is null or it is the XSLTC translet uri.
    */
   private boolean isInternalNamespace() {
-    return _namespaceOfFunct == null || _namespaceOfFunct.equals(EMPTYSTRING) || _namespaceOfFunct.equals(TRANSLET_URI);
+    return _namespaceOfFunct == null || _namespaceOfFunct.isEmpty() || _namespaceOfFunct.equals(TRANSLET_URI);
   }
 
-  @Override
-  public JExpression compile(CompilerContext ctx) {
-    return lit(getResult());
-  }
-  
   /**
    * Calls to 'function-available' are resolved at compile time since the
    * namespaces declared in the stylsheet are not available at run time.
    * Consequently, arguments to this function must be literals.
    */
   @Override
-  public void translate(CompilerContext ctx) {
- // FIXME
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//    methodGen.getInstructionList().append(new PUSH(cpg, getResult()));
+  public JExpression toJExpression(CompilerContext ctx) {
+    return lit(getResult());
   }
+  
 
 }

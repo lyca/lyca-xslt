@@ -205,17 +205,17 @@ final class RelationalExpr extends Expression {
   }
 
   @Override
-  public JExpression compile(CompilerContext ctx) {
+  public JExpression toJExpression(CompilerContext ctx) {
     // FIXME
     if (hasNodeSetArgs() || hasReferenceArgs()) {
       // Call compare() from the BasisLibrary
-      JExpression leftExp = _left.startIterator(ctx, _left.compile(ctx));
-      JExpression rightExp = _right.compile(ctx);
+      JExpression leftExp = _left.startIterator(ctx, _left.toJExpression(ctx));
+      JExpression rightExp = _right.toJExpression(ctx);
       JClass basisLib = ctx.ref(BasisLibrary.class);
       return basisLib.staticInvoke("compare").arg(leftExp).arg(rightExp).arg(lit(_op)).arg(ctx.currentDom());
     } else {
-      JExpression leftExp = _left.compile(ctx);
-      JExpression rightExp = _right.compile(ctx);
+      JExpression leftExp = _left.toJExpression(ctx);
+      JExpression rightExp = _right.toJExpression(ctx);
 
       // TODO: optimize if one of the args is 0
 

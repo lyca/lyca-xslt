@@ -16,10 +16,35 @@ import org.custommonkey.xmlunit.Transform;
 import org.junit.Assert;
 import org.junit.Test;
 
+//@RunWith(Parameterized.class)
 public class ConfMessageTests {
 
   private static final String PACKAGE = '/' + ConfMessageTests.class.getPackage().getName().replace('.', '/')
-          + "/message/";
+      + "/message/";
+
+  // @Parameters(name = "{0}")
+  // public static Collection<Object> params() {
+  // Collection<Object> result = new ArrayList<>();
+  // for (int i = 1; i < 17; i++) {
+  // result.add(String.format("message%02d", i));
+  // }
+  // return result;
+  // }
+  //
+  // private String name;
+  //
+  // public ConfMessageTests(String name) {
+  // this.name = PACKAGE + name;
+  // }
+  //
+  // @Test
+  // public void confMessageTests() throws Exception {
+  // final Source xsl = getSource(name + ".xsl");
+  // final Source xml = getSource(name + ".xml");
+  // final String expected = readResource(name + ".out", UTF_8);
+  // final Transform t = new Transform(xml, xsl);
+  // Assert.assertEquals(expected, t.getResultString());
+  // }
 
   @Test
   public void message01() throws Exception {
@@ -164,7 +189,7 @@ public class ConfMessageTests {
     t.setErrorListener(messageListener);
     Assert.assertEquals(expected, t.getResultString());
     Assert.assertEquals("Message from MESSAGE11: <!--X-->Anything between the colon and this?",
-            messageListener.getFirstMessage());
+        messageListener.getFirstMessage());
   }
 
   @Test
@@ -178,7 +203,7 @@ public class ConfMessageTests {
     t.setErrorListener(messageListener);
     Assert.assertEquals(expected, t.getResultString());
     Assert.assertEquals("Message from MESSAGE12: <?junk X?>Anything between the colon and this?",
-            messageListener.getFirstMessage());
+        messageListener.getFirstMessage());
   }
 
   @Test
@@ -192,7 +217,7 @@ public class ConfMessageTests {
     t.setErrorListener(messageListener);
     Assert.assertEquals(expected, t.getResultString());
     Assert.assertEquals("Message from MESSAGE13: <a/>Anything between the colon and this?",
-            messageListener.getFirstMessage());
+        messageListener.getFirstMessage());
   }
 
   @Test
@@ -206,7 +231,7 @@ public class ConfMessageTests {
     t.setErrorListener(messageListener);
     Assert.assertEquals(expected, t.getResultString());
     Assert.assertEquals("Message from MESSAGE14: (17) Anything between the colon and this?",
-            messageListener.getFirstMessage());
+        messageListener.getFirstMessage());
   }
 
   @Test

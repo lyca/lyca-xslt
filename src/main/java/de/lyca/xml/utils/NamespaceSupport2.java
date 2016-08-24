@@ -545,8 +545,8 @@ final class Context2 {
 
     prefix = prefix.intern();
     uri = uri.intern();
-    if ("".equals(prefix)) {
-      if ("".equals(uri)) {
+    if (prefix.isEmpty()) {
+      if (uri.isEmpty()) {
         defaultNS = null;
       } else {
         defaultNS = uri;
@@ -615,7 +615,7 @@ final class Context2 {
       final String prefix = qName.substring(0, index);
       final String local = qName.substring(index + 1);
       String uri;
-      if ("".equals(prefix)) {
+      if (prefix.isEmpty()) {
         uri = defaultNS;
       } else {
         uri = prefixTable.get(prefix);
@@ -642,7 +642,7 @@ final class Context2 {
    * @see org.xml.sax.helpers.NamespaceSupport2#getURI
    */
   String getURI(String prefix) {
-    if ("".equals(prefix))
+    if (prefix.isEmpty())
       return defaultNS;
     else if (prefixTable == null)
       return null;

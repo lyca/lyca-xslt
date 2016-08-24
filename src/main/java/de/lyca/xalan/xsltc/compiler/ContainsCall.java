@@ -84,33 +84,10 @@ final class ContainsCall extends FunctionCall {
   }
 
   @Override
-  public JExpression compile(CompilerContext ctx) {
-    JExpression base = _base.compile(ctx);
-    JExpression token = _token.compile(ctx);
+  public JExpression toJExpression(CompilerContext ctx) {
+    JExpression base = _base.toJExpression(ctx);
+    JExpression token = _token.toJExpression(ctx);
     return base.invoke("indexOf").arg(token).gte(lit(0));
   }
 
-  /**
-   * Compile the expression - leave boolean expression on stack
-   */
-  @Override
-  public void translate(CompilerContext ctx) {
-    // FIXME
-//    translateDesynthesized(classGen, methodGen);
-//    synthesize(classGen, methodGen);
-  }
-
-  /**
-   * Compile expression and update true/false-lists
-   */
-  @Override
-  public void translateDesynthesized(CompilerContext ctx) {
-    // FIXME
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//    final InstructionList il = methodGen.getInstructionList();
-//    _base.translate(classGen, methodGen);
-//    _token.translate(classGen, methodGen);
-//    il.append(new INVOKEVIRTUAL(cpg.addMethodref(STRING_CLASS, "indexOf", "(" + STRING_SIG + ")I")));
-//    _falseList.add(il.append(new IFLT(null)));
-  }
 }

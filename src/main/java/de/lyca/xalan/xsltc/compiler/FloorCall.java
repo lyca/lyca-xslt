@@ -32,20 +32,14 @@ import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
  * @author Santiago Pericas-Geertsen
  */
 final class FloorCall extends FunctionCall {
+
   public FloorCall(QName fname, List<Expression> arguments) {
     super(fname, arguments);
   }
 
   @Override
-  public JExpression compile(CompilerContext ctx) {
-    return ctx.ref(Math.class).staticInvoke("floor").arg(argument().compile(ctx));
+  public JExpression toJExpression(CompilerContext ctx) {
+    return ctx.ref(Math.class).staticInvoke("floor").arg(argument().toJExpression(ctx));
   }
 
-  @Override
-  public void translate(CompilerContext ctx) {
- // FIXME
-//    argument().translate(classGen, methodGen);
-//    methodGen.getInstructionList().append(
-//            new INVOKESTATIC(classGen.getConstantPool().addMethodref(MATH_CLASS, "floor", "(D)D")));
-  }
 }

@@ -47,11 +47,11 @@ public class FuncLocalPart extends FunctionDef1Arg {
 
     final int context = getArg0AsNode(xctxt);
     if (DTM.NULL == context)
-      return XString.EMPTYSTRING;
+      return XString.EMPTY;
     final DTM dtm = xctxt.getDTM(context);
     final String s = context != DTM.NULL ? dtm.getLocalName(context) : "";
     if (s.startsWith("#") || s.equals("xmlns"))
-      return XString.EMPTYSTRING;
+      return XString.EMPTY;
 
     return new XString(s);
   }

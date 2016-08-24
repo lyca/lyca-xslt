@@ -17,6 +17,7 @@
 
 package de.lyca.xalan.xsltc.compiler.util;
 
+import static com.sun.codemodel.JExpr.cast;
 import static com.sun.codemodel.JExpr.direct;
 import static de.lyca.xalan.xsltc.compiler.Constants.DOCUMENT_PNAME;
 import static de.lyca.xalan.xsltc.compiler.Constants.DOM_FIELD;
@@ -31,7 +32,6 @@ import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JClass;
 import com.sun.codemodel.JCodeModel;
 import com.sun.codemodel.JDefinedClass;
-import com.sun.codemodel.JExpr;
 import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JFieldVar;
 import com.sun.codemodel.JMethod;
@@ -212,6 +212,14 @@ public class CompilerContext {
     return currentMethodContext().nextTmpIterator();
   }
 
+  public String currentVar() {
+    return currentMethodContext().currentVar();
+  }
+  
+  public String nextVar() {
+    return currentMethodContext().nextVar();
+  }
+  
   public String currentResultTreeFrag() {
     return "resultTreeFrag" + resultTreeFrag.get();
   }
@@ -263,7 +271,7 @@ public class CompilerContext {
       if (param(TRANSLET_PNAME) == null) {
         document = direct("_document");
       } else {
-        document = ((JExpression) JExpr.cast(clazz().outer(), param(TRANSLET_PNAME))).ref(DOM_FIELD);
+        document = ((JExpression) cast(clazz().outer(), param(TRANSLET_PNAME))).ref(DOM_FIELD);
       }
     }
     return document;
@@ -279,6 +287,7 @@ public class CompilerContext {
     private final Deque<JVar> currentNodes = new ArrayDeque<>();
     private final Deque<JVar> currentParents = new ArrayDeque<>();
     private final AtomicInteger iterator = new AtomicInteger();
+    private final AtomicInteger var = new AtomicInteger();
 
     public MethodContext(JMethod method) {
       this.method = method;
@@ -290,6 +299,14 @@ public class CompilerContext {
 
     public String nextTmpIterator() {
       return "iterator" + iterator.incrementAndGet();
+    }
+
+    public String currentVar() {
+      return "var" + var.get();
+    }
+    
+    public String nextVar() {
+      return "var" + var.incrementAndGet();
     }
 
   }

@@ -128,7 +128,7 @@ public class SAX2DOM implements ContentHandler, LexicalHandler, Constants {
       for (int i = 0; i < nDecls; i++) {
         final String prefix = _namespaceDecls.get(i++);
 
-        if (prefix == null || prefix.equals(EMPTYSTRING)) {
+        if (prefix == null || prefix.isEmpty()) {
           tmp.setAttributeNS(XMLNS_URI, XMLNS_PREFIX, _namespaceDecls.get(i));
         } else {
           tmp.setAttributeNS(XMLNS_URI, XMLNS_STRING + prefix, _namespaceDecls.get(i));

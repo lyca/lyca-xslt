@@ -31,7 +31,6 @@ import java.util.Map;
  */
 public class AttributeList implements org.xml.sax.Attributes {
 
-  private final static String EMPTYSTRING = "";
   private final static String CDATASTRING = "CDATA";
 
   private Map<String, Integer> _attributes;
@@ -208,7 +207,7 @@ public class AttributeList implements org.xml.sax.Attributes {
         _uris.add(qname.substring(0, col));
         _names.add(qname.substring(col + 1));
       } else {
-        _uris.add(EMPTYSTRING);
+        _uris.add("");
         _names.add(qname);
       }
     } else {

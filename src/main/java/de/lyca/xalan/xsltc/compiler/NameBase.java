@@ -21,7 +21,7 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import static de.lyca.xalan.xsltc.compiler.Constants.NEXT;
+import static de.lyca.xml.dtm.DTMAxisIterator.NEXT;
 
 import java.util.List;
 
@@ -88,7 +88,7 @@ class NameBase extends FunctionCall {
   }
 
   @Override
-  public JExpression compile(CompilerContext ctx) {
+  public JExpression toJExpression(CompilerContext ctx) {
     // Function was called with no parameters
     JExpression expr;
     if (argumentCount() == 0) {
@@ -96,13 +96,13 @@ class NameBase extends FunctionCall {
     }
     // Function was called with node parameter
     else if (_paramType == Type.Node) {
-      expr = _param.compile(ctx);
+      expr = _param.toJExpression(ctx);
     } else if (_paramType == Type.Reference) {
-      expr = ctx.ref(BasisLibrary.class).staticInvoke("referenceToNodeSet").arg(_param.compile(ctx)).invoke(NEXT);
+      expr = ctx.ref(BasisLibrary.class).staticInvoke("referenceToNodeSet").arg(_param.toJExpression(ctx)).invoke(NEXT);
     }
     // Function was called with node-set parameter
     else {
-      expr = _param.startIterator(ctx, _param.compile(ctx)).invoke(NEXT);
+      expr = _param.startIterator(ctx, _param.toJExpression(ctx)).invoke(NEXT);
     }
     return expr;
   }

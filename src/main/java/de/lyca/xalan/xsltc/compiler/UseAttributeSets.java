@@ -57,10 +57,10 @@ final class UseAttributeSets extends Instruction {
    * inherit from).
    */
   public void addAttributeSets(String setNames) {
-    if (setNames != null && !setNames.equals(Constants.EMPTYSTRING)) {
-      final StringTokenizer tokens = new StringTokenizer(setNames);
-      while (tokens.hasMoreTokens()) {
-        final QName qname = getParser().getQNameIgnoreDefaultNs(tokens.nextToken());
+    if (setNames != null && !setNames.isEmpty()) {
+      final StringTokenizer tokenizer = new StringTokenizer(setNames);
+      while (tokenizer.hasMoreTokens()) {
+        final QName qname = getParser().getQNameIgnoreDefaultNs(tokenizer.nextToken());
         _sets.add(qname);
       }
     }

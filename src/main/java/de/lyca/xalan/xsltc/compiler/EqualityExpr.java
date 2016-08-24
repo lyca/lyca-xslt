@@ -178,41 +178,12 @@ final class EqualityExpr extends Expression {
   }
 
   @Override
-  public void translateDesynthesized(CompilerContext ctx) {
-    // FIXME
-//    final Type tleft = _left.getType();
-//    final InstructionList il = methodGen.getInstructionList();
-//
-//    if (tleft instanceof BooleanType) {
-//      _left.translate(classGen, methodGen);
-//      _right.translate(classGen, methodGen);
-//      _falseList.add(il.append(_op == Operators.EQ ? (BranchInstruction) new IF_ICMPNE(null)
-//              : (BranchInstruction) new IF_ICMPEQ(null)));
-//    } else if (tleft instanceof NumberType) {
-//      _left.translate(classGen, methodGen);
-//      _right.translate(classGen, methodGen);
-//
-//      if (tleft instanceof RealType) {
-//        il.append(DCMPG);
-//        _falseList.add(il.append(_op == Operators.EQ ? (BranchInstruction) new IFNE(null)
-//                : (BranchInstruction) new IFEQ(null)));
-//      } else {
-//        _falseList.add(il.append(_op == Operators.EQ ? (BranchInstruction) new IF_ICMPNE(null)
-//                : (BranchInstruction) new IF_ICMPEQ(null)));
-//      }
-//    } else {
-//      translate(classGen, methodGen);
-//      desynthesize(classGen, methodGen);
-//    }
-  }
-
-  @Override
-  public JExpression compile(CompilerContext ctx) {
+  public JExpression toJExpression(CompilerContext ctx) {
     final Type tleft = _left.getType();
     Type tright = _right.getType();
 
-    JExpression leftExpr = _left.compile(ctx);
-    JExpression rightExpr = _right.compile(ctx);
+    JExpression leftExpr = _left.toJExpression(ctx);
+    JExpression rightExpr = _right.toJExpression(ctx);
 
     if (tleft instanceof BooleanType || tleft instanceof NumberType) {
       return _op == Operators.EQ ? JOp.eq(leftExpr, rightExpr) : JOp.ne(leftExpr, rightExpr);
@@ -255,14 +226,15 @@ final class EqualityExpr extends Expression {
 
     if (tleft instanceof NodeSetType && tright instanceof BooleanType) {
       leftExpr = _left.startIterator(ctx, leftExpr);
-      leftExpr = Type.NodeSet.compileTo(ctx,leftExpr, Type.Boolean);
+      leftExpr = Type.NodeSet.compileTo(ctx, leftExpr, Type.Boolean);
 
       return _op == Operators.NE ? leftExpr.ne(rightExpr) : leftExpr.eq(rightExpr);
     }
 
     if (tleft instanceof NodeSetType && tright instanceof StringType) {
       leftExpr = _left.startIterator(ctx, leftExpr); // needed ?
-      return ctx.ref(BasisLibrary.class).staticInvoke("compare").arg(leftExpr).arg(rightExpr).arg(lit(_op)).arg(ctx.currentDom());
+      return ctx.ref(BasisLibrary.class).staticInvoke("compare").arg(leftExpr).arg(rightExpr).arg(lit(_op))
+          .arg(ctx.currentDom());
     }
 
     // Next, node-set/t for t in {real, string, node-set, result-tree}
@@ -276,128 +248,8 @@ final class EqualityExpr extends Expression {
     }
 
     // Call the appropriate compare() from the BasisLibrary
-    return ctx.ref(BasisLibrary.class).staticInvoke("compare").arg(leftExpr).arg(rightExpr).arg(lit(_op)).arg(ctx.currentDom());
+    return ctx.ref(BasisLibrary.class).staticInvoke("compare").arg(leftExpr).arg(rightExpr).arg(lit(_op))
+        .arg(ctx.currentDom());
   }
 
-  @Override
-  public void translate(CompilerContext ctx) {
-    // FIXME
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//    final InstructionList il = methodGen.getInstructionList();
-//
-//    final Type tleft = _left.getType();
-//    Type tright = _right.getType();
-//
-//    if (tleft instanceof BooleanType || tleft instanceof NumberType) {
-//      translateDesynthesized(classGen, methodGen);
-//      synthesize(classGen, methodGen);
-//      return;
-//    }
-//
-//    if (tleft instanceof StringType) {
-//      final int equals = cpg.addMethodref(STRING_CLASS, "equals", "(" + OBJECT_SIG + ")Z");
-//      _left.translate(classGen, methodGen);
-//      _right.translate(classGen, methodGen);
-//      il.append(new INVOKEVIRTUAL(equals));
-//
-//      if (_op == Operators.NE) {
-//        il.append(ICONST_1);
-//        il.append(IXOR); // not x <-> x xor 1
-//      }
-//      return;
-//    }
-//
-//    BranchHandle truec, falsec;
-//
-//    if (tleft instanceof ResultTreeType) {
-//      if (tright instanceof BooleanType) {
-//        _right.translate(classGen, methodGen);
-//        if (_op == Operators.NE) {
-//          il.append(ICONST_1);
-//          il.append(IXOR); // not x <-> x xor 1
-//        }
-//        return;
-//      }
-//
-//      if (tright instanceof RealType) {
-//        _left.translate(classGen, methodGen);
-//        tleft.translateTo(classGen, methodGen, Type.Real);
-//        _right.translate(classGen, methodGen);
-//
-//        il.append(DCMPG);
-//        falsec = il.append(_op == Operators.EQ ? (BranchInstruction) new IFNE(null)
-//                : (BranchInstruction) new IFEQ(null));
-//        il.append(ICONST_1);
-//        truec = il.append(new GOTO(null));
-//        falsec.setTarget(il.append(ICONST_0));
-//        truec.setTarget(il.append(NOP));
-//        return;
-//      }
-//
-//      // Next, result-tree/string and result-tree/result-tree comparisons
-//
-//      _left.translate(classGen, methodGen);
-//      tleft.translateTo(classGen, methodGen, Type.String);
-//      _right.translate(classGen, methodGen);
-//
-//      if (tright instanceof ResultTreeType) {
-//        tright.translateTo(classGen, methodGen, Type.String);
-//      }
-//
-//      final int equals = cpg.addMethodref(STRING_CLASS, "equals", "(" + OBJECT_SIG + ")Z");
-//      il.append(new INVOKEVIRTUAL(equals));
-//
-//      if (_op == Operators.NE) {
-//        il.append(ICONST_1);
-//        il.append(IXOR); // not x <-> x xor 1
-//      }
-//      return;
-//    }
-//
-//    if (tleft instanceof NodeSetType && tright instanceof BooleanType) {
-//      _left.translate(classGen, methodGen);
-//      _left.startIterator(classGen, methodGen);
-//      Type.NodeSet.translateTo(classGen, methodGen, Type.Boolean);
-//      _right.translate(classGen, methodGen);
-//
-//      il.append(IXOR); // x != y <-> x xor y
-//      if (_op == Operators.EQ) {
-//        il.append(ICONST_1);
-//        il.append(IXOR); // not x <-> x xor 1
-//      }
-//      return;
-//    }
-//
-//    if (tleft instanceof NodeSetType && tright instanceof StringType) {
-//      _left.translate(classGen, methodGen);
-//      _left.startIterator(classGen, methodGen); // needed ?
-//      _right.translate(classGen, methodGen);
-//      il.append(new PUSH(cpg, _op));
-//      il.append(methodGen.loadDOM());
-//      final int cmp = cpg.addMethodref(BASIS_LIBRARY_CLASS, "compare", "(" + tleft.toSignature() + tright.toSignature()
-//              + "I" + DOM_INTF_SIG + ")Z");
-//      il.append(new INVOKESTATIC(cmp));
-//      return;
-//    }
-//
-//    // Next, node-set/t for t in {real, string, node-set, result-tree}
-//    _left.translate(classGen, methodGen);
-//    _left.startIterator(classGen, methodGen);
-//    _right.translate(classGen, methodGen);
-//    _right.startIterator(classGen, methodGen);
-//
-//    // Cast a result tree to a string to use an existing compare
-//    if (tright instanceof ResultTreeType) {
-//      tright.translateTo(classGen, methodGen, Type.String);
-//      tright = Type.String;
-//    }
-//
-//    // Call the appropriate compare() from the BasisLibrary
-//    il.append(new PUSH(cpg, _op));
-//    il.append(methodGen.loadDOM());
-//
-//    final int compare = cpg.addMethodref(BASIS_LIBRARY_CLASS, "compare",
-//            "(" + tleft.toSignature() + tright.toSignature() + "I" + DOM_INTF_SIG + ")Z");
-//    il.append(new INVOKESTATIC(compare));
-  }
 }

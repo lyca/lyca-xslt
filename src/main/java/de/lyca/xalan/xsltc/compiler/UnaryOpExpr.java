@@ -86,8 +86,8 @@ final class UnaryOpExpr extends Expression {
   }
 
   @Override
-  public JExpression compile(CompilerContext ctx) {
-    return minus(_left.compile(ctx));
+  public JExpression toJExpression(CompilerContext ctx) {
+    return minus(_left.toJExpression(ctx));
   }
 
   @Override

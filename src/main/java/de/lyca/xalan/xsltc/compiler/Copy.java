@@ -23,6 +23,7 @@ package de.lyca.xalan.xsltc.compiler;
 
 import static com.sun.codemodel.JExpr._null;
 import static com.sun.codemodel.JExpr.lit;
+import static de.lyca.xalan.xsltc.DOM.SHALLOW_COPY;
 
 import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JVar;
@@ -76,9 +77,9 @@ final class Copy extends Instruction {
     JBlock body = ctx.currentBlock();
 
     // Get the name of the node to copy and save for later
-    JVar name = body.decl(ctx.ref(String.class), "name", ctx.currentDom().invoke("shallowCopy").arg(ctx.currentNode()).arg(ctx.currentHandler()));
+    JVar name = body.decl(ctx.ref(String.class), "name", ctx.currentDom().invoke(SHALLOW_COPY).arg(ctx.currentNode())
+        .arg(ctx.currentHandler()));
 
-    // final BranchHandle ifBlock1 = il.append(new IFNULL(null));
     JBlock _if1 = body._if(name.ne(_null()))._then();
 
     // Get the length of the node name and save for later
@@ -96,33 +97,18 @@ final class Copy extends Instruction {
       // If not we have to check to see if the copy will result in an
       // element being output.
       else {
-        // check if element; if not skip to translate body
-//        il.append(new ILOAD(length.getIndex()));
-//        final BranchHandle ifBlock2 = il.append(new IFEQ(null));
-        // length != 0 -> element -> do attribute sets
         _useSets.translate(ctx);
-        // not an element; root
-//        ifBlock2.setTarget(il.append(NOP));
       }
     }
 
     // Instantiate body of xsl:copy
     translateContents(ctx);
     ctx.popBlock();
+
     // Call the output handler's endElement() if we copied an element
     // (The DOM.shallowCopy() method calls startElement().)
-//    length.setEnd(il.append(new ILOAD(length.getIndex())));
-//    final BranchHandle ifBlock3 = il.append(new IFEQ(null));
-//    il.append(methodGen.loadHandler());
-//    name.setEnd(il.append(new ALOAD(name.getIndex())));
-//    il.append(methodGen.endElement());
-    
     JBlock _if3 = _if1._if(length.ne(lit(0)))._then();
     _if3.invoke(ctx.currentHandler(), "endElement").arg(name);
-//    final InstructionHandle end = il.append(NOP);
-//    ifBlock1.setTarget(end);
-//    ifBlock3.setTarget(end);
-//    methodGen.removeLocalVariable(name);
-//    methodGen.removeLocalVariable(length);
   }
+
 }

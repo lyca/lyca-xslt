@@ -22,6 +22,7 @@
 package de.lyca.xalan.xsltc.compiler;
 
 import static de.lyca.xalan.xsltc.compiler.Constants.ITERATOR_PNAME;
+import static de.lyca.xml.dtm.DTMAxisIterator.GET_POSITION;
 
 import com.sun.codemodel.JExpr;
 import com.sun.codemodel.JExpression;
@@ -47,7 +48,7 @@ final class PositionCall extends FunctionCall {
   }
 
   @Override
-  public JExpression compile(CompilerContext ctx) {
+  public JExpression toJExpression(CompilerContext ctx) {
     if (ctx.ref(NodeSortRecord.class).isAssignableFrom(ctx.clazz())) {
       return ctx.currentNode();
     }
@@ -56,26 +57,9 @@ final class PositionCall extends FunctionCall {
     }
     // FIXME
     if ("iterator0".equals(ctx.currentTmpIterator())) {
-      return ctx.param(ITERATOR_PNAME).invoke("getPosition");
+      return ctx.param(ITERATOR_PNAME).invoke(GET_POSITION);
     }
-    return JExpr.direct(ctx.currentTmpIterator()).invoke("getPosition");
+    return JExpr.direct(ctx.currentTmpIterator()).invoke(GET_POSITION);
   }
 
-  @Override
-  public void translate(CompilerContext ctx) {
- // FIXME
-//    final InstructionList il = methodGen.getInstructionList();
-//
-//    if (methodGen instanceof CompareGenerator) {
-//      il.append(((CompareGenerator) methodGen).loadCurrentNode());
-//    } else if (methodGen instanceof TestGenerator) {
-//      il.append(new ILOAD(POSITION_INDEX));
-//    } else {
-//      final ConstantPoolGen cpg = classGen.getConstantPool();
-//      final int index = cpg.addInterfaceMethodref(NODE_ITERATOR, "getPosition", "()I");
-//
-//      il.append(methodGen.loadIterator());
-//      il.append(new INVOKEINTERFACE(index, 1));
-//    }
-  }
 }

@@ -15,9 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * $Id$
- */
 package de.lyca.xml.serializer;
 
 import java.io.IOException;
@@ -58,11 +55,6 @@ public final class ToUnknownStream extends SerializerBase {
    * The wrapped handler, initially XML but possibly switched to HTML
    */
   private SerializationHandler m_handler;
-
-  /**
-   * A String with no characters
-   */
-  private static final String EMPTYSTRING = "";
 
   /**
    * true if the underlying handler (XML or HTML) is fully initialized
@@ -375,7 +367,7 @@ public final class ToUnknownStream extends SerializerBase {
     // hack for XSLTC with finding URI for default namespace
     if (m_firstTagNotEmitted && m_firstElementURI == null && m_firstElementName != null) {
       final String prefix1 = getPrefixPart(m_firstElementName);
-      if (prefix1 == null && EMPTYSTRING.equals(prefix)) {
+      if (prefix1 == null && "".equals(prefix)) {
         // the elements URI is not known yet, and it
         // doesn't have a prefix, and we are currently
         // setting the uri for prefix "", so we have
@@ -1093,7 +1085,7 @@ public final class ToUnknownStream extends SerializerBase {
    */
   private String getPrefixPartUnknown(String qname) {
     final int index = qname.indexOf(':');
-    return index > 0 ? qname.substring(0, index) : EMPTYSTRING;
+    return index > 0 ? qname.substring(0, index) : "";
   }
 
   /**
@@ -1110,7 +1102,7 @@ public final class ToUnknownStream extends SerializerBase {
     isHTML = getLocalNameUnknown(m_firstElementName).equalsIgnoreCase("html");
 
     // Try to rule out if this is not to be an HTML document based on URI
-    if (isHTML && m_firstElementURI != null && !EMPTYSTRING.equals(m_firstElementURI)) {
+    if (isHTML && m_firstElementURI != null && !"".equals(m_firstElementURI)) {
       // the <html> element has a non-trivial namespace
       isHTML = false;
     }
@@ -1126,7 +1118,7 @@ public final class ToUnknownStream extends SerializerBase {
         final String prefix = (String) m_namespacePrefix.get(i);
         final String uri = (String) m_namespaceURI.get(i);
 
-        if (m_firstElementPrefix != null && m_firstElementPrefix.equals(prefix) && !EMPTYSTRING.equals(uri)) {
+        if (m_firstElementPrefix != null && m_firstElementPrefix.equals(prefix) && !"".equals(uri)) {
           // The first element has a prefix, so it can't be <html>
           isHTML = false;
           break;

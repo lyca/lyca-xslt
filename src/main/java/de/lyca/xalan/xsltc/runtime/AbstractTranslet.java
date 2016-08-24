@@ -101,9 +101,6 @@ public abstract class AbstractTranslet implements Translet {
   // TODO - these should only be instanciated when needed
   protected StringValueHandler stringValueHandler = new StringValueHandler();
 
-  // Use one empty string instead of constantly instanciating String("");
-  private final static String EMPTYSTRING = "";
-
   // This is the name of the index used for ID attributes
   private final static String ID_INDEX_NAME = "##id";
 
@@ -273,7 +270,7 @@ public abstract class AbstractTranslet implements Translet {
 
     // The name cannot be null - use empty string instead
     if (name == null) {
-      name = EMPTYSTRING;
+      name = "";
     }
 
     // Construct a DecimalFormat object containing the symbols we got
@@ -292,12 +289,12 @@ public abstract class AbstractTranslet implements Translet {
     if (_formatSymbols != null) {
       // The name cannot be null - use empty string instead
       if (name == null) {
-        name = EMPTYSTRING;
+        name = "";
       }
 
       DecimalFormat df = _formatSymbols.get(name);
       if (df == null) {
-        df = _formatSymbols.get(EMPTYSTRING);
+        df = _formatSymbols.get("");
       }
       return df;
     }

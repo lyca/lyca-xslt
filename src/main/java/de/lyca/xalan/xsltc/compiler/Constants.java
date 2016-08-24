@@ -21,161 +21,61 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import org.apache.bcel.generic.InstructionConstants;
-
-import de.lyca.xml.serializer.SerializerBase;
-
 /**
  * @author Jacek Ambroziak
  * @author Santiago Pericas-Geertsen
  */
-public interface Constants extends InstructionConstants {
+public class Constants {
 
   // Error categories used to report errors to Parser.reportError()
 
   // Unexpected internal errors, such as null-ptr exceptions, etc.
   // Immediately terminates compilation, no translet produced
-  public final int INTERNAL = 0;
+  public static final int INTERNAL = 0;
   // XSLT elements that are not implemented and unsupported ext.
   // Immediately terminates compilation, no translet produced
-  public final int UNSUPPORTED = 1;
+  public static final int UNSUPPORTED = 1;
   // Fatal error in the stylesheet input (parsing or content)
   // Immediately terminates compilation, no translet produced
-  public final int FATAL = 2;
+  public static final int FATAL = 2;
   // Other error in the stylesheet input (parsing or content)
   // Does not terminate compilation, no translet produced
-  public final int ERROR = 3;
+  public static final int ERROR = 3;
   // Other error in the stylesheet input (content errors only)
   // Does not terminate compilation, a translet is produced
-  public final int WARNING = 4;
-
-  public static final String EMPTYSTRING = "";
+  public static final int WARNING = 4;
 
   public static final String NAMESPACE_FEATURE = "http://xml.org/sax/features/namespaces";
 
-  public static final String TRANSLET_INTF = "de.lyca.xalan.xsltc.Translet";
-  public static final String TRANSLET_INTF_SIG = "Lde/lyca/xalan/xsltc/Translet;";
-
-  public static final String ATTRIBUTES_SIG = "Lde/lyca/xalan/xsltc/runtime/Attributes;";
-  public static final String NODE_ITERATOR_SIG = "Lde/lyca/xml/dtm/DTMAxisIterator;";
-  public static final String DOM_INTF_SIG = "Lde/lyca/xalan/xsltc/DOM;";
-  public static final String DOM_IMPL_CLASS = "de/lyca/xalan/xsltc/DOM"; // xml/dtm/ref/DTMDefaultBaseIterators"; //xalan/xsltc/dom/DOMImpl";
-  public static final String SAX_IMPL_CLASS = "de/lyca/xalan/xsltc/DOM/SAXImpl";
-  public static final String DOM_IMPL_SIG = "Lde/lyca/xalan/xsltc/dom/SAXImpl;"; // xml/dtm/ref/DTMDefaultBaseIterators"; //xalan/xsltc/dom/DOMImpl;";
-  public static final String SAX_IMPL_SIG = "Lde/lyca/xalan/xsltc/dom/SAXImpl;";
-  public static final String DOM_ADAPTER_CLASS = "de/lyca/xalan/xsltc/dom/DOMAdapter";
-  public static final String DOM_ADAPTER_SIG = "Lde/lyca/xalan/xsltc/dom/DOMAdapter;";
-  public static final String MULTI_DOM_CLASS = "de.lyca.xalan.xsltc.dom.MultiDOM";
-  public static final String MULTI_DOM_SIG = "Lde/lyca/xalan/xsltc/dom/MultiDOM;";
-
-  public static final int ACC_PUBLIC = org.apache.bcel.Constants.ACC_PUBLIC;
-  public static final int ACC_SUPER = org.apache.bcel.Constants.ACC_SUPER;
-  public static final int ACC_FINAL = org.apache.bcel.Constants.ACC_FINAL;
-  public static final int ACC_PRIVATE = org.apache.bcel.Constants.ACC_PRIVATE;
-  public static final int ACC_PROTECTED = org.apache.bcel.Constants.ACC_PROTECTED;
-  public static final int ACC_STATIC = org.apache.bcel.Constants.ACC_STATIC;
-
-  public static final String STRING_SIG = "Ljava/lang/String;";
-
   public static final String NODE_ITERATOR = "de.lyca.xml.dtm.DTMAxisIterator";
-  public static final String NODE_SIG = "I";
-  public static final String GET_PARENT = "getParent";
-  public static final String NEXT_SIG = "()" + NODE_SIG;
-  public static final String NEXT = "next";
-  public static final String NEXTID = "nextNodeID";
-  public static final String MAKE_NODE = "makeNode";
-  public static final String MAKE_NODE_LIST = "makeNodeList";
-  public static final String GET_UNPARSED_ENTITY_URI = "getUnparsedEntityURI";
   public static final String STRING_TO_REAL = "stringToReal";
-  public static final String STRING_TO_INT = "stringToInt";
 
-  public static final String XSLT_PACKAGE = "de.lyca.xalan.xsltc";
-  public static final String COMPILER_PACKAGE = XSLT_PACKAGE + ".compiler";
-  public static final String RUNTIME_PACKAGE = XSLT_PACKAGE + ".runtime";
-  public static final String TRANSLET_CLASS = RUNTIME_PACKAGE + ".AbstractTranslet";
-
-  public static final String TRANSLET_SIG = "Lde/lyca/xalan/xsltc/runtime/AbstractTranslet;";
-  public static final String TRANSLET_OUTPUT_SIG = "L" + SerializerBase.PKG_PATH + "/SerializationHandler;";
+  public static final String COMPILER_PACKAGE = "de.lyca.xalan.xsltc.compiler";
 
   public static final String DOM_INTF = "de.lyca.xalan.xsltc.DOM";
   public static final String STRING_CLASS = "java.lang.String";
-  public static final String OBJECT_CLASS = "java.lang.Object";
 
-  public static final String TRANSLET_OUTPUT_BASE = "de.lyca.xalan.xsltc.TransletOutputBase";
   // output interface
-  public static final String TRANSLET_OUTPUT_INTERFACE = SerializerBase.PKG_NAME + ".SerializationHandler";
-  public static final String BASIS_LIBRARY_CLASS = "de.lyca.xalan.xsltc.runtime.BasisLibrary";
-  public static final String ATTRIBUTE_LIST_IMPL_CLASS = "de.lyca.xalan.xsltc.runtime.AttributeListImpl";
-  public static final String DOUBLE_CLASS = "java.lang.Double";
-  public static final String INTEGER_CLASS = "java.lang.Integer";
   public static final String RUNTIME_NODE_CLASS = "de.lyca.xalan.xsltc.runtime.Node";
-  public static final String MATH_CLASS = "java.lang.Math";
 
-  public static final String BOOLEAN_VALUE = "booleanValue";
-  public static final String BOOLEAN_VALUE_SIG = "()Z";
-  public static final String INT_VALUE = "intValue";
-  public static final String INT_VALUE_SIG = "()I";
-  public static final String DOUBLE_VALUE = "doubleValue";
-  public static final String DOUBLE_VALUE_SIG = "()D";
-
-  public static final String DOM_PNAME = "dom";
   public static final String NODE_PNAME = "node";
   public static final String TRANSLET_OUTPUT_PNAME = "handler";
   public static final String ITERATOR_PNAME = "iterator";
   public static final String DOCUMENT_PNAME = "document";
   public static final String TRANSLET_PNAME = "translet";
 
-  public static final String INVOKE_METHOD = "invokeMethod";
-  public static final String GET_NODE_NAME = "getNodeNameX";
   public static final String CHARACTERSW = "characters";
-  public static final String GET_CHILDREN = "getChildren";
-  public static final String GET_TYPED_CHILDREN = "getTypedChildren";
   public static final String CHARACTERS = "characters";
   public static final String APPLY_TEMPLATES = "applyTemplates";
-  public static final String GET_NODE_TYPE = "getNodeType";
-  public static final String GET_NODE_VALUE = "getStringValueX";
   public static final String GET_ELEMENT_VALUE = "getElementValue";
-  public static final String GET_ATTRIBUTE_VALUE = "getAttributeValue";
-  public static final String HAS_ATTRIBUTE = "hasAttribute";
   public static final String ADD_ITERATOR = "addIterator";
-  public static final String SET_START_NODE = "setStartNode";
-  public static final String RESET = "reset";
-
-  public static final String ATTR_SET_SIG = "(" + DOM_INTF_SIG + NODE_ITERATOR_SIG + TRANSLET_OUTPUT_SIG + ")V";
-
-  public static final String GET_NODE_NAME_SIG = "(" + NODE_SIG + ")" + STRING_SIG;
-  public static final String CHARACTERSW_SIG = "(" + STRING_SIG + TRANSLET_OUTPUT_SIG + ")V";
-  public static final String CHARACTERS_SIG = "(" + NODE_SIG + TRANSLET_OUTPUT_SIG + ")V";
-  public static final String GET_CHILDREN_SIG = "(" + NODE_SIG + ")" + NODE_ITERATOR_SIG;
-  public static final String GET_TYPED_CHILDREN_SIG = "(I)" + NODE_ITERATOR_SIG;
-  public static final String GET_NODE_TYPE_SIG = "()S";
-  public static final String GET_NODE_VALUE_SIG = "(I)" + STRING_SIG;
-  public static final String GET_ELEMENT_VALUE_SIG = "(I)" + STRING_SIG;
-  public static final String GET_ATTRIBUTE_VALUE_SIG = "(II)" + STRING_SIG;
-  public static final String HAS_ATTRIBUTE_SIG = "(II)Z";
-  public static final String GET_ITERATOR_SIG = "()" + NODE_ITERATOR_SIG;
 
   public static final String NAMES_INDEX = "namesArray";
-//  public static final String NAMES_INDEX_SIG = "[" + STRING_SIG;
   public static final String URIS_INDEX = "urisArray";
-//  public static final String URIS_INDEX_SIG = "[" + STRING_SIG;
   public static final String TYPES_INDEX = "typesArray";
-//  public static final String TYPES_INDEX_SIG = "[I";
   public static final String NAMESPACE_INDEX = "namespaceArray";
-//  public static final String NAMESPACE_INDEX_SIG = "[" + STRING_SIG;
-  public static final String NS_ANCESTORS_INDEX_SIG = "[I";
-  public static final String PREFIX_URIS_IDX_SIG = "[I";
-  public static final String PREFIX_URIS_ARRAY_SIG = "[" + STRING_SIG;
   public static final String HASIDCALL_INDEX = "_hasIdCall";
-  public static final String HASIDCALL_INDEX_SIG = "Z";
   public static final String TRANSLET_VERSION_INDEX = "transletVersion";
-  public static final String TRANSLET_VERSION_INDEX_SIG = "I";
-  public static final String LOOKUP_STYLESHEET_QNAME_NS_REF = "lookupStylesheetQNameNamespace";
-  public static final String LOOKUP_STYLESHEET_QNAME_NS_SIG = "(" + STRING_SIG + "I" + NS_ANCESTORS_INDEX_SIG
-          + PREFIX_URIS_IDX_SIG + PREFIX_URIS_ARRAY_SIG + "Z)" + STRING_SIG;
-  public static final String EXPAND_STYLESHEET_QNAME_REF = "expandStylesheetQNameRef";
-  public static final String EXPAND_STYLESHEET_QNAME_SIG = "(" + STRING_SIG + "I" + NS_ANCESTORS_INDEX_SIG
-          + PREFIX_URIS_IDX_SIG + PREFIX_URIS_ARRAY_SIG + "Z)" + STRING_SIG;
 
   public static final String DOM_FIELD = "_dom";
   public static final String STATIC_NAMES_ARRAY_FIELD = "_sNamesArray";
@@ -186,45 +86,18 @@ public interface Constants extends InstructionConstants {
   public static final String STATIC_PREFIX_URIS_IDX_ARRAY_FIELD = "_sPrefixURIsIdxArray";
   public static final String STATIC_PREFIX_URIS_ARRAY_FIELD = "_sPrefixURIPairsArray";
   public static final String STATIC_CHAR_DATA_FIELD = "_scharData";
-  public static final String FORMAT_SYMBOLS_FIELD = "format_symbols";
 
-  public static final String ITERATOR_FIELD_SIG = NODE_ITERATOR_SIG;
-  public static final String NODE_FIELD = "node";
-  public static final String NODE_FIELD_SIG = "I";
-
-  public static final String EMPTYATTR_FIELD = "EmptyAttributes";
-  public static final String ATTRIBUTE_LIST_FIELD = "attributeList";
-  public static final String CLEAR_ATTRIBUTES = "clear";
-  public static final String ADD_ATTRIBUTE = "addAttribute";
-
-  public static final String ORDER_ITERATOR = "orderNodes";
-
-  public static final String SET_START_NODE_SIG = "(" + NODE_SIG + ")" + NODE_ITERATOR_SIG;
-
-  public static final String NODE_COUNTER = "de.lyca.xalan.xsltc.dom.NodeCounter";
-  public static final String DEFAULT_NODE_COUNTER = "de.lyca.xalan.xsltc.dom.DefaultNodeCounter";
-  public static final String TRANSLET_FIELD = "translet";
-
-  public static final String GET_PARAMETER = "getParameter";
   public static final String ADD_PARAMETER = "addParameter";
   public static final String PUSH_PARAM_FRAME = "pushParamFrame";
   public static final String POP_PARAM_FRAME = "popParamFrame";
 
   public static final String STRIP_SPACE = "stripSpace";
 
-  public static final String GET_NODE_VALUE_ITERATOR = "getNodeValueIterator";
-
-  public static final int POSITION_INDEX = 2;
-  public static final int LAST_INDEX = 3;
-
   public static final String XMLNS_PREFIX = "xmlns";
-  public static final String XMLNS_STRING = "xmlns:";
-  public static final String XMLNS_URI = "http://www.w3.org/2000/xmlns/";
   public static final String XSLT_URI = "http://www.w3.org/1999/XSL/Transform";
   public static final String XHTML_URI = "http://www.w3.org/1999/xhtml";
   public static final String TRANSLET_URI = "http://xml.apache.org/xalan/xsltc";
   public static final String REDIRECT_URI = "http://xml.apache.org/xalan/redirect";
-  public static final String FALLBACK_CLASS = "de.lyca.xalan.xsltc.compiler.Fallback";
 
   public static final int RTF_INITIAL_SIZE = 32;
 }

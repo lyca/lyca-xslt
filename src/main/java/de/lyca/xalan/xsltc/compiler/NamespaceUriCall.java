@@ -21,6 +21,8 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
+import static de.lyca.xalan.xsltc.DOM.GET_NAMESPACE_NAME;
+
 import java.util.List;
 
 import com.sun.codemodel.JExpression;
@@ -47,9 +49,9 @@ final class NamespaceUriCall extends NameBase {
   }
 
   @Override
-  public JExpression compile(CompilerContext ctx) {
+  public JExpression toJExpression(CompilerContext ctx) {
     // Returns the string value for a node in the DOM
-    return ctx.currentDom().invoke("getNamespaceName").arg(super.compile(ctx));
+    return ctx.currentDom().invoke(GET_NAMESPACE_NAME).arg(super.toJExpression(ctx));
   }
 
   /**

@@ -69,7 +69,7 @@ final class SimpleAttributeValue extends AttributeValue {
   }
 
   @Override
-  public JExpression compile(CompilerContext ctx) {
+  public JExpression toJExpression(CompilerContext ctx) {
     return lit(_value);
   }
 

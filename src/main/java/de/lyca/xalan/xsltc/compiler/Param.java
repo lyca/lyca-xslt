@@ -24,7 +24,6 @@ package de.lyca.xalan.xsltc.compiler;
 import static com.sun.codemodel.JExpr._null;
 import static com.sun.codemodel.JExpr.invoke;
 import static de.lyca.xalan.xsltc.compiler.Constants.ADD_PARAMETER;
-import static de.lyca.xalan.xsltc.compiler.Constants.EMPTYSTRING;
 
 import com.sun.codemodel.JConditional;
 import com.sun.codemodel.JExpr;
@@ -178,7 +177,6 @@ final class Param extends VariableBase {
      * the class.
      */
     final String name = _escapedName;// BasisLibrary.mapQNameToJavaName(_name.toString());
-    final String signature = _type.toSignature();
     final String className = _type.getClassName();
 
     if (isLocal()) {
@@ -187,15 +185,15 @@ final class Param extends VariableBase {
        * using its default value: if (param == null) param = <default-value>
        */
       if (_isInSimpleNamedTemplate) {
-        _local = ctx.param(name);
-        JConditional _if =  ctx.currentBlock()._if(_local.eq(_null()));
+        _param = ctx.param(name);
+        JConditional _if =  ctx.currentBlock()._if(_param.eq(_null()));
         ctx.pushBlock(_if._then());
-        ctx.currentBlock().assign(_local, compileValue(ctx));
+        ctx.currentBlock().assign(_param, compileValue(ctx));
         ctx.popBlock();
         return;
       }
 
-      if (className != EMPTYSTRING) {
+      if (className != "") {
         // FIXME
 //        il.append(new CHECKCAST(cpg.addClass(className)));
       }
@@ -204,12 +202,12 @@ final class Param extends VariableBase {
 
       if (_refs.isEmpty()) { // nobody uses the value
 //        il.append(_type.POP());
-        _local = null;
+        _param = null;
       } else { // normal case
         // Call addParameter() from this class
         JExpression addParameter = invoke(ADD_PARAMETER).arg(name).arg(compileValue(ctx)).arg(JExpr.TRUE);
 
-        _local = ctx.currentBlock().decl(_type.toJCType(), name, addParameter);
+        _param = ctx.currentBlock().decl(_type.toJCType(), name, addParameter);
         // Cache the result of addParameter() in a local variable
 //        _local.setStart(il.append(_type.STORE(_local.getIndex())));
       }
@@ -224,7 +222,7 @@ final class Param extends VariableBase {
 //        _type.translateUnBox(classGen, methodGen);
 
         // Cache the result of addParameter() in a field
-        if (className != EMPTYSTRING) {
+        if (className != "") {
 //          il.append(new CHECKCAST(cpg.addClass(className)));
         }
       }

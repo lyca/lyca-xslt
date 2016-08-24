@@ -20,23 +20,16 @@
  */
 
 package de.lyca.xalan.xsltc.compiler.util;
-
 import static com.sun.codemodel.JExpr._new;
-import static com.sun.codemodel.JExpr._null;
 import static com.sun.codemodel.JExpr.lit;
+import static de.lyca.xalan.xsltc.DOM.GET_STRING_VALUE_X;
+import static de.lyca.xalan.xsltc.compiler.Constants.FATAL;
+import static de.lyca.xalan.xsltc.compiler.Constants.GET_ELEMENT_VALUE;
+import static de.lyca.xalan.xsltc.compiler.Constants.RUNTIME_NODE_CLASS;
 
-import org.apache.bcel.generic.ILOAD;
-import org.apache.bcel.generic.ISTORE;
-import org.apache.bcel.generic.Instruction;
-
-import com.sun.codemodel.JDefinedClass;
-import com.sun.codemodel.JExpr;
 import com.sun.codemodel.JExpression;
-import com.sun.codemodel.JMethod;
-import com.sun.codemodel.JOp;
 import com.sun.codemodel.JType;
 
-import de.lyca.xalan.xsltc.compiler.FlowList;
 import de.lyca.xalan.xsltc.compiler.NodeTest;
 import de.lyca.xalan.xsltc.dom.SingletonIterator;
 
@@ -75,42 +68,18 @@ public final class NodeType extends Type {
   }
 
   @Override
-  public String toSignature() {
-    return "I";
-  }
-
-  @Override
   public JType toJCType() {
     return JCM.INT;
   }
 
   /**
-   * Translates a node into an object of internal type <code>type</code>. The
-   * translation to int is undefined since nodes are always converted to reals
-   * in arithmetic expressions.
+   * Compiles a node expression into an expression of internal type
+   * <code>type</code>. The compilation to int is undefined since nodes are
+   * always converted to reals in arithmetic expressions.
    * 
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo(CompilerContext,
+   *      JExpression, Type)
    */
-  @Override
-  public void translateTo(JDefinedClass definedClass, JMethod method, Type type) {
-    if (type == Type.String) {
-      translateTo(definedClass, method, (StringType) type);
-    } else if (type == Type.Boolean) {
-      translateTo(definedClass, method, (BooleanType) type);
-    } else if (type == Type.Real) {
-      translateTo(definedClass, method, (RealType) type);
-    } else if (type == Type.NodeSet) {
-      translateTo(definedClass, method, (NodeSetType) type);
-    } else if (type == Type.Reference) {
-      translateTo(definedClass, method, (ReferenceType) type);
-    } else if (type == Type.Object) {
-      translateTo(definedClass, method, (ObjectType) type);
-    } else {
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), type.toString());
-      // FIXME classGen.getParser().reportError(Constants.FATAL, err);
-    }
-  }
-
   @Override
   public JExpression compileTo(CompilerContext ctx, JExpression expr, Type type) {
     if (type == Type.String) {
@@ -128,46 +97,16 @@ public final class NodeType extends Type {
     } else {
       final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), type.toString());
       ctx.xsltc().getParser().reportError(FATAL, err);
-      return null;
+      return expr;
     }
   }
-  
+
   /**
-   * Expects a node on the stack and pushes its string value.
+   * Expects a node expression and returns its string value.
    * 
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo(CompilerContext,
+   *      JExpression, Type)
    */
-  public void translateTo(JDefinedClass definedClass, JMethod method, StringType type) {
-//    FIXME
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//    final InstructionList il = methodGen.getInstructionList();
-//
-//    switch (_type) {
-//      case NodeTest.ROOT:
-//      case NodeTest.ELEMENT:
-//        il.append(methodGen.loadDOM());
-//        il.append(SWAP); // dom ref must be below node index
-//        int index = cpg.addInterfaceMethodref(DOM_INTF, GET_ELEMENT_VALUE, GET_ELEMENT_VALUE_SIG);
-//        il.append(new INVOKEINTERFACE(index, 2));
-//        break;
-//
-//      case NodeTest.ANODE:
-//      case NodeTest.COMMENT:
-//      case NodeTest.ATTRIBUTE:
-//      case NodeTest.PI:
-//        il.append(methodGen.loadDOM());
-//        il.append(SWAP); // dom ref must be below node index
-//        index = cpg.addInterfaceMethodref(DOM_INTF, GET_NODE_VALUE, GET_NODE_VALUE_SIG);
-//        il.append(new INVOKEINTERFACE(index, 2));
-//        break;
-//
-//      default:
-//        final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), type.toString());
-//        classGen.getParser().reportError(Constants.FATAL, err);
-//        break;
-//    }
-  }
-  
   public JExpression compileTo(CompilerContext ctx, JExpression expr, StringType type) {
     switch (_type) {
     case NodeTest.ROOT:
@@ -177,11 +116,11 @@ public final class NodeType extends Type {
     case NodeTest.COMMENT:
     case NodeTest.ATTRIBUTE:
     case NodeTest.PI:
-      return ctx.currentDom().invoke(GET_NODE_VALUE).arg(expr);
+      return ctx.currentDom().invoke(GET_STRING_VALUE_X).arg(expr);
     default:
       final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), type.toString());
       ctx.xsltc().getParser().reportError(FATAL, err);
-      return null;
+      return expr;
     }
   }
 
@@ -192,16 +131,6 @@ public final class NodeType extends Type {
    * 
    * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
    */
-  public void translateTo(JDefinedClass definedClass, JMethod method, BooleanType type) {
-//    FIXME
-//    final InstructionList il = methodGen.getInstructionList();
-//    final FlowList falsel = translateToDesynthesized(classGen, methodGen, type);
-//    il.append(ICONST_1);
-//    final BranchHandle truec = il.append(new GOTO(null));
-//    falsel.backPatch(il.append(ICONST_0));
-//    truec.setTarget(il.append(NOP));
-  }
-
   public JExpression compileTo(CompilerContext ctx, JExpression expr, BooleanType type) {
     return expr.ne(lit(0));
   }
@@ -212,12 +141,6 @@ public final class NodeType extends Type {
    * 
    * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
    */
-  public void translateTo(JDefinedClass definedClass, JMethod method, RealType type) {
-//    FIXME
-//    translateTo(classGen, methodGen, Type.String);
-//    Type.String.translateTo(classGen, methodGen, Type.Real);
-  }
-
   public JExpression compileTo(CompilerContext ctx, JExpression expr, RealType type) {
     return Type.String.compileTo(ctx, compileTo(ctx, expr, Type.String), Type.Real);
   }
@@ -228,20 +151,8 @@ public final class NodeType extends Type {
    * 
    * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
    */
-  public void translateTo(JDefinedClass definedClass, JMethod method, NodeSetType type) {
-//    FIXME
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//    final InstructionList il = methodGen.getInstructionList();
-//
-//    // Create a new instance of SingletonIterator
-//    il.append(new NEW(cpg.addClass(SINGLETON_ITERATOR)));
-//    il.append(DUP_X1);
-//    il.append(SWAP);
-//    final int init = cpg.addMethodref(SINGLETON_ITERATOR, "<init>", "(" + NODE_SIG + ")V");
-//    il.append(new INVOKESPECIAL(init));
-  }
-
   public JExpression compileTo(CompilerContext ctx, JExpression expr, NodeSetType type) {
+    // Create a new instance of SingletonIterator
     return _new(ctx.ref(SingletonIterator.class)).arg(expr);
   }
 
@@ -250,23 +161,8 @@ public final class NodeType extends Type {
    * 
    * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
    */
-  public void translateTo(JDefinedClass definedClass, JMethod method, ObjectType type) {
-//    FIXME
-//    methodGen.getInstructionList().append(NOP);
-  }
-
-  /**
-   * Translates a node into a non-synthesized boolean. It does not push a 0 or a
-   * 1 but instead returns branchhandle list to be appended to the false list.
-   * 
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#translateToDesynthesized
-   */
-  @Override
-  public FlowList translateToDesynthesized(JDefinedClass definedClass, JMethod method, BooleanType type) {
-    return null;
-//    FIXME
-//    final InstructionList il = methodGen.getInstructionList();
-//    return new FlowList(il.append(new IFEQ(null)));
+  public JExpression compileTo(CompilerContext ctx, JExpression expr, ObjectType type) {
+    return expr;
   }
 
   /**
@@ -275,17 +171,6 @@ public final class NodeType extends Type {
    * 
    * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
    */
-  public void translateTo(JDefinedClass definedClass, JMethod method, ReferenceType type) {
-//    FIXME
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//    final InstructionList il = methodGen.getInstructionList();
-//    il.append(new NEW(cpg.addClass(RUNTIME_NODE_CLASS)));
-//    il.append(DUP_X1);
-//    il.append(SWAP);
-//    il.append(new PUSH(cpg, _type));
-//    il.append(new INVOKESPECIAL(cpg.addMethodref(RUNTIME_NODE_CLASS, "<init>", "(II)V")));
-  }
-
   public JExpression compileTo(CompilerContext ctx, JExpression expr, ReferenceType type) {
     return _new(ctx.ref(de.lyca.xalan.xsltc.runtime.Node.class)).arg(expr).arg(lit(_type));
   }
@@ -296,7 +181,7 @@ public final class NodeType extends Type {
    * coercion.
    */
   @Override
-  public void translateTo(JDefinedClass definedClass, JMethod method, Class<?> clazz) {
+  public JExpression compileTo(CompilerContext ctx, JExpression expr, Class<?> clazz) {
 //    FIXME
 //    final ConstantPoolGen cpg = classGen.getConstantPool();
 //    final InstructionList il = methodGen.getInstructionList();
@@ -320,27 +205,7 @@ public final class NodeType extends Type {
 //      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), className);
 //      classGen.getParser().reportError(Constants.FATAL, err);
 //    }
-  }
-
-  /**
-   * Translates an object of this type to its boxed representation.
-   */
-  @Override
-  public void translateBox(JDefinedClass definedClass, JMethod method) {
-//    FIXME
-//    translateTo(classGen, methodGen, Type.Reference);
-  }
-
-  /**
-   * Translates an object of this type to its unboxed representation.
-   */
-  @Override
-  public void translateUnBox(JDefinedClass definedClass, JMethod method) {
-//    FIXME
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//    final InstructionList il = methodGen.getInstructionList();
-//    il.append(new CHECKCAST(cpg.addClass(RUNTIME_NODE_CLASS)));
-//    il.append(new GETFIELD(cpg.addFieldref(RUNTIME_NODE_CLASS, NODE_FIELD, NODE_FIELD_SIG)));
+    return expr;
   }
 
   /**
@@ -351,13 +216,4 @@ public final class NodeType extends Type {
     return RUNTIME_NODE_CLASS;
   }
 
-  @Override
-  public Instruction LOAD(int slot) {
-    return new ILOAD(slot);
-  }
-
-  @Override
-  public Instruction STORE(int slot) {
-    return new ISTORE(slot);
-  }
 }

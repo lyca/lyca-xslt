@@ -21,7 +21,7 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import static de.lyca.xalan.xsltc.compiler.Constants.GET_UNPARSED_ENTITY_URI;
+import static de.lyca.xalan.xsltc.DOM.GET_UNPARSED_ENTITY_URI;
 
 import java.util.List;
 
@@ -55,8 +55,8 @@ final class UnparsedEntityUriCall extends FunctionCall {
   }
 
   @Override
-  public JExpression compile(CompilerContext ctx) {
-    return ctx.currentDom().invoke(GET_UNPARSED_ENTITY_URI).arg(_entity.compile(ctx));
+  public JExpression toJExpression(CompilerContext ctx) {
+    return ctx.currentDom().invoke(GET_UNPARSED_ENTITY_URI).arg(_entity.toJExpression(ctx));
   }
 
   @Override

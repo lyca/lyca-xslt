@@ -49,8 +49,8 @@ final class BooleanCall extends FunctionCall {
   }
 
   @Override
-  public JExpression compile(CompilerContext ctx) {
-    JExpression expr = _arg.compile(ctx);
+  public JExpression toJExpression(CompilerContext ctx) {
+    JExpression expr = _arg.toJExpression(ctx);
     final Type targ = _arg.getType();
     if (!targ.identicalTo(Type.Boolean)) {
       expr = _arg.startIterator(ctx, expr);
@@ -59,13 +59,4 @@ final class BooleanCall extends FunctionCall {
     return expr;
   }
 
-  @Override
-  public void translate(CompilerContext ctx) {
-    _arg.translate(ctx);
-    final Type targ = _arg.getType();
-    if (!targ.identicalTo(Type.Boolean)) {
-      // FIXME _arg.startIterator(ctx);
-      targ.translateTo(ctx.clazz(), ctx.currentMethod(), Type.Boolean);
-    }
-  }
 }

@@ -4,60 +4,41 @@ import static de.lyca.xslt.ResourceUtils.getSource;
 import static de.lyca.xslt.ResourceUtils.readResource;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import javax.xml.transform.Source;
 
 import org.custommonkey.xmlunit.Transform;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
+@RunWith(Parameterized.class)
 public class ConfExtendTests {
 
   private static final String PACKAGE = '/' + ConfExtendTests.class.getPackage().getName().replace('.', '/')
-          + "/extend/";
+      + "/extend/";
 
-  @Test
-  public void extend01() throws Exception {
-    final String name = PACKAGE + "extend01";
-    final Source xsl = getSource(name + ".xsl");
-    final Source xml = getSource(name + ".xml");
-    final String expected = readResource(name + ".out", UTF_8);
-    final Transform t = new Transform(xml, xsl);
-    Assert.assertEquals(expected, t.getResultString());
+  @Parameters(name = "{0}")
+  public static Collection<Object> params() {
+    Collection<Object> result = new ArrayList<>();
+    for (int i = 1; i < 6; i++) {
+      result.add(String.format("extend%02d", i));
+    }
+    return result;
+  }
+
+  private String name;
+
+  public ConfExtendTests(String name) {
+    this.name = PACKAGE + name;
   }
 
   @Test
-  public void extend02() throws Exception {
-    final String name = PACKAGE + "extend02";
-    final Source xsl = getSource(name + ".xsl");
-    final Source xml = getSource(name + ".xml");
-    final String expected = readResource(name + ".out", UTF_8);
-    final Transform t = new Transform(xml, xsl);
-    Assert.assertEquals(expected, t.getResultString());
-  }
-
-  @Test
-  public void extend03() throws Exception {
-    final String name = PACKAGE + "extend03";
-    final Source xsl = getSource(name + ".xsl");
-    final Source xml = getSource(name + ".xml");
-    final String expected = readResource(name + ".out", UTF_8);
-    final Transform t = new Transform(xml, xsl);
-    Assert.assertEquals(expected, t.getResultString());
-  }
-
-  @Test
-  public void extend04() throws Exception {
-    final String name = PACKAGE + "extend04";
-    final Source xsl = getSource(name + ".xsl");
-    final Source xml = getSource(name + ".xml");
-    final String expected = readResource(name + ".out", UTF_8);
-    final Transform t = new Transform(xml, xsl);
-    Assert.assertEquals(expected, t.getResultString());
-  }
-
-  @Test
-  public void extend05() throws Exception {
-    final String name = PACKAGE + "extend05";
+  public void confExtendTest() throws Exception {
     final Source xsl = getSource(name + ".xsl");
     final Source xml = getSource(name + ".xml");
     final String expected = readResource(name + ".out", UTF_8);

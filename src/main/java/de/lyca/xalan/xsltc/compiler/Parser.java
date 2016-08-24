@@ -21,9 +21,25 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
+import static de.lyca.xalan.xsltc.compiler.Constants.COMPILER_PACKAGE;
+import static de.lyca.xalan.xsltc.compiler.Constants.ERROR;
+import static de.lyca.xalan.xsltc.compiler.Constants.FATAL;
+import static de.lyca.xalan.xsltc.compiler.Constants.REDIRECT_URI;
+import static de.lyca.xalan.xsltc.compiler.Constants.TRANSLET_URI;
+import static de.lyca.xalan.xsltc.compiler.Constants.UNSUPPORTED;
+import static de.lyca.xalan.xsltc.compiler.Constants.WARNING;
+import static de.lyca.xalan.xsltc.compiler.Constants.XMLNS_PREFIX;
+import static de.lyca.xalan.xsltc.compiler.Constants.XSLT_URI;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -62,7 +78,7 @@ import de.lyca.xalan.xsltc.runtime.AttributeList;
  * @author Morten Jorgensen
  * @author Erwin Bolwidt <ejb@klomp.org>
  */
-public class Parser implements Constants, ContentHandler {
+public class Parser implements ContentHandler {
 
   private static final String XSL = "xsl"; // standard prefix
   private static final String TRANSLET = "translet"; // extension prefix
@@ -91,6 +107,7 @@ public class Parser implements Constants, ContentHandler {
 
   private SyntaxTreeNode _root;
 
+  private String _systemId;
   private String _target;
 
   private int _currentImportPrecedence;
@@ -224,12 +241,12 @@ public class Parser implements Constants, ContentHandler {
       if (prefix.equals(XMLNS_PREFIX) == false) {
         namespace = _symbolTable.lookupNamespace(prefix);
         if (namespace == null) {
-          namespace = EMPTYSTRING;
+          namespace = "";
         }
       }
       return getQName(namespace, prefix, localname);
     } else {
-      final String uri = stringRep.equals(XMLNS_PREFIX) ? null : _symbolTable.lookupNamespace(EMPTYSTRING);
+      final String uri = stringRep.equals(XMLNS_PREFIX) ? null : _symbolTable.lookupNamespace("");
       return getQName(uri, null, stringRep);
     }
   }
@@ -268,13 +285,13 @@ public class Parser implements Constants, ContentHandler {
       if (stringRep.equals(XMLNS_PREFIX)) {
         ignoreDefaultNs = true;
       }
-      final String defURI = ignoreDefaultNs ? null : _symbolTable.lookupNamespace(EMPTYSTRING);
+      final String defURI = ignoreDefaultNs ? null : _symbolTable.lookupNamespace("");
       return getQName(defURI, null, stringRep);
     }
   }
 
   public QName getQName(String namespace, String prefix, String localname) {
-    if (namespace == null || namespace.equals(EMPTYSTRING)) {
+    if (namespace == null || namespace.isEmpty()) {
       QName name = _qNames.get(localname);
       if (name == null) {
         name = new QName(null, prefix, localname);
@@ -340,8 +357,8 @@ public class Parser implements Constants, ContentHandler {
         stylesheet.setAttributes((AttributeList) element.getAttributes());
 
         // Map the default NS if not already defined
-        if (element.lookupNamespace(EMPTYSTRING) == null) {
-          element.addPrefixMapping(EMPTYSTRING, EMPTYSTRING);
+        if (element.lookupNamespace("") == null) {
+          element.addPrefixMapping("", "");
         }
       }
       stylesheet.setParser(this);
@@ -430,6 +447,7 @@ public class Parser implements Constants, ContentHandler {
    * @return The root of the abstract syntax tree
    */
   public SyntaxTreeNode parse(InputSource input) {
+    _systemId = input.getSystemId();
     try {
       // Create a SAX parser and get the XMLReader object it uses
       final SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -556,7 +574,13 @@ public class Parser implements Constants, ContentHandler {
     if (new File(location).exists()) {
       source = new InputSource("file:" + location);
     } else {
-      source = new InputSource(location);
+      try {
+        URI uri = new URL(_systemId).toURI();
+        Path path = Paths.get(uri).resolveSibling(location);
+        source = new InputSource(path.toUri().toURL().toString());
+      } catch (MalformedURLException | URISyntaxException e) {
+        source = new InputSource(location);
+      }
     }
 
     final SyntaxTreeNode external = parse(source);
@@ -653,7 +677,7 @@ public class Parser implements Constants, ContentHandler {
   }
 
   private void initStdClass(String elementName, String className) {
-    _instructionClasses.put(getQName(XSLT_URI, XSL, elementName), COMPILER_PACKAGE + '.' + className);
+    _instructionClasses.put(getQName(XSLT_URI, XSL, elementName), Constants.COMPILER_PACKAGE + '.' + className);
   }
 
   public boolean elementSupported(String namespace, String localName) {

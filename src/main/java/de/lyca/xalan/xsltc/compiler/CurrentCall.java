@@ -37,7 +37,7 @@ final class CurrentCall extends FunctionCall {
   }
 
   @Override
-  public JExpression compile(CompilerContext ctx) {
+  public JExpression toJExpression(CompilerContext ctx) {
     if (ctx.ref(NodeSortRecord.class).isAssignableFrom(ctx.clazz())) {
       return ctx.param("current");
     }
@@ -47,9 +47,4 @@ final class CurrentCall extends FunctionCall {
     return ctx.currentNode();
   }
 
-  @Override
-  public void translate(CompilerContext ctx) {
-    // FIXME
-//    methodGen.getInstructionList().append(methodGen.loadCurrentNode());
-  }
 }

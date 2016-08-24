@@ -21,7 +21,6 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -38,7 +37,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.jar.Attributes;
-import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 
@@ -48,7 +46,6 @@ import javax.tools.JavaFileObject;
 import javax.tools.StandardJavaFileManager;
 import javax.tools.ToolProvider;
 
-import org.apache.bcel.classfile.JavaClass;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
@@ -124,7 +121,7 @@ public final class XSLTC {
   private int _outputType = FILE_OUTPUT; // by default
 
   private List<byte[]> _classes;
-  private List<JavaClass> _bcelClasses;
+  private JCodeModel _codeModel;
   private boolean _callsNodeset = false;
   private boolean _multiDocument = false;
   private boolean _hasIdCall = false;
@@ -194,7 +191,7 @@ public final class XSLTC {
     reset();
     _reader = null;
     _classes = new ArrayList<>();
-    _bcelClasses = new ArrayList<>();
+    _codeModel = null;
   }
 
   /**
@@ -223,8 +220,8 @@ public final class XSLTC {
     _prefixURIPairs = null;
     _prefixURIPairsIdx = null;
     _numberFieldIndexes = new JFieldVar[] { null, // LEVEL_SINGLE
-            null, // LEVEL_MULTIPLE
-            null // LEVEL_ANY
+        null, // LEVEL_MULTIPLE
+        null // LEVEL_ANY
     };
   }
 
@@ -891,44 +888,45 @@ public final class XSLTC {
 
     try {
       switch (_outputType) {
-        case FILE_OUTPUT:
-          jCodeModel.build(getOutputFile(fullName));
-          break;
-        case JAR_OUTPUT:
-          // FIXME
-          // _bcelClasses.add(jCodeModel);
-          break;
-        case BYTEARRAY_OUTPUT:
-        case BYTEARRAY_AND_FILE_OUTPUT:
-        case BYTEARRAY_AND_JAR_OUTPUT:
-        case CLASSLOADER_OUTPUT:
-          final File inFile = getInputFile(fullName);
-          Path parentDir = inFile.toPath().getParent();
-          if(parentDir == null){
-            parentDir = Paths.get(System.getProperty("user.dir"));
-          }
-          Files.createDirectories(parentDir);
-          jCodeModel.build(parentDir.toFile());
-          JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-          StandardJavaFileManager fileManager = compiler.getStandardFileManager(null, null, null);
-          Iterable<? extends JavaFileObject> fileObjects = fileManager.getJavaFileObjects(inFile);
-          CompilationTask task = compiler.getTask(null, fileManager, null, null, null, fileObjects);
-          Boolean result = task.call();
-          if(result == true){
-            System.out.println("Compilation has succeeded");
-          }
-          _classes.add(Files.readAllBytes(Paths.get(getOutputFile(fullName).toURI())));
-          for (Iterator<JDefinedClass> iterator = definedClass.classes(); iterator.hasNext();) {
-            JDefinedClass definedInnerClass = iterator.next();
-            _classes.add(Files.readAllBytes(Paths.get(getOutputFile(definedInnerClass.binaryName()).toURI())));
-          }
-          if (_outputType == BYTEARRAY_AND_FILE_OUTPUT) {
-            //jCodeModel.build(getOutputFile(definedClass.fullName()));
-          } else if (_outputType == BYTEARRAY_AND_JAR_OUTPUT) {
-            //_bcelClasses.add(jCodeModel);
-          }
+      case FILE_OUTPUT:
+        jCodeModel.build(getOutputFile(fullName));
+        break;
+      case JAR_OUTPUT:
+        _codeModel = jCodeModel;
+        // FIXME
+        // _bcelClasses.add(jCodeModel);
+        break;
+      case BYTEARRAY_OUTPUT:
+      case BYTEARRAY_AND_FILE_OUTPUT:
+      case BYTEARRAY_AND_JAR_OUTPUT:
+      case CLASSLOADER_OUTPUT:
+        final File inFile = getInputFile(fullName);
+        Path parentDir = inFile.toPath().getParent();
+        if (parentDir == null) {
+          parentDir = Paths.get(System.getProperty("user.dir"));
+        }
+        Files.createDirectories(parentDir);
+        jCodeModel.build(parentDir.toFile());
+        JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+        StandardJavaFileManager fileManager = compiler.getStandardFileManager(null, null, null);
+        Iterable<? extends JavaFileObject> fileObjects = fileManager.getJavaFileObjects(inFile);
+        CompilationTask task = compiler.getTask(null, fileManager, null, null, null, fileObjects);
+        Boolean result = task.call();
+        if (result == true) {
+          System.out.println("Compilation has succeeded");
+        }
+        _classes.add(Files.readAllBytes(Paths.get(getOutputFile(fullName).toURI())));
+        for (Iterator<JDefinedClass> iterator = definedClass.classes(); iterator.hasNext();) {
+          JDefinedClass definedInnerClass = iterator.next();
+          _classes.add(Files.readAllBytes(Paths.get(getOutputFile(definedInnerClass.binaryName()).toURI())));
+        }
+        if (_outputType == BYTEARRAY_AND_FILE_OUTPUT) {
+          // jCodeModel.build(getOutputFile(definedClass.fullName()));
+        } else if (_outputType == BYTEARRAY_AND_JAR_OUTPUT) {
+          _codeModel = jCodeModel;
+        }
 
-          break;
+        break;
       }
     } catch (final Exception e) {
       e.printStackTrace();
@@ -936,7 +934,7 @@ public final class XSLTC {
   }
 
   /**
-   * Generate output JAR-file and packages
+   * TODO Generate output JAR-file and packages
    */
   public void outputToJar() throws IOException {
     // create the manifest
@@ -948,22 +946,22 @@ public final class XSLTC {
     // create manifest
     final String now = new Date().toString();
     final Attributes.Name dateAttr = new Attributes.Name("Date");
-    for (final JavaClass clazz : _bcelClasses) {
-      final String className = clazz.getClassName().replace('.', '/');
-      final Attributes attr = new Attributes();
-      attr.put(dateAttr, now);
-      map.put(className + ".class", attr);
-    }
+    // for (final JavaClass clazz : _bcelClasses) {
+    // final String className = clazz.getClassName().replace('.', '/');
+    // final Attributes attr = new Attributes();
+    // attr.put(dateAttr, now);
+    // map.put(className + ".class", attr);
+    // }
 
     final File jarFile = new File(_destDir, _jarFileName);
     final JarOutputStream jos = new JarOutputStream(new FileOutputStream(jarFile), manifest);
-    for (final JavaClass clazz : _bcelClasses) {
-      final String className = clazz.getClassName().replace('.', '/');
-      jos.putNextEntry(new JarEntry(className + ".class"));
-      final ByteArrayOutputStream out = new ByteArrayOutputStream(2048);
-      clazz.dump(out); // dump() closes it's output stream
-      out.writeTo(jos);
-    }
+    // for (final JavaClass clazz : _bcelClasses) {
+    // final String className = clazz.getClassName().replace('.', '/');
+    // jos.putNextEntry(new JarEntry(className + ".class"));
+    // final ByteArrayOutputStream out = new ByteArrayOutputStream(2048);
+    // clazz.dump(out); // dump() closes it's output stream
+    // out.writeTo(jos);
+    // }
     jos.close();
   }
 

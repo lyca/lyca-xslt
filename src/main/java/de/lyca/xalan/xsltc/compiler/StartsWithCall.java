@@ -77,9 +77,9 @@ final class StartsWithCall extends FunctionCall {
   }
 
   @Override
-  public JExpression compile(CompilerContext ctx) {
-    JExpression base = _base.compile(ctx);
-    JExpression token = _token.compile(ctx);
+  public JExpression toJExpression(CompilerContext ctx) {
+    JExpression base = _base.toJExpression(ctx);
+    JExpression token = _token.toJExpression(ctx);
     return base.invoke("startsWith").arg(token);
   }
 

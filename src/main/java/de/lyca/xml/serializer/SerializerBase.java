@@ -15,10 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * $Id$
- */
 package de.lyca.xml.serializer;
+
+import static de.lyca.xml.serializer.SerializerConstants.XMLNS_PREFIX;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -46,7 +45,7 @@ import de.lyca.xml.serializer.utils.Utils;
  * 
  * @xsl.usage internal
  */
-public abstract class SerializerBase implements SerializationHandler, SerializerConstants {
+public abstract class SerializerBase implements SerializationHandler {
   SerializerBase() {
     return;
   }
@@ -364,7 +363,7 @@ public abstract class SerializerBase implements SerializationHandler, Serializer
    */
   @Override
   public void addAttribute(String uri, String localName, String rawName, String type, String value, boolean XSLAttribute)
-          throws SAXException {
+      throws SAXException {
     if (m_elemContext.m_startTagOpen) {
       addAttributeAlways(uri, localName, rawName, type, value, XSLAttribute);
     }
@@ -392,7 +391,7 @@ public abstract class SerializerBase implements SerializationHandler, Serializer
    *         replaced.
    */
   public boolean addAttributeAlways(String uri, String localName, String rawName, String type, String value,
-          boolean XSLAttribute) {
+      boolean XSLAttribute) {
     boolean was_added;
     // final int index =
     // (localName == null || uri == null) ?
@@ -878,16 +877,16 @@ public abstract class SerializerBase implements SerializationHandler, Serializer
    */
   @Override
   public String getNamespaceURI(String qname, boolean isElement) {
-    String uri = EMPTYSTRING;
+    String uri = "";
     final int col = qname.lastIndexOf(':');
-    final String prefix = col > 0 ? qname.substring(0, col) : EMPTYSTRING;
+    final String prefix = col > 0 ? qname.substring(0, col) : "";
 
-    if (!EMPTYSTRING.equals(prefix) || isElement) {
+    if (!"".equals(prefix) || isElement) {
       if (m_prefixMap != null) {
         uri = m_prefixMap.lookupNamespace(prefix);
         if (uri == null && !prefix.equals(XMLNS_PREFIX))
           throw new RuntimeException(Utils.messages.createMessage(MsgKey.ER_NAMESPACE_PREFIX,
-                  new Object[] { qname.substring(0, col) }));
+              new Object[] { qname.substring(0, col) }));
       }
     }
     return uri;
@@ -1543,7 +1542,7 @@ public abstract class SerializerBase implements SerializationHandler, Serializer
       // prefix ... ouch, that shouldn't happen.
       // This is a hack, we really don't know
       // the namespace
-      uri = EMPTYSTRING;
+      uri = "";
     }
 
     return uri;
@@ -1636,8 +1635,16 @@ public abstract class SerializerBase implements SerializationHandler, Serializer
     return m_OutputPropsDefault.keySet();
   }
 
+  Map<String, String> getOutputPropDefault() {
+    return m_OutputPropsDefault;
+  }
+
   Set<String> getOutputPropKeys() {
     return m_OutputProps.keySet();
+  }
+
+  Map<String, String> getOutputProps() {
+    return m_OutputProps;
   }
 
   private String getProp(String name, boolean defaultVal) {

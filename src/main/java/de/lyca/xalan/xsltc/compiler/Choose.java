@@ -56,7 +56,6 @@ final class Choose extends Instruction {
    */
   @Override
   public void translate(CompilerContext ctx) {
-    // FIXME
     final List<When> whenElements = new ArrayList<>();
     Otherwise otherwise = null;
     final ListIterator<SyntaxTreeNode> elements = elements();
@@ -97,7 +96,7 @@ final class Choose extends Instruction {
     }
 
     When first = whenElements.remove(0);
-    JConditional currentIf = ctx.currentBlock()._if(first.getTest().compile(ctx));
+    JConditional currentIf = ctx.currentBlock()._if(first.getTest().toJExpression(ctx));
     if (!first.ignore()) {
       ctx.pushBlock(currentIf._then());
       first.translateContents(ctx);
@@ -107,25 +106,8 @@ final class Choose extends Instruction {
     final Iterator<When> whens = whenElements.iterator();
     while (whens.hasNext()) {
       final When when = whens.next();
-      final Expression test = when.getTest();
 
-      currentIf = currentIf._elseif(when.getTest().compile(ctx));
-
-//      test.translateDesynthesized(classGen, methodGen);
-//
-//      if (test instanceof FunctionCall) {
-//        final FunctionCall call = (FunctionCall) test;
-//        try {
-//          final Type type = call.typeCheck(getParser().getSymbolTable());
-//          if (type != Type.Boolean) {
-//            test._falseList.add(il.append(new IFEQ(null)));
-//          }
-//        } catch (final TypeCheckError e) {
-//          // handled later!
-//        }
-//      }
-//      // remember end of condition
-//      truec = il.getEnd();
+      currentIf = currentIf._elseif(when.getTest().toJExpression(ctx));
 
       // The When object should be ignored completely in case it tests
       // for the support of a non-available element
@@ -134,16 +116,6 @@ final class Choose extends Instruction {
         when.translateContents(ctx);
         ctx.popBlock();
       }
-
-      // goto exit after executing the body of when
-//      exitHandles.add(il.append(new GOTO(null)));
-//      if (whens.hasNext() || otherwise != null) {
-//        nextElement = il.append(new GOTO(null));
-//        test.backPatchFalseList(nextElement);
-//      } else {
-//        test.backPatchFalseList(exit = il.append(NOP));
-//      }
-//      test.backPatchTrueList(truec.getNext());
     }
 
     // Translate any <xsl:otherwise> element
@@ -152,12 +124,6 @@ final class Choose extends Instruction {
       otherwise.translateContents(ctx);
       ctx.popBlock();
     }
-
-    // now that end is known set targets of exit gotos
-//    final Iterator<BranchHandle> exitGotos = exitHandles.iterator();
-//    while (exitGotos.hasNext()) {
-//      final BranchHandle gotoExit = exitGotos.next();
-//      gotoExit.setTarget(exit);
-//    }
   }
+
 }

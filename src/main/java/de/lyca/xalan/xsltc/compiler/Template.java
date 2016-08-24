@@ -333,24 +333,17 @@ public final class Template extends TopLevelElement implements Comparable<Templa
     _compiled = true;
 
     // %OPT% Special handling for simple named templates.
-    if (_isSimpleNamedTemplate) { // && methodGen instanceof NamedMethodGenerator) {
+    if (_isSimpleNamedTemplate) {
       final int numParams = _parameters.size();
-      // final NamedMethodGenerator namedMethodGen = (NamedMethodGenerator) methodGen;
 
       // Update load/store instructions to access Params from the stack
       for (int i = 0; i < numParams; i++) {
         // FIXME
         final Param param = _parameters.get(i);
-        param.storeInstruction(ctx.param(param.getEscapedName()));
-//        param.setLoadInstruction(namedMethodGen.loadParameter(i));
-//        param.setStoreInstruction(namedMethodGen.storeParameter(i));
+        param.storeParam(ctx.param(param.getEscapedName()));
       }
     }
-
     translateContents(ctx);
-
-    // InstructionList il = null;
-    // il.setPositions(true);
   }
 
 }

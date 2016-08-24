@@ -74,7 +74,7 @@ public abstract class Map2Node {
 
     // name we will provide a default value for
     String elemName = null;
-    if (null == name || "".equals(name)) {
+    if (null == name || name.isEmpty()) {
       elemName = "appendHashToNode";
     } else {
       elemName = name;

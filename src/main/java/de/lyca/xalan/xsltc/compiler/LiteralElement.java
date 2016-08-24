@@ -33,6 +33,7 @@ import java.util.Set;
 
 import com.sun.codemodel.JExpression;
 
+import de.lyca.xalan.xsltc.compiler.Stylesheet.OutputMethod;
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.Type;
@@ -137,7 +138,7 @@ final class LiteralElement extends Instruction {
 
     // Treat default namespace as "" and not null
     if (prefix == null) {
-      prefix = Constants.EMPTYSTRING;
+      prefix = "";
     } else if (prefix.equals(XMLNS_STRING))
       return XMLNS_STRING;
 
@@ -157,7 +158,7 @@ final class LiteralElement extends Instruction {
     registerNamespace(prefix, uri, stable, false);
 
     // Construct the new name for the element (may be unchanged)
-    if (prefix != Constants.EMPTYSTRING)
+    if (prefix != "")
       return prefix + ":" + localname;
     else
       return localname;
@@ -340,8 +341,8 @@ final class LiteralElement extends Instruction {
       for (final Map.Entry<String, String> entry : _accessedPrefixes.entrySet()) {
         final String prefix = entry.getKey();
         final String uri = entry.getValue();
-        if (uri != Constants.EMPTYSTRING || prefix != Constants.EMPTYSTRING) {
-          if (prefix == Constants.EMPTYSTRING) {
+        if (uri != "" || prefix != "") {
+          if (prefix == "") {
             declaresDefaultNS = true;
           }
           ctx.currentBlock().add(handler.invoke("namespaceAfterStartElement").arg(prefix).arg(uri));
@@ -354,7 +355,7 @@ final class LiteralElement extends Instruction {
        */
       if (!declaresDefaultNS && _parent instanceof XslElement && ((XslElement) _parent).declaresDefaultNS()) {
         ctx.currentBlock().add(
-            handler.invoke("namespaceAfterStartElement").arg(Constants.EMPTYSTRING).arg(Constants.EMPTYSTRING));
+            handler.invoke("namespaceAfterStartElement").arg("").arg(""));
       }
     }
 
@@ -378,7 +379,7 @@ final class LiteralElement extends Instruction {
    * Return true if the output method is html.
    */
   private boolean isHTMLOutput() {
-    return getStylesheet().getOutputMethod() == Stylesheet.HTML_OUTPUT;
+    return getStylesheet().getOutputMethod() == OutputMethod.HTML;
   }
 
   /**

@@ -23,7 +23,6 @@ package de.lyca.xalan.xsltc.compiler;
 
 import static com.sun.codemodel.JExpr.invoke;
 import static com.sun.codemodel.JExpr.lit;
-import static de.lyca.xalan.xsltc.compiler.Constants.EMPTYSTRING;
 
 import java.util.List;
 
@@ -82,44 +81,19 @@ final class FormatNumberCall extends FunctionCall {
   }
 
   @Override
-  public JExpression compile(CompilerContext ctx) {
-    JExpression value = _value.compile(ctx);
-    JExpression format = _format.compile(ctx);
+  public JExpression toJExpression(CompilerContext ctx) {
+    JExpression value = _value.toJExpression(ctx);
+    JExpression format = _format.toJExpression(ctx);
     JExpression name;
     if (_name == null) {
-      name = lit(EMPTYSTRING);
+      name = lit("");
     } else if (_resolvedQName != null) {
       name = lit(_resolvedQName.toString());
     } else {
-      name = _name.compile(ctx);
+      name = _name.toJExpression(ctx);
     }
     return ctx.ref(BasisLibrary.class).staticInvoke("formatNumber").arg(value).arg(format)
         .arg(invoke("getDecimalFormat").arg(name));
   }
 
-  @Override
-  public void translate(CompilerContext ctx) {
-    // FIXME
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//    final InstructionList il = methodGen.getInstructionList();
-//
-//    _value.translate(classGen, methodGen);
-//    _format.translate(classGen, methodGen);
-//
-//    final int fn3arg = cpg.addMethodref(BASIS_LIBRARY_CLASS, "formatNumber", "(DLjava/lang/String;"
-//            + "Ljava/text/DecimalFormat;)" + "Ljava/lang/String;");
-//    final int get = cpg.addMethodref(TRANSLET_CLASS, "getDecimalFormat", "(Ljava/lang/String;)"
-//            + "Ljava/text/DecimalFormat;");
-//
-//    il.append(classGen.loadTranslet());
-//    if (_name == null) {
-//      il.append(new PUSH(cpg, EMPTYSTRING));
-//    } else if (_resolvedQName != null) {
-//      il.append(new PUSH(cpg, _resolvedQName.toString()));
-//    } else {
-//      _name.translate(classGen, methodGen);
-//    }
-//    il.append(new INVOKEVIRTUAL(get));
-//    il.append(new INVOKESTATIC(fn3arg));
-  }
 }

@@ -38,10 +38,10 @@ final class StringLengthCall extends FunctionCall {
   }
 
   @Override
-  public JExpression compile(CompilerContext ctx) {
+  public JExpression toJExpression(CompilerContext ctx) {
     JExpression expr;
     if (argumentCount() > 0) {
-      expr = argument().compile(ctx);
+      expr = argument().toJExpression(ctx);
     } else {
       expr = Type.Node.compileTo(ctx, ctx.currentNode(), Type.String);
     }

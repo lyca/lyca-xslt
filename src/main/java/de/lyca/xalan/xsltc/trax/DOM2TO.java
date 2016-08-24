@@ -44,7 +44,6 @@ import de.lyca.xml.serializer.SerializationHandler;
  */
 public class DOM2TO implements XMLReader, Locator {
 
-  private final static String EMPTYSTRING = "";
   private static final String XMLNS_PREFIX = "xmlns";
 
   /**
@@ -154,7 +153,7 @@ public class DOM2TO implements XMLReader, Locator {
           if (qnameAttr.startsWith(XMLNS_PREFIX)) {
             final String uriAttr = attr.getNodeValue();
             colon = qnameAttr.lastIndexOf(':');
-            prefix = colon > 0 ? qnameAttr.substring(colon + 1) : EMPTYSTRING;
+            prefix = colon > 0 ? qnameAttr.substring(colon + 1) : "";
             _handler.namespaceAfterStartElement(prefix, uriAttr);
           }
         }
@@ -169,7 +168,7 @@ public class DOM2TO implements XMLReader, Locator {
           if (!qnameAttr.startsWith(XMLNS_PREFIX)) {
             final String uriAttr = attr.getNamespaceURI();
             // Uri may be implicitly declared
-            if (uriAttr != null && !uriAttr.equals(EMPTYSTRING)) {
+            if (uriAttr != null && !uriAttr.isEmpty()) {
               colon = qnameAttr.lastIndexOf(':');
 
               // Fix for bug 26319
@@ -196,7 +195,7 @@ public class DOM2TO implements XMLReader, Locator {
         // Uri may be implicitly declared
         if (uri != null) {
           colon = qname.lastIndexOf(':');
-          prefix = colon > 0 ? qname.substring(0, colon) : EMPTYSTRING;
+          prefix = colon > 0 ? qname.substring(0, colon) : "";
           _handler.namespaceAfterStartElement(prefix, uri);
         } else {
           // Fix for bug 26319
@@ -205,8 +204,8 @@ public class DOM2TO implements XMLReader, Locator {
           // then the element should be serialized
           // <foo xmlns=" "/>
           if (uri == null && localName != null) {
-            prefix = EMPTYSTRING;
-            _handler.namespaceAfterStartElement(prefix, EMPTYSTRING);
+            prefix = "";
+            _handler.namespaceAfterStartElement(prefix, "");
           }
         }
 

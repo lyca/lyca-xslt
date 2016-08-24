@@ -21,6 +21,8 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
+import static de.lyca.xalan.xsltc.DOM.GET_NODE_NAME;
+
 import java.util.List;
 
 import com.sun.codemodel.JExpression;
@@ -48,10 +50,10 @@ final class LocalNameCall extends NameBase {
   }
 
   @Override
-  public JExpression compile(CompilerContext ctx) {
+  public JExpression toJExpression(CompilerContext ctx) {
     // Returns the local name of a node in the DOM
     return ctx.ref(BasisLibrary.class).staticInvoke("getLocalName")
-        .arg(ctx.currentDom().invoke("getNodeName").arg(super.compile(ctx)));
+        .arg(ctx.currentDom().invoke(GET_NODE_NAME).arg(super.toJExpression(ctx)));
   }
 
   /**

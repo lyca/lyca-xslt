@@ -54,7 +54,7 @@ final class StringCall extends FunctionCall {
   }
 
   @Override
-  public JExpression compile(CompilerContext ctx) {
+  public JExpression toJExpression(CompilerContext ctx) {
     JExpression expr;
     Type targ;
     if (argumentCount() == 0) {
@@ -62,7 +62,7 @@ final class StringCall extends FunctionCall {
       targ = Type.Node;
     } else {
       final Expression arg = argument();
-      expr = arg.startIterator(ctx, arg.compile(ctx));
+      expr = arg.startIterator(ctx, arg.toJExpression(ctx));
       targ = arg.getType();
     }
 
@@ -72,24 +72,4 @@ final class StringCall extends FunctionCall {
     return expr;
   }
 
-  @Override
-  public void translate(CompilerContext ctx) {
-//    FIXME
-//    final InstructionList il = methodGen.getInstructionList();
-//    Type targ;
-//
-//    if (argumentCount() == 0) {
-//      il.append(methodGen.loadContextNode());
-//      targ = Type.Node;
-//    } else {
-//      final Expression arg = argument();
-//      arg.translate(classGen, methodGen);
-//      arg.startIterator(classGen, methodGen);
-//      targ = arg.getType();
-//    }
-//
-//    if (!targ.identicalTo(Type.String)) {
-//      targ.translateTo(classGen, methodGen, Type.String);
-//    }
-  }
 }

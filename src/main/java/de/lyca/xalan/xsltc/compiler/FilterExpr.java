@@ -27,9 +27,7 @@ import static com.sun.codemodel.JExpr._this;
 
 import java.util.List;
 
-import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JExpression;
-import com.sun.codemodel.JMethod;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.NodeSetType;
@@ -115,50 +113,16 @@ class FilterExpr extends Expression {
     return _type = Type.NodeSet;
   }
 
-  @Override
-  public JExpression compile(CompilerContext ctx) {
-    if (_predicates.size() > 0) {
-      return compilePredicates(ctx);
-    } else {
-      return _primary.compile(ctx);
-    }
-  }
-
   /**
    * Translate a filter expression by pushing the appropriate iterator onto the
    * stack.
    */
   @Override
-  public void translate(CompilerContext ctx) {
+  public JExpression toJExpression(CompilerContext ctx) {
     if (_predicates.size() > 0) {
-      translatePredicates(ctx.clazz(), ctx.currentMethod());
+      return compilePredicates(ctx);
     } else {
-      _primary.translate(ctx);
-    }
-  }
-
-  public JExpression compilePredicates(CompilerContext ctx) {
-    // If not predicates left, translate primary expression
-    if (_predicates.size() == 0) {
-      return compile(ctx);
-    } else {
-      // Remove the next predicate to be translated
-      final Predicate predicate = (Predicate) _predicates.get(_predicates.size() - 1);
-      _predicates.remove(predicate);
-
-      // Translate the rest of the predicates from right to left
-      JExpression predicateExpressions = compilePredicates(ctx);
-      JExpression predicateExpression = predicate.compile(ctx);
-
-      if (predicate.isNthPositionFilter()) {
-        // public NthIterator(DTMAxisIterator, int)
-        return _new(ctx.ref(NthIterator.class)).arg(predicateExpressions).arg(predicateExpression);
-      } else {
-        // public CurrentNodeListIterator(DTMAxisIterator, boolean,
-        // CurrentNodeListFilter, int, AbstractTranslet)
-        return _new(ctx.ref(CurrentNodeListIterator.class)).arg(predicateExpressions).arg(TRUE)
-            .arg(predicateExpression).arg(ctx.currentNode()).arg(_this());
-      }
+      return _primary.toJExpression(ctx);
     }
   }
 
@@ -168,86 +132,26 @@ class FilterExpr extends Expression {
    * initialized from another iterator (recursive call), a filter and a closure
    * (call to translate on the predicate) and "this".
    */
-  public void translatePredicates(JDefinedClass definedClass, JMethod method) {
-    // FIXME
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//    final InstructionList il = methodGen.getInstructionList();
-//
-//    // If not predicates left, translate primary expression
-//    if (_predicates.size() == 0) {
-//      translate(definedClass, method);
-//    } else {
-//      // Remove the next predicate to be translated
-//      final Predicate predicate = (Predicate) _predicates.get(_predicates.size() - 1);
-//      _predicates.remove(predicate);
-//
-//      // Translate the rest of the predicates from right to left
-//      translatePredicates(definedClass, method);
-//
-//      if (predicate.isNthPositionFilter()) {
-//        final int nthIteratorIdx = cpg.addMethodref(NTH_ITERATOR_CLASS, "<init>", "(" + NODE_ITERATOR_SIG + "I)V");
-//
-//        // Backwards branches are prohibited if an uninitialized object
-//        // is on the stack by section 4.9.4 of the JVM Specification,
-//        // 2nd Ed. We don't know whether this code might contain
-//        // backwards branches, so we mustn't create the new object unti
-//
-//        // after we've created the suspect arguments to its constructor
-//
-//        // Instead we calculate the values of the arguments to the
-//        // constructor first, store them in temporary variables, create
-//        // the object and reload the arguments from the temporaries to
-//        // avoid the problem.
-//        final LocalVariableGen iteratorTemp = methodGen.addLocalVariable("filter_expr_tmp1",
-//                Util.getJCRefType(NODE_ITERATOR_SIG), null, null);
-//        iteratorTemp.setStart(il.append(new ASTORE(iteratorTemp.getIndex())));
-//
-//        predicate.translate(definedClass, method);
-//        final LocalVariableGen predicateValueTemp = methodGen.addLocalVariable("filter_expr_tmp2",
-//                Util.getJCRefType("I"), null, null);
-//        predicateValueTemp.setStart(il.append(new ISTORE(predicateValueTemp.getIndex())));
-//
-//        il.append(new NEW(cpg.addClass(NTH_ITERATOR_CLASS)));
-//        il.append(DUP);
-//        iteratorTemp.setEnd(il.append(new ALOAD(iteratorTemp.getIndex())));
-//        predicateValueTemp.setEnd(il.append(new ILOAD(predicateValueTemp.getIndex())));
-//        il.append(new INVOKESPECIAL(nthIteratorIdx));
-//      } else {
-//        // Translate predicates from right to left
-//        final int initCNLI = cpg.addMethodref(CURRENT_NODE_LIST_ITERATOR, "<init>", "(" + NODE_ITERATOR_SIG + "Z"
-//                + CURRENT_NODE_LIST_FILTER_SIG + NODE_SIG + TRANSLET_SIG + ")V");
-//
-//        // Backwards branches are prohibited if an uninitialized object
-//        // is on the stack by section 4.9.4 of the JVM Specification,
-//        // 2nd Ed. We don't know whether this code might contain
-//        // backwards branches, so we mustn't create the new object
-//        // until after we've created the suspect arguments to its
-//        // constructor. Instead we calculate the values of the
-//        // arguments to the constructor first, store them in temporary
-//        // variables, create the object and reload the arguments from
-//        // the temporaries to avoid the problem.
-//
-//        final LocalVariableGen nodeIteratorTemp = methodGen.addLocalVariable("filter_expr_tmp1",
-//                Util.getJCRefType(NODE_ITERATOR_SIG), null, null);
-//        nodeIteratorTemp.setStart(il.append(new ASTORE(nodeIteratorTemp.getIndex())));
-//
-//        predicate.translate(classGen, methodGen);
-//        final LocalVariableGen filterTemp = methodGen.addLocalVariable("filter_expr_tmp2",
-//                Util.getJCRefType(CURRENT_NODE_LIST_FILTER_SIG), null, null);
-//        filterTemp.setStart(il.append(new ASTORE(filterTemp.getIndex())));
-//
-//        // Create a CurrentNodeListIterator
-//        il.append(new NEW(cpg.addClass(CURRENT_NODE_LIST_ITERATOR)));
-//        il.append(DUP);
-//
-//        // Initialize CurrentNodeListIterator
-//        nodeIteratorTemp.setEnd(il.append(new ALOAD(nodeIteratorTemp.getIndex())));
-//        il.append(ICONST_1);
-//        filterTemp.setEnd(il.append(new ALOAD(filterTemp.getIndex())));
-//        il.append(methodGen.loadCurrentNode());
-//        il.append(classGen.loadTranslet());
-//        il.append(new INVOKESPECIAL(initCNLI));
-//      }
-//    }
+  public JExpression compilePredicates(CompilerContext ctx) {
+    // If not predicates left, translate primary expression
+    if (_predicates.size() == 0) {
+      return toJExpression(ctx);
+    } else {
+      // Remove the next predicate to be translated
+      final Predicate predicate = (Predicate) _predicates.get(_predicates.size() - 1);
+      _predicates.remove(predicate);
+
+      // Translate the rest of the predicates from right to left
+      JExpression predicateExpressions = compilePredicates(ctx);
+      JExpression predicateExpression = predicate.toJExpression(ctx);
+
+      if (predicate.isNthPositionFilter()) {
+        return _new(ctx.ref(NthIterator.class)).arg(predicateExpressions).arg(predicateExpression);
+      } else {
+        return _new(ctx.ref(CurrentNodeListIterator.class)).arg(predicateExpressions).arg(TRUE)
+            .arg(predicateExpression).arg(ctx.currentNode()).arg(_this());
+      }
+    }
   }
+
 }

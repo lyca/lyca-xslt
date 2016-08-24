@@ -80,7 +80,7 @@ final class ProcessingInstruction extends Instruction {
     if (!_isLiteral) {
       // if the ncname is an AVT, then the ncname has to be checked at runtime
       // if it is a valid ncname
-      nameValue = _name.compile(ctx);
+      nameValue = _name.toJExpression(ctx);
 
       // store the name into a variable first so _name.translate only needs to
       // be called once
@@ -103,7 +103,7 @@ final class ProcessingInstruction extends Instruction {
 //      il.append(DUP); // first arg to "attributes" call
 
       // Push attribute name
-       nameValue = _name.compile(ctx);// 2nd arg
+       nameValue = _name.toJExpression(ctx);// 2nd arg
 
     }
 

@@ -33,7 +33,6 @@ import de.lyca.xalan.xsltc.TransletException;
 import de.lyca.xml.dtm.Axis;
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xml.dtm.DTMAxisIterator;
-import de.lyca.xml.dtm.DTMManager;
 import de.lyca.xml.serializer.SerializationHandler;
 
 /**

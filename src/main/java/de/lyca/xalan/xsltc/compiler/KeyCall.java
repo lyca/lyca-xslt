@@ -80,17 +80,17 @@ final class KeyCall extends FunctionCall {
   public KeyCall(QName fname, List<Expression> arguments) {
     super(fname, arguments);
     switch (argumentCount()) {
-      case 1:
-        _name = null;
-        _value = argument(0);
-        break;
-      case 2:
-        _name = argument(0);
-        _value = argument(1);
-        break;
-      default:
-        _name = _value = null;
-        break;
+    case 1:
+      _name = null;
+      _value = argument(0);
+      break;
+    case 2:
+      _name = argument(0);
+      _value = argument(1);
+      break;
+    default:
+      _name = _value = null;
+      break;
     }
   }
 
@@ -170,8 +170,20 @@ final class KeyCall extends FunctionCall {
     return returnType;
   }
 
+  /**
+   * This method is called when the constructor is compiled in
+   * Stylesheet.compileConstructor() and not as the syntax tree is traversed.
+   * <p>
+   * This method will generate byte code that produces an iterator for the nodes
+   * in the node set for the key or id function call.
+   * 
+   * @param classGen
+   *          The Java class generator
+   * @param methodGen
+   *          The method generator
+   */
   @Override
-  public JExpression compile(CompilerContext ctx) {
+  public JExpression toJExpression(CompilerContext ctx) {
     // Initialise the index specified in the first parameter of key()
     JExpression name;
     if (_name == null) {
@@ -179,9 +191,9 @@ final class KeyCall extends FunctionCall {
     } else if (_resolvedQName != null) {
       name = lit(_resolvedQName.toString());
     } else {
-      name = _name.compile(ctx);
+      name = _name.toJExpression(ctx);
     }
-    JExpression value = _value.compile(ctx);
+    JExpression value = _value.toJExpression(ctx);
 
     // Generate following byte code:
     //
@@ -197,62 +209,9 @@ final class KeyCall extends FunctionCall {
     if (ctx.ref(NodeSortRecord.class).isAssignableFrom(ctx.clazz())) {
       getKeyIndex = invoke(ctx.param(TRANSLET_PNAME), "getKeyIndex");
     }
-    JInvocation result = getKeyIndex.arg(name).invoke("setDom").arg(ctx.currentDom())
-        .invoke("getKeyIndexIterator").arg(value);
+    JInvocation result = getKeyIndex.arg(name).invoke("setDom").arg(ctx.currentDom()).invoke("getKeyIndexIterator")
+        .arg(value);
     return _name == null ? result.arg(FALSE) : result.arg(TRUE);
   }
 
-  /**
-   * This method is called when the constructor is compiled in
-   * Stylesheet.compileConstructor() and not as the syntax tree is traversed.
-   * <p>
-   * This method will generate byte code that produces an iterator for the nodes
-   * in the node set for the key or id function call.
-   * @param classGen
-   *          The Java class generator
-   * @param methodGen
-   *          The method generator
-   */
-  @Override
-  public void translate(CompilerContext ctx) {
- // FIXME
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//    final InstructionList il = methodGen.getInstructionList();
-//
-//    // Returns the KeyIndex object of a given name
-//    final int getKeyIndex = cpg.addMethodref(TRANSLET_CLASS, "getKeyIndex", "(Ljava/lang/String;)" + KEY_INDEX_SIG);
-//
-//    // KeyIndex.setDom(Dom) => void
-//    final int keyDom = cpg.addMethodref(KEY_INDEX_CLASS, "setDom", "(" + DOM_INTF_SIG + ")V");
-//
-//    // Initialises a KeyIndex to return nodes with specific values
-//    final int getKeyIterator = cpg.addMethodref(KEY_INDEX_CLASS, "getKeyIndexIterator", "(" + _valueType.toSignature()
-//            + "Z)" + KEY_INDEX_ITERATOR_SIG);
-//
-//    // Initialise the index specified in the first parameter of key()
-//    il.append(classGen.loadTranslet());
-//    if (_name == null) {
-//      il.append(new PUSH(cpg, "##id"));
-//    } else if (_resolvedQName != null) {
-//      il.append(new PUSH(cpg, _resolvedQName.toString()));
-//    } else {
-//      _name.translate(classGen, methodGen);
-//    }
-//
-//    // Generate following byte code:
-//    //
-//    // KeyIndex ki = translet.getKeyIndex(_name)
-//    // ki.setDom(translet.dom);
-//    // ki.getKeyIndexIterator(_value, true) - for key()
-//    // OR
-//    // ki.getKeyIndexIterator(_value, false) - for id()
-//    il.append(new INVOKEVIRTUAL(getKeyIndex));
-//    il.append(DUP);
-//    il.append(methodGen.loadDOM());
-//    il.append(new INVOKEVIRTUAL(keyDom));
-//
-//    _value.translate(classGen, methodGen);
-//    il.append(_name != null ? ICONST_1 : ICONST_0);
-//    il.append(new INVOKEVIRTUAL(getKeyIterator));
-  }
 }

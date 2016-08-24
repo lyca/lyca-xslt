@@ -114,13 +114,13 @@ final class UnionPathExpr extends Expression {
   }
 
   @Override
-  public JExpression compile(CompilerContext ctx) {
+  public JExpression toJExpression(CompilerContext ctx) {
     // Create the UnionIterator and leave it on the stack
     JExpression unionIterator = JExpr._new(ctx.ref(UnionIterator.class)).arg(ctx.currentDom());
 
     // Add the various iterators to the UnionIterator
     for (final Expression expression : _components) {
-      unionIterator = unionIterator.invoke(ADD_ITERATOR).arg(expression.compile(ctx));
+      unionIterator = unionIterator.invoke(ADD_ITERATOR).arg(expression.toJExpression(ctx));
     }
 
     // Order the iterator only if strictly needed

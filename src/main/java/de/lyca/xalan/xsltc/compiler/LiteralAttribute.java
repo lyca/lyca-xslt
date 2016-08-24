@@ -22,6 +22,9 @@
 package de.lyca.xalan.xsltc.compiler;
 
 import static com.sun.codemodel.JExpr.lit;
+
+import com.sun.codemodel.JExpression;
+
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
@@ -75,16 +78,10 @@ final class LiteralAttribute extends Instruction {
 
   @Override
   public void translate(CompilerContext ctx) {
-    // push handler
-//    il.append(methodGen.loadHandler());
-    // push attribute name - namespace prefix set by parent node
-//    il.append(new PUSH(cpg, _name));
-    // push attribute value
-//    _value.translate(classGen, methodGen);
-
     // Generate code that calls SerializationHandler.addUniqueAttribute()
     // if all attributes are unique.
     final SyntaxTreeNode parent = getParent();
+    JExpression value = _value.toJExpression(ctx);
     if (parent instanceof LiteralElement && ((LiteralElement) parent).allAttributesUnique()) {
 
       int flags = 0;
@@ -107,16 +104,12 @@ final class LiteralAttribute extends Instruction {
         if (!hasBadChars(attrValue) && !isHTMLAttrEmpty) {
           flags = flags | ExtendedContentHandler.NO_BAD_CHARS;
         }
-        // addUniqueAttribute(String qName, String value, int flags) throws SAXException;
       }
-      ctx.currentBlock().invoke(ctx.currentHandler(), "addUniqueAttribute").arg(_name).arg(_value.compile(ctx)).arg(lit(flags));
+      ctx.currentBlock().invoke(ctx.currentHandler(), "addUniqueAttribute").arg(_name).arg(value).arg(lit(flags));
 
-//      il.append(new PUSH(cpg, flags));
-//      il.append(methodGen.uniqueAttribute());
     } else {
       // call attribute
-      ctx.currentBlock().invoke(ctx.currentHandler() ,"addAttribute").arg(_name).arg(_value.compile(ctx));
-//      il.append(methodGen.attribute());
+      ctx.currentBlock().invoke(ctx.currentHandler() ,"addAttribute").arg(_name).arg(value);
     }
   }
 

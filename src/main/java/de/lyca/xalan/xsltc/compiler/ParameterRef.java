@@ -21,6 +21,8 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
+import static de.lyca.xml.dtm.DTMAxisIterator.CLONE_ITERATOR;
+
 import com.sun.codemodel.JExpression;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
@@ -52,14 +54,13 @@ final class ParameterRef extends VariableRefBase {
   }
 
   @Override
-  public JExpression compile(CompilerContext ctx) {
+  public JExpression toJExpression(CompilerContext ctx) {
   /*
    * To fix bug 24518 related to setting parameters of the form
    * {namespaceuri}localName, which will get mapped to an instance variable in
    * the class.
    */
   final String name = BasisLibrary.mapQNameToJavaName(_name.toString());
-  final String signature = _type.toSignature();
   JExpression variable;
   if (_variable.isLocal()) {
 //    if (classGen.isExternal()) {
@@ -78,7 +79,7 @@ final class ParameterRef extends VariableRefBase {
 //        il.append(_variable.loadInstruction());
 //      }
 //    } else {
-      variable = _variable.loadInstruction();
+      variable = _variable.loadParam();
 //    }
   } else {
 //    final String className = classGen.getClassName();
@@ -92,9 +93,7 @@ final class ParameterRef extends VariableRefBase {
 
   if (_variable.getType() instanceof NodeSetType) {
     // The method cloneIterator() also does resetting
-    variable = variable.invoke("cloneIterator");
-//    final int clone = cpg.addInterfaceMethodref(NODE_ITERATOR, "cloneIterator", "()" + NODE_ITERATOR_SIG);
-//    il.append(new INVOKEINTERFACE(clone, 1));
+    variable = variable.invoke(CLONE_ITERATOR);
   }
     return variable;
   }

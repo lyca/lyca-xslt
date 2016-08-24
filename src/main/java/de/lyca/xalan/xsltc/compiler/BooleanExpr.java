@@ -64,26 +64,8 @@ final class BooleanExpr extends Expression {
   }
 
   @Override
-  public JExpression compile(CompilerContext ctx) {
+  public JExpression toJExpression(CompilerContext ctx) {
     return lit(_value);
   }
-  
-  @Override
-  public void translate(CompilerContext ctx) {
-// FIXME
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//    final InstructionList il = methodGen.getInstructionList();
-//    il.append(new PUSH(cpg, _value));
-  }
 
-  @Override
-  public void translateDesynthesized(CompilerContext ctx) {
-// FIXME
-//    final InstructionList il = methodGen.getInstructionList();
-//    if (_value) {
-//      il.append(NOP); // true list falls through
-//    } else {
-//      _falseList.add(il.append(new GOTO(null)));
-//    }
-  }
 }

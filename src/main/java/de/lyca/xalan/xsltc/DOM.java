@@ -35,21 +35,62 @@ import de.lyca.xml.serializer.SerializationHandler;
  * @author Santiago Pericas-Geertsen
  */
 public interface DOM {
-  final static int FIRST_TYPE = 0;
+  int FIRST_TYPE = 0;
 
-  final static int NO_TYPE = -1;
+  int NO_TYPE = -1;
 
   // 0 is reserved for NodeIterator.END
-  final static int NULL = 0;
+  int NULL = 0;
 
   // used by some node iterators to know which node to return
-  final static int RETURN_CURRENT = 0;
-  final static int RETURN_PARENT = 1;
+  int RETURN_CURRENT = 0;
+  int RETURN_PARENT = 1;
 
   // Constants used by getResultTreeFrag to indicate the types of the RTFs.
-  final static int SIMPLE_RTF = 0;
-  final static int ADAPTIVE_RTF = 1;
-  final static int TREE_RTF = 2;
+  int SIMPLE_RTF = 0;
+  int ADAPTIVE_RTF = 1;
+  int TREE_RTF = 2;
+
+  String GET_ITERATOR = "getIterator";
+  String GET_STRING_VALUE = "getStringValue";
+  String GET_CHILDREN = "getChildren";
+//  String GET_TYPED_CHILDREN = "getTypedChildren";
+  String GET_AXIS_ITERATOR = "getAxisIterator";
+  String GET_TYPED_AXIS_ITERATOR = "getTypedAxisIterator";
+  String GET_NTH_DESCENDANT = "getNthDescendant"; // TODO
+  String GET_NAMESPACE_AXIS_ITERATOR = "getNamespaceAxisIterator"; // TODO
+  String GET_NODE_VALUE_ITERATOR = "getNodeValueIterator";
+  String ORDER_NODES = "orderNodes";
+  String GET_NODE_NAME = "getNodeName";
+  String GET_NODE_NAME_X = "getNodeNameX";
+  String GET_NAMESPACE_NAME = "getNamespaceName";
+  String GET_EXPANDED_TYPE_ID = "getExpandedTypeID";
+  String GET_NAMESPACE_TYPE = "getNamespaceType";
+  String GET_PARENT = "getParent";
+//  String GET_ATTRIBUTE_NODE = "getAttributeNode";
+  String GET_STRING_VALUE_X = "getStringValueX";
+  String COPY = "copy";
+  String SHALLOW_COPY = "shallowCopy";
+//  String LESS_THAN = "lessThan";
+  String CHARACTERS = "characters"; // TODO
+  String MAKE_NODE = "makeNode";
+  String MAKE_NODE_LIST = "makeNodeList";
+//  String GET_LANGUAGE = "getLanguage";
+//  String GET_SIZE = "getSize";
+//  String GET_DOCUMENT_URI = "getDocumentURI";
+  String SET_FILTER = "setFilter";
+  String SETUP_MAPPING = "setupMapping";
+  String IS_ELEMENT = "isElement";
+  String IS_ATTRIBUTE = "isAttribute";
+//  String LOOKUP_NAMESPACE = "lookupNamespace";
+//  String GET_NODE_IDENT = "getNodeIdent";
+//  String GET_NODE_HANDLE = "getNodeHandle";
+  String GET_RESULT_TREE_FRAG = "getResultTreeFrag";
+  String GET_OUTPUT_DOM_BUILDER = "getOutputDomBuilder";
+//  String GET_NS_TYPE = "getNSType";
+  String GET_DOCUMENT = "getDocument";
+  String GET_UNPARSED_ENTITY_URI = "getUnparsedEntityURI";
+//  String GET_ELEMENTS_WITH_IDS = "getElementsWithIDs";
 
   /** returns singleton iterator containg the document root */
   DTMAxisIterator getIterator();

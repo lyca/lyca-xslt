@@ -24,10 +24,17 @@ package de.lyca.xalan.xsltc.compiler.util;
 import static com.sun.codemodel.JExpr.TRUE;
 import static com.sun.codemodel.JExpr.direct;
 import static com.sun.codemodel.JExpr.invoke;
-
-import org.apache.bcel.generic.ALOAD;
-import org.apache.bcel.generic.ASTORE;
-import org.apache.bcel.generic.Instruction;
+import static de.lyca.xalan.xsltc.DOM.GET_ITERATOR;
+import static de.lyca.xalan.xsltc.DOM.GET_STRING_VALUE;
+import static de.lyca.xalan.xsltc.DOM.MAKE_NODE;
+import static de.lyca.xalan.xsltc.DOM.MAKE_NODE_LIST;
+import static de.lyca.xalan.xsltc.DOM.SETUP_MAPPING;
+import static de.lyca.xalan.xsltc.compiler.Constants.DOM_INTF;
+import static de.lyca.xalan.xsltc.compiler.Constants.FATAL;
+import static de.lyca.xalan.xsltc.compiler.Constants.NAMESPACE_INDEX;
+import static de.lyca.xalan.xsltc.compiler.Constants.NAMES_INDEX;
+import static de.lyca.xalan.xsltc.compiler.Constants.TYPES_INDEX;
+import static de.lyca.xalan.xsltc.compiler.Constants.URIS_INDEX;
 
 import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JExpr;
@@ -37,7 +44,6 @@ import com.sun.codemodel.JType;
 
 import de.lyca.xalan.xsltc.DOM;
 import de.lyca.xalan.xsltc.compiler.Constants;
-import de.lyca.xalan.xsltc.compiler.FlowList;
 
 /**
  * @author Jacek Ambroziak
@@ -63,11 +69,6 @@ public final class ResultTreeType extends Type {
   @Override
   public boolean identicalTo(Type other) {
     return other instanceof ResultTreeType;
-  }
-
-  @Override
-  public String toSignature() {
-    return DOM_INTF_SIG;
   }
 
   @Override
@@ -98,29 +99,7 @@ public final class ResultTreeType extends Type {
    * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
    */
   @Override
-  public void translateTo(JDefinedClass definedClass, JMethod method, Type type) {
-//    FIXME
-//    if (type == Type.String) {
-//      translateTo(classGen, methodGen, (StringType) type);
-//    } else if (type == Type.Boolean) {
-//      translateTo(classGen, methodGen, (BooleanType) type);
-//    } else if (type == Type.Real) {
-//      translateTo(classGen, methodGen, (RealType) type);
-//    } else if (type == Type.NodeSet) {
-//      translateTo(classGen, methodGen, (NodeSetType) type);
-//    } else if (type == Type.Reference) {
-//      translateTo(classGen, methodGen, (ReferenceType) type);
-//    } else if (type == Type.Object) {
-//      translateTo(classGen, methodGen, (ObjectType) type);
-//    } else {
-//      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), type.toString());
-//      classGen.getParser().reportError(Constants.FATAL, err);
-//    }
-  }
-
-  @Override
   public JExpression compileTo(CompilerContext ctx, JExpression expr, Type type) {
-    // FIXME
     if (type == Type.String) {
       return compileTo(ctx, expr, (StringType) type);
     } else if (type == Type.Boolean) {
@@ -136,7 +115,7 @@ public final class ResultTreeType extends Type {
     } else {
       final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), type.toString());
       ctx.xsltc().getParser().reportError(FATAL, err);
-      return null;
+      return expr;
     }
   }
 
@@ -152,15 +131,6 @@ public final class ResultTreeType extends Type {
    *          An instance of BooleanType (any)
    * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
    */
-  public void translateTo(JDefinedClass definedClass, JMethod method, BooleanType type) {
-//    FIXME
-//    // A result tree is always 'true' when converted to a boolean value,
-//    // since the tree always has at least one node (the root).
-//    final InstructionList il = methodGen.getInstructionList();
-//    il.append(POP); // don't need the DOM reference
-//    il.append(ICONST_1); // push 'true' on the stack
-  }
-
   public JExpression compileTo(CompilerContext ctx, JExpression expr, BooleanType type) {
     return TRUE;
   }
@@ -177,82 +147,91 @@ public final class ResultTreeType extends Type {
    * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
    */
   public void translateTo(JDefinedClass definedClass, JMethod method, StringType type) {
-//    FIXME
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//    final InstructionList il = methodGen.getInstructionList();
-//
-//    if (_methodName == null) {
-//      final int index = cpg.addInterfaceMethodref(DOM_INTF, "getStringValue", "()" + STRING_SIG);
-//      il.append(new INVOKEINTERFACE(index, 1));
-//    } else {
-//      final String className = classGen.getClassName();
-//
-//      // Push required parameters
-//      il.append(classGen.loadTranslet());
-//      if (classGen.isExternal()) {
-//        il.append(new CHECKCAST(cpg.addClass(className)));
-//      }
-//      il.append(DUP);
-//      il.append(new GETFIELD(cpg.addFieldref(className, "_dom", DOM_INTF_SIG)));
-//
-//      // Create a new instance of a StringValueHandler
-//      int index = cpg.addMethodref(STRING_VALUE_HANDLER, "<init>", "()V");
-//      il.append(new NEW(cpg.addClass(STRING_VALUE_HANDLER)));
-//      il.append(DUP);
-//      il.append(DUP);
-//      il.append(new INVOKESPECIAL(index));
-//
-//      // Store new Handler into a local variable
-//      final LocalVariableGen handler = methodGen.addLocalVariable("rt_to_string_handler",
-//              Util.getJCRefType(STRING_VALUE_HANDLER_SIG), null, null);
-//      handler.setStart(il.append(new ASTORE(handler.getIndex())));
-//
-//      // Call the method that implements this result tree
-//      index = cpg.addMethodref(className, _methodName, "(" + DOM_INTF_SIG + TRANSLET_OUTPUT_SIG + ")V");
-//      il.append(new INVOKEVIRTUAL(index));
-//
-//      // Restore new handler and call getValue()
-//      handler.setEnd(il.append(new ALOAD(handler.getIndex())));
-//      index = cpg.addMethodref(STRING_VALUE_HANDLER, "getValue", "()" + STRING_SIG);
-//      il.append(new INVOKEVIRTUAL(index));
-//    }
+    // FIXME
+    // final ConstantPoolGen cpg = classGen.getConstantPool();
+    // final InstructionList il = methodGen.getInstructionList();
+    //
+    // if (_methodName == null) {
+    // final int index = cpg.addInterfaceMethodref(DOM_INTF, "getStringValue",
+    // "()" + STRING_SIG);
+    // il.append(new INVOKEINTERFACE(index, 1));
+    // } else {
+    // final String className = classGen.getClassName();
+    //
+    // // Push required parameters
+    // il.append(classGen.loadTranslet());
+    // if (classGen.isExternal()) {
+    // il.append(new CHECKCAST(cpg.addClass(className)));
+    // }
+    // il.append(DUP);
+    // il.append(new GETFIELD(cpg.addFieldref(className, "_dom",
+    // DOM_INTF_SIG)));
+    //
+    // // Create a new instance of a StringValueHandler
+    // int index = cpg.addMethodref(STRING_VALUE_HANDLER, "<init>", "()V");
+    // il.append(new NEW(cpg.addClass(STRING_VALUE_HANDLER)));
+    // il.append(DUP);
+    // il.append(DUP);
+    // il.append(new INVOKESPECIAL(index));
+    //
+    // // Store new Handler into a local variable
+    // final LocalVariableGen handler =
+    // methodGen.addLocalVariable("rt_to_string_handler",
+    // Util.getJCRefType(STRING_VALUE_HANDLER_SIG), null, null);
+    // handler.setStart(il.append(new ASTORE(handler.getIndex())));
+    //
+    // // Call the method that implements this result tree
+    // index = cpg.addMethodref(className, _methodName, "(" + DOM_INTF_SIG +
+    // TRANSLET_OUTPUT_SIG + ")V");
+    // il.append(new INVOKEVIRTUAL(index));
+    //
+    // // Restore new handler and call getValue()
+    // handler.setEnd(il.append(new ALOAD(handler.getIndex())));
+    // index = cpg.addMethodref(STRING_VALUE_HANDLER, "getValue", "()" +
+    // STRING_SIG);
+    // il.append(new INVOKEVIRTUAL(index));
+    // }
   }
 
   public JExpression compileTo(CompilerContext ctx, JExpression expr, StringType type) {
     if (_methodName == null) {
-      return expr.invoke("getStringValue");
+      return expr.invoke(GET_STRING_VALUE);
     } else {
-//    FIXME
-//      final String className = classGen.getClassName();
-//
-//      // Push required parameters
-//      il.append(classGen.loadTranslet());
-//      if (classGen.isExternal()) {
-//        il.append(new CHECKCAST(cpg.addClass(className)));
-//      }
-//      il.append(DUP);
-//      il.append(new GETFIELD(cpg.addFieldref(className, "_dom", DOM_INTF_SIG)));
-//
-//      // Create a new instance of a StringValueHandler
-//      int index = cpg.addMethodref(STRING_VALUE_HANDLER, "<init>", "()V");
-//      il.append(new NEW(cpg.addClass(STRING_VALUE_HANDLER)));
-//      il.append(DUP);
-//      il.append(DUP);
-//      il.append(new INVOKESPECIAL(index));
-//
-//      // Store new Handler into a local variable
-//      final LocalVariableGen handler = methodGen.addLocalVariable("rt_to_string_handler",
-//              Util.getJCRefType(STRING_VALUE_HANDLER_SIG), null, null);
-//      handler.setStart(il.append(new ASTORE(handler.getIndex())));
-//
-//      // Call the method that implements this result tree
-//      index = cpg.addMethodref(className, _methodName, "(" + DOM_INTF_SIG + TRANSLET_OUTPUT_SIG + ")V");
-//      il.append(new INVOKEVIRTUAL(index));
-//
-//      // Restore new handler and call getValue()
-//      handler.setEnd(il.append(new ALOAD(handler.getIndex())));
-//      index = cpg.addMethodref(STRING_VALUE_HANDLER, "getValue", "()" + STRING_SIG);
-//      il.append(new INVOKEVIRTUAL(index));
+      // FIXME
+      // final String className = classGen.getClassName();
+      //
+      // // Push required parameters
+      // il.append(classGen.loadTranslet());
+      // if (classGen.isExternal()) {
+      // il.append(new CHECKCAST(cpg.addClass(className)));
+      // }
+      // il.append(DUP);
+      // il.append(new GETFIELD(cpg.addFieldref(className, "_dom",
+      // DOM_INTF_SIG)));
+      //
+      // // Create a new instance of a StringValueHandler
+      // int index = cpg.addMethodref(STRING_VALUE_HANDLER, "<init>", "()V");
+      // il.append(new NEW(cpg.addClass(STRING_VALUE_HANDLER)));
+      // il.append(DUP);
+      // il.append(DUP);
+      // il.append(new INVOKESPECIAL(index));
+      //
+      // // Store new Handler into a local variable
+      // final LocalVariableGen handler =
+      // methodGen.addLocalVariable("rt_to_string_handler",
+      // Util.getJCRefType(STRING_VALUE_HANDLER_SIG), null, null);
+      // handler.setStart(il.append(new ASTORE(handler.getIndex())));
+      //
+      // // Call the method that implements this result tree
+      // index = cpg.addMethodref(className, _methodName, "(" + DOM_INTF_SIG +
+      // TRANSLET_OUTPUT_SIG + ")V");
+      // il.append(new INVOKEVIRTUAL(index));
+      //
+      // // Restore new handler and call getValue()
+      // handler.setEnd(il.append(new ALOAD(handler.getIndex())));
+      // index = cpg.addMethodref(STRING_VALUE_HANDLER, "getValue", "()" +
+      // STRING_SIG);
+      // il.append(new INVOKEVIRTUAL(index));
       return null;
     }
   }
@@ -269,12 +248,6 @@ public final class ResultTreeType extends Type {
    *          An instance of RealType (any)
    * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
    */
-  public void translateTo(JDefinedClass definedClass, JMethod method, RealType type) {
-//    FIXME
-//    translateTo(classGen, methodGen, Type.String);
-//    Type.String.translateTo(classGen, methodGen, Type.Real);
-  }
-
   public JExpression compileTo(CompilerContext ctx, JExpression expr, RealType type) {
     return Type.String.compileTo(ctx, compileTo(ctx, expr, Type.String), Type.Real);
   }
@@ -292,128 +265,142 @@ public final class ResultTreeType extends Type {
    * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
    */
   public void translateTo(JDefinedClass definedClass, JMethod method, ReferenceType type) {
-//    FIXME
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//    final InstructionList il = methodGen.getInstructionList();
-//
-//    if (_methodName == null) {
-//      il.append(NOP);
-//    } else {
-//      LocalVariableGen domBuilder, newDom;
-//      final String className = classGen.getClassName();
-//
-//      // Push required parameters
-//      il.append(classGen.loadTranslet());
-//      if (classGen.isExternal()) {
-//        il.append(new CHECKCAST(cpg.addClass(className)));
-//      }
-//      il.append(methodGen.loadDOM());
-//
-//      // Create new instance of DOM class (with RTF_INITIAL_SIZE nodes)
-//      il.append(methodGen.loadDOM());
-//      int index = cpg.addInterfaceMethodref(DOM_INTF, "getResultTreeFrag", "(IZ)" + DOM_INTF_SIG);
-//      il.append(new PUSH(cpg, RTF_INITIAL_SIZE));
-//      il.append(new PUSH(cpg, false));
-//      il.append(new INVOKEINTERFACE(index, 3));
-//      il.append(DUP);
-//
-//      // Store new DOM into a local variable
-//      newDom = methodGen.addLocalVariable("rt_to_reference_dom", Util.getJCRefType(DOM_INTF_SIG), null, null);
-//      il.append(new CHECKCAST(cpg.addClass(DOM_INTF_SIG)));
-//      newDom.setStart(il.append(new ASTORE(newDom.getIndex())));
-//
-//      // Overwrite old handler with DOM handler
-//      index = cpg.addInterfaceMethodref(DOM_INTF, "getOutputDomBuilder", "()" + TRANSLET_OUTPUT_SIG);
-//
-//      il.append(new INVOKEINTERFACE(index, 1));
-//      // index = cpg.addMethodref(DOM_IMPL,
-//      // "getOutputDomBuilder",
-//      // "()" + TRANSLET_OUTPUT_SIG);
-//      // il.append(new INVOKEVIRTUAL(index));
-//      il.append(DUP);
-//      il.append(DUP);
-//
-//      // Store DOM handler in a local in order to call endDocument()
-//      domBuilder = methodGen.addLocalVariable("rt_to_reference_handler", Util.getJCRefType(TRANSLET_OUTPUT_SIG), null,
-//              null);
-//      domBuilder.setStart(il.append(new ASTORE(domBuilder.getIndex())));
-//
-//      // Call startDocument on the new handler
-//      index = cpg.addInterfaceMethodref(TRANSLET_OUTPUT_INTERFACE, "startDocument", "()V");
-//      il.append(new INVOKEINTERFACE(index, 1));
-//
-//      // Call the method that implements this result tree
-//      index = cpg.addMethodref(className, _methodName, "(" + DOM_INTF_SIG + TRANSLET_OUTPUT_SIG + ")V");
-//      il.append(new INVOKEVIRTUAL(index));
-//
-//      // Call endDocument on the DOM handler
-//      domBuilder.setEnd(il.append(new ALOAD(domBuilder.getIndex())));
-//      index = cpg.addInterfaceMethodref(TRANSLET_OUTPUT_INTERFACE, "endDocument", "()V");
-//      il.append(new INVOKEINTERFACE(index, 1));
-//
-//      // Push the new DOM on the stack
-//      newDom.setEnd(il.append(new ALOAD(newDom.getIndex())));
-//    }
+    // FIXME
+    // final ConstantPoolGen cpg = classGen.getConstantPool();
+    // final InstructionList il = methodGen.getInstructionList();
+    //
+    // if (_methodName == null) {
+    // il.append(NOP);
+    // } else {
+    // LocalVariableGen domBuilder, newDom;
+    // final String className = classGen.getClassName();
+    //
+    // // Push required parameters
+    // il.append(classGen.loadTranslet());
+    // if (classGen.isExternal()) {
+    // il.append(new CHECKCAST(cpg.addClass(className)));
+    // }
+    // il.append(methodGen.loadDOM());
+    //
+    // // Create new instance of DOM class (with RTF_INITIAL_SIZE nodes)
+    // il.append(methodGen.loadDOM());
+    // int index = cpg.addInterfaceMethodref(DOM_INTF, "getResultTreeFrag",
+    // "(IZ)" + DOM_INTF_SIG);
+    // il.append(new PUSH(cpg, RTF_INITIAL_SIZE));
+    // il.append(new PUSH(cpg, false));
+    // il.append(new INVOKEINTERFACE(index, 3));
+    // il.append(DUP);
+    //
+    // // Store new DOM into a local variable
+    // newDom = methodGen.addLocalVariable("rt_to_reference_dom",
+    // Util.getJCRefType(DOM_INTF_SIG), null, null);
+    // il.append(new CHECKCAST(cpg.addClass(DOM_INTF_SIG)));
+    // newDom.setStart(il.append(new ASTORE(newDom.getIndex())));
+    //
+    // // Overwrite old handler with DOM handler
+    // index = cpg.addInterfaceMethodref(DOM_INTF, "getOutputDomBuilder", "()" +
+    // TRANSLET_OUTPUT_SIG);
+    //
+    // il.append(new INVOKEINTERFACE(index, 1));
+    // // index = cpg.addMethodref(DOM_IMPL,
+    // // "getOutputDomBuilder",
+    // // "()" + TRANSLET_OUTPUT_SIG);
+    // // il.append(new INVOKEVIRTUAL(index));
+    // il.append(DUP);
+    // il.append(DUP);
+    //
+    // // Store DOM handler in a local in order to call endDocument()
+    // domBuilder = methodGen.addLocalVariable("rt_to_reference_handler",
+    // Util.getJCRefType(TRANSLET_OUTPUT_SIG), null,
+    // null);
+    // domBuilder.setStart(il.append(new ASTORE(domBuilder.getIndex())));
+    //
+    // // Call startDocument on the new handler
+    // index = cpg.addInterfaceMethodref(TRANSLET_OUTPUT_INTERFACE,
+    // "startDocument", "()V");
+    // il.append(new INVOKEINTERFACE(index, 1));
+    //
+    // // Call the method that implements this result tree
+    // index = cpg.addMethodref(className, _methodName, "(" + DOM_INTF_SIG +
+    // TRANSLET_OUTPUT_SIG + ")V");
+    // il.append(new INVOKEVIRTUAL(index));
+    //
+    // // Call endDocument on the DOM handler
+    // domBuilder.setEnd(il.append(new ALOAD(domBuilder.getIndex())));
+    // index = cpg.addInterfaceMethodref(TRANSLET_OUTPUT_INTERFACE,
+    // "endDocument", "()V");
+    // il.append(new INVOKEINTERFACE(index, 1));
+    //
+    // // Push the new DOM on the stack
+    // newDom.setEnd(il.append(new ALOAD(newDom.getIndex())));
+    // }
   }
 
   public JExpression compileTo(CompilerContext ctx, JExpression expr, ReferenceType type) {
     if (_methodName == null) {
       return expr;
     } else {
-//      LocalVariableGen domBuilder, newDom;
-//      final String className = classGen.getClassName();
-//
-//      // Push required parameters
-//      il.append(classGen.loadTranslet());
-//      if (classGen.isExternal()) {
-//        il.append(new CHECKCAST(cpg.addClass(className)));
-//      }
-//      il.append(methodGen.loadDOM());
-//
-//      // Create new instance of DOM class (with RTF_INITIAL_SIZE nodes)
-//      il.append(methodGen.loadDOM());
-//      int index = cpg.addInterfaceMethodref(DOM_INTF, "getResultTreeFrag", "(IZ)" + DOM_INTF_SIG);
-//      il.append(new PUSH(cpg, RTF_INITIAL_SIZE));
-//      il.append(new PUSH(cpg, false));
-//      il.append(new INVOKEINTERFACE(index, 3));
-//      il.append(DUP);
-//
-//      // Store new DOM into a local variable
-//      newDom = methodGen.addLocalVariable("rt_to_reference_dom", Util.getJCRefType(DOM_INTF_SIG), null, null);
-//      il.append(new CHECKCAST(cpg.addClass(DOM_INTF_SIG)));
-//      newDom.setStart(il.append(new ASTORE(newDom.getIndex())));
-//
-//      // Overwrite old handler with DOM handler
-//      index = cpg.addInterfaceMethodref(DOM_INTF, "getOutputDomBuilder", "()" + TRANSLET_OUTPUT_SIG);
-//
-//      il.append(new INVOKEINTERFACE(index, 1));
-//      // index = cpg.addMethodref(DOM_IMPL,
-//      // "getOutputDomBuilder",
-//      // "()" + TRANSLET_OUTPUT_SIG);
-//      // il.append(new INVOKEVIRTUAL(index));
-//      il.append(DUP);
-//      il.append(DUP);
-//
-//      // Store DOM handler in a local in order to call endDocument()
-//      domBuilder = methodGen.addLocalVariable("rt_to_reference_handler", Util.getJCRefType(TRANSLET_OUTPUT_SIG), null,
-//          null);
-//      domBuilder.setStart(il.append(new ASTORE(domBuilder.getIndex())));
-//
-//      // Call startDocument on the new handler
-//      index = cpg.addInterfaceMethodref(TRANSLET_OUTPUT_INTERFACE, "startDocument", "()V");
-//      il.append(new INVOKEINTERFACE(index, 1));
-//
-//      // Call the method that implements this result tree
-//      index = cpg.addMethodref(className, _methodName, "(" + DOM_INTF_SIG + TRANSLET_OUTPUT_SIG + ")V");
-//      il.append(new INVOKEVIRTUAL(index));
-//
-//      // Call endDocument on the DOM handler
-//      domBuilder.setEnd(il.append(new ALOAD(domBuilder.getIndex())));
-//      index = cpg.addInterfaceMethodref(TRANSLET_OUTPUT_INTERFACE, "endDocument", "()V");
-//      il.append(new INVOKEINTERFACE(index, 1));
-//
-//      // Push the new DOM on the stack
-//      newDom.setEnd(il.append(new ALOAD(newDom.getIndex())));
+      // LocalVariableGen domBuilder, newDom;
+      // final String className = classGen.getClassName();
+      //
+      // // Push required parameters
+      // il.append(classGen.loadTranslet());
+      // if (classGen.isExternal()) {
+      // il.append(new CHECKCAST(cpg.addClass(className)));
+      // }
+      // il.append(methodGen.loadDOM());
+      //
+      // // Create new instance of DOM class (with RTF_INITIAL_SIZE nodes)
+      // il.append(methodGen.loadDOM());
+      // int index = cpg.addInterfaceMethodref(DOM_INTF, "getResultTreeFrag",
+      // "(IZ)" + DOM_INTF_SIG);
+      // il.append(new PUSH(cpg, RTF_INITIAL_SIZE));
+      // il.append(new PUSH(cpg, false));
+      // il.append(new INVOKEINTERFACE(index, 3));
+      // il.append(DUP);
+      //
+      // // Store new DOM into a local variable
+      // newDom = methodGen.addLocalVariable("rt_to_reference_dom",
+      // Util.getJCRefType(DOM_INTF_SIG), null, null);
+      // il.append(new CHECKCAST(cpg.addClass(DOM_INTF_SIG)));
+      // newDom.setStart(il.append(new ASTORE(newDom.getIndex())));
+      //
+      // // Overwrite old handler with DOM handler
+      // index = cpg.addInterfaceMethodref(DOM_INTF, "getOutputDomBuilder", "()"
+      // + TRANSLET_OUTPUT_SIG);
+      //
+      // il.append(new INVOKEINTERFACE(index, 1));
+      // // index = cpg.addMethodref(DOM_IMPL,
+      // // "getOutputDomBuilder",
+      // // "()" + TRANSLET_OUTPUT_SIG);
+      // // il.append(new INVOKEVIRTUAL(index));
+      // il.append(DUP);
+      // il.append(DUP);
+      //
+      // // Store DOM handler in a local in order to call endDocument()
+      // domBuilder = methodGen.addLocalVariable("rt_to_reference_handler",
+      // Util.getJCRefType(TRANSLET_OUTPUT_SIG), null,
+      // null);
+      // domBuilder.setStart(il.append(new ASTORE(domBuilder.getIndex())));
+      //
+      // // Call startDocument on the new handler
+      // index = cpg.addInterfaceMethodref(TRANSLET_OUTPUT_INTERFACE,
+      // "startDocument", "()V");
+      // il.append(new INVOKEINTERFACE(index, 1));
+      //
+      // // Call the method that implements this result tree
+      // index = cpg.addMethodref(className, _methodName, "(" + DOM_INTF_SIG +
+      // TRANSLET_OUTPUT_SIG + ")V");
+      // il.append(new INVOKEVIRTUAL(index));
+      //
+      // // Call endDocument on the DOM handler
+      // domBuilder.setEnd(il.append(new ALOAD(domBuilder.getIndex())));
+      // index = cpg.addInterfaceMethodref(TRANSLET_OUTPUT_INTERFACE,
+      // "endDocument", "()V");
+      // il.append(new INVOKEINTERFACE(index, 1));
+      //
+      // // Push the new DOM on the stack
+      // newDom.setEnd(il.append(new ALOAD(newDom.getIndex())));
       return JExpr._null();
     }
   }
@@ -434,46 +421,16 @@ public final class ResultTreeType extends Type {
    *          An instance of NodeSetType (any)
    * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
    */
-  public void translateTo(JDefinedClass definedClass, JMethod method, NodeSetType type) {
-//    FIXME
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//    final InstructionList il = methodGen.getInstructionList();
-//
-//    // Put an extra copy of the result tree (DOM) on the stack
-//    il.append(DUP);
-//
-//    // DOM adapters containing a result tree are not initialised with
-//    // translet-type to DOM-type mapping. This must be done now for
-//    // XPath expressions and patterns to work for the iterator we create.
-//    il.append(classGen.loadTranslet()); // get names array
-//    il.append(new GETFIELD(cpg.addFieldref(TRANSLET_CLASS, NAMES_INDEX, NAMES_INDEX_SIG)));
-//    il.append(classGen.loadTranslet()); // get uris array
-//    il.append(new GETFIELD(cpg.addFieldref(TRANSLET_CLASS, URIS_INDEX, URIS_INDEX_SIG)));
-//    il.append(classGen.loadTranslet()); // get types array
-//    il.append(new GETFIELD(cpg.addFieldref(TRANSLET_CLASS, TYPES_INDEX, TYPES_INDEX_SIG)));
-//    il.append(classGen.loadTranslet()); // get namespaces array
-//    il.append(new GETFIELD(cpg.addFieldref(TRANSLET_CLASS, NAMESPACE_INDEX, NAMESPACE_INDEX_SIG)));
-//    // Pass the type mappings to the DOM adapter
-//    final int mapping = cpg.addInterfaceMethodref(DOM_INTF, "setupMapping", "([" + STRING_SIG + "[" + STRING_SIG + "[I"
-//            + "[" + STRING_SIG + ")V");
-//    il.append(new INVOKEINTERFACE(mapping, 5));
-//    il.append(DUP);
-//
-//    // Create an iterator for the root node of the DOM adapter
-//    final int iter = cpg.addInterfaceMethodref(DOM_INTF, "getIterator", "()" + NODE_ITERATOR_SIG);
-//    il.append(new INVOKEINTERFACE(iter, 1));
-  }
-  
   public JExpression compileTo(CompilerContext ctx, JExpression expr, NodeSetType type) {
     // DOM adapters containing a result tree are not initialised with
     // translet-type to DOM-type mapping. This must be done now for
     // XPath expressions and patterns to work for the iterator we create.
     // Pass the type mappings to the DOM adapter
-    ctx.currentBlock().invoke(expr, "setupMapping").arg(direct(NAMES_INDEX)).arg(direct(URIS_INDEX))
+    ctx.currentBlock().invoke(expr, SETUP_MAPPING).arg(direct(NAMES_INDEX)).arg(direct(URIS_INDEX))
         .arg(direct(TYPES_INDEX)).arg(direct(NAMESPACE_INDEX));
 
     // Create an iterator for the root node of the DOM adapter
-    return expr.invoke("getIterator");
+    return expr.invoke(GET_ITERATOR);
   }
 
   /**
@@ -482,30 +439,8 @@ public final class ResultTreeType extends Type {
    * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
    */
   public void translateTo(JDefinedClass definedClass, JMethod method, ObjectType type) {
-//    FIXME
-//    methodGen.getInstructionList().append(NOP);
-  }
-
-  /**
-   * Translates a result tree into a non-synthesized boolean. It does not push a
-   * 0 or a 1 but instead returns branchhandle list to be appended to the false
-   * list.
-   * 
-   * @param classGen
-   *          A BCEL class generator
-   * @param methodGen
-   *          A BCEL method generator
-   * @param type
-   *          An instance of BooleanType (any)
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#translateToDesynthesized
-   */
-  @Override
-  public FlowList translateToDesynthesized(JDefinedClass definedClass, JMethod method, BooleanType type) {
-    return null;
-//    FIXME
-//    final InstructionList il = methodGen.getInstructionList();
-//    translateTo(classGen, methodGen, Type.Boolean);
-//    return new FlowList(il.append(new IFEQ(null)));
+    // FIXME
+    // methodGen.getInstructionList().append(NOP);
   }
 
   /**
@@ -523,35 +458,10 @@ public final class ResultTreeType extends Type {
    * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
    */
   @Override
-  public void translateTo(JDefinedClass definedClass, JMethod method, Class<?> clazz) {
-//    FIXME
-//    final String className = clazz.getName();
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//    final InstructionList il = methodGen.getInstructionList();
-//
-//    if (className.equals("org.w3c.dom.Node")) {
-//      translateTo(classGen, methodGen, Type.NodeSet);
-//      final int index = cpg.addInterfaceMethodref(DOM_INTF, MAKE_NODE, MAKE_NODE_SIG2);
-//      il.append(new INVOKEINTERFACE(index, 2));
-//    } else if (className.equals("org.w3c.dom.NodeList")) {
-//      translateTo(classGen, methodGen, Type.NodeSet);
-//      final int index = cpg.addInterfaceMethodref(DOM_INTF, MAKE_NODE_LIST, MAKE_NODE_LIST_SIG2);
-//      il.append(new INVOKEINTERFACE(index, 2));
-//    } else if (className.equals("java.lang.Object")) {
-//      il.append(NOP);
-//    } else if (className.equals("java.lang.String")) {
-//      translateTo(classGen, methodGen, Type.String);
-//    } else {
-//      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), className);
-//      classGen.getParser().reportError(Constants.FATAL, err);
-//    }
-  }
-
-  @Override
   public JExpression compileTo(CompilerContext ctx, JExpression expr, Class<?> clazz) {
     final String className = clazz.getName();
     if (className.equals("org.w3c.dom.Node")) {
-      return invoke(expr,MAKE_NODE).arg(compileTo(ctx, expr, Type.NodeSet));
+      return invoke(expr, MAKE_NODE).arg(compileTo(ctx, expr, Type.NodeSet));
     } else if (className.equals("org.w3c.dom.NodeList")) {
       return invoke(expr, MAKE_NODE_LIST).arg(compileTo(ctx, expr, Type.NodeSet));
     } else if (className.equals("java.lang.Object")) {
@@ -566,24 +476,6 @@ public final class ResultTreeType extends Type {
   }
 
   /**
-   * Translates an object of this type to its boxed representation.
-   */
-  @Override
-  public void translateBox(JDefinedClass definedClass, JMethod method) {
-//    FIXME
-//    translateTo(classGen, methodGen, Type.Reference);
-  }
-
-  /**
-   * Translates an object of this type to its unboxed representation.
-   */
-  @Override
-  public void translateUnBox(JDefinedClass definedClass, JMethod method) {
-//    FIXME
-//    methodGen.getInstructionList().append(NOP);
-  }
-
-  /**
    * Returns the class name of an internal type's external representation.
    */
   @Override
@@ -591,13 +483,4 @@ public final class ResultTreeType extends Type {
     return DOM_INTF;
   }
 
-  @Override
-  public Instruction LOAD(int slot) {
-    return new ALOAD(slot);
-  }
-
-  @Override
-  public Instruction STORE(int slot) {
-    return new ASTORE(slot);
-  }
 }

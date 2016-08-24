@@ -21,6 +21,8 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
+import static com.sun.codemodel.JExpr.lit;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -30,6 +32,7 @@ import java.util.Set;
 
 import com.sun.codemodel.JExpression;
 
+import de.lyca.xalan.xsltc.DOM;
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.NodeType;
@@ -54,45 +57,41 @@ final class CastExpr extends Expression {
 
   static {
     // Possible type conversions between internal types
-    InternalTypeMap.put(
-            Type.Boolean,
-            new HashSet<>(Arrays
-                    .asList(new Type[] { Type.Boolean, Type.Real, Type.String, Type.Reference, Type.Object })));
+    InternalTypeMap.put(Type.Boolean,
+        new HashSet<>(Arrays.asList(new Type[] { Type.Boolean, Type.Real, Type.String, Type.Reference, Type.Object })));
 
     InternalTypeMap.put(
-            Type.Real,
-            new HashSet<>(Arrays.asList(new Type[] { Type.Real, Type.Int, Type.Boolean, Type.String, Type.Reference,
-                    Type.Object })));
+        Type.Real,
+        new HashSet<>(Arrays.asList(new Type[] { Type.Real, Type.Int, Type.Boolean, Type.String, Type.Reference,
+            Type.Object })));
 
     InternalTypeMap.put(
-            Type.Int,
-            new HashSet<>(Arrays.asList(new Type[] { Type.Int, Type.Real, Type.Boolean, Type.String, Type.Reference,
-                    Type.Object })));
+        Type.Int,
+        new HashSet<>(Arrays.asList(new Type[] { Type.Int, Type.Real, Type.Boolean, Type.String, Type.Reference,
+            Type.Object })));
+
+    InternalTypeMap.put(Type.String,
+        new HashSet<>(Arrays.asList(new Type[] { Type.String, Type.Boolean, Type.Real, Type.Reference, Type.Object })));
 
     InternalTypeMap.put(
-            Type.String,
-            new HashSet<>(Arrays
-                    .asList(new Type[] { Type.String, Type.Boolean, Type.Real, Type.Reference, Type.Object })));
+        Type.NodeSet,
+        new HashSet<>(Arrays.asList(new Type[] { Type.NodeSet, Type.Boolean, Type.Real, Type.String, Type.Node,
+            Type.Reference, Type.Object })));
 
     InternalTypeMap.put(
-            Type.NodeSet,
-            new HashSet<>(Arrays.asList(new Type[] { Type.NodeSet, Type.Boolean, Type.Real, Type.String, Type.Node,
-                    Type.Reference, Type.Object })));
+        Type.Node,
+        new HashSet<>(Arrays.asList(new Type[] { Type.Node, Type.Boolean, Type.Real, Type.String, Type.NodeSet,
+            Type.Reference, Type.Object })));
 
     InternalTypeMap.put(
-            Type.Node,
-            new HashSet<>(Arrays.asList(new Type[] { Type.Node, Type.Boolean, Type.Real, Type.String, Type.NodeSet,
-                    Type.Reference, Type.Object })));
+        Type.ResultTree,
+        new HashSet<>(Arrays.asList(new Type[] { Type.ResultTree, Type.Boolean, Type.Real, Type.String, Type.NodeSet,
+            Type.Reference, Type.Object })));
 
     InternalTypeMap.put(
-            Type.ResultTree,
-            new HashSet<>(Arrays.asList(new Type[] { Type.ResultTree, Type.Boolean, Type.Real, Type.String,
-                    Type.NodeSet, Type.Reference, Type.Object })));
-
-    InternalTypeMap.put(
-            Type.Reference,
-            new HashSet<>(Arrays.asList(new Type[] { Type.Reference, Type.Boolean, Type.Int, Type.Real, Type.String,
-                    Type.Node, Type.NodeSet, Type.ResultTree, Type.Object })));
+        Type.Reference,
+        new HashSet<>(Arrays.asList(new Type[] { Type.Reference, Type.Boolean, Type.Int, Type.Real, Type.String,
+            Type.Node, Type.NodeSet, Type.ResultTree, Type.Object })));
 
     InternalTypeMap.put(Type.Object, new HashSet<>(Arrays.asList(new Type[] { Type.String })));
 
@@ -178,83 +177,24 @@ final class CastExpr extends Expression {
     throw new TypeCheckError(new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, tleft.toString(), _type.toString()));
   }
 
-//  @Override
-//  public JExpression compile(CompilerContext ctx) {
-//    final Type ltype = _left.getType();
-//    JExpression left = _left.compile(ctx);// TODO .invoke("getStringValue");
-//    if (!_type.identicalTo(ltype) && ltype instanceof NodeSetType) {
-//      Expression expr = _left;
-//      if (expr instanceof CastExpr) {
-//        expr = ((CastExpr) expr).getExpr();
-//      }
-//      if (!(expr instanceof VariableRefBase)) {
-//        // ltype.translateTo(definedClass, method, _type);
-//        return left.invoke("setStartNode").arg(ctx.currentNode()).invoke("next");
-//        // _left.startIterator(definedClass, method);
-//        // il.append(method.loadContextNode());
-//        // il.append(method.setStartNode());
-//
-//      }
-//    }
-//    return left;
-//  }
-
   @Override
-  public JExpression compile(CompilerContext ctx) {
+  public JExpression toJExpression(CompilerContext ctx) {
     final Type ltype = _left.getType();
-    JExpression left = _left.compile(ctx);
-    if (!_type.identicalTo(ltype)) {
-      left = _left.startIterator(ctx, left);
-      left = ltype.compileTo(ctx, left, _type);
-      // ltype.translateTo(classGen, methodGen, _type);
+    // This is a special case for the self:: axis. Instead of letting
+    // the Step object create an iterator that we cast back to a single
+    // node, we simply ask the DOM for the node type.
+    if (_typeTest) {
+      return ctx.currentDom().invoke(DOM.GET_EXPANDED_TYPE_ID).arg(ctx.currentNode())
+          .eq(lit(((Step) _left).getNodeType()));
+    } else {
+
+      JExpression left = _left.toJExpression(ctx);
+      if (!_type.identicalTo(ltype)) {
+        left = _left.startIterator(ctx, left);
+        left = ltype.compileTo(ctx, left, _type);
+      }
+      return left;
     }
-    return left;
   }
 
-  @Override
-  public void translateDesynthesized(CompilerContext ctx) {
-    // FIXME
-//    FlowList fl;
-//    final Type ltype = _left.getType();
-//
-//    // This is a special case for the self:: axis. Instead of letting
-//    // the Step object create and iterator that we cast back to a single
-//    // node, we simply ask the DOM for the node type.
-//    if (_typeTest) {
-//      final ConstantPoolGen cpg = classGen.getConstantPool();
-//      final InstructionList il = methodGen.getInstructionList();
-//
-//      final int idx = cpg.addInterfaceMethodref(DOM_INTF, "getExpandedTypeID", "(I)I");
-//      il.append(new SIPUSH((short) ((Step) _left).getNodeType()));
-//      il.append(methodGen.loadDOM());
-//      il.append(methodGen.loadContextNode());
-//      il.append(new INVOKEINTERFACE(idx, 2));
-//      _falseList.add(il.append(new IF_ICMPNE(null)));
-//    } else {
-//
-//      _left.translate(classGen, methodGen);
-//      if (_type != ltype) {
-//        _left.startIterator(classGen, methodGen);
-//        if (_type instanceof BooleanType) {
-//          fl = ltype.translateToDesynthesized(classGen, methodGen, _type);
-//          if (fl != null) {
-//            _falseList.append(fl);
-//          }
-//        } else {
-//          ltype.translateTo(classGen, methodGen, _type);
-//        }
-//      }
-//    }
-  }
-
-  @Override
-  public void translate(CompilerContext ctx) {
-    // FIXME
-//    final Type ltype = _left.getType();
-//    _left.translate(classGen, methodGen);
-//    if (_type.identicalTo(ltype) == false) {
-//      _left.startIterator(classGen, methodGen);
-//      ltype.translateTo(classGen, methodGen, _type);
-//    }
-  }
 }

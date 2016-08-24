@@ -21,11 +21,14 @@
 
 package de.lyca.xalan.xsltc.compiler.util;
 
-import org.apache.bcel.generic.Instruction;
+import static de.lyca.xalan.xsltc.compiler.Constants.FATAL;
+import static de.lyca.xalan.xsltc.compiler.util.ErrorMsg.DATA_CONVERSION_ERR;
 
-import com.sun.codemodel.JDefinedClass;
-import com.sun.codemodel.JMethod;
+import com.sun.codemodel.JExpr;
+import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JType;
+
+import de.lyca.xalan.xsltc.compiler.Constants;
 
 /**
  * @author Jacek Ambroziak
@@ -46,18 +49,8 @@ public final class VoidType extends Type {
   }
 
   @Override
-  public String toSignature() {
-    return "V";
-  }
-
-  @Override
   public JType toJCType() {
     return JCM.VOID; // should never be called
-  }
-
-  @Override
-  public Instruction POP() {
-    return NOP;
   }
 
   /**
@@ -67,14 +60,14 @@ public final class VoidType extends Type {
    * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
    */
   @Override
-  public void translateTo(JDefinedClass definedClass, JMethod method, Type type) {
-//    FIXME
-//    if (type == Type.String) {
-//      translateTo(classGen, methodGen, (StringType) type);
-//    } else {
-//      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), type.toString());
-//      classGen.getParser().reportError(Constants.FATAL, err);
-//    }
+  public JExpression compileTo(CompilerContext ctx, JExpression expr, Type type) {
+    if (type == Type.String) {
+      return compileTo(ctx, expr, (StringType) type);
+    } else {
+      final ErrorMsg err = new ErrorMsg(DATA_CONVERSION_ERR, toString(), type.toString());
+      ctx.xsltc().getParser().reportError(FATAL, err);
+      return expr;
+    }
   }
 
   /**
@@ -82,10 +75,8 @@ public final class VoidType extends Type {
    * 
    * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
    */
-  public void translateTo(JDefinedClass definedClass, JMethod method, StringType type) {
-//    FIXME
-//    final InstructionList il = methodGen.getInstructionList();
-//    il.append(new PUSH(classGen.getConstantPool(), ""));
+  public JExpression compileTo(CompilerContext ctx, JExpression expr, StringType type) {
+    return JExpr.lit("");
   }
 
   /**
@@ -93,11 +84,12 @@ public final class VoidType extends Type {
    * "void" can be converted to this class.
    */
   @Override
-  public void translateFrom(JDefinedClass definedClass, JMethod method, Class<?> clazz) {
-//    FIXME
-//    if (!clazz.getName().equals("void")) {
-//      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), clazz.getName());
-//      classGen.getParser().reportError(Constants.FATAL, err);
-//    }
+  public JExpression compileFrom(CompilerContext ctx, JExpression expr, Class<?> clazz) {
+    if (!clazz.getName().equals("void")) {
+      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), clazz.getName());
+      ctx.xsltc().getParser().reportError(Constants.FATAL, err);
+    }
+    return expr;
   }
+
 }

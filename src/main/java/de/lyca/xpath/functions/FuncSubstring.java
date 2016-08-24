@@ -53,7 +53,7 @@ public class FuncSubstring extends Function3Args {
     XMLString substr;
 
     if (lenOfS1 <= 0)
-      return XString.EMPTYSTRING;
+      return XString.EMPTY;
     else {
       int startIndex;
 

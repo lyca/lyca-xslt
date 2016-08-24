@@ -24,19 +24,20 @@ package de.lyca.xalan.xsltc.compiler.util;
 import static com.sun.codemodel.JExpr._this;
 import static com.sun.codemodel.JExpr.lit;
 import static com.sun.codemodel.JOp.cond;
+import static de.lyca.xalan.xsltc.DOM.GET_STRING_VALUE_X;
+import static de.lyca.xalan.xsltc.DOM.MAKE_NODE;
+import static de.lyca.xalan.xsltc.DOM.MAKE_NODE_LIST;
+import static de.lyca.xalan.xsltc.compiler.Constants.FATAL;
+import static de.lyca.xalan.xsltc.compiler.Constants.NODE_ITERATOR;
+import static de.lyca.xml.dtm.DTMAxisIterator.NEXT;
 
-import org.apache.bcel.generic.ALOAD;
-import org.apache.bcel.generic.ASTORE;
-import org.apache.bcel.generic.Instruction;
 import org.w3c.dom.NodeList;
 
-import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JInvocation;
-import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JType;
+import com.sun.codemodel.JVar;
 
-import de.lyca.xalan.xsltc.compiler.FlowList;
 import de.lyca.xalan.xsltc.runtime.BasisLibrary;
 import de.lyca.xml.dtm.DTMAxisIterator;
 
@@ -59,42 +60,18 @@ public final class NodeSetType extends Type {
   }
 
   @Override
-  public String toSignature() {
-    return NODE_ITERATOR_SIG;
-  }
-
-  @Override
   public JType toJCType() {
     return JCM._ref(DTMAxisIterator.class);
   }
 
   /**
-   * Translates a node-set into an object of internal type <code>type</code>.
-   * The translation to int is undefined since node-sets are always converted to
-   * reals in arithmetic expressions.
+   * Compiles a node-set expression into an expresion of internal type
+   * <code>type</code>. The compilation to int is undefined since node-sets are
+   * always converted to reals in arithmetic expressions.
    * 
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo(CompilerContext,
+   *      JExpression, Type)
    */
-  @Override
-  public void translateTo(JDefinedClass definedClass, JMethod method, Type type) {
-    if (type == Type.String) {
-      translateTo(definedClass, method, (StringType) type);
-    } else if (type == Type.Boolean) {
-      translateTo(definedClass, method, (BooleanType) type);
-    } else if (type == Type.Real) {
-      translateTo(definedClass, method, (RealType) type);
-    } else if (type == Type.Node) {
-      translateTo(definedClass, method, (NodeType) type);
-    } else if (type == Type.Reference) {
-      translateTo(definedClass, method, (ReferenceType) type);
-    } else if (type == Type.Object) {
-      translateTo(definedClass, method, (ObjectType) type);
-    } else {
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), type.toString());
-      // FIXME classGen.getParser().reportError(Constants.FATAL, err);
-    }
-  }
-
   @Override
   public JExpression compileTo(CompilerContext ctx, JExpression expr, Type type) {
     if (type == Type.String) {
@@ -112,43 +89,14 @@ public final class NodeSetType extends Type {
     } else {
       final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), type.toString());
       ctx.xsltc().getParser().reportError(FATAL, err);
-      return null;
+      return expr;
     }
   }
-  
+
   /**
    * Translates an external Java Class into an internal type. Expects the Java
    * object on the stack, pushes the internal type
    */
-  @Override
-  public void translateFrom(JDefinedClass definedClass, JMethod method, Class<?> clazz) {
-//    FIXME
-//    final InstructionList il = methodGen.getInstructionList();
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//    if (clazz.getName().equals("org.w3c.dom.NodeList")) {
-//      // w3c NodeList is on the stack from the external Java function call.
-//      // call BasisFunction to consume NodeList and leave Iterator on
-//      // the stack.
-//      il.append(classGen.loadTranslet()); // push translet onto stack
-//      il.append(methodGen.loadDOM()); // push DOM onto stack
-//      final int convert = cpg.addMethodref(BASIS_LIBRARY_CLASS, "nodeList2Iterator", "(" + "Lorg/w3c/dom/NodeList;"
-//              + TRANSLET_INTF_SIG + DOM_INTF_SIG + ")" + NODE_ITERATOR_SIG);
-//      il.append(new INVOKESTATIC(convert));
-//    } else if (clazz.getName().equals("org.w3c.dom.Node")) {
-//      // w3c Node is on the stack from the external Java function call.
-//      // call BasisLibrary.node2Iterator() to consume Node and leave
-//      // Iterator on the stack.
-//      il.append(classGen.loadTranslet()); // push translet onto stack
-//      il.append(methodGen.loadDOM()); // push DOM onto stack
-//      final int convert = cpg.addMethodref(BASIS_LIBRARY_CLASS, "node2Iterator", "(" + "Lorg/w3c/dom/Node;"
-//              + TRANSLET_INTF_SIG + DOM_INTF_SIG + ")" + NODE_ITERATOR_SIG);
-//      il.append(new INVOKESTATIC(convert));
-//    } else {
-//      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), clazz.getName());
-//      classGen.getParser().reportError(Constants.FATAL, err);
-//    }
-  }
-
   @Override
   public JExpression compileFrom(CompilerContext ctx, JExpression expr, Class<?> clazz) {
     if (clazz == NodeList.class) {
@@ -167,18 +115,8 @@ public final class NodeSetType extends Type {
    * node-set is "true" if non-empty and "false" otherwise. Notice that the
    * function getFirstNode() is called in translateToDesynthesized().
    * 
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo(CompilerContext, JExpression, Type)
    */
-  public void translateTo(JDefinedClass definedClass, JMethod method, BooleanType type) {
-//    FIXME
-//    final InstructionList il = methodGen.getInstructionList();
-//    final FlowList falsel = translateToDesynthesized(classGen, methodGen, type);
-//    il.append(ICONST_1);
-//    final BranchHandle truec = il.append(new GOTO(null));
-//    falsel.backPatch(il.append(ICONST_0));
-//    truec.setTarget(il.append(NOP));
-  }
-
   public JExpression compileTo(CompilerContext ctx, JExpression expr, BooleanType type) {
     JInvocation next = expr.invoke(NEXT);
     return next.gte(lit(0));
@@ -188,38 +126,19 @@ public final class NodeSetType extends Type {
    * Translates a node-set into a string. The string value of a node-set is
    * value of its first element.
    * 
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo(CompilerContext, JExpression, Type)
    */
-  public void translateTo(JDefinedClass definedClass, JMethod method, StringType type) {
-//    FIXME
-//    final InstructionList il = methodGen.getInstructionList();
-//    getFirstNode(classGen, methodGen);
-//    il.append(DUP);
-//    final BranchHandle falsec = il.append(new IFLT(null));
-//    Type.Node.translateTo(classGen, methodGen, type);
-//    final BranchHandle truec = il.append(new GOTO(null));
-//    falsec.setTarget(il.append(POP));
-//    il.append(new PUSH(classGen.getConstantPool(), ""));
-//    truec.setTarget(il.append(NOP));
-  }
-
   public JExpression compileTo(CompilerContext ctx, JExpression expr, StringType type) {
-    JInvocation next = expr.invoke(NEXT);
-    return cond(next.gte(lit(0)), Type.Node.compileTo(ctx, next, type), lit(""));
+    JVar var = ctx.currentBlock().decl(ctx.owner().INT, ctx.nextVar(), expr.invoke(NEXT));
+    return cond(var.gte(lit(0)), Type.Node.compileTo(ctx, var, type), lit(""));
   }
 
   /**
    * Expects a node-set on the stack and pushes a real. First the node-set is
    * converted to string, and from string to real.
    * 
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo(CompilerContext, JExpression, Type)
    */
-  public void translateTo(JDefinedClass definedClass, JMethod method, RealType type) {
-//    FIXME
-//    translateTo(classGen, methodGen, Type.String);
-//    Type.String.translateTo(classGen, methodGen, Type.Real);
-  }
-
   public JExpression compileTo(CompilerContext ctx, JExpression expr, RealType type) {
     return Type.String.compileTo(ctx, compileTo(ctx, expr, Type.String), Type.Real);
   }
@@ -227,14 +146,9 @@ public final class NodeSetType extends Type {
   /**
    * Expects a node-set on the stack and pushes a node.
    * 
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo(CompilerContext, JExpression, Type)
    */
-  public void translateTo(JDefinedClass definedClass, JMethod method, NodeType type) {
-    getFirstNode(definedClass, method);
-  }
-
   public JExpression compileTo(CompilerContext ctx, JExpression expr, NodeType type) {
-//  il.append(new INVOKEINTERFACE(cpg.addInterfaceMethodref(NODE_ITERATOR, NEXT, NEXT_SIG), 1));
     return expr.invoke(NEXT);
   }
 
@@ -242,40 +156,18 @@ public final class NodeSetType extends Type {
   /**
    * Subsume node-set into ObjectType.
    * 
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo(CompilerContext, JExpression, Type)
    */
-  public void translateTo(JDefinedClass definedClass, JMethod method, ObjectType type) {
-//    FIXME
-//    methodGen.getInstructionList().append(NOP);
-  }
-
-  /**
-   * Translates a node-set into a non-synthesized boolean. It does not push a 0
-   * or a 1 but instead returns branchhandle list to be appended to the false
-   * list.
-   * 
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#translateToDesynthesized
-   */
-  @Override
-  public FlowList translateToDesynthesized(JDefinedClass definedClass, JMethod method, BooleanType type) {
-    return null;
-//    FIXME
-//    final InstructionList il = methodGen.getInstructionList();
-//    getFirstNode(classGen, methodGen);
-//    return new FlowList(il.append(new IFLT(null)));
+  public JExpression compileTo(CompilerContext ctx, JExpression expr, ObjectType type) {
+    return expr;
   }
 
   /**
    * Expects a node-set on the stack and pushes a boxed node-set. Node sets are
    * already boxed so the translation is just a NOP.
    * 
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo(CompilerContext, JExpression, Type)
    */
-  public void translateTo(JDefinedClass definedClass, JMethod method, ReferenceType type) {
-//    FIXME
-//    methodGen.getInstructionList().append(NOP);
-  }
-
   public JExpression compileTo(CompilerContext ctx, JExpression expr, ReferenceType type) {
     return expr;
   }
@@ -285,75 +177,15 @@ public final class NodeSetType extends Type {
    * Expects a node-set on the stack and pushes an object of the appropriate
    * type after coercion.
    */
-  @Override
-  public void translateTo(JDefinedClass definedClass, JMethod method, Class<?> clazz) {
-//    FIXME
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//    final InstructionList il = methodGen.getInstructionList();
-//    final String className = clazz.getName();
-//
-//    il.append(methodGen.loadDOM());
-//    il.append(SWAP);
-//
-//    if (className.equals("org.w3c.dom.Node")) {
-//      final int index = cpg.addInterfaceMethodref(DOM_INTF, MAKE_NODE, MAKE_NODE_SIG2);
-//      il.append(new INVOKEINTERFACE(index, 2));
-//    } else if (className.equals("org.w3c.dom.NodeList") || className.equals("java.lang.Object")) {
-//      final int index = cpg.addInterfaceMethodref(DOM_INTF, MAKE_NODE_LIST, MAKE_NODE_LIST_SIG2);
-//      il.append(new INVOKEINTERFACE(index, 2));
-//    } else if (className.equals("java.lang.String")) {
-//      final int next = cpg.addInterfaceMethodref(NODE_ITERATOR, "next", "()I");
-//      final int index = cpg.addInterfaceMethodref(DOM_INTF, GET_NODE_VALUE, "(I)" + STRING_SIG);
-//
-//      // Get next node from the iterator
-//      il.append(new INVOKEINTERFACE(next, 1));
-//      // Get the node's string value (from the DOM)
-//      il.append(new INVOKEINTERFACE(index, 2));
-//
-//    } else {
-//      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), className);
-//      classGen.getParser().reportError(Constants.FATAL, err);
-//    }
-  }
-
   public JExpression compileTo(CompilerContext ctx, JExpression expr, Class<?> clazz) {
-    if (String.class.equals(clazz)) {
-      return compileTo(ctx, expr, Type.String);
-    } else if (org.w3c.dom.Node.class.equals(clazz)) {
+    if (clazz == org.w3c.dom.Node.class) {
       return ctx.currentDom().invoke(MAKE_NODE).arg(expr);
-    } else if (NodeList.class.equals(clazz)) {
+    } else if (clazz == NodeList.class || clazz == Object.class) {
       return ctx.currentDom().invoke(MAKE_NODE_LIST).arg(expr);
+    } else if (clazz == String.class) {
+      return ctx.currentDom().invoke(GET_STRING_VALUE_X).arg(expr.invoke(NEXT));
     }
     return expr;
-  }
-
-  /**
-   * Some type conversions require gettting the first node from the node-set.
-   * This function is defined to avoid code repetition.
-   */
-  private void getFirstNode(JDefinedClass definedClass, JMethod method) {
-//    FIXME
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//    final InstructionList il = methodGen.getInstructionList();
-//    il.append(new INVOKEINTERFACE(cpg.addInterfaceMethodref(NODE_ITERATOR, NEXT, NEXT_SIG), 1));
-  }
-
-  /**
-   * Translates an object of this type to its boxed representation.
-   */
-  @Override
-  public void translateBox(JDefinedClass definedClass, JMethod method) {
-//    FIXME
-//    translateTo(classGen, methodGen, Type.Reference);
-  }
-
-  /**
-   * Translates an object of this type to its unboxed representation.
-   */
-  @Override
-  public void translateUnBox(JDefinedClass definedClass, JMethod method) {
-//    FIXME
-//    methodGen.getInstructionList().append(NOP);
   }
 
   /**
@@ -364,13 +196,4 @@ public final class NodeSetType extends Type {
     return NODE_ITERATOR;
   }
 
-  @Override
-  public Instruction LOAD(int slot) {
-    return new ALOAD(slot);
-  }
-
-  @Override
-  public Instruction STORE(int slot) {
-    return new ASTORE(slot);
-  }
 }

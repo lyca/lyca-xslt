@@ -105,9 +105,6 @@ public final class SAXImpl extends SAX2DTM2 implements DOMEnhancedForDTM, DOMBui
   /* DOMBuilder fields END */
   /* ------------------------------------------------------------------- */
 
-  // empty String for null attribute values
-  private final static String EMPTYSTRING = "";
-
   // empty iterator to be returned when there are no children
   private final static DTMAxisIterator EMPTYITERATOR = EmptyIterator.getInstance();
   // The number of expanded names
@@ -1001,7 +998,7 @@ public final class SAXImpl extends SAX2DTM2 implements DOMEnhancedForDTM, DOMBui
       case DTM.DOCUMENT_NODE:
       case DTM.TEXT_NODE:
       case DTM.COMMENT_NODE:
-        return EMPTYSTRING;
+        return "";
       case DTM.NAMESPACE_NODE:
         return this.getLocalName(nodeh);
       default:
@@ -1018,7 +1015,7 @@ public final class SAXImpl extends SAX2DTM2 implements DOMEnhancedForDTM, DOMBui
       return "";
 
     String s;
-    return (s = getNamespaceURI(node)) == null ? EMPTYSTRING : s;
+    return (s = getNamespaceURI(node)) == null ? "" : s;
   }
 
   /**
@@ -1038,7 +1035,7 @@ public final class SAXImpl extends SAX2DTM2 implements DOMEnhancedForDTM, DOMBui
    */
   public String getAttributeValue(final int type, final int element) {
     final int attr = getAttributeNode(type, element);
-    return attr != DTM.NULL ? getStringValueX(attr) : EMPTYSTRING;
+    return attr != DTM.NULL ? getStringValueX(attr) : "";
   }
 
   /**
@@ -1628,7 +1625,7 @@ public final class SAXImpl extends SAX2DTM2 implements DOMEnhancedForDTM, DOMBui
           return name;
         case DTM.ROOT_NODE:
         case DTM.DOCUMENT_NODE:
-          return EMPTYSTRING;
+          return "";
         case DTM.TEXT_NODE:
           copyTextNode(nodeID, handler);
           return null;

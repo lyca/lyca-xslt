@@ -24,7 +24,6 @@ package de.lyca.xalan.xsltc.compiler;
 import static com.sun.codemodel.JExpr._null;
 import static com.sun.codemodel.JExpr.lit;
 import static com.sun.codemodel.JExpr.ref;
-import static de.lyca.xalan.xsltc.compiler.Constants.EMPTYSTRING;
 
 import java.io.OutputStreamWriter;
 import java.util.Properties;
@@ -155,7 +154,7 @@ final class Output extends TopLevelElement {
 
     // Get the output version
     _version = getAttribute("version");
-    if (_version.equals(Constants.EMPTYSTRING)) {
+    if (_version.isEmpty()){
       _version = null;
     } else {
       outputProperties.setProperty(OutputKeys.VERSION, _version);
@@ -163,10 +162,9 @@ final class Output extends TopLevelElement {
 
     // Get the output method - "xml", "html", "text" or <qname> (but not ncname)
     _method = getAttribute("method");
-    if (_method.equals(Constants.EMPTYSTRING)) {
+    if (_method.isEmpty()) {
       _method = null;
-    }
-    if (_method != null) {
+    } else {
       _method = _method.toLowerCase();
       if (_method.equals("xml") || _method.equals("html") || _method.equals("xhtml") || _method.equals("text")
           || XML11Char.isXML11ValidQName(_method) && _method.indexOf(":") > 0) {
@@ -178,7 +176,7 @@ final class Output extends TopLevelElement {
 
     // Get the output encoding - any value accepted here
     _encoding = getAttribute("encoding");
-    if (_encoding.equals(Constants.EMPTYSTRING)) {
+    if (_encoding.isEmpty()) {
       _encoding = null;
     } else {
       try {
@@ -195,7 +193,7 @@ final class Output extends TopLevelElement {
 
     // Should the XML header be omitted - translate to true/false
     attrib = getAttribute("omit-xml-declaration");
-    if (!attrib.equals(Constants.EMPTYSTRING)) {
+    if (!attrib.isEmpty()) {
       if (attrib.equals("yes")) {
         _omitHeader = true;
       }
@@ -204,7 +202,7 @@ final class Output extends TopLevelElement {
 
     // Add 'standalone' decaration to output - use text as is
     _standalone = getAttribute("standalone");
-    if (_standalone.equals(Constants.EMPTYSTRING)) {
+    if (_standalone.isEmpty()) {
       _standalone = null;
     } else {
       outputProperties.setProperty(OutputKeys.STANDALONE, _standalone);
@@ -212,14 +210,14 @@ final class Output extends TopLevelElement {
 
     // Get system/public identifiers for output DOCTYPE declaration
     _doctypeSystem = getAttribute("doctype-system");
-    if (_doctypeSystem.equals(Constants.EMPTYSTRING)) {
+    if (_doctypeSystem.isEmpty()) {
       _doctypeSystem = null;
     } else {
       outputProperties.setProperty(OutputKeys.DOCTYPE_SYSTEM, _doctypeSystem);
     }
 
     _doctypePublic = getAttribute("doctype-public");
-    if (_doctypePublic.equals(Constants.EMPTYSTRING)) {
+    if (_doctypePublic.isEmpty()) {
       _doctypePublic = null;
     } else {
       outputProperties.setProperty(OutputKeys.DOCTYPE_PUBLIC, _doctypePublic);
@@ -227,7 +225,7 @@ final class Output extends TopLevelElement {
 
     // Names the elements of whose text contents should be output as CDATA
     _cdata = getAttribute("cdata-section-elements");
-    if (_cdata.equals(Constants.EMPTYSTRING)) {
+    if (_cdata.isEmpty()) {
       _cdata = null;
     } else {
       final StringBuilder expandedNames = new StringBuilder();
@@ -248,28 +246,28 @@ final class Output extends TopLevelElement {
 
     // Get the indent setting - only has effect for xml and html output
     attrib = getAttribute("indent");
-    if (!attrib.equals(EMPTYSTRING)) {
+    if (!attrib.isEmpty()) {
       if (attrib.equals("yes")) {
         _indent = true;
       }
       outputProperties.setProperty(OutputKeys.INDENT, attrib);
-    } else if (_method != null && _method.equals("html")) {
+    } else if ("html".equals(_method)) {
       _indent = true;
     }
 
     // indent-amount: extension attribute of xsl:output
     _indentamount = getAttribute(lookupPrefix("http://xml.apache.org/xalan"), "indent-amount");
     // Hack for supporting Old Namespace URI.
-    if (_indentamount.equals(EMPTYSTRING)) {
+    if (_indentamount.isEmpty()) {
       _indentamount = getAttribute(lookupPrefix("http://xml.apache.org/xslt"), "indent-amount");
     }
-    if (!_indentamount.equals(EMPTYSTRING)) {
+    if (!_indentamount.isEmpty()) {
       outputProperties.setProperty("indent_amount", _indentamount);
     }
 
     // Get the MIME type for the output file
     _mediaType = getAttribute("media-type");
-    if (_mediaType.equals(Constants.EMPTYSTRING)) {
+    if (_mediaType.isEmpty()) {
       _mediaType = null;
     } else {
       outputProperties.setProperty(OutputKeys.MEDIA_TYPE, _mediaType);
@@ -335,7 +333,7 @@ final class Output extends TopLevelElement {
     body.assign(ref("_doctypeSystem"), _doctypeSystem == null ? _null() : lit(_doctypeSystem));
     body.assign(ref("_doctypePublic"), _doctypePublic == null ? _null() : lit(_doctypePublic));
 
-    // Add 'medye-type' decaration to output - if used
+    // Add 'media-type' decaration to output - if used
     if (_mediaType != null) {
       body.assign(ref("_mediaType"), lit(_mediaType));
     }
@@ -346,12 +344,16 @@ final class Output extends TopLevelElement {
     }
 
     // Compile code to set indent amount.
-    if (_indentamount != null && !_indentamount.equals(EMPTYSTRING)) {
+    if (_indentamount != null && !_indentamount.isEmpty()) {
       body.assign(ref("_indentamount"), lit(Integer.parseInt(_indentamount)));
     }
 
     // Forward to the translet any elements that should be output as CDATA
     if (_cdata != null) {
+      final StringTokenizer tokenizer = new StringTokenizer(_cdata);
+      while (tokenizer.hasMoreTokens()) {
+        body.invoke("addCdataElement").arg(tokenizer.nextToken());
+      }
       // final int index = cpg.addMethodref(TRANSLET_CLASS, "addCdataElement",
       // "(Ljava/lang/String;)V");
       //

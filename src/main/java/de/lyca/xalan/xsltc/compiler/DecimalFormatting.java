@@ -22,7 +22,6 @@
 package de.lyca.xalan.xsltc.compiler;
 
 import static com.sun.codemodel.JExpr._new;
-import static de.lyca.xalan.xsltc.compiler.Constants.EMPTYSTRING;
 import static de.lyca.xalan.xsltc.compiler.util.ErrorMsg.SYMBOLS_REDEF_ERR;
 
 import java.text.DecimalFormatSymbols;
@@ -44,9 +43,6 @@ import de.lyca.xml.utils.XML11Char;
  * @author Morten Jorgensen
  */
 final class DecimalFormatting extends TopLevelElement {
-
-  private static final String DFS_CLASS = "java.text.DecimalFormatSymbols";
-  private static final String DFS_SIG = "Ljava/text/DecimalFormatSymbols;";
 
   private QName _name = null;
 
@@ -73,7 +69,7 @@ final class DecimalFormatting extends TopLevelElement {
     }
     _name = parser.getQNameIgnoreDefaultNs(name);
     if (_name == null) {
-      _name = parser.getQNameIgnoreDefaultNs(EMPTYSTRING);
+      _name = parser.getQNameIgnoreDefaultNs("");
     }
 
     // Check if a set of symbols has already been registered under this name
@@ -91,47 +87,24 @@ final class DecimalFormatting extends TopLevelElement {
    */
   @Override
   public void translate(CompilerContext ctx) {
-    // FIXME
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//    final InstructionList il = methodGen.getInstructionList();
-//
-//    // DecimalFormatSymbols.<init>(Locale);
-//    // xsl:decimal-format - except for the NaN and infinity attributes.
-//    final int init = cpg.addMethodref(DFS_CLASS, "<init>", "(" + LOCALE_SIG + ")V");
-//
-//    // Push the format name on the stack for call to addDecimalFormat()
-//    il.append(classGen.loadTranslet());
-//    il.append(new PUSH(cpg, _name.toString()));
-//
-//    // Manufacture a DecimalFormatSymbols on the stack
-//    // for call to addDecimalFormat()
-//    // Use the US Locale as the default, as most of its settings
-//    // are equivalent to the default settings required of
-//    il.append(new NEW(cpg.addClass(DFS_CLASS)));
-//    il.append(DUP);
-//    il.append(new GETSTATIC(cpg.addFieldref(LOCALE_CLASS, "US", LOCALE_SIG)));
-//    il.append(new INVOKESPECIAL(init));
+    // Manufacture a DecimalFormatSymbols on the stack
+    // for call to addDecimalFormat()
+    // Use the US Locale as the default, as most of its settings
+    // are equivalent to the default settings required of
     JClass decimalFormatSymbols = ctx.ref(DecimalFormatSymbols.class);
     JClass locale = ctx.ref(Locale.class);
-    JVar dfs = ctx.currentBlock().decl(decimalFormatSymbols, ctx.nextDecimalFormatting(), _new(decimalFormatSymbols).arg(locale.staticRef("US")));
+    JVar dfs = ctx.currentBlock().decl(decimalFormatSymbols, ctx.nextDecimalFormatting(),
+        _new(decimalFormatSymbols).arg(locale.staticRef("US")));
     String tmp = getAttribute("NaN");
-    if (tmp == null || tmp.equals(EMPTYSTRING)) {
+    if (tmp == null || tmp.isEmpty()) {
       ctx.currentBlock().invoke(dfs, "setNaN").arg("NaN");
-//      final int nan = cpg.addMethodref(DFS_CLASS, "setNaN", "(Ljava/lang/String;)V");
-//      il.append(DUP);
-//      il.append(new PUSH(cpg, "NaN"));
-//      il.append(new INVOKEVIRTUAL(nan));
     } else {
       ctx.currentBlock().invoke(dfs, "setNaN").arg(tmp);
     }
 
     tmp = getAttribute("infinity");
-    if (tmp == null || tmp.equals(EMPTYSTRING)) {
+    if (tmp == null || tmp.isEmpty()) {
       ctx.currentBlock().invoke(dfs, "setInfinity").arg("Infinity");
-//      final int inf = cpg.addMethodref(DFS_CLASS, "setInfinity", "(Ljava/lang/String;)V");
-//      il.append(DUP);
-//      il.append(new PUSH(cpg, "Infinity"));
-//      il.append(new INVOKEVIRTUAL(inf));
     } else {
       ctx.currentBlock().invoke(dfs, "setInfinity").arg(tmp);
     }
@@ -139,63 +112,31 @@ final class DecimalFormatting extends TopLevelElement {
     final int nAttributes = _attributes.getLength();
     for (int i = 0; i < nAttributes; i++) {
       final String name = _attributes.getQName(i);
-      final String value = _attributes.getValue(i);
 
-      boolean valid = true;
-//      int method = 0;
       String method = null;
       if (name.equals("decimal-separator")) {
-        // DecimalFormatSymbols.setDecimalSeparator();
         method = "setDecimalSeparator";
-//        method = cpg.addMethodref(DFS_CLASS, "setDecimalSeparator", "(C)V");
       } else if (name.equals("grouping-separator")) {
         method = "setGroupingSeparator";
-//        method = cpg.addMethodref(DFS_CLASS, "setGroupingSeparator", "(C)V");
       } else if (name.equals("minus-sign")) {
         method = "setMinusSign";
-//        method = cpg.addMethodref(DFS_CLASS, "setMinusSign", "(C)V");
       } else if (name.equals("percent")) {
         method = "setPercent";
-//        method = cpg.addMethodref(DFS_CLASS, "setPercent", "(C)V");
       } else if (name.equals("per-mille")) {
         method = "setPerMill";
-//        method = cpg.addMethodref(DFS_CLASS, "setPerMill", "(C)V");
       } else if (name.equals("zero-digit")) {
         method = "setZeroDigit";
-//        method = cpg.addMethodref(DFS_CLASS, "setZeroDigit", "(C)V");
       } else if (name.equals("digit")) {
         method = "setDigit";
-//        method = cpg.addMethodref(DFS_CLASS, "setDigit", "(C)V");
       } else if (name.equals("pattern-separator")) {
         method = "setPatternSeparator";
-//        method = cpg.addMethodref(DFS_CLASS, "setPatternSeparator", "(C)V");
-//      } else if (name.equals("NaN")) {
-//        method = cpg.addMethodref(DFS_CLASS, "setNaN", "(Ljava/lang/String;)V");
-//        il.append(DUP);
-//        il.append(new PUSH(cpg, value));
-//        il.append(new INVOKEVIRTUAL(method));
-//        valid = false;
-//      } else if (name.equals("infinity")) {
-//        method = cpg.addMethodref(DFS_CLASS, "setInfinity", "(Ljava/lang/String;)V");
-//        il.append(DUP);
-//        il.append(new PUSH(cpg, value));
-//        il.append(new INVOKEVIRTUAL(method));
-//        valid = false;
       } else {
-        valid = false;
+        continue;
       }
-
-      if (valid) {
-        ctx.currentBlock().invoke(dfs, method).arg(JExpr.lit(value.charAt(0)));
-//        il.append(DUP);
-//        il.append(new PUSH(cpg, value.charAt(0)));
-//        il.append(new INVOKEVIRTUAL(method));
-      }
-
+      final String value = _attributes.getValue(i);
+      ctx.currentBlock().invoke(dfs, method).arg(JExpr.lit(value.charAt(0)));
     }
-//
-//    final int put = cpg.addMethodref(TRANSLET_CLASS, "addDecimalFormat", "(" + STRING_SIG + DFS_SIG + ")V");
-//    il.append(new INVOKEVIRTUAL(put));
+
     ctx.currentBlock().invoke("addDecimalFormat").arg(_name.toString()).arg(dfs);
   }
 
@@ -205,40 +146,18 @@ final class DecimalFormatting extends TopLevelElement {
    * entry may be overridden by later nameless xsl:decimal-format instructions.
    */
   public static void translateDefaultDFS(CompilerContext ctx) {
-    // FIXME
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//    final InstructionList il = methodGen.getInstructionList();
-//    final int init = cpg.addMethodref(DFS_CLASS, "<init>", "(" + LOCALE_SIG + ")V");
-//
-//    // Push the format name, which is empty, on the stack
-//    // for call to addDecimalFormat()
-//    il.append(classGen.loadTranslet());
-//    il.append(new PUSH(cpg, EMPTYSTRING));
-//
-//    // Manufacture a DecimalFormatSymbols on the stack for
-//    // call to addDecimalFormat(). Use the US Locale as the
-//    // default, as most of its settings are equivalent to
-//    // the default settings required of xsl:decimal-format -
-//    // except for the NaN and infinity attributes.
-//    il.append(new NEW(cpg.addClass(DFS_CLASS)));
-//    il.append(DUP);
-//    il.append(new GETSTATIC(cpg.addFieldref(LOCALE_CLASS, "US", LOCALE_SIG)));
-//    il.append(new INVOKESPECIAL(init));
+    // Manufacture a DecimalFormatSymbols on the stack for
+    // call to addDecimalFormat(). Use the US Locale as the
+    // default, as most of its settings are equivalent to
+    // the default settings required of xsl:decimal-format -
+    // except for the NaN and infinity attributes.
     JClass decimalFormatSymbols = ctx.ref(DecimalFormatSymbols.class);
     JClass locale = ctx.ref(Locale.class);
-    JVar dfs = ctx.currentBlock().decl(decimalFormatSymbols, "__$dfs$__", _new(decimalFormatSymbols).arg(locale.staticRef("US")));
-//    final int nan = cpg.addMethodref(DFS_CLASS, "setNaN", "(Ljava/lang/String;)V");
-//    il.append(DUP);
-//    il.append(new PUSH(cpg, "NaN"));
-//    il.append(new INVOKEVIRTUAL(nan));
+    JVar dfs = ctx.currentBlock().decl(decimalFormatSymbols, "__$dfs$__",
+        _new(decimalFormatSymbols).arg(locale.staticRef("US")));
     ctx.currentBlock().invoke(dfs, "setNaN").arg("NaN");
-//    final int inf = cpg.addMethodref(DFS_CLASS, "setInfinity", "(Ljava/lang/String;)V");
-//    il.append(DUP);
-//    il.append(new PUSH(cpg, "Infinity"));
-//    il.append(new INVOKEVIRTUAL(inf));
     ctx.currentBlock().invoke(dfs, "setInfinity").arg("Infinity");
-//    final int put = cpg.addMethodref(TRANSLET_CLASS, "addDecimalFormat", "(" + STRING_SIG + DFS_SIG + ")V");
-//    il.append(new INVOKEVIRTUAL(put));
     ctx.currentBlock().invoke("addDecimalFormat").arg("").arg(dfs);
   }
+
 }

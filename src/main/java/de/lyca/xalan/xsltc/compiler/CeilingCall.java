@@ -37,15 +37,8 @@ final class CeilingCall extends FunctionCall {
   }
 
   @Override
-  public JExpression compile(CompilerContext ctx) {
-    return ctx.ref(Math.class).staticInvoke("ceil").arg(argument().compile(ctx));
+  public JExpression toJExpression(CompilerContext ctx) {
+    return ctx.ref(Math.class).staticInvoke("ceil").arg(argument().toJExpression(ctx));
   }
 
-  @Override
-  public void translate(CompilerContext ctx) {
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//    final InstructionList il = methodGen.getInstructionList();
-//    argument(0).translate(classGen, methodGen);
-//    il.append(new INVOKESTATIC(cpg.addMethodref(MATH_CLASS, "ceil", "(D)D")));
-  }
 }

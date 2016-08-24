@@ -29,9 +29,10 @@ import static com.sun.codemodel.JExpr.lit;
 import static com.sun.codemodel.JExpr.newArray;
 import static com.sun.codemodel.JExpr.refthis;
 import static com.sun.codemodel.JMod.PUBLIC;
+import static de.lyca.xalan.xsltc.DOM.GET_ITERATOR;
+import static de.lyca.xalan.xsltc.DOM.SET_FILTER;
 import static de.lyca.xalan.xsltc.compiler.Constants.DOCUMENT_PNAME;
 import static de.lyca.xalan.xsltc.compiler.Constants.DOM_FIELD;
-import static de.lyca.xalan.xsltc.compiler.Constants.EMPTYSTRING;
 import static de.lyca.xalan.xsltc.compiler.Constants.ERROR;
 import static de.lyca.xalan.xsltc.compiler.Constants.HASIDCALL_INDEX;
 import static de.lyca.xalan.xsltc.compiler.Constants.ITERATOR_PNAME;
@@ -53,6 +54,7 @@ import static de.lyca.xalan.xsltc.compiler.Constants.URIS_INDEX;
 import static de.lyca.xalan.xsltc.compiler.Constants.XHTML_URI;
 import static de.lyca.xalan.xsltc.compiler.Constants.XSLT_URI;
 import static de.lyca.xalan.xsltc.compiler.util.ErrorMsg.MULTIPLE_STYLESHEET_ERR;
+import static de.lyca.xml.dtm.DTMAxisIterator.NEXT;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -248,18 +250,17 @@ public final class Stylesheet extends SyntaxTreeNode {
    * Output method for this stylesheet (must be set to one of the constants
    * defined below).
    */
-  private int _outputMethod = UNKNOWN_OUTPUT;
+  private OutputMethod _outputMethod = OutputMethod.UNKNOWN;
 
   // Output method constants
-  public static final int UNKNOWN_OUTPUT = 0;
-  public static final int XML_OUTPUT = 1;
-  public static final int HTML_OUTPUT = 2;
-  public static final int TEXT_OUTPUT = 3;
+  public enum OutputMethod {
+    UNKNOWN, XML, HTML, TEXT, XHTML
+  }
 
   /**
    * Return the output method
    */
-  public int getOutputMethod() {
+  public OutputMethod getOutputMethod() {
     return _outputMethod;
   }
 
@@ -271,11 +272,13 @@ public final class Stylesheet extends SyntaxTreeNode {
       final String method = _lastOutputElement.getOutputMethod();
       if (method != null) {
         if (method.equals("xml")) {
-          _outputMethod = XML_OUTPUT;
+          _outputMethod = OutputMethod.XML;
         } else if (method.equals("html")) {
-          _outputMethod = HTML_OUTPUT;
+          _outputMethod = OutputMethod.HTML;
         } else if (method.equals("text")) {
-          _outputMethod = TEXT_OUTPUT;
+          _outputMethod = OutputMethod.TEXT;
+        } else if (method.equals("xhtml")) {
+          _outputMethod = OutputMethod.XHTML;
         }
       }
     }
@@ -516,7 +519,7 @@ public final class Stylesheet extends SyntaxTreeNode {
    */
   @Override
   protected void addPrefixMapping(String prefix, String uri) {
-    if (prefix.equals(EMPTYSTRING) && uri.equals(XHTML_URI))
+    if (prefix.isEmpty() && uri.equals(XHTML_URI))
       return;
     super.addPrefixMapping(prefix, uri);
   }
@@ -558,7 +561,7 @@ public final class Stylesheet extends SyntaxTreeNode {
 
     /*
      * // Make sure the XSL version set in this stylesheet if ((_version ==
-     * null) || (_version.equals(EMPTYSTRING))) { reportError(this, parser,
+     * null) || (_version.isEmpty())) { reportError(this, parser,
      * ErrorMsg.REQUIRED_ATTR_ERR,"version"); } // Verify that the version is
      * 1.0 and nothing else else if (!_version.equals("1.0")) {
      * reportError(this, parser, ErrorMsg.XSL_VERSION_ERR, _version); }
@@ -640,7 +643,7 @@ public final class Stylesheet extends SyntaxTreeNode {
 
   public void processModes() {
     if (_defaultMode == null) {
-      _defaultMode = new Mode(null, this, Constants.EMPTYSTRING);
+      _defaultMode = new Mode(null, this, "");
     }
     _defaultMode.processPatterns();
     for (final Mode mode : _modes.values()) {
@@ -658,7 +661,7 @@ public final class Stylesheet extends SyntaxTreeNode {
   public Mode getMode(QName modeName) {
     if (modeName == null) {
       if (_defaultMode == null) {
-        _defaultMode = new Mode(null, this, EMPTYSTRING);
+        _defaultMode = new Mode(null, this, "");
       }
       return _defaultMode;
     } else {
@@ -1009,7 +1012,7 @@ public final class Stylesheet extends SyntaxTreeNode {
     JBlock body = topLevel.body();
     ctx.pushBlock(body);
     // Define and initialize 'current' variable with the root node
-    JVar current = body.decl(ctx.owner().INT, "current", invoke(document, "getIterator").invoke("next"));
+    JVar current = body.decl(ctx.owner().INT, "current", invoke(document, GET_ITERATOR).invoke(NEXT));
     ctx.pushNode(current);
 
     // Create a new list containing variables/params + keys
@@ -1056,7 +1059,7 @@ public final class Stylesheet extends SyntaxTreeNode {
         new JType[] { ctx.ref(DOM.class), ctx.owner().INT, ctx.owner().INT });
     if (stripSpace != null && stripSpace.type() == ctx.owner().BOOLEAN) {
 //      JFieldVar _dom = definedClass.fields().get(DOM_FIELD);
-      body.invoke(document, "setFilter").arg(_this());
+      body.invoke(document, SET_FILTER).arg(_this());
     }
     ctx.popNode();
     ctx.popBlock();
@@ -1174,7 +1177,7 @@ public final class Stylesheet extends SyntaxTreeNode {
     }
 
     // continue with globals initialization
-    JVar current = block.decl(ctx.owner().INT, "current", invoke(document, "getIterator").invoke("next"));
+    JVar current = block.decl(ctx.owner().INT, "current", invoke(document, GET_ITERATOR).invoke(NEXT));
 
     // Transfer the output settings to the output post-processor
     block.invoke("transferOutputSettings").arg(serializationHandler);

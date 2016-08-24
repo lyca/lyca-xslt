@@ -23,10 +23,9 @@ package de.lyca.xalan.xsltc.compiler;
 
 import static de.lyca.xalan.xsltc.compiler.Constants.FATAL;
 import static de.lyca.xalan.xsltc.compiler.util.ErrorMsg.NOT_IMPLEMENTED_ERR;
+import static de.lyca.xml.dtm.DTMAxisIterator.SET_START_NODE;
 
 import java.util.List;
-
-import org.apache.bcel.generic.InstructionHandle;
 
 import com.sun.codemodel.JExpression;
 
@@ -50,16 +49,6 @@ abstract class Expression extends SyntaxTreeNode {
    * <code>typeCheck()</code>.
    */
   protected Type _type;
-
-  /**
-   * Instruction handles that comprise the true list.
-   */
-  protected FlowList _trueList = new FlowList();
-
-  /**
-   * Instruction handles that comprise the false list.
-   */
-  protected FlowList _falseList = new FlowList();
 
   public Type getType() {
     return _type;
@@ -107,7 +96,7 @@ abstract class Expression extends SyntaxTreeNode {
    * list is saved and restored.
    * @param ctx TODO
    */
-  public JExpression compile(CompilerContext ctx) {
+  public JExpression toJExpression(CompilerContext ctx) {
     return null;
     // FIXME
 //    final InstructionList result, save = methodGen.getInstructionList();
@@ -145,7 +134,7 @@ abstract class Expression extends SyntaxTreeNode {
       expr = ((CastExpr) expr).getExpr();
     }
     if (!(expr instanceof VariableRefBase)) {
-      return iter.invoke("setStartNode").arg(ctx.currentNode());
+      return iter.invoke(SET_START_NODE).arg(ctx.currentNode());
     }
     return iter;
   }
@@ -169,22 +158,6 @@ abstract class Expression extends SyntaxTreeNode {
  // FIXME
 //    final InstructionList il = methodGen.getInstructionList();
 //    _falseList.add(il.append(new IFEQ(null)));
-  }
-
-  public FlowList getFalseList() {
-    return _falseList;
-  }
-
-  public FlowList getTrueList() {
-    return _trueList;
-  }
-
-  public void backPatchFalseList(InstructionHandle ih) {
-    _falseList.backPatch(ih);
-  }
-
-  public void backPatchTrueList(InstructionHandle ih) {
-    _trueList.backPatch(ih);
   }
 
   /**

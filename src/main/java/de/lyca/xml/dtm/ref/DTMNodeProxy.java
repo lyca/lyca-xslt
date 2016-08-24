@@ -69,9 +69,6 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
   /** The DTM node handle. */
   int node;
 
-  /** The return value as Empty String. */
-  private static final String EMPTYSTRING = "";
-
   /** The DOMImplementation object */
   static final DOMImplementation implementation = new DTMNodeProxyImplementation();
 
@@ -1033,7 +1030,7 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
 
     final DTMNamedNodeMap map = new DTMNamedNodeMap(dtm, node);
     final Node node = map.getNamedItem(name);
-    return null == node ? EMPTYSTRING : node.getNodeValue();
+    return null == node ? "" : node.getNodeValue();
   }
 
   /**
@@ -1134,7 +1131,7 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
     if (n != DTM.NULL) {
       retNode = dtm.getNode(n);
     }
-    return null == retNode ? EMPTYSTRING : retNode.getNodeValue();
+    return null == retNode ? "" : retNode.getNodeValue();
   }
 
   /**

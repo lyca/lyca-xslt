@@ -27,6 +27,7 @@ import java.util.ListIterator;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
+import com.sun.codemodel.JExpr;
 import com.sun.codemodel.JExpression;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
@@ -86,77 +87,77 @@ final class AttributeValueTemplate extends AttributeValue {
 
       if (t.length() == 1) {
         switch (t.charAt(0)) {
-          case '{':
-            switch (state) {
-              case OUT_EXPR:
-                lookahead = tokenizer.nextToken();
-                if (lookahead.equals("{")) {
-                  buffer.append(lookahead); // replace {{ by {
-                  lookahead = null;
-                } else {
-                  buffer.append(DELIMITER);
-                  state = IN_EXPR;
-                }
-                break;
-              case IN_EXPR:
-              case IN_EXPR_SQUOTES:
-              case IN_EXPR_DQUOTES:
-                reportError(getParent(), parser, ErrorMsg.ATTR_VAL_TEMPLATE_ERR, text);
-                break;
+        case '{':
+          switch (state) {
+          case OUT_EXPR:
+            lookahead = tokenizer.nextToken();
+            if (lookahead.equals("{")) {
+              buffer.append(lookahead); // replace {{ by {
+              lookahead = null;
+            } else {
+              buffer.append(DELIMITER);
+              state = IN_EXPR;
             }
             break;
-          case '}':
-            switch (state) {
-              case OUT_EXPR:
-                lookahead = tokenizer.nextToken();
-                if (lookahead.equals("}")) {
-                  buffer.append(lookahead); // replace }} by }
-                  lookahead = null;
-                } else {
-                  reportError(getParent(), parser, ErrorMsg.ATTR_VAL_TEMPLATE_ERR, text);
-                }
-                break;
-              case IN_EXPR:
-                buffer.append(DELIMITER);
-                state = OUT_EXPR;
-                break;
-              case IN_EXPR_SQUOTES:
-              case IN_EXPR_DQUOTES:
-                buffer.append(t);
-                break;
+          case IN_EXPR:
+          case IN_EXPR_SQUOTES:
+          case IN_EXPR_DQUOTES:
+            reportError(getParent(), parser, ErrorMsg.ATTR_VAL_TEMPLATE_ERR, text);
+            break;
+          }
+          break;
+        case '}':
+          switch (state) {
+          case OUT_EXPR:
+            lookahead = tokenizer.nextToken();
+            if (lookahead.equals("}")) {
+              buffer.append(lookahead); // replace }} by }
+              lookahead = null;
+            } else {
+              reportError(getParent(), parser, ErrorMsg.ATTR_VAL_TEMPLATE_ERR, text);
             }
             break;
-          case '\'':
-            switch (state) {
-              case IN_EXPR:
-                state = IN_EXPR_SQUOTES;
-                break;
-              case IN_EXPR_SQUOTES:
-                state = IN_EXPR;
-                break;
-              case OUT_EXPR:
-              case IN_EXPR_DQUOTES:
-                break;
-            }
+          case IN_EXPR:
+            buffer.append(DELIMITER);
+            state = OUT_EXPR;
+            break;
+          case IN_EXPR_SQUOTES:
+          case IN_EXPR_DQUOTES:
             buffer.append(t);
             break;
-          case '\"':
-            switch (state) {
-              case IN_EXPR:
-                state = IN_EXPR_DQUOTES;
-                break;
-              case IN_EXPR_DQUOTES:
-                state = IN_EXPR;
-                break;
-              case OUT_EXPR:
-              case IN_EXPR_SQUOTES:
-                break;
-            }
-            buffer.append(t);
+          }
+          break;
+        case '\'':
+          switch (state) {
+          case IN_EXPR:
+            state = IN_EXPR_SQUOTES;
             break;
-          default:
-            buffer.append(t);
+          case IN_EXPR_SQUOTES:
+            state = IN_EXPR;
             break;
+          case OUT_EXPR:
+          case IN_EXPR_DQUOTES:
+            break;
+          }
+          buffer.append(t);
+          break;
+        case '\"':
+          switch (state) {
+          case IN_EXPR:
+            state = IN_EXPR_DQUOTES;
+            break;
+          case IN_EXPR_DQUOTES:
+            state = IN_EXPR;
+            break;
+          case OUT_EXPR:
+          case IN_EXPR_SQUOTES:
+            break;
+          }
+          buffer.append(t);
+          break;
+        default:
+          buffer.append(t);
+          break;
         }
       } else {
         buffer.append(t);
@@ -211,69 +212,26 @@ final class AttributeValueTemplate extends AttributeValue {
   }
 
   @Override
-  public JExpression compile(CompilerContext ctx) {
-    if (elementCount() == 1) {
-      final Expression exp = (Expression) elementAt(0);
-      return exp.compile(ctx);
-    } else {
+  public JExpression toJExpression(CompilerContext ctx) {
+    switch (elementCount()) {
+    case 0:
+      return JExpr.lit("");
+    case 1:
+      return ((Expression) elementAt(0)).toJExpression(ctx);
+    default:
       JExpression stringBuilder = _new(ctx.ref(StringBuilder.class));
       final ListIterator<SyntaxTreeNode> elements = elements();
       while (elements.hasNext()) {
         final Expression exp = (Expression) elements.next();
-        stringBuilder = stringBuilder.invoke("append").arg(exp.compile(ctx));
+        JExpression string = exp.toJExpression(ctx);
+        stringBuilder = stringBuilder.invoke("append").arg(string);
       }
       return stringBuilder.invoke("toString");
-
-      // final ConstantPoolGen cpg = classGen.getConstantPool();
-      // final InstructionList il = methodGen.getInstructionList();
-      // final int initBuffer = cpg.addMethodref(STRING_BUILDER_CLASS, "<init>",
-      // "()V");
-      // final Instruction append = new
-      // INVOKEVIRTUAL(cpg.addMethodref(STRING_BUILDER_CLASS, "append", "(" +
-      // STRING_SIG
-      // + ")" + STRING_BUILDER_SIG));
-      //
-      // final int toString = cpg.addMethodref(STRING_BUILDER_CLASS, "toString",
-      // "()" + STRING_SIG);
-      // il.append(new NEW(cpg.addClass(STRING_BUILDER_CLASS)));
-      // il.append(DUP);
-      // il.append(new INVOKESPECIAL(initBuffer));
-      // // StringBuilder is on the stack
-      // final ListIterator<SyntaxTreeNode> elements = elements();
-      // while (elements.hasNext()) {
-      // final Expression exp = (Expression) elements.next();
-      // exp.translate(classGen, methodGen);
-      // il.append(append);
-      // }
-      // il.append(new INVOKEVIRTUAL(toString));
     }
   }
 
   @Override
   public void translate(CompilerContext ctx) {
-// FIXME
-//    if (elementCount() == 1) {
-//      final Expression exp = (Expression) elementAt(0);
-//      exp.translate(classGen, methodGen);
-//    } else {
-//      final ConstantPoolGen cpg = classGen.getConstantPool();
-//      final InstructionList il = methodGen.getInstructionList();
-//      final int initBuffer = cpg.addMethodref(STRING_BUILDER_CLASS, "<init>", "()V");
-//      final Instruction append = new INVOKEVIRTUAL(cpg.addMethodref(STRING_BUILDER_CLASS, "append", "(" + STRING_SIG
-//              + ")" + STRING_BUILDER_SIG));
-//
-//      final int toString = cpg.addMethodref(STRING_BUILDER_CLASS, "toString", "()" + STRING_SIG);
-//      il.append(new NEW(cpg.addClass(STRING_BUILDER_CLASS)));
-//      il.append(DUP);
-//      il.append(new INVOKESPECIAL(initBuffer));
-//      // StringBuilder is on the stack
-//      final ListIterator<SyntaxTreeNode> elements = elements();
-//      while (elements.hasNext()) {
-//        final Expression exp = (Expression) elements.next();
-//        exp.translate(classGen, methodGen);
-//        il.append(append);
-//      }
-//      il.append(new INVOKEVIRTUAL(toString));
-//    }
   }
+
 }

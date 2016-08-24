@@ -31,8 +31,10 @@ import static com.sun.codemodel.JExpr.newArray;
 import static com.sun.codemodel.JMod.FINAL;
 import static com.sun.codemodel.JMod.PUBLIC;
 import static com.sun.codemodel.JMod.STATIC;
+import static de.lyca.xalan.xsltc.DOM.GET_AXIS_ITERATOR;
 import static de.lyca.xalan.xsltc.compiler.Constants.DOCUMENT_PNAME;
 import static de.lyca.xalan.xsltc.compiler.Constants.TRANSLET_PNAME;
+import static de.lyca.xml.dtm.DTMAxisIterator.SET_START_NODE;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -231,7 +233,7 @@ final class Sort extends Instruction implements Closure {
   }
 
   public JExpression compileSelect(CompilerContext ctx) {
-    return _select.compile(ctx);
+    return _select.toJExpression(ctx);
   }
 
   /**
@@ -276,13 +278,13 @@ final class Sort extends Instruction implements Closure {
     JClass dtmAxisIterator = ctx.ref(DTMAxisIterator.class);
     if (nodeSet == null) { // apply-templates default
       final JClass axis = ctx.ref(Axis.class);
-      ctx.currentBlock().decl(dtmAxisIterator, ctx.nextTmpIterator(), ctx.currentDom().invoke("getAxisIterator").arg(axis.staticRef(Axis.CHILD.name())));
+      ctx.currentBlock().decl(dtmAxisIterator, ctx.nextTmpIterator(), ctx.currentDom().invoke(GET_AXIS_ITERATOR).arg(axis.staticRef(Axis.CHILD.name())));
 //      final int children = cpg.addInterfaceMethodref(DOM_INTF, "getAxisIterator", "(Lde/lyca/xml/dtm/Axis;)" + NODE_ITERATOR_SIG);
 //      il.append(methodGen.loadDOM());
 //      il.append(factory.createFieldAccess("de.lyca.xml.dtm.Axis", Axis.CHILD.name(), Type.Axis.toJCType(), org.apache.bcel.Constants.GETSTATIC));
 //      il.append(new INVOKEINTERFACE(children, 2));
     } else {
-      ctx.currentBlock().decl(dtmAxisIterator, ctx.nextTmpIterator(), nodeSet.compile(ctx));
+      ctx.currentBlock().decl(dtmAxisIterator, ctx.nextTmpIterator(), nodeSet.toJExpression(ctx));
 //      nodeSet.translate(ctx);
     }
 
@@ -343,7 +345,7 @@ final class Sort extends Instruction implements Closure {
     JArray sortOrderArray = newArray(stringClass);
     for (int level = 0; level < nsorts; level++) {
       final Sort sort = sortObjects.get(level);
-      sortOrderArray.add(sort._order.compile(ctx));
+      sortOrderArray.add(sort._order.toJExpression(ctx));
     }
 //    JVar sortOrderRef = ctx.currentBlock().decl(stringArray, "sort_order_tmp", sortOrderArray);
 
@@ -364,7 +366,7 @@ final class Sort extends Instruction implements Closure {
     JArray sortTypeArray = newArray(stringClass);
     for (int level = 0; level < nsorts; level++) {
       final Sort sort = sortObjects.get(level);
-      sortTypeArray.add(sort._dataType.compile(ctx));
+      sortTypeArray.add(sort._dataType.toJExpression(ctx));
     }
 //    JVar sortTypeRef = ctx.currentBlock().decl(stringArray, "sort_type_tmp", sortTypeArray);
 
@@ -384,7 +386,7 @@ final class Sort extends Instruction implements Closure {
     JArray sortLangArray = newArray(stringClass);
     for (int level = 0; level < nsorts; level++) {
       final Sort sort = sortObjects.get(level);
-      sortLangArray.add(sort._lang.compile(ctx));
+      sortLangArray.add(sort._lang.toJExpression(ctx));
     }
 //    JVar sortLangRef = ctx.currentBlock().decl(stringArray, "sort_lang_tmp", sortLangArray);
 
@@ -404,7 +406,7 @@ final class Sort extends Instruction implements Closure {
     JArray sortCaseOrderArray = newArray(stringClass);
     for (int level = 0; level < nsorts; level++) {
       final Sort sort = sortObjects.get(level);
-      sortCaseOrderArray.add(sort._caseOrder.compile(ctx));
+      sortCaseOrderArray.add(sort._caseOrder.toJExpression(ctx));
     }
 //    JVar sortCaseOrderRef = ctx.currentBlock().decl(stringArray, "sort_case_tmp", sortCaseOrderArray);
 
@@ -451,7 +453,7 @@ final class Sort extends Instruction implements Closure {
 
         final VariableBase var = varRef.getVariable();
 
-        ctx.currentBlock().assign(nsrf.ref(var.getEscapedName()), var._select.compile(ctx));
+        ctx.currentBlock().assign(nsrf.ref(var.getEscapedName()), var._select.toJExpression(ctx));
         // Store variable in new closure
 //        il.append(DUP);
 //        il.append(var.loadInstruction());
@@ -461,7 +463,7 @@ final class Sort extends Instruction implements Closure {
       }
     }
     String currentTmpIterator = ctx.currentTmpIterator();
-    JVar iterator = ctx.currentBlock().decl(dtmAxisIterator, ctx.nextTmpIterator(), _new(sortingIterator).arg(direct(currentTmpIterator)).arg(nsrf).invoke("setStartNode").arg(ctx.currentNode()));
+    JVar iterator = ctx.currentBlock().decl(dtmAxisIterator, ctx.nextTmpIterator(), _new(sortingIterator).arg(direct(currentTmpIterator)).arg(nsrf).invoke(SET_START_NODE).arg(ctx.currentNode()));
     return iterator;
   }
 
@@ -693,7 +695,7 @@ final class Sort extends Instruction implements Closure {
     // FIXME
     // String NodeSortRecord.extractValueFromDOM(DOM dom, int current, int
     // level, AbstractTranslet translet, int last);
-    JMethod extractValueFromDOM = sortCtx.method(JMod.PUBLIC | JMod.FINAL, String.class, "extractValueFromDOM");
+    JMethod extractValueFromDOM = sortCtx.method(JMod.PUBLIC | JMod.FINAL, String.class, "extractValueFromDOM")._throws(TransletException.class);
     sortCtx.param(DOM.class, DOCUMENT_PNAME);
     JVar currentParam = sortCtx.param(int.class, "current");
     JVar levelParam = sortCtx.param(int.class, "level");
@@ -711,7 +713,10 @@ final class Sort extends Instruction implements Closure {
       JSwitch _switch = sortCtx.currentBlock()._switch(levelParam);
       for (int level = 0; level < levels; level++) {
         final Sort sort = sortObjects.get(level);
-        _switch._case(lit(level)).body()._return(sort.compileSelect(sortCtx));
+        JBlock body = _switch._case(lit(level)).body();
+        sortCtx.pushBlock(body);
+        body._return(sort.compileSelect(sortCtx));
+        sortCtx.popBlock();
       }
       // Will never be reached
       _switch._default().body()._return(lit(""));

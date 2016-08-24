@@ -22,6 +22,7 @@
 package de.lyca.xalan.xsltc.compiler;
 
 import static de.lyca.xalan.xsltc.compiler.Constants.ITERATOR_PNAME;
+import static de.lyca.xml.dtm.DTMAxisIterator.GET_LAST;
 
 import com.sun.codemodel.JExpr;
 import com.sun.codemodel.JExpression;
@@ -51,7 +52,7 @@ final class LastCall extends FunctionCall {
   }
 
   @Override
-  public JExpression compile(CompilerContext ctx) {
+  public JExpression toJExpression(CompilerContext ctx) {
     if (ctx.ref(NodeSortRecord.class).isAssignableFrom(ctx.clazz())) {
       return ctx.param("last");
     }
@@ -60,25 +61,9 @@ final class LastCall extends FunctionCall {
     }
     // FIXME
     if ("iterator0".equals(ctx.currentTmpIterator())) {
-      return ctx.param(ITERATOR_PNAME).invoke("getLast");
+      return ctx.param(ITERATOR_PNAME).invoke(GET_LAST);
     }
-    return JExpr.direct(ctx.currentTmpIterator()).invoke("getLast");
+    return JExpr.direct(ctx.currentTmpIterator()).invoke(GET_LAST);
   }
 
-  @Override
-  public void translate(CompilerContext ctx) {
- // FIXME
-//    final InstructionList il = methodGen.getInstructionList();
-//
-//    if (methodGen instanceof CompareGenerator) {
-//      il.append(((CompareGenerator) methodGen).loadLastNode());
-//    } else if (methodGen instanceof TestGenerator) {
-//      il.append(new ILOAD(LAST_INDEX));
-//    } else {
-//      final ConstantPoolGen cpg = classGen.getConstantPool();
-//      final int getLast = cpg.addInterfaceMethodref(NODE_ITERATOR, "getLast", "()I");
-//      il.append(methodGen.loadIterator());
-//      il.append(new INVOKEINTERFACE(getLast, 1));
-//    }
-  }
 }

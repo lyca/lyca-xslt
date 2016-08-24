@@ -25,9 +25,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import org.apache.bcel.generic.Type;
-
-import de.lyca.xalan.xsltc.compiler.Constants;
 import de.lyca.xml.utils.XML11Char;
 
 /**
@@ -37,7 +34,7 @@ import de.lyca.xml.utils.XML11Char;
 public final class Util {
   private static char filesep;
 
-  private static final Map<String, String> KEYWORDS = new HashMap();
+  private static final Map<String, String> KEYWORDS = new HashMap<>();
   static {
     KEYWORDS.put("abstract", "$abstract");
     KEYWORDS.put("assert", "$assert");
@@ -159,10 +156,6 @@ public final class Util {
     return name;
   }
 
-  public static Type getJCRefType(String signature) {
-    return Type.getType(signature);
-  }
-
   public static String internalName(String cname) {
     return cname.replace('.', filesep);
   }
@@ -226,7 +219,7 @@ public final class Util {
 
   public static String getPrefix(String qname) {
     final int index = qname.lastIndexOf(':');
-    return index > 0 ? qname.substring(0, index) : Constants.EMPTYSTRING;
+    return index > 0 ? qname.substring(0, index) : "";
   }
 
   /**
@@ -245,7 +238,7 @@ public final class Util {
    * Checks if the string is valid list of qnames
    */
   public static boolean isValidQNames(String str) {
-    if (str != null && !str.equals(Constants.EMPTYSTRING)) {
+    if (str != null && !str.isEmpty()) {
       final StringTokenizer tokens = new StringTokenizer(str);
       while (tokens.hasMoreTokens()) {
         if (!XML11Char.isXML11ValidQName(tokens.nextToken()))

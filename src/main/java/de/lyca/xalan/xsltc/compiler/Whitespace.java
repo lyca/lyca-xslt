@@ -25,6 +25,7 @@ import static com.sun.codemodel.JExpr.FALSE;
 import static com.sun.codemodel.JExpr.TRUE;
 import static com.sun.codemodel.JExpr.invoke;
 import static com.sun.codemodel.JExpr.lit;
+import static de.lyca.xalan.xsltc.DOM.GET_NAMESPACE_NAME;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -87,7 +88,7 @@ final class Whitespace extends TopLevelElement {
         _namespace = element.substring(0, colon);
         _element = element.substring(colon + 1, element.length());
       } else {
-        _namespace = Constants.EMPTYSTRING;
+        _namespace = "";
         _element = element;
       }
 
@@ -96,7 +97,7 @@ final class Whitespace extends TopLevelElement {
 
       // Get the strip/preserve type; either "NS:EL", "NS:*" or "*"
       if (_element.equals("*")) {
-        if (_namespace == Constants.EMPTYSTRING) {
+        if (_namespace == "") {
           _type = RULE_ALL; // Strip/preserve _all_ elements
           _priority += 2; // Lowest priority
         } else {
@@ -157,7 +158,7 @@ final class Whitespace extends TopLevelElement {
     }
 
     final StringTokenizer list = new StringTokenizer(_elementList);
-    final StringBuilder elements = new StringBuilder(Constants.EMPTYSTRING);
+    final StringBuilder elements = new StringBuilder("");
 
     while (list.hasMoreElements()) {
       final String token = list.nextToken();
@@ -348,7 +349,7 @@ final class Whitespace extends TopLevelElement {
       // Handle elements="ns:*" type rule
       if (rule.getStrength() == RULE_NAMESPACE) {
         // Returns the namespace for a node in the DOM
-        JExpression namespaceRule = invoke(dom, "getNamespaceName").arg(node).invoke("compareTo")
+        JExpression namespaceRule = invoke(dom, GET_NAMESPACE_NAME).arg(node).invoke("compareTo")
             .arg(rule.getNamespace()).eq(lit(0));
 
         if (rule.getAction() == STRIP_SPACE) {
@@ -362,7 +363,7 @@ final class Whitespace extends TopLevelElement {
         // Create the QName for the element
         final Parser parser = xsltc.getParser();
         QName qname;
-        if (rule.getNamespace() != Constants.EMPTYSTRING) {
+        if (rule.getNamespace() != "") {
           qname = parser.getQName(rule.getNamespace(), null, rule.getElement());
         } else {
           qname = parser.getQName(rule.getElement());

@@ -188,7 +188,7 @@ final class SymbolTable {
 
   public String lookupNamespace(String prefix) {
     if (_current == null)
-      return Constants.EMPTYSTRING;
+      return "";
     return _current.lookupNamespace(prefix);
   }
 
@@ -246,7 +246,7 @@ final class SymbolTable {
         final String prefix = tokens.nextToken();
         final String uri;
         if (prefix.equals("#default")) {
-          uri = lookupNamespace(Constants.EMPTYSTRING);
+          uri = lookupNamespace("");
         } else {
           uri = lookupNamespace(prefix);
         }
@@ -280,7 +280,7 @@ final class SymbolTable {
         final String prefix = tokens.nextToken();
         final String uri;
         if (prefix.equals("#default")) {
-          uri = lookupNamespace(Constants.EMPTYSTRING);
+          uri = lookupNamespace("");
         } else {
           uri = lookupNamespace(prefix);
         }

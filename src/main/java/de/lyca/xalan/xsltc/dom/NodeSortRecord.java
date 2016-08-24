@@ -148,7 +148,7 @@ public abstract class NodeSortRecord {
    * element. The value is extracted from the DOM if it is not already in our
    * sort key vector.
    */
-  private final Comparable stringValue(int level) {
+  private final Comparable stringValue(int level) throws TransletException {
     // Get value from our array if possible
     if (_scanned <= level) {
       final AbstractTranslet translet = _settings.getTranslet();
@@ -164,7 +164,7 @@ public abstract class NodeSortRecord {
     return (Comparable) _values[level];
   }
 
-  private final Double numericValue(int level) {
+  private final Double numericValue(int level) throws TransletException {
     // Get value from our vector if possible
     if (_scanned <= level) {
       final AbstractTranslet translet = _settings.getTranslet();
@@ -192,7 +192,7 @@ public abstract class NodeSortRecord {
    * 
    * !!!!MUST OPTIMISE - THIS IS REALLY, REALLY SLOW!!!!
    */
-  public int compareTo(NodeSortRecord other) {
+  public int compareTo(NodeSortRecord other) throws TransletException {
     int cmp, level;
     final int[] sortOrder = _settings.getSortOrders();
     final int levels = _settings.getSortOrders().length;
@@ -229,6 +229,6 @@ public abstract class NodeSortRecord {
   /**
    * Extract the sort value for a level of this key.
    */
-  public abstract String extractValueFromDOM(DOM dom, int current, int level, AbstractTranslet translet, int last);
+  public abstract String extractValueFromDOM(DOM dom, int current, int level, AbstractTranslet translet, int last) throws TransletException;
 
 }

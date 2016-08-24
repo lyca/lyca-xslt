@@ -48,7 +48,7 @@ final class NumberCall extends FunctionCall {
   }
 
   @Override
-  public JExpression compile(CompilerContext ctx) {
+  public JExpression toJExpression(CompilerContext ctx) {
     JExpression expr;
     Type targ;
     if (argumentCount() == 0) {
@@ -56,7 +56,7 @@ final class NumberCall extends FunctionCall {
       targ = Type.Node;
     } else {
       final Expression arg = argument();
-      expr = arg.startIterator(ctx, arg.compile(ctx));
+      expr = arg.startIterator(ctx, arg.toJExpression(ctx));
       targ = arg.getType();
     }
 

@@ -38,23 +38,9 @@ final class GenerateIdCall extends FunctionCall {
   }
 
   @Override
-  public JExpression compile(CompilerContext ctx) {
-    JExpression arg = argumentCount() == 0 ? ctx.currentNode() : argument().compile(ctx);
+  public JExpression toJExpression(CompilerContext ctx) {
+    JExpression arg = argumentCount() == 0 ? ctx.currentNode() : argument().toJExpression(ctx);
     return ctx.ref(BasisLibrary.class).staticInvoke("generate_idF").arg(arg);
   }
 
-  @Override
-  public void translate(CompilerContext ctx) {
- // FIXME
-//    final InstructionList il = methodGen.getInstructionList();
-//    if (argumentCount() == 0) {
-//      il.append(methodGen.loadContextNode());
-//    } else { // one argument
-//      argument().translate(definedClass, method);
-//    }
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//    il.append(new INVOKESTATIC(cpg.addMethodref(BASIS_LIBRARY_CLASS, "generate_idF",
-//    // reuse signature
-//            GET_NODE_NAME_SIG)));
-  }
 }

@@ -100,7 +100,7 @@ public class XMLStringFactoryImpl extends XMLStringFactory {
    */
   @Override
   public XMLString emptystr() {
-    return XString.EMPTYSTRING;
+    return XString.EMPTY;
   }
 
 }

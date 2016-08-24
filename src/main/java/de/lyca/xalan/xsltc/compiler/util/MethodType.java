@@ -88,27 +88,6 @@ public final class MethodType extends Type {
   }
 
   @Override
-  public String toSignature() {
-    return toSignature("");
-  }
-
-  /**
-   * Returns the signature of this method that results by adding
-   * <code>lastArgSig</code> to the end of the argument list.
-   */
-  public String toSignature(String lastArgSig) {
-    final StringBuilder buffer = new StringBuilder();
-    buffer.append('(');
-    if (_argsType != null) {
-      final int n = _argsType.size();
-      for (int i = 0; i < n; i++) {
-        buffer.append(_argsType.get(i).toSignature());
-      }
-    }
-    return buffer.append(lastArgSig).append(')').append(_resultType.toSignature()).toString();
-  }
-
-  @Override
   public JType toJCType() {
     return null; // should never be called
   }
@@ -170,4 +149,5 @@ public final class MethodType extends Type {
   public int argsCount() {
     return _argsType == null ? 0 : _argsType.size();
   }
+
 }

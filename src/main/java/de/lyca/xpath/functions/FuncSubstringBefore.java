@@ -48,6 +48,6 @@ public class FuncSubstringBefore extends Function2Args {
     final String s2 = m_arg1.execute(xctxt).str();
     final int index = s1.indexOf(s2);
 
-    return -1 == index ? XString.EMPTYSTRING : new XString(s1.substring(0, index));
+    return -1 == index ? XString.EMPTY : new XString(s1.substring(0, index));
   }
 }

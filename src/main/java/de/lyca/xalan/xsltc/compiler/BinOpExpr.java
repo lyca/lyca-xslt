@@ -100,9 +100,9 @@ final class BinOpExpr extends Expression {
   }
 
   @Override
-  public JExpression compile(CompilerContext ctx) {
-    JExpression leftExpr = _left.compile(ctx);
-    JExpression rightExpr = _right.compile(ctx);
+  public JExpression toJExpression(CompilerContext ctx) {
+    JExpression leftExpr = _left.toJExpression(ctx);
+    JExpression rightExpr = _right.toJExpression(ctx);
 
     switch (_op) {
     case PLUS:
@@ -120,36 +120,6 @@ final class BinOpExpr extends Expression {
       getParser().reportError(Constants.ERROR, msg);
       return null;
     }
-  }
-
-  @Override
-  public void translate(CompilerContext ctx) {
-// FIXME
-//    final InstructionList il = methodGen.getInstructionList();
-//
-//    _left.translate(classGen, methodGen);
-//    _right.translate(classGen, methodGen);
-//
-//    switch (_op) {
-//      case PLUS:
-//        il.append(_type.ADD());
-//        break;
-//      case MINUS:
-//        il.append(_type.SUB());
-//        break;
-//      case TIMES:
-//        il.append(_type.MUL());
-//        break;
-//      case DIV:
-//        il.append(_type.DIV());
-//        break;
-//      case MOD:
-//        il.append(_type.REM());
-//        break;
-//      default:
-//        final ErrorMsg msg = new ErrorMsg(ErrorMsg.ILLEGAL_BINARY_OP_ERR, this);
-//        getParser().reportError(Constants.ERROR, msg);
-//    }
   }
 
   @Override

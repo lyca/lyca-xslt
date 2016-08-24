@@ -26,7 +26,9 @@ import static com.sun.codemodel.JExpr._this;
 import static com.sun.codemodel.JExpr.cast;
 import static com.sun.codemodel.JExpr.invoke;
 import static com.sun.codemodel.JExpr.lit;
-import static de.lyca.xalan.xsltc.compiler.Constants.GET_NODE_VALUE_ITERATOR;
+import static de.lyca.xalan.xsltc.DOM.GET_AXIS_ITERATOR;
+import static de.lyca.xalan.xsltc.DOM.GET_NODE_VALUE_ITERATOR;
+import static de.lyca.xalan.xsltc.DOM.GET_TYPED_AXIS_ITERATOR;
 import static de.lyca.xalan.xsltc.compiler.Constants.TRANSLET_PNAME;
 
 import java.util.List;
@@ -198,7 +200,7 @@ final class Step extends RelativeLocationPath {
     return _type;
   }
 
-  public JExpression compile(CompilerContext ctx) {
+  public JExpression toJExpression(CompilerContext ctx) {
     final JClass axis = ctx.ref(Axis.class);
     JExpression invocation = null;
 
@@ -220,7 +222,7 @@ final class Step extends RelativeLocationPath {
       // and has no parent
       if (_axis == Axis.ATTRIBUTE && _nodeType != NodeTest.ATTRIBUTE && _nodeType != NodeTest.ANODE
           && !hasParentPattern() && star == 0) {
-        return invoke(ctx.currentDom(), "getTypedAxisIterator").arg(axis.staticRef(Axis.ATTRIBUTE.name()))
+        return invoke(ctx.currentDom(), GET_TYPED_AXIS_ITERATOR).arg(axis.staticRef(Axis.ATTRIBUTE.name()))
             .arg(lit(_nodeType));
       }
 
@@ -242,7 +244,7 @@ final class Step extends RelativeLocationPath {
 //            il.append(new INVOKESPECIAL(init));
           } else {
             // DOM.getAxisIterator(int axis);
-            return ctx.currentDom().invoke("getAxisIterator").arg(axis.staticRef(_axis.name()));
+            return ctx.currentDom().invoke(GET_AXIS_ITERATOR).arg(axis.staticRef(_axis.name()));
 //            final int git = cpg.addInterfaceMethodref(DOM_INTF, "getAxisIterator", "(Lde/lyca/xml/dtm/Axis;)"
 //                + NODE_ITERATOR_SIG);
 //            il.append(methodGen.loadDOM());
@@ -266,7 +268,7 @@ final class Step extends RelativeLocationPath {
           _axis = Axis.ATTRIBUTE;
         case NodeTest.ANODE:
           // DOM.getAxisIterator(int axis);
-          invocation = invoke(ctx.currentDom(), "getAxisIterator").arg(axis.staticRef(_axis.name()));
+          invocation = invoke(ctx.currentDom(), GET_AXIS_ITERATOR).arg(axis.staticRef(_axis.name()));
 //          final int git = cpg.addInterfaceMethodref(DOM_INTF, "getAxisIterator", "(Lde/lyca/xml/dtm/Axis;)"
 //              + NODE_ITERATOR_SIG);
 //          il.append(methodGen.loadDOM());
@@ -284,6 +286,7 @@ final class Step extends RelativeLocationPath {
             }
   
             final int nsType = xsltc.registerNamespace(namespace);
+            // FIXME
 //            final int ns = cpg.addInterfaceMethodref(DOM_INTF, "getNamespaceAxisIterator", "(Lde/lyca/xml/dtm/Axis;I)"
 //                + NODE_ITERATOR_SIG);
 //            il.append(methodGen.loadDOM());
@@ -295,7 +298,7 @@ final class Step extends RelativeLocationPath {
           }
         case NodeTest.ELEMENT:
           // DOM.getTypedAxisIterator(int axis, int type);
-          invocation = invoke(ctx.currentDom(), "getTypedAxisIterator").arg(axis.staticRef(_axis.name()))
+          invocation = invoke(ctx.currentDom(), GET_TYPED_AXIS_ITERATOR).arg(axis.staticRef(_axis.name()))
               .arg(lit(_nodeType));
 //          final int ty = cpg.addInterfaceMethodref(DOM_INTF, "getTypedAxisIterator", "(Lde/lyca/xml/dtm/Axis;I)"
 //              + NODE_ITERATOR_SIG);
@@ -436,7 +439,7 @@ final class Step extends RelativeLocationPath {
     int idx = 0;
 
     if (_predicates.size() == 0) {
-      return compile(ctx);
+      return toJExpression(ctx);
     } else {
       final Predicate predicate = _predicates.get(_predicates.size() - 1);
       _predicates.remove(predicate);
@@ -457,7 +460,7 @@ final class Step extends RelativeLocationPath {
         JExpression iter;
         int rType;
         if (step.isAbbreviatedDot()) {
-          iter = compile(ctx);
+          iter = toJExpression(ctx);
           rType=DOM.RETURN_CURRENT;
 //          il.append(new ICONST(DOM.RETURN_CURRENT));
         }
@@ -469,17 +472,18 @@ final class Step extends RelativeLocationPath {
             path.typeCheck(getParser().getSymbolTable());
           } catch (final TypeCheckError e) {
           }
-          iter =path.compile(ctx);
+          iter =path.toJExpression(ctx);
           rType=DOM.RETURN_PARENT;
 //          il.append(new ICONST(DOM.RETURN_PARENT));
         }
 //        predicate.translate(definedClass, method);
-        return invoke(ctx.currentDom(), GET_NODE_VALUE_ITERATOR).arg(iter).arg(lit(rType)).arg(predicate.compile(ctx)).arg(lit(((EqualityExpr)predicate.getExpr()).getOp()));
+        return invoke(ctx.currentDom(), GET_NODE_VALUE_ITERATOR).arg(iter).arg(lit(rType)).arg(predicate.toJExpression(ctx)).arg(lit(((EqualityExpr)predicate.getExpr()).getOp()));
 //        idx = cpg.addInterfaceMethodref(DOM_INTF, GET_NODE_VALUE_ITERATOR, GET_NODE_VALUE_ITERATOR_SIG);
 //        il.append(new INVOKEINTERFACE(idx, 5));
       }
       // Handle '//*[n]' expression
       else if (predicate.isNthDescendant()) {
+        // FIXME
 //        return invoke(method.listParams()[0], "getNthDescendant").arg(lit(NodeTest.ELEMENT)).arg(lit(rType)).arg(predicate.compile(definedClass, method)).arg(lit(((EqualityExpr)predicate.getExpr()).getOp()));
 
         //        il.append(methodGen.loadDOM());
@@ -492,7 +496,7 @@ final class Step extends RelativeLocationPath {
       }
       // Handle 'elem[n]' expression
       else if (predicate.isNthPositionFilter()) {
-        return _new(ctx.ref(NthIterator.class)).arg(compilePredicates(ctx)).arg(predicate.compile(ctx));
+        return _new(ctx.ref(NthIterator.class)).arg(compilePredicates(ctx)).arg(predicate.toJExpression(ctx));
 //        idx = cpg.addMethodref(NTH_ITERATOR_CLASS, "<init>", "(" + NODE_ITERATOR_SIG + "I)V");
 
         // Backwards branches are prohibited if an uninitialized object
@@ -535,7 +539,7 @@ final class Step extends RelativeLocationPath {
         // public CurrentNodeListIterator(DTMAxisIterator source, CurrentNodeListFilter filter, int currentNode, AbstractTranslet translet)
 
         JExpression recursive = compilePredicates(ctx); // recursive call
-        JExpression currentPredicate = predicate.compile(ctx);
+        JExpression currentPredicate = predicate.toJExpression(ctx);
 //        final LocalVariableGen iteratorTemp = methodGen.addLocalVariable("step_tmp1",
 //                Util.getJCRefType(NODE_ITERATOR_SIG), null, null);
 //        iteratorTemp.setStart(il.append(new ASTORE(iteratorTemp.getIndex())));

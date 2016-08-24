@@ -95,7 +95,6 @@ public class NamespaceMappings {
    */
   private final Deque<MappingRecord> m_nodeStack = new ArrayDeque<>();
 
-  private static final String EMPTYSTRING = "";
   private static final String XML_PREFIX = "xml"; // was "xmlns"
 
   /**
@@ -117,10 +116,10 @@ public class NamespaceMappings {
     // (a kludge)
 
     // Define the default namespace (initially maps to "" uri)
-    final MappingRecord emptyRecord = new MappingRecord(EMPTYSTRING, EMPTYSTRING, -1);
+    final MappingRecord emptyRecord = new MappingRecord("", "", -1);
     final Deque<MappingRecord> emptyRecordStack = new ArrayDeque<>();
     emptyRecordStack.push(emptyRecord);
-    m_namespaces.put(EMPTYSTRING, emptyRecordStack);
+    m_namespaces.put("", emptyRecordStack);
 
     // define "xml" namespace
     final MappingRecord xmlRecord = new MappingRecord(XML_PREFIX, "http://www.w3.org/XML/1998/namespace", -1);
@@ -141,7 +140,7 @@ public class NamespaceMappings {
     String uri = null;
     final Deque<MappingRecord> stack = m_namespaces.get(prefix);
     if (stack == null || stack.isEmpty()) {
-      uri = EMPTYSTRING;
+      uri = "";
     } else {
       uri = stack.peek().m_uri;
     }
@@ -325,7 +324,7 @@ public class NamespaceMappings {
 
     MappingRecord(String prefix, String uri, int depth) {
       m_prefix = prefix;
-      m_uri = uri == null ? EMPTYSTRING : uri;
+      m_uri = uri == null ? "" : uri;
       m_declarationDepth = depth;
     }
   }

@@ -25,7 +25,8 @@ import static com.sun.codemodel.JExpr._new;
 import static com.sun.codemodel.JExpr.cast;
 import static com.sun.codemodel.JExpr.direct;
 import static com.sun.codemodel.JExpr.lit;
-import static de.lyca.xalan.xsltc.compiler.Constants.EMPTYSTRING;
+import static de.lyca.xalan.xsltc.DOM.GET_OUTPUT_DOM_BUILDER;
+import static de.lyca.xalan.xsltc.DOM.GET_RESULT_TREE_FRAG;
 import static de.lyca.xalan.xsltc.compiler.Constants.NAMESPACE_INDEX;
 import static de.lyca.xalan.xsltc.compiler.Constants.NAMES_INDEX;
 import static de.lyca.xalan.xsltc.compiler.Constants.RTF_INITIAL_SIZE;
@@ -205,9 +206,9 @@ public abstract class SyntaxTreeNode {
    */
   protected String getAttribute(String qname) {
     if (_attributes == null)
-      return EMPTYSTRING;
+      return "";
     final String value = _attributes.getValue(qname);
-    return value == null || value.equals(EMPTYSTRING) ? EMPTYSTRING : value;
+    return value == null ? "" : value;
   }
 
   protected String getAttribute(String prefix, String localName) {
@@ -293,8 +294,8 @@ public abstract class SyntaxTreeNode {
     // ... but if we can't find it there we ask our parent for the mapping
     if (uri == null && _parent != null) {
       uri = _parent.lookupNamespace(prefix);
-      if (prefix == Constants.EMPTYSTRING && uri == null) {
-        uri = Constants.EMPTYSTRING;
+      if (prefix == "" && uri == null) {
+        uri = "";
       }
     }
     // ... and then we return whatever URI we've got.
@@ -327,8 +328,8 @@ public abstract class SyntaxTreeNode {
     // ... but if we can't find it there we ask our parent for the mapping
     if (_parent != null) {
       prefix = _parent.lookupPrefix(uri);
-      if (uri == Constants.EMPTYSTRING && prefix == null) {
-        prefix = Constants.EMPTYSTRING;
+      if (uri == "" && prefix == null) {
+        prefix = "";
       }
     }
     return prefix;
@@ -688,7 +689,7 @@ public abstract class SyntaxTreeNode {
     JBlock body = ctx.currentBlock();
     String nextResultTreeFrag = ctx.nextResultTreeFrag();
     JVar resultTreeFrag = body.decl(ctx.ref(DOM.class), nextResultTreeFrag,
-        dom.invoke("getResultTreeFrag").arg(lit(RTF_INITIAL_SIZE)).arg(lit(rtfType))
+        dom.invoke(GET_RESULT_TREE_FRAG).arg(lit(RTF_INITIAL_SIZE)).arg(lit(rtfType))
             .arg(lit(stylesheet.callsNodeset())));
 
 //    il.append(DUP);
@@ -700,7 +701,7 @@ public abstract class SyntaxTreeNode {
 //    il.append(DUP);
 //    il.append(methodGen.storeHandler());
     JVar resultTreeFragHandler = body.decl(ctx.ref(SerializationHandler.class), nextResultTreeFrag + "handler",
-        resultTreeFrag.invoke("getOutputDomBuilder"));
+        resultTreeFrag.invoke(GET_OUTPUT_DOM_BUILDER));
 
     ctx.pushHandler(resultTreeFragHandler);// body.invoke("pushHandler").arg(resultTreeFrag.invoke("getOutputDomBuilder"));
 //    JInvocation outputDomBuilder = invoke("peekHandler");

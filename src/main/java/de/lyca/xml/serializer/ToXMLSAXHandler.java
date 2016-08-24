@@ -15,10 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * $Id$
- */
 package de.lyca.xml.serializer;
+
+import static de.lyca.xml.serializer.SerializerConstants.XMLNS_URI;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -352,11 +351,11 @@ public final class ToXMLSAXHandler extends ToSAXHandler {
          * are just covering our butt here.
          */
         String name;
-        if (EMPTYSTRING.equals(prefix)) {
+        if ("".equals(prefix)) {
           name = "xmlns";
           addAttributeAlways(XMLNS_URI, name, name, "CDATA", uri, false);
         } else {
-          if (!EMPTYSTRING.equals(uri)) // hack for attribset16 test
+          if (!"".equals(uri)) // hack for attribset16 test
           { // that maps ns1 prefix to "" URI
             name = "xmlns:" + prefix;
 

@@ -110,7 +110,7 @@ final class ValueOf extends Instruction {
     // Otherwise, the value is a node, and the
     // dom.characters(int node, TransletOutputHandler) method can dispatch
     // the string value of the node to the output handler more efficiently.
-    JExpression select = _select.compile(ctx);
+    JExpression select = _select.toJExpression(ctx);
     if (_isString) {
       ctx.currentBlock().invoke(CHARACTERS).arg(select).arg(handler);
     } else {

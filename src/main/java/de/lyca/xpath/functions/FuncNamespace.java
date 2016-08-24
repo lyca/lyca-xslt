@@ -60,14 +60,14 @@ public class FuncNamespace extends FunctionDef1Arg {
 
         s = dtm.getNodeName(context);
         if (s.startsWith("xmlns:") || s.equals("xmlns"))
-          return XString.EMPTYSTRING;
+          return XString.EMPTY;
 
         s = dtm.getNamespaceURI(context);
       } else
-        return XString.EMPTYSTRING;
+        return XString.EMPTY;
     } else
-      return XString.EMPTYSTRING;
+      return XString.EMPTY;
 
-    return null == s ? XString.EMPTYSTRING : new XString(s);
+    return null == s ? XString.EMPTY : new XString(s);
   }
 }

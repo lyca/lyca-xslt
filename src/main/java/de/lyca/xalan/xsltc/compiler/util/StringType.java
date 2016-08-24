@@ -21,21 +21,19 @@
 
 package de.lyca.xalan.xsltc.compiler.util;
 
+import static com.sun.codemodel.JExpr._null;
 import static com.sun.codemodel.JExpr.lit;
+import static com.sun.codemodel.JOp.cond;
+import static de.lyca.xalan.xsltc.compiler.Constants.FATAL;
+import static de.lyca.xalan.xsltc.compiler.Constants.STRING_CLASS;
+import static de.lyca.xalan.xsltc.compiler.Constants.STRING_TO_REAL;
 
-import org.apache.bcel.generic.ALOAD;
-import org.apache.bcel.generic.ASTORE;
-import org.apache.bcel.generic.Instruction;
-
-import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JExpr;
 import com.sun.codemodel.JExpression;
-import com.sun.codemodel.JMethod;
-import com.sun.codemodel.JOp;
 import com.sun.codemodel.JType;
+import com.sun.codemodel.JVar;
 
 import de.lyca.xalan.xsltc.compiler.Constants;
-import de.lyca.xalan.xsltc.compiler.FlowList;
 import de.lyca.xalan.xsltc.runtime.BasisLibrary;
 
 /**
@@ -57,11 +55,6 @@ public class StringType extends Type {
   }
 
   @Override
-  public String toSignature() {
-    return "Ljava/lang/String;";
-  }
-
-  @Override
   public boolean isSimple() {
     return true;
   }
@@ -72,27 +65,13 @@ public class StringType extends Type {
   }
 
   /**
-   * Translates a string into an object of internal type <code>type</code>. The
-   * translation to int is undefined since strings are always converted to reals
-   * in arithmetic expressions.
+   * Compiles a string expression into an object of internal type
+   * <code>type</code>. The compilation to int is undefined since strings are
+   * always converted to reals in arithmetic expressions.
    * 
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo(CompilerContext,
+   *      JExpression, Type)
    */
-  @Override
-  public void translateTo(JDefinedClass definedClass, JMethod method, Type type) {
-//    FIXME
-//    if (type == Type.Boolean) {
-//      translateTo(classGen, methodGen, (BooleanType) type);
-//    } else if (type == Type.Real) {
-//      translateTo(classGen, methodGen, (RealType) type);
-//    } else if (type == Type.Reference) {
-//      translateTo(classGen, methodGen, (ReferenceType) type);
-//    } else {
-//      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), type.toString());
-//      classGen.getParser().reportError(Constants.FATAL, err);
-//    }
-  }
-
   @Override
   public JExpression compileTo(CompilerContext ctx, JExpression expr, Type type) {
     if (type == Type.Boolean) {
@@ -104,95 +83,46 @@ public class StringType extends Type {
     } else {
       final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), type.toString());
       ctx.xsltc().getParser().reportError(FATAL, err);
-      return null;
+      return expr;
     }
   }
-  
-  /**
-   * Translates a string into a synthesized boolean.
-   * 
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
-   */
-  public void translateTo(JDefinedClass definedClass, JMethod method, BooleanType type) {
-//    FIXME
-//    final InstructionList il = methodGen.getInstructionList();
-//    final FlowList falsel = translateToDesynthesized(classGen, methodGen, type);
-//    il.append(ICONST_1);
-//    final BranchHandle truec = il.append(new GOTO(null));
-//    falsel.backPatch(il.append(ICONST_0));
-//    truec.setTarget(il.append(NOP));
-  }
 
+  /**
+   * Compiles a string expression into a boolean expression.
+   * 
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo(CompilerContext,
+   *      JExpression, Type)
+   */
   public JExpression compileTo(CompilerContext ctx, JExpression expr, BooleanType type) {
     return expr.invoke("length").gt(lit(0));
   }
 
   /**
-   * Translates a string into a real by calling stringToReal() from the basis
-   * library.
+   * Compiles a string expression into a real expression by calling
+   * stringToReal() from the basis library.
    * 
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo(CompilerContext,
+   *      JExpression, Type)
    */
-  public void translateTo(JDefinedClass definedClass, JMethod method, RealType type) {
-//    FIXME
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//    final InstructionList il = methodGen.getInstructionList();
-//    il.append(new INVOKESTATIC(cpg.addMethodref(BASIS_LIBRARY_CLASS, STRING_TO_REAL, STRING_TO_REAL_SIG)));
-  }
-
   public JExpression compileTo(CompilerContext ctx, JExpression expr, RealType type) {
     return ctx.ref(BasisLibrary.class).staticInvoke(STRING_TO_REAL).arg(expr);
   }
 
   /**
-   * Translates a string into a non-synthesized boolean. It does not push a 0 or
-   * a 1 but instead returns branchhandle list to be appended to the false list.
-   * 
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#translateToDesynthesized
-   */
-  @Override
-  public FlowList translateToDesynthesized(JDefinedClass definedClass, JMethod method, BooleanType type) {
-    return null;
-//    FIXME
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//    final InstructionList il = methodGen.getInstructionList();
-//
-//    il.append(new INVOKEVIRTUAL(cpg.addMethodref(STRING_CLASS, "length", "()I")));
-//    return new FlowList(il.append(new IFEQ(null)));
-  }
-
-  /**
-   * Expects a string on the stack and pushes a boxed string. Strings are
-   * already boxed so the translation is just a NOP.
+   * Expects a string expression and returns a boxed string. As strings are
+   * already boxed so the compilation just returns the given expression.
    * 
    * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
    */
-  public void translateTo(JDefinedClass definedClass, JMethod method, ReferenceType type) {
-//    FIXME
-//    methodGen.getInstructionList().append(NOP);
-  }
-
   public JExpression compileTo(CompilerContext ctx, JExpression expr, ReferenceType type) {
     return expr;
   }
 
   /**
-   * Translates a internal string into an external (Java) string.
+   * Compiles an internal string expression into an external (Java) string.
    * 
    * @see de.lyca.xalan.xsltc.compiler.util.Type#translateFrom
    */
-  @Override
-  public void translateTo(JDefinedClass definedClass, JMethod method, Class<?> clazz) {
-//    FIXME
-//    // Is String <: clazz? I.e. clazz in { String, Object }
-//    if (clazz.isAssignableFrom(java.lang.String.class)) {
-//      methodGen.getInstructionList().append(NOP);
-//    } else {
-//      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), clazz.getName());
-//      classGen.getParser().reportError(Constants.FATAL, err);
-//    }
-  }
-
   public JExpression compileTo(CompilerContext ctx, JExpression expr, Class<?> clazz) {
     // Is String <: clazz? I.e. clazz in { String, Object }
     if (clazz.isAssignableFrom(java.lang.String.class)) {
@@ -200,61 +130,26 @@ public class StringType extends Type {
     } else {
       final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), clazz.getName());
       ctx.xsltc().getParser().reportError(Constants.FATAL, err);
-      return null;
+      return expr;
     }
   }
-  
+
   /**
    * Translates an external (primitive) Java type into a string.
    * 
    * @see de.lyca.xalan.xsltc.compiler.util.Type#translateFrom
    */
   @Override
-  public void translateFrom(JDefinedClass definedClass, JMethod method, Class<?> clazz) {
-//    FIXME
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//    final InstructionList il = methodGen.getInstructionList();
-//
-//    if (clazz.getName().equals("java.lang.String")) {
-//      // same internal representation, convert null to ""
-//      il.append(DUP);
-//      final BranchHandle ifNonNull = il.append(new IFNONNULL(null));
-//      il.append(POP);
-//      il.append(new PUSH(cpg, ""));
-//      ifNonNull.setTarget(il.append(NOP));
-//    } else {
-//      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), clazz.getName());
-//      classGen.getParser().reportError(Constants.FATAL, err);
-//    }
-  }
-
   public JExpression compileFrom(CompilerContext ctx, JExpression expr, Class<?> clazz) {
     if (String.class.equals(clazz)) {
+      JVar var = ctx.currentBlock().decl(ctx.ref(String.class), ctx.nextVar(), expr);
       // same internal representation, convert null to ""
-      return JOp.cond(expr.eq(JExpr._null()), JExpr.lit(""), expr);
+      return cond(var.eq(_null()), JExpr.lit(""), var);
     } else {
       final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), clazz.getName());
       ctx.xsltc().getParser().reportError(Constants.FATAL, err);
-      return null;
+      return expr;
     }
-  }
-
-  /**
-   * Translates an object of this type to its boxed representation.
-   */
-  @Override
-  public void translateBox(JDefinedClass definedClass, JMethod method) {
-//    FIXME
-//    translateTo(classGen, methodGen, Type.Reference);
-  }
-
-  /**
-   * Translates an object of this type to its unboxed representation.
-   */
-  @Override
-  public void translateUnBox(JDefinedClass definedClass, JMethod method) {
-//    FIXME
-//    methodGen.getInstructionList().append(NOP);
   }
 
   /**
@@ -265,13 +160,4 @@ public class StringType extends Type {
     return STRING_CLASS;
   }
 
-  @Override
-  public Instruction LOAD(int slot) {
-    return new ALOAD(slot);
-  }
-
-  @Override
-  public Instruction STORE(int slot) {
-    return new ASTORE(slot);
-  }
 }

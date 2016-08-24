@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.sun.codemodel.JExpression;
-import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JType;
 import com.sun.codemodel.JVar;
 
@@ -53,7 +52,7 @@ class VariableBase extends TopLevelElement {
   protected String _escapedName; // The escaped qname of the variable.
   protected Type _type; // The type of this variable.
   protected boolean _isLocal; // True if the variable is local.
-  protected JVar _local; // Reference to JVM variable
+  protected JVar _param; // Reference to JVM variable
   protected Expression _select; // Reference to variable expression
   protected String select; // Textual repr. of variable expr.
 
@@ -80,44 +79,30 @@ class VariableBase extends TopLevelElement {
   }
 
   /**
-   * Map this variable to a register
+   * Create the variable in the current block
    */
   public void mapRegister(CompilerContext ctx) {
-    if (_local == null) {
+    if (_param == null) {
       final String name = getEscapedName(); // TODO: namespace ?
       final JType varType = _type.toJCType();
-      _local = ctx.currentBlock().decl(varType, name);
+      _param = ctx.currentBlock().decl(varType, name);
     }
-  }
-
-  /**
-   * Remove the mapping of this variable to a register. Called when we leave the
-   * AST scope of the variable's declaration
-   */
-  public void unmapRegister(JMethod method) {
-    // FIXME
-    // if (_local != null) {
-    // _local.setEnd(methodGen.getInstructionList().getEnd());
-    // methodGen.removeLocalVariable(_local);
-    // _refs = null;
-    // _local = null;
-    // }
   }
 
   /**
    * Returns an instruction for loading the value of this variable onto the JVM
    * stack.
    */
-  public JVar loadInstruction() {
-    return _local;
+  public JVar loadParam() {
+    return _param;
   }
 
   /**
    * Returns an instruction for storing a value from the JVM stack into this
    * variable.
    */
-  public void storeInstruction(JVar instruction) {
-    _local = instruction;
+  public void storeParam(JVar param) {
+    _param = param;
   }
 
   /**
@@ -223,10 +208,14 @@ class VariableBase extends TopLevelElement {
     parseChildren(parser);
   }
 
+  /**
+   * Compile the value of the variable, which is either in an expression in a
+   * 'select' attribute, or in the variable elements body
+   */
   public JExpression compileValue(CompilerContext ctx) {
     // Compile expression is 'select' attribute if present
     if (_select != null) {
-      JExpression select = _select.compile(ctx);
+      JExpression select = _select.toJExpression(ctx);
       // Create a CachedNodeListIterator for select expressions in a variable or
       // parameter.
       if (_select.getType() instanceof NodeSetType) {
@@ -240,46 +229,8 @@ class VariableBase extends TopLevelElement {
     }
     // If neither are present then store empty string in variable
     else {
-      return lit(Constants.EMPTYSTRING);
+      return lit("");
     }
-  }
-
-  /**
-   * Compile the value of the variable, which is either in an expression in a
-   * 'select' attribute, or in the variable elements body
-   */
-  public void translateValue(CompilerContext ctx) {
-    compileValue(ctx);
-    // FIXME
-    // // Compile expression is 'select' attribute if present
-    // if (_select != null) {
-    // _select.translate(classGen, methodGen);
-    // // Create a CachedNodeListIterator for select expressions
-    // // in a variable or parameter.
-    // if (_select.getType() instanceof NodeSetType) {
-    // final ConstantPoolGen cpg = classGen.getConstantPool();
-    // final InstructionList il = methodGen.getInstructionList();
-    //
-    // final int initCNI = cpg.addMethodref(CACHED_NODE_LIST_ITERATOR_CLASS,
-    // "<init>", "(" + NODE_ITERATOR_SIG + ")V");
-    // il.append(new NEW(cpg.addClass(CACHED_NODE_LIST_ITERATOR_CLASS)));
-    // il.append(DUP_X1);
-    // il.append(SWAP);
-    //
-    // il.append(new INVOKESPECIAL(initCNI));
-    // }
-    // _select.startIterator(classGen, methodGen);
-    // }
-    // // If not, compile result tree from parameter body if present.
-    // else if (hasContents()) {
-    // compileResultTree(classGen, methodGen);
-    // }
-    // // If neither are present then store empty string in variable
-    // else {
-    // final ConstantPoolGen cpg = classGen.getConstantPool();
-    // final InstructionList il = methodGen.getInstructionList();
-    // il.append(new PUSH(cpg, Constants.EMPTYSTRING));
-    // }
   }
 
 }

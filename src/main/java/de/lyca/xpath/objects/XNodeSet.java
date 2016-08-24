@@ -214,7 +214,7 @@ public class XNodeSet extends NodeSequence {
     if (DTM.NULL != n)
       return m_dtmMgr.getDTM(n).getStringValue(n);
     else
-      return de.lyca.xpath.objects.XString.EMPTYSTRING;
+      return de.lyca.xpath.objects.XString.EMPTY;
   }
 
   /**
@@ -245,7 +245,7 @@ public class XNodeSet extends NodeSequence {
   @Override
   public XMLString xstr() {
     final int node = item(0);
-    return node != DTM.NULL ? getStringFromNode(node) : XString.EMPTYSTRING;
+    return node != DTM.NULL ? getStringFromNode(node) : XString.EMPTY;
   }
 
   /**

@@ -912,6 +912,9 @@ FunctionCall ::= FunctionName:fname LPAREN RPAREN
           else if (parser.getQNameIgnoreDefaultNs("namespace-uri").equals(fname)) {
             RESULT = new NamespaceUriCall(fname);
 	  }
+          else if (parser.getQNameIgnoreDefaultNs("document").equals(fname)) {
+            RESULT = new DocumentCall(fname, parser.EmptyArgs);
+	  }
           else {
             RESULT = new FunctionCall(fname, parser.EmptyArgs);
 	  }

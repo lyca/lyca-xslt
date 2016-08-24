@@ -21,17 +21,11 @@
 
 package de.lyca.xalan.xsltc.compiler.util;
 
-import org.apache.bcel.generic.BranchInstruction;
-import org.apache.bcel.generic.Instruction;
-
 import com.sun.codemodel.JCodeModel;
-import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JExpression;
-import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JType;
 
 import de.lyca.xalan.xsltc.compiler.Constants;
-import de.lyca.xalan.xsltc.compiler.FlowList;
 import de.lyca.xalan.xsltc.compiler.NodeTest;
 
 /**
@@ -39,7 +33,7 @@ import de.lyca.xalan.xsltc.compiler.NodeTest;
  * @author Santiago Pericas-Geertsen
  * @author Morten Jorgensen
  */
-public abstract class Type implements Constants {
+public abstract class Type {
   protected static final JCodeModel JCM = new JCodeModel();
 
   public static final Type Int = new IntType();
@@ -133,54 +127,14 @@ public abstract class Type implements Constants {
   }
 
   /**
-   * Returns the signature of an internal type's external representation.
+   * Compiles an expression of this type to an expression of type
+   * <code>type</code>. Expects an expression of the former type and returns an
+   * expression of the latter.
    */
-  public abstract String toSignature();
-
-  /**
-   * Translates an object of this type to an object of type <code>type</code>.
-   * Expects an object of the former type and pushes an object of the latter.
-   */
-  public void translateTo(JDefinedClass definedClass, JMethod method, Type type) {
-    final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), type.toString());
-//    definedClass.getParser().reportError(Constants.FATAL, err);
-  }
-
   public JExpression compileTo(CompilerContext ctx, JExpression expr, Type type) {
     final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), type.toString());
-//    definedClass.getParser().reportError(Constants.FATAL, err);
-    return null;
-  }
-  
-
-  /**
-   * Translates object of this type to an object of type <code>type</code>.
-   * Expects an object of the former type and pushes an object of the latter if
-   * not boolean. If type <code>type</code> is boolean then a branchhandle list
-   * (to be appended to the false list) is returned.
-   */
-  public FlowList translateToDesynthesized(JDefinedClass definedClass, JMethod method, Type type) {
-    return null;
-//    FIXME
-//    FlowList fl = null;
-//    if (type == Type.Boolean) {
-//      fl = translateToDesynthesized(classGen, methodGen, (BooleanType) type);
-//    } else {
-//      translateTo(classGen, methodGen, type);
-//    }
-//    return fl;
-  }
-
-  /**
-   * Translates an object of this type to an non-synthesized boolean. It does
-   * not push a 0 or a 1 but instead returns branchhandle list to be appended to
-   * the false list.
-   */
-  public FlowList translateToDesynthesized(JDefinedClass definedClass, JMethod method, BooleanType type) {
-//    FIXME
-//    final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), type.toString());
-//    classGen.getParser().reportError(Constants.FATAL, err);
-    return null;
+    ctx.xsltc().getParser().reportError(Constants.FATAL, err);
+    return expr;
   }
 
   /**
@@ -188,12 +142,6 @@ public abstract class Type implements Constants {
    * <code>clazz</code>. This method is used to translate parameters when
    * external functions are called.
    */
-  public void translateTo(JDefinedClass definedClass, JMethod method, Class<?> clazz) {
-//    FIXME
-//    final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), clazz.getClass().toString());
-//    classGen.getParser().reportError(Constants.FATAL, err);
-  }
-
   public JExpression compileTo(CompilerContext ctx, JExpression expr, Class<?> clazz) {
     final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), clazz.toString());
     ctx.xsltc().getParser().reportError(Constants.FATAL, err);
@@ -205,12 +153,6 @@ public abstract class Type implements Constants {
    * object of this type. This method is used to translate return values when
    * external functions are called.
    */
-  public void translateFrom(JDefinedClass definedClass, JMethod method, Class<?> clazz) {
-//    FIXME
-//    final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, clazz.getClass().toString(), toString());
-//    classGen.getParser().reportError(Constants.FATAL, err);
-  }
-
   public JExpression compileFrom(CompilerContext ctx, JExpression expr, Class<?> clazz) {
     final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, clazz.toString(), toString());
     ctx.xsltc().getParser().reportError(Constants.FATAL, err);
@@ -218,87 +160,10 @@ public abstract class Type implements Constants {
   }
 
   /**
-   * Translates an object of this type to its boxed representation.
-   */
-  public void translateBox(JDefinedClass definedClass, JMethod method) {
-//    FIXME
-//    final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), "[" + toString() + "]");
-//    classGen.getParser().reportError(Constants.FATAL, err);
-  }
-
-  /**
-   * Translates an object of this type to its unboxed representation.
-   */
-  public void translateUnBox(JDefinedClass definedClass, JMethod method) {
-//    FIXME
-//    final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, "[" + toString() + "]", toString());
-//    classGen.getParser().reportError(Constants.FATAL, err);
-  }
-
-  /**
    * Returns the class name of an internal type's external representation.
    */
   public String getClassName() {
-    return EMPTYSTRING;
+    return "";
   }
 
-  public Instruction ADD() {
-    return null; // should never be called
-  }
-
-  public Instruction SUB() {
-    return null; // should never be called
-  }
-
-  public Instruction MUL() {
-    return null; // should never be called
-  }
-
-  public Instruction DIV() {
-    return null; // should never be called
-  }
-
-  public Instruction REM() {
-    return null; // should never be called
-  }
-
-  public Instruction NEG() {
-    return null; // should never be called
-  }
-
-  public Instruction LOAD(int slot) {
-    return null; // should never be called
-  }
-
-  public Instruction STORE(int slot) {
-    return null; // should never be called
-  }
-
-  public Instruction POP() {
-    return POP;
-  }
-
-  public BranchInstruction GT(boolean tozero) {
-    return null; // should never be called
-  }
-
-  public BranchInstruction GE(boolean tozero) {
-    return null; // should never be called
-  }
-
-  public BranchInstruction LT(boolean tozero) {
-    return null; // should never be called
-  }
-
-  public BranchInstruction LE(boolean tozero) {
-    return null; // should never be called
-  }
-
-  public Instruction CMP(boolean less) {
-    return null; // should never be called
-  }
-
-  public Instruction DUP() {
-    return DUP; // default
-  }
 }

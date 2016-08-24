@@ -1,2 +1,2 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<out xmlns:ped="www.test.com" xmlns="testguys.com"><inner xmlns="other.com"><yyy xmlns="testguys.com"/></inner></out>
+<out xmlns="testguys.com" xmlns:ped="www.test.com"><inner xmlns="other.com"><yyy xmlns="testguys.com"/></inner></out>

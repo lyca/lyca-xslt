@@ -21,7 +21,6 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import static de.lyca.xalan.xsltc.compiler.Constants.EMPTYSTRING;
 import static de.lyca.xalan.xsltc.compiler.util.ErrorMsg.REQUIRED_ATTR_ERR;
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.StringType;
@@ -60,7 +59,7 @@ final class TransletOutput extends Instruction {
     final String append = getAttribute("append");
 
     // Verify that the filename is in fact set
-    if (filename == null || filename.equals(EMPTYSTRING)) {
+    if (filename == null || filename.isEmpty()) {
       reportError(this, parser, REQUIRED_ATTR_ERR, "file");
     }
 

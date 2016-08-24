@@ -28,12 +28,14 @@ import javax.xml.transform.stream.StreamSource;
 import de.lyca.xalan.xsltc.DOM;
 import de.lyca.xalan.xsltc.DOMCache;
 import de.lyca.xalan.xsltc.DOMEnhancedForDTM;
+import de.lyca.xalan.xsltc.StripFilter;
 import de.lyca.xalan.xsltc.TransletException;
 import de.lyca.xalan.xsltc.runtime.AbstractTranslet;
 import de.lyca.xalan.xsltc.trax.TemplatesImpl;
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xml.dtm.DTMAxisIterator;
 import de.lyca.xml.dtm.DTMManager;
+import de.lyca.xml.dtm.DTMWSFilter;
 import de.lyca.xml.dtm.ref.EmptyIterator;
 import de.lyca.xml.utils.SystemIDResolver;
 
@@ -50,7 +52,7 @@ public final class LoadDocument {
    * call
    */
   public static DTMAxisIterator documentF(Object arg1, DTMAxisIterator arg2, String xslURI, AbstractTranslet translet,
-          DOM dom) throws TransletException {
+      DOM dom) throws TransletException {
     String baseURI = null;
     final int arg2FirstNode = arg2.next();
     if (arg2FirstNode == DTMAxisIterator.END)
@@ -90,7 +92,7 @@ public final class LoadDocument {
    * documents are requested. 1 arguments arg. document(Obj) call
    */
   public static DTMAxisIterator documentF(Object arg, String xslURI, AbstractTranslet translet, DOM dom)
-          throws TransletException {
+      throws TransletException {
     try {
       if (arg instanceof String) {
         if (xslURI == null) {
@@ -138,7 +140,7 @@ public final class LoadDocument {
   }
 
   private static DTMAxisIterator document(String uri, String base, AbstractTranslet translet, DOM dom, boolean cacheDOM)
-          throws Exception {
+      throws Exception {
     try {
       final String originalUri = uri;
       final MultiDOM multiplexer = (MultiDOM) dom;
@@ -178,8 +180,9 @@ public final class LoadDocument {
         // Trust the DTMManager to pick the right parser and set up the DOM
         // correctly.
         final XSLTCDTMManager dtmManager = (XSLTCDTMManager) multiplexer.getDTMManager();
-        final DOMEnhancedForDTM enhancedDOM = (DOMEnhancedForDTM) dtmManager.getDTM(new StreamSource(uri), false, null,
-                true, false, translet.hasIdCall(), cacheDOM);
+        final DTMWSFilter wsfilter = translet instanceof StripFilter ? new DOMWSFilter(translet) : null;
+        final DOMEnhancedForDTM enhancedDOM = (DOMEnhancedForDTM) dtmManager.getDTM(new StreamSource(uri), false,
+            wsfilter, true, false, translet.hasIdCall(), cacheDOM);
         newdom = enhancedDOM;
 
         // Cache the stylesheet DOM in the Templates object
@@ -209,7 +212,7 @@ public final class LoadDocument {
   }
 
   private static DTMAxisIterator document(DTMAxisIterator arg1, String baseURI, AbstractTranslet translet, DOM dom)
-          throws Exception {
+      throws Exception {
     final UnionIterator union = new UnionIterator(dom);
     int node = DTM.NULL;
 

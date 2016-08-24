@@ -51,7 +51,7 @@ final class RealExpr extends Expression {
   }
 
   @Override
-  public JExpression compile(CompilerContext ctx) {
+  public JExpression toJExpression(CompilerContext ctx) {
     return lit(_value);
   }
 

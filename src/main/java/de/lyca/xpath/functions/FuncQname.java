@@ -51,9 +51,9 @@ public class FuncQname extends FunctionDef1Arg {
     if (DTM.NULL != context) {
       final DTM dtm = xctxt.getDTM(context);
       final String qname = dtm.getNodeNameX(context);
-      val = null == qname ? XString.EMPTYSTRING : new XString(qname);
+      val = null == qname ? XString.EMPTY : new XString(qname);
     } else {
-      val = XString.EMPTYSTRING;
+      val = XString.EMPTY;
     }
 
     return val;

@@ -21,14 +21,15 @@
 
 package de.lyca.xalan.xsltc.compiler.util;
 
-import org.apache.bcel.generic.ALOAD;
-import org.apache.bcel.generic.ASTORE;
-import org.apache.bcel.generic.Instruction;
+import static com.sun.codemodel.JExpr._null;
+import static com.sun.codemodel.JExpr.lit;
+import static com.sun.codemodel.JOp.cond;
+import static de.lyca.xalan.xsltc.compiler.Constants.FATAL;
+import static de.lyca.xalan.xsltc.compiler.util.ErrorMsg.DATA_CONVERSION_ERR;
 
-import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JExpression;
-import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JType;
+import com.sun.codemodel.JVar;
 
 /**
  * @author Todd Miller
@@ -99,32 +100,26 @@ public final class ObjectType extends Type {
   }
 
   @Override
-  public String toSignature() {
-    final StringBuilder result = new StringBuilder("L");
-    result.append(_javaClassName.replace('.', '/')).append(';');
-    return result.toString();
-  }
-
-  @Override
   public JType toJCType() {
     return JCM._ref(_clazz);
   }
 
   /**
-   * Translates a void into an object of internal type <code>type</code>. This
-   * translation is needed when calling external functions that return void.
+   * Compiles an expression into an expression of internal type
+   * <code>type</code>. This translation is needed when calling external
+   * functions that return void.
    * 
    * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
    */
   @Override
-  public void translateTo(JDefinedClass definedClass, JMethod method, Type type) {
-//    FIXME
-//    if (type == Type.String) {
-//      translateTo(classGen, methodGen, (StringType) type);
-//    } else {
-//      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), type.toString());
-//      classGen.getParser().reportError(Constants.FATAL, err);
-//    }
+  public JExpression compileTo(CompilerContext ctx, JExpression expr, Type type) {
+    if (type == Type.String) {
+      return compileTo(ctx, expr, (StringType) type);
+    } else {
+      final ErrorMsg err = new ErrorMsg(DATA_CONVERSION_ERR, toString(), type.toString());
+      ctx.xsltc().getParser().reportError(FATAL, err);
+      return expr;
+    }
   }
 
   /**
@@ -133,18 +128,9 @@ public final class ObjectType extends Type {
    * 
    * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
    */
-  public void translateTo(JDefinedClass definedClass, JMethod method, StringType type) {
-//    FIXME
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//    final InstructionList il = methodGen.getInstructionList();
-//
-//    il.append(DUP);
-//    final BranchHandle ifNull = il.append(new IFNULL(null));
-//    il.append(new INVOKEVIRTUAL(cpg.addMethodref(_javaClassName, "toString", "()" + STRING_SIG)));
-//    final BranchHandle gotobh = il.append(new GOTO(null));
-//    ifNull.setTarget(il.append(POP));
-//    il.append(new PUSH(cpg, ""));
-//    gotobh.setTarget(il.append(NOP));
+  public JExpression compileTo(CompilerContext ctx, JExpression expr, StringType type) {
+    JVar var = ctx.currentBlock().decl(ctx.ref(Object.class), ctx.nextVar(), expr);
+    return cond(var.eq(_null()), lit(""), var.invoke("toString"));
   }
 
   /**
@@ -153,40 +139,20 @@ public final class ObjectType extends Type {
    * external functions are called.
    */
   @Override
-  public void translateTo(JDefinedClass definedClass, JMethod method, Class<?> clazz) {
-//    FIXME
-//    if (clazz.isAssignableFrom(_clazz)) {
-//      methodGen.getInstructionList().append(NOP);
-//    } else {
-//      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), clazz.getClass().toString());
-//      classGen.getParser().reportError(Constants.FATAL, err);
-//    }
-  }
-
-  @Override
   public JExpression compileTo(CompilerContext ctx, JExpression expr, Class<?> clazz) {
-    if (clazz.isAssignableFrom(_clazz)) {
-      return expr;
+    if (!clazz.isAssignableFrom(_clazz)) {
+      final ErrorMsg err = new ErrorMsg(DATA_CONVERSION_ERR, toString(), clazz.toString());
+      ctx.xsltc().getParser().reportError(FATAL, err);
     }
-    return super.compileTo(ctx, expr, clazz);
+    return expr;
   }
 
   /**
    * Translates an external Java type into an Object type
    */
   @Override
-  public void translateFrom(JDefinedClass definedClass, JMethod method, Class<?> clazz) {
-//    FIXME
-//    methodGen.getInstructionList().append(NOP);
+  public JExpression compileFrom(CompilerContext ctx, JExpression expr, Class<?> clazz) {
+    return expr;
   }
 
-  @Override
-  public Instruction LOAD(int slot) {
-    return new ALOAD(slot);
-  }
-
-  @Override
-  public Instruction STORE(int slot) {
-    return new ASTORE(slot);
-  }
 }

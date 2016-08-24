@@ -21,7 +21,7 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import static de.lyca.xalan.xsltc.compiler.Constants.GET_NODE_NAME;
+import static de.lyca.xalan.xsltc.DOM.GET_NODE_NAME_X;
 
 import java.util.List;
 
@@ -51,8 +51,8 @@ final class NameCall extends NameBase {
   }
 
   @Override
-  public JExpression compile(CompilerContext ctx) {
-    return ctx.currentDom().invoke(GET_NODE_NAME).arg(super.compile(ctx));
+  public JExpression toJExpression(CompilerContext ctx) {
+    return ctx.currentDom().invoke(GET_NODE_NAME_X).arg(super.toJExpression(ctx));
   }
 
   /**

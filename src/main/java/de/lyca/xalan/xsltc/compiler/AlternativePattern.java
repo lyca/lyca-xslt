@@ -84,27 +84,14 @@ final class AlternativePattern extends Pattern {
   public String toString() {
     return "alternative(" + _left + ", " + _right + ')';
   }
-@Override
-  public JExpression compile(CompilerContext ctx) {
-    return _left.compile(ctx).cor(_right.compile(ctx));
+
+  @Override
+  public JExpression toJExpression(CompilerContext ctx) {
+    return _left.toJExpression(ctx).cor(_right.toJExpression(ctx));
   }
 
-@Override
+  @Override
   public void translate(CompilerContext ctx) {
-    ctx.currentBlock()._return(compile(ctx));
-//    FIXME
-//
-//    final InstructionList il = methodGen.getInstructionList();
-//
-//    _left.translate(classGen, methodGen);
-//    final InstructionHandle gotot = il.append(new GOTO(null));
-//    il.append(methodGen.loadContextNode());
-//    _right.translate(classGen, methodGen);
-//
-//    _left._trueList.backPatch(gotot);
-//    _left._falseList.backPatch(gotot.getNext());
-//
-//    _trueList.append(_right._trueList.add(gotot));
-//    _falseList.append(_right._falseList);
   }
+
 }

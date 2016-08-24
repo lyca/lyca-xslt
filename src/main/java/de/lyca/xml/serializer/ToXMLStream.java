@@ -15,10 +15,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * $Id$
- */
 package de.lyca.xml.serializer;
+
+import static de.lyca.xml.serializer.SerializerConstants.XMLVERSION10;
+import static de.lyca.xml.serializer.SerializerConstants.XMLVERSION11;
 
 import java.io.IOException;
 
@@ -31,7 +31,6 @@ import org.xml.sax.SAXException;
 
 import de.lyca.xml.serializer.utils.MsgKey;
 import de.lyca.xml.serializer.utils.Utils;
-
 /**
  * This class converts SAX or SAX-like calls to a serialized xml document. The
  * xsl:output method is "xml".
@@ -483,7 +482,7 @@ public class ToXMLStream extends ToStream {
     // hack for XSLTC with finding URI for default namespace
     if (m_elemContext.m_elementURI == null) {
       final String prefix1 = getPrefixPart(m_elemContext.m_elementName);
-      if (prefix1 == null && EMPTYSTRING.equals(prefix)) {
+      if (prefix1 == null && "".equals(prefix)) {
         // the elements URI is not known yet, and it
         // doesn't have a prefix, and we are currently
         // setting the uri for prefix "", so we have

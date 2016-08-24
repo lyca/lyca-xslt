@@ -23,11 +23,12 @@ package de.lyca.xalan.xsltc.compiler;
 
 import static com.sun.codemodel.JExpr._this;
 import static de.lyca.xalan.xsltc.compiler.Constants.DOM_FIELD;
+import static de.lyca.xalan.xsltc.compiler.Constants.TRANSLET_PNAME;
 
 import java.util.List;
 
+import com.sun.codemodel.JExpr;
 import com.sun.codemodel.JExpression;
-import com.sun.codemodel.JFieldVar;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
@@ -107,74 +108,39 @@ final class DocumentCall extends FunctionCall {
     return _type = Type.NodeSet;
   }
 
-  @Override
-  public JExpression compile(CompilerContext ctx) {
-    final int ac = argumentCount();
-
-    JFieldVar domField = ctx.field(DOM_FIELD);
-    // The URI can be either a node-set or something else cast to a string
-    JExpression arg1 = _arg1.compile(ctx);
-    if (_arg1Type == Type.NodeSet) {
-      arg1 = _arg1.startIterator(ctx, arg1);
-    }
-
-    if (ac == 2) {
-      // _arg2 == null was tested in typeChec()
-      JExpression arg2 = _arg2.startIterator(ctx, _arg2.compile(ctx));
-      // public static DTMAxisIterator documentF(Object arg1, DTMAxisIterator
-      // arg2, String xslURI, AbstractTranslet translet, DOM dom)
-      return ctx.ref(LoadDocument.class).staticInvoke("documentF").arg(arg1).arg(arg2).arg(getStylesheet().getSystemId())
-          .arg(_this()).arg(domField);
-    }
-
-    // public static DTMAxisIterator documentF(Object arg, String xslURI,
-    // AbstractTranslet translet, DOM dom)
-    return ctx.ref(LoadDocument.class).staticInvoke("documentF").arg(arg1).arg(getStylesheet().getSystemId())
-        .arg(_this()).arg(domField);
-  }
-
   /**
    * Translates the document() function call to a call to LoadDocument()'s
    * static method document().
    */
   @Override
-  public void translate(CompilerContext ctx) {
-    // FIXME
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//    final InstructionList il = methodGen.getInstructionList();
-//    final int ac = argumentCount();
-//
-//    final int domField = cpg.addFieldref(classGen.getClassName(), DOM_FIELD, DOM_INTF_SIG);
-//
-//    String docParamList = null;
-//    if (ac == 1) {
-//      // documentF(Object,String,AbstractTranslet,DOM)
-//      docParamList = "(" + OBJECT_SIG + STRING_SIG + TRANSLET_SIG + DOM_INTF_SIG + ")" + NODE_ITERATOR_SIG;
-//    } else { // ac == 2; ac < 1 or as >2 was tested in typeChec()
-//      // documentF(Object,DTMAxisIterator,String,AbstractTranslet,DOM)
-//      docParamList = "(" + OBJECT_SIG + NODE_ITERATOR_SIG + STRING_SIG + TRANSLET_SIG + DOM_INTF_SIG + ")"
-//              + NODE_ITERATOR_SIG;
-//    }
-//    final int docIdx = cpg.addMethodref(LOAD_DOCUMENT_CLASS, "documentF", docParamList);
-//
-//    // The URI can be either a node-set or something else cast to a string
-//    _arg1.translate(classGen, methodGen);
-//    if (_arg1Type == Type.NodeSet) {
-//      _arg1.startIterator(classGen, methodGen);
-//    }
-//
-//    if (ac == 2) {
-//      // _arg2 == null was tested in typeChec()
-//      _arg2.translate(classGen, methodGen);
-//      _arg2.startIterator(classGen, methodGen);
-//    }
-//
-//    // Process the rest of the parameters on the stack
-//    il.append(new PUSH(cpg, getStylesheet().getSystemId()));
-//    il.append(classGen.loadTranslet());
-//    il.append(DUP);
-//    il.append(new GETFIELD(domField));
-//    il.append(new INVOKESTATIC(docIdx));
+  public JExpression toJExpression(CompilerContext ctx) {
+    final int ac = argumentCount();
+
+    JExpression translet;
+    JExpression document;
+    if (ctx.isInnerClass()) {
+      translet = ctx.param(TRANSLET_PNAME);
+      document = ((JExpression) JExpr.cast(ctx.clazz().outer(), translet)).ref(DOM_FIELD);
+    } else {
+      translet = _this();
+      document = ctx.field(DOM_FIELD);
+    }
+
+    // The URI can be either a node-set or something else cast to a string
+    JExpression arg1 = _arg1.toJExpression(ctx);
+    if (_arg1Type == Type.NodeSet) {
+      arg1 = _arg1.startIterator(ctx, arg1);
+    }
+
+    if (ac == 2) {
+      // _arg2 == null was tested in typeCheck()
+      JExpression arg2 = _arg2.startIterator(ctx, _arg2.toJExpression(ctx));
+      return ctx.ref(LoadDocument.class).staticInvoke("documentF").arg(arg1).arg(arg2)
+          .arg(getStylesheet().getSystemId()).arg(translet).arg(document);
+    }
+
+    return ctx.ref(LoadDocument.class).staticInvoke("documentF").arg(arg1).arg(getStylesheet().getSystemId())
+        .arg(translet).arg(document);
   }
 
 }

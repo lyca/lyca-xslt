@@ -24,7 +24,6 @@ package de.lyca.xalan.xsltc.compiler;
 import static com.sun.codemodel.JExpr.FALSE;
 import static com.sun.codemodel.JExpr.lit;
 import static de.lyca.xalan.xsltc.compiler.Constants.ADD_PARAMETER;
-import static de.lyca.xalan.xsltc.compiler.Constants.EMPTYSTRING;
 
 import com.sun.codemodel.JExpression;
 
@@ -161,7 +160,7 @@ final class WithParam extends Instruction {
 
     // Compile expression is 'select' attribute if present
     if (_select != null) {
-      JExpression select = _select.compile(ctx);
+      JExpression select = _select.toJExpression(ctx);
       return _select.startIterator(ctx, select);
     }
     // If not, compile result tree from parameter body if present.
@@ -170,7 +169,7 @@ final class WithParam extends Instruction {
     }
     // If neither are present then store empty string in parameter slot
     else {
-      return lit(EMPTYSTRING);
+      return lit("");
     }
   }
 
@@ -190,20 +189,12 @@ final class WithParam extends Instruction {
 
     // Make name acceptable for use as field name in class
     final String name = getEscapedName();
+    // Generate the value of the parameter (use value in 'select' by def.)
     JExpression translateValue = translateValue(ctx);
-    ctx.currentBlock().invoke(ADD_PARAMETER).arg(name).arg(translateValue).arg(FALSE);
-
-    // Load reference to the translet (method is in AbstractTranslet)
-//    il.append(classGen.loadTranslet());
-
-    // Load the name of the parameter
-//    il.append(new PUSH(cpg, name)); // TODO: namespace ?
-    // Generete the value of the parameter (use value in 'select' by def.)
-//    translateValue(classGen, methodGen);
-    // Mark this parameter value is not being the default value
-//    il.append(new PUSH(cpg, false));
     // Pass the parameter to the template
-//    il.append(new INVOKEVIRTUAL(cpg.addMethodref(TRANSLET_CLASS, ADD_PARAMETER, ADD_PARAMETER_SIG)));
-//    il.append(POP); // cleanup stack
+    // Load the name of the parameter
+    // Mark this parameter value is not being the default value
+    ctx.currentBlock().invoke(ADD_PARAMETER).arg(name).arg(translateValue).arg(FALSE);
   }
+
 }

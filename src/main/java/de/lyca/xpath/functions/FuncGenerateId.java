@@ -56,6 +56,6 @@ public class FuncGenerateId extends FunctionDef1Arg {
       // that value.
       return new XString("N" + Integer.toHexString(which).toUpperCase());
     else
-      return XString.EMPTYSTRING;
+      return XString.EMPTY;
   }
 }

@@ -141,12 +141,12 @@ final class XslAttribute extends Instruction {
     }
 
     // Get namespace from namespace attribute?
-    if (namespace != null && namespace != Constants.EMPTYSTRING) {
+    if (namespace != null && namespace != "") {
       _prefix = lookupPrefix(namespace);
       _namespace = new AttributeValueTemplate(namespace, parser, this);
     }
     // Get namespace from prefix in name attribute?
-    else if (prefix != null && prefix != Constants.EMPTYSTRING) {
+    else if (prefix != null && prefix != "") {
       _prefix = prefix;
       namespace = lookupNamespace(prefix);
       if (namespace != null) {
@@ -157,7 +157,7 @@ final class XslAttribute extends Instruction {
     // Common handling for namespaces:
     if (_namespace != null) {
       // Generate prefix if we have none
-      if (_prefix == null || _prefix == Constants.EMPTYSTRING) {
+      if (_prefix == null || _prefix == "") {
         if (prefix != null) {
           _prefix = prefix;
         } else {
@@ -212,7 +212,7 @@ final class XslAttribute extends Instruction {
     // Compile code that emits any needed namespace declaration
     if (_namespace != null) {
       // public void attribute(final String name, final String value)
-      ctx.currentBlock().add(ctx.currentHandler().invoke("namespaceAfterStartElement").arg(_prefix).arg(_namespace.compile(ctx)));
+      ctx.currentBlock().add(ctx.currentHandler().invoke("namespaceAfterStartElement").arg(_prefix).arg(_namespace.toJExpression(ctx)));
 
 //      il.append(methodGen.loadHandler());
 //      il.append(new PUSH(cpg, _prefix));
@@ -224,7 +224,7 @@ final class XslAttribute extends Instruction {
     if (!_isLiteral) {
       // if the qname is an AVT, then the qname has to be checked at runtime if
       // it is a valid qname
-      secondArg = ctx.currentBlock().decl(ctx.ref(String.class), ctx.nextNameValue(), _name.compile(ctx));
+      secondArg = ctx.currentBlock().decl(ctx.ref(String.class), ctx.nextNameValue(), _name.toJExpression(ctx));
       
       // store the name into a variable first so _name.translate only needs to
       // be called once
@@ -248,7 +248,7 @@ final class XslAttribute extends Instruction {
 //      il.append(DUP); // first arg to "attributes" call
 
       // Push attribute name
-      secondArg = _name.compile(ctx);// 2nd arg
+      secondArg = _name.toJExpression(ctx);// 2nd arg
 
     }
 

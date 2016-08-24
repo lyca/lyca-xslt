@@ -125,10 +125,10 @@ final class Variable extends VariableBase {
       }
 
       // Create a variable slot if none is allocated
-      if (_local == null) {
-        _local = ctx.currentBlock().decl(_type.toJCType(), getEscapedName(), defaultValue);
+      if (_param == null) {
+        _param = ctx.currentBlock().decl(_type.toJCType(), getEscapedName(), defaultValue);
       } else {
-        ctx.currentBlock().assign(_local, defaultValue);
+        ctx.currentBlock().assign(_param, defaultValue);
       }
     }
   }
@@ -149,11 +149,11 @@ final class Variable extends VariableBase {
 
     if (isLocal()) {
       // Add a new local variable and store value
-      if (_local == null) {
+      if (_param == null) {
         mapRegister(ctx);
       }
       // Compile variable value computation
-      ctx.currentBlock().assign(_local, compileValue(ctx));
+      ctx.currentBlock().assign(_param, compileValue(ctx));
     } else {
       // Global variables are store in class fields
       if (ctx.field(name) == null) {

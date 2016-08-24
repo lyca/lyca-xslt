@@ -23,9 +23,8 @@ package de.lyca.xalan.xsltc.compiler;
 
 import static com.sun.codemodel.JExpr.lit;
 import static com.sun.codemodel.JOp.not;
-import static de.lyca.xalan.xsltc.compiler.Constants.GET_PARENT;
-
-import org.apache.bcel.generic.InstructionHandle;
+import static de.lyca.xalan.xsltc.DOM.GET_EXPANDED_TYPE_ID;
+import static de.lyca.xalan.xsltc.DOM.GET_PARENT;
 
 import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JConditional;
@@ -48,7 +47,6 @@ final class AncestorPattern extends RelativePathPattern {
 
   private final Pattern _left; // may be null
   private final RelativePathPattern _right;
-  private InstructionHandle _loop;
 
   public AncestorPattern(RelativePathPattern right) {
     this(null, right);
@@ -60,10 +58,6 @@ final class AncestorPattern extends RelativePathPattern {
     if (left != null) {
       left.setParent(this);
     }
-  }
-
-  public InstructionHandle getLoopHandle() {
-    return _loop;
   }
 
   @Override
@@ -101,44 +95,21 @@ final class AncestorPattern extends RelativePathPattern {
 
   @Override
   public void compilePattern(CompilerContext ctx, JStatement fail) {
-    // FIXME
-//    JInvocation parent;
-
-  /*
-   * The scope of this local var must be the entire method since a another
-   * pattern may decide to jump back into the loop
-   */
-//  final LocalVariableGen local = methodGen.addLocalVariable2("app", Util.getJCRefType(NODE_SIG), il.getEnd());
-
-//  final org.apache.bcel.generic.Instruction loadLocal = new ILOAD(local.getIndex());
-//  final org.apache.bcel.generic.Instruction storeLocal = new ISTORE(local.getIndex());
-
-    JExpression right = _right.compile(ctx);
+    JExpression right = _right.toJExpression(ctx);
 
     if (_left != null) {
       JVar parent = ctx.currentBlock().decl(ctx.owner().INT, ctx.nextParent(),
           ctx.currentDom().invoke(GET_PARENT).arg(ctx.currentNode()));
       ctx.pushNode(parent);
-      JExpression result = _left.compile(ctx).cand(right);
+      JExpression result = _left.toJExpression(ctx).cand(right);
       ctx.popNode();
       JExpression pgte0 = parent.gte(lit(0));
       ctx.currentBlock()._while(pgte0.cand(not(result))).body()
           .assign(parent, ctx.currentDom().invoke(GET_PARENT).arg(parent));
-      
-//      JVar app = ctx.currentBlock().decl(ctx.owner().INT, "app", ctx.currentNode());
-//      final JBlock loop = ctx.currentBlock()._while(TRUE).body();
 
-      // Create a local variable to hold the current node
-      // Create an instruction list that contains the default next-node
-      // iteration
-//      parent = invoke(ctx.param(DOCUMENT_PNAME), GET_PARENT).arg(app);
-//      loop.assign(app, parent);
-//      JBlock _then = loop._if(app.lt(lit(0)))._then();
-//      if (fail != null) _then.add(fail);
-//      _then._break();
       Template nodeTemplate = getTemplate();
       SyntaxTreeNode parentNode = getParent();
-      while(nodeTemplate == null && parentNode != null){
+      while (nodeTemplate == null && parentNode != null) {
         nodeTemplate = parentNode.getTemplate();
         parentNode = parentNode.getParent();
       }
@@ -148,46 +119,21 @@ final class AncestorPattern extends RelativePathPattern {
         JBlock _then = _if._then();
         _then.add(template);
         _then._break();
-        if (fail != null) _if._else().add(fail);
+        if (fail != null)
+          _if._else().add(fail);
       }
-
-//    final int getParent = cpg.addInterfaceMethodref(DOM_INTF, GET_PARENT, GET_PARENT_SIG);
-//
-//    il.append(DUP);
-//    il.append(storeLocal);
-//    _falseList.add(il.append(new IFLT(null)));
-//    il.append(loadLocal);
-//
-//    _left.translate(classGen, methodGen);
-//
-//    final SyntaxTreeNode p = getParent();
-//    if (p == null || p instanceof Instruction || p instanceof TopLevelElement) {
-//      // do nothing
-//    } else {
-//      il.append(loadLocal);
-//    }
-//
-//    final BranchHandle exit = il.append(new GOTO(null));
-//    _loop = il.append(methodGen.loadDOM());
-//    il.append(loadLocal);
-//    local.setEnd(_loop);
-//    il.append(new GOTO(parent));
-//    exit.setTarget(il.append(NOP));
-//    _left.backPatchFalseList(_loop);
-//
-//    _trueList.append(_left._trueList);
-  } else {
+    } else {
       Template nodeTemplate = getTemplate();
       SyntaxTreeNode parentNode = getParent();
-      while(nodeTemplate == null && parentNode != null){
+      while (nodeTemplate == null && parentNode != null) {
         nodeTemplate = parentNode.getTemplate();
         parentNode = parentNode.getParent();
       }
       if (nodeTemplate != null) {
         JStatement template = nodeTemplate.compile(ctx);
-        if(right == JExpr.TRUE){
+        if (right == JExpr.TRUE) {
           ctx.currentBlock().add(template);
-        }else{
+        } else {
           JConditional _if = ctx.currentBlock()._if(right);
           JBlock _then2 = _if._then();
           _then2.add(template);
@@ -195,177 +141,41 @@ final class AncestorPattern extends RelativePathPattern {
           _if._else().add(fail);
         }
       }
-      //    il.append(POP2);
-  }
-
-  /*
-   * If _right is an ancestor pattern, backpatch this pattern's false list to
-   * the loop that searches for more ancestors.
-   */
-  if (_right instanceof AncestorPattern) {
-//    final AncestorPattern ancestor = (AncestorPattern) _right;
-//    _falseList.backPatch(ancestor.getLoopHandle()); // clears list
-  }
-
-//  _trueList.append(_right._trueList);
-//  _falseList.append(_right._falseList);
+    }
   }
 
   @Override
-  public JExpression compile(CompilerContext ctx) {
-    // FIXME
-
-    /*
-     * The scope of this local var must be the entire method since a another
-     * pattern may decide to jump back into the loop
-     */
-    // final LocalVariableGen local = methodGen.addLocalVariable2("app",
-    // Util.getJCRefType(NODE_SIG), il.getEnd());
-
-    // final org.apache.bcel.generic.Instruction loadLocal = new
-    // ILOAD(local.getIndex());
-    // final org.apache.bcel.generic.Instruction storeLocal = new
-    // ISTORE(local.getIndex());
-
-    JExpression right = _right.compile(ctx);
+  public JExpression toJExpression(CompilerContext ctx) {
+    JExpression right = _right.toJExpression(ctx);
 
     if (_left != null) {
       JVar parent = ctx.currentBlock().decl(ctx.owner().INT, ctx.nextParent(),
           ctx.currentDom().invoke(GET_PARENT).arg(ctx.currentNode()));
       ctx.pushNode(parent);
-      JExpression result = _left.compile(ctx).cand(right);
+      JExpression result = _left.toJExpression(ctx).cand(right);
       if (getParent() instanceof AbsolutePathPattern) {
-        result = result.cand(ctx.currentDom().invoke("getExpandedTypeID")
+        result = result.cand(ctx.currentDom().invoke(GET_EXPANDED_TYPE_ID)
             .arg(ctx.currentDom().invoke(GET_PARENT).arg(parent)).eq(lit(DTM.DOCUMENT_NODE)));
       }
       ctx.popNode();
       JExpression pgte0 = parent.gte(lit(0));
       ctx.currentBlock()._while(pgte0.cand(not(result))).body()
           .assign(parent, ctx.currentDom().invoke(GET_PARENT).arg(parent));
-      if(getParent() instanceof ParentPattern){
+      if (getParent() instanceof ParentPattern) {
         ctx.currentBlock().assign(ctx.currentParent(), ctx.currentDom().invoke(GET_PARENT).arg(parent));
       }
       return pgte0.cand(result);
-//      final int getParent = cpg.addInterfaceMethodref(DOM_INTF, GET_PARENT, GET_PARENT_SIG);
-
-//      il.append(DUP);
-//      il.append(storeLocal);
-//      _falseList.add(il.append(new IFLT(null)));
-//      il.append(loadLocal);
-
-//      _left.translate(classGen, methodGen);
-
-//      final SyntaxTreeNode p = getParent();
-//      if (p == null || p instanceof Instruction || p instanceof TopLevelElement) {
-//        // do nothing
-//      } else {
-//        il.append(loadLocal);
-      }
-
-//      final BranchHandle exit = il.append(new GOTO(null));
-//      _loop = il.append(methodGen.loadDOM());
-//      il.append(loadLocal);
-//      local.setEnd(_loop);
-//      il.append(new GOTO(parent));
-//      exit.setTarget(il.append(NOP));
-//      _left.backPatchFalseList(_loop);
-
-//      _trueList.append(_left._trueList);
-//    } else {
-//      il.append(POP2);
-//    }
-
-    /*
-     * If _right is an ancestor pattern, backpatch this pattern's false list to
-     * the loop that searches for more ancestors.
-     */
-//    if (_right instanceof AncestorPattern) {
-//      final AncestorPattern ancestor = (AncestorPattern) _right;
-//      _falseList.backPatch(ancestor.getLoopHandle()); // clears list
-//    }
-
-//    _trueList.append(_right._trueList);
-//    _falseList.append(_right._falseList);
+    }
     return JExpr._null();
   }
 
   @Override
   public void translate(CompilerContext ctx) {
-//    FIXME
-//    InstructionHandle parent;
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//    final InstructionList il = methodGen.getInstructionList();
-//
-//    /*
-//     * The scope of this local var must be the entire method since a another
-//     * pattern may decide to jump back into the loop
-//     */
-//    final LocalVariableGen local = methodGen.addLocalVariable2("app", Util.getJCRefType(NODE_SIG), il.getEnd());
-//
-//    final org.apache.bcel.generic.Instruction loadLocal = new ILOAD(local.getIndex());
-//    final org.apache.bcel.generic.Instruction storeLocal = new ISTORE(local.getIndex());
-//
-//    if (_right instanceof StepPattern) {
-//      il.append(DUP);
-//      il.append(storeLocal);
-//      _right.translate(classGen, methodGen);
-//      il.append(methodGen.loadDOM());
-//      il.append(loadLocal);
-//    } else {
-//      _right.translate(classGen, methodGen);
-//
-//      if (_right instanceof AncestorPattern) {
-//        il.append(methodGen.loadDOM());
-//        il.append(SWAP);
-//      }
-//    }
-//
-//    if (_left != null) {
-//      final int getParent = cpg.addInterfaceMethodref(DOM_INTF, GET_PARENT, GET_PARENT_SIG);
-//      parent = il.append(new INVOKEINTERFACE(getParent, 2));
-//
-//      il.append(DUP);
-//      il.append(storeLocal);
-//      _falseList.add(il.append(new IFLT(null)));
-//      il.append(loadLocal);
-//
-//      _left.translate(classGen, methodGen);
-//
-//      final SyntaxTreeNode p = getParent();
-//      if (p == null || p instanceof Instruction || p instanceof TopLevelElement) {
-//        // do nothing
-//      } else {
-//        il.append(loadLocal);
-//      }
-//
-//      final BranchHandle exit = il.append(new GOTO(null));
-//      _loop = il.append(methodGen.loadDOM());
-//      il.append(loadLocal);
-//      local.setEnd(_loop);
-//      il.append(new GOTO(parent));
-//      exit.setTarget(il.append(NOP));
-//      _left.backPatchFalseList(_loop);
-//
-//      _trueList.append(_left._trueList);
-//    } else {
-//      il.append(POP2);
-//    }
-//
-//    /*
-//     * If _right is an ancestor pattern, backpatch this pattern's false list to
-//     * the loop that searches for more ancestors.
-//     */
-//    if (_right instanceof AncestorPattern) {
-//      final AncestorPattern ancestor = (AncestorPattern) _right;
-//      _falseList.backPatch(ancestor.getLoopHandle()); // clears list
-//    }
-//
-//    _trueList.append(_right._trueList);
-//    _falseList.append(_right._falseList);
   }
 
   @Override
   public String toString() {
     return "AncestorPattern(" + _left + ", " + _right + ')';
   }
+
 }

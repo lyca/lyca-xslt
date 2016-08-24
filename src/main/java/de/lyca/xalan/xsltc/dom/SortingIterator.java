@@ -21,6 +21,7 @@
 
 package de.lyca.xalan.xsltc.dom;
 
+import de.lyca.xalan.xsltc.TransletException;
 import de.lyca.xalan.xsltc.runtime.BasisLibrary;
 import de.lyca.xml.dtm.DTMAxisIterator;
 import de.lyca.xml.dtm.ref.DTMAxisIteratorBase;
@@ -123,7 +124,7 @@ public final class SortingIterator extends DTMAxisIteratorBase {
     _data[_free++] = record;
   }
 
-  private void quicksort(int p, int r) {
+  private void quicksort(int p, int r) throws TransletException {
     while (p < r) {
       final int q = partition(p, r);
       quicksort(p, q);
@@ -131,7 +132,7 @@ public final class SortingIterator extends DTMAxisIteratorBase {
     }
   }
 
-  private int partition(int p, int r) {
+  private int partition(int p, int r) throws TransletException{
     final NodeSortRecord x = _data[p + r >>> 1];
     int i = p - 1;
     int j = r + 1;

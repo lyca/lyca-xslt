@@ -452,10 +452,8 @@ public class ToXHTMLStream extends ToStream {
      * this method used to return m_dummy when name was null but now it doesn't
      * check and and requires non-null name.
      */
-    final Object obj = m_elementFlags.get(name);
-    if (null != obj)
-      return (ElemDesc) obj;
-    return m_dummy;
+    final ElemDesc obj = m_elementFlags.get(name);
+    return obj == null ? m_dummy : obj;
   }
 
   /**
@@ -469,10 +467,8 @@ public class ToXHTMLStream extends ToStream {
    * this one should be faster.
    */
   private ElemDesc getElemDesc2(String name) {
-    final Object obj = m_htmlInfo.get2(name);
-    if (null != obj)
-      return (ElemDesc) obj;
-    return m_dummy;
+    final ElemDesc obj = m_htmlInfo.get2(name);
+    return obj == null ? m_dummy : obj;
   }
 
   /**
@@ -1518,7 +1514,7 @@ public class ToXHTMLStream extends ToStream {
     // hack for XSLTC with finding URI for default namespace
     if (m_elemContext.m_elementURI == null) {
       final String prefix1 = getPrefixPart(m_elemContext.m_elementName);
-      if (prefix1 == null && EMPTYSTRING.equals(prefix)) {
+      if (prefix1 == null && "".equals(prefix)) {
         // the elements URI is not known yet, and it
         // doesn't have a prefix, and we are currently
         // setting the uri for prefix "", so we have
@@ -1737,7 +1733,7 @@ public class ToXHTMLStream extends ToStream {
      * 
      * @return The old object that matched key, or null.
      */
-    public Object put(String key, Object value) {
+    public ElemDesc put(String key, ElemDesc value) {
 
       final int len = key.length();
       if (len > m_charBuffer.length) {
@@ -1769,7 +1765,7 @@ public class ToXHTMLStream extends ToStream {
         }
       }
 
-      final Object ret = node.m_Value;
+      final ElemDesc ret = node.m_Value;
 
       node.m_Value = value;
 
@@ -1784,7 +1780,7 @@ public class ToXHTMLStream extends ToStream {
      * 
      * @return The object that matches the key, or null.
      */
-    public Object get(final String key) {
+    public ElemDesc get(final String key) {
 
       final int len = key.length();
 
@@ -1872,7 +1868,7 @@ public class ToXHTMLStream extends ToStream {
       final Node m_nextChar[];
 
       /** The value. */
-      Object m_Value;
+      ElemDesc m_Value;
     }
 
     /**
@@ -1902,7 +1898,7 @@ public class ToXHTMLStream extends ToStream {
      * 
      * @return The object that matches the key, or null.
      */
-    public Object get2(final String key) {
+    public ElemDesc get2(final String key) {
 
       final int len = key.length();
 

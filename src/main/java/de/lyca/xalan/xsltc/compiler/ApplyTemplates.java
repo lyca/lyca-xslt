@@ -24,7 +24,6 @@ package de.lyca.xalan.xsltc.compiler;
 import static de.lyca.xalan.xsltc.compiler.Constants.ITERATOR_PNAME;
 import static de.lyca.xalan.xsltc.compiler.Constants.POP_PARAM_FRAME;
 import static de.lyca.xalan.xsltc.compiler.Constants.PUSH_PARAM_FRAME;
-import static de.lyca.xalan.xsltc.compiler.Constants.WARNING;
 import static de.lyca.xalan.xsltc.compiler.util.ErrorMsg.RESULT_TREE_SORT_ERR;
 
 import java.util.ArrayList;
@@ -120,10 +119,6 @@ final class ApplyTemplates extends Instruction {
     boolean setStartNodeCalled = false;
     final Stylesheet stylesheet = getStylesheet();
 
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//    final InstructionList il = methodGen.getInstructionList();
-//    final int current = methodGen.getLocalIndex("current");
-
     // check if sorting nodes is required
     final List<Sort> sortObjects = new ArrayList<>();
     for (SyntaxTreeNode child : getContents()) {
@@ -138,7 +133,6 @@ final class ApplyTemplates extends Instruction {
       // translate with-params
       translateContents(ctx);
     }
-//    il.append(classGen.loadTranslet());
 
     JExpression select = null;
     // The 'select' expression is a result-tree
@@ -146,28 +140,22 @@ final class ApplyTemplates extends Instruction {
       // <xsl:sort> cannot be applied to a result tree - issue warning
       if (sortObjects.size() > 0) {
         final ErrorMsg err = new ErrorMsg(RESULT_TREE_SORT_ERR, this);
-        getParser().reportError(WARNING, err);
+        getParser().reportError(Constants.WARNING, err);
       }
       // Put the result tree (a DOM adapter) on the stack
       _select.translate(ctx);
       // Get back the DOM and iterator (not just iterator!!!)
-      _type.translateTo(ctx.clazz(), ctx.currentMethod(), Type.NodeSet);
+//      _type.translateTo(ctx.clazz(), ctx.currentMethod(), Type.NodeSet);
     } else {
-//      il.append(methodGen.loadDOM());
-
       // compute node iterator for applyTemplates
       if (sortObjects.size() > 0) {
         select = Sort.translateSortIterator(ctx, _select, sortObjects);
-//        ctx.currentBlock().invoke(ctx.param(DOM_PNAME) ,SET_START_NODE).arg(ctx.currentNode());
-//        final int setStartNode = cpg.addInterfaceMethodref(NODE_ITERATOR, SET_START_NODE, "(I)" + NODE_ITERATOR_SIG);
-//        il.append(methodGen.loadCurrentNode());
-//        il.append(new INVOKEINTERFACE(setStartNode, 2));
         setStartNodeCalled = true;
       } else {
         if (_select == null) {
           select = Mode.compileGetChildren(ctx);
         } else {
-          select = _select.compile(ctx);
+          select = _select.toJExpression(ctx);
         }
       }
     }
@@ -177,13 +165,8 @@ final class ApplyTemplates extends Instruction {
     }
 
     // !!! need to instantiate all needed modes
-    final String className = getStylesheet().getClassName();
-    ctx.currentBlock().invoke(_functionName).arg(ctx.currentDom()).arg(select == null ? ctx.param(ITERATOR_PNAME) : select).arg(ctx.currentHandler());
-    
-//    il.append(methodGen.loadHandler());
-//    final String applyTemplatesSig = classGen.getApplyTemplatesSig();
-//    final int applyTemplates = cpg.addMethodref(className, _functionName, applyTemplatesSig);
-//    il.append(new INVOKEVIRTUAL(applyTemplates));
+    ctx.currentBlock().invoke(_functionName).arg(ctx.currentDom())
+        .arg(select == null ? ctx.param(ITERATOR_PNAME) : select).arg(ctx.currentHandler());
 
     // Pop parameter frame
     if (stylesheet.hasLocalParams() || hasContents()) {

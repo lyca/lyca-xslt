@@ -22,9 +22,8 @@
 package de.lyca.xalan.xsltc.compiler;
 
 import static com.sun.codemodel.JExpr._new;
-import static de.lyca.xalan.xsltc.compiler.Constants.ORDER_ITERATOR;
+import static de.lyca.xalan.xsltc.DOM.ORDER_NODES;
 
-import com.sun.codemodel.JClass;
 import com.sun.codemodel.JInvocation;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
@@ -153,42 +152,15 @@ final class ParentLocationPath extends RelativeLocationPath {
   }
 
   @Override
-  public JInvocation compile(CompilerContext ctx) {
-    final JClass axis = ctx.ref(Axis.class);
+  public JInvocation toJExpression(CompilerContext ctx) {
+    // Initialize StepIterator
     JInvocation invocation = _new(ctx.ref(StepIterator.class));
-    // DTMAxisIterator a2 = new StepIterator(dom.getTypedAxisIterator(Axis.CHILD, 14), dom.getTypedAxisIterator(CHILD, 15))).setStartNode(current);
-
-    // Backwards branches are prohibited if an uninitialized object is
-    // on the stack by section 4.9.4 of the JVM Specification, 2nd Ed.
-    // We don't know whether this code might contain backwards branches
-    // so we mustn't create the new object until after we've created
-    // the suspect arguments to its constructor. Instead we calculate
-    // the values of the arguments to the constructor first, store them
-    // in temporary variables, create the object and reload the
-    // arguments from the temporaries to avoid the problem.
 
     // Compile path iterator
-    invocation.arg(_path.compile(ctx)); // iterator on stack....
-//    final LocalVariableGen pathTemp = method.addLocalVariable("parent_location_path_tmp1",
-//        Util.getJCRefType(NODE_ITERATOR_SIG), null, null);
-//    pathTemp.setStart(il.append(new ASTORE(pathTemp.getIndex())));
-
-    invocation.arg(_step.compile(ctx));
-//    final LocalVariableGen stepTemp = method.addLocalVariable("parent_location_path_tmp2",
-//        Util.getJCRefType(NODE_ITERATOR_SIG), null, null);
-//    stepTemp.setStart(il.append(new ASTORE(stepTemp.getIndex())));
+    invocation.arg(_path.toJExpression(ctx)); // iterator on stack....
 
     // Create new StepIterator
-//    final int initSI = cpg.addMethodref(STEP_ITERATOR_CLASS, "<init>", "(" + NODE_ITERATOR_SIG + NODE_ITERATOR_SIG
-//        + ")V");
-//    il.append(new NEW(cpg.addClass(STEP_ITERATOR_CLASS)));
-//    il.append(DUP);
-
-//    pathTemp.setEnd(il.append(new ALOAD(pathTemp.getIndex())));
-//    stepTemp.setEnd(il.append(new ALOAD(stepTemp.getIndex())));
-
-    // Initialize StepIterator with iterators from the stack
-//    il.append(new INVOKESPECIAL(initSI));
+    invocation.arg(_step.toJExpression(ctx));
 
     // This is a special case for the //* path with or without predicates
     Expression stp = _step;
@@ -201,8 +173,6 @@ final class ParentLocationPath extends RelativeLocationPath {
       final Axis step = ((Step) stp).getAxis();
       if (path == Axis.DESCENDANTORSELF && step == Axis.CHILD || path == Axis.PRECEDING && step == Axis.PARENT) {
         invocation = invocation.invoke("includeSelf");
-//        final int incl = cpg.addMethodref(NODE_ITERATOR_BASE, "includeSelf", "()" + NODE_ITERATOR_SIG);
-//        il.append(new INVOKEVIRTUAL(incl));
       }
     }
 
@@ -213,82 +183,9 @@ final class ParentLocationPath extends RelativeLocationPath {
      * single node multiple times.
      */
     if (_orderNodes) {
-      invocation = ctx.currentDom().invoke(ORDER_ITERATOR).arg(invocation).arg(ctx.currentNode());
-//      final int order = cpg.addInterfaceMethodref(DOM_INTF, ORDER_ITERATOR, ORDER_ITERATOR_SIG);
-//      il.append(method.loadDOM());
-//      il.append(SWAP);
-//      il.append(method.loadContextNode());
-//      il.append(new INVOKEINTERFACE(order, 3));
+      invocation = ctx.currentDom().invoke(ORDER_NODES).arg(invocation).arg(ctx.currentNode());
     }
     return invocation;
   }
 
-  @Override
-  public void translate(CompilerContext ctx) {
-    ctx.currentBlock().decl(ctx.ref(StepIterator.class), ctx.nextTmpIterator(), compile(ctx));
- // FIXME
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//    final InstructionList il = methodGen.getInstructionList();
-//
-//    // Backwards branches are prohibited if an uninitialized object is
-//    // on the stack by section 4.9.4 of the JVM Specification, 2nd Ed.
-//    // We don't know whether this code might contain backwards branches
-//    // so we mustn't create the new object until after we've created
-//    // the suspect arguments to its constructor. Instead we calculate
-//    // the values of the arguments to the constructor first, store them
-//    // in temporary variables, create the object and reload the
-//    // arguments from the temporaries to avoid the problem.
-//
-//    // Compile path iterator
-//    _path.translate(classGen, methodGen); // iterator on stack....
-//    final LocalVariableGen pathTemp = methodGen.addLocalVariable("parent_location_path_tmp1",
-//            Util.getJCRefType(NODE_ITERATOR_SIG), null, null);
-//    pathTemp.setStart(il.append(new ASTORE(pathTemp.getIndex())));
-//
-//    _step.translate(classGen, methodGen);
-//    final LocalVariableGen stepTemp = methodGen.addLocalVariable("parent_location_path_tmp2",
-//            Util.getJCRefType(NODE_ITERATOR_SIG), null, null);
-//    stepTemp.setStart(il.append(new ASTORE(stepTemp.getIndex())));
-//
-//    // Create new StepIterator
-//    final int initSI = cpg.addMethodref(STEP_ITERATOR_CLASS, "<init>", "(" + NODE_ITERATOR_SIG + NODE_ITERATOR_SIG
-//            + ")V");
-//    il.append(new NEW(cpg.addClass(STEP_ITERATOR_CLASS)));
-//    il.append(DUP);
-//
-//    pathTemp.setEnd(il.append(new ALOAD(pathTemp.getIndex())));
-//    stepTemp.setEnd(il.append(new ALOAD(stepTemp.getIndex())));
-//
-//    // Initialize StepIterator with iterators from the stack
-//    il.append(new INVOKESPECIAL(initSI));
-//
-//    // This is a special case for the //* path with or without predicates
-//    Expression stp = _step;
-//    if (stp instanceof ParentLocationPath) {
-//      stp = ((ParentLocationPath) stp).getStep();
-//    }
-//
-//    if (_path instanceof Step && stp instanceof Step) {
-//      final Axis path = ((Step) _path).getAxis();
-//      final Axis step = ((Step) stp).getAxis();
-//      if (path == Axis.DESCENDANTORSELF && step == Axis.CHILD || path == Axis.PRECEDING && step == Axis.PARENT) {
-//        final int incl = cpg.addMethodref(NODE_ITERATOR_BASE, "includeSelf", "()" + NODE_ITERATOR_SIG);
-//        il.append(new INVOKEVIRTUAL(incl));
-//      }
-//    }
-//
-//    /*
-//     * If this pattern contains a sequence of descendant iterators we run the
-//     * risk of returning the same node several times. We put a new iterator on
-//     * top of the existing one to assure node order and prevent returning a
-//     * single node multiple times.
-//     */
-//    if (_orderNodes) {
-//      final int order = cpg.addInterfaceMethodref(DOM_INTF, ORDER_ITERATOR, ORDER_ITERATOR_SIG);
-//      il.append(methodGen.loadDOM());
-//      il.append(SWAP);
-//      il.append(methodGen.loadContextNode());
-//      il.append(new INVOKEINTERFACE(order, 3));
-//    }
-  }
 }

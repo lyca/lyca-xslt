@@ -88,9 +88,9 @@ final class UnresolvedRef extends VariableRefBase {
   }
 
   @Override
-  public JExpression compile(CompilerContext ctx) {
+  public JExpression toJExpression(CompilerContext ctx) {
     if (_ref != null) {
-      return _ref.compile(ctx);
+      return _ref.toJExpression(ctx);
     } else {
       reportError();
       return _null();

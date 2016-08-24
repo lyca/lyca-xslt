@@ -22,6 +22,7 @@
 package de.lyca.xalan.xsltc.compiler;
 
 import static com.sun.codemodel.JExpr.lit;
+import static de.lyca.xalan.xsltc.DOM.GET_NODE_NAME;
 
 import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JStatement;
@@ -87,12 +88,12 @@ final class ProcessingInstructionPattern extends StepPattern {
   }
 
   @Override
-  public JExpression compile(CompilerContext ctx) {
-    JExpression result = lit(_name).invoke("equals").arg(ctx.currentDom().invoke("getNodeName").arg(ctx.currentNode()));
+  public JExpression toJExpression(CompilerContext ctx) {
+    JExpression result = lit(_name).invoke("equals").arg(ctx.currentDom().invoke(GET_NODE_NAME).arg(ctx.currentNode()));
     if (hasPredicates()) {
       for (Predicate pred : _predicates) {
         final Expression exp = pred.getExpr();
-        result = result.cand(exp.compile(ctx));
+        result = result.cand(exp.toJExpression(ctx));
       }
     }
     return result;

@@ -25,6 +25,13 @@ package de.lyca.xml.dtm;
  */
 public interface DTMAxisIterator extends Cloneable {
 
+  String NEXT = "next";
+  String RESET = "reset";
+  String GET_LAST = "getLast";
+  String GET_POSITION = "getPosition";
+  String SET_START_NODE = "setStartNode";
+  String CLONE_ITERATOR = "cloneIterator";
+
   /** Specifies the end of the iteration, and is the same as DTM.NULL. */
   int END = DTM.NULL;
 

@@ -155,9 +155,9 @@ final class LogicalExpr extends Expression {
   }
 
   @Override
-  public JExpression compile(CompilerContext ctx) {
-    JExpression left = _left.compile(ctx);
-    JExpression right = _right.compile(ctx);
+  public JExpression toJExpression(CompilerContext ctx) {
+    JExpression left = _left.toJExpression(ctx);
+    JExpression right = _right.toJExpression(ctx);
     return _op == AND ? cand(left, right) : JOp.cor(left, right);
   }
 

@@ -81,10 +81,11 @@ final class CastCall extends FunctionCall {
   @Override
   public void translate(CompilerContext ctx) {
     // FIXME
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//    final InstructionList il = methodGen.getInstructionList();
-//
-//    _right.translate(classGen, methodGen);
-//    il.append(new CHECKCAST(cpg.addClass(_className)));
+    // final ConstantPoolGen cpg = classGen.getConstantPool();
+    // final InstructionList il = methodGen.getInstructionList();
+    //
+    // _right.translate(classGen, methodGen);
+    // il.append(new CHECKCAST(cpg.addClass(_className)));
   }
+
 }

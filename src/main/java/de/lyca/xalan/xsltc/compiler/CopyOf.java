@@ -21,7 +21,10 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
+import static de.lyca.xalan.xsltc.DOM.COPY;
+import static de.lyca.xalan.xsltc.DOM.GET_DOCUMENT;
 import static de.lyca.xalan.xsltc.compiler.Constants.CHARACTERSW;
+import static de.lyca.xml.dtm.DTMAxisIterator.SET_START_NODE;
 
 import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JInvocation;
@@ -76,69 +79,29 @@ final class CopyOf extends Instruction {
 
   @Override
   public void translate(CompilerContext ctx) {
-    final Type tselect = _select.getType();
-//    final String CPY1_SIG = "(" + NODE_ITERATOR_SIG + TRANSLET_OUTPUT_SIG + ")V";
-//    final int cpy1 = cpg.addInterfaceMethodref(DOM_INTF, "copy", CPY1_SIG);
-//
-//    final String CPY2_SIG = "(" + NODE_SIG + TRANSLET_OUTPUT_SIG + ")V";
-//    final int cpy2 = cpg.addInterfaceMethodref(DOM_INTF, "copy", CPY2_SIG);
-//
-//    final String getDoc_SIG = "()" + NODE_SIG;
-//    final int getDoc = cpg.addInterfaceMethodref(DOM_INTF, "getDocument", getDoc_SIG);
-
-    if (tselect instanceof NodeSetType) {
-      JInvocation copy = ctx.currentBlock().invoke(ctx.currentDom(), "copy");
-      JInvocation iterator = _select.compile(ctx).invoke("setStartNode").arg(ctx.currentNode());
+    final Type type = _select.getType();
+    JExpression select = _select.toJExpression(ctx);
+    if (type instanceof NodeSetType) {
+      JInvocation copy = ctx.currentBlock().invoke(ctx.currentDom(), COPY);
+      JInvocation iterator = select.invoke(SET_START_NODE).arg(ctx.currentNode());
       copy.arg(iterator).arg(ctx.currentHandler());
-      
-//      il.append(method.loadDOM());
-      
-      // push NodeIterator
-//      _select.translate(definedClass, method);
-//      _select.startIterator(definedClass, method);
-
-      // call copy from the DOM 'library'
-//      il.append(method.loadHandler());
-//      il.append(new INVOKEINTERFACE(cpy1, 3));
-    } else if (tselect instanceof NodeType) {
-      JInvocation copy = ctx.currentBlock().invoke(ctx.currentDom(), "copy");
-      JExpression dom = _select.compile(ctx);
+    } else if (type instanceof NodeType) {
+      JInvocation copy = ctx.currentBlock().invoke(ctx.currentDom(), COPY);
+      JExpression dom = select;
       copy.arg(dom).arg(ctx.currentHandler());
-
-//      il.append(method.loadDOM());
-//      _select.translate(ctx);
-//      il.append(method.loadHandler());
-//      il.append(new INVOKEINTERFACE(cpy2, 3));
-    } else if (tselect instanceof ResultTreeType) {
-      JExpression dom = _select.compile(ctx);
-      JInvocation document = dom.invoke("getDocument");
-      JInvocation copy = ctx.currentBlock().invoke(dom, "copy");
-      copy.arg(document).arg(ctx.currentHandler());
-
-//      _select.translate(ctx);
+    } else if (type instanceof ResultTreeType) {
+      JExpression dom = select;
       // We want the whole tree, so we start with the root node
-//      il.append(DUP); // need a pointer to the DOM ;
-//      il.append(new INVOKEINTERFACE(getDoc, 1)); // ICONST_0);
-//      il.append(method.loadHandler());
-//      il.append(new INVOKEINTERFACE(cpy2, 3));
-    } else if (tselect instanceof ReferenceType) {
+      JInvocation document = dom.invoke(GET_DOCUMENT);
+      JInvocation copy = ctx.currentBlock().invoke(dom, COPY);
+      copy.arg(document).arg(ctx.currentHandler());
+    } else if (type instanceof ReferenceType) {
       ctx.currentBlock().add(
-          ctx.ref(BasisLibrary.class).staticInvoke("copy").arg(_select.compile(ctx)).arg(ctx.currentHandler())
+          ctx.ref(BasisLibrary.class).staticInvoke(COPY).arg(select).arg(ctx.currentHandler())
               .arg(ctx.currentNode()).arg(ctx.currentDom()));
-//      _select.translate(ctx);
-//      il.append(method.loadHandler());
-//      il.append(method.loadCurrentNode());
-//      il.append(method.loadDOM());
-//      final int copy = cpg.addMethodref(BASIS_LIBRARY_CLASS, "copy", "(" + OBJECT_SIG + TRANSLET_OUTPUT_SIG + NODE_SIG
-//              + DOM_INTF_SIG + ")V");
-//      il.append(new INVOKESTATIC(copy));
     } else {
-      ctx.currentBlock().invoke(CHARACTERSW).arg(_select.compile(ctx)).arg(ctx.currentHandler());
-//      il.append(definedClass.loadTranslet());
-//      _select.translate(ctx);
-//      il.append(method.loadHandler());
-//      il.append(new INVOKEVIRTUAL(cpg.addMethodref(TRANSLET_CLASS, CHARACTERSW, CHARACTERSW_SIG)));
+      ctx.currentBlock().invoke(CHARACTERSW).arg(select).arg(ctx.currentHandler());
     }
-
   }
+
 }

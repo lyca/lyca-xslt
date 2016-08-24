@@ -80,7 +80,7 @@ public class FuncSystemProperty extends FunctionOneArg {
         if (null == result) {
           warn(xctxt, XPATHErrorResources.WG_PROPERTY_NOT_SUPPORTED, new Object[] { fullName }); // "XSL Property not supported: "+fullName);
 
-          return XString.EMPTYSTRING;
+          return XString.EMPTY;
         }
       } else {
         warn(xctxt, XPATHErrorResources.WG_DONT_DO_ANYTHING_WITH_NS, new Object[] { namespace, fullName }); // "Don't currently do anything with namespace "+namespace+" in property: "+fullName);
@@ -93,12 +93,12 @@ public class FuncSystemProperty extends FunctionOneArg {
             warn(xctxt, XPATHErrorResources.WG_SECURITY_EXCEPTION, new Object[]{ fullName });  //"SecurityException when trying to access XSL system property: "+fullName);
           }
           if (null == result) {
-            return XString.EMPTYSTRING;
+            return XString.EMPTY;
           }
         } catch (final SecurityException se) {
           warn(xctxt, XPATHErrorResources.WG_SECURITY_EXCEPTION, new Object[] { fullName }); // "SecurityException when trying to access XSL system property: "+fullName);
 
-          return XString.EMPTYSTRING;
+          return XString.EMPTY;
         }
       }
     } else {
@@ -110,12 +110,12 @@ public class FuncSystemProperty extends FunctionOneArg {
           warn(xctxt, XPATHErrorResources.WG_SECURITY_EXCEPTION, new Object[]{ fullName });  //"SecurityException when trying to access XSL system property: "+fullName);
         }
         if (null == result) {
-          return XString.EMPTYSTRING;
+          return XString.EMPTY;
         }
       } catch (final SecurityException se) {
         warn(xctxt, XPATHErrorResources.WG_SECURITY_EXCEPTION, new Object[] { fullName }); // "SecurityException when trying to access XSL system property: "+fullName);
 
-        return XString.EMPTYSTRING;
+        return XString.EMPTY;
       }
     }
 

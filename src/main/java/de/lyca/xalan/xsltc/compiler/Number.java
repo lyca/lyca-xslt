@@ -28,25 +28,11 @@ import static com.sun.codemodel.JMod.FINAL;
 import static com.sun.codemodel.JMod.PUBLIC;
 import static com.sun.codemodel.JMod.STATIC;
 import static de.lyca.xalan.xsltc.compiler.Constants.CHARACTERSW;
-import static de.lyca.xalan.xsltc.compiler.Constants.DOM_INTF_SIG;
-import static de.lyca.xalan.xsltc.compiler.Constants.EMPTYSTRING;
-import static de.lyca.xalan.xsltc.compiler.Constants.ITERATOR_FIELD_SIG;
 import static de.lyca.xalan.xsltc.compiler.Constants.ITERATOR_PNAME;
-import static de.lyca.xalan.xsltc.compiler.Constants.NODE_COUNTER;
-import static de.lyca.xalan.xsltc.compiler.Constants.NODE_ITERATOR_SIG;
-import static de.lyca.xalan.xsltc.compiler.Constants.TRANSLET_CLASS;
-import static de.lyca.xalan.xsltc.compiler.Constants.TRANSLET_SIG;
-import static org.apache.bcel.generic.InstructionConstants.ALOAD_0;
+import static de.lyca.xml.dtm.DTMAxisIterator.SET_START_NODE;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.bcel.generic.ASTORE;
-import org.apache.bcel.generic.CHECKCAST;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.GETFIELD;
-import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.LocalVariableGen;
 
 import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JClassAlreadyExistsException;
@@ -60,12 +46,9 @@ import com.sun.codemodel.JVar;
 
 import de.lyca.xalan.xsltc.DOM;
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
-import de.lyca.xalan.xsltc.compiler.util.MatchGenerator;
-import de.lyca.xalan.xsltc.compiler.util.NodeCounterGenerator;
 import de.lyca.xalan.xsltc.compiler.util.RealType;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
-import de.lyca.xalan.xsltc.compiler.util.Util;
 import de.lyca.xalan.xsltc.dom.AnyNodeCounter;
 import de.lyca.xalan.xsltc.dom.MultipleNodeCounter;
 import de.lyca.xalan.xsltc.dom.NodeCounter;
@@ -328,41 +311,41 @@ final class Number extends Instruction implements Closure {
 //    classGen.addMethod(cons);
   }
 
-  /**
-   * This method compiles code that is common to matchesFrom() and
-   * matchesCount() in the auxillary class.
-   */
-  private void compileLocals(NodeCounterGenerator nodeCounterGen, MatchGenerator matchGen, InstructionList il) {
-    int field;
-    LocalVariableGen local;
-    final ConstantPoolGen cpg = nodeCounterGen.getConstantPool();
-
-    // Get NodeCounter._iterator and store locally
-    local = matchGen.addLocalVariable("iterator", Util.getJCRefType(NODE_ITERATOR_SIG), null, null);
-    field = cpg.addFieldref(NODE_COUNTER, "_iterator", ITERATOR_FIELD_SIG);
-    il.append(ALOAD_0); // 'this' pointer on stack
-    il.append(new GETFIELD(field));
-    local.setStart(il.append(new ASTORE(local.getIndex())));
-    matchGen.setIteratorIndex(local.getIndex());
-
-    // Get NodeCounter._translet and store locally
-    local = matchGen.addLocalVariable("translet", Util.getJCRefType(TRANSLET_SIG), null, null);
-    field = cpg.addFieldref(NODE_COUNTER, "_translet", "Lde/lyca/xalan/xsltc/Translet;");
-    il.append(ALOAD_0); // 'this' pointer on stack
-    il.append(new GETFIELD(field));
-    il.append(new CHECKCAST(cpg.addClass(TRANSLET_CLASS)));
-    local.setStart(il.append(new ASTORE(local.getIndex())));
-    nodeCounterGen.setTransletIndex(local.getIndex());
-
-    // Get NodeCounter._document and store locally
-    local = matchGen.addLocalVariable("document", Util.getJCRefType(DOM_INTF_SIG), null, null);
-    field = cpg.addFieldref(_className, "_document", DOM_INTF_SIG);
-    il.append(ALOAD_0); // 'this' pointer on stack
-    il.append(new GETFIELD(field));
-    // Make sure we have the correct DOM type on the stack!!!
-    local.setStart(il.append(new ASTORE(local.getIndex())));
-    matchGen.setDomIndex(local.getIndex());
-  }
+//  /**
+//   * This method compiles code that is common to matchesFrom() and
+//   * matchesCount() in the auxillary class.
+//   */
+//  private void compileLocals(NodeCounterGenerator nodeCounterGen, MatchGenerator matchGen, InstructionList il) {
+//    int field;
+//    LocalVariableGen local;
+//    final ConstantPoolGen cpg = nodeCounterGen.getConstantPool();
+//
+//    // Get NodeCounter._iterator and store locally
+//    local = matchGen.addLocalVariable("iterator", Util.getJCRefType(NODE_ITERATOR_SIG), null, null);
+//    field = cpg.addFieldref(NODE_COUNTER, "_iterator", ITERATOR_FIELD_SIG);
+//    il.append(ALOAD_0); // 'this' pointer on stack
+//    il.append(new GETFIELD(field));
+//    local.setStart(il.append(new ASTORE(local.getIndex())));
+//    matchGen.setIteratorIndex(local.getIndex());
+//
+//    // Get NodeCounter._translet and store locally
+//    local = matchGen.addLocalVariable("translet", Util.getJCRefType(TRANSLET_SIG), null, null);
+//    field = cpg.addFieldref(NODE_COUNTER, "_translet", "Lde/lyca/xalan/xsltc/Translet;");
+//    il.append(ALOAD_0); // 'this' pointer on stack
+//    il.append(new GETFIELD(field));
+//    il.append(new CHECKCAST(cpg.addClass(TRANSLET_CLASS)));
+//    local.setStart(il.append(new ASTORE(local.getIndex())));
+//    nodeCounterGen.setTransletIndex(local.getIndex());
+//
+//    // Get NodeCounter._document and store locally
+//    local = matchGen.addLocalVariable("document", Util.getJCRefType(DOM_INTF_SIG), null, null);
+//    field = cpg.addFieldref(_className, "_document", DOM_INTF_SIG);
+//    il.append(ALOAD_0); // 'this' pointer on stack
+//    il.append(new GETFIELD(field));
+//    // Make sure we have the correct DOM type on the stack!!!
+//    local.setStart(il.append(new ASTORE(local.getIndex())));
+//    matchGen.setDomIndex(local.getIndex());
+//  }
 
   private JExpression compilePatterns(CompilerContext ctx) {
  // FIXME
@@ -413,7 +396,7 @@ final class Number extends Instruction implements Closure {
 
       // Translate Pattern
 //      il.append(matchGen.loadContextNode());
-      nodeCounterCtx.currentBlock()._return(_from.compile(nodeCounterCtx));
+      nodeCounterCtx.currentBlock()._return(_from.toJExpression(nodeCounterCtx));
 //      _from.synthesize(nodeCounterGen, matchGen);
 //      il.append(IRETURN);
 
@@ -439,7 +422,7 @@ final class Number extends Instruction implements Closure {
 
       // Translate Pattern
 //      il.append(matchGen.loadContextNode());
-      nodeCounterCtx.currentBlock()._return(_count.compile(nodeCounterCtx));
+      nodeCounterCtx.currentBlock()._return(_count.toJExpression(nodeCounterCtx));
 //      _count.translate(nodeCounterCtx);
 //      _count.synthesize(nodeCounterGen, matchGen);
 
@@ -493,7 +476,7 @@ final class Number extends Instruction implements Closure {
     if (hasValue()) {
 //      compileDefault(classGen, methodGen);
 //      _value.translate(classGen, methodGen);
-      JExpression value = ctx.ref(Math.class).staticInvoke("floor").arg(JExpr.lit(0.5).plus(_value.compile(ctx)));
+      JExpression value = ctx.ref(Math.class).staticInvoke("floor").arg(JExpr.lit(0.5).plus(_value.toJExpression(ctx)));
       // Using java.lang.Math.floor(number + 0.5) to return a double value
 //      il.append(new PUSH(cpg, 0.5));
 //      il.append(DADD);
@@ -512,7 +495,7 @@ final class Number extends Instruction implements Closure {
 
     // Call setStartNode()
     if (!hasValue()) {
-      numberFieldIndex = numberFieldIndex.invoke("setStartNode").arg(ctx.currentNode());
+      numberFieldIndex = numberFieldIndex.invoke(SET_START_NODE).arg(ctx.currentNode());
 //      il.append(methodGen.loadContextNode());
 //      index = cpg.addMethodref(NODE_COUNTER, SET_START_NODE, "(I)" + NODE_COUNTER_SIG);
 //      il.append(new INVOKEVIRTUAL(index));
@@ -522,35 +505,35 @@ final class Number extends Instruction implements Closure {
     if (_formatNeeded) {
       JExpression format;
       if (_format != null) {
-        format = _format.compile(ctx);
+        format = _format.toJExpression(ctx);
       } else {
         format = lit("1");
       }
 
       JExpression lang;
       if (_lang != null) {
-        lang = _lang.compile(ctx);
+        lang = _lang.toJExpression(ctx);
       } else {
         lang = lit("en"); // TODO ??
       }
 
       JExpression letterValue;
       if (_letterValue != null) {
-        letterValue = _letterValue.compile(ctx);
+        letterValue = _letterValue.toJExpression(ctx);
       } else {
-        letterValue = lit(EMPTYSTRING);
+        letterValue = lit("");
       }
 
       JExpression groupingSeparator;
       if (_groupingSeparator != null) {
-        groupingSeparator = _groupingSeparator.compile(ctx);
+        groupingSeparator = _groupingSeparator.toJExpression(ctx);
       } else {
-        groupingSeparator = lit(EMPTYSTRING);
+        groupingSeparator = lit("");
       }
 
       JExpression groupingSize;
       if (_groupingSize != null) {
-        groupingSize = _groupingSize.compile(ctx);
+        groupingSize = _groupingSize.toJExpression(ctx);
       } else {
         groupingSize = lit("0");
       }

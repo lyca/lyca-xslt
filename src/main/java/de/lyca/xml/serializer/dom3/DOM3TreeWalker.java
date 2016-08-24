@@ -519,7 +519,7 @@ final class DOM3TreeWalker {
 
     // DocumentType nodes are never passed to the filter
 
-    if (internalSubset != null && !"".equals(internalSubset)) {
+    if (internalSubset != null && !internalSubset.isEmpty()) {
 
       if (bStart) {
         try {

@@ -395,7 +395,7 @@ final class Predicate extends Expression implements Closure {
     filterCtx.pushBlock(test.body());
     filterCtx.pushNode(nodeParam);
 
-    test.body()._return(_exp.compile(filterCtx));
+    test.body()._return(_exp.toJExpression(filterCtx));
     
 //    // Store the dom in a local variable
 //    local = testGen.addLocalVariable("document", Util.getJCRefType(DOM_INTF_SIG), null, null);
@@ -620,11 +620,11 @@ final class Predicate extends Expression implements Closure {
   }
 
   @Override
-  public JExpression compile(CompilerContext ctx) {
+  public JExpression toJExpression(CompilerContext ctx) {
     if (_nthPositionFilter || _nthDescendant) {
-      return _exp.compile(ctx);
+      return _exp.toJExpression(ctx);
     } else if (isNodeValueTest() && getParent() instanceof Step) {
-      return _value.compile(ctx);
+      return _value.toJExpression(ctx);
       // FIXME
 //      il.append(new CHECKCAST(cpg.addClass(STRING_CLASS)));
 //      il.append(new PUSH(cpg, ((EqualityExpr) _exp).getOp()));

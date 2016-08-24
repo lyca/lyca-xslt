@@ -227,14 +227,14 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
   }
 
   protected TransformerImpl(Translet translet, Properties outputProperties, int indentNumber,
-          TransformerFactoryImpl tfactory) {
+      TransformerFactoryImpl tfactory) {
     _translet = (AbstractTranslet) translet;
     _indentNumber = indentNumber;
     _tfactory = tfactory;
     stylesheetProperties = createStylesheetProperties(outputProperties);
     if (stylesheetProperties.containsKey(OutputKeys.METHOD)) {
       defaultProperties = OutputPropertiesMapFactory.getDefaultMethodProperties(stylesheetProperties
-              .get(OutputKeys.METHOD));
+          .get(OutputKeys.METHOD));
     } else {
       defaultProperties = OutputPropertiesMapFactory.getDefaultMethodProperties("xml");
     }
@@ -438,14 +438,9 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
       DOM dom = null;
 
       if (source != null) {
-        DTMWSFilter wsfilter;
-        if (_translet != null && _translet instanceof StripFilter) {
-          wsfilter = new DOMWSFilter(_translet);
-        } else {
-          wsfilter = null;
-        }
+        DTMWSFilter wsfilter = _translet instanceof StripFilter ? new DOMWSFilter(_translet) : null;
 
-        final boolean hasIdCall = _translet != null ? _translet.hasIdCall() : false;
+        final boolean hasIdCall = _translet != null && _translet.hasIdCall();
 
         if (_dtmManager == null) {
           _dtmManager = (XSLTCDTMManager) _tfactory.getDTMManagerClass().newInstance();
@@ -585,10 +580,10 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
        * StreamSource() are used.
        */
       if (source instanceof StreamSource && source.getSystemId() == null
-              && ((StreamSource) source).getInputStream() == null && ((StreamSource) source).getReader() == null
-              || source instanceof SAXSource && ((SAXSource) source).getInputSource() == null
-              && ((SAXSource) source).getXMLReader() == null || source instanceof DOMSource
-              && ((DOMSource) source).getNode() == null) {
+          && ((StreamSource) source).getInputStream() == null && ((StreamSource) source).getReader() == null
+          || source instanceof SAXSource && ((SAXSource) source).getInputSource() == null
+          && ((SAXSource) source).getXMLReader() == null || source instanceof DOMSource
+          && ((DOMSource) source).getNode() == null) {
         final DocumentBuilderFactory builderF = DocumentBuilderFactory.newInstance();
         final DocumentBuilder builder = builderF.newDocumentBuilder();
         final String systemID = source.getSystemId();
@@ -740,7 +735,7 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
   }
 
   private String getLayeredOutputProperty(String name, Map<String, String> first, Map<String, String> second,
-          Map<String, String> third) {
+      Map<String, String> third) {
     String result = getLayeredOutputProperty(name, first, second);
     return result == null ? third.get(name) : result;
   }
@@ -823,13 +818,13 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
     }
 
     final String doctypePublic = getLayeredOutputProperty(OutputKeys.DOCTYPE_PUBLIC, userProperties,
-            stylesheetProperties);
+        stylesheetProperties);
     if (doctypePublic != null) {
       translet._doctypePublic = doctypePublic;
     }
 
     final String doctypeSystem = getLayeredOutputProperty(OutputKeys.DOCTYPE_SYSTEM, userProperties,
-            stylesheetProperties);
+        stylesheetProperties);
     if (doctypeSystem != null) {
       translet._doctypeSystem = doctypeSystem;
     }
@@ -850,7 +845,7 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
     }
 
     final String omitHeader = getLayeredOutputProperty(OutputKeys.OMIT_XML_DECLARATION, userProperties,
-            stylesheetProperties);
+        stylesheetProperties);
     if (omitHeader != null) {
       translet._omitHeader = YES.equalsIgnoreCase(omitHeader);
     }
@@ -861,7 +856,7 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
     }
 
     final String cdata = getLayeredOutputProperty(OutputKeys.CDATA_SECTION_ELEMENTS, userProperties,
-            stylesheetProperties);
+        stylesheetProperties);
     if (cdata != null) {
       translet._cdata = null; // clear previous setting
       final StringTokenizer e = new StringTokenizer(cdata);
@@ -882,9 +877,9 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
 
     // Transfer only non-default properties
     final String doctypePublic = getLayeredOutputProperty(OutputKeys.DOCTYPE_PUBLIC, userProperties,
-            stylesheetProperties);
+        stylesheetProperties);
     final String doctypeSystem = getLayeredOutputProperty(OutputKeys.DOCTYPE_SYSTEM, userProperties,
-            stylesheetProperties);
+        stylesheetProperties);
 
     final String mediaType = getLayeredOutputProperty(OutputKeys.MEDIA_TYPE, userProperties, stylesheetProperties);
     if (mediaType != null) {
@@ -902,7 +897,7 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
     }
 
     final String omitHeader = getLayeredOutputProperty(OutputKeys.OMIT_XML_DECLARATION, userProperties,
-            stylesheetProperties);
+        stylesheetProperties);
     if (omitHeader != null) {
       handler.setOmitXMLDeclaration(YES.equalsIgnoreCase(omitHeader));
     }
@@ -913,7 +908,7 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
     }
 
     final String cdata = getLayeredOutputProperty(OutputKeys.CDATA_SECTION_ELEMENTS, userProperties,
-            stylesheetProperties);
+        stylesheetProperties);
     if (cdata != null) {
       final StringTokenizer e = new StringTokenizer(cdata);
       List<String> uriAndLocalNames = null;
@@ -971,9 +966,9 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
   }
 
   private static final Set<String> VALID_OUTPUT_PROPERTIES = new HashSet<>(Arrays.asList(new String[] {
-          OutputKeys.ENCODING, OutputKeys.METHOD, OutputKeys.INDENT, OutputKeys.DOCTYPE_PUBLIC,
-          OutputKeys.DOCTYPE_SYSTEM, OutputKeys.CDATA_SECTION_ELEMENTS, OutputKeys.MEDIA_TYPE,
-          OutputKeys.OMIT_XML_DECLARATION, OutputKeys.STANDALONE, OutputKeys.VERSION }));
+      OutputKeys.ENCODING, OutputKeys.METHOD, OutputKeys.INDENT, OutputKeys.DOCTYPE_PUBLIC, OutputKeys.DOCTYPE_SYSTEM,
+      OutputKeys.CDATA_SECTION_ELEMENTS, OutputKeys.MEDIA_TYPE, OutputKeys.OMIT_XML_DECLARATION, OutputKeys.STANDALONE,
+      OutputKeys.VERSION }));
 
   /**
    * Verifies if a given output property name is a property defined in the JAXP
@@ -1134,7 +1129,7 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
     final Throwable wrapped = e.getException();
     if (wrapped != null) {
       System.err
-              .println(new ErrorMsg(ErrorMsg.ERROR_PLUS_WRAPPED_MSG, e.getMessageAndLocation(), wrapped.getMessage()));
+          .println(new ErrorMsg(ErrorMsg.ERROR_PLUS_WRAPPED_MSG, e.getMessageAndLocation(), wrapped.getMessage()));
     } else {
       System.err.println(new ErrorMsg(ErrorMsg.ERROR_MSG, e.getMessageAndLocation()));
     }
@@ -1159,7 +1154,7 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
     final Throwable wrapped = e.getException();
     if (wrapped != null) {
       System.err.println(new ErrorMsg(ErrorMsg.FATAL_ERR_PLUS_WRAPPED_MSG, e.getMessageAndLocation(), wrapped
-              .getMessage()));
+          .getMessage()));
     } else {
       System.err.println(new ErrorMsg(ErrorMsg.FATAL_ERR_MSG, e.getMessageAndLocation()));
     }
@@ -1184,7 +1179,7 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
     final Throwable wrapped = e.getException();
     if (wrapped != null) {
       System.err.println(new ErrorMsg(ErrorMsg.WARNING_PLUS_WRAPPED_MSG, e.getMessageAndLocation(), wrapped
-              .getMessage()));
+          .getMessage()));
     } else {
       System.err.println(new ErrorMsg(ErrorMsg.WARNING_MSG, e.getMessageAndLocation()));
     }

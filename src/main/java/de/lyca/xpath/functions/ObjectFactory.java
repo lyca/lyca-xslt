@@ -560,7 +560,7 @@ final class ObjectFactory {
       }
     }
 
-    if (factoryClassName != null && !"".equals(factoryClassName)) {
+    if (factoryClassName != null && !factoryClassName.isEmpty()) {
       debugPrintln("found in resource, value=" + factoryClassName);
 
       // Note: here we do not want to fall back to the current

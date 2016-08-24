@@ -102,17 +102,12 @@ final class If extends Instruction {
    */
   @Override
   public void translate(CompilerContext ctx) {
-//    final InstructionList il = methodGen.getInstructionList();
-    //_test.translateDesynthesized(definedClass, method, body);
-    JExpression testExp = _test.compile(ctx);
-    // remember end of condition
-//    final InstructionHandle truec = il.getEnd();
+    JExpression testExp = _test.toJExpression(ctx);
     if (!_ignore && testExp != FALSE) {
       ctx.pushBlock(ctx.currentBlock()._if(testExp)._then());
       translateContents(ctx);
       ctx.popBlock();
     }
-//    _test.backPatchFalseList(il.append(NOP));
-//    _test.backPatchTrueList(truec.getNext());
   }
+
 }

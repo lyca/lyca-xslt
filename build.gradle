@@ -22,11 +22,11 @@ configurations {
 
 dependencies {
     compile 'xerces:xercesImpl:2.11.0'
-    compile 'org.apache.bcel:bcel:5.2'
+//    compile 'org.apache.bcel:bcel:5.2'
     compile 'edu.princeton.cup:java-cup:10k'
     compile 'com.sun.codemodel:codemodel:2.4'
     testCompile 'junit:junit:4.12'
-    testCompile 'xmlunit:xmlunit:1.5'
+    testCompile 'xmlunit:xmlunit:1.6'
     lexer files('tools/JLex.jar')
 }
 

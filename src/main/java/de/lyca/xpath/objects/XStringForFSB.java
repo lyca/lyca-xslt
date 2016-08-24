@@ -732,7 +732,7 @@ public class XStringForFSB extends XString {
     final int len = m_length - beginIndex;
 
     if (len <= 0)
-      return XString.EMPTYSTRING;
+      return XString.EMPTY;
     else {
       final int start = m_start + beginIndex;
 
@@ -767,7 +767,7 @@ public class XStringForFSB extends XString {
     }
 
     if (len <= 0)
-      return XString.EMPTYSTRING;
+      return XString.EMPTY;
     else {
       final int start = m_start + beginIndex;
 

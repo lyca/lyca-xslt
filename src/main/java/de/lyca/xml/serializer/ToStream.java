@@ -15,10 +15,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * $Id$
- */
 package de.lyca.xml.serializer;
+
+import static de.lyca.xml.serializer.SerializerConstants.CDATA_CONTINUE;
+import static de.lyca.xml.serializer.SerializerConstants.CDATA_DELIMITER_CLOSE;
+import static de.lyca.xml.serializer.SerializerConstants.CDATA_DELIMITER_OPEN;
+import static de.lyca.xml.serializer.SerializerConstants.XMLNS_URI;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -26,11 +28,8 @@ import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.util.EmptyStackException;
-import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
-import java.util.Set;
 
 import javax.xml.transform.ErrorListener;
 import javax.xml.transform.OutputKeys;
@@ -45,7 +44,6 @@ import org.xml.sax.SAXException;
 import de.lyca.xml.serializer.utils.MsgKey;
 import de.lyca.xml.serializer.utils.Utils;
 import de.lyca.xml.serializer.utils.WrappedRuntimeException;
-
 /**
  * This abstract class is a base class for other stream serializers (xml, html,
  * text ...) that write output to a stream.
@@ -544,10 +542,7 @@ abstract public class ToStream extends SerializerBase {
       // and the non-default values after that,
       // just in case there is some unexpected
       // residual values left over from over-ridden default values
-      Enumeration propNames;
-      propNames = format.propertyNames();
-      while (propNames.hasMoreElements()) {
-        final String key = (String) propNames.nextElement();
+      for (final String key : format.stringPropertyNames()) {
         // Get the value, possibly a default value
         final String value = format.getProperty(key);
         // Get the non-default value (if any).
@@ -585,28 +580,10 @@ abstract public class ToStream extends SerializerBase {
   @Override
   public Properties getOutputFormat() {
     final Properties def = new Properties();
-    {
-      final Set<String> s = getOutputPropDefaultKeys();
-      final Iterator<String> i = s.iterator();
-      while (i.hasNext()) {
-        final String key = i.next();
-        final String val = getOutputPropertyDefault(key);
-        def.put(key, val);
-      }
-    }
+    def.putAll(getOutputPropDefault());
 
     final Properties props = new Properties(def);
-    {
-      final Set<String> s = getOutputPropKeys();
-      final Iterator<String> i = s.iterator();
-      while (i.hasNext()) {
-        final String key = i.next();
-        final String val = getOutputPropertyNonDefault(key);
-        if (val != null) {
-          props.put(key, val);
-        }
-      }
-    }
+    props.putAll(getOutputProps());
     return props;
   }
 
@@ -2163,11 +2140,11 @@ abstract public class ToStream extends SerializerBase {
        * We are just covering our butt here.
        */
       String name;
-      if (EMPTYSTRING.equals(prefix)) {
+      if ("".equals(prefix)) {
         name = "xmlns";
         addAttributeAlways(XMLNS_URI, name, name, "CDATA", uri, false);
       } else {
-        if (!EMPTYSTRING.equals(uri))
+        if (!"".equals(uri))
         // hack for XSLTC attribset16 test
         { // that maps ns1 prefix to "" URI
           name = "xmlns:" + prefix;

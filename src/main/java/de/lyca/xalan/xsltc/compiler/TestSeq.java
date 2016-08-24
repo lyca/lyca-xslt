@@ -214,69 +214,26 @@ final class TestSeq {
     if (count == 0)
       return _start = getTemplateHandle(_default);
 
-    // Init handle to jump when all patterns failed
+    // Init default call when all patterns failed
     JStatement fail = _default == null ? defaultStatement : getTemplateHandle(_default);
 
-    // Compile all patterns in reverse order
+    // Compile all patterns
     JBlock patternBlock = new JBlock(false, false);
     ctx.pushBlock(patternBlock);
-//    for (int n = count - 1; n >= 0; n--) {
-    for (int n = 0; n <count; n++) {
+    for (int n = 0; n < count; n++) {
       final LocationPathPattern pattern = getPattern(n);
-      final Template template = pattern.getTemplate();
-      // Patterns expect current node on top of stack
-      // il.append(methodGen.loadCurrentNode());
-
       // Apply the test-code compiled for the pattern
-      // TODO InstructionList ilist = methodGen.getInstructionList(pattern);
-      // TODO if (ilist == null) {
       JBlock currentBlock = new JBlock();
       ctx.pushBlock(currentBlock);
       pattern.compilePattern(ctx, n + 1 == count ? fail : null);
       patternBlock.add(ctx.popBlock());
-//      block.add(fail);
-      // TODO methodGen.addInstructionList(pattern, ilist);
-      // TODO }
-
-//      // Make a copy of the instruction list for backpatching
-//      final InstructionList copyOfilist = ilist.copy();
-//
-//      FlowList trueList = pattern.getTrueList();
-//      if (trueList != null) {
-//        trueList = trueList.copyAndRedirect(ilist, copyOfilist);
-//      }
-//      FlowList falseList = pattern.getFalseList();
-//      if (falseList != null) {
-//        falseList = falseList.copyAndRedirect(ilist, copyOfilist);
-//      }
-//
-//      il.append(copyOfilist);
-//
-//      // On success branch to the template code
-//      final JBlock gtmpl = getTemplateHandle(template);
-//      final InstructionHandle success = il.append(new GOTO_W(gtmpl));
-//
-//      if (trueList != null) {
-//        trueList.backPatch(success);
-//      }
-//      if (falseList != null) {
-//        falseList.backPatch(fail);
-//      }
-//
-//      // Next pattern's 'fail' target is this pattern's first instruction
-//      fail = il.getStart();
-//
-//      // Append existing instruction list to the end of this one
-//      if (_instructionList != null) {
-//        block.add(_instructionList);
-//      }
-//
-//      // Set current instruction list to be this one
-//      _instructionList = il;
     }
+
     ctx.popBlock();
     _instructionList = patternBlock;
-    if(_instructionList != null) return _instructionList;
+    if (_instructionList != null)
+      return _instructionList;
     return _start = fail;
   }
+
 }

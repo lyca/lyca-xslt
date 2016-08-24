@@ -13,7 +13,7 @@ import org.junit.Test;
 public class ConfProcessorinfoTests {
 
   private static final String PACKAGE = '/' + ConfProcessorinfoTests.class.getPackage().getName().replace('.', '/')
-          + "/processorinfo/";
+      + "/processorinfo/";
 
   @Test
   public void processorinfo03() throws Exception {

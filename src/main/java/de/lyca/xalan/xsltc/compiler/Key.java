@@ -23,11 +23,13 @@ package de.lyca.xalan.xsltc.compiler;
 
 import static com.sun.codemodel.JExpr.TRUE;
 import static com.sun.codemodel.JExpr.lit;
+import static de.lyca.xalan.xsltc.DOM.GET_AXIS_ITERATOR;
+import static de.lyca.xalan.xsltc.DOM.GET_STRING_VALUE_X;
+import static de.lyca.xml.dtm.DTMAxisIterator.NEXT;
+import static de.lyca.xml.dtm.DTMAxisIterator.SET_START_NODE;
 
 import com.sun.codemodel.JBlock;
-import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JExpression;
-import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JVar;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
@@ -132,138 +134,28 @@ final class Key extends TopLevelElement {
    * set. In this case we must traverse all nodes in the set and create one
    * entry in this key's index for each node in the set.
    */
-  public void traverseNodeSet(JDefinedClass definedClass, JMethod method, int buildKeyIndex) {
- // FIXME
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//    final InstructionList il = methodGen.getInstructionList();
-//
-//    // DOM.getStringValueX(nodeIndex) => String
-//    final int getNodeValue = cpg.addInterfaceMethodref(DOM_INTF, GET_NODE_VALUE, "(I)" + STRING_SIG);
-//
-//    cpg.addInterfaceMethodref(DOM_INTF, "getNodeIdent", "(I)" + NODE_SIG);
-//
-//    // AbstractTranslet.SetKeyIndexDom(name, Dom) => void
-//    final int keyDom = cpg.addMethodref(TRANSLET_CLASS, "setKeyIndexDom", "(" + STRING_SIG + DOM_INTF_SIG + ")V");
-//
-//    // This variable holds the id of the node we found with the "match"
-//    // attribute of xsl:key. This is the id we store, with the value we
-//    // get from the nodes we find here, in the index for this key.
-//    final LocalVariableGen parentNode = methodGen.addLocalVariable("parentNode", Util.getJCRefType("I"), null, null);
-//
-//    // Get the 'parameter' from the stack and store it in a local var.
-//    parentNode.setStart(il.append(new ISTORE(parentNode.getIndex())));
-//
-//    // Save current node and current iterator on the stack
-//    il.append(methodGen.loadCurrentNode());
-//    il.append(methodGen.loadIterator());
-//
-//    // Overwrite current iterator with one that gives us only what we want
-//    _use.translate(classGen, methodGen);
-//    _use.startIterator(classGen, methodGen);
-//    il.append(methodGen.storeIterator());
-//
-//    final BranchHandle nextNode = il.append(new GOTO(null));
-//    final InstructionHandle loop = il.append(NOP);
-//
-//    // Prepare to call buildKeyIndex(String name, int node, String value);
-//    il.append(classGen.loadTranslet());
-//    il.append(new PUSH(cpg, _name.toString()));
-//    parentNode.setEnd(il.append(new ILOAD(parentNode.getIndex())));
-//
-//    // Now get the node value and push it on the parameter stack
-//    il.append(methodGen.loadDOM());
-//    il.append(methodGen.loadCurrentNode());
-//    il.append(new INVOKEINTERFACE(getNodeValue, 2));
-//
-//    // Finally do the call to add an entry in the index for this key.
-//    il.append(new INVOKEVIRTUAL(buildKeyIndex));
-//
-//    il.append(classGen.loadTranslet());
-//    il.append(new PUSH(cpg, getName()));
-//    il.append(methodGen.loadDOM());
-//    il.append(new INVOKEVIRTUAL(keyDom));
-//
-//    nextNode.setTarget(il.append(methodGen.loadIterator()));
-//    il.append(methodGen.nextNode());
-//
-//    il.append(DUP);
-//    il.append(methodGen.storeCurrentNode());
-//    il.append(new IFGE(loop)); // Go on to next matching node....
-//
-//    // Restore current node and current iterator from the stack
-//    il.append(methodGen.storeIterator());
-//    il.append(methodGen.storeCurrentNode());
-  }
-
   public void traverseNodeSet(CompilerContext ctx) {
-    // FIXME
+    // Overwrite current iterator with one that gives us only what we want
+    JExpression use = _use.startIterator(ctx, _use.toJExpression(ctx));
 
-    // DOM.getStringValueX(nodeIndex) => String
-//    final int getNodeValue = cpg.addInterfaceMethodref(DOM_INTF, GET_NODE_VALUE, "(I)" + STRING_SIG);
-
-//    cpg.addInterfaceMethodref(DOM_INTF, "getNodeIdent", "(I)" + NODE_SIG);
-
-    // AbstractTranslet.SetKeyIndexDom(name, Dom) => void
-//    final int keyDom = cpg.addMethodref(TRANSLET_CLASS, "setKeyIndexDom", "(" + STRING_SIG + DOM_INTF_SIG + ")V");
+    JVar iterator = ctx.currentBlock().decl(ctx.ref(DTMAxisIterator.class), ctx.nextTmpIterator(), use);
+    JBlock loop = ctx.currentBlock()._while(TRUE).body();
 
     // This variable holds the id of the node we found with the "match"
     // attribute of xsl:key. This is the id we store, with the value we
     // get from the nodes we find here, in the index for this key.
-//    final LocalVariableGen parentNode = methodGen.addLocalVariable("parentNode", Util.getJCRefType("I"), null, null);
-
-    // Get the 'parameter' from the stack and store it in a local var.
-//    parentNode.setStart(il.append(new ISTORE(parentNode.getIndex())));
-
-    // Save current node and current iterator on the stack
-//    il.append(methodGen.loadCurrentNode());
-//    il.append(methodGen.loadIterator());
-
-    // Overwrite current iterator with one that gives us only what we want
-    JExpression use = _use.startIterator(ctx, _use.compile(ctx));
-    
-    JVar iterator = ctx.currentBlock().decl(ctx.ref(DTMAxisIterator.class), ctx.nextTmpIterator(), use);
-    JBlock loop = ctx.currentBlock()._while(TRUE).body();
-    JVar parentNode = loop.decl(ctx.owner().INT, "parentNode", iterator.invoke("next"));
+    JVar parentNode = loop.decl(ctx.owner().INT, "parentNode", iterator.invoke(NEXT));
     loop._if(parentNode.lt(lit(0)))._then()._break();
 
+    // Prepare to call buildKeyIndex(String name, int node, String value);
     // AbstractTranslet.buildKeyIndex(name,node_id,value) => void
-    loop.invoke("buildKeyIndex").arg(_name.toString()).arg(ctx.currentNode()).arg(ctx.currentDom().invoke("getStringValueX").arg(parentNode));
+    // Now get the node value and push it on the parameter stack
+    // DOM.getStringValueX(nodeIndex) => String
+    loop.invoke("buildKeyIndex").arg(_name.toString()).arg(ctx.currentNode())
+        .arg(ctx.currentDom().invoke(GET_STRING_VALUE_X).arg(parentNode));
+    // Finally do the call to add an entry in the index for this key.
     // AbstractTranslet.SetKeyIndexDom(name, Dom) => void
     loop.invoke("setKeyIndexDom").arg(_name.toString()).arg(ctx.currentDom());
-
-//    il.append(methodGen.storeIterator());
-
-//    final BranchHandle nextNode = il.append(new GOTO(null));
-//    final InstructionHandle loop = il.append(NOP);
-
-    // Prepare to call buildKeyIndex(String name, int node, String value);
-//    il.append(classGen.loadTranslet());
-//    il.append(new PUSH(cpg, _name.toString()));
-//    parentNode.setEnd(il.append(new ILOAD(parentNode.getIndex())));
-
-    // Now get the node value and push it on the parameter stack
-//    il.append(methodGen.loadDOM());
-//    il.append(methodGen.loadCurrentNode());
-//    il.append(new INVOKEINTERFACE(getNodeValue, 2));
-
-    // Finally do the call to add an entry in the index for this key.
-//    il.append(new INVOKEVIRTUAL(buildKeyIndex));
-
-//    il.append(classGen.loadTranslet());
-//    il.append(new PUSH(cpg, getName()));
-//    il.append(methodGen.loadDOM());
-//    il.append(new INVOKEVIRTUAL(keyDom));
-
-//    nextNode.setTarget(il.append(methodGen.loadIterator()));
-//    il.append(methodGen.nextNode());
-
-//    il.append(DUP);
-//    il.append(methodGen.storeCurrentNode());
-//    il.append(new IFGE(loop)); // Go on to next matching node....
-
-    // Restore current node and current iterator from the stack
-//    il.append(methodGen.storeIterator());
-//    il.append(methodGen.storeCurrentNode());
   }
 
   /**
@@ -272,75 +164,41 @@ final class Key extends TopLevelElement {
    */
   @Override
   public void translate(CompilerContext ctx) {
-    // FIXME
-
-//    cpg.addInterfaceMethodref(DOM_INTF, "getNodeIdent", "(I)" + NODE_SIG);
-
-    // DOM.getAxisIterator(root) => NodeIterator
-//    final int git = cpg.addInterfaceMethodref(DOM_INTF, "getAxisIterator", "(Lde/lyca/xml/dtm/Axis;)"
-//        + NODE_ITERATOR_SIG);
-
-//    il.append(methodGen.loadCurrentNode());
-//    il.append(methodGen.loadIterator());
-
-    // Get an iterator for all nodes in the DOM
-    // and reset the iterator to start with the root node
-//    il.append(methodGen.loadDOM());
-//    il.append(factory.createFieldAccess("de.lyca.xml.dtm.Axis", Axis.DESCENDANT.name(), Type.Axis.toJCType(),
-//        org.apache.bcel.Constants.GETSTATIC));
-//    il.append(new INVOKEINTERFACE(git, 2));
-//    il.append(methodGen.loadCurrentNode());
-//    il.append(methodGen.setStartNode());
-//    il.append(methodGen.storeIterator());
+    // Get an iterator for all nodes in the DOM and reset the iterator to start
+    // with the root node
     JVar axisIterator = ctx.currentBlock().decl(
         ctx.ref(DTMAxisIterator.class),
         ctx.nextTmpIterator(),
-        ctx.currentDom().invoke("getAxisIterator").arg(ctx.ref(Axis.class).staticRef(Axis.DESCENDANT.name()))
-            .invoke("setStartNode").arg(ctx.currentNode()));
+        ctx.currentDom().invoke(GET_AXIS_ITERATOR).arg(ctx.ref(Axis.class).staticRef(Axis.DESCENDANT.name()))
+            .invoke(SET_START_NODE).arg(ctx.currentNode()));
 
     // Loop for traversing all nodes in the DOM
     final JBlock loop = ctx.currentBlock()._while(TRUE).body();
-    JVar current = loop.decl(ctx.owner().INT, ctx.nextCurrent(), axisIterator.invoke("next"));
+    // Get the next node from the iterator and do loop again...
+    JVar current = loop.decl(ctx.owner().INT, ctx.nextCurrent(), axisIterator.invoke(NEXT));
     loop._if(current.lte(lit(0)))._then()._break();
     ctx.pushBlock(loop);
     ctx.pushNode(current);
 
     // Check if the current node matches the pattern in "match"
-    JBlock _if = loop._if(_match.compile(ctx))._then();
+    JBlock _if = loop._if(_match.toJExpression(ctx))._then();
     ctx.pushBlock(_if);
 
     // If this is a node-set we must go through each node in the set
     if (_useType instanceof NodeSetType) {
       // Pass current node as parameter (we're indexing on that node)
-      // il.append(methodGen.loadCurrentNode());
-//       traverseNodeSet(classGen, methodGen, key);
-       traverseNodeSet(ctx);
+      traverseNodeSet(ctx);
     } else {
       // AbstractTranslet.buildKeyIndex(name,node_id,value) => void
-      _if.invoke("buildKeyIndex").arg(_name.toString()).arg(ctx.currentNode()).arg(_use.compile(ctx));
+      JExpression use = _use.toJExpression(ctx);
+      _if.invoke("buildKeyIndex").arg(_name.toString()).arg(ctx.currentNode()).arg(use);
       // AbstractTranslet.SetKeyIndexDom(name, Dom) => void
       _if.invoke("setKeyIndexDom").arg(_name.toString()).arg(ctx.currentDom());
     }
-    
+
     ctx.popBlock();
     ctx.popNode();
     ctx.popBlock();
-
-    // Get the next node from the iterator and do loop again...
-//    final InstructionHandle skip = il.append(NOP);
-//
-//    il.append(methodGen.loadIterator());
-//    il.append(methodGen.nextNode());
-//    il.append(DUP);
-//    il.append(methodGen.storeCurrentNode());
-//    il.append(new IFGT(loop));
-//
-//    // Restore current node and current iterator from the stack
-//    il.append(methodGen.storeIterator());
-//    il.append(methodGen.storeCurrentNode());
-//
-//    nextNode.setTarget(skip);
-//    skipNode.setTarget(skip);
   }
 
 }

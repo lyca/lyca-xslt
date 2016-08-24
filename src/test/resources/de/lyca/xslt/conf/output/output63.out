@@ -1,5 +1,5 @@
 <HTML xmlns="http://www.w3.org/TR/REC-html40">
-<jsp:setProperty xmlns:jsp="http://www.w3.org/jsp" value="blah" property="blah" name="blah"/>
+<jsp:setProperty name="blah" property="blah" value="blah" xmlns:jsp="http://www.w3.org/jsp"/>
 <P/>
 <p/>
 <P/>

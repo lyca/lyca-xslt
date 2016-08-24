@@ -24,7 +24,6 @@ package de.lyca.xalan.xsltc.compiler;
 import static com.sun.codemodel.JExpr.FALSE;
 import static com.sun.codemodel.JExpr.direct;
 import static com.sun.codemodel.JExpr.lit;
-import static de.lyca.xalan.xsltc.compiler.Constants.EMPTYSTRING;
 import static de.lyca.xalan.xsltc.compiler.Constants.ERROR;
 import static de.lyca.xalan.xsltc.compiler.Constants.STATIC_NS_ANCESTORS_ARRAY_FIELD;
 import static de.lyca.xalan.xsltc.compiler.Constants.STATIC_PREFIX_URIS_ARRAY_FIELD;
@@ -34,6 +33,7 @@ import static de.lyca.xalan.xsltc.compiler.util.ErrorMsg.ILLEGAL_ELEM_NAME_ERR;
 import static de.lyca.xalan.xsltc.compiler.util.ErrorMsg.INVALID_QNAME_ERR;
 import static de.lyca.xalan.xsltc.compiler.util.ErrorMsg.NAMESPACE_UNDEF_ERR;
 
+import com.sun.codemodel.JExpr;
 import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JVar;
 
@@ -57,6 +57,8 @@ final class XslElement extends Instruction {
   private boolean _isLiteralName = true;
   private AttributeValueTemplate _name;
   private AttributeValueTemplate _namespace;
+  private boolean namespaceUriEmpty = false;
+  private boolean hasCalledStartPrefixMapping = false;
 
   /**
    * Displays the contents of the element
@@ -82,7 +84,7 @@ final class XslElement extends Instruction {
 
     // Handle the 'name' attribute
     String name = getAttribute("name");
-    if (name == EMPTYSTRING) {
+    if (name == "") {
       final ErrorMsg msg = new ErrorMsg(ILLEGAL_ELEM_NAME_ERR, name, this);
       parser.reportError(WARNING, msg);
       parseChildren(parser);
@@ -106,10 +108,15 @@ final class XslElement extends Instruction {
 
       final QName qname = parser.getQNameSafe(name);
       String prefix = qname.getPrefix();
-      final String local = qname.getLocalPart();
-
       if (prefix == null) {
-        prefix = EMPTYSTRING;
+        prefix = "";
+      } else if (!prefix.isEmpty()) {
+        String prefixAlias = stable.lookupPrefixAlias(prefix);
+        if (prefixAlias != null) {
+          prefix = prefixAlias;
+        }
+        final String local = qname.getLocalPart();
+        name = prefix + ":" + local;
       }
 
       if (!hasAttribute("namespace")) {
@@ -124,21 +131,21 @@ final class XslElement extends Instruction {
         _prefix = prefix;
         _namespace = new AttributeValueTemplate(namespace, parser, this);
       } else {
-        if (prefix == EMPTYSTRING) {
-          if (Util.isLiteral(namespace)) {
-            prefix = lookupPrefix(namespace);
-            if (prefix == null) {
-              prefix = stable.generateNamespacePrefix();
-            }
-          }
-
-          // Prepend prefix to local name
-          final StringBuilder newName = new StringBuilder(prefix);
-          if (prefix != EMPTYSTRING) {
-            newName.append(':');
-          }
-          name = newName.append(local).toString();
-        }
+        // if (prefix == "") {
+        // if (Util.isLiteral(namespace)) {
+        // prefix = lookupPrefix(namespace);
+        // if (prefix == null) {
+        // prefix = stable.generateNamespacePrefix();
+        // }
+        // }
+        //
+        // // Prepend prefix to local name
+        // final StringBuilder newName = new StringBuilder(prefix);
+        // if (prefix != "") {
+        // newName.append(':');
+        // }
+        // name = newName.append(local).toString();
+        // }
         _prefix = prefix;
         _namespace = new AttributeValueTemplate(namespace, parser, this);
       }
@@ -146,9 +153,9 @@ final class XslElement extends Instruction {
       // name attribute contains variable parts. If there is no namespace
       // attribute, the generated code needs to be prepared to look up
       // any prefix in the stylesheet at run-time.
-      _namespace = namespace == EMPTYSTRING ? null : new AttributeValueTemplate(namespace, parser, this);
+      _namespace = namespace == "" ? null : new AttributeValueTemplate(namespace, parser, this);
     }
-
+    namespaceUriEmpty = namespace.isEmpty();
     _name = new AttributeValueTemplate(name, parser, this);
 
     final String useSets = getAttribute("use-attribute-sets");
@@ -178,6 +185,19 @@ final class XslElement extends Instruction {
     return Type.Void;
   }
 
+  private boolean hasElementContent() {
+    if (hasContents()) {
+      for (final SyntaxTreeNode item : getContents()) {
+        if (item instanceof XslAttribute || item instanceof Text) {
+          continue;
+        } else {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
   /**
    * This method is called when the name of the element is known at compile
    * time. In this case, there is no need to inspect the element name at runtime
@@ -187,12 +207,16 @@ final class XslElement extends Instruction {
     JExpression handler = ctx.currentHandler();
     if (!_ignore) {
       if (_name.elementCount() == 1) {
-        ctx.currentBlock().invoke(handler, "startElement").arg(_name.compile(ctx));
+        ctx.currentBlock().invoke(handler, "startElement").arg(_name.toJExpression(ctx));
       } else {
-        ctx.currentBlock().invoke(handler, "startElement").arg(_name.compile(ctx));
+        ctx.currentBlock().invoke(handler, "startElement").arg(_name.toJExpression(ctx));
       }
       if (_namespace != null) {
-        ctx.currentBlock().add(ctx.currentHandler().invoke("namespaceAfterStartElement").arg(_prefix).arg(_namespace.compile(ctx)));
+        ctx.currentBlock().add(
+            ctx.currentHandler().invoke("namespaceAfterStartElement").arg(_prefix).arg(_namespace.toJExpression(ctx)));
+        // if (hasElementContent() && _namespace.elementCount() > 0) {
+        // ctx.currentBlock().add(ctx.currentHandler().invoke("startPrefixMapping").arg("").arg("").arg(JExpr.TRUE));
+        // }
         // il.append(methodGen.loadHandler());
         // il.append(new PUSH(cpg, _prefix));
         // _namespace.translate(classGen, methodGen);
@@ -204,9 +228,9 @@ final class XslElement extends Instruction {
 
     if (!_ignore) {
       if (_name.elementCount() == 1) {
-        ctx.currentBlock().invoke(handler, "endElement").arg(_name.compile(ctx));
+        ctx.currentBlock().invoke(handler, "endElement").arg(_name.toJExpression(ctx));
       } else {
-        ctx.currentBlock().invoke(handler, "endElement").arg(_name.compile(ctx));
+        ctx.currentBlock().invoke(handler, "endElement").arg(_name.toJExpression(ctx));
       }
     }
   }
@@ -236,31 +260,34 @@ final class XslElement extends Instruction {
 
       // if the qname is an AVT, then the qname has to be checked at runtime if
       // it is a valid qname
-//      final LocalVariableGen nameValue = methodGen.addLocalVariable2("nameValue", Util.getJCRefType(STRING_SIG), null);
+      // final LocalVariableGen nameValue =
+      // methodGen.addLocalVariable2("nameValue", Util.getJCRefType(STRING_SIG),
+      // null);
 
       // store the name into a variable first so _name.translate only needs to
       // be called once
-      
-      JVar nameValue = ctx.currentBlock().decl(ctx.ref(String.class), ctx.nextNameValue(), _name.compile(ctx));
 
-      //      nameValue.setStart(il.append(new ASTORE(nameValue.getIndex())));
-//      il.append(new ALOAD(nameValue.getIndex()));
+      JVar nameValue = ctx.currentBlock().decl(ctx.ref(String.class), ctx.nextNameValue(), _name.toJExpression(ctx));
+
+      // nameValue.setStart(il.append(new ASTORE(nameValue.getIndex())));
+      // il.append(new ALOAD(nameValue.getIndex()));
 
       // call checkQName if the name is an AVT
-//      final int check = cpg.addMethodref(BASIS_LIBRARY_CLASS, "checkQName", "(" + STRING_SIG + ")V");
-//      il.append(new INVOKESTATIC(check));
+      // final int check = cpg.addMethodref(BASIS_LIBRARY_CLASS, "checkQName",
+      // "(" + STRING_SIG + ")V");
+      // il.append(new INVOKESTATIC(check));
 
       ctx.currentBlock().add(ctx.ref(BasisLibrary.class).staticInvoke("checkQName").arg(nameValue));
 
       // Push handler for call to endElement()
-//      il.append(methodGen.loadHandler());
+      // il.append(methodGen.loadHandler());
 
       // load name value again
-//      nameValue.setEnd(il.append(new ALOAD(nameValue.getIndex())));
+      // nameValue.setEnd(il.append(new ALOAD(nameValue.getIndex())));
 
       JExpression namespace;
       if (_namespace != null) {
-        namespace = _namespace.compile(ctx);
+        namespace = _namespace.toJExpression(ctx);
       } else {
         // If name is an AVT and namespace is not specified, need to
         // look up any prefix in the stylesheet by calling
@@ -271,25 +298,29 @@ final class XslElement extends Instruction {
         namespace = ctx.ref(BasisLibrary.class).staticInvoke("lookupStylesheetQNameNamespace").arg(nameValue)
             .arg(lit(getNodeIDForStylesheetNSLookup())).arg(direct(STATIC_NS_ANCESTORS_ARRAY_FIELD))
             .arg(direct(STATIC_PREFIX_URIS_IDX_ARRAY_FIELD)).arg(direct(STATIC_PREFIX_URIS_ARRAY_FIELD)).arg(FALSE);
-        //        final String transletClassName = getXSLTC().getClassName();
-//        il.append(DUP);
-//        il.append(new PUSH(cpg, getNodeIDForStylesheetNSLookup()));
-//        il.append(new GETSTATIC(cpg.addFieldref(transletClassName, STATIC_NS_ANCESTORS_ARRAY_FIELD,
-//            NS_ANCESTORS_INDEX_SIG)));
-//        il.append(new GETSTATIC(cpg.addFieldref(transletClassName, STATIC_PREFIX_URIS_IDX_ARRAY_FIELD,
-//            PREFIX_URIS_IDX_SIG)));
-//        il.append(new GETSTATIC(cpg.addFieldref(transletClassName, STATIC_PREFIX_URIS_ARRAY_FIELD,
-//            PREFIX_URIS_ARRAY_SIG)));
-//        // Default namespace is significant
-//        il.append(ICONST_0);
-//        il.append(new INVOKESTATIC(cpg.addMethodref(BASIS_LIBRARY_CLASS, LOOKUP_STYLESHEET_QNAME_NS_REF,
-//            LOOKUP_STYLESHEET_QNAME_NS_SIG)));
+        // final String transletClassName = getXSLTC().getClassName();
+        // il.append(DUP);
+        // il.append(new PUSH(cpg, getNodeIDForStylesheetNSLookup()));
+        // il.append(new GETSTATIC(cpg.addFieldref(transletClassName,
+        // STATIC_NS_ANCESTORS_ARRAY_FIELD,
+        // NS_ANCESTORS_INDEX_SIG)));
+        // il.append(new GETSTATIC(cpg.addFieldref(transletClassName,
+        // STATIC_PREFIX_URIS_IDX_ARRAY_FIELD,
+        // PREFIX_URIS_IDX_SIG)));
+        // il.append(new GETSTATIC(cpg.addFieldref(transletClassName,
+        // STATIC_PREFIX_URIS_ARRAY_FIELD,
+        // PREFIX_URIS_ARRAY_SIG)));
+        // // Default namespace is significant
+        // il.append(ICONST_0);
+        // il.append(new INVOKESTATIC(cpg.addMethodref(BASIS_LIBRARY_CLASS,
+        // LOOKUP_STYLESHEET_QNAME_NS_REF,
+        // LOOKUP_STYLESHEET_QNAME_NS_SIG)));
       }
 
       // Push additional arguments
-//      il.append(methodGen.loadHandler());
-//      il.append(methodGen.loadDOM());
-//      il.append(methodGen.loadCurrentNode());
+      // il.append(methodGen.loadHandler());
+      // il.append(methodGen.loadDOM());
+      // il.append(methodGen.loadCurrentNode());
 
       elementValue = ctx.currentBlock().decl(
           ctx.ref(String.class),
@@ -298,8 +329,9 @@ final class XslElement extends Instruction {
               .arg(ctx.currentHandler()).arg(ctx.currentDom()).arg(ctx.currentNode()));
 
       // Invoke BasisLibrary.startXslElemCheckQName()
-//      il.append(new INVOKESTATIC(cpg.addMethodref(BASIS_LIBRARY_CLASS, "startXslElement", "(" + STRING_SIG + STRING_SIG
-//          + TRANSLET_OUTPUT_SIG + DOM_INTF_SIG + "I)" + STRING_SIG)));
+      // il.append(new INVOKESTATIC(cpg.addMethodref(BASIS_LIBRARY_CLASS,
+      // "startXslElement", "(" + STRING_SIG + STRING_SIG
+      // + TRANSLET_OUTPUT_SIG + DOM_INTF_SIG + "I)" + STRING_SIG)));
 
     }
 
@@ -307,7 +339,7 @@ final class XslElement extends Instruction {
 
     if (!_ignore) {
       ctx.currentBlock().invoke(ctx.currentHandler(), "endElement").arg(elementValue);
-//      il.append(methodGen.endElement());
+      // il.append(methodGen.endElement());
     }
   }
 
@@ -320,6 +352,20 @@ final class XslElement extends Instruction {
     for (final SyntaxTreeNode item : getContents()) {
       if (_ignore && item instanceof XslAttribute) {
         continue;
+      }
+      if (!namespaceUriEmpty) {
+        if (!hasCalledStartPrefixMapping && item instanceof LiteralElement) {
+          QName qName = item.getQName();
+          String prefix = qName.getPrefix() == null ? "" : qName.getPrefix();
+          String namespace = qName.getNamespace() == null ? "" : qName.getNamespace();
+          ctx.currentBlock().add(
+              ctx.currentHandler().invoke("startPrefixMapping").arg(prefix).arg(namespace).arg(JExpr.TRUE));
+          hasCalledStartPrefixMapping = true;
+        }
+        if (!hasCalledStartPrefixMapping && item instanceof CopyOf) {
+          ctx.currentBlock().add(ctx.currentHandler().invoke("startPrefixMapping").arg("").arg("").arg(JExpr.TRUE));
+          hasCalledStartPrefixMapping = true;
+        }
       }
       item.translate(ctx);
     }

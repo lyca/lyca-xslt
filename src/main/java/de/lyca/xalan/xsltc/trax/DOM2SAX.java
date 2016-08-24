@@ -50,7 +50,6 @@ import de.lyca.xalan.xsltc.dom.SAXImpl;
  */
 public class DOM2SAX implements XMLReader, Locator {
 
-  private final static String EMPTYSTRING = "";
   private static final String XMLNS_PREFIX = "xmlns";
 
   private Node _dom = null;
@@ -221,7 +220,7 @@ public class DOM2SAX implements XMLReader, Locator {
           if (qnameAttr.startsWith(XMLNS_PREFIX)) {
             final String uriAttr = attr.getNodeValue();
             final int colon = qnameAttr.lastIndexOf(':');
-            prefix = colon > 0 ? qnameAttr.substring(colon + 1) : EMPTYSTRING;
+            prefix = colon > 0 ? qnameAttr.substring(colon + 1) : "";
             if (startPrefixMapping(prefix, uriAttr)) {
               pushedPrefixes.add(prefix);
             }
@@ -240,7 +239,7 @@ public class DOM2SAX implements XMLReader, Locator {
             // Uri may be implicitly declared
             if (uriAttr != null) {
               final int colon = qnameAttr.lastIndexOf(':');
-              prefix = colon > 0 ? qnameAttr.substring(0, colon) : EMPTYSTRING;
+              prefix = colon > 0 ? qnameAttr.substring(0, colon) : "";
               if (startPrefixMapping(prefix, uriAttr)) {
                 pushedPrefixes.add(prefix);
               }
@@ -259,7 +258,7 @@ public class DOM2SAX implements XMLReader, Locator {
         // Uri may be implicitly declared
         if (uri != null) {
           final int colon = qname.lastIndexOf(':');
-          prefix = colon > 0 ? qname.substring(0, colon) : EMPTYSTRING;
+          prefix = colon > 0 ? qname.substring(0, colon) : "";
           if (startPrefixMapping(prefix, uri)) {
             pushedPrefixes.add(prefix);
           }

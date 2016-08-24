@@ -25,19 +25,22 @@ import static com.sun.codemodel.JExpr.TRUE;
 import static com.sun.codemodel.JExpr._this;
 import static com.sun.codemodel.JExpr.invoke;
 import static com.sun.codemodel.JExpr.lit;
+import static de.lyca.xalan.xsltc.DOM.GET_CHILDREN;
+import static de.lyca.xalan.xsltc.DOM.GET_EXPANDED_TYPE_ID;
+import static de.lyca.xalan.xsltc.DOM.GET_NAMESPACE_TYPE;
+import static de.lyca.xalan.xsltc.compiler.Constants.APPLY_TEMPLATES;
+import static de.lyca.xalan.xsltc.compiler.Constants.CHARACTERS;
+import static de.lyca.xalan.xsltc.compiler.Constants.DOCUMENT_PNAME;
+import static de.lyca.xalan.xsltc.compiler.Constants.ITERATOR_PNAME;
+import static de.lyca.xalan.xsltc.compiler.Constants.NODE_PNAME;
+import static de.lyca.xalan.xsltc.compiler.Constants.TRANSLET_OUTPUT_PNAME;
+import static de.lyca.xml.dtm.DTMAxisIterator.NEXT;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.bcel.generic.DUP;
-import org.apache.bcel.generic.Instruction;
-import org.apache.bcel.generic.InstructionHandle;
-import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.TargetLostException;
-import org.apache.bcel.util.InstructionFinder;
 import org.xml.sax.SAXException;
 
 import com.sun.codemodel.JBlock;
@@ -52,7 +55,6 @@ import com.sun.codemodel.JVar;
 import de.lyca.xalan.xsltc.DOM;
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext.MethodContext;
-import de.lyca.xalan.xsltc.compiler.util.MethodGenerator;
 import de.lyca.xalan.xsltc.compiler.util.Util;
 import de.lyca.xml.dtm.Axis;
 import de.lyca.xml.dtm.DTM;
@@ -70,7 +72,7 @@ import de.lyca.xml.serializer.SerializationHandler;
  * @author Erwin Bolwidt <ejb@klomp.org>
  * @author G. Todd Miller
  */
-final class Mode implements Constants {
+final class Mode {
 
   /**
    * The name of this mode as defined in the stylesheet.
@@ -628,7 +630,8 @@ final class Mode implements Constants {
 
       // Append first code in applyTemplates() - get type of current node
       
-      body.invoke("getNamespaceType").arg(ctx.currentNode());
+      body.invoke(GET_NAMESPACE_TYPE).arg(ctx.currentNode());
+      // FIXME
 //      final int getNS = cpg.addInterfaceMethodref(DOM_INTF, "getNamespaceType", "(I)I");
 //      body.append(methodGen.loadDOM());
 //      body.append(new ILOAD(_currentIndex));
@@ -656,7 +659,7 @@ final class Mode implements Constants {
     // Create a local variable to hold the current node
     // Create an instruction list that contains the default next-node
     // iteration
-    JVar current = loop.decl(ctx.owner().INT, "current", invoke(iterator, "next"));
+    JVar current = loop.decl(ctx.owner().INT, "current", invoke(iterator, NEXT));
     ctx.pushNode(current);
     // The body of this code can get very large - large than can be handled
     // by a single IFNE(body.getStart()) instruction - need workaround:
@@ -862,7 +865,7 @@ final class Mode implements Constants {
 //    }
 
     // Append first code in applyTemplates() - get type of current node
-    JInvocation getExpandedTypeID = document.invoke("getExpandedTypeID").arg(current);
+    JInvocation getExpandedTypeID = document.invoke(GET_EXPANDED_TYPE_ID).arg(current);
     
     // Append switch() statement - main dispatch loop in applyTemplates()
     JSwitch test = loop._switch(getExpandedTypeID);
@@ -1174,7 +1177,7 @@ final class Mode implements Constants {
 //    }
 
     // Append first code in applyTemplates() - get type of current node
-    JInvocation getExpandedTypeID = document.invoke("getExpandedTypeID").arg(current);
+    JInvocation getExpandedTypeID = document.invoke(GET_EXPANDED_TYPE_ID).arg(current);
     
     // Append switch() statement - main dispatch loop in applyTemplates()
     JSwitch test = body._switch(getExpandedTypeID);
@@ -1219,85 +1222,6 @@ final class Mode implements Constants {
     // Restore original (complete) set of templates for this transformation
     _templates = oldTemplates;
     ctx.popMethodContext();
-  }
-
-  /**
-   * Peephole optimization.
-   */
-  private void peepHoleOptimization(MethodGenerator methodGen) {
-    final InstructionList il = methodGen.getInstructionList();
-    final InstructionFinder find = new InstructionFinder(il);
-    String pattern;
-
-    // LoadInstruction, POP => (removed)
-    pattern = "LoadInstruction POP";
-    for (@SuppressWarnings("unchecked")
-    final Iterator<InstructionHandle[]> iter = find.search(pattern); iter.hasNext();) {
-      final InstructionHandle[] match = iter.next();
-      try {
-        if (!match[0].hasTargeters() && !match[1].hasTargeters()) {
-          il.delete(match[0], match[1]);
-        }
-      } catch (final TargetLostException e) {
-        // TODO: move target down into the list
-      }
-    }
-
-    // ILOAD_N, ILOAD_N, SWAP, ISTORE_N => ILOAD_N
-    pattern = "ILOAD ILOAD SWAP ISTORE";
-    for (@SuppressWarnings("unchecked")
-    final Iterator<InstructionHandle[]> iter = find.search(pattern); iter.hasNext();) {
-      final InstructionHandle[] match = iter.next();
-      try {
-        final org.apache.bcel.generic.ILOAD iload1 = (org.apache.bcel.generic.ILOAD) match[0].getInstruction();
-        final org.apache.bcel.generic.ILOAD iload2 = (org.apache.bcel.generic.ILOAD) match[1].getInstruction();
-        final org.apache.bcel.generic.ISTORE istore = (org.apache.bcel.generic.ISTORE) match[3].getInstruction();
-
-        if (!match[1].hasTargeters() && !match[2].hasTargeters() && !match[3].hasTargeters()
-                && iload1.getIndex() == iload2.getIndex() && iload2.getIndex() == istore.getIndex()) {
-          il.delete(match[1], match[3]);
-        }
-      } catch (final TargetLostException e) {
-        // TODO: move target down into the list
-      }
-    }
-
-    // LoadInstruction_N, LoadInstruction_M, SWAP => LoadInstruction_M,
-    // LoadInstruction_N
-    pattern = "LoadInstruction LoadInstruction SWAP";
-    for (@SuppressWarnings("unchecked")
-    final Iterator<InstructionHandle[]> iter = find.search(pattern); iter.hasNext();) {
-      final InstructionHandle[] match = iter.next();
-      try {
-        if (!match[0].hasTargeters() && !match[1].hasTargeters() && !match[2].hasTargeters()) {
-          final Instruction load_m = match[1].getInstruction();
-          il.insert(match[0], load_m);
-          il.delete(match[1], match[2]);
-        }
-      } catch (final TargetLostException e) {
-        // TODO: move target down into the list
-      }
-    }
-
-    // ALOAD_N ALOAD_N => ALOAD_N DUP
-    pattern = "ALOAD ALOAD";
-    for (@SuppressWarnings("unchecked")
-    final Iterator<InstructionHandle[]> iter = find.search(pattern); iter.hasNext();) {
-      final InstructionHandle[] match = iter.next();
-      try {
-        if (!match[1].hasTargeters()) {
-          final org.apache.bcel.generic.ALOAD aload1 = (org.apache.bcel.generic.ALOAD) match[0].getInstruction();
-          final org.apache.bcel.generic.ALOAD aload2 = (org.apache.bcel.generic.ALOAD) match[1].getInstruction();
-
-          if (aload1.getIndex() == aload2.getIndex()) {
-            il.insert(match[1], new DUP());
-            il.delete(match[1]);
-          }
-        }
-      } catch (final TargetLostException e) {
-        // TODO: move target down into the list
-      }
-    }
   }
 
   public JStatement getTemplateInstructionHandle(Template template) {

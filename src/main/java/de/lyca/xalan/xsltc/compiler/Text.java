@@ -24,7 +24,6 @@ package de.lyca.xalan.xsltc.compiler;
 import static com.sun.codemodel.JExpr.FALSE;
 import static com.sun.codemodel.JExpr.TRUE;
 import static com.sun.codemodel.JExpr.lit;
-import static de.lyca.xalan.xsltc.compiler.Constants.EMPTYSTRING;
 import static de.lyca.xalan.xsltc.compiler.Constants.STATIC_CHAR_DATA_FIELD;
 
 import com.sun.codemodel.JDefinedClass;
@@ -106,7 +105,7 @@ final class Text extends Instruction {
 
     if (_text == null) {
       if (_textElement) {
-        _text = EMPTYSTRING;
+        _text = "";
       } else {
         _ignore = true;
       }

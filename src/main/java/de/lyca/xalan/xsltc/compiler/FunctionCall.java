@@ -22,9 +22,6 @@
 package de.lyca.xalan.xsltc.compiler;
 
 import static com.sun.codemodel.JExpr._new;
-import static de.lyca.xalan.xsltc.compiler.Constants.BASIS_LIBRARY_CLASS;
-import static de.lyca.xalan.xsltc.compiler.Constants.DOM_INTF_SIG;
-import static de.lyca.xalan.xsltc.compiler.Constants.EMPTYSTRING;
 import static de.lyca.xalan.xsltc.compiler.Constants.ERROR;
 import static de.lyca.xalan.xsltc.compiler.Constants.TRANSLET_URI;
 
@@ -40,11 +37,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.INVOKESTATIC;
-import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.PUSH;
 
 import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JInvocation;
@@ -301,13 +293,13 @@ class FunctionCall extends Expression {
     else {
       if (uri.startsWith(JAVA_EXT_XSLTC)) {
         final int length = JAVA_EXT_XSLTC.length() + 1;
-        return uri.length() > length ? uri.substring(length) : EMPTYSTRING;
+        return uri.length() > length ? uri.substring(length) : "";
       } else if (uri.startsWith(JAVA_EXT_XALAN)) {
         final int length = JAVA_EXT_XALAN.length() + 1;
-        return uri.length() > length ? uri.substring(length) : EMPTYSTRING;
+        return uri.length() > length ? uri.substring(length) : "";
       } else if (uri.startsWith(JAVA_EXT_XALAN_OLD)) {
         final int length = JAVA_EXT_XALAN_OLD.length() + 1;
-        return uri.length() > length ? uri.substring(length) : EMPTYSTRING;
+        return uri.length() > length ? uri.substring(length) : "";
       } else {
         final int index = uri.lastIndexOf('/');
         return index > 0 ? uri.substring(index + 1) : uri;
@@ -668,35 +660,28 @@ class FunctionCall extends Expression {
   }
 
   @Override
-  public JExpression compile(CompilerContext ctx) {
+  public JExpression toJExpression(CompilerContext ctx) {
     final int n = argumentCount();
     final boolean isSecureProcessing = getParser().getXSLTC().isSecureProcessing();
-    int index;
 
     // Translate calls to methods in the BasisLibrary
     if (isStandard() || isExtension()) {
       List<JExpression> compiledExps = new ArrayList<>();
       for (int i = 0, size = _arguments.size(); i < size; i++) {
         Expression exp = _arguments.get(i);
-        compiledExps.add(exp.startIterator(ctx, exp.compile(ctx)));
+        compiledExps.add(exp.startIterator(ctx, exp.toJExpression(ctx)));
       }
 
       // append "F" to the function's name
       final String name = _fname.toString().replace('-', '_') + "F";
-      String args = Constants.EMPTYSTRING;
 
       // Special precautions for some method calls
       if (name.equals("sumF")) {
-        args = DOM_INTF_SIG;
         compiledExps.add(ctx.currentDom());
-//        il.append(method.loadDOM());
       } else if (name.equals("normalize_spaceF")) {
-        if (_chosenMethodType.toSignature(args).equals("()Ljava/lang/String;")) {
-          args = "I" + DOM_INTF_SIG;
+        if (_chosenMethodType.argsCount() == 0 && _chosenMethodType.resultType().identicalTo(Type.String)) {
           compiledExps.add(ctx.currentNode());
           compiledExps.add(ctx.currentDom());
-//          il.append(methodGen.loadContextNode());
-//          il.append(methodGen.loadDOM());
         }
       }
 
@@ -706,75 +691,42 @@ class FunctionCall extends Expression {
         result = result.arg(exp);
       }
       return result;
-//      index = cpg.addMethodref(BASIS_LIBRARY_CLASS, name, _chosenMethodType.toSignature(args));
-//      il.append(new INVOKESTATIC(index));
     }
     // Add call to BasisLibrary.unresolved_externalF() to generate
     // run-time error message for unsupported external functions
     else if (unresolvedExternal) {
-//      index = cpg.addMethodref(BASIS_LIBRARY_CLASS, "unresolved_externalF", "(Ljava/lang/String;)V");
-//      il.append(new PUSH(cpg, _fname.toString()));
-//      il.append(new INVOKESTATIC(index));
+      return ctx.ref(BasisLibrary.class).staticInvoke("unresolved_externalF").arg(_fname.toString());
     } else if (_isExtConstructor) {
       if (isSecureProcessing) {
-//        translateUnallowedExtension(cpg, il);
+        translateUnallowedExtension(ctx);
       }
 
-      JInvocation invocation = _new(ctx.ref(_chosenConstructor.getDeclaringClass()));
-      final String clazz = _chosenConstructor.getDeclaringClass().getName();
+      Class<?> declaringClass = _chosenConstructor.getDeclaringClass();
+      JInvocation invocation = _new(ctx.ref(declaringClass));
       final Class<?>[] paramTypes = _chosenConstructor.getParameterTypes();
 
       for (int i = 0; i < n; i++) {
         final Expression exp = argument(i);
-//        final Type expType = exp.getType();
-//        exp.translate(ctx);
         // Convert the argument to its Java type
-//        exp.startIterator(ctx);
-//        expType.translateTo(ctx.clazz(), ctx.currentMethod(), paramTypes[i]);
-//        paramTemp[i] = methodGen.addLocalVariable("function_call_tmp" + i, expType.toJCType(), null, null);
-//        paramTemp[i].setStart(il.append(expType.STORE(paramTemp[i].getIndex())));
-        JExpression expr = exp.getType().compileTo(ctx, exp.startIterator(ctx, exp.compile(ctx)), paramTypes[i]);
+        JExpression expr = exp.getType().compileTo(ctx, exp.startIterator(ctx, exp.toJExpression(ctx)), paramTypes[i]);
         invocation.arg(expr);
       }
-
-//      il.append(new NEW(cpg.addClass(_className)));
-//      il.append(InstructionConstants.DUP);
-
-      for (int i = 0; i < n; i++) {
-        final Expression arg = argument(i);
-//        paramTemp[i].setEnd(il.append(arg.getType().LOAD(paramTemp[i].getIndex())));
-      }
-
-      final StringBuilder buffer = new StringBuilder();
-      buffer.append('(');
-      for (int i = 0; i < paramTypes.length; i++) {
-        buffer.append(getSignature(paramTypes[i]));
-      }
-      buffer.append(')');
-      buffer.append("V");
-
-//      index = cpg.addMethodref(clazz, "<init>", buffer.toString());
-//      il.append(new INVOKESPECIAL(index));
-
       // Convert the return type back to our internal type
-      return _type.getClassName().equals(_chosenConstructor.getDeclaringClass().getName()) ? invocation : _type.compileFrom(ctx, invocation,
-          _chosenConstructor.getDeclaringClass());
-
+      return _type.getClassName().equals(declaringClass.getName()) ? invocation : _type.compileFrom(ctx, invocation,
+          declaringClass);
     }
     // Invoke function calls that are handled in separate classes
     else {
       if (isSecureProcessing) {
-//        translateUnallowedExtension(cpg, il);
+        translateUnallowedExtension(ctx);
       }
 
-      final String clazz = _chosenMethod.getDeclaringClass().getName();
       final Class<?>[] paramTypes = _chosenMethod.getParameterTypes();
 
       // Push "this" if it is an instance method
       JExpression thisArgument = null;
       if (_thisArgument != null) {
-//        _thisArgument.translate(ctx);
-          thisArgument = _thisArgument.compile(ctx);
+          thisArgument = _thisArgument.toJExpression(ctx);
       }
 
       JInvocation invocation = thisArgument == null ? ctx.ref(_chosenMethod.getDeclaringClass()).staticInvoke(
@@ -783,36 +735,15 @@ class FunctionCall extends Expression {
       JExpression[] expressions = new JExpression[n];
       for (int i = 0; i < n; i++) {
         final Expression exp = argument(i);
-//        exp.translate(ctx);
         // Convert the argument to its Java type
-//        exp.startIterator(ctx);
-//        exp.getType().translateTo(ctx.clazz(), ctx.currentMethod(), paramTypes[i]);
-        expressions[i] = exp.getType().compileTo(ctx, exp.startIterator(ctx, exp.compile(ctx)), paramTypes[i]);
+        expressions[i] = exp.getType().compileTo(ctx, exp.startIterator(ctx, exp.toJExpression(ctx)), paramTypes[i]);
         invocation.arg(expressions[i]);
-      }
-
-      final StringBuilder buffer = new StringBuilder();
-      buffer.append('(');
-      for (int i = 0; i < paramTypes.length; i++) {
-        buffer.append(getSignature(paramTypes[i]));
-      }
-      buffer.append(')');
-      buffer.append(getSignature(_chosenMethod.getReturnType()));
-
-      if (_thisArgument != null && _clazz.isInterface()) {
-//        index = cpg.addInterfaceMethodref(clazz, _fname.getLocalPart(), buffer.toString());
-//        il.append(new INVOKEINTERFACE(index, n + 1));
-      } else {
-//        index = cpg.addMethodref(clazz, _fname.getLocalPart(), buffer.toString());
-//        il.append(_thisArgument != null ? (InvokeInstruction) new INVOKEVIRTUAL(index)
-//            : (InvokeInstruction) new INVOKESTATIC(index));
       }
 
       // Convert the return type back to our internal type
       return _type.getClassName().equals(_chosenMethod.getReturnType().getName()) ? invocation : _type.compileFrom(ctx, invocation,
           _chosenMethod.getReturnType());
     }
-    return null;
   }
   
   /**
@@ -837,7 +768,7 @@ class FunctionCall extends Expression {
 //
 //      // append "F" to the function's name
 //      final String name = _fname.toString().replace('-', '_') + "F";
-//      String args = Constants.EMPTYSTRING;
+//      String args = "";
 //
 //      // Special precautions for some method calls
 //      if (name.equals("sumF")) {
@@ -964,7 +895,7 @@ class FunctionCall extends Expression {
 
   public boolean isStandard() {
     final String namespace = _fname.getNamespace();
-    return namespace == null || namespace.equals(Constants.EMPTYSTRING);
+    return namespace == null || namespace.isEmpty();
   }
 
   public boolean isExtension() {
@@ -1158,12 +1089,11 @@ class FunctionCall extends Expression {
   }
 
   /**
-   * Translate code to call the BasisLibrary.unallowed_extensionF(String)
-   * method.
+   * Add code to call the BasisLibrary.unallowed_extensionF(String) method.
    */
-  private void translateUnallowedExtension(ConstantPoolGen cpg, InstructionList il) {
-    final int index = cpg.addMethodref(BASIS_LIBRARY_CLASS, "unallowed_extension_functionF", "(Ljava/lang/String;)V");
-    il.append(new PUSH(cpg, _fname.toString()));
-    il.append(new INVOKESTATIC(index));
+  private void translateUnallowedExtension(CompilerContext ctx) {
+    ctx.currentBlock().staticInvoke(ctx.ref(BasisLibrary.class), "unallowed_extension_functionF")
+        .arg(_fname.toString());
   }
+
 }

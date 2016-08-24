@@ -60,8 +60,6 @@ import de.lyca.xml.utils.XML11Char;
  */
 public final class BasisLibrary {
 
-  private final static String EMPTYSTRING = "";
-
   /**
    * Standard function count(node-set)
    */
@@ -187,7 +185,7 @@ public final class BasisLibrary {
     else if (obj instanceof Boolean)
       return ((Boolean) obj).booleanValue();
     else if (obj instanceof String)
-      return !((String) obj).equals(EMPTYSTRING);
+      return !((String) obj).isEmpty();
     else if (obj instanceof DTMAxisIterator) {
       final DTMAxisIterator iter = (DTMAxisIterator) obj;
       return iter.reset().next() != DTMAxisIterator.END;
@@ -195,7 +193,7 @@ public final class BasisLibrary {
       return true;
     else if (obj instanceof DOM) {
       final String temp = ((DOM) obj).getStringValue();
-      return !temp.equals(EMPTYSTRING);
+      return !temp.isEmpty();
     } else {
       final String className = obj.getClass().getName();
       runTimeError(INVALID_ARGUMENT_ERR, className, "boolean()");
@@ -213,9 +211,9 @@ public final class BasisLibrary {
       int istart = (int) Math.round(start) - 1;
 
       if (Double.isNaN(start))
-        return EMPTYSTRING;
+        return "";
       if (istart > strlen)
-        return EMPTYSTRING;
+        return "";
       if (istart < 1) {
         istart = 0;
       }
@@ -242,13 +240,13 @@ public final class BasisLibrary {
       }
 
       if (Double.isNaN(start) || Double.isNaN(length))
-        return EMPTYSTRING;
+        return "";
       if (Double.isInfinite(start))
-        return EMPTYSTRING;
+        return "";
       if (istart > strlen)
-        return EMPTYSTRING;
+        return "";
       if (isum < 0)
-        return EMPTYSTRING;
+        return "";
       if (istart < 0) {
         istart = 0;
       }
@@ -271,7 +269,7 @@ public final class BasisLibrary {
     if (index >= 0)
       return value.substring(index + substring.length());
     else
-      return EMPTYSTRING;
+      return "";
   }
 
   /**
@@ -282,7 +280,7 @@ public final class BasisLibrary {
     if (index >= 0)
       return value.substring(0, index);
     else
-      return EMPTYSTRING;
+      return "";
   }
 
   /**
@@ -356,7 +354,7 @@ public final class BasisLibrary {
       return "N" + node;
     else
       // Otherwise return an empty string
-      return EMPTYSTRING;
+      return "";
   }
 
   /**
@@ -436,7 +434,7 @@ public final class BasisLibrary {
       return "http://xml.apache.org/xalan-j";
 
     runTimeError(INVALID_ARGUMENT_ERR, name, "system-property()");
-    return EMPTYSTRING;
+    return "";
   }
 
   /**
@@ -448,7 +446,7 @@ public final class BasisLibrary {
     if (colon >= 0)
       return value.substring(0, colon);
     else
-      return EMPTYSTRING;
+      return "";
   }
 
   /**
@@ -894,7 +892,7 @@ public final class BasisLibrary {
       return result.toString();
     } catch (final IllegalArgumentException e) {
       runTimeError(FORMAT_NUMBER_ERR, Double.toString(number), pattern);
-      return EMPTYSTRING;
+      return "";
     }
   }
 
@@ -1294,11 +1292,11 @@ public final class BasisLibrary {
   public static String startXslElement(String qname, String namespace, SerializationHandler handler, DOM dom, int node) {
     try {
       // Get prefix from qname
-      String prefix;
+//      String prefix = "";
       final int index = qname.indexOf(':');
 
       if (index > 0) {
-        prefix = qname.substring(0, index);
+        String prefix = qname.substring(0, index);
 
         // Handle case when prefix is not known at compile time
         if (namespace == null || namespace.length() == 0) {
@@ -1310,10 +1308,10 @@ public final class BasisLibrary {
       } else {
         // Need to generate a prefix?
         if (namespace != null && namespace.length() > 0) {
-          prefix = generatePrefix();
-          qname = prefix + ':' + qname;
+//          prefix = generatePrefix();
+//          qname = prefix + ':' + qname;
           handler.startElement(namespace, qname, qname);
-          handler.namespaceAfterStartElement(prefix, namespace);
+          handler.namespaceAfterStartElement("", namespace);
         } else {
           handler.startElement(null, null, qname);
         }

@@ -81,7 +81,7 @@ public class FunctionDef1Arg extends FunctionOneArg {
     if (null == m_arg0) {
       final int currentNode = xctxt.getCurrentNode();
       if (DTM.NULL == currentNode)
-        return XString.EMPTYSTRING;
+        return XString.EMPTY;
       else {
         final DTM dtm = xctxt.getDTM(currentNode);
         return dtm.getStringValue(currentNode);

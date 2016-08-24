@@ -24,9 +24,12 @@ package de.lyca.xalan.xsltc.compiler;
 import static com.sun.codemodel.JExpr.TRUE;
 import static com.sun.codemodel.JExpr.invoke;
 import static com.sun.codemodel.JExpr.lit;
-import static de.lyca.xalan.xsltc.compiler.Constants.GET_PARENT;
-import static de.lyca.xalan.xsltc.compiler.Constants.NEXT;
-import static de.lyca.xalan.xsltc.compiler.Constants.SET_START_NODE;
+import static de.lyca.xalan.xsltc.DOM.GET_EXPANDED_TYPE_ID;
+import static de.lyca.xalan.xsltc.DOM.GET_PARENT;
+import static de.lyca.xalan.xsltc.DOM.IS_ATTRIBUTE;
+import static de.lyca.xalan.xsltc.DOM.IS_ELEMENT;
+import static de.lyca.xml.dtm.DTMAxisIterator.NEXT;
+import static de.lyca.xml.dtm.DTMAxisIterator.SET_START_NODE;
 
 import java.util.List;
 
@@ -213,17 +216,17 @@ class StepPattern extends RelativePathPattern {
 
   private JExpression compileKernel(CompilerContext ctx) {
     if (_nodeType == DTM.ELEMENT_NODE) {
-      return invoke(ctx.currentDom(), "isElement").arg(ctx.currentNode());
+      return invoke(ctx.currentDom(), IS_ELEMENT).arg(ctx.currentNode());
     } else if (_nodeType == DTM.ATTRIBUTE_NODE) {
-      return invoke(ctx.currentDom(), "isAttribute").arg(ctx.currentNode());
+      return invoke(ctx.currentDom(), IS_ATTRIBUTE).arg(ctx.currentNode());
     } else {
-      return invoke(ctx.currentDom(), "getExpandedTypeID").arg(ctx.currentNode()).eq(lit(_nodeType));
+      return invoke(ctx.currentDom(), GET_EXPANDED_TYPE_ID).arg(ctx.currentNode()).eq(lit(_nodeType));
     }
   }
 
   private void translateKernel(CompilerContext ctx) {
     if (_nodeType == DTM.ELEMENT_NODE) {
-      ctx.currentBlock()._if(invoke(ctx.currentDom(), "isElement").arg(ctx.currentNode()));
+      ctx.currentBlock()._if(invoke(ctx.currentDom(), IS_ELEMENT).arg(ctx.currentNode()));
 //      final int check = cpg.addInterfaceMethodref(DOM_INTF, "isElement", "(I)Z");
 //      il.append(methodGen.loadDOM());
 //      il.append(SWAP);
@@ -234,7 +237,7 @@ class StepPattern extends RelativePathPattern {
 //      _falseList.add(il.append(new GOTO_W(null)));
 //      icmp.setTarget(il.append(NOP));
     } else if (_nodeType == DTM.ATTRIBUTE_NODE) {
-      ctx.currentBlock()._if(invoke(ctx.currentDom(), "isAttribute").arg(ctx.currentNode()));
+      ctx.currentBlock()._if(invoke(ctx.currentDom(), IS_ATTRIBUTE).arg(ctx.currentNode()));
 //      final int check = cpg.addInterfaceMethodref(DOM_INTF, "isAttribute", "(I)Z");
 //      il.append(methodGen.loadDOM());
 //      il.append(SWAP);
@@ -246,7 +249,7 @@ class StepPattern extends RelativePathPattern {
 //      icmp.setTarget(il.append(NOP));
     } else {
       // context node is on the stack
-      ctx.currentBlock()._if(invoke(ctx.currentDom(), "getExpandedTypeID").arg(ctx.currentNode()).eq(lit(_nodeType)));
+      ctx.currentBlock()._if(invoke(ctx.currentDom(), GET_EXPANDED_TYPE_ID).arg(ctx.currentNode()).eq(lit(_nodeType)));
 //      final int getEType = cpg.addInterfaceMethodref(DOM_INTF, "getExpandedTypeID", "(I)I");
 //      il.append(methodGen.loadDOM());
 //      il.append(SWAP);
@@ -281,9 +284,9 @@ class StepPattern extends RelativePathPattern {
   for (final Predicate pred : _predicates) {
     final Expression exp = pred.getExpr();
     if(result ==null){
-      result = exp.compile(ctx);
+      result = exp.toJExpression(ctx);
     }else{
-      result = result.cand(exp.compile(ctx));
+      result = result.cand(exp.toJExpression(ctx));
     }
 //    exp.translateDesynthesized(classGen, methodGen);
 //    _trueList.append(exp._trueList);
@@ -385,7 +388,7 @@ class StepPattern extends RelativePathPattern {
 //          Util.getJCRefType(NODE_ITERATOR_SIG), null, null);
 //  stepIteratorTemp.setStart(il.append(new ASTORE(stepIteratorTemp.getIndex())));
 
-  JExpression step = _step.compile(ctx);
+  JExpression step = _step.toJExpression(ctx);
   
 //  il.append(new NEW(cpg.addClass(MATCHING_ITERATOR)));
 //  il.append(DUP);
@@ -403,7 +406,7 @@ class StepPattern extends RelativePathPattern {
 
   // Start the iterator with the parent
 //  il.append(methodGen.setStartNode());
-  match = match.invoke("setStartNode").arg(parent);
+  match = match.invoke(SET_START_NODE).arg(parent);
 
   ctx.currentBlock().decl(ctx.ref(DTMAxisIterator.class), ctx.nextTmpIterator(), match);
   // Overwrite current iterator and current node
@@ -414,7 +417,7 @@ class StepPattern extends RelativePathPattern {
   // Translate the expression of the predicate
   final Predicate pred = _predicates.get(0);
   final Expression exp = pred.getExpr();
-  return kernel ==null ? exp.compile(ctx):kernel.cand(exp.compile(ctx));
+  return kernel ==null ? exp.toJExpression(ctx):kernel.cand(exp.toJExpression(ctx));
   
 //  exp.translateDesynthesized(classGen, methodGen);
 
@@ -546,7 +549,7 @@ class StepPattern extends RelativePathPattern {
 //    }
 
     // Compile the step created at type checking time
-    JExpression step = _step.compile(ctx);
+    JExpression step = _step.toJExpression(ctx);
 //    final InstructionHandle iterStore = il.append(new ASTORE(iter.getIndex()));
 
     // If in the main class update the field too
@@ -699,7 +702,7 @@ class StepPattern extends RelativePathPattern {
 
   @Override
   public void compilePattern(CompilerContext ctx, JStatement fail) {
-    JConditional _if = ctx.currentBlock()._if(compile(ctx));
+    JConditional _if = ctx.currentBlock()._if(toJExpression(ctx));
     JBlock _then = _if._then();
     _then.add(getTemplate().compile(ctx));
     _then._break();
@@ -707,7 +710,7 @@ class StepPattern extends RelativePathPattern {
   }
 
   @Override
-  public JExpression compile(CompilerContext ctx) {
+  public JExpression toJExpression(CompilerContext ctx) {
     if (hasPredicates()) {
       switch (_contextCase) {
       case NO_CONTEXT:

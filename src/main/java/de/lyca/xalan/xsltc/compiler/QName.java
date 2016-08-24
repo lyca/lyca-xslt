@@ -44,7 +44,7 @@ final class QName {
   }
 
   public void clearNamespace() {
-    _namespace = Constants.EMPTYSTRING;
+    _namespace = "";
   }
 
   @Override

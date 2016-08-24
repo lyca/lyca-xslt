@@ -24,7 +24,8 @@ package de.lyca.xalan.xsltc.compiler;
 import static com.sun.codemodel.JExpr.TRUE;
 import static com.sun.codemodel.JExpr.invoke;
 import static com.sun.codemodel.JExpr.lit;
-import static de.lyca.xalan.xsltc.compiler.Constants.GET_PARENT;
+import static de.lyca.xalan.xsltc.DOM.GET_EXPANDED_TYPE_ID;
+import static de.lyca.xalan.xsltc.DOM.GET_PARENT;
 import static de.lyca.xml.dtm.DTM.DOCUMENT_NODE;
 
 import com.sun.codemodel.JConditional;
@@ -79,45 +80,17 @@ final class AbsolutePathPattern extends LocationPathPattern {
   }
 
   public void compilePattern(CompilerContext ctx, JStatement fail) {
-//    if (_left != null) {
-//      if (_left instanceof StepPattern) {
-//        final LocalVariableGen local =
-//        // absolute path pattern temporary
-//        methodGen.addLocalVariable2("apptmp", Util.getJCRefType(NODE_SIG), null);
-//        il.append(DUP);
-//        local.setStart(il.append(new ISTORE(local.getIndex())));
-//        _left.translate(classGen, methodGen);
-//        il.append(methodGen.loadDOM());
-//        local.setEnd(il.append(new ILOAD(local.getIndex())));
-//        methodGen.removeLocalVariable(local);
-//      } else {
-//        left = _left.compile(ctx);
-//      }
-//    }
-
-//    final int getParent = cpg.addInterfaceMethodref(DOM_INTF, GET_PARENT, GET_PARENT_SIG);
-//    final int getType = cpg.addInterfaceMethodref(DOM_INTF, "getExpandedTypeID", "(I)I");
-//
-//    final InstructionHandle begin = il.append(methodGen.loadDOM());
-//    il.append(SWAP);
-//    il.append(new INVOKEINTERFACE(getParent, 2));
-//    if (_left instanceof AncestorPattern) {
-//      il.append(methodGen.loadDOM());
-//      il.append(SWAP);
-//    }
-//    il.append(new INVOKEINTERFACE(getType, 2));
-//    il.append(new PUSH(cpg, DTM.DOCUMENT_NODE));
     if (_left == null) {
-      ctx.currentBlock().invoke(ctx.currentDom(), "getExpandedTypeID")
+      ctx.currentBlock().invoke(ctx.currentDom(), GET_EXPANDED_TYPE_ID)
           .arg(ctx.currentDom().invoke(GET_PARENT).arg(ctx.currentNode())).eq(lit(DOCUMENT_NODE));
     } else {
       if (getTemplate() != null) {
         JExpression absPath = TRUE;
         if (_left instanceof StepPattern) {
-          absPath = ctx.currentDom().invoke("getExpandedTypeID")
+          absPath = ctx.currentDom().invoke(GET_EXPANDED_TYPE_ID)
               .arg(ctx.currentDom().invoke(GET_PARENT).arg(ctx.currentNode())).eq(lit(DOCUMENT_NODE));
         }
-        JExpression left = _left.compile(ctx);
+        JExpression left = _left.toJExpression(ctx);
         JConditional _if = ctx.currentBlock()._if(left.cand(absPath));
         _if._then().add(getTemplate().compile(ctx));
         if (fail == null) {
@@ -127,119 +100,16 @@ final class AbsolutePathPattern extends LocationPathPattern {
         }
       }
     }
-    //    _left.compilePattern(ctx);
-
-//    final BranchHandle skip = il.append(new IF_ICMPEQ(null));
-//    _falseList.add(il.append(new GOTO_W(null)));
-//    skip.setTarget(il.append(NOP));
-//
-//    if (_left != null) {
-//      _left.backPatchTrueList(begin);
-//
-//      /*
-//       * If _left is an ancestor pattern, backpatch this pattern's false list to
-//       * the loop that searches for more ancestors.
-//       */
-//      if (_left instanceof AncestorPattern) {
-//        final AncestorPattern ancestor = (AncestorPattern) _left;
-//        _falseList.backPatch(ancestor.getLoopHandle()); // clears list
-//      }
-//      _falseList.append(_left._falseList);
-//    }
   }
 
   @Override
-  public JExpression compile(CompilerContext ctx) {
+  public JExpression toJExpression(CompilerContext ctx) {
     if (_left == null) {
-      return invoke(ctx.currentDom(), "getExpandedTypeID").arg(
+      return invoke(ctx.currentDom(), GET_EXPANDED_TYPE_ID).arg(
           ctx.currentDom().invoke(GET_PARENT).arg(ctx.currentNode())).eq(lit(DTM.DOCUMENT_NODE));
     } else {
-        return _left.compile(ctx);
+      return _left.toJExpression(ctx);
     }
-
-//    if (_left != null) {
-//      if (_left instanceof StepPattern) {
-//        final LocalVariableGen local =
-//        // absolute path pattern temporary
-//        methodGen.addLocalVariable2("apptmp", Util.getJCRefType(NODE_SIG), null);
-//        il.append(DUP);
-//        local.setStart(il.append(new ISTORE(local.getIndex())));
-//        _left.translate(classGen, methodGen);
-//        il.append(methodGen.loadDOM());
-//        local.setEnd(il.append(new ILOAD(local.getIndex())));
-//        methodGen.removeLocalVariable(local);
-//      } else {
-//        _left.translate(classGen, methodGen);
-//      }
-//    }
-//
-//    final int getParent = cpg.addInterfaceMethodref(DOM_INTF, GET_PARENT, GET_PARENT_SIG);
-//    final int getType = cpg.addInterfaceMethodref(DOM_INTF, "getExpandedTypeID", "(I)I");
-//
-//    final InstructionHandle begin = il.append(methodGen.loadDOM());
-//    il.append(SWAP);
-//    il.append(new INVOKEINTERFACE(getParent, 2));
-//    if (_left instanceof AncestorPattern) {
-//      il.append(methodGen.loadDOM());
-//      il.append(SWAP);
-//    }
-//    il.append(new INVOKEINTERFACE(getType, 2));
-//    il.append(new PUSH(cpg, DTM.DOCUMENT_NODE));
-//    return super.compile(ctx);
-  }
-
-  @Override
-  public void translate(CompilerContext ctx) {
-//    FIXME
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//    final InstructionList il = methodGen.getInstructionList();
-//
-//    if (_left != null) {
-//      if (_left instanceof StepPattern) {
-//        final LocalVariableGen local =
-//        // absolute path pattern temporary
-//        methodGen.addLocalVariable2("apptmp", Util.getJCRefType(NODE_SIG), null);
-//        il.append(DUP);
-//        local.setStart(il.append(new ISTORE(local.getIndex())));
-//        _left.translate(classGen, methodGen);
-//        il.append(methodGen.loadDOM());
-//        local.setEnd(il.append(new ILOAD(local.getIndex())));
-//        methodGen.removeLocalVariable(local);
-//      } else {
-//        _left.translate(classGen, methodGen);
-//      }
-//    }
-//
-//    final int getParent = cpg.addInterfaceMethodref(DOM_INTF, GET_PARENT, GET_PARENT_SIG);
-//    final int getType = cpg.addInterfaceMethodref(DOM_INTF, "getExpandedTypeID", "(I)I");
-//
-//    final InstructionHandle begin = il.append(methodGen.loadDOM());
-//    il.append(SWAP);
-//    il.append(new INVOKEINTERFACE(getParent, 2));
-//    if (_left instanceof AncestorPattern) {
-//      il.append(methodGen.loadDOM());
-//      il.append(SWAP);
-//    }
-//    il.append(new INVOKEINTERFACE(getType, 2));
-//    il.append(new PUSH(cpg, DTM.DOCUMENT_NODE));
-//
-//    final BranchHandle skip = il.append(new IF_ICMPEQ(null));
-//    _falseList.add(il.append(new GOTO_W(null)));
-//    skip.setTarget(il.append(NOP));
-//
-//    if (_left != null) {
-//      _left.backPatchTrueList(begin);
-//
-//      /*
-//       * If _left is an ancestor pattern, backpatch this pattern's false list to
-//       * the loop that searches for more ancestors.
-//       */
-//      if (_left instanceof AncestorPattern) {
-//        final AncestorPattern ancestor = (AncestorPattern) _left;
-//        _falseList.backPatch(ancestor.getLoopHandle()); // clears list
-//      }
-//      _falseList.append(_left._falseList);
-//    }
   }
 
   @Override

@@ -23,6 +23,8 @@ package de.lyca.xalan.xsltc.compiler;
 
 import static com.sun.codemodel.JExpr.TRUE;
 import static de.lyca.xalan.xsltc.compiler.Constants.WARNING;
+import static de.lyca.xml.dtm.DTMAxisIterator.NEXT;
+import static de.lyca.xml.dtm.DTMAxisIterator.SET_START_NODE;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -93,13 +95,6 @@ final class ForEach extends Instruction {
 
   @Override
   public void translate(CompilerContext ctx) {
- // FIXME
-//    final InstructionList il = method.getInstructionList();
-
-    // Save current node and current iterator on the stack
-//    il.append(method.loadCurrentNode());
-//    il.append(method.loadIterator());
-
     // Collect sort objects associated with this instruction
     final List<Sort> sortObjects = new ArrayList<>();
     for (SyntaxTreeNode child : getContents()) {
@@ -110,23 +105,12 @@ final class ForEach extends Instruction {
 
     JExpression iterator;
     if (_type != null && _type instanceof ResultTreeType) {
-      // Store existing DOM on stack - must be restored when loop is done
-//      il.append(method.loadDOM());
-
       // <xsl:sort> cannot be applied to a result tree - issue warning
       if (sortObjects.size() > 0) {
         final ErrorMsg msg = new ErrorMsg(ErrorMsg.RESULT_TREE_SORT_ERR, this);
         getParser().reportError(WARNING, msg);
       }
-      iterator = _select.compile(ctx);//.invoke("setStartNode").arg(params[3]);
-
-      // Put the result tree on the stack (DOM)
-//      _select.translate(definedClass, method);
-      // Get an iterator for the whole DOM - excluding the root node
-      _type.translateTo(ctx.clazz(), ctx.currentMethod(), Type.NodeSet);
-      // Store the result tree as the default DOM
-//      il.append(SWAP);
-//      il.append(method.storeDOM());
+      iterator = _type.compileTo(ctx, _select.toJExpression(ctx), Type.NodeSet);
     } else {
       // Compile node iterator
       if (sortObjects.size() > 0) {
@@ -134,31 +118,19 @@ final class ForEach extends Instruction {
       } else {
         JExpression select;
         if(_type instanceof ReferenceType){
-          select = _select.compile(ctx);
+          select = _select.toJExpression(ctx);
         }else{
-          select = _select.compile(ctx).invoke("setStartNode").arg(ctx.currentNode());
+          select = _select.toJExpression(ctx).invoke(SET_START_NODE).arg(ctx.currentNode());
         }
         iterator = ctx.currentBlock().decl(ctx.ref(DTMAxisIterator.class), ctx.nextTmpIterator(), select);
-//        _select.translate(definedClass, method);
-      }
-
-      if (_type instanceof ReferenceType == false) {
-//        iterator = iterator.invoke("setStartNode").arg(ctx.currentNode());
-//        il.append(method.loadContextNode());
-//        il.append(method.setStartNode());
       }
     }
-
-    // Overwrite current iterator
-//    il.append(method.storeIterator());
 
     // Give local variables (if any) default values before starting loop
     initializeVariables(ctx);
 
-//    final BranchHandle nextNode = il.append(new GOTO(null));
-//    final InstructionHandle loop = il.append(NOP);
     final JBlock loop = ctx.currentBlock()._while(TRUE).body();
-    JVar current = loop.decl(ctx.owner().INT, ctx.nextCurrent(), iterator.invoke("next"));
+    JVar current = loop.decl(ctx.owner().INT, ctx.nextCurrent(), iterator.invoke(NEXT));
     final JConditional _if = loop._if(current.gt(JExpr.lit(0)));
 
     ctx.pushNode(current);
@@ -168,20 +140,6 @@ final class ForEach extends Instruction {
     ctx.popNode();
 
     _if._else()._break();
-//    nextNode.setTarget(il.append(method.loadIterator()));
-//    il.append(method.nextNode());
-//    il.append(DUP);
-//    il.append(method.storeCurrentNode());
-//    il.append(new IFGT(loop));
-
-    // Restore current DOM (if result tree was used instead for this loop)
-    if (_type != null && _type instanceof ResultTreeType) {
-//      il.append(method.storeDOM());
-    }
-
-    // Restore current node and current iterator from the stack
-//    il.append(method.storeIterator());
-//    il.append(method.storeCurrentNode());
   }
 
   /**

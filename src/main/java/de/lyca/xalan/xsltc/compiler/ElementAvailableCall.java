@@ -78,21 +78,14 @@ final class ElementAvailableCall extends FunctionCall {
     }
   }
 
-  @Override
-  public JExpression compile(CompilerContext ctx) {
-    return lit(getResult());
-  }
-
   /**
    * Calls to 'element-available' are resolved at compile time since the
    * namespaces declared in the stylsheet are not available at run time.
    * Consequently, arguments to this function must be literals.
    */
   @Override
-  public void translate(CompilerContext ctx) {
-    // FIXME
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//    final boolean result = getResult();
-//    methodGen.getInstructionList().append(new PUSH(cpg, result));
+  public JExpression toJExpression(CompilerContext ctx) {
+    return lit(getResult());
   }
+
 }

@@ -24,9 +24,9 @@ package de.lyca.xalan.xsltc.compiler;
 import static com.sun.codemodel.JExpr._this;
 import static com.sun.codemodel.JExpr.cast;
 import static de.lyca.xalan.xsltc.compiler.Constants.TRANSLET_PNAME;
+import static de.lyca.xml.dtm.DTMAxisIterator.CLONE_ITERATOR;
 
 import com.sun.codemodel.JExpression;
-import com.sun.codemodel.JInvocation;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.NodeSetType;
@@ -44,13 +44,12 @@ final class VariableRef extends VariableRefBase {
   }
 
   @Override
-  public JExpression compile(CompilerContext ctx) {
+  public JExpression toJExpression(CompilerContext ctx) {
     // Fall-through for variables that are implemented as methods
     if (_type.implementedAsMethod())
       return null;
 
     final String name = _variable.getEscapedName();
-    final String signature = _type.toSignature();
     JExpression exp = null;
     if (_variable.isLocal()) {
       if (false){//classGen.isExternal()) {
@@ -69,7 +68,7 @@ final class VariableRef extends VariableRefBase {
 //          il.append(_variable.loadInstruction());
 //        }
       } else {
-        exp = _variable.loadInstruction();
+        exp = _variable.loadParam();
 //        il.append(_variable.loadInstruction());
       }
     } else {
@@ -87,54 +86,9 @@ final class VariableRef extends VariableRefBase {
 
     if (_variable.getType() instanceof NodeSetType) {
       // The method cloneIterator() also does resetting
-      exp = exp.invoke("cloneIterator");
+      exp = exp.invoke(CLONE_ITERATOR);
     }
     return exp;
   }
-  
-  @Override
-  public void translate(CompilerContext ctx) {
-//    FIXME
 
-    // Fall-through for variables that are implemented as methods
-    if (_type.implementedAsMethod())
-      return;
-
-    final String name = _variable.getEscapedName();
-    final String signature = _type.toSignature();
-    JInvocation invocation = null;
-    if (_variable.isLocal()) {
-      if (false){//classGen.isExternal()) {
-//        Closure variableClosure = _closure;
-//        while (variableClosure != null) {
-//          if (variableClosure.inInnerClass()) {
-//            break;
-//          }
-//          variableClosure = variableClosure.getParentClosure();
-//        }
-//
-//        if (variableClosure != null) {
-//          il.append(ALOAD_0);
-//          il.append(new GETFIELD(cpg.addFieldref(variableClosure.getInnerClassName(), name, signature)));
-//        } else {
-//          il.append(_variable.loadInstruction());
-//        }
-      } else {
-//        il.append(_variable.loadInstruction());
-      }
-    } else {
-      final String className = ctx.clazz().fullName();
-//      il.append(classGen.loadTranslet());
-//      if (classGen.isExternal()) {
-//        il.append(new CHECKCAST(cpg.addClass(className)));
-//      }
-//      il.append(new GETFIELD(cpg.addFieldref(className, name, signature)));
-    }
-
-    if (_variable.getType() instanceof NodeSetType) {
-      // The method cloneIterator() also does resetting
-//      final int clone = cpg.addInterfaceMethodref(NODE_ITERATOR, "cloneIterator", "()" + NODE_ITERATOR_SIG);
-//      il.append(new INVOKEINTERFACE(clone, 1));
-    }
-  }
 }

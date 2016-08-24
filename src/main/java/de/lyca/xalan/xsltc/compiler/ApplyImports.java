@@ -102,18 +102,6 @@ final class ApplyImports extends Instruction {
    */
   @Override
   public void translate(CompilerContext ctx) {
- // FIXME
-//    final Stylesheet stylesheet = classGen.getStylesheet();
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//    final InstructionList il = methodGen.getInstructionList();
-
-    // Push the arguments that are passed to applyTemplates()
-//    il.append(classGen.loadTranslet());
-//    il.append(methodGen.loadDOM());
-//    il.append(methodGen.loadIterator());
-//    il.append(methodGen.loadHandler());
-//    il.append(methodGen.loadCurrentNode());
-
     // Push a new parameter frame in case imported template might expect
     // parameters. The apply-imports has nothing that it can pass.
     if (ctx.stylesheet().hasLocalParams()) {
@@ -131,11 +119,8 @@ final class ApplyImports extends Instruction {
     final String functionName = mode.functionName(minPrecedence, maxPrecedence);
 
     // Construct the translet class-name and the signature of the method
-//    final String className = classGen.getStylesheet().getClassName();
-//    final String signature = classGen.getApplyTemplatesSigForImport();
-//    final int applyTemplates = cpg.addMethodref(className, functionName, signature);
-//    il.append(new INVOKEVIRTUAL(applyTemplates));
-    ctx.currentBlock().invoke(functionName).arg(ctx.currentDom()).arg(ctx.param(ITERATOR_PNAME)).arg(ctx.currentHandler()).arg(ctx.currentNode());
+    ctx.currentBlock().invoke(functionName).arg(ctx.currentDom()).arg(ctx.param(ITERATOR_PNAME))
+        .arg(ctx.currentHandler()).arg(ctx.currentNode());
 
     // Pop any parameter frame that was pushed above.
     if (ctx.stylesheet().hasLocalParams()) {

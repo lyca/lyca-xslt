@@ -24,7 +24,6 @@ package de.lyca.xalan.xsltc.compiler;
 import static com.sun.codemodel.JExpr.invoke;
 import static com.sun.codemodel.JMod.PRIVATE;
 import static de.lyca.xalan.xsltc.compiler.Constants.DOCUMENT_PNAME;
-import static de.lyca.xalan.xsltc.compiler.Constants.EMPTYSTRING;
 import static de.lyca.xalan.xsltc.compiler.Constants.ERROR;
 import static de.lyca.xalan.xsltc.compiler.Constants.ITERATOR_PNAME;
 import static de.lyca.xalan.xsltc.compiler.Constants.TRANSLET_OUTPUT_PNAME;
@@ -107,7 +106,8 @@ final class AttributeSet extends TopLevelElement {
       parser.reportError(Constants.ERROR, err);
     }
     _name = parser.getQNameIgnoreDefaultNs(name);
-    if (_name == null || _name.equals(EMPTYSTRING)) {
+    if (_name == null || _name.equals("")) {
+      // TODO _name cannot be the empty string...
       final ErrorMsg msg = new ErrorMsg(UNNAMED_ATTRIBSET_ERR, this);
       parser.reportError(ERROR, msg);
     }
@@ -166,13 +166,13 @@ final class AttributeSet extends TopLevelElement {
   public JStatement compile(CompilerContext ctx) {
     return invoke(_method).arg(ctx.currentDom()).arg(ctx.param(ITERATOR_PNAME)).arg(ctx.currentHandler());
   }
-  
+
   /**
    * Compile a method that outputs the attributes in this set
    */
   @Override
   public void translate(CompilerContext ctx) {
-// FIXME
+    // FIXME
 
     if (_ignore)
       return;
@@ -183,23 +183,11 @@ final class AttributeSet extends TopLevelElement {
     JVar handler = ctx.param(SerializationHandler.class, TRANSLET_OUTPUT_PNAME);
     ctx.pushBlock(method.body());
     ctx.pushHandler(handler);
-    // Create a new method generator for an attribute set method
-//    methodGen = new AttributeSetMethodGenerator(_method, classGen);
 
     // Generate a reference to previous attribute-set definitions with the
     // same name first. Those later in the stylesheet take precedence.
     if (_mergeSet != null) {
-//      final ConstantPoolGen cpg = classGen.getConstantPool();
-//      final InstructionList il = methodGen.getInstructionList();
-      final String methodName = _mergeSet.getMethodName();
-
       ctx.currentBlock().add(_mergeSet.compile(ctx));
-//      il.append(classGen.loadTranslet());
-//      il.append(methodGen.loadDOM());
-//      il.append(methodGen.loadIterator());
-//      il.append(methodGen.loadHandler());
-//      final int method = cpg.addMethodref(classGen.getClassName(), methodName, ATTR_SET_SIG);
-//      il.append(new INVOKESPECIAL(method));
     }
 
     // Translate other used attribute sets first, as local attributes
@@ -214,10 +202,7 @@ final class AttributeSet extends TopLevelElement {
         element.translate(ctx);
       }
     }
-//    final InstructionList il = methodGen.getInstructionList();
-//    il.append(RETURN);
 
-//    classGen.addMethod(methodGen);
     ctx.popHandler();
     ctx.popBlock();
     ctx.popMethodContext();
@@ -234,4 +219,5 @@ final class AttributeSet extends TopLevelElement {
     }
     return sb.toString();
   }
+
 }

@@ -39,8 +39,8 @@ final class NotCall extends FunctionCall {
   }
 
   @Override
-  public JExpression compile(CompilerContext ctx) {
-    return not(argument().compile(ctx));
+  public JExpression toJExpression(CompilerContext ctx) {
+    return not(argument().toJExpression(ctx));
   }
 
   @Override

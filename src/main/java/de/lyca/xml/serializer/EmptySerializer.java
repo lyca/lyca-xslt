@@ -601,13 +601,6 @@ public class EmptySerializer implements SerializationHandler {
   }
 
   /**
-   * @see XSLOutputAttributes#setCdataSectionElements
-   */
-  public void setCdataSectionElements(Hashtable h) throws Exception {
-    couldThrowException();
-  }
-
-  /**
    * @see XSLOutputAttributes#setDoctype(java.lang.String, java.lang.String)
    */
   @Override
