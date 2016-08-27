@@ -60,9 +60,9 @@ import de.lyca.xml.utils.SystemIDResolver;
  * @author Original: shane_curcuru@lotus.com
  * @author Refactored: l.michele@lyca.de
  */
-public class URIResolverTest {
+public class URIResolver_Test {
 
-  private static final String PACKAGE = '/' + URIResolverTest.class.getPackage().getName().replace('.', '/') + "/";
+  private static final String PACKAGE = '/' + URIResolver_Test.class.getPackage().getName().replace('.', '/') + "/";
 
   @Test
   public void testURIResolver() throws Exception {

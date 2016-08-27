@@ -107,7 +107,7 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
    * the rest of his bulk, waved helplessly before his eyes.
    * "What has happened to me?", he thought. It was no dream....
    */
-  protected final static String DEFAULT_TRANSLET_NAME = "GregorSamsa";
+  public final static String DEFAULT_TRANSLET_NAME = "GregorSamsa";
 
   /**
    * The class name of the translet

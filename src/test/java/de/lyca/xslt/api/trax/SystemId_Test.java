@@ -82,9 +82,9 @@ import de.lyca.xslt.ResourceUtils;
  * @author shane_curcuru@lotus.com
  * @version $Id: SystemIdTest.java 470101 2006-11-01 21:03:00Z minchau $
  */
-public class SystemIdTest {
+public class SystemId_Test {
 
-  private static final String PACKAGE = '/' + SystemIdTest.class.getPackage().getName().replace('.', '/') + "/";
+  private static final String PACKAGE = '/' + SystemId_Test.class.getPackage().getName().replace('.', '/') + "/";
 
   /** Internal flag for test that we have not yet verified expected result. */
   protected static final String EXPECTED_RESULT_UNKNOWN = "EXPECTED_RESULT_UNKNOWN";

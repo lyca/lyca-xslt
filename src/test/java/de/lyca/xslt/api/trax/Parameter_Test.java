@@ -47,9 +47,9 @@ import org.junit.Test;
  * @author Original: shane_curcuru@lotus.com
  * @author Refactored: l.michele@lyca.de
  */
-public class ParameterTest {
+public class Parameter_Test {
 
-  private static final String PACKAGE = '/' + ExamplesTest.class.getPackage().getName().replace('.', '/') + "/";
+  private static final String PACKAGE = '/' + Parameter_Test.class.getPackage().getName().replace('.', '/') + "/";
 
   private static final String FIRST = "<outp>ABC,<B>ABC</B>; DEF,<B>DEF</B>; GHI,<B>GHI</B>; </outp>"
           + System.lineSeparator();

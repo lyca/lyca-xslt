@@ -55,6 +55,7 @@ import com.sun.codemodel.JFieldVar;
 
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.Util;
+import de.lyca.xalan.xsltc.trax.TransformerFactoryImpl;
 import de.lyca.xml.dtm.DTM;
 
 /**
@@ -613,6 +614,8 @@ public final class XSLTC {
    * Generate an output File object to send the translet to
    */
   private File getOutputFile(String className) {
+    if (TransformerFactoryImpl.DEFAULT_TRANSLET_NAME.equals(className))
+      return new File(System.getProperty("java.io.tmpdir"), classFileName(className));
     if (_destDir != null)
       return new File(_destDir, classFileName(className));
     else
@@ -623,6 +626,8 @@ public final class XSLTC {
    * Generate an output File object to send the translet to
    */
   private File getInputFile(String className) {
+    if (TransformerFactoryImpl.DEFAULT_TRANSLET_NAME.equals(className))
+      return new File(System.getProperty("java.io.tmpdir"), sourceFileName(className));
     if (_destDir != null)
       return new File(_destDir, sourceFileName(className));
     else
@@ -903,7 +908,7 @@ public final class XSLTC {
         final File inFile = getInputFile(fullName);
         Path parentDir = inFile.toPath().getParent();
         if (parentDir == null) {
-          parentDir = Paths.get(System.getProperty("user.dir"));
+          parentDir = Paths.get(System.getProperty("java.io.tmpdir"));
         }
         Files.createDirectories(parentDir);
         jCodeModel.build(parentDir.toFile());
