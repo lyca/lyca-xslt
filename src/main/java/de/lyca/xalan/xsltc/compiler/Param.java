@@ -60,26 +60,6 @@ final class Param extends VariableBase {
     return "param(" + _name + ")";
   }
 
-//  /**
-//   * Set the instruction for loading the value of this variable onto the JVM
-//   * stack and returns the old instruction.
-//   */
-//  public Instruction setLoadInstruction(Instruction instruction) {
-//    final Instruction tmp = _loadInstruction;
-//    _loadInstruction = instruction;
-//    return tmp;
-//  }
-//
-//  /**
-//   * Set the instruction for storing a value from the stack into this variable
-//   * and returns the old instruction.
-//   */
-//  public Instruction setStoreInstruction(Instruction instruction) {
-//    final Instruction tmp = _storeInstruction;
-//    _storeInstruction = instruction;
-//    return tmp;
-//  }
-
   /**
    * Display variable in a full AST dump
    */
@@ -177,7 +157,6 @@ final class Param extends VariableBase {
      * the class.
      */
     final String name = _escapedName;// BasisLibrary.mapQNameToJavaName(_name.toString());
-    final String className = _type.getClassName();
 
     if (isLocal()) {
       /*
@@ -193,39 +172,23 @@ final class Param extends VariableBase {
         return;
       }
 
-      if (className != "") {
-        // FIXME
-//        il.append(new CHECKCAST(cpg.addClass(className)));
-      }
-
-//      _type.translateUnBox(classGen, methodGen);
-
       if (_refs.isEmpty()) { // nobody uses the value
-//        il.append(_type.POP());
         _param = null;
       } else { // normal case
         // Call addParameter() from this class
         JExpression addParameter = invoke(ADD_PARAMETER).arg(name).arg(compileValue(ctx)).arg(JExpr.TRUE);
-
-        _param = ctx.currentBlock().decl(_type.toJCType(), name, addParameter);
         // Cache the result of addParameter() in a local variable
-//        _local.setStart(il.append(_type.STORE(_local.getIndex())));
+        _param = ctx.currentBlock().decl(_type.toJCType(), name, addParameter);
       }
     } else {
       if (ctx.field(name) == null) {
         JVar field = ctx.addPublicField(_type.toJCType(), name);
-
         // Call addParameter() from this class
         JExpression addParameter = invoke(ADD_PARAMETER).arg(name).arg(compileValue(ctx)).arg(JExpr.TRUE);
-        ctx.currentBlock().assign(field, addParameter);
-
-//        _type.translateUnBox(classGen, methodGen);
-
         // Cache the result of addParameter() in a field
-        if (className != "") {
-//          il.append(new CHECKCAST(cpg.addClass(className)));
-        }
+        ctx.currentBlock().assign(field, addParameter);
       }
     }
   }
+
 }

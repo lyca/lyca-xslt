@@ -354,16 +354,6 @@ final class Output extends TopLevelElement {
       while (tokenizer.hasMoreTokens()) {
         body.invoke("addCdataElement").arg(tokenizer.nextToken());
       }
-      // final int index = cpg.addMethodref(TRANSLET_CLASS, "addCdataElement",
-      // "(Ljava/lang/String;)V");
-      //
-      // final StringTokenizer tokens = new StringTokenizer(_cdata);
-      // while (tokens.hasMoreTokens()) {
-      // il.append(DUP);
-      // il.append(new PUSH(cpg, tokens.nextToken()));
-      // il.append(new INVOKEVIRTUAL(index));
-      // }
-      // il.append(POP); // Cleanup - pop last translet reference off stack
     }
   }
 

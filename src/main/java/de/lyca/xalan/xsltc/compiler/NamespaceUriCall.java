@@ -54,19 +54,4 @@ final class NamespaceUriCall extends NameBase {
     return ctx.currentDom().invoke(GET_NAMESPACE_NAME).arg(super.toJExpression(ctx));
   }
 
-  /**
-   * Translate code that leaves a node's namespace URI (as a String) on the
-   * stack
-   */
-  @Override
-  public void translate(CompilerContext ctx) {
- // FIXME
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//    final InstructionList il = methodGen.getInstructionList();
-//
-//    // Returns the string value for a node in the DOM
-//    final int getNamespace = cpg.addInterfaceMethodref(DOM_INTF, "getNamespaceName", "(I)" + STRING_SIG);
-//    super.translate(classGen, methodGen);
-//    il.append(new INVOKEINTERFACE(getNamespace, 2));
-  }
 }

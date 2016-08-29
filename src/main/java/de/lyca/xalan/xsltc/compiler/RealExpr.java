@@ -55,11 +55,4 @@ final class RealExpr extends Expression {
     return lit(_value);
   }
 
-  @Override
-  public void translate(CompilerContext ctx) {
- // FIXME
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//    final InstructionList il = methodGen.getInstructionList();
-//    il.append(new PUSH(cpg, _value));
-  }
 }

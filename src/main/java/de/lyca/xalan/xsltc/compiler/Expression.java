@@ -29,7 +29,6 @@ import java.util.List;
 
 import com.sun.codemodel.JExpression;
 
-import de.lyca.xalan.xsltc.compiler.util.BooleanType;
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.MethodType;
@@ -107,17 +106,6 @@ abstract class Expression extends SyntaxTreeNode {
   }
 
   /**
-   * Redefined by expressions of type boolean that use flow lists.
-   * @param ctx TODO
-   */
-  public void translateDesynthesized(CompilerContext ctx) {
-    translate(ctx);
-    if (_type instanceof BooleanType) {
-      desynthesize(ctx);
-    }
-  }
-
-  /**
    * If this expression is of type node-set and it is not a variable reference,
    * then call setStartNode() passing the context node.
    * @param ctx TODO
@@ -137,27 +125,6 @@ abstract class Expression extends SyntaxTreeNode {
       return iter.invoke(SET_START_NODE).arg(ctx.currentNode());
     }
     return iter;
-  }
-
-  /**
-   * Synthesize a boolean expression, i.e., either push a 0 or 1 onto the
-   * operand stack for the next statement to succeed. Returns the handle of the
-   * instruction to be backpatched.
-   * @param ctx TODO
-   */
-  public void synthesize(CompilerContext ctx) {
-    // FIXME
-//    final InstructionList il = methodGen.getInstructionList();
-//    _trueList.backPatch(il.append(ICONST_1));
-//    final BranchHandle truec = il.append(new GOTO_W(null));
-//    _falseList.backPatch(il.append(ICONST_0));
-//    truec.setTarget(il.append(NOP));
-  }
-
-  public void desynthesize(CompilerContext ctx) {
- // FIXME
-//    final InstructionList il = methodGen.getInstructionList();
-//    _falseList.add(il.append(new IFEQ(null)));
   }
 
   /**

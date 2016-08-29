@@ -83,16 +83,4 @@ final class StartsWithCall extends FunctionCall {
     return base.invoke("startsWith").arg(token);
   }
 
-  /**
-   * Compile the expression - leave boolean expression on stack
-   */
-  @Override
-  public void translate(CompilerContext ctx) {
-// FIXME
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//    final InstructionList il = methodGen.getInstructionList();
-//    _base.translate(classGen, methodGen);
-//    _token.translate(classGen, methodGen);
-//    il.append(new INVOKEVIRTUAL(cpg.addMethodref(STRING_CLASS, "startsWith", "(" + STRING_SIG + ")Z")));
-  }
 }

@@ -38,7 +38,6 @@ import de.lyca.xalan.xsltc.compiler.util.IntType;
 import de.lyca.xalan.xsltc.compiler.util.MethodType;
 import de.lyca.xalan.xsltc.compiler.util.NodeSetType;
 import de.lyca.xalan.xsltc.compiler.util.NodeType;
-import de.lyca.xalan.xsltc.compiler.util.RealType;
 import de.lyca.xalan.xsltc.compiler.util.ReferenceType;
 import de.lyca.xalan.xsltc.compiler.util.ResultTreeType;
 import de.lyca.xalan.xsltc.compiler.util.Type;
@@ -206,7 +205,6 @@ final class RelationalExpr extends Expression {
 
   @Override
   public JExpression toJExpression(CompilerContext ctx) {
-    // FIXME
     if (hasNodeSetArgs() || hasReferenceArgs()) {
       // Call compare() from the BasisLibrary
       JExpression leftExp = _left.startIterator(ctx, _left.toJExpression(ctx));
@@ -216,17 +214,6 @@ final class RelationalExpr extends Expression {
     } else {
       JExpression leftExp = _left.toJExpression(ctx);
       JExpression rightExp = _right.toJExpression(ctx);
-
-      // TODO: optimize if one of the args is 0
-
-      boolean tozero = false;
-      Type tleft = _left.getType();
-
-      if (tleft instanceof RealType) {
-//        il.append(tleft.CMP(_op == Operators.LT || _op == Operators.LE));
-        tleft = Type.Int;
-        tozero = true;
-      }
 
       switch (_op) {
         case Operators.LT:
@@ -243,81 +230,6 @@ final class RelationalExpr extends Expression {
       }
     }
     return _null();
-  }
-
-  @Override
-  public void translate(CompilerContext ctx) {
- // FIXME
-    if (hasNodeSetArgs() || hasReferenceArgs()) {
-//      final ConstantPoolGen cpg = classGen.getConstantPool();
-//      final InstructionList il = methodGen.getInstructionList();
-
-      // Call compare() from the BasisLibrary
-      _left.translate(ctx);
-//      _left.startIterator(definedClass, method);
-      _right.translate(ctx);
-//      _right.startIterator(definedClass, method);
-
-//      il.append(new PUSH(cpg, _op));
-//      il.append(method.loadDOM());
-
-//      final int index = cpg.addMethodref(BASIS_LIBRARY_CLASS, "compare", "(" + _left.getType().toSignature()
-//              + _right.getType().toSignature() + "I" + DOM_INTF_SIG + ")Z");
-//      il.append(new INVOKESTATIC(index));
-    } else {
-      translateDesynthesized(ctx);
-      synthesize(ctx);
-    }
-  }
-
-  @Override
-  public void translateDesynthesized(CompilerContext ctx) {
-//  FIXME
-    if (hasNodeSetArgs() || hasReferenceArgs()) {
-      translate(ctx);
-      desynthesize(ctx);
-    } else {
-//      BranchInstruction bi = null;
-//      final InstructionList il = methodGen.getInstructionList();
-
-      _left.translate(ctx);
-      _right.translate(ctx);
-
-      // TODO: optimize if one of the args is 0
-
-      boolean tozero = false;
-      Type tleft = _left.getType();
-
-      if (tleft instanceof RealType) {
-//        il.append(tleft.CMP(_op == Operators.LT || _op == Operators.LE));
-        tleft = Type.Int;
-        tozero = true;
-      }
-
-      switch (_op) {
-        case Operators.LT:
-//          bi = tleft.GE(tozero);
-          break;
-
-        case Operators.GT:
-//          bi = tleft.LE(tozero);
-          break;
-
-        case Operators.LE:
-//          bi = tleft.GT(tozero);
-          break;
-
-        case Operators.GE:
-//          bi = tleft.LT(tozero);
-          break;
-
-        default:
-          final ErrorMsg msg = new ErrorMsg(ErrorMsg.ILLEGAL_RELAT_OP_ERR, this);
-          getParser().reportError(Constants.FATAL, msg);
-      }
-
-//      _falseList.add(il.append(bi)); // must be backpatched
-    }
   }
 
   @Override

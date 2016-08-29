@@ -194,14 +194,6 @@ final class KeyCall extends FunctionCall {
       name = _name.toJExpression(ctx);
     }
     JExpression value = _value.toJExpression(ctx);
-
-    // Generate following byte code:
-    //
-    // KeyIndex ki = translet.getKeyIndex(_name)
-    // ki.setDom(translet.dom);
-    // ki.getKeyIndexIterator(_value, true) - for key()
-    // OR
-    // ki.getKeyIndexIterator(_value, false) - for id()
     JInvocation getKeyIndex = invoke("getKeyIndex");
     if (ctx.ref(CurrentNodeListFilter.class).isAssignableFrom(ctx.clazz())) {
       getKeyIndex = invoke(ctx.param(TRANSLET_PNAME), "getKeyIndex");

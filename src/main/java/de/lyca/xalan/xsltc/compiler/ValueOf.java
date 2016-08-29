@@ -96,9 +96,6 @@ final class ValueOf extends Instruction {
   public void translate(CompilerContext ctx) {
     JExpression document =  ctx.currentDom();
     JExpression handler = ctx.currentHandler();
-//    JVar handler = method.listParams()[2];
-    
-//    JFieldRef handler = ref("stringValueHandler");
 
     // Turn off character escaping if so is wanted.
     if (!_escaping) {
@@ -115,10 +112,6 @@ final class ValueOf extends Instruction {
       ctx.currentBlock().invoke(CHARACTERS).arg(select).arg(handler);
     } else {
       ctx.currentBlock().invoke(document, CHARACTERS).arg(select).arg(handler);
-//      il.append(methodGen.loadDOM());
-//      _select.translate(classGen, methodGen);
-//      il.append(methodGen.loadHandler());
-//      il.append(new INVOKEINTERFACE(characters, 3));
     }
 
     // Restore character escaping setting to whatever it was.

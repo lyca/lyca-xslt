@@ -113,7 +113,7 @@ final class LiteralAttribute extends Instruction {
     }
   }
 
-/**
+    /**
      * Return true if at least one character in the String is considered to
      * be a "bad" character. A bad character is one whose code is:
      * less than 32 (a space),

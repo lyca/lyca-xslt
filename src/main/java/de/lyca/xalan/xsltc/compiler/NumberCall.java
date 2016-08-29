@@ -66,23 +66,4 @@ final class NumberCall extends FunctionCall {
     return expr;
   }
 
-  @Override
-  public void translate(CompilerContext ctx) {
-//    final InstructionList il = methodGen.getInstructionList();
-//    Type targ;
-//
-//    if (argumentCount() == 0) {
-//      il.append(methodGen.loadContextNode());
-//      targ = Type.Node;
-//    } else {
-//      final Expression arg = argument();
-//      arg.translate(classGen, methodGen);
-//      arg.startIterator(classGen, methodGen);
-//      targ = arg.getType();
-//    }
-//
-//    if (!targ.identicalTo(Type.Real)) {
-//      targ.translateTo(classGen, methodGen, Type.Real);
-//    }
-  }
 }

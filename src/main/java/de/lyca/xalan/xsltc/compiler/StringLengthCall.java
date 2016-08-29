@@ -48,17 +48,4 @@ final class StringLengthCall extends FunctionCall {
     return expr.invoke("length");
   }
 
-  @Override
-  public void translate(CompilerContext ctx) {
-//    FIXME
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//    final InstructionList il = methodGen.getInstructionList();
-//    if (argumentCount() > 0) {
-//      argument().translate(classGen, methodGen);
-//    } else {
-//      il.append(methodGen.loadContextNode());
-//      Type.Node.translateTo(classGen, methodGen, Type.String);
-//    }
-//    il.append(new INVOKEVIRTUAL(cpg.addMethodref(STRING_CLASS, "length", "()I")));
-  }
 }

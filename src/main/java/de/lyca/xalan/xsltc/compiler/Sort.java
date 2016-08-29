@@ -692,9 +692,7 @@ final class Sort extends Instruction implements Closure {
    * Compiles a method that overloads NodeSortRecord.extractValueFromDOM()
    */
   private static void compileExtract(List<Sort> sortObjects, CompilerContext sortCtx, String className) {
-    // FIXME
-    // String NodeSortRecord.extractValueFromDOM(DOM dom, int current, int
-    // level, AbstractTranslet translet, int last);
+    // String NodeSortRecord.extractValueFromDOM(DOM dom, int current, int level, AbstractTranslet translet, int last);
     JMethod extractValueFromDOM = sortCtx.method(JMod.PUBLIC | JMod.FINAL, String.class, "extractValueFromDOM")._throws(TransletException.class);
     sortCtx.param(DOM.class, DOCUMENT_PNAME);
     JVar currentParam = sortCtx.param(int.class, "current");

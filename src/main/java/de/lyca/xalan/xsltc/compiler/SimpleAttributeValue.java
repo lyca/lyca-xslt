@@ -73,19 +73,4 @@ final class SimpleAttributeValue extends AttributeValue {
     return lit(_value);
   }
 
-  /**
-   * Translate this attribute value into JVM bytecodes that pushes the attribute
-   * value onto the JVM's stack.
-   * @param classGen
-   *          BCEL Java class generator
-   * @param methodGen
-   *          BCEL Java method generator
-   */
-  @Override
-  public void translate(CompilerContext ctx) {
- // FIXME
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//    final InstructionList il = methodGen.getInstructionList();
-//    il.append(new PUSH(cpg, _value));
-  }
 }

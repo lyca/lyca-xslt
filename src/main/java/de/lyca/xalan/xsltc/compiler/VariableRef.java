@@ -52,36 +52,13 @@ final class VariableRef extends VariableRefBase {
     final String name = _variable.getEscapedName();
     JExpression exp = null;
     if (_variable.isLocal()) {
-      if (false){//classGen.isExternal()) {
-//        Closure variableClosure = _closure;
-//        while (variableClosure != null) {
-//          if (variableClosure.inInnerClass()) {
-//            break;
-//          }
-//          variableClosure = variableClosure.getParentClosure();
-//        }
-//
-//        if (variableClosure != null) {
-//          il.append(ALOAD_0);
-//          il.append(new GETFIELD(cpg.addFieldref(variableClosure.getInnerClassName(), name, signature)));
-//        } else {
-//          il.append(_variable.loadInstruction());
-//        }
-      } else {
-        exp = _variable.loadParam();
-//        il.append(_variable.loadInstruction());
-      }
+      exp = _variable.loadParam();
     } else {
       JExpression classCtx = _this();
       if (ctx.isInnerClass()) {
         classCtx = ((JExpression) cast(ctx.clazz().outer(), ctx.param(TRANSLET_PNAME)));
       }
       exp = classCtx.ref(name);
-//      il.append(classGen.loadTranslet());
-//      if (classGen.isExternal()) {
-//        il.append(new CHECKCAST(cpg.addClass(className)));
-//      }
-//      il.append(new GETFIELD(cpg.addFieldref(className, name, signature)));
     }
 
     if (_variable.getType() instanceof NodeSetType) {

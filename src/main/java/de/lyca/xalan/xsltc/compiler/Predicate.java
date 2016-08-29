@@ -353,7 +353,6 @@ final class Predicate extends Expression implements Closure {
    * closure to test(). Notice that local variables need to be "unboxed".
    */
   private CompilerContext createFilter(CompilerContext ctx) {
- // FIXME
     final XSLTC xsltc = ctx.xsltc();
     _className = xsltc.getHelperClassName();
 
@@ -361,9 +360,11 @@ final class Predicate extends Expression implements Closure {
     CompilerContext filterCtx;
     JDefinedClass nodeListFilter;
     JDefinedClass currentClazz = ctx.clazz();
-    if(currentClazz.outer()!=null) currentClazz = (JDefinedClass) currentClazz.outer();
+    if (currentClazz.outer() != null)
+      currentClazz = (JDefinedClass) currentClazz.outer();
     try {
-      nodeListFilter = currentClazz._class(PUBLIC | STATIC | FINAL, _className)._implements(CurrentNodeListFilter.class);
+      nodeListFilter = currentClazz._class(PUBLIC | STATIC | FINAL, _className)
+          ._implements(CurrentNodeListFilter.class);
     } catch (JClassAlreadyExistsException e) {
       throw new RuntimeException(e);
     }
@@ -383,36 +384,20 @@ final class Predicate extends Expression implements Closure {
       }
     }
 
-
-    // public boolean test(int node, int position, int last, int current, AbstractTranslet translet, DTMAxisIterator iter);
+    // public boolean test(int node, int position, int last, int current,
+    // AbstractTranslet translet, DTMAxisIterator iter);
     JMethod test = filterCtx.method(JMod.PUBLIC | JMod.FINAL, boolean.class, "test");
     JVar nodeParam = filterCtx.param(int.class, "node");
-    JVar positionParam = filterCtx.param(int.class, "position");
-    JVar lastParam = filterCtx.param(int.class, "last");
-    JVar currentParam = filterCtx.param(int.class, "current");
-    JVar transletParam = filterCtx.param(AbstractTranslet.class, "translet");
-    JVar iteratorParam = filterCtx.param(DTMAxisIterator.class, "iterator");
+    filterCtx.param(int.class, "position");
+    filterCtx.param(int.class, "last");
+    filterCtx.param(int.class, "current");
+    filterCtx.param(AbstractTranslet.class, "translet");
+    filterCtx.param(DTMAxisIterator.class, "iterator");
     filterCtx.pushBlock(test.body());
     filterCtx.pushNode(nodeParam);
 
     test.body()._return(_exp.toJExpression(filterCtx));
-    
-//    // Store the dom in a local variable
-//    local = testGen.addLocalVariable("document", Util.getJCRefType(DOM_INTF_SIG), null, null);
-//    final String className = classGen.getClassName();
-//    il.append(filterGen.loadTranslet());
-//    il.append(new CHECKCAST(cpg.addClass(className)));
-//    il.append(new GETFIELD(cpg.addFieldref(className, DOM_FIELD, DOM_INTF_SIG)));
-//    local.setStart(il.append(new ASTORE(local.getIndex())));
-//
-//    // Store the dom index in the test generator
-//    testGen.setDomIndex(local.getIndex());
-//
-//    test.
-//    _exp.translate(filterCtx);
-//    il.append(IRETURN);
 
-//    getXSLTC().dumpClass(filterGen.getJavaClass());
     return filterCtx;
   }
 
@@ -531,92 +516,6 @@ final class Predicate extends Expression implements Closure {
       _new.arg(param);
     }
     return _new;
-
-    // Initialize closure variables
-    // FIXME
-//    final int length = _closureVars == null ? 0 : _closureVars.size();
-//
-//    for (int i = 0; i < length; i++) {
-//      final VariableRefBase varRef = _closureVars.get(i);
-//      final VariableBase var = varRef.getVariable();
-//      final Type varType = var.getType();
-//
-//      il.append(DUP);
-//
-//      // Find nearest closure implemented as an inner class
-//      Closure variableClosure = _parentClosure;
-//      while (variableClosure != null) {
-//        if (variableClosure.inInnerClass()) {
-//          break;
-//        }
-//        variableClosure = variableClosure.getParentClosure();
-//      }
-//
-//      // Use getfield if in an inner class
-//      if (variableClosure != null) {
-//        il.append(ALOAD_0);
-//        il.append(new GETFIELD(cpg.addFieldref(variableClosure.getInnerClassName(), var.getEscapedName(),
-//                varType.toSignature())));
-//      } else {
-//        // Use a load of instruction if in translet class
-//        il.append(var.loadInstruction());
-//      }
-//
-//      // Store variable in new closure
-//      il.append(new PUTFIELD(cpg.addFieldref(_className, var.getEscapedName(), varType.toSignature())));
-//    }
-  }
-
-  /**
-   * Translate a predicate expression. This translation pushes two references on
-   * the stack: a reference to a newly created filter object and a reference to
-   * the predicate's closure.
-   */
-  public void translateFilter(JDefinedClass definedClass, JMethod method) {
-    // FIXME
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//    final InstructionList il = methodGen.getInstructionList();
-//
-//    // Compile auxiliary class for filter
-//    compileFilter(classGen, methodGen);
-//
-//    // Create new instance of filter
-//    il.append(new NEW(cpg.addClass(_className)));
-//    il.append(DUP);
-//    il.append(new INVOKESPECIAL(cpg.addMethodref(_className, "<init>", "()V")));
-//
-//    // Initialize closure variables
-//    final int length = _closureVars == null ? 0 : _closureVars.size();
-//
-//    for (int i = 0; i < length; i++) {
-//      final VariableRefBase varRef = _closureVars.get(i);
-//      final VariableBase var = varRef.getVariable();
-//      final Type varType = var.getType();
-//
-//      il.append(DUP);
-//
-//      // Find nearest closure implemented as an inner class
-//      Closure variableClosure = _parentClosure;
-//      while (variableClosure != null) {
-//        if (variableClosure.inInnerClass()) {
-//          break;
-//        }
-//        variableClosure = variableClosure.getParentClosure();
-//      }
-//
-//      // Use getfield if in an inner class
-//      if (variableClosure != null) {
-//        il.append(ALOAD_0);
-//        il.append(new GETFIELD(cpg.addFieldref(variableClosure.getInnerClassName(), var.getEscapedName(),
-//                varType.toSignature())));
-//      } else {
-//        // Use a load of instruction if in translet class
-//        il.append(var.loadInstruction());
-//      }
-//
-//      // Store variable in new closure
-//      il.append(new PUTFIELD(cpg.addFieldref(_className, var.getEscapedName(), varType.toSignature())));
-//    }
   }
 
   @Override
@@ -625,36 +524,9 @@ final class Predicate extends Expression implements Closure {
       return _exp.toJExpression(ctx);
     } else if (isNodeValueTest() && getParent() instanceof Step) {
       return _value.toJExpression(ctx);
-      // FIXME
-//      il.append(new CHECKCAST(cpg.addClass(STRING_CLASS)));
-//      il.append(new PUSH(cpg, ((EqualityExpr) _exp).getOp()));
     } else {
       return compileFilter(ctx);
     }
-//    return super.compile(ctx);
   }
 
-  /**
-   * Translate a predicate expression. If non of the optimizations apply then
-   * this translation pushes two references on the stack: a reference to a newly
-   * created filter object and a reference to the predicate's closure. See class
-   * <code>Step</code> for further details.
-   */
-  @Override
-  public void translate(CompilerContext ctx) {
- // FIXME
-//
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//    final InstructionList il = methodGen.getInstructionList();
-//
-//    if (_nthPositionFilter || _nthDescendant) {
-//      _exp.translate(classGen, methodGen);
-//    } else if (isNodeValueTest() && getParent() instanceof Step) {
-//      _value.translate(classGen, methodGen);
-//      il.append(new CHECKCAST(cpg.addClass(STRING_CLASS)));
-//      il.append(new PUSH(cpg, ((EqualityExpr) _exp).getOp()));
-//    } else {
-//      translateFilter(classGen, methodGen);
-//    }
-  }
 }

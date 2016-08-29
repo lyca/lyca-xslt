@@ -55,17 +55,4 @@ final class NameCall extends NameBase {
     return ctx.currentDom().invoke(GET_NODE_NAME_X).arg(super.toJExpression(ctx));
   }
 
-  /**
-   * Translate code that leaves a node's QName (as a String) on the stack
-   */
-  @Override
-  public void translate(CompilerContext ctx) {
- // FIXME
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//    final InstructionList il = methodGen.getInstructionList();
-//
-//    final int getName = cpg.addInterfaceMethodref(DOM_INTF, GET_NODE_NAME, GET_NODE_NAME_SIG);
-//    super.translate(classGen, methodGen);
-//    il.append(new INVOKEINTERFACE(getName, 2));
-  }
 }

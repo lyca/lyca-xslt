@@ -200,9 +200,6 @@ final class XslAttribute extends Instruction {
     return Type.Void;
   }
 
-  /**
-     *
-     */
   @Override
   public void translate(CompilerContext ctx) {
     if (_ignore)
@@ -211,62 +208,34 @@ final class XslAttribute extends Instruction {
 
     // Compile code that emits any needed namespace declaration
     if (_namespace != null) {
-      // public void attribute(final String name, final String value)
-      ctx.currentBlock().add(ctx.currentHandler().invoke("namespaceAfterStartElement").arg(_prefix).arg(_namespace.toJExpression(ctx)));
-
-//      il.append(methodGen.loadHandler());
-//      il.append(new PUSH(cpg, _prefix));
-//      _namespace.translate(classGen, methodGen);
-//      il.append(methodGen.namespace());
+      ctx.currentBlock().add(
+          ctx.currentHandler().invoke("namespaceAfterStartElement").arg(_prefix).arg(_namespace.toJExpression(ctx)));
     }
 
     JExpression secondArg = null;
     if (!_isLiteral) {
       // if the qname is an AVT, then the qname has to be checked at runtime if
       // it is a valid qname
-      secondArg = ctx.currentBlock().decl(ctx.ref(String.class), ctx.nextNameValue(), _name.toJExpression(ctx));
-      
       // store the name into a variable first so _name.translate only needs to
       // be called once
-//      nameValue.setStart(il.append(new ASTORE(nameValue.getIndex())));
-//      il.append(new ALOAD(nameValue.getIndex()));
+      secondArg = ctx.currentBlock().decl(ctx.ref(String.class), ctx.nextNameValue(), _name.toJExpression(ctx));
 
       // call checkQName if the name is an AVT
       ctx.currentBlock().staticInvoke(ctx.ref(BasisLibrary.class), "checkAttribQName").arg(secondArg);
-//      final int check = cpg.addMethodref(BASIS_LIBRARY_CLASS, "checkAttribQName", "(" + STRING_SIG + ")V");
-//      il.append(new INVOKESTATIC(check));
-
-      // Save the current handler base on the stack
-//      il.append(methodGen.loadHandler());
-//      il.append(DUP); // first arg to "attributes" call
-
-      // load name value again
-//      nameValue.setEnd(il.append(new ALOAD(nameValue.getIndex())));
     } else {
-      // Save the current handler base on the stack
-//      il.append(methodGen.loadHandler());
-//      il.append(DUP); // first arg to "attributes" call
-
       // Push attribute name
       secondArg = _name.toJExpression(ctx);// 2nd arg
-
     }
 
     // Push attribute value - shortcut for literal strings
     JExpression text = null;
     if (elementCount() == 1 && elementAt(0) instanceof Text) {
       text = lit(((Text) elementAt(0)).getText());
-//      il.append(new PUSH(cpg, ((Text) elementAt(0)).getText()));
     } else {
-//      il.append(classGen.loadTranslet());
-//      il.append(new GETFIELD(cpg.addFieldref(TRANSLET_CLASS, "stringValueHandler", STRING_VALUE_HANDLER_SIG)));
-//      il.append(DUP);
-//      il.append(methodGen.storeHandler());
       ctx.pushHandler(ref("stringValueHandler"));
       // translate contents with substituted handler
       translateContents(ctx);
       // get String out of the handler
-//      il.append(new INVOKEVIRTUAL(cpg.addMethodref(STRING_VALUE_HANDLER, "getValue", "()" + STRING_SIG)));
       text = invoke(ctx.popHandler(), "getValue");
     }
 
@@ -284,17 +253,11 @@ final class XslAttribute extends Instruction {
           flags = flags | ExtendedContentHandler.HTML_ATTRURL;
         }
       }
-      ctx.currentBlock().invoke(ctx.currentHandler() ,"addUniqueAttribute").arg(secondArg).arg(text).arg(lit(flags));
-//      il.append(new PUSH(cpg, flags));
-//      il.append(methodGen.uniqueAttribute());
+      ctx.currentBlock().invoke(ctx.currentHandler(), "addUniqueAttribute").arg(secondArg).arg(text).arg(lit(flags));
     } else {
       // call "attribute"
-      ctx.currentBlock().invoke(ctx.currentHandler() ,"addAttribute").arg(secondArg).arg(text);
-//      il.append(methodGen.attribute());
+      ctx.currentBlock().invoke(ctx.currentHandler(), "addAttribute").arg(secondArg).arg(text);
     }
-
-    // Restore old handler base from stack
-//    il.append(methodGen.storeHandler());
   }
 
 }

@@ -90,11 +90,4 @@ final class UnaryOpExpr extends Expression {
     return minus(_left.toJExpression(ctx));
   }
 
-  @Override
-  public void translate(CompilerContext ctx) {
-    // FIXME
-    // final InstructionList il = methodGen.getInstructionList();
-    // _left.translate(classGen, methodGen);
-    // il.append(_type.NEG());
-  }
 }

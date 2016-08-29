@@ -107,36 +107,4 @@ class NameBase extends FunctionCall {
     return expr;
   }
 
-  /**
-   * Translate the code required for getting the node for which the QName,
-   * local-name or namespace URI should be extracted.
-   */
-  @Override
-  public void translate(CompilerContext ctx) {
-// // FIXME
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//    final InstructionList il = methodGen.getInstructionList();
-//
-//    il.append(methodGen.loadDOM());
-//
-//    // Function was called with no parameters
-//    if (argumentCount() == 0) {
-//      il.append(methodGen.loadContextNode());
-//    }
-//    // Function was called with node parameter
-//    else if (_paramType == Type.Node) {
-//      _param.translate(classGen, methodGen);
-//    } else if (_paramType == Type.Reference) {
-//      _param.translate(classGen, methodGen);
-//      il.append(new INVOKESTATIC(cpg.addMethodref(BASIS_LIBRARY_CLASS, "referenceToNodeSet", "(" + OBJECT_SIG + ")"
-//              + NODE_ITERATOR_SIG)));
-//      il.append(methodGen.nextNode());
-//    }
-//    // Function was called with node-set parameter
-//    else {
-//      _param.translate(classGen, methodGen);
-//      _param.startIterator(classGen, methodGen);
-//      il.append(methodGen.nextNode());
-//    }
-  }
 }
