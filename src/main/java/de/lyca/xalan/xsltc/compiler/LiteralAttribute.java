@@ -28,7 +28,6 @@ import com.sun.codemodel.JExpression;
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
-import de.lyca.xalan.xsltc.compiler.util.Util;
 import de.lyca.xml.serializer.ElemDesc;
 import de.lyca.xml.serializer.ExtendedContentHandler;
 
@@ -56,12 +55,6 @@ final class LiteralAttribute extends Instruction {
     _name = name;
     setParent(parent);
     _value = AttributeValue.create(this, value, parser);
-  }
-
-  @Override
-  public void display(int indent) {
-    indent(indent);
-    Util.println("LiteralAttribute name=" + _name + " value=" + _value);
   }
 
   @Override

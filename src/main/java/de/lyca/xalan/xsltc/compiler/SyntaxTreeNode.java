@@ -925,31 +925,6 @@ public abstract class SyntaxTreeNode {
   }
 
   /**
-   * Displays the contents of this syntax tree node (to stdout). This method is
-   * intended for debugging _only_, and should be overridden by all syntax tree
-   * node implementations.
-   * 
-   * @param indent
-   *          Indentation level for syntax tree levels.
-   */
-  public void display(int indent) {
-    displayContents(indent);
-  }
-
-  /**
-   * Displays the contents of this syntax tree node (to stdout). This method is
-   * intended for debugging _only_ !!!
-   * 
-   * @param indent
-   *          Indentation level for syntax tree levels.
-   */
-  protected void displayContents(int indent) {
-    for (final SyntaxTreeNode item : _contents) {
-      item.display(indent);
-    }
-  }
-
-  /**
    * Set the indentation level for debug output.
    * 
    * @param indent

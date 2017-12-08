@@ -26,7 +26,6 @@ import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
-import de.lyca.xalan.xsltc.compiler.util.Util;
 
 /**
  * @author Jacek Ambroziak
@@ -37,16 +36,6 @@ final class When extends Instruction {
 
   private Expression _test;
   private boolean _ignore = false;
-
-  @Override
-  public void display(int indent) {
-    indent(indent);
-    Util.println("When");
-    indent(indent + IndentIncrement);
-    System.out.print("test ");
-    Util.println(_test.toString());
-    displayContents(indent + IndentIncrement);
-  }
 
   public Expression getTest() {
     return _test;

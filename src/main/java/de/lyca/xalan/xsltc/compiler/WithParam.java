@@ -67,20 +67,6 @@ final class WithParam extends Instruction {
   private boolean _doParameterOptimization = false;
 
   /**
-   * Displays the contents of this element
-   */
-  @Override
-  public void display(int indent) {
-    indent(indent);
-    Util.println("with-param " + _name);
-    if (_select != null) {
-      indent(indent + IndentIncrement);
-      Util.println("select " + _select.toString());
-    }
-    displayContents(indent + IndentIncrement);
-  }
-
-  /**
    * Returns the escaped qname of the parameter
    */
   public String getEscapedName() {

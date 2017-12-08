@@ -32,7 +32,6 @@ import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
-import de.lyca.xalan.xsltc.compiler.util.Util;
 import de.lyca.xalan.xsltc.runtime.BasisLibrary;
 
 /**
@@ -62,16 +61,6 @@ final class UnsupportedElement extends SyntaxTreeNode {
    */
   public void setErrorMessage(ErrorMsg message) {
     _message = message;
-  }
-
-  /**
-   * Displays the contents of this element
-   */
-  @Override
-  public void display(int indent) {
-    indent(indent);
-    Util.println("Unsupported element = " + _qname.getNamespace() + ":" + _qname.getLocalPart());
-    displayContents(indent + IndentIncrement);
   }
 
   /**

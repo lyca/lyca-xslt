@@ -62,14 +62,6 @@ final class CallTemplate extends Instruction {
    */
   private Template _calleeTemplate = null;
 
-  @Override
-  public void display(int indent) {
-    indent(indent);
-    System.out.print("CallTemplate");
-    Util.println(" name " + _name);
-    displayContents(indent + IndentIncrement);
-  }
-
   public boolean hasWithParams() {
     return elementCount() > 0;
   }

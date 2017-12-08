@@ -30,7 +30,6 @@ import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
-import de.lyca.xalan.xsltc.compiler.util.Util;
 
 /**
  * @author Jacek Ambroziak
@@ -41,19 +40,6 @@ final class If extends Instruction {
 
   private Expression _test;
   private boolean _ignore = false;
-
-  /**
-   * Display the contents of this element
-   */
-  @Override
-  public void display(int indent) {
-    indent(indent);
-    Util.println("If");
-    indent(indent + IndentIncrement);
-    System.out.print("test ");
-    Util.println(_test.toString());
-    displayContents(indent + IndentIncrement);
-  }
 
   /**
    * Parse the "test" expression and contents of this element.

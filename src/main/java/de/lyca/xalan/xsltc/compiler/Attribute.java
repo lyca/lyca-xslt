@@ -21,21 +21,12 @@
 
 package de.lyca.xalan.xsltc.compiler;
 
-import de.lyca.xalan.xsltc.compiler.util.Util;
-
 /**
  * @author Jacek Ambroziak
  * @author Santiago Pericas-Geertsen
  */
 final class Attribute extends Instruction {
   private QName _name;
-
-  @Override
-  public void display(int indent) {
-    indent(indent);
-    Util.println("Attribute " + _name);
-    displayContents(indent + IndentIncrement);
-  }
 
   @Override
   public void parseContents(Parser parser) {

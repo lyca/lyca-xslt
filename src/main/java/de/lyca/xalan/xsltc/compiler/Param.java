@@ -61,20 +61,6 @@ final class Param extends VariableBase {
   }
 
   /**
-   * Display variable in a full AST dump
-   */
-  @Override
-  public void display(int indent) {
-    indent(indent);
-    System.out.println("param " + _name);
-    if (_select != null) {
-      indent(indent + IndentIncrement);
-      System.out.println("select " + _select.toString());
-    }
-    displayContents(indent + IndentIncrement);
-  }
-
-  /**
    * Parse the contents of the <xsl:param> element. This method must read the
    * 'name' (required) and 'select' (optional) attributes.
    */

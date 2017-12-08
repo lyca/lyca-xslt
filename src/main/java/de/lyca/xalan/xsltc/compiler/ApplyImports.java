@@ -24,26 +24,15 @@ package de.lyca.xalan.xsltc.compiler;
 import static de.lyca.xalan.xsltc.compiler.Constants.ITERATOR_PNAME;
 import static de.lyca.xalan.xsltc.compiler.Constants.POP_PARAM_FRAME;
 import static de.lyca.xalan.xsltc.compiler.Constants.PUSH_PARAM_FRAME;
+
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
-import de.lyca.xalan.xsltc.compiler.util.Util;
 
 final class ApplyImports extends Instruction {
 
   private QName _modeName;
   private int _precedence;
-
-  @Override
-  public void display(int indent) {
-    indent(indent);
-    Util.println("ApplyTemplates");
-    indent(indent + IndentIncrement);
-    if (_modeName != null) {
-      indent(indent + IndentIncrement);
-      Util.println("mode " + _modeName);
-    }
-  }
 
   /**
    * Returns true if this <xsl:apply-imports/> element has parameters

@@ -37,7 +37,6 @@ import de.lyca.xalan.xsltc.compiler.util.ReferenceType;
 import de.lyca.xalan.xsltc.compiler.util.ResultTreeType;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
-import de.lyca.xalan.xsltc.compiler.util.Util;
 import de.lyca.xalan.xsltc.runtime.BasisLibrary;
 
 /**
@@ -46,14 +45,6 @@ import de.lyca.xalan.xsltc.runtime.BasisLibrary;
  */
 final class CopyOf extends Instruction {
   private Expression _select;
-
-  @Override
-  public void display(int indent) {
-    indent(indent);
-    Util.println("CopyOf");
-    indent(indent + IndentIncrement);
-    Util.println("select " + _select.toString());
-  }
 
   @Override
   public void parseContents(Parser parser) {

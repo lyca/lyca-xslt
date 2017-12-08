@@ -31,7 +31,6 @@ import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JMethod;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
-import de.lyca.xalan.xsltc.compiler.util.Util;
 
 /**
  * @author Jacek Ambroziak
@@ -84,14 +83,6 @@ final class Text extends Instruction {
     } else {
       _text = _text + text;
     }
-  }
-
-  @Override
-  public void display(int indent) {
-    indent(indent);
-    Util.println("Text");
-    indent(indent + IndentIncrement);
-    Util.println(_text);
   }
 
   @Override

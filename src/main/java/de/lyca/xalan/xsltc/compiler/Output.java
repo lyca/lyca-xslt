@@ -35,7 +35,6 @@ import com.sun.codemodel.JBlock;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
-import de.lyca.xalan.xsltc.compiler.util.Util;
 import de.lyca.xml.serializer.Encodings;
 import de.lyca.xml.utils.XML11Char;
 
@@ -69,15 +68,6 @@ final class Output extends TopLevelElement {
   private final static String STRING_SIG = "Ljava/lang/String;";
   private final static String XML_VERSION = "1.0";
   private final static String HTML_VERSION = "4.0";
-
-  /**
-   * Displays the contents of this element (for debugging)
-   */
-  @Override
-  public void display(int indent) {
-    indent(indent);
-    Util.println("Output " + _method);
-  }
 
   /**
    * Disables this <xsl:output> element in case where there are some other

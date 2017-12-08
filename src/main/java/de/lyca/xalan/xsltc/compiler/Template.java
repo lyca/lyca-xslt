@@ -142,24 +142,6 @@ public final class Template extends TopLevelElement implements Comparable<Templa
       return 0;
   }
 
-  @Override
-  public void display(int indent) {
-    Util.println('\n');
-    indent(indent);
-    if (_name != null) {
-      indent(indent);
-      Util.println("name = " + _name);
-    } else if (_pattern != null) {
-      indent(indent);
-      Util.println("match = " + _pattern.toString());
-    }
-    if (_mode != null) {
-      indent(indent);
-      Util.println("mode = " + _mode);
-    }
-    displayContents(indent + IndentIncrement);
-  }
-
   private boolean resolveNamedTemplates(Template other, Parser parser) {
 
     if (other == null)

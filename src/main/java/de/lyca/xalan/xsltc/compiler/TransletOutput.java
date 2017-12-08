@@ -22,11 +22,11 @@
 package de.lyca.xalan.xsltc.compiler;
 
 import static de.lyca.xalan.xsltc.compiler.util.ErrorMsg.REQUIRED_ATTR_ERR;
+
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.StringType;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
-import de.lyca.xalan.xsltc.compiler.util.Util;
 
 /**
  * @author Morten Jorgensen
@@ -35,15 +35,6 @@ final class TransletOutput extends Instruction {
 
   private Expression _filename;
   private boolean _append;
-
-  /**
-   * Displays the contents of this <xsltc:output> element.
-   */
-  @Override
-  public void display(int indent) {
-    indent(indent);
-    Util.println("TransletOutput: " + _filename);
-  }
 
   /**
    * Parse the contents of this <xsltc:output> element. The only attribute we

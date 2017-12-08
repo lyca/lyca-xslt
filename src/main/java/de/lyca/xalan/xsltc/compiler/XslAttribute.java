@@ -64,16 +64,6 @@ final class XslAttribute extends Instruction {
   }
 
   /**
-   * Displays the contents of the attribute
-   */
-  @Override
-  public void display(int indent) {
-    indent(indent);
-    Util.println("Attribute " + _name);
-    displayContents(indent + IndentIncrement);
-  }
-
-  /**
    * Parses the attribute's contents. Special care taken for namespaces.
    */
   @Override

@@ -39,7 +39,6 @@ import de.lyca.xalan.xsltc.compiler.util.ReferenceType;
 import de.lyca.xalan.xsltc.compiler.util.ResultTreeType;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
-import de.lyca.xalan.xsltc.compiler.util.Util;
 import de.lyca.xml.utils.XML11Char;
 
 /**
@@ -51,18 +50,6 @@ final class ApplyTemplates extends Instruction {
   private Type _type = null;
   private QName _modeName;
   private String _functionName;
-
-  @Override
-  public void display(int indent) {
-    indent(indent);
-    Util.println("ApplyTemplates");
-    indent(indent + IndentIncrement);
-    Util.println("select " + _select.toString());
-    if (_modeName != null) {
-      indent(indent + IndentIncrement);
-      Util.println("mode " + _modeName);
-    }
-  }
 
   public boolean hasWithParams() {
     return hasContents();

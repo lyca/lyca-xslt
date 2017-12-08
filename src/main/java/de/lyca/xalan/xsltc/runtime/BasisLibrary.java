@@ -1161,21 +1161,21 @@ public final class BasisLibrary {
           break;
         default:
           // Should not happen, as first run should have got all these
-          throw new InternalRuntimeError("Mismatched cases");
+          throw new AssertionError("Mismatched cases");
       }
       if (iter3 != null) {
         iter3.setStartNode(iter.next());
         dtmHandles[n] = iter3.next();
         // For now, play it self and perform extra checks:
         if (dtmHandles[n] == DTMAxisIterator.END)
-          throw new InternalRuntimeError("Expected element missing at " + i);
+          throw new AssertionError("Expected element missing at " + i);
         if (iter3.next() != DTMAxisIterator.END)
-          throw new InternalRuntimeError("Too many elements at " + i);
+          throw new AssertionError("Too many elements at " + i);
         ++n;
       }
     }
     if (n != dtmHandles.length)
-      throw new InternalRuntimeError("Nodes lost in second pass");
+      throw new AssertionError("Nodes lost in second pass");
 
     return new ArrayNodeListIterator(dtmHandles);
   }

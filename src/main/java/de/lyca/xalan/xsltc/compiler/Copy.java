@@ -55,14 +55,6 @@ final class Copy extends Instruction {
   }
 
   @Override
-  public void display(int indent) {
-    indent(indent);
-    Util.println("Copy");
-    indent(indent + IndentIncrement);
-    displayContents(indent + IndentIncrement);
-  }
-
-  @Override
   public Type typeCheck(SymbolTable stable) throws TypeCheckError {
     if (_useSets != null) {
       _useSets.typeCheck(stable);

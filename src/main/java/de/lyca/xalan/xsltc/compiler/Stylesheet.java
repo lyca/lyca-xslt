@@ -88,7 +88,6 @@ import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
-import de.lyca.xalan.xsltc.compiler.util.Util;
 import de.lyca.xalan.xsltc.dom.MultiDOM;
 import de.lyca.xalan.xsltc.runtime.AbstractTranslet;
 import de.lyca.xml.dtm.DTM;
@@ -1223,13 +1222,6 @@ public final class Stylesheet extends SyntaxTreeNode {
   public int addVariable(Variable global) {
     _globals.add(global);
     return _globals.size() - 1;
-  }
-
-  @Override
-  public void display(int indent) {
-    indent(indent);
-    Util.println("Stylesheet");
-    displayContents(indent + IndentIncrement);
   }
 
   // do we need this wrapper ?????

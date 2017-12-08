@@ -61,16 +61,6 @@ final class XslElement extends Instruction {
   private boolean hasCalledStartPrefixMapping = false;
 
   /**
-   * Displays the contents of the element
-   */
-  @Override
-  public void display(int indent) {
-    indent(indent);
-    Util.println("Element " + _name);
-    displayContents(indent + IndentIncrement);
-  }
-
-  /**
    * This method is now deprecated. The new implemation of this class never
    * declares the default NS.
    */

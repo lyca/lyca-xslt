@@ -121,20 +121,6 @@ class VariableBase extends TopLevelElement {
   }
 
   /**
-   * Display variable in a full AST dump
-   */
-  @Override
-  public void display(int indent) {
-    indent(indent);
-    System.out.println("Variable " + _name);
-    if (_select != null) {
-      indent(indent + IndentIncrement);
-      System.out.println("select " + _select.toString());
-    }
-    displayContents(indent + IndentIncrement);
-  }
-
-  /**
    * Returns the type of the variable
    */
   public Type getType() {

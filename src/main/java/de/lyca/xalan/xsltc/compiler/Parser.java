@@ -50,8 +50,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
-import java_cup.runtime.Symbol;
-
 import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -70,6 +68,7 @@ import de.lyca.xalan.xsltc.compiler.util.MethodType;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
 import de.lyca.xalan.xsltc.runtime.AttributeList;
+import java_cup.runtime.Symbol;
 
 /**
  * @author Jacek Ambroziak

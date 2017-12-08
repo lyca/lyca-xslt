@@ -22,6 +22,7 @@
 package de.lyca.xalan.xsltc.compiler;
 
 import static de.lyca.xalan.xsltc.compiler.Constants.FATAL;
+
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.Type;

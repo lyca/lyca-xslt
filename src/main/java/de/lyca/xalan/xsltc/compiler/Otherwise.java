@@ -25,21 +25,12 @@ import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
-import de.lyca.xalan.xsltc.compiler.util.Util;
 
 /**
  * @author Jacek Ambroziak
  * @author Santiago Pericas-Geertsen
  */
 final class Otherwise extends Instruction {
-  @Override
-  public void display(int indent) {
-    indent(indent);
-    Util.println("Otherwise");
-    indent(indent + IndentIncrement);
-    displayContents(indent + IndentIncrement);
-  }
-
   @Override
   public Type typeCheck(SymbolTable stable) throws TypeCheckError {
     typeCheckContents(stable);

@@ -30,7 +30,6 @@ import com.sun.codemodel.JConditional;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
-import de.lyca.xalan.xsltc.compiler.util.Util;
 
 /**
  * @author Jacek Ambroziak
@@ -38,17 +37,6 @@ import de.lyca.xalan.xsltc.compiler.util.Util;
  * @author Morten Jorgensen
  */
 final class Choose extends Instruction {
-
-  /**
-   * Display the element contents (a lot of when's and an otherwise)
-   */
-  @Override
-  public void display(int indent) {
-    indent(indent);
-    Util.println("Choose");
-    indent(indent + IndentIncrement);
-    displayContents(indent + IndentIncrement);
-  }
 
   /**
    * Translate this Choose element. Generate a test-chain for the various

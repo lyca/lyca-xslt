@@ -43,7 +43,6 @@ import de.lyca.xalan.xsltc.compiler.util.ReferenceType;
 import de.lyca.xalan.xsltc.compiler.util.ResultTreeType;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
-import de.lyca.xalan.xsltc.compiler.util.Util;
 import de.lyca.xml.dtm.DTMAxisIterator;
 
 /**
@@ -55,15 +54,6 @@ final class ForEach extends Instruction {
 
   private Expression _select;
   private Type _type;
-
-  @Override
-  public void display(int indent) {
-    indent(indent);
-    Util.println("ForEach");
-    indent(indent + IndentIncrement);
-    Util.println("select " + _select.toString());
-    displayContents(indent + IndentIncrement);
-  }
 
   @Override
   public void parseContents(Parser parser) {

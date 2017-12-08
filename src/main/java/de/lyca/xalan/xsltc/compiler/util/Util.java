@@ -160,26 +160,6 @@ public final class Util {
     return cname.replace('.', filesep);
   }
 
-  public static void println(String s) {
-    System.out.println(s);
-  }
-
-  public static void println(char ch) {
-    System.out.println(ch);
-  }
-
-  public static void TRACE1() {
-    System.out.println("TRACE1");
-  }
-
-  public static void TRACE2() {
-    System.out.println("TRACE2");
-  }
-
-  public static void TRACE3() {
-    System.out.println("TRACE3");
-  }
-
   /**
    * Replace a certain character in a string with a new substring.
    */

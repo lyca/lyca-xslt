@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><out xmlns:b="name-b" xmlns:c="namc-c" xmlns:a="name-a">
+<?xml version="1.0" encoding="UTF-8"?><out xmlns:a="name-a" xmlns:b="name-b" xmlns:c="namc-c">
 
 <a:root/>
 	<a>name-a</a>,

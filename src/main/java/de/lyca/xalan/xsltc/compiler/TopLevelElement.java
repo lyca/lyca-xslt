@@ -33,7 +33,6 @@ import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
-import de.lyca.xalan.xsltc.compiler.util.Util;
 
 class TopLevelElement extends SyntaxTreeNode {
 
@@ -72,13 +71,6 @@ class TopLevelElement extends SyntaxTreeNode {
 //    translate(classGen, methodGen);
 //    methodGen.setInstructionList(save);
 //    return result;
-  }
-
-  @Override
-  public void display(int indent) {
-    indent(indent);
-    Util.println("TopLevelElement");
-    displayContents(indent + IndentIncrement);
   }
 
   /**

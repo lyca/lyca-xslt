@@ -30,6 +30,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import com.sun.codemodel.JExpression;
 
@@ -69,16 +70,6 @@ final class LiteralElement extends Instruction {
   }
 
   /**
-   * Displays the contents of this literal element
-   */
-  @Override
-  public void display(int indent) {
-    indent(indent);
-    Util.println("LiteralElement name = " + _name);
-    displayContents(indent + IndentIncrement);
-  }
-
-  /**
    * Returns the namespace URI for which a prefix is pointing to
    */
   private String accessedNamespace(String prefix) {
@@ -87,7 +78,7 @@ final class LiteralElement extends Instruction {
       if (result != null)
         return result;
     }
-    return _accessedPrefixes != null ? (String) _accessedPrefixes.get(prefix) : null;
+    return _accessedPrefixes == null ? null: _accessedPrefixes.get(prefix);
   }
 
   /**
@@ -106,7 +97,7 @@ final class LiteralElement extends Instruction {
 
     // Check if we have any declared namesaces
     if (_accessedPrefixes == null) {
-      _accessedPrefixes = new HashMap<>();
+      _accessedPrefixes = new TreeMap<>();
     } else {
       if (!declared) {
         // Check if this node has a declaration for this namespace

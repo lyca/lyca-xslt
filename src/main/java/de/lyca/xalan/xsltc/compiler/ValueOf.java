@@ -31,7 +31,6 @@ import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
-import de.lyca.xalan.xsltc.compiler.util.Util;
 
 /**
  * @author Jacek Ambroziak
@@ -42,14 +41,6 @@ final class ValueOf extends Instruction {
   private Expression _select;
   private boolean _escaping = true;
   private boolean _isString = false;
-
-  @Override
-  public void display(int indent) {
-    indent(indent);
-    Util.println("ValueOf");
-    indent(indent + IndentIncrement);
-    Util.println("select " + _select.toString());
-  }
 
   @Override
   public void parseContents(Parser parser) {
