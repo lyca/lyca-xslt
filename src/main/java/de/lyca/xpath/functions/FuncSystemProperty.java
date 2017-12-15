@@ -24,6 +24,8 @@ import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.util.Properties;
 
+import de.lyca.xalan.ObjectFactory;
+import de.lyca.xalan.SecuritySupport;
 import de.lyca.xpath.XPathContext;
 import de.lyca.xpath.objects.XObject;
 import de.lyca.xpath.objects.XString;

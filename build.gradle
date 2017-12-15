@@ -3,7 +3,7 @@ apply plugin: 'jacoco'
 apply plugin: 'java-library-distribution'
 apply plugin: 'findbugs'
 
-sourceCompatibility = 1.7
+sourceCompatibility = 1.8
 version = '1.0'
 
 //jar {
@@ -24,7 +24,7 @@ dependencies {
     compile 'xerces:xercesImpl:2.11.0'
 //    compile 'org.apache.bcel:bcel:5.2'
     compile 'edu.princeton.cup:java-cup:10k'
-    compile 'com.sun.codemodel:codemodel:2.4'
+    compile 'com.sun.codemodel:codemodel:2.6'
     testCompile 'junit:junit:4.12'
     testCompile 'xmlunit:xmlunit:1.6'
     lexer files('tools/JLex.jar')
@@ -33,7 +33,15 @@ dependencies {
 test {
   //  systemProperties 'javax.xml.transform.TransformerFactory': 'com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl'
   //  systemProperties 'javax.xml.transform.TransformerFactory': 'de.lyca.xalan.xsltc.trax.TransformerFactoryImpl'
-  ignoreFailures=true
+    ignoreFailures=true
+    jacoco {
+        excludes += [
+            "**/de.lyca.xalan.res/**",
+            "**/de.lyca.xml.res/**",
+            "**/de.lyca.xml.utils.res/**",
+            "**/de.lyca.xpath.res/**"
+        ]
+    }
 }
 
 task(createXPathParser, type: JavaExec) {
@@ -59,11 +67,25 @@ task(createXPathLexer, dependsOn:createXPathParser, type: JavaExec) {
     }
 } 
 
+jacoco {
+    toolVersion = "0.7.9"
+}
 
 jacocoTestReport {
     reports {
         xml.enabled false
         csv.enabled false
+    }
+    afterEvaluate {
+        classDirectories = files(classDirectories.files.collect {
+            fileTree(dir: it,
+                exclude: [
+                    '**/de/lyca/xalan/res/**',
+                    '**/de/lyca/xml/res/**',
+                    '**/de/lyca/xml/utils/res/**',
+                    '**/de/lyca/xpath/res/**'
+                ])
+        })
     }
 }
 

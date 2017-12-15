@@ -30,6 +30,7 @@ import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.XMLReader;
 
+import de.lyca.xalan.ObjectFactory;
 import de.lyca.xalan.xsltc.trax.DOM2SAX;
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xml.dtm.DTMException;

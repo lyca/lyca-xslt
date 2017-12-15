@@ -19,7 +19,7 @@
  * $Id$
  */
 
-package de.lyca.xalan.xsltc.cmdline;
+package de.lyca.xalan;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -31,15 +31,11 @@ import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 
 /**
- * This class is duplicated for each Xalan-Java subpackage so keep it in sync.
- * It is package private and therefore is not exposed as part of the Xalan-Java
- * API.
- * 
  * Security related methods that only work on J2SE 1.2 and newer.
  */
-final class SecuritySupport {
+public final class SecuritySupport {
 
-  static ClassLoader getContextClassLoader() {
+  public static ClassLoader getContextClassLoader() {
     return AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
       @Override
       public ClassLoader run() {
@@ -53,7 +49,7 @@ final class SecuritySupport {
     });
   }
 
-  static ClassLoader getSystemClassLoader() {
+  public static ClassLoader getSystemClassLoader() {
     return AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
       @Override
       public ClassLoader run() {
@@ -67,7 +63,7 @@ final class SecuritySupport {
     });
   }
 
-  static ClassLoader getParentClassLoader(final ClassLoader cl) {
+  public static ClassLoader getParentClassLoader(final ClassLoader cl) {
     return AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
       @Override
       public ClassLoader run() {
@@ -84,61 +80,33 @@ final class SecuritySupport {
     });
   }
 
-  static String getSystemProperty(final String propName) {
-    return AccessController.doPrivileged(new PrivilegedAction<String>() {
-      @Override
-      public String run() {
-        return System.getProperty(propName);
-      }
-    });
+  public static String getSystemProperty(final String propName) {
+    return AccessController.doPrivileged((PrivilegedAction<String>) () -> System.getProperty(propName));
   }
 
-  static FileInputStream getFileInputStream(final File file) throws FileNotFoundException {
+  public static FileInputStream getFileInputStream(final File file) throws FileNotFoundException {
     try {
-      return AccessController.doPrivileged(new PrivilegedExceptionAction<FileInputStream>() {
-        @Override
-        public FileInputStream run() throws FileNotFoundException {
-          return new FileInputStream(file);
-        }
-      });
+      return AccessController
+          .doPrivileged((PrivilegedExceptionAction<FileInputStream>) () -> new FileInputStream(file));
     } catch (final PrivilegedActionException e) {
       throw (FileNotFoundException) e.getException();
     }
   }
 
-  static InputStream getResourceAsStream(final ClassLoader cl, final String name) {
-    return AccessController.doPrivileged(new PrivilegedAction<InputStream>() {
-      @Override
-      public InputStream run() {
-        InputStream ris;
-        if (cl == null) {
-          ris = ClassLoader.getSystemResourceAsStream(name);
-        } else {
-          ris = cl.getResourceAsStream(name);
-        }
-        return ris;
-      }
-    });
+  public static InputStream getResourceAsStream(final ClassLoader cl, final String name) {
+    return AccessController.doPrivileged((PrivilegedAction<InputStream>) () -> cl == null
+        ? ClassLoader.getSystemResourceAsStream(name) : cl.getResourceAsStream(name));
   }
 
-  static boolean getFileExists(final File f) {
-    return AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
-      @Override
-      public Boolean run() {
-        return f.exists() ? Boolean.TRUE : Boolean.FALSE;
-      }
-    }).booleanValue();
+  public static boolean getFileExists(final File f) {
+    return AccessController.doPrivileged((PrivilegedAction<Boolean>) () -> f.exists());
   }
 
-  static long getLastModified(final File f) {
-    return AccessController.doPrivileged(new PrivilegedAction<Long>() {
-      @Override
-      public Long run() {
-        return new Long(f.lastModified());
-      }
-    }).longValue();
+  public static long getLastModified(final File f) {
+    return AccessController.doPrivileged((PrivilegedAction<Long>) () -> f.lastModified());
   }
 
   private SecuritySupport() {
   }
+
 }

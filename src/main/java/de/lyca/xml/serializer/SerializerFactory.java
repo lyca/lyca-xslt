@@ -26,6 +26,7 @@ import javax.xml.transform.OutputKeys;
 
 import org.xml.sax.ContentHandler;
 
+import de.lyca.xalan.ObjectFactory;
 import de.lyca.xml.serializer.utils.MsgKey;
 import de.lyca.xml.serializer.utils.Utils;
 

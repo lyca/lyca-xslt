@@ -63,6 +63,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
 
+import de.lyca.xalan.ObjectFactory;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.MethodType;
 import de.lyca.xalan.xsltc.compiler.util.Type;

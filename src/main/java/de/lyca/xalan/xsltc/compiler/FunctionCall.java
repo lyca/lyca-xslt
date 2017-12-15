@@ -41,6 +41,7 @@ import java.util.Set;
 import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JInvocation;
 
+import de.lyca.xalan.ObjectFactory;
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.MethodType;

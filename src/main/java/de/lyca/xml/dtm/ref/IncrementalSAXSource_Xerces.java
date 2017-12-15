@@ -30,6 +30,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
+import de.lyca.xalan.ObjectFactory;
 import de.lyca.xml.res.XMLErrorResources;
 import de.lyca.xml.res.XMLMessages;
 

@@ -30,6 +30,7 @@ import java.util.List;
 
 import com.sun.codemodel.JExpression;
 
+import de.lyca.xalan.ObjectFactory;
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.Type;

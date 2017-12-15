@@ -24,6 +24,7 @@ import javax.xml.transform.Source;
 
 import org.w3c.dom.Node;
 
+import de.lyca.xalan.ObjectFactory;
 import de.lyca.xml.res.XMLErrorResources;
 import de.lyca.xml.res.XMLMessages;
 import de.lyca.xml.utils.PrefixResolver;

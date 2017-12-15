@@ -34,6 +34,7 @@ import java.util.ResourceBundle;
 
 import javax.xml.transform.TransformerException;
 
+import de.lyca.xalan.ObjectFactory;
 import de.lyca.xml.serializer.utils.MsgKey;
 import de.lyca.xml.serializer.utils.SystemIDResolver;
 import de.lyca.xml.serializer.utils.Utils;

@@ -37,6 +37,7 @@ import javax.xml.transform.Templates;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.URIResolver;
 
+import de.lyca.xalan.ObjectFactory;
 import de.lyca.xalan.xsltc.DOM;
 import de.lyca.xalan.xsltc.Translet;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;

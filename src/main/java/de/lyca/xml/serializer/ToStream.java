@@ -41,6 +41,7 @@ import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
+import de.lyca.xalan.SecuritySupport;
 import de.lyca.xml.serializer.utils.MsgKey;
 import de.lyca.xml.serializer.utils.Utils;
 import de.lyca.xml.serializer.utils.WrappedRuntimeException;

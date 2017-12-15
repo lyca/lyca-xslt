@@ -33,6 +33,9 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
+import de.lyca.xalan.ObjectFactory;
+import de.lyca.xalan.SecuritySupport;
+
 /**
  * Provides information about encodings. Depends on the Java runtime to provides
  * writers for the different encodings.

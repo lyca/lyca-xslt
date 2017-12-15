@@ -35,6 +35,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import de.lyca.xalan.ObjectFactory;
+
 /**
  * Utility class to report simple information about the environment. Simplistic
  * reporting about certain classes found in your JVM may help answer some FAQs

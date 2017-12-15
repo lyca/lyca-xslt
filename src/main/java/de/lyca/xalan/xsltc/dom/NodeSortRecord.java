@@ -24,6 +24,7 @@ package de.lyca.xalan.xsltc.dom;
 import java.text.Collator;
 import java.util.Locale;
 
+import de.lyca.xalan.ObjectFactory;
 import de.lyca.xalan.xsltc.CollatorFactory;
 import de.lyca.xalan.xsltc.DOM;
 import de.lyca.xalan.xsltc.TransletException;

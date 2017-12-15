@@ -19,7 +19,7 @@
  * $Id$
  */
 
-package de.lyca.xalan.xsltc.compiler.util;
+package de.lyca.xalan;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -30,9 +30,6 @@ import java.io.InputStreamReader;
 import java.util.Properties;
 
 /**
- * This class is duplicated for each JAXP subpackage so keep it in sync. It is
- * package private and therefore is not exposed as part of the JAXP API.
- * <p>
  * This code is designed to implement the JAXP 1.1 spec pluggability feature and
  * is designed to run on JDK version 1.1 and later, and to compile on JDK 1.2
  * and onward. The code also runs both as part of an unbundled jar file and when
@@ -41,10 +38,8 @@ import java.util.Properties;
  * This class was moved from the <code>javax.xml.parsers.ObjectFactory</code>
  * class and modified to be used as a general utility for creating objects
  * dynamically.
- * 
- * @version $Id$
  */
-final class ObjectFactory {
+public final class ObjectFactory {
 
   //
   // Constants
@@ -94,7 +89,7 @@ final class ObjectFactory {
    * 
    * @exception ObjectFactory.ConfigurationError
    */
-  static Object createObject(String factoryId, String fallbackClassName) throws ConfigurationError {
+  public static Object createObject(String factoryId, String fallbackClassName) throws ConfigurationError {
     return createObject(factoryId, null, fallbackClassName);
   }
 
@@ -148,34 +143,6 @@ final class ObjectFactory {
    * <li>use fallback classname
    * </ol>
    * 
-   * @return Class object of factory, never null
-   * 
-   * @param factoryId
-   *          Name of the factory to find, same as a property name
-   * @param propertiesFilename
-   *          The filename in the $java.home/lib directory of the properties
-   *          file. If none specified, ${java.home}/lib/xalan.properties will be
-   *          used.
-   * @param fallbackClassName
-   *          Implementation class name, if nothing else is found. Use null to
-   *          mean no fallback.
-   * 
-   * @exception ObjectFactory.ConfigurationError
-   */
-  static Class<?> lookUpFactoryClass(String factoryId) throws ConfigurationError {
-    return lookUpFactoryClass(factoryId, null, null);
-  }
-
-  /**
-   * Finds the implementation Class object in the specified order. The specified
-   * order is the following:
-   * <ol>
-   * <li>query the system property using <code>System.getProperty</code>
-   * <li>read <code>$java.home/lib/<i>propertiesFilename</i></code> file
-   * <li>read <code>META-INF/services/<i>factoryId</i></code> file
-   * <li>use fallback classname
-   * </ol>
-   * 
    * @return Class object that provides factory service, never null
    * 
    * @param factoryId
@@ -190,7 +157,7 @@ final class ObjectFactory {
    * 
    * @exception ObjectFactory.ConfigurationError
    */
-  static Class<?> lookUpFactoryClass(String factoryId, String propertiesFilename, String fallbackClassName)
+  public static Class<?> lookUpFactoryClass(String factoryId, String propertiesFilename, String fallbackClassName)
           throws ConfigurationError {
     String factoryClassName = lookUpFactoryClassName(factoryId, propertiesFilename, fallbackClassName);
     final ClassLoader cl = findClassLoader();
@@ -364,7 +331,7 @@ final class ObjectFactory {
    * Figure out which ClassLoader to use. For JDK 1.2 and later use the context
    * ClassLoader.
    */
-  static ClassLoader findClassLoader() throws ConfigurationError {
+  public static ClassLoader findClassLoader() throws ConfigurationError {
     // Figure out which ClassLoader to use for loading the provider
     // class. If there is a Context ClassLoader then use it.
     final ClassLoader context = SecuritySupport.getContextClassLoader();
@@ -419,7 +386,7 @@ final class ObjectFactory {
   /**
    * Create an instance of a class using the specified ClassLoader
    */
-  static Object newInstance(String className, ClassLoader cl, boolean doFallback) throws ConfigurationError {
+  public static Object newInstance(String className, ClassLoader cl, boolean doFallback) throws ConfigurationError {
     // assert(className != null);
     try {
       final Class<?> providerClass = findProviderClass(className, cl, doFallback);
@@ -436,7 +403,7 @@ final class ObjectFactory {
   /**
    * Find a Class using the specified ClassLoader
    */
-  static Class<?> findProviderClass(String className, ClassLoader cl, boolean doFallback)
+  public static Class<?> findProviderClass(String className, ClassLoader cl, boolean doFallback)
           throws ClassNotFoundException, ConfigurationError {
     // throw security exception if the calling thread is not allowed to access
     // the
@@ -581,7 +548,7 @@ final class ObjectFactory {
   /**
    * A configuration error.
    */
-  static class ConfigurationError extends Error {
+  public static class ConfigurationError extends Error {
     static final long serialVersionUID = 8564305128443551853L;
     //
     // Data

@@ -22,6 +22,7 @@ package de.lyca.xml.utils;
 
 import java.util.ArrayList;
 
+import de.lyca.xalan.ObjectFactory;
 import de.lyca.xml.res.XMLErrorResources;
 import de.lyca.xml.res.XMLMessages;
 

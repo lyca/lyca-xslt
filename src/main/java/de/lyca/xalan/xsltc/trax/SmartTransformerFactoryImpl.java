@@ -41,6 +41,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.xml.sax.XMLFilter;
 
+import de.lyca.xalan.ObjectFactory;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 
 /**

@@ -37,6 +37,7 @@ import org.w3c.dom.Text;
 import org.w3c.dom.traversal.NodeIterator;
 import org.xml.sax.SAXNotSupportedException;
 
+import de.lyca.xalan.ObjectFactory;
 import de.lyca.xalan.extensions.ExpressionContext;
 import de.lyca.xalan.xslt.EnvironmentCheck;
 import de.lyca.xpath.NodeSet;
@@ -134,6 +135,7 @@ public class Extensions {
    *         is deprecated. Please use the same function in the EXSLT sets
    *         extension (http://exslt.org/sets).
    */
+  @Deprecated
   public static NodeList intersection(NodeList nl1, NodeList nl2) {
     return ExsltSets.intersection(nl1, nl2);
   }
@@ -151,6 +153,7 @@ public class Extensions {
    *         is deprecated. Please use the same function in the EXSLT sets
    *         extension (http://exslt.org/sets).
    */
+  @Deprecated
   public static NodeList difference(NodeList nl1, NodeList nl2) {
     return ExsltSets.difference(nl1, nl2);
   }
@@ -168,6 +171,7 @@ public class Extensions {
    *         is deprecated. Please use the same function in the EXSLT sets
    *         extension (http://exslt.org/sets).
    */
+  @Deprecated
   public static NodeList distinct(NodeList nl) {
     return ExsltSets.distinct(nl);
   }
@@ -218,6 +222,7 @@ public class Extensions {
    *           is deprecated. Please use the same function in the EXSLT dynamic
    *           extension (http://exslt.org/dynamic).
    */
+  @Deprecated
   public static XObject evaluate(ExpressionContext myContext, String xpathExpr) throws SAXNotSupportedException {
     return ExsltDynamic.evaluate(myContext, xpathExpr);
   }

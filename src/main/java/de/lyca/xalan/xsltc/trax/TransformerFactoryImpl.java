@@ -59,6 +59,7 @@ import org.xml.sax.XMLFilter;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
+import de.lyca.xalan.ObjectFactory;
 import de.lyca.xalan.xsltc.compiler.SourceLoader;
 import de.lyca.xalan.xsltc.compiler.XSLTC;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;

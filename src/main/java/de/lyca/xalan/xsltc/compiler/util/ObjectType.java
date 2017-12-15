@@ -31,6 +31,8 @@ import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JType;
 import com.sun.codemodel.JVar;
 
+import de.lyca.xalan.ObjectFactory;
+
 /**
  * @author Todd Miller
  * @author Santiago Pericas-Geertsen
