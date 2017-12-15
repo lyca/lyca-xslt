@@ -15,10 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * $Id$
- */
-
 package de.lyca.xalan.xsltc;
 
 import java.text.Collator;
@@ -30,7 +26,11 @@ import java.util.Locale;
  */
 public interface CollatorFactory {
 
-  public Collator getCollator(String lang, String country);
+  static final Locale DEFAULT_LOCALE = Locale.getDefault();
+  static final Collator DEFAULT_COLLATOR = Collator.getInstance();
 
-  public Collator getCollator(Locale locale);
+  default Collator getCollator(Locale locale) {
+    return locale == DEFAULT_LOCALE ? DEFAULT_COLLATOR : Collator.getInstance(locale);
+  }
+
 }

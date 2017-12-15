@@ -15,16 +15,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * $Id$
- */
-
 package de.lyca.xalan.xsltc.dom;
 
 import java.text.Collator;
 import java.util.Locale;
 
 import de.lyca.xalan.ObjectFactory;
+import de.lyca.xalan.ObjectFactory.ConfigurationError;
 import de.lyca.xalan.xsltc.CollatorFactory;
 import de.lyca.xalan.xsltc.DOM;
 import de.lyca.xalan.xsltc.TransletException;
@@ -41,45 +38,18 @@ public abstract class NodeSortRecord {
   public static final int COMPARE_ASCENDING = 0;
   public static final int COMPARE_DESCENDING = 1;
 
-  /**
-   * A reference to a collator. May be updated by subclass if the stylesheet
-   * specifies a different language (will be updated iff _locale is updated).
-   * 
-   * @deprecated This field continues to exist for binary compatibility. New
-   *             code should not refer to it.
-   */
-  @Deprecated
-  private static final Collator DEFAULT_COLLATOR = Collator.getInstance();
+  protected Collator[] collators;
 
-  /**
-   * A reference to the first Collator
-   * 
-   * @deprecated This field continues to exist for binary compatibility. New
-   *             code should not refer to it.
-   */
-  @Deprecated
-  protected Collator _collator = DEFAULT_COLLATOR;
-  protected Collator[] _collators;
+  protected CollatorFactory collatorFactory;
 
-  /**
-   * A locale field that might be set by an instance of a subclass.
-   * 
-   * @deprecated This field continues to exist for binary compatibility. New
-   *             code should not refer to it.
-   */
-  @Deprecated
-  protected Locale _locale;
+  protected SortSettings settings;
 
-  protected CollatorFactory _collatorFactory;
+  private DOM dom = null;
+  private int node; // The position in the current iterator
+  private int last = 0; // Number of nodes in the current iterator
+  private int scanned = 0; // Number of key levels extracted from DOM
 
-  protected SortSettings _settings;
-
-  private DOM _dom = null;
-  private int _node; // The position in the current iterator
-  private int _last = 0; // Number of nodes in the current iterator
-  private int _scanned = 0; // Number of key levels extracted from DOM
-
-  private Object[] _values; // Contains Comparable objects
+  private Object[] values; // Contains Comparable objects
 
   /**
    * This constructor is run by a call to ClassLoader in the makeNodeSortRecord
@@ -88,7 +58,7 @@ public abstract class NodeSortRecord {
    * here and wait for new values through initialize().
    */
   public NodeSortRecord(int node) {
-    _node = node;
+    this.node = node;
   }
 
   public NodeSortRecord() {
@@ -100,33 +70,31 @@ public abstract class NodeSortRecord {
    * the default constructor.
    */
   public final void initialize(int node, int last, DOM dom, SortSettings settings) throws TransletException {
-    _dom = dom;
-    _node = node;
-    _last = last;
-    _settings = settings;
+    this.dom = dom;
+    this.node = node;
+    this.last = last;
+    this.settings = settings;
 
     final int levels = settings.getSortOrders().length;
-    _values = new Object[levels];
+    values = new Object[levels];
 
     // -- W. Eliot Kimber (eliot@isogen.com)
-    final String colFactClassname = System.getProperty("de.lyca.xalan.xsltc.COLLATOR_FACTORY");
+    final String collatorFactoryClassName = System.getProperty("de.lyca.xalan.xsltc.COLLATOR_FACTORY");
 
-    if (colFactClassname != null) {
+    if (collatorFactoryClassName == null) {
+      collators = settings.getCollators();
+    } else {
       try {
-        final Object candObj = ObjectFactory.findProviderClass(colFactClassname, ObjectFactory.findClassLoader(), true);
-        _collatorFactory = (CollatorFactory) candObj;
-      } catch (final ClassNotFoundException e) {
-        throw new TransletException(e);
+        collatorFactory = (CollatorFactory) ObjectFactory.newInstance(collatorFactoryClassName,
+            ObjectFactory.findClassLoader(), true);
+      } catch (final ConfigurationError e) {
+        throw new TransletException(e.getException());
       }
       final Locale[] locales = settings.getLocales();
-      _collators = new Collator[levels];
+      collators = new Collator[levels];
       for (int i = 0; i < levels; i++) {
-        _collators[i] = _collatorFactory.getCollator(locales[i]);
+        collators[i] = collatorFactory.getCollator(locales[i]);
       }
-      _collator = _collators[0];
-    } else {
-      _collators = settings.getCollators();
-      _collator = _collators[0];
     }
   }
 
@@ -134,14 +102,11 @@ public abstract class NodeSortRecord {
    * Returns the node for this sort object
    */
   public final int getNode() {
-    return _node;
+    return node;
   }
 
-  /**
-     *
-     */
   public final int compareDocOrder(NodeSortRecord other) {
-    return _node - other._node;
+    return node - other.node;
   }
 
   /**
@@ -151,27 +116,27 @@ public abstract class NodeSortRecord {
    */
   private final Comparable stringValue(int level) throws TransletException {
     // Get value from our array if possible
-    if (_scanned <= level) {
-      final AbstractTranslet translet = _settings.getTranslet();
-      final Locale[] locales = _settings.getLocales();
-      final String[] caseOrder = _settings.getCaseOrders();
+    if (scanned <= level) {
+      final AbstractTranslet translet = settings.getTranslet();
+      final Locale[] locales = settings.getLocales();
+      final String[] caseOrder = settings.getCaseOrders();
 
       // Get value from DOM if accessed for the first time
-      final String str = extractValueFromDOM(_dom, _node, level, translet, _last);
-      final Comparable key = StringComparable.getComparator(str, locales[level], _collators[level], caseOrder[level]);
-      _values[_scanned++] = key;
+      final String str = extractValueFromDOM(dom, node, level, translet, last);
+      final Comparable key = StringComparable.getComparator(str, locales[level], collators[level], caseOrder[level]);
+      values[scanned++] = key;
       return key;
     }
-    return (Comparable) _values[level];
+    return (Comparable) values[level];
   }
 
   private final Double numericValue(int level) throws TransletException {
     // Get value from our vector if possible
-    if (_scanned <= level) {
-      final AbstractTranslet translet = _settings.getTranslet();
+    if (scanned <= level) {
+      final AbstractTranslet translet = settings.getTranslet();
 
       // Get value from DOM if accessed for the first time
-      final String str = extractValueFromDOM(_dom, _node, level, translet, _last);
+      final String str = extractValueFromDOM(dom, node, level, translet, last);
       Double num;
       try {
         num = new Double(str);
@@ -180,10 +145,10 @@ public abstract class NodeSortRecord {
       catch (final NumberFormatException e) {
         num = new Double(Double.NEGATIVE_INFINITY);
       }
-      _values[_scanned++] = num;
+      values[scanned++] = num;
       return num;
     }
-    return (Double) _values[level];
+    return (Double) values[level];
   }
 
   /**
@@ -195,9 +160,9 @@ public abstract class NodeSortRecord {
    */
   public int compareTo(NodeSortRecord other) throws TransletException {
     int cmp, level;
-    final int[] sortOrder = _settings.getSortOrders();
-    final int levels = _settings.getSortOrders().length;
-    final int[] compareTypes = _settings.getTypes();
+    final int[] sortOrder = settings.getSortOrders();
+    final int levels = settings.getSortOrders().length;
+    final int[] compareTypes = settings.getTypes();
 
     for (level = 0; level < levels; level++) {
       // Compare the two nodes either as numeric or text values
@@ -216,7 +181,7 @@ public abstract class NodeSortRecord {
         return sortOrder[level] == COMPARE_DESCENDING ? 0 - cmp : cmp;
     }
     // Compare based on document order if all sort keys are equal
-    return _node - other._node;
+    return node - other.node;
   }
 
   /**
@@ -224,12 +189,13 @@ public abstract class NodeSortRecord {
    * May be overridden by inheriting classes
    */
   public Collator[] getCollator() {
-    return _collators;
+    return collators;
   }
 
   /**
    * Extract the sort value for a level of this key.
    */
-  public abstract String extractValueFromDOM(DOM dom, int current, int level, AbstractTranslet translet, int last) throws TransletException;
+  public abstract String extractValueFromDOM(DOM dom, int current, int level, AbstractTranslet translet, int last)
+      throws TransletException;
 
 }
