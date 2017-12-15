@@ -15,9 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * $Id$
- */
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;

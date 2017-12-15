@@ -16,10 +16,6 @@
  * limitations under the License.
  */
 /*
- * $Id$
- */
-
-/*
 Simple Servlet Example using a stylesheet parameter
  */
 package servlet;

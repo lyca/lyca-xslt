@@ -15,10 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * $Id$
- */
-
 package de.lyca.xalan.xsltc.compiler;
 
 import de.lyca.xalan.xsltc.compiler.util.BooleanType;

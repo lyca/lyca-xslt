@@ -15,9 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * $Id$
- */
 // Imported TraX classes
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.Transformer;

@@ -15,8 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-// $Id$
-
 package de.lyca.xpath.jaxp;
 
 import javax.xml.transform.TransformerException;

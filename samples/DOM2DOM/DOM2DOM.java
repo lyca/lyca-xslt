@@ -15,10 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * $Id$
- */
-
 import java.io.FileNotFoundException;
 import java.io.IOException;
 

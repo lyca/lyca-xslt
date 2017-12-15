@@ -27,7 +27,79 @@ import de.lyca.xml.serializer.utils.StringToIntTable;
  * 
  * @xsl.usage internal
  */
-public final class ElemDesc {
+public class HtmlElemDesc {
+  
+  enum ElemDesc{
+    /** Bit position if this element type is empty. */
+    EMPTY,
+
+    /** Bit position if this element type is a flow. */
+    FLOW,
+
+    /** Bit position if this element type is a block. */
+    BLOCK,
+
+    /** Bit position if this element type is a block form. */
+    BLOCKFORM,
+
+    /** Bit position if this element type is a block form field set. */
+    BLOCKFORMFIELDSET ,
+
+    /** Bit position if this element type is CDATA. */
+    CDATA,
+
+    /** Bit position if this element type is PCDATA. */
+    PCDATA,
+
+    /** Bit position if this element type is should be raw characters. */
+    RAW,
+
+    /** Bit position if this element type should be inlined. */
+    INLINE,
+
+    /** Bit position if this element type is INLINEA. */
+    INLINEA,
+
+    /** Bit position if this element type is an inline label. */
+    INLINELABEL,
+
+    /** Bit position if this element type is a font style. */
+    FONTSTYLE,
+
+    /** Bit position if this element type is a phrase. */
+    PHRASE,
+
+    /** Bit position if this element type is a form control. */
+    FORMCTRL,
+
+    /** Bit position if this element type is ???. */
+    SPECIAL,
+
+    /** Bit position if this element type is ???. */
+    ASPECIAL,
+
+    /** Bit position if this element type is an odd header element. */
+    HEADMISC,
+
+    /** Bit position if this element type is a head element (i.e. H1, H2, etc.) */
+    HEAD,
+
+    /** Bit position if this element type is a list. */
+    LIST,
+
+    /** Bit position if this element type is a preformatted type. */
+    PREFORMATTED,
+
+    /** Bit position if this element type is whitespace sensitive. */
+    WHITESPACESENSITIVE,
+
+    /** Bit position if this element type is a header element (i.e. HEAD). */
+    HEADELEM,
+
+    /** Bit position if this element is the "HTML" element */
+    HTMLELEM;
+    
+  }
   /** Bit flags to tell about this element type. */
   private final int m_flags;
 
@@ -119,7 +191,7 @@ public final class ElemDesc {
    * @param flags
    *          Bit flags that describe the basic properties of this element type.
    */
-  ElemDesc(int flags) {
+  HtmlElemDesc(int flags) {
     m_flags = flags;
   }
 

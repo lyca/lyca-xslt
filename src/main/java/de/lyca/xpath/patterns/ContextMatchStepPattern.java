@@ -15,9 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * $Id$
- */
 package de.lyca.xpath.patterns;
 
 import de.lyca.xml.dtm.Axis;

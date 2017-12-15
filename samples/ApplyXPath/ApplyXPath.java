@@ -15,9 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * $Id$
- */
 // This file uses 4 space indents, no tabs.
 
 import java.io.FileInputStream;

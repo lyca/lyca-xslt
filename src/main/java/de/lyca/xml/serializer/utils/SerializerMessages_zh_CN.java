@@ -15,10 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * $Id$
- */
-
 package de.lyca.xml.serializer.utils;
 
 public class SerializerMessages_zh_CN extends SerializerMessages_zh {
