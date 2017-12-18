@@ -22,6 +22,7 @@ import java.util.List;
 import com.sun.codemodel.JExpression;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
+import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.StringType;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
@@ -47,6 +48,10 @@ final class LangCall extends FunctionCall {
      */
   @Override
   public Type typeCheck(SymbolTable stable) throws TypeCheckError {
+    if (argumentCount() != 1) {
+      final ErrorMsg err = new ErrorMsg(ErrorMsg.ILLEGAL_ARG_ERR, this);
+      throw new TypeCheckError(err);
+    }
     _langType = _lang.typeCheck(stable);
     if (!(_langType instanceof StringType)) {
       _lang = new CastExpr(_lang, Type.String);

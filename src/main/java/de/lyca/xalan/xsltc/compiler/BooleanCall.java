@@ -22,6 +22,7 @@ import java.util.List;
 import com.sun.codemodel.JExpression;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
+import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
 
@@ -40,6 +41,10 @@ final class BooleanCall extends FunctionCall {
 
   @Override
   public Type typeCheck(SymbolTable stable) throws TypeCheckError {
+    if (argumentCount() != 1) {
+      final ErrorMsg err = new ErrorMsg(ErrorMsg.ILLEGAL_ARG_ERR, this);
+      throw new TypeCheckError(err);
+    }
     _arg.typeCheck(stable);
     return _type = Type.Boolean;
   }
