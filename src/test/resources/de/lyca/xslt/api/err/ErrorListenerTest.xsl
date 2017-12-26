@@ -9,12 +9,12 @@
 <!-- ExpectedError: TBD -->
 <!-- ExpectedFatalError: xsl:decimal-format names must be unique. Name "myminus" has been duplicated -->
 
-<!-- duplicating decimal-format names is illegal, but shouldn't 
+<!-- TODO duplicating decimal-format names is illegal, but shouldn't 
      affect other processing in the stylesheet, so it should be 
      recoverable, allowing processing to continue.
 --> 
 <xsl:decimal-format name="myminus" minus-sign='_' />
-<xsl:decimal-format name="myminus" minus-sign='`' />
+<xsl:decimal-format name="myminus" minus-sign='_' />
 
 <xsl:template match="list">
   <list-out>

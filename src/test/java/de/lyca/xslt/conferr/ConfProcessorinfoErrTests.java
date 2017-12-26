@@ -1,66 +1,56 @@
 package de.lyca.xslt.conferr;
 
 import static de.lyca.xslt.ResourceUtils.getSource;
+import static org.junit.Assert.fail;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 
 import javax.xml.transform.Source;
+import javax.xml.transform.TransformerConfigurationException;
 
-import org.custommonkey.xmlunit.Transform;
-import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
+import de.lyca.xslt.Transform;
+
+@RunWith(Parameterized.class)
 public class ConfProcessorinfoErrTests {
 
   private static final String PACKAGE = '/' + ConfProcessorinfoErrTests.class.getPackage().getName().replace('.', '/')
-          + "/processorinfoerr/";
+      + "/processorinfoerr/";
 
-  @Test
-  public void processorinfoerr01() throws Exception {
-    final String name = PACKAGE + "processorinfoerr01";
-    final Source xsl = getSource(name + ".xsl");
-    final Source xml = getSource(name + ".xml");
-    final Transform t = new Transform(xml, xsl);
+  @Parameters(name = "{0}")
+  public static Collection<Object> params() {
+    Collection<Object> result = new ArrayList<>();
+    // TODO revisit, if system-property will be important
+    int[] exclude = { 1, 2, 3, 6 };
+    for (int i = 1; i < 7; i++) {
+      if (Arrays.binarySearch(exclude, i) >= 0) {
+        continue;
+      }
+      result.add(String.format("processorinfoerr%02d", i));
+    }
+    return result;
+  }
+
+  private String name;
+
+  public ConfProcessorinfoErrTests(String name) {
+    this.name = PACKAGE + name;
   }
 
   @Test
-  public void processorinfoerr02() throws Exception {
-    final String name = PACKAGE + "processorinfoerr02";
+  public void processorinfoerrTest() throws Exception {
     final Source xsl = getSource(name + ".xsl");
     final Source xml = getSource(name + ".xml");
-    final Transform t = new Transform(xml, xsl);
-  }
-
-  @Test
-  public void processorinfoerr03() throws Exception {
-    final String name = PACKAGE + "processorinfoerr03";
-    final Source xsl = getSource(name + ".xsl");
-    final Source xml = getSource(name + ".xml");
-    final Transform t = new Transform(xml, xsl);
-  }
-
-  @Test
-  @Ignore
-  public void processorinfoerr04() throws Exception {
-    final String name = PACKAGE + "processorinfoerr04";
-    final Source xsl = getSource(name + ".xsl");
-    final Source xml = getSource(name + ".xml");
-    final Transform t = new Transform(xml, xsl);
-  }
-
-  @Test
-  @Ignore
-  public void processorinfoerr05() throws Exception {
-    final String name = PACKAGE + "processorinfoerr05";
-    final Source xsl = getSource(name + ".xsl");
-    final Source xml = getSource(name + ".xml");
-    final Transform t = new Transform(xml, xsl);
-  }
-
-  @Test
-  public void processorinfoerr06() throws Exception {
-    final String name = PACKAGE + "processorinfoerr06";
-    final Source xsl = getSource(name + ".xsl");
-    final Source xml = getSource(name + ".xml");
-    final Transform t = new Transform(xml, xsl);
+    try {
+      fail(new Transform(xml, xsl).getResultString());
+    } catch (final TransformerConfigurationException e) {
+    }
   }
 
 }

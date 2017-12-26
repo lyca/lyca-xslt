@@ -82,6 +82,12 @@ final class Variable extends VariableBase {
    */
   @Override
   public Type typeCheck(SymbolTable stable) throws TypeCheckError {
+    if (_select != null && hasContents()) {
+      // TODO better error reporting
+      final ErrorMsg err = new ErrorMsg(ErrorMsg.INTERNAL_ERR,
+          "xsl:variable element must not have both content and a select attribute", this);
+      throw new TypeCheckError(err);
+    }
 
     // Type check the 'select' expression if present
     if (_select != null) {

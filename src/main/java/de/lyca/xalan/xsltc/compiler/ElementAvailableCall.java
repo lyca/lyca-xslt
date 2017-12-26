@@ -43,6 +43,10 @@ final class ElementAvailableCall extends FunctionCall {
    */
   @Override
   public Type typeCheck(SymbolTable stable) throws TypeCheckError {
+    if (argumentCount() != 1) {
+      final ErrorMsg err = new ErrorMsg(ErrorMsg.ILLEGAL_ARG_ERR, this);
+      throw new TypeCheckError(err);
+    }
     if (argument() instanceof LiteralExpr)
       return _type = Type.Boolean;
     final ErrorMsg err = new ErrorMsg(ErrorMsg.NEED_LITERAL_ERR, "element-available", this);

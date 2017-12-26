@@ -27,6 +27,7 @@ import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JMethod;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
+import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 
 /**
  * @author Jacek Ambroziak
@@ -89,6 +90,12 @@ final class Text extends Instruction {
     }
 
     parseChildren(parser);
+
+    if (hasContents()) {
+      // TODO
+      final ErrorMsg err = new ErrorMsg(ErrorMsg.INTERNAL_ERR, "xsl:text should contain only #PCDATA", this);
+      parser.reportError(Constants.ERROR, err);
+    }
 
     if (_text == null) {
       if (_textElement) {
@@ -155,10 +162,10 @@ final class Text extends Instruction {
   @Override
   public void translate(CompilerContext ctx) {
     if (!_ignore) {
-//      Object lastStatement = body.getContents().get(body.pos()-1);
-//      if(lastStatement instanceof JTryBlock){
-//        body = ((JTryBlock) lastStatement).body();
-//      }
+      // Object lastStatement = body.getContents().get(body.pos()-1);
+      // if(lastStatement instanceof JTryBlock){
+      // body = ((JTryBlock) lastStatement).body();
+      // }
 
       JExpression handler = ctx.currentHandler();
       // Turn off character escaping if so is wanted.
@@ -218,10 +225,10 @@ final class Text extends Instruction {
     final int offset = xsltc.addCharacterData(_text);
     final String charDataFieldName = STATIC_CHAR_DATA_FIELD + (xsltc.getCharacterDataCount() - 1);
     JExpression handler = ctx.currentHandler();
-//    Object lastStatement = body.getContents().get(body.pos()-1);
-//    if(lastStatement instanceof JTryBlock){
-//      body = ((JTryBlock) lastStatement).body();
-//    }
+    // Object lastStatement = body.getContents().get(body.pos()-1);
+    // if(lastStatement instanceof JTryBlock){
+    // body = ((JTryBlock) lastStatement).body();
+    // }
     ctx.currentBlock().add(handler.invoke(methodToCall).arg(ctx.clazz().staticRef(charDataFieldName)).arg(lit(offset))
         .arg(lit(_text.length())));
   }

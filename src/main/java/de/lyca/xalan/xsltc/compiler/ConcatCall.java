@@ -26,6 +26,7 @@ import java.util.ListIterator;
 import com.sun.codemodel.JExpression;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
+import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
 
@@ -40,6 +41,11 @@ final class ConcatCall extends FunctionCall {
 
   @Override
   public Type typeCheck(SymbolTable stable) throws TypeCheckError {
+    if (argumentCount() < 2) {
+      // TODO better error reporting
+      final ErrorMsg err = new ErrorMsg(ErrorMsg.ILLEGAL_ARG_ERR, this);
+      throw new TypeCheckError(err);
+    }
     ListIterator<Expression> expressions = getArguments().listIterator();
     while (expressions.hasNext()) {
       Expression exp = expressions.next();

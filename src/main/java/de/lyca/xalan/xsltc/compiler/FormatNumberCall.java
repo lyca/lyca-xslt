@@ -25,6 +25,7 @@ import java.util.List;
 import com.sun.codemodel.JExpression;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
+import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.RealType;
 import de.lyca.xalan.xsltc.compiler.util.StringType;
 import de.lyca.xalan.xsltc.compiler.util.Type;
@@ -44,6 +45,8 @@ final class FormatNumberCall extends FunctionCall {
 
   public FormatNumberCall(QName fname, List<Expression> arguments) {
     super(fname, arguments);
+    if (argumentCount() < 2)
+      return;
     _value = argument(0);
     _format = argument(1);
     _name = argumentCount() == 3 ? argument(2) : null;
@@ -51,6 +54,10 @@ final class FormatNumberCall extends FunctionCall {
 
   @Override
   public Type typeCheck(SymbolTable stable) throws TypeCheckError {
+    if (argumentCount() < 2) {
+      final ErrorMsg err = new ErrorMsg(ErrorMsg.ILLEGAL_ARG_ERR, this);
+      throw new TypeCheckError(err);
+    }
 
     // Inform stylesheet to instantiate a DecimalFormat object
     getStylesheet().numberFormattingUsed();

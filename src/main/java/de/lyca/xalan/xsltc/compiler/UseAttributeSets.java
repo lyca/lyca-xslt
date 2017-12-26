@@ -47,6 +47,10 @@ final class UseAttributeSets extends Instruction {
     addAttributeSets(setNames);
   }
 
+  public List<QName> getSets() {
+    return _sets;
+  }
+
   /**
    * This method is made public to enable an AttributeSet object to merge itself
    * with another AttributeSet (including any other AttributeSets the two may

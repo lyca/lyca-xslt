@@ -483,6 +483,10 @@ public final class Stylesheet extends SyntaxTreeNode {
     return _globals.size() > 0;
   }
 
+  public boolean hasKey(String name) {
+    return _keys.get(name) != null || _parentStylesheet != null && _parentStylesheet.hasKey(name);
+  }
+
   /**
    * Returns true if at least one template in the stylesheet has params defined.
    * Uses the variable <code>_hasLocalParams</code> to cache the result.
@@ -554,13 +558,19 @@ public final class Stylesheet extends SyntaxTreeNode {
   public void parseContents(Parser parser) {
     final SymbolTable stable = parser.getSymbolTable();
 
-    /*
-     * // Make sure the XSL version set in this stylesheet if ((_version ==
-     * null) || (_version.isEmpty())) { reportError(this, parser,
-     * ErrorMsg.REQUIRED_ATTR_ERR,"version"); } // Verify that the version is
-     * 1.0 and nothing else else if (!_version.equals("1.0")) {
-     * reportError(this, parser, ErrorMsg.XSL_VERSION_ERR, _version); }
-     */
+    _version = getAttribute("version");
+    if (_version.isEmpty()) {
+      String prefix = lookupPrefix(Constants.XSLT_URI);
+      _version = getAttribute(prefix == null ? "xsl" : prefix, "version");
+    }
+    // Make sure the XSL version set in this stylesheet
+    if (_version.isEmpty()) {
+      reportError(this, parser, ErrorMsg.REQUIRED_ATTR_ERR, "version");
+    }
+    // Verify that the version is 1.0 and nothing else
+    // else if (!_version.equals("1.0")) {
+    // reportError(this, parser, ErrorMsg.XSL_VERSION_ERR, _version);
+    // }
 
     // Add the implicit mapping of 'xml' to the XML namespace URI
     addPrefixMapping("xml", "http://www.w3.org/XML/1998/namespace");
@@ -600,11 +610,29 @@ public final class Stylesheet extends SyntaxTreeNode {
     // Exclude XSLT uri
     stable.pushExcludedNamespacesContext();
     stable.excludeURI(Constants.XSLT_URI);
-    stable.excludeNamespaces(excludePrefixes);
+    if (!stable.excludeNamespaces(excludePrefixes).isEmpty()) {
+      // TODO
+      final ErrorMsg error = new ErrorMsg(ErrorMsg.INTERNAL_ERR, "Unknown exclude-result-prefix", this);
+      parser.reportError(Constants.ERROR, error);
+    }
     stable.excludeNamespaces(extensionPrefixes);
 
     final List<SyntaxTreeNode> contents = getContents();
     final int count = contents.size();
+
+    // Check the order of import We have to scan the stylesheet element's top-level elements for
+    // variables and/or parameters before we parse the other elements
+    boolean inImports = true;
+    for (int i = 0; i < count; i++) {
+      SyntaxTreeNode child = contents.get(i);
+      if (!(child instanceof Import || child instanceof Text && ((Text) child).isIgnore())) {
+        inImports = false;
+      } else if (!inImports && child instanceof Import) {
+        // TODO better error reporting
+        final ErrorMsg err = new ErrorMsg(ErrorMsg.INTERNAL_ERR, "Imports must be first in stylesheet", this);
+        parser.reportError(Constants.ERROR, err);
+      }
+    }
 
     // We have to scan the stylesheet element's top-level elements for
     // variables and/or parameters before we parse the other elements
@@ -630,6 +658,19 @@ public final class Stylesheet extends SyntaxTreeNode {
         final Template template = (Template) child;
         final String name = "template$dot$" + template.getPosition();
         template.setName(parser.getQName(name));
+      }
+    }
+
+    // Search for non top-level elements or childs without namespace
+    for (int i = 0; i < count; i++) {
+      final SyntaxTreeNode child = contents.get(i);
+      if (!(child instanceof TopLevelElement || child instanceof UnsupportedElement
+          || child.getQName().getNamespace() != null && !child.getQName().getNamespace().isEmpty()
+              && !child.getQName().getNamespace().equals(Constants.XSLT_URI))) {
+        // TODO
+        final ErrorMsg error = new ErrorMsg(ErrorMsg.INTERNAL_ERR,
+            child.getQName().getLocalPart() + " is not a Top-Level Element", this);
+        parser.reportError(Constants.ERROR, error);
       }
     }
 
@@ -854,7 +895,7 @@ public final class Stylesheet extends SyntaxTreeNode {
 
     JBlock staticInit = ctx.clazz().init();
 
-//    initArray(namesArray, _sNamesArray, staticInit);
+    // initArray(namesArray, _sNamesArray, staticInit);
     JArray namesArrayRef = newArray(_sNamesArray.type().elementType());
     for (int i = 0; i < size; i++) {
       final String name = namesArray[i];
@@ -862,7 +903,7 @@ public final class Stylesheet extends SyntaxTreeNode {
     }
     staticInit.assign(_sNamesArray, namesArrayRef);
 
-//    initArray(urisArray, _sUrisArray, staticInit);
+    // initArray(urisArray, _sUrisArray, staticInit);
     JArray urisArrayRef = newArray(_sUrisArray.type().elementType());
     for (int i = 0; i < size; i++) {
       final String uri = urisArray[i];
@@ -870,7 +911,7 @@ public final class Stylesheet extends SyntaxTreeNode {
     }
     staticInit.assign(_sUrisArray, urisArrayRef);
 
-//    initArray(typesArray, _sTypesArray, staticInit);
+    // initArray(typesArray, _sTypesArray, staticInit);
     JArray typesArrayRef = newArray(_sTypesArray.type().elementType());
     for (int i = 0; i < size; i++) {
       final int nodeType = typesArray[i];
@@ -999,7 +1040,8 @@ public final class Stylesheet extends SyntaxTreeNode {
    * from transform().
    */
   private JMethod compileTopLevel(CompilerContext ctx) {
-    JMethod topLevel = ctx.method(PUBLIC, void.class, "topLevel")._throws(TransletException.class)._throws(SAXException.class);
+    JMethod topLevel = ctx.method(PUBLIC, void.class, "topLevel")._throws(TransletException.class)
+        ._throws(SAXException.class);
     JVar document = ctx.param(DOM.class, DOCUMENT_PNAME);
     JVar iterator = ctx.param(DTMAxisIterator.class, ITERATOR_PNAME);
     JVar handler = ctx.param(SerializationHandler.class, TRANSLET_OUTPUT_PNAME);
@@ -1053,7 +1095,7 @@ public final class Stylesheet extends SyntaxTreeNode {
     JMethod stripSpace = ctx.clazz().getMethod(STRIP_SPACE,
         new JType[] { ctx.ref(DOM.class), ctx.owner().INT, ctx.owner().INT });
     if (stripSpace != null && stripSpace.type() == ctx.owner().BOOLEAN) {
-//      JFieldVar _dom = definedClass.fields().get(DOM_FIELD);
+      // JFieldVar _dom = definedClass.fields().get(DOM_FIELD);
       body.invoke(document, SET_FILTER).arg(_this());
     }
     ctx.popNode();

@@ -62,6 +62,7 @@ import de.lyca.xalan.xsltc.dom.SortingIterator;
 import de.lyca.xalan.xsltc.runtime.AbstractTranslet;
 import de.lyca.xml.dtm.Axis;
 import de.lyca.xml.dtm.DTMAxisIterator;
+import de.lyca.xml.utils.XML11Char;
 
 /**
  * @author Jacek Ambroziak
@@ -142,19 +143,27 @@ final class Sort extends Instruction implements Closure {
       return;
     }
 
+    if(hasContents()){
+      // TODO
+      reportError(this, parser, ErrorMsg.INTERNAL_ERR, "Childs not allowed in xsl:sort");
+    }
     // Parse the select expression (node string value if no expression)
     _select = parser.parseExpression(this, "select", "string(.)");
 
     // Get the sort order; default is 'ascending'
     String val = getAttribute("order");
-    if (val.length() == 0) {
+    if (val.isEmpty()) {
       val = "ascending";
     }
     _order = AttributeValue.create(this, val, parser);
+    if (_order instanceof SimpleAttributeValue && !("ascending".equals(val) || "descending".equals(val))) {
+      // TODO
+      reportError(this, parser, ErrorMsg.INTERNAL_ERR, "order '" + val + "' is unknown");
+    }
 
     // Get the sort data type; default is text
     val = getAttribute("data-type");
-    if (val.length() == 0) {
+    if (val.isEmpty()) {
       try {
         final Type type = _select.typeCheck(parser.getSymbolTable());
         if (type instanceof IntType) {
@@ -166,14 +175,24 @@ final class Sort extends Instruction implements Closure {
         val = "text";
       }
     }
+
     _dataType = AttributeValue.create(this, val, parser);
+    if (_dataType instanceof SimpleAttributeValue
+        && !("text".equals(val) || "number".equals(val) || val.contains(":") && XML11Char.isXML11ValidQName(val))) {
+      // TODO
+      reportError(this, parser, ErrorMsg.INTERNAL_ERR, "datatype '" + val + "' not qname-but-not-ncname");
+    }
 
     val = getAttribute("lang");
     _lang = AttributeValue.create(this, val, parser);
     // Get the case order; default is language dependant
     val = getAttribute("case-order");
     _caseOrder = AttributeValue.create(this, val, parser);
-
+    if (!val.isEmpty() && _caseOrder instanceof SimpleAttributeValue
+        && !("upper-first".equals(val) || "lower-first".equals(val))) {
+      // TODO
+      reportError(this, parser, ErrorMsg.INTERNAL_ERR, "case-order '" + val + "' is unknown");
+    }
   }
 
   /**
@@ -200,7 +219,9 @@ final class Sort extends Instruction implements Closure {
   /**
    * These two methods are needed in the static methods that compile the
    * overloaded NodeSortRecord.compareType() and NodeSortRecord.sortOrder()
-   * @param ctx TODO
+   * 
+   * @param ctx
+   *          TODO
    */
   public void translateSortType(CompilerContext ctx) {
     _dataType.translate(ctx);
@@ -222,7 +243,9 @@ final class Sort extends Instruction implements Closure {
    * This method compiles code for the select expression for this xsl:sort
    * element. The method is called from the static code-generating methods in
    * this class.
-   * @param ctx TODO
+   * 
+   * @param ctx
+   *          TODO
    */
   public void translateSelect(CompilerContext ctx) {
     _select.translate(ctx);
@@ -242,18 +265,21 @@ final class Sort extends Instruction implements Closure {
 
   /**
    * Compiles code that instantiates a SortingIterator object. This object's
-   * constructor needs referencdes to the current iterator and a node sort
+   * constructor needs references to the current iterator and a node sort
    * record producing objects as its parameters.
-   * @param ctx TODO
+   * 
+   * @param ctx
+   *          TODO
    */
   public static JExpression translateSortIterator(CompilerContext ctx, Expression nodeSet, List<Sort> sortObjects) {
     // FIXME
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//    final InstructionList il = methodGen.getInstructionList();
-//    final InstructionFactory factory = new InstructionFactory(classGen, cpg);
+    // final ConstantPoolGen cpg = classGen.getConstantPool();
+    // final InstructionList il = methodGen.getInstructionList();
+    // final InstructionFactory factory = new InstructionFactory(classGen, cpg);
 
     // SortingIterator.SortingIterator(NodeIterator,NodeSortRecordFactory);
-//    final int init = cpg.addMethodref(SORT_ITERATOR, "<init>", "(" + NODE_ITERATOR_SIG + NODE_SORT_FACTORY_SIG + ")V");
+    // final int init = cpg.addMethodref(SORT_ITERATOR, "<init>", "(" +
+    // NODE_ITERATOR_SIG + NODE_SORT_FACTORY_SIG + ")V");
 
     // Backwards branches are prohibited if an uninitialized object is
     // on the stack by section 4.9.4 of the JVM Specification, 2nd Ed.
@@ -264,47 +290,58 @@ final class Sort extends Instruction implements Closure {
     // in temporary variables, create the object and reload the
     // arguments from the temporaries to avoid the problem.
 
-//    final LocalVariableGen nodesTemp = methodGen.addLocalVariable("sort_tmp1", Util.getJCRefType(NODE_ITERATOR_SIG),
-//            null, null);
+    // final LocalVariableGen nodesTemp =
+    // methodGen.addLocalVariable("sort_tmp1",
+    // Util.getJCRefType(NODE_ITERATOR_SIG),
+    // null, null);
 
-//    final LocalVariableGen sortRecordFactoryTemp = methodGen.addLocalVariable("sort_tmp2",
-//            Util.getJCRefType(NODE_SORT_FACTORY_SIG), null, null);
+    // final LocalVariableGen sortRecordFactoryTemp =
+    // methodGen.addLocalVariable("sort_tmp2",
+    // Util.getJCRefType(NODE_SORT_FACTORY_SIG), null, null);
 
     // Get the current node iterator
     JClass dtmAxisIterator = ctx.ref(DTMAxisIterator.class);
     if (nodeSet == null) { // apply-templates default
       final JClass axis = ctx.ref(Axis.class);
-      ctx.currentBlock().decl(dtmAxisIterator, ctx.nextTmpIterator(), ctx.currentDom().invoke(GET_AXIS_ITERATOR).arg(axis.staticRef(Axis.CHILD.name())));
-//      final int children = cpg.addInterfaceMethodref(DOM_INTF, "getAxisIterator", "(Lde/lyca/xml/dtm/Axis;)" + NODE_ITERATOR_SIG);
-//      il.append(methodGen.loadDOM());
-//      il.append(factory.createFieldAccess("de.lyca.xml.dtm.Axis", Axis.CHILD.name(), Type.Axis.toJCType(), org.apache.bcel.Constants.GETSTATIC));
-//      il.append(new INVOKEINTERFACE(children, 2));
+      ctx.currentBlock().decl(dtmAxisIterator, ctx.nextTmpIterator(),
+          ctx.currentDom().invoke(GET_AXIS_ITERATOR).arg(axis.staticRef(Axis.CHILD.name())));
+      // final int children = cpg.addInterfaceMethodref(DOM_INTF,
+      // "getAxisIterator", "(Lde/lyca/xml/dtm/Axis;)" + NODE_ITERATOR_SIG);
+      // il.append(methodGen.loadDOM());
+      // il.append(factory.createFieldAccess("de.lyca.xml.dtm.Axis",
+      // Axis.CHILD.name(), Type.Axis.toJCType(),
+      // org.apache.bcel.Constants.GETSTATIC));
+      // il.append(new INVOKEINTERFACE(children, 2));
     } else {
       ctx.currentBlock().decl(dtmAxisIterator, ctx.nextTmpIterator(), nodeSet.toJExpression(ctx));
-//      nodeSet.translate(ctx);
+      // nodeSet.translate(ctx);
     }
 
-//    nodesTemp.setStart(il.append(new ASTORE(nodesTemp.getIndex())));
+    // nodesTemp.setStart(il.append(new ASTORE(nodesTemp.getIndex())));
 
     // Compile the code for the NodeSortRecord producing class and pass
     // that as the last argument to the SortingIterator constructor.
     return compileSortRecordFactory(sortObjects, ctx);
-//    sortRecordFactoryTemp.setStart(il.append(new ASTORE(sortRecordFactoryTemp.getIndex())));
+    // sortRecordFactoryTemp.setStart(il.append(new
+    // ASTORE(sortRecordFactoryTemp.getIndex())));
 
-//    il.append(new NEW(cpg.addClass(SORT_ITERATOR)));
-//    il.append(DUP);
-//    nodesTemp.setEnd(il.append(new ALOAD(nodesTemp.getIndex())));
-//    sortRecordFactoryTemp.setEnd(il.append(new ALOAD(sortRecordFactoryTemp.getIndex())));
-//    il.append(new INVOKESPECIAL(init));
+    // il.append(new NEW(cpg.addClass(SORT_ITERATOR)));
+    // il.append(DUP);
+    // nodesTemp.setEnd(il.append(new ALOAD(nodesTemp.getIndex())));
+    // sortRecordFactoryTemp.setEnd(il.append(new
+    // ALOAD(sortRecordFactoryTemp.getIndex())));
+    // il.append(new INVOKESPECIAL(init));
   }
 
   /**
    * Compiles code that instantiates a NodeSortRecordFactory object which will
    * produce NodeSortRecord objects of a specific type.
-   * @param ctx TODO
+   * 
+   * @param ctx
+   *          TODO
    */
   public static JExpression compileSortRecordFactory(List<Sort> sortObjects, CompilerContext ctx) {
- // FIXME
+    // FIXME
     final JClass sortRecordClass = compileSortRecord(sortObjects, ctx);
 
     boolean needsSortRecordFactory = false;
@@ -319,8 +356,8 @@ final class Sort extends Instruction implements Closure {
       nodeSortRecordFactory = compileSortRecordFactory(sortObjects, ctx, sortRecordClass);
     }
 
-//    final ConstantPoolGen cpg = definedClass.getConstantPool();
-//    final InstructionList il = method.getInstructionList();
+    // final ConstantPoolGen cpg = definedClass.getConstantPool();
+    // final InstructionList il = method.getInstructionList();
 
     // Backwards branches are prohibited if an uninitialized object is
     // on the stack by section 4.9.4 of the JVM Specification, 2nd Ed.
@@ -332,10 +369,11 @@ final class Sort extends Instruction implements Closure {
     // arguments from the temporaries to avoid the problem.
 
     // Compile code that initializes the static _sortOrder
-//    final LocalVariableGen sortOrderTemp = method.addLocalVariable("sort_order_tmp",
-//            Util.getJCRefType("[" + STRING_SIG), null, null);
-//    il.append(new PUSH(cpg, nsorts));
-//    il.append(new ANEWARRAY(cpg.addClass(STRING)));
+    // final LocalVariableGen sortOrderTemp =
+    // method.addLocalVariable("sort_order_tmp",
+    // Util.getJCRefType("[" + STRING_SIG), null, null);
+    // il.append(new PUSH(cpg, nsorts));
+    // il.append(new ANEWARRAY(cpg.addClass(STRING)));
     JClass stringClass = ctx.ref(String.class);
     JClass stringArray = ctx.ref(String[].class);
     JArray sortOrderArray = newArray(stringClass);
@@ -343,94 +381,106 @@ final class Sort extends Instruction implements Closure {
       final Sort sort = sortObjects.get(level);
       sortOrderArray.add(sort._order.toJExpression(ctx));
     }
-//    JVar sortOrderRef = ctx.currentBlock().decl(stringArray, "sort_order_tmp", sortOrderArray);
+    // JVar sortOrderRef = ctx.currentBlock().decl(stringArray,
+    // "sort_order_tmp", sortOrderArray);
 
-    
-//    for (int level = 0; level < nsorts; level++) {
-//      final Sort sort = sortObjects.get(level);
-//      il.append(DUP);
-//      il.append(new PUSH(cpg, level));
-//      sort.translateSortOrder(definedClass, method, method.body());
-//      il.append(AASTORE);
-//    }
-//    sortOrderTemp.setStart(il.append(new ASTORE(sortOrderTemp.getIndex())));
+    // for (int level = 0; level < nsorts; level++) {
+    // final Sort sort = sortObjects.get(level);
+    // il.append(DUP);
+    // il.append(new PUSH(cpg, level));
+    // sort.translateSortOrder(definedClass, method, method.body());
+    // il.append(AASTORE);
+    // }
+    // sortOrderTemp.setStart(il.append(new ASTORE(sortOrderTemp.getIndex())));
 
-//    final LocalVariableGen sortTypeTemp = method.addLocalVariable("sort_type_tmp",
-//            Util.getJCRefType("[" + STRING_SIG), null, null);
-//    il.append(new PUSH(cpg, nsorts));
-//    il.append(new ANEWARRAY(cpg.addClass(STRING)));
+    // final LocalVariableGen sortTypeTemp =
+    // method.addLocalVariable("sort_type_tmp",
+    // Util.getJCRefType("[" + STRING_SIG), null, null);
+    // il.append(new PUSH(cpg, nsorts));
+    // il.append(new ANEWARRAY(cpg.addClass(STRING)));
     JArray sortTypeArray = newArray(stringClass);
     for (int level = 0; level < nsorts; level++) {
       final Sort sort = sortObjects.get(level);
       sortTypeArray.add(sort._dataType.toJExpression(ctx));
     }
-//    JVar sortTypeRef = ctx.currentBlock().decl(stringArray, "sort_type_tmp", sortTypeArray);
+    // JVar sortTypeRef = ctx.currentBlock().decl(stringArray, "sort_type_tmp",
+    // sortTypeArray);
 
-//    for (int level = 0; level < nsorts; level++) {
-//      final Sort sort = sortObjects.get(level);
-//      il.append(DUP);
-//      il.append(new PUSH(cpg, level));
-//      sort.translateSortType(definedClass, method, method.body());
-//      il.append(AASTORE);
-//    }
-//    sortTypeTemp.setStart(il.append(new ASTORE(sortTypeTemp.getIndex())));
+    // for (int level = 0; level < nsorts; level++) {
+    // final Sort sort = sortObjects.get(level);
+    // il.append(DUP);
+    // il.append(new PUSH(cpg, level));
+    // sort.translateSortType(definedClass, method, method.body());
+    // il.append(AASTORE);
+    // }
+    // sortTypeTemp.setStart(il.append(new ASTORE(sortTypeTemp.getIndex())));
 
-//    final LocalVariableGen sortLangTemp = method.addLocalVariable("sort_lang_tmp",
-//            Util.getJCRefType("[" + STRING_SIG), null, null);
-//    il.append(new PUSH(cpg, nsorts));
-//    il.append(new ANEWARRAY(cpg.addClass(STRING)));
+    // final LocalVariableGen sortLangTemp =
+    // method.addLocalVariable("sort_lang_tmp",
+    // Util.getJCRefType("[" + STRING_SIG), null, null);
+    // il.append(new PUSH(cpg, nsorts));
+    // il.append(new ANEWARRAY(cpg.addClass(STRING)));
     JArray sortLangArray = newArray(stringClass);
     for (int level = 0; level < nsorts; level++) {
       final Sort sort = sortObjects.get(level);
       sortLangArray.add(sort._lang.toJExpression(ctx));
     }
-//    JVar sortLangRef = ctx.currentBlock().decl(stringArray, "sort_lang_tmp", sortLangArray);
+    // JVar sortLangRef = ctx.currentBlock().decl(stringArray, "sort_lang_tmp",
+    // sortLangArray);
 
-//    for (int level = 0; level < nsorts; level++) {
-//      final Sort sort = sortObjects.get(level);
-//      il.append(DUP);
-//      il.append(new PUSH(cpg, level));
-//      sort.translateLang(definedClass, method, method.body());
-//      il.append(AASTORE);
-//    }
-//    sortLangTemp.setStart(il.append(new ASTORE(sortLangTemp.getIndex())));
+    // for (int level = 0; level < nsorts; level++) {
+    // final Sort sort = sortObjects.get(level);
+    // il.append(DUP);
+    // il.append(new PUSH(cpg, level));
+    // sort.translateLang(definedClass, method, method.body());
+    // il.append(AASTORE);
+    // }
+    // sortLangTemp.setStart(il.append(new ASTORE(sortLangTemp.getIndex())));
 
-//    final LocalVariableGen sortCaseOrderTemp = method.addLocalVariable("sort_case_order_tmp",
-//            Util.getJCRefType("[" + STRING_SIG), null, null);
-//    il.append(new PUSH(cpg, nsorts));
-//    il.append(new ANEWARRAY(cpg.addClass(STRING)));
+    // final LocalVariableGen sortCaseOrderTemp =
+    // method.addLocalVariable("sort_case_order_tmp",
+    // Util.getJCRefType("[" + STRING_SIG), null, null);
+    // il.append(new PUSH(cpg, nsorts));
+    // il.append(new ANEWARRAY(cpg.addClass(STRING)));
     JArray sortCaseOrderArray = newArray(stringClass);
     for (int level = 0; level < nsorts; level++) {
       final Sort sort = sortObjects.get(level);
       sortCaseOrderArray.add(sort._caseOrder.toJExpression(ctx));
     }
-//    JVar sortCaseOrderRef = ctx.currentBlock().decl(stringArray, "sort_case_tmp", sortCaseOrderArray);
+    // JVar sortCaseOrderRef = ctx.currentBlock().decl(stringArray,
+    // "sort_case_tmp", sortCaseOrderArray);
 
-//    for (int level = 0; level < nsorts; level++) {
-//      final Sort sort = sortObjects.get(level);
-//      il.append(DUP);
-//      il.append(new PUSH(cpg, level));
-//      sort.translateCaseOrder(definedClass, method, method.body());
-//      il.append(AASTORE);
-//    }
-//    sortCaseOrderTemp.setStart(il.append(new ASTORE(sortCaseOrderTemp.getIndex())));
+    // for (int level = 0; level < nsorts; level++) {
+    // final Sort sort = sortObjects.get(level);
+    // il.append(DUP);
+    // il.append(new PUSH(cpg, level));
+    // sort.translateCaseOrder(definedClass, method, method.body());
+    // il.append(AASTORE);
+    // }
+    // sortCaseOrderTemp.setStart(il.append(new
+    // ASTORE(sortCaseOrderTemp.getIndex())));
 
     JClass sortingIterator = ctx.ref(SortingIterator.class);
     JClass dtmAxisIterator = ctx.ref(DTMAxisIterator.class);
-//    il.append(new NEW(cpg.addClass(sortRecordFactoryClass)));
-//    il.append(DUP);
-//    il.append(method.loadDOM());
-//    il.append(new PUSH(cpg, sortRecordClass));
-//    il.append(definedClass.loadTranslet());
+    // il.append(new NEW(cpg.addClass(sortRecordFactoryClass)));
+    // il.append(DUP);
+    // il.append(method.loadDOM());
+    // il.append(new PUSH(cpg, sortRecordClass));
+    // il.append(definedClass.loadTranslet());
 
-//    sortOrderTemp.setEnd(il.append(new ALOAD(sortOrderTemp.getIndex())));
-//    sortTypeTemp.setEnd(il.append(new ALOAD(sortTypeTemp.getIndex())));
-//    sortLangTemp.setEnd(il.append(new ALOAD(sortLangTemp.getIndex())));
-//    sortCaseOrderTemp.setEnd(il.append(new ALOAD(sortCaseOrderTemp.getIndex())));
+    // sortOrderTemp.setEnd(il.append(new ALOAD(sortOrderTemp.getIndex())));
+    // sortTypeTemp.setEnd(il.append(new ALOAD(sortTypeTemp.getIndex())));
+    // sortLangTemp.setEnd(il.append(new ALOAD(sortLangTemp.getIndex())));
+    // sortCaseOrderTemp.setEnd(il.append(new
+    // ALOAD(sortCaseOrderTemp.getIndex())));
 
-//    il.append(new INVOKESPECIAL(cpg.addMethodref(sortRecordFactoryClass, "<init>", "(" + DOM_INTF_SIG + STRING_SIG
-//            + TRANSLET_INTF_SIG + "[" + STRING_SIG + "[" + STRING_SIG + "[" + STRING_SIG + "[" + STRING_SIG + ")V")));
-    JVar nsrf = ctx.currentBlock().decl(nodeSortRecordFactory,ctx.nextSortFactory(), _new(nodeSortRecordFactory).arg(ctx.currentDom()).arg(sortRecordClass.binaryName()).arg(_this()).arg(sortOrderArray).arg(sortTypeArray).arg(sortLangArray).arg(sortCaseOrderArray));
+    // il.append(new INVOKESPECIAL(cpg.addMethodref(sortRecordFactoryClass,
+    // "<init>", "(" + DOM_INTF_SIG + STRING_SIG
+    // + TRANSLET_INTF_SIG + "[" + STRING_SIG + "[" + STRING_SIG + "[" +
+    // STRING_SIG + "[" + STRING_SIG + ")V")));
+    JVar nsrf = ctx.currentBlock().decl(nodeSortRecordFactory, ctx.nextSortFactory(),
+        _new(nodeSortRecordFactory).arg(ctx.currentDom()).arg(sortRecordClass.binaryName()).arg(_this())
+            .arg(sortOrderArray).arg(sortTypeArray).arg(sortLangArray).arg(sortCaseOrderArray));
 
     // Initialize closure variables in sortRecordFactory
     final List<VariableRefBase> dups = new ArrayList<>();
@@ -451,15 +501,17 @@ final class Sort extends Instruction implements Closure {
 
         ctx.currentBlock().assign(nsrf.ref(var.getEscapedName()), var._select.toJExpression(ctx));
         // Store variable in new closure
-//        il.append(DUP);
-//        il.append(var.loadInstruction());
-//        il.append(new PUTFIELD(cpg.addFieldref(sortRecordFactoryClass, var.getEscapedName(), var.getType()
-//                .toSignature())));
+        // il.append(DUP);
+        // il.append(var.loadInstruction());
+        // il.append(new PUTFIELD(cpg.addFieldref(sortRecordFactoryClass,
+        // var.getEscapedName(), var.getType()
+        // .toSignature())));
         dups.add(varRef);
       }
     }
     String currentTmpIterator = ctx.currentTmpIterator();
-    JVar iterator = ctx.currentBlock().decl(dtmAxisIterator, ctx.nextTmpIterator(), _new(sortingIterator).arg(direct(currentTmpIterator)).arg(nsrf).invoke(SET_START_NODE).arg(ctx.currentNode()));
+    JVar iterator = ctx.currentBlock().decl(dtmAxisIterator, ctx.nextTmpIterator(),
+        _new(sortingIterator).arg(direct(currentTmpIterator)).arg(nsrf).invoke(SET_START_NODE).arg(ctx.currentNode()));
     return iterator;
   }
 
@@ -471,16 +523,19 @@ final class Sort extends Instruction implements Closure {
     CompilerContext factoryCtx;
     JDefinedClass nodeSortRecordFactory;
     try {
-      nodeSortRecordFactory = ctx.clazz()._class(PUBLIC | STATIC | FINAL, className)._extends(NodeSortRecordFactory.class);
+      nodeSortRecordFactory = ctx.clazz()._class(PUBLIC | STATIC | FINAL, className)
+          ._extends(NodeSortRecordFactory.class);
     } catch (JClassAlreadyExistsException e) {
       throw new RuntimeException(e);
     }
     factoryCtx = new CompilerContext(ctx.owner(), nodeSortRecordFactory, ctx.stylesheet(), xsltc);
 
-//    final NodeSortRecordFactGenerator sortRecordFactory = new NodeSortRecordFactGenerator(className, NODE_SORT_FACTORY,
-//            className + ".java", ACC_PUBLIC | ACC_SUPER | ACC_FINAL, new String[] {}, xsltc.getStylesheet());
-//
-//    final ConstantPoolGen cpg = sortRecordFactory.getConstantPool();
+    // final NodeSortRecordFactGenerator sortRecordFactory = new
+    // NodeSortRecordFactGenerator(className, NODE_SORT_FACTORY,
+    // className + ".java", ACC_PUBLIC | ACC_SUPER | ACC_FINAL, new String[] {},
+    // xsltc.getStylesheet());
+    //
+    // final ConstantPoolGen cpg = sortRecordFactory.getConstantPool();
 
     // Add a new instance variable for each var in closure
     final int nsorts = sortObjects.size();
@@ -502,8 +557,9 @@ final class Sort extends Instruction implements Closure {
         final VariableBase var = varRef.getVariable();
         String escapedName = var.getEscapedName();
         JVar field = factoryCtx.addPublicField(jcType, escapedName);
-//        sortRecordFactory.addField(new Field(ACC_PUBLIC, cpg.addUtf8(var.getEscapedName()), cpg.addUtf8(var.getType()
-//                .toSignature()), null, cpg.getConstantPool()));
+        // sortRecordFactory.addField(new Field(ACC_PUBLIC,
+        // cpg.addUtf8(var.getEscapedName()), cpg.addUtf8(var.getType()
+        // .toSignature()), null, cpg.getConstantPool()));
         dups.add(varRef);
       }
     }
@@ -520,61 +576,69 @@ final class Sort extends Instruction implements Closure {
     constructor.body().invoke("super").arg(document).arg(clazzName).arg(translet).arg(order).arg(type).arg(lang)
         .arg(caseOrder);
 
-//    final org.apache.bcel.generic.Type[] argTypes = new org.apache.bcel.generic.Type[7];
-//    argTypes[0] = Util.getJCRefType(DOM_INTF_SIG);
-//    argTypes[1] = Util.getJCRefType(STRING_SIG);
-//    argTypes[2] = Util.getJCRefType(TRANSLET_INTF_SIG);
-//    argTypes[3] = Util.getJCRefType("[" + STRING_SIG);
-//    argTypes[4] = Util.getJCRefType("[" + STRING_SIG);
-//    argTypes[5] = Util.getJCRefType("[" + STRING_SIG);
-//    argTypes[6] = Util.getJCRefType("[" + STRING_SIG);
+    // final org.apache.bcel.generic.Type[] argTypes = new
+    // org.apache.bcel.generic.Type[7];
+    // argTypes[0] = Util.getJCRefType(DOM_INTF_SIG);
+    // argTypes[1] = Util.getJCRefType(STRING_SIG);
+    // argTypes[2] = Util.getJCRefType(TRANSLET_INTF_SIG);
+    // argTypes[3] = Util.getJCRefType("[" + STRING_SIG);
+    // argTypes[4] = Util.getJCRefType("[" + STRING_SIG);
+    // argTypes[5] = Util.getJCRefType("[" + STRING_SIG);
+    // argTypes[6] = Util.getJCRefType("[" + STRING_SIG);
 
-//    final String[] argNames = new String[7];
-//    argNames[0] = DOCUMENT_PNAME;
-//    argNames[1] = "className";
-//    argNames[2] = TRANSLET_PNAME;
-//    argNames[3] = "order";
-//    argNames[4] = "type";
-//    argNames[5] = "lang";
-//    argNames[6] = "case_order";
+    // final String[] argNames = new String[7];
+    // argNames[0] = DOCUMENT_PNAME;
+    // argNames[1] = "className";
+    // argNames[2] = TRANSLET_PNAME;
+    // argNames[3] = "order";
+    // argNames[4] = "type";
+    // argNames[5] = "lang";
+    // argNames[6] = "case_order";
 
-//    InstructionList il = new InstructionList();
-//    final MethodGenerator constructor = new MethodGenerator(ACC_PUBLIC, org.apache.bcel.generic.Type.VOID, argTypes,
-//            argNames, "<init>", className, il, cpg);
+    // InstructionList il = new InstructionList();
+    // final MethodGenerator constructor = new MethodGenerator(ACC_PUBLIC,
+    // org.apache.bcel.generic.Type.VOID, argTypes,
+    // argNames, "<init>", className, il, cpg);
 
     // Push all parameters onto the stack and called super.<init>()
-//    il.append(ALOAD_0);
-//    il.append(ALOAD_1);
-//    il.append(ALOAD_2);
-//    il.append(new ALOAD(3));
-//    il.append(new ALOAD(4));
-//    il.append(new ALOAD(5));
-//    il.append(new ALOAD(6));
-//    il.append(new ALOAD(7));
-//    il.append(new INVOKESPECIAL(cpg.addMethodref(NODE_SORT_FACTORY, "<init>", "(" + DOM_INTF_SIG + STRING_SIG
-//            + TRANSLET_INTF_SIG + "[" + STRING_SIG + "[" + STRING_SIG + "[" + STRING_SIG + "[" + STRING_SIG + ")V")));
-//    il.append(RETURN);
+    // il.append(ALOAD_0);
+    // il.append(ALOAD_1);
+    // il.append(ALOAD_2);
+    // il.append(new ALOAD(3));
+    // il.append(new ALOAD(4));
+    // il.append(new ALOAD(5));
+    // il.append(new ALOAD(6));
+    // il.append(new ALOAD(7));
+    // il.append(new INVOKESPECIAL(cpg.addMethodref(NODE_SORT_FACTORY, "<init>",
+    // "(" + DOM_INTF_SIG + STRING_SIG
+    // + TRANSLET_INTF_SIG + "[" + STRING_SIG + "[" + STRING_SIG + "[" +
+    // STRING_SIG + "[" + STRING_SIG + ")V")));
+    // il.append(RETURN);
 
     // Override the definition of makeNodeSortRecord()
-    JMethod makeNodeSortRecord = factoryCtx
-        .method(JMod.PUBLIC | JMod.FINAL, NodeSortRecord.class, "makeNodeSortRecord")
+    JMethod makeNodeSortRecord = factoryCtx.method(JMod.PUBLIC | JMod.FINAL, NodeSortRecord.class, "makeNodeSortRecord")
         ._throws(ExceptionInInitializerError.class)._throws(LinkageError.class)._throws(IllegalAccessException.class)
         ._throws(InstantiationException.class)._throws(SecurityException.class)._throws(TransletException.class);
     JVar node = factoryCtx.param(int.class, "node");
     JVar last = factoryCtx.param(int.class, "last");
-//    il = new InstructionList();
-//    final MethodGenerator makeNodeSortRecord = new MethodGenerator(ACC_PUBLIC, Util.getJCRefType(NODE_SORT_RECORD_SIG),
-//            new org.apache.bcel.generic.Type[] { org.apache.bcel.generic.Type.INT, org.apache.bcel.generic.Type.INT },
-//            new String[] { "node", "last" }, "makeNodeSortRecord", className, il, cpg);
+    // il = new InstructionList();
+    // final MethodGenerator makeNodeSortRecord = new
+    // MethodGenerator(ACC_PUBLIC, Util.getJCRefType(NODE_SORT_RECORD_SIG),
+    // new org.apache.bcel.generic.Type[] { org.apache.bcel.generic.Type.INT,
+    // org.apache.bcel.generic.Type.INT },
+    // new String[] { "node", "last" }, "makeNodeSortRecord", className, il,
+    // cpg);
 
-    JVar nsr = makeNodeSortRecord.body().decl(sortRecordClass, "nsr", cast(sortRecordClass, _super().invoke("makeNodeSortRecord").arg(node).arg(last)));
-//    il.append(ALOAD_0);
-//    il.append(ILOAD_1);
-//    il.append(ILOAD_2);
-//    il.append(new INVOKESPECIAL(cpg
-//            .addMethodref(NODE_SORT_FACTORY, "makeNodeSortRecord", "(II)" + NODE_SORT_RECORD_SIG)));
-//    il.append(DUP);
-//    il.append(new CHECKCAST(cpg.addClass(sortRecordClass)));
+    JVar nsr = makeNodeSortRecord.body().decl(sortRecordClass, "nsr",
+        cast(sortRecordClass, _super().invoke("makeNodeSortRecord").arg(node).arg(last)));
+    // il.append(ALOAD_0);
+    // il.append(ILOAD_1);
+    // il.append(ILOAD_2);
+    // il.append(new INVOKESPECIAL(cpg
+    // .addMethodref(NODE_SORT_FACTORY, "makeNodeSortRecord", "(II)" +
+    // NODE_SORT_RECORD_SIG)));
+    // il.append(DUP);
+    // il.append(new CHECKCAST(cpg.addClass(sortRecordClass)));
 
     // Initialize closure in record class
     final int ndups = dups.size();
@@ -585,25 +649,27 @@ final class Sort extends Instruction implements Closure {
 
       String escapedName = var.getEscapedName();
       makeNodeSortRecord.body().assign(nsr.ref(escapedName), _this().ref(escapedName));
-//      il.append(DUP);
+      // il.append(DUP);
 
       // Get field from factory class
-//      il.append(ALOAD_0);
-//      il.append(new GETFIELD(cpg.addFieldref(className, var.getEscapedName(), varType.toSignature())));
+      // il.append(ALOAD_0);
+      // il.append(new GETFIELD(cpg.addFieldref(className, var.getEscapedName(),
+      // varType.toSignature())));
 
       // Put field in record class
-//      il.append(new PUTFIELD(cpg.addFieldref(sortRecordClass, var.getEscapedName(), varType.toSignature())));
+      // il.append(new PUTFIELD(cpg.addFieldref(sortRecordClass,
+      // var.getEscapedName(), varType.toSignature())));
     }
-//    il.append(POP);
-//    il.append(ARETURN);
+    // il.append(POP);
+    // il.append(ARETURN);
     makeNodeSortRecord.body()._return(nsr);
 
-//    constructor.setMaxLocals();
-//    constructor.setMaxStack();
-//    sortRecordFactory.addMethod(constructor);
-//    makeNodeSortRecord.setMaxLocals();
-//    makeNodeSortRecord.setMaxStack();
-//    sortRecordFactory.addMethod(makeNodeSortRecord);
+    // constructor.setMaxLocals();
+    // constructor.setMaxStack();
+    // sortRecordFactory.addMethod(constructor);
+    // makeNodeSortRecord.setMaxLocals();
+    // makeNodeSortRecord.setMaxStack();
+    // sortRecordFactory.addMethod(makeNodeSortRecord);
     // FIXME
     // xsltc.dumpClass(sortRecordFactory.getJavaClass());
 
@@ -612,10 +678,12 @@ final class Sort extends Instruction implements Closure {
 
   /**
    * Create a new auxillary class extending NodeSortRecord.
-   * @param ctx TODO
+   * 
+   * @param ctx
+   *          TODO
    */
   private static JClass compileSortRecord(List<Sort> sortObjects, CompilerContext ctx) {
- // FIXME
+    // FIXME
     final XSLTC xsltc = ctx.xsltc();
     final String className = xsltc.getHelperClassName();
 
@@ -628,10 +696,12 @@ final class Sort extends Instruction implements Closure {
       throw new RuntimeException(e);
     }
     sortCtx = new CompilerContext(ctx.owner(), nodeSortRecord, ctx.stylesheet(), xsltc);
-    //    final NodeSortRecordGenerator sortRecord = new NodeSortRecordGenerator(className, NODE_SORT_RECORD, "sort$0.java",
-//            ACC_PUBLIC | ACC_SUPER | ACC_FINAL, new String[] {}, classGen.getStylesheet());
+    // final NodeSortRecordGenerator sortRecord = new
+    // NodeSortRecordGenerator(className, NODE_SORT_RECORD, "sort$0.java",
+    // ACC_PUBLIC | ACC_SUPER | ACC_FINAL, new String[] {},
+    // classGen.getStylesheet());
 
-//    final ConstantPoolGen cpg = sortRecord.getConstantPool();
+    // final ConstantPoolGen cpg = sortRecord.getConstantPool();
 
     JMethod constructor = compileInit(sortObjects, sortCtx, className);
     // Add a new instance variable for each var in closure
@@ -657,19 +727,21 @@ final class Sort extends Instruction implements Closure {
         final VariableBase var = varRef.getVariable();
         String escapedName = var.getEscapedName();
         JVar field = sortCtx.addPublicField(jcType, escapedName);
-//        JVar param = constructor.param(jcType, escapedName);
-//        constructor.body().assign(_this().ref(field), param);
+        // JVar param = constructor.param(jcType, escapedName);
+        // constructor.body().assign(_this().ref(field), param);
 
-//        nodeSortRecord.field(JMod.PUBLIC, var.getType().toJCType(), var.getEscapedName());
-//        sortRecord.addField(new Field(ACC_PUBLIC, cpg.addUtf8(var.getEscapedName()), cpg.addUtf8(var.getType()
-//                .toSignature()), null, cpg.getConstantPool()));
+        // nodeSortRecord.field(JMod.PUBLIC, var.getType().toJCType(),
+        // var.getEscapedName());
+        // sortRecord.addField(new Field(ACC_PUBLIC,
+        // cpg.addUtf8(var.getEscapedName()), cpg.addUtf8(var.getType()
+        // .toSignature()), null, cpg.getConstantPool()));
         dups.add(varRef);
       }
     }
 
     compileExtract(sortObjects, sortCtx, className);
 
-//    xsltc.dumpClass(nodeSortRecord.owner(), nodeSortRecord);
+    // xsltc.dumpClass(nodeSortRecord.owner(), nodeSortRecord);
     return nodeSortRecord;
   }
 
@@ -688,8 +760,10 @@ final class Sort extends Instruction implements Closure {
    * Compiles a method that overloads NodeSortRecord.extractValueFromDOM()
    */
   private static void compileExtract(List<Sort> sortObjects, CompilerContext sortCtx, String className) {
-    // String NodeSortRecord.extractValueFromDOM(DOM dom, int current, int level, AbstractTranslet translet, int last);
-    JMethod extractValueFromDOM = sortCtx.method(JMod.PUBLIC | JMod.FINAL, String.class, "extractValueFromDOM")._throws(TransletException.class);
+    // String NodeSortRecord.extractValueFromDOM(DOM dom, int current, int
+    // level, AbstractTranslet translet, int last);
+    JMethod extractValueFromDOM = sortCtx.method(JMod.PUBLIC | JMod.FINAL, String.class, "extractValueFromDOM")
+        ._throws(TransletException.class);
     sortCtx.param(DOM.class, DOCUMENT_PNAME);
     JVar currentParam = sortCtx.param(int.class, "current");
     JVar levelParam = sortCtx.param(int.class, "level");

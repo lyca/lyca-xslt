@@ -14,8 +14,8 @@
        namespace URI. This tests for many xslt TOP-LEVEL elements, apparent code path 
        are different for numerous elements. Should not have namespaces to inherit. -->
 
-<!-- xsl:import href="..\test1.xsl"  a="a"/ -->
-<!-- xsl:include href="..\test2.xsl" b="b"/ -->
+<xsl:import href="../../conf/namespace/test1.xsl"  ped:a="a"/>
+<xsl:include href="../../conf/namespace/test2.xsl" ped:b="b"/>
 <xsl:output method="xml" indent="yes" ped:c="c"/>
 
 <xsl:key name="sprtest" match="TestID" use="Name" ped:d="d"/>

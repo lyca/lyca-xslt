@@ -17,6 +17,7 @@
  */
 package de.lyca.xalan.xsltc.compiler;
 
+import static de.lyca.xalan.xsltc.compiler.util.ErrorMsg.INTERNAL_ERR;
 import static de.lyca.xml.dtm.DTMAxisIterator.NEXT;
 
 import java.util.List;
@@ -24,6 +25,7 @@ import java.util.List;
 import com.sun.codemodel.JExpression;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
+import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
 import de.lyca.xalan.xsltc.runtime.BasisLibrary;
@@ -61,14 +63,15 @@ class NameBase extends FunctionCall {
 
     // Check the argument type (if any)
     switch (argumentCount()) {
-      case 0:
-        _paramType = Type.Node;
-        break;
-      case 1:
-        _paramType = _param.typeCheck(stable);
-        break;
-      default:
-        throw new TypeCheckError(this);
+    case 0:
+      _paramType = Type.Node;
+      break;
+    case 1:
+      _paramType = _param.typeCheck(stable);
+      break;
+    default:
+      // TODO
+      throw new TypeCheckError(new ErrorMsg(INTERNAL_ERR, "Too many arguments.", this));
     }
 
     // The argument has to be a node, a node-set or a node reference

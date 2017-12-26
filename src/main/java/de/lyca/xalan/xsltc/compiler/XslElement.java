@@ -70,12 +70,17 @@ final class XslElement extends Instruction {
 
     // Handle the 'name' attribute
     String name = getAttribute("name");
-    if (name == "") {
+    if (hasAttribute("name") && name.isEmpty()) {
       final ErrorMsg msg = new ErrorMsg(ILLEGAL_ELEM_NAME_ERR, name, this);
       parser.reportError(WARNING, msg);
       parseChildren(parser);
       _ignore = true; // Ignore the element if the QName is invalid
       return;
+
+    } else if (!hasAttribute("name")) {
+      // TODO Better error
+      final ErrorMsg msg = new ErrorMsg(ErrorMsg.INTERNAL_ERR, "xsl:element needs name attribute", this);
+      parser.reportError(ERROR, msg);
     }
 
     // Get namespace attribute
@@ -308,9 +313,7 @@ final class XslElement extends Instruction {
       // il.append(methodGen.loadDOM());
       // il.append(methodGen.loadCurrentNode());
 
-      elementValue = ctx.currentBlock().decl(
-          ctx.ref(String.class),
-          ctx.nextElementName(),
+      elementValue = ctx.currentBlock().decl(ctx.ref(String.class), ctx.nextElementName(),
           ctx.ref(BasisLibrary.class).staticInvoke("startXslElement").arg(nameValue).arg(namespace)
               .arg(ctx.currentHandler()).arg(ctx.currentDom()).arg(ctx.currentNode()));
 
@@ -344,8 +347,8 @@ final class XslElement extends Instruction {
           QName qName = item.getQName();
           String prefix = qName.getPrefix() == null ? "" : qName.getPrefix();
           String namespace = qName.getNamespace() == null ? "" : qName.getNamespace();
-          ctx.currentBlock().add(
-              ctx.currentHandler().invoke("startPrefixMapping").arg(prefix).arg(namespace).arg(JExpr.TRUE));
+          ctx.currentBlock()
+              .add(ctx.currentHandler().invoke("startPrefixMapping").arg(prefix).arg(namespace).arg(JExpr.TRUE));
           hasCalledStartPrefixMapping = true;
         }
         if (!hasCalledStartPrefixMapping && item instanceof CopyOf) {

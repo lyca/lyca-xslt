@@ -24,6 +24,7 @@ import java.util.List;
 import com.sun.codemodel.JExpression;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
+import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.StringType;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
@@ -43,6 +44,12 @@ final class UnparsedEntityUriCall extends FunctionCall {
 
   @Override
   public Type typeCheck(SymbolTable stable) throws TypeCheckError {
+    if (argumentCount() != 1) {
+      // TODO better error reporting
+      final ErrorMsg err = new ErrorMsg(ErrorMsg.ILLEGAL_ARG_ERR, this);
+      throw new TypeCheckError(err);
+    }
+
     final Type entity = _entity.typeCheck(stable);
     if (entity instanceof StringType == false) {
       _entity = new CastExpr(_entity, Type.String);

@@ -21,6 +21,8 @@ import static com.sun.codemodel.JExpr._null;
 import static com.sun.codemodel.JExpr.invoke;
 import static de.lyca.xalan.xsltc.compiler.Constants.ADD_PARAMETER;
 
+import java.util.List;
+
 import com.sun.codemodel.JConditional;
 import com.sun.codemodel.JExpr;
 import com.sun.codemodel.JExpression;
@@ -110,6 +112,25 @@ final class Param extends VariableBase {
    */
   @Override
   public Type typeCheck(SymbolTable stable) throws TypeCheckError {
+    if (_select != null && hasContents()) {
+      List<SyntaxTreeNode> contents = getContents();
+      int size = contents.size();
+      for (int i = 0; i < size; i++) {
+        SyntaxTreeNode child = contents.get(i);
+        if (child instanceof Text && ((Text) child).isIgnore())
+          continue;
+        // TODO better error reporting
+        final ErrorMsg err = new ErrorMsg(ErrorMsg.INTERNAL_ERR,
+            "xsl:param element must not have both content and a select attribute", this);
+        throw new TypeCheckError(err);
+      }
+    }
+    if (!(getParent() instanceof Stylesheet || getParent() instanceof Template)) {
+      // TODO better error reporting
+      final ErrorMsg err = new ErrorMsg(ErrorMsg.INTERNAL_ERR, "Parent is not Stylesheet or Template", this);
+      throw new TypeCheckError(err);
+    }
+
     if (_select != null) {
       _type = _select.typeCheck(stable);
       if (_type instanceof ReferenceType == false && !(_type instanceof ObjectType)) {
@@ -127,7 +148,7 @@ final class Param extends VariableBase {
 
   @Override
   public void translate(CompilerContext ctx) {
- // FIXME
+    // FIXME
 
     if (_ignore)
       return;
@@ -147,7 +168,7 @@ final class Param extends VariableBase {
        */
       if (_isInSimpleNamedTemplate) {
         _param = ctx.param(name);
-        JConditional _if =  ctx.currentBlock()._if(_param.eq(_null()));
+        JConditional _if = ctx.currentBlock()._if(_param.eq(_null()));
         ctx.pushBlock(_if._then());
         ctx.currentBlock().assign(_param, compileValue(ctx));
         ctx.popBlock();

@@ -961,7 +961,7 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
     } else {
       System.err.println(new ErrorMsg(ErrorMsg.ERROR_MSG, e.getMessageAndLocation()));
     }
-    throw e;
+//    throw e;
   }
 
   /**

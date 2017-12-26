@@ -131,6 +131,11 @@ final class Include extends TopLevelElement {
 
   @Override
   public Type typeCheck(SymbolTable stable) throws TypeCheckError {
+    if (!(getParent() instanceof Stylesheet)) {
+      // TODO better error reporting
+      final ErrorMsg err = new ErrorMsg(ErrorMsg.INTERNAL_ERR, "Parent is not Stylesheet", this);
+      throw new TypeCheckError(err);
+    }
     return Type.Void;
   }
 

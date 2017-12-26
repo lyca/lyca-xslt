@@ -95,9 +95,15 @@ final class Key extends TopLevelElement {
     if (_match.isDummy()) {
       reportError(this, parser, ErrorMsg.REQUIRED_ATTR_ERR, "match");
       return;
+    } else if (!(_match instanceof Pattern)) {
+      reportError(this, parser, ErrorMsg.TYPE_CHECK_ERR, "match");
+      return;
     }
     if (_use.isDummy()) {
       reportError(this, parser, ErrorMsg.REQUIRED_ATTR_ERR, "use");
+      return;
+    } else if (_use instanceof VariableRef) {
+      reportError(this, parser, ErrorMsg.TYPE_CHECK_ERR, "use");
       return;
     }
   }
@@ -113,6 +119,12 @@ final class Key extends TopLevelElement {
 
   @Override
   public Type typeCheck(SymbolTable stable) throws TypeCheckError {
+    if (!(getParent() instanceof Stylesheet)) {
+      // TODO
+      final ErrorMsg err = new ErrorMsg(ErrorMsg.INTERNAL_ERR, "Parent is not Stylesheet", this);
+      throw new TypeCheckError(err);
+    }
+
     // Type check match pattern
     _match.typeCheck(stable);
 
@@ -162,9 +174,7 @@ final class Key extends TopLevelElement {
   public void translate(CompilerContext ctx) {
     // Get an iterator for all nodes in the DOM and reset the iterator to start
     // with the root node
-    JVar axisIterator = ctx.currentBlock().decl(
-        ctx.ref(DTMAxisIterator.class),
-        ctx.nextTmpIterator(),
+    JVar axisIterator = ctx.currentBlock().decl(ctx.ref(DTMAxisIterator.class), ctx.nextTmpIterator(),
         ctx.currentDom().invoke(GET_AXIS_ITERATOR).arg(ctx.ref(Axis.class).staticRef(Axis.DESCENDANT.name()))
             .invoke(SET_START_NODE).arg(ctx.currentNode()));
 

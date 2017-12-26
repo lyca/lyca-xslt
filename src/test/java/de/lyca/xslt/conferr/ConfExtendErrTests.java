@@ -1,73 +1,55 @@
 package de.lyca.xslt.conferr;
 
 import static de.lyca.xslt.ResourceUtils.getSource;
+import static org.junit.Assert.fail;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerConfigurationException;
 
-import org.custommonkey.xmlunit.Transform;
-import org.custommonkey.xmlunit.exceptions.ConfigurationException;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
+import de.lyca.xslt.Transform;
+
+@RunWith(Parameterized.class)
 public class ConfExtendErrTests {
 
   private static final String PACKAGE = '/' + ConfExtendErrTests.class.getPackage().getName().replace('.', '/')
-          + "/extenderr/";
+      + "/extenderr/";
 
-  @Test
-  public void extenderr01() throws Exception {
-    final String name = PACKAGE + "extenderr01";
-    final Source xsl = getSource(name + ".xsl");
-    final Source xml = getSource(name + ".xml");
-    final Transform t = new Transform(xml, xsl);
+  @Parameters(name = "{0}")
+  public static Collection<Object> params() {
+    Collection<Object> result = new ArrayList<>();
+    int[] exclude = {};
+    for (int i = 1; i < 6; i++) {
+      if (Arrays.binarySearch(exclude, i) >= 0) {
+        continue;
+      }
+      result.add(String.format("extenderr%02d", i));
+    }
+    return result;
+  }
+
+  private String name;
+
+  public ConfExtendErrTests(String name) {
+    this.name = PACKAGE + name;
   }
 
   @Test
-  public void extenderr02() throws Exception {
-    final String name = PACKAGE + "extenderr02";
+  public void extenderrTest() throws Exception {
     final Source xsl = getSource(name + ".xsl");
     final Source xml = getSource(name + ".xml");
     try {
-      new Transform(xml, xsl);
-    } catch (final ConfigurationException e) {
-      final Throwable t = e.getCause();
-      if (t instanceof TransformerConfigurationException) {
-        System.out.println(t.getMessage());
-      } else
-        throw e;
+      fail(new Transform(xml, xsl).getResultString());
+    } catch (final TransformerConfigurationException e) {
     }
-  }
-
-  @Test
-  public void extenderr03() throws Exception {
-    final String name = PACKAGE + "extenderr03";
-    final Source xsl = getSource(name + ".xsl");
-    final Source xml = getSource(name + ".xml");
-    final Transform t = new Transform(xml, xsl);
-  }
-
-  @Test
-  public void extenderr04() throws Exception {
-    final String name = PACKAGE + "extenderr04";
-    final Source xsl = getSource(name + ".xsl");
-    final Source xml = getSource(name + ".xml");
-    try {
-      new Transform(xml, xsl);
-    } catch (final ConfigurationException e) {
-      final Throwable t = e.getCause();
-      if (t instanceof TransformerConfigurationException) {
-        System.out.println(t.getMessage());
-      } else
-        throw e;
-    }
-  }
-
-  @Test
-  public void extenderr05() throws Exception {
-    final String name = PACKAGE + "extenderr05";
-    final Source xsl = getSource(name + ".xsl");
-    final Source xml = getSource(name + ".xml");
-    final Transform t = new Transform(xml, xsl);
   }
 
 }

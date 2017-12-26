@@ -49,11 +49,6 @@ final class Import extends TopLevelElement {
 
     try {
       String docToLoad = getAttribute("href");
-      if (context.checkForLoop(docToLoad)) {
-        final ErrorMsg msg = new ErrorMsg(ErrorMsg.CIRCULAR_INCLUDE_ERR, docToLoad, this);
-        parser.reportError(Constants.FATAL, msg);
-        return;
-      }
 
       InputSource input = null;
       XMLReader reader = null;
@@ -73,6 +68,12 @@ final class Import extends TopLevelElement {
       if (input == null) {
         docToLoad = SystemIDResolver.getAbsoluteURI(docToLoad, currLoadedDoc);
         input = new InputSource(docToLoad);
+      }
+
+      if (context.checkForLoop(docToLoad)) {
+        final ErrorMsg msg = new ErrorMsg(ErrorMsg.CIRCULAR_INCLUDE_ERR, docToLoad, this);
+        parser.reportError(Constants.FATAL, msg);
+        return;
       }
 
       // Return if we could not resolve the URL
@@ -132,6 +133,11 @@ final class Import extends TopLevelElement {
 
   @Override
   public Type typeCheck(SymbolTable stable) throws TypeCheckError {
+    if (!(getParent() instanceof Stylesheet)) {
+      // TODO better error reporting
+      final ErrorMsg err = new ErrorMsg(ErrorMsg.INTERNAL_ERR, "Parent is not Stylesheet", this);
+      throw new TypeCheckError(err);
+    }
     return Type.Void;
   }
 

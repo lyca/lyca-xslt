@@ -27,8 +27,10 @@ import static de.lyca.xalan.xsltc.compiler.util.ErrorMsg.ILLEGAL_CHILD_ERR;
 import static de.lyca.xalan.xsltc.compiler.util.ErrorMsg.INVALID_QNAME_ERR;
 import static de.lyca.xalan.xsltc.compiler.util.ErrorMsg.UNNAMED_ATTRIBSET_ERR;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Set;
 
 import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JStatement;
@@ -152,10 +154,25 @@ final class AttributeSet extends TopLevelElement {
     _method = AttributeSetPrefix + getXSLTC().nextAttributeSetSerial();
 
     if (_useSets != null) {
+      if (containsSet(_name, stable)) {
+        // TODO better error handling
+        reportError(this, getParser(), ErrorMsg.INTERNAL_ERR, "Circular references in attribute-sets");
+      }
       _useSets.typeCheck(stable);
     }
     typeCheckContents(stable);
     return Type.Void;
+  }
+
+  boolean containsSet(QName qname, SymbolTable stable) {
+    boolean result = _useSets.getSets().contains(qname);
+    if (!result) {
+      for (QName refQname : _useSets.getSets()) {
+        result = result || stable.lookupAttributeSet(refQname) != null
+            && stable.lookupAttributeSet(refQname).containsSet(qname, stable);
+      }
+    }
+    return result;
   }
 
   @Override

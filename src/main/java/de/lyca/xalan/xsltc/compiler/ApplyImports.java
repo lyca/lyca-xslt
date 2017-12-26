@@ -22,6 +22,7 @@ import static de.lyca.xalan.xsltc.compiler.Constants.POP_PARAM_FRAME;
 import static de.lyca.xalan.xsltc.compiler.Constants.PUSH_PARAM_FRAME;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
+import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
 
@@ -77,6 +78,16 @@ final class ApplyImports extends Instruction {
    */
   @Override
   public Type typeCheck(SymbolTable stable) throws TypeCheckError {
+    SyntaxTreeNode parent = getParent();
+    while (parent != null) {
+      if (parent instanceof ForEach) {
+        // TODO better error reporting
+        final ErrorMsg err = new ErrorMsg(ErrorMsg.INTERNAL_ERR, "xsl:apply-imports not allowed in a xsl:for-each",
+            this);
+        throw new TypeCheckError(err);
+      }
+      parent = parent.getParent();
+    }
     typeCheckContents(stable); // with-params
     return Type.Void;
   }

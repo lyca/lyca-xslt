@@ -22,6 +22,7 @@ import java.util.List;
 import com.sun.codemodel.JExpression;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
+import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
 
@@ -37,10 +38,16 @@ final class NumberCall extends FunctionCall {
 
   @Override
   public Type typeCheck(SymbolTable stable) throws TypeCheckError {
-    if (argumentCount() > 0) {
+    switch (argumentCount()) {
+    case 0:
+      return _type = Type.Real;
+    case 1:
       argument().typeCheck(stable);
+      return _type = Type.Real;
+    default:
+      final ErrorMsg err = new ErrorMsg(ErrorMsg.ILLEGAL_ARG_ERR, this);
+      throw new TypeCheckError(err);
     }
-    return _type = Type.Real;
   }
 
   @Override

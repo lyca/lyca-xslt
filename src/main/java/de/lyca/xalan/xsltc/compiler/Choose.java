@@ -50,9 +50,15 @@ final class Choose extends Instruction {
     // Traverse all child nodes - must be either When or Otherwise
     while (elements.hasNext()) {
       final Object element = elements.next();
-      // Add a When child element
-      if (element instanceof When) {
+      // Add a When child element when no otherwise exists
+      if (element instanceof When && otherwise == null) {
         whenElements.add((When) element);
+      }
+      // Add a When child element when no otherwise exists
+      else if (element instanceof When && otherwise != null) {
+        // TODO
+        error = new ErrorMsg(ErrorMsg.INTERNAL_ERR, "when after otherwise",this);
+        getParser().reportError(Constants.ERROR, error);
       }
       // Add an Otherwise child element
       else if (element instanceof Otherwise) {

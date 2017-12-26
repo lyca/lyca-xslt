@@ -1,101 +1,56 @@
 package de.lyca.xslt.conferr;
 
 import static de.lyca.xslt.ResourceUtils.getSource;
+import static org.junit.Assert.fail;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 
 import javax.xml.transform.Source;
+import javax.xml.transform.TransformerConfigurationException;
 
-import org.custommonkey.xmlunit.Transform;
-import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
+import de.lyca.xslt.Transform;
+
+@RunWith(Parameterized.class)
 public class ConfNamespaceErrTests {
 
   private static final String PACKAGE = '/' + ConfNamespaceErrTests.class.getPackage().getName().replace('.', '/')
-          + "/namespaceerr/";
+      + "/namespaceerr/";
 
-  @Test
-  public void namespaceerr01() throws Exception {
-    final String name = PACKAGE + "namespaceerr01";
-    final Source xsl = getSource(name + ".xsl");
-    final Source xml = getSource(name + ".xml");
-    final Transform t = new Transform(xml, xsl);
+  @Parameters(name = "{0}")
+  public static Collection<Object> params() {
+    Collection<Object> result = new ArrayList<>();
+    // no error found in the following test
+    int[] exclude = { 4 };
+    for (int i = 1; i < 11; i++) {
+      if (Arrays.binarySearch(exclude, i) >= 0) {
+        continue;
+      }
+      result.add(String.format("namespaceerr%02d", i));
+    }
+    return result;
+  }
+
+  private String name;
+
+  public ConfNamespaceErrTests(String name) {
+    this.name = PACKAGE + name;
   }
 
   @Test
-  public void namespaceerr02() throws Exception {
-    final String name = PACKAGE + "namespaceerr02";
+  public void namespaceerrTest() throws Exception {
     final Source xsl = getSource(name + ".xsl");
     final Source xml = getSource(name + ".xml");
-    final Transform t = new Transform(xml, xsl);
-  }
-
-  @Test
-  public void namespaceerr03() throws Exception {
-    final String name = PACKAGE + "namespaceerr03";
-    final Source xsl = getSource(name + ".xsl");
-    final Source xml = getSource(name + ".xml");
-    final Transform t = new Transform(xml, xsl);
-  }
-
-  @Test
-  public void namespaceerr04() throws Exception {
-    final String name = PACKAGE + "namespaceerr04";
-    final Source xsl = getSource(name + ".xsl");
-    final Source xml = getSource(name + ".xml");
-    final Transform t = new Transform(xml, xsl);
-  }
-
-  @Test
-  public void namespaceerr05() throws Exception {
-    final String name = PACKAGE + "namespaceerr05";
-    final Source xsl = getSource(name + ".xsl");
-    final Source xml = getSource(name + ".xml");
-    final Transform t = new Transform(xml, xsl);
-  }
-
-  @Test
-  @Ignore
-  public void namespaceerr06() throws Exception {
-    final String name = PACKAGE + "namespaceerr06";
-    final Source xsl = getSource(name + ".xsl");
-    final Source xml = getSource(name + ".xml");
-    final Transform t = new Transform(xml, xsl);
-  }
-
-  @Test
-  @Ignore
-  public void namespaceerr07() throws Exception {
-    final String name = PACKAGE + "namespaceerr07";
-    final Source xsl = getSource(name + ".xsl");
-    final Source xml = getSource(name + ".xml");
-    final Transform t = new Transform(xml, xsl);
-  }
-
-  @Test
-  @Ignore
-  public void namespaceerr08() throws Exception {
-    final String name = PACKAGE + "namespaceerr08";
-    final Source xsl = getSource(name + ".xsl");
-    final Source xml = getSource(name + ".xml");
-    final Transform t = new Transform(xml, xsl);
-  }
-
-  @Test
-  @Ignore
-  public void namespaceerr09() throws Exception {
-    final String name = PACKAGE + "namespaceerr09";
-    final Source xsl = getSource(name + ".xsl");
-    final Source xml = getSource(name + ".xml");
-    final Transform t = new Transform(xml, xsl);
-  }
-
-  @Test
-  @Ignore
-  public void namespaceerr10() throws Exception {
-    final String name = PACKAGE + "namespaceerr10";
-    final Source xsl = getSource(name + ".xsl");
-    final Source xml = getSource(name + ".xml");
-    final Transform t = new Transform(xml, xsl);
+    try {
+      fail(new Transform(xml, xsl).getResultString());
+    } catch (final TransformerConfigurationException e) {
+    }
   }
 
 }

@@ -51,7 +51,7 @@ final class FunctionAvailableCall extends FunctionCall {
    */
   public FunctionAvailableCall(QName fname, List<Expression> arguments) {
     super(fname, arguments);
-    _arg = arguments.get(0);
+    _arg = argumentCount() == 1 ? arguments.get(0) : null;
     _type = null;
 
     if (_arg instanceof LiteralExpr) {
@@ -71,6 +71,10 @@ final class FunctionAvailableCall extends FunctionCall {
    */
   @Override
   public Type typeCheck(SymbolTable stable) throws TypeCheckError {
+    if (argumentCount() != 1) {
+      final ErrorMsg err = new ErrorMsg(ErrorMsg.ILLEGAL_ARG_ERR, this);
+      throw new TypeCheckError(err);
+    }
     if (_type != null)
       return _type;
     if (_arg instanceof LiteralExpr)
@@ -177,6 +181,5 @@ final class FunctionAvailableCall extends FunctionCall {
   public JExpression toJExpression(CompilerContext ctx) {
     return lit(getResult());
   }
-  
 
 }

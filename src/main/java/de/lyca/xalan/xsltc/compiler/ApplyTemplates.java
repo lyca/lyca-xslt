@@ -58,7 +58,10 @@ final class ApplyTemplates extends Instruction {
 
     if (select.length() > 0) {
       _select = parser.parseExpression(this, "select", null);
-
+    } else if (hasAttribute("select")) {
+      // TODO better error reporting
+      final ErrorMsg err = new ErrorMsg(ErrorMsg.INTERNAL_ERR, "Select is empty", this);
+      parser.reportError(Constants.ERROR, err);
     }
 
     if (mode.length() > 0) {
@@ -72,6 +75,14 @@ final class ApplyTemplates extends Instruction {
     // instantiate Mode if needed, cache (apply temp) function name
     _functionName = parser.getTopLevelStylesheet().getMode(_modeName).functionName();
     parseChildren(parser);// with-params
+    for (SyntaxTreeNode child : getContents()) {
+      if (!(child instanceof Sort || child instanceof WithParam
+          || child instanceof Text && ((Text) child).isIgnore())) {
+        // TODO better error reporting
+        final ErrorMsg err = new ErrorMsg(ErrorMsg.ILLEGAL_CHILD_ERR, child, this);
+        parser.reportError(Constants.ERROR, err);
+      }
+    }
   }
 
   @Override
@@ -128,7 +139,7 @@ final class ApplyTemplates extends Instruction {
       // Put the result tree (a DOM adapter) on the stack
       _select.translate(ctx);
       // Get back the DOM and iterator (not just iterator!!!)
-//      _type.translateTo(ctx.clazz(), ctx.currentMethod(), Type.NodeSet);
+      // _type.translateTo(ctx.clazz(), ctx.currentMethod(), Type.NodeSet);
     } else {
       // compute node iterator for applyTemplates
       if (sortObjects.size() > 0) {

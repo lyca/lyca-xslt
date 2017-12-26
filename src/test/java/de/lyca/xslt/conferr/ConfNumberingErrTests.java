@@ -1,74 +1,56 @@
 package de.lyca.xslt.conferr;
 
 import static de.lyca.xslt.ResourceUtils.getSource;
+import static org.junit.Assert.fail;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 
 import javax.xml.transform.Source;
+import javax.xml.transform.TransformerConfigurationException;
 
-import org.custommonkey.xmlunit.Transform;
-import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
+import de.lyca.xslt.Transform;
+
+@RunWith(Parameterized.class)
 public class ConfNumberingErrTests {
 
   private static final String PACKAGE = '/' + ConfNumberingErrTests.class.getPackage().getName().replace('.', '/')
-          + "/numberingerr/";
+      + "/numberingerr/";
 
-  @Test
-  public void numberingerr01() throws Exception {
-    final String name = PACKAGE + "numberingerr01";
-    final Source xsl = getSource(name + ".xsl");
-    final Source xml = getSource(name + ".xml");
-    final Transform t = new Transform(xml, xsl);
+  @Parameters(name = "{0}")
+  public static Collection<Object> params() {
+    Collection<Object> result = new ArrayList<>();
+    // hard to catch: numbering with negative values on roman numerals
+    int[] exclude = { 6 };
+    for (int i = 1; i < 8; i++) {
+      if (Arrays.binarySearch(exclude, i) >= 0) {
+        continue;
+      }
+      result.add(String.format("numberingerr%02d", i));
+    }
+    return result;
+  }
+
+  private String name;
+
+  public ConfNumberingErrTests(String name) {
+    this.name = PACKAGE + name;
   }
 
   @Test
-  public void numberingerr02() throws Exception {
-    final String name = PACKAGE + "numberingerr02";
+  public void numberingerrTest() throws Exception {
     final Source xsl = getSource(name + ".xsl");
     final Source xml = getSource(name + ".xml");
-    final Transform t = new Transform(xml, xsl);
-  }
-
-  @Test
-  public void numberingerr03() throws Exception {
-    final String name = PACKAGE + "numberingerr03";
-    final Source xsl = getSource(name + ".xsl");
-    final Source xml = getSource(name + ".xml");
-    final Transform t = new Transform(xml, xsl);
-  }
-
-  @Test
-  @Ignore
-  public void numberingerr04() throws Exception {
-    final String name = PACKAGE + "numberingerr04";
-    final Source xsl = getSource(name + ".xsl");
-    final Source xml = getSource(name + ".xml");
-    final Transform t = new Transform(xml, xsl);
-  }
-
-  @Test
-  @Ignore
-  public void numberingerr05() throws Exception {
-    final String name = PACKAGE + "numberingerr05";
-    final Source xsl = getSource(name + ".xsl");
-    final Source xml = getSource(name + ".xml");
-    final Transform t = new Transform(xml, xsl);
-  }
-
-  @Test
-  public void numberingerr06() throws Exception {
-    final String name = PACKAGE + "numberingerr06";
-    final Source xsl = getSource(name + ".xsl");
-    final Source xml = getSource(name + ".xml");
-    final Transform t = new Transform(xml, xsl);
-  }
-
-  @Test
-  public void numberingerr07() throws Exception {
-    final String name = PACKAGE + "numberingerr07";
-    final Source xsl = getSource(name + ".xsl");
-    final Source xml = getSource(name + ".xml");
-    final Transform t = new Transform(xml, xsl);
+    try {
+      fail(new Transform(xml, xsl).getResultString());
+    } catch (final TransformerConfigurationException e) {
+    }
   }
 
 }

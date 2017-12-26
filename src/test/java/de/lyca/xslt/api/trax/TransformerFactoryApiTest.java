@@ -112,7 +112,7 @@ public class TransformerFactoryApiTest {
     }
   }
 
-  @Test(expected = ClassCastException.class)
+  @Test(expected = TransformerFactoryConfigurationError.class)
   public void testWrongClassTransformerFactory() throws Exception {
     try {
       System.setProperty(DEFAULT_TRANSFORMER_FACTORY_PROPERTY_NAME, "java.lang.String");

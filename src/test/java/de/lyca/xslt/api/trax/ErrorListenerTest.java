@@ -41,6 +41,7 @@ import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.w3c.dom.Node;
 
@@ -61,9 +62,10 @@ import de.lyca.xslt.ResourceUtils;
  * 
  * @author shane_curcuru@lotus.com
  */
+@Ignore("Revisit error handling")
 public class ErrorListenerTest {
 
-  private static final String PACKAGE = '/' + ErrorListenerTest.class.getPackage().getName().replace('.', '/') + "/";
+  private static final String PACKAGE = '/' + ErrorListenerTest.class.getPackage().getName().replace('.', '/') + '/';
   private static final String ERR_PACKAGE = PACKAGE.replace("trax", "err");
 
   /** Expected type of error during stylesheet build. */

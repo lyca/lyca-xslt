@@ -122,6 +122,19 @@ final class WithParam extends Instruction {
    */
   @Override
   public Type typeCheck(SymbolTable stable) throws TypeCheckError {
+    if (!(getParent() instanceof ApplyTemplates || getParent() instanceof CallTemplate)) {
+      // TODO better error reporting
+      final ErrorMsg err = new ErrorMsg(ErrorMsg.INTERNAL_ERR,
+          "xsl:with-param must be child of xsl:apply-templates or xsl:call-template", this);
+      throw new TypeCheckError(err);
+    }
+    if (_select != null && hasContents()) {
+      // TODO better error reporting
+      final ErrorMsg err = new ErrorMsg(ErrorMsg.INTERNAL_ERR,
+          "xsl:with-param element must not have both content and a select attribute", this);
+      throw new TypeCheckError(err);
+    }
+
     if (_select != null) {
       final Type tselect = _select.typeCheck(stable);
       if (tselect instanceof ReferenceType == false) {
@@ -162,10 +175,10 @@ final class WithParam extends Instruction {
    */
   @Override
   public void translate(CompilerContext ctx) {
-//    FIXME
+    // FIXME
     // Translate the value and put it on the stack
     if (_doParameterOptimization) {
-//      translateValue(classGen, methodGen);
+      // translateValue(classGen, methodGen);
       return;
     }
 

@@ -335,7 +335,7 @@ public class ErrorMessages_de extends ListResourceBundle {
              * Note to translators: An element in the stylesheet contained an
              * element of a type that it was not permitted to contain.
              */
-            { ErrorMsg.ILLEGAL_CHILD_ERR, "Zul\u00e4ssiges Kindelement." },
+            { ErrorMsg.ILLEGAL_CHILD_ERR, "Unzul\u00e4ssiges Kindelement." },
 
             /*
              * Note to translators: The stylesheet tried to create an element

@@ -31,6 +31,8 @@ import com.sun.codemodel.JBlock;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
+import de.lyca.xalan.xsltc.compiler.util.Type;
+import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
 import de.lyca.xml.serializer.Encodings;
 import de.lyca.xml.utils.XML11Char;
 
@@ -107,8 +109,8 @@ final class Output extends TopLevelElement {
     // Merge cdata-section-elements
     if (previous.hasAttribute("cdata-section-elements")) {
       // addAttribute works as a setter if it already exists
-      addAttribute("cdata-section-elements", previous.getAttribute("cdata-section-elements") + ' '
-          + getAttribute("cdata-section-elements"));
+      addAttribute("cdata-section-elements",
+          previous.getAttribute("cdata-section-elements") + ' ' + getAttribute("cdata-section-elements"));
     }
 
     // Transfer non-standard attributes as well
@@ -120,6 +122,16 @@ final class Output extends TopLevelElement {
     if (prefix != null) {
       transferAttribute(previous, prefix + ':' + "indent-amount");
     }
+  }
+
+  @Override
+  public Type typeCheck(SymbolTable stable) throws TypeCheckError {
+    if (!(getParent() instanceof Stylesheet)) {
+      // TODO
+      final ErrorMsg err = new ErrorMsg(ErrorMsg.INTERNAL_ERR, "Parent is not Stylesheet", this);
+      throw new TypeCheckError(err);
+    }
+    return super.typeCheck(stable);
   }
 
   /**
@@ -140,7 +152,7 @@ final class Output extends TopLevelElement {
 
     // Get the output version
     _version = getAttribute("version");
-    if (_version.isEmpty()){
+    if (_version.isEmpty()) {
       _version = null;
     } else {
       outputProperties.setProperty(OutputKeys.VERSION, _version);

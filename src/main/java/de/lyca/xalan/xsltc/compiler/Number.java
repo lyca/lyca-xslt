@@ -42,6 +42,7 @@ import com.sun.codemodel.JVar;
 
 import de.lyca.xalan.xsltc.DOM;
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
+import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.RealType;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
@@ -75,11 +76,11 @@ final class Number extends Instruction implements Closure {
   private Pattern _count = null;
   private Expression _value = null;
 
-  private AttributeValueTemplate _lang = null;
-  private AttributeValueTemplate _format = null;
-  private AttributeValueTemplate _letterValue = null;
-  private AttributeValueTemplate _groupingSeparator = null;
-  private AttributeValueTemplate _groupingSize = null;
+  private AttributeValue _lang = null;
+  private AttributeValue _format = null;
+  private AttributeValue _letterValue = null;
+  private AttributeValue _groupingSeparator = null;
+  private AttributeValue _groupingSize = null;
 
   private int _level = LEVEL_SINGLE;
   private boolean _formatNeeded = false;
@@ -153,21 +154,34 @@ final class Number extends Instruction implements Closure {
           _level = LEVEL_MULTIPLE;
         } else if (value.equals("any")) {
           _level = LEVEL_ANY;
+        } else {
+          // TODO better Error reporting
+          reportError(this, parser, ErrorMsg.ILLEGAL_ARG_ERR, value);
         }
       } else if (name.equals("format")) {
-        _format = new AttributeValueTemplate(value, parser, this);
+        _format = AttributeValue.create(this, value, parser);
         _formatNeeded = true;
       } else if (name.equals("lang")) {
-        _lang = new AttributeValueTemplate(value, parser, this);
+        _lang = AttributeValue.create(this, value, parser);
         _formatNeeded = true;
       } else if (name.equals("letter-value")) {
-        _letterValue = new AttributeValueTemplate(value, parser, this);
+        _letterValue = AttributeValue.create(this, value, parser);
         _formatNeeded = true;
+        if (_letterValue instanceof SimpleAttributeValue
+            && !("alphabetic".equals(value) || "traditional".equals(value))) {
+          // TODO better Error reporting
+          reportError(this, parser, ErrorMsg.ILLEGAL_ARG_ERR, value);
+        }
       } else if (name.equals("grouping-separator")) {
-        _groupingSeparator = new AttributeValueTemplate(value, parser, this);
+        _groupingSeparator = AttributeValue.create(this, value, parser);
         _formatNeeded = true;
+        if (_groupingSeparator instanceof SimpleAttributeValue && value.length() > 1) {
+          // TODO better Error reporting
+          reportError(this, parser, ErrorMsg.ILLEGAL_CHAR_ERR, value);
+        }
+
       } else if (name.equals("grouping-size")) {
-        _groupingSize = new AttributeValueTemplate(value, parser, this);
+        _groupingSize = AttributeValue.create(this, value, parser);
         _formatNeeded = true;
       }
     }
@@ -221,56 +235,57 @@ final class Number extends Instruction implements Closure {
   }
 
   private JVar compileDefault(CompilerContext ctx) {
- // FIXME
-//    int index;
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//    final InstructionList il = methodGen.getInstructionList();
+    // FIXME
+    // int index;
+    // final ConstantPoolGen cpg = classGen.getConstantPool();
+    // final InstructionList il = methodGen.getInstructionList();
 
     final JFieldVar[] fieldIndexes = getXSLTC().getNumberFieldIndexes();
 
     if (fieldIndexes[_level] == null) {
-//      final Field defaultNode = new Field(ACC_PRIVATE, cpg.addUtf8(FieldNames[_level]), cpg.addUtf8(NODE_COUNTER_SIG),
-//              null, cpg.getConstantPool());
+      // final Field defaultNode = new Field(ACC_PRIVATE,
+      // cpg.addUtf8(FieldNames[_level]), cpg.addUtf8(NODE_COUNTER_SIG),
+      // null, cpg.getConstantPool());
       // Add a new private field to this class
-//      classGen.addField(defaultNode);
+      // classGen.addField(defaultNode);
       fieldIndexes[_level] = ctx.addPrivateField(NodeCounter.class, FIELD_NAMES[_level]);
 
       // Get a reference to the newly added field
-//      fieldIndexes[_level] = cpg.addFieldref(classGen.getClassName(), FieldNames[_level], NODE_COUNTER_SIG);
+      // fieldIndexes[_level] = cpg.addFieldref(classGen.getClassName(),
+      // FieldNames[_level], NODE_COUNTER_SIG);
     }
 
     // Check if field is initialized (runtime)
-//    il.append(classGen.loadTranslet());
-//    il.append(new GETFIELD(fieldIndexes[_level]));
-//    final BranchHandle ifBlock1 = il.append(new IFNONNULL(null));
+    // il.append(classGen.loadTranslet());
+    // il.append(new GETFIELD(fieldIndexes[_level]));
+    // final BranchHandle ifBlock1 = il.append(new IFNONNULL(null));
 
-    JBlock _then =  ctx.currentBlock()._if(fieldIndexes[_level].eq(_null()))._then();
+    JBlock _then = ctx.currentBlock()._if(fieldIndexes[_level].eq(_null()))._then();
     // Create an instance of DefaultNodeCounter
-//    index = cpg.addMethodref(ClassNames[_level], "getDefaultNodeCounter", "(" + TRANSLET_INTF_SIG + DOM_INTF_SIG
-//            + NODE_ITERATOR_SIG + ")" + NODE_COUNTER_SIG);
-//    il.append(classGen.loadTranslet());
-//    il.append(methodGen.loadDOM());
-//    il.append(methodGen.loadIterator());
-//    il.append(new INVOKESTATIC(index));
-//    il.append(DUP);
+    // index = cpg.addMethodref(ClassNames[_level], "getDefaultNodeCounter", "("
+    // + TRANSLET_INTF_SIG + DOM_INTF_SIG
+    // + NODE_ITERATOR_SIG + ")" + NODE_COUNTER_SIG);
+    // il.append(classGen.loadTranslet());
+    // il.append(methodGen.loadDOM());
+    // il.append(methodGen.loadIterator());
+    // il.append(new INVOKESTATIC(index));
+    // il.append(DUP);
 
     // Store the node counter in the field
-//    il.append(classGen.loadTranslet());
-//    il.append(SWAP);
-//    il.append(new PUTFIELD(fieldIndexes[_level]));
-//    final BranchHandle ifBlock2 = il.append(new GOTO(null));
+    // il.append(classGen.loadTranslet());
+    // il.append(SWAP);
+    // il.append(new PUTFIELD(fieldIndexes[_level]));
+    // final BranchHandle ifBlock2 = il.append(new GOTO(null));
 
-    _then.assign(
-        fieldIndexes[_level],
-        ctx.ref(CLASS_NAMES[_level]).staticInvoke("getDefaultNodeCounter").arg(_this()).arg(ctx.currentDom())
-            .arg(ctx.param(ITERATOR_PNAME)));
+    _then.assign(fieldIndexes[_level], ctx.ref(CLASS_NAMES[_level]).staticInvoke("getDefaultNodeCounter").arg(_this())
+        .arg(ctx.currentDom()).arg(ctx.param(ITERATOR_PNAME)));
 
     return fieldIndexes[_level];
     // Backpatch conditionals
-//    ifBlock1.setTarget(il.append(classGen.loadTranslet()));
-//    il.append(new GETFIELD(fieldIndexes[_level]));
-//
-//    ifBlock2.setTarget(il.append(NOP));
+    // ifBlock1.setTarget(il.append(classGen.loadTranslet()));
+    // il.append(new GETFIELD(fieldIndexes[_level]));
+    //
+    // ifBlock2.setTarget(il.append(NOP));
   }
 
   /**
@@ -285,74 +300,83 @@ final class Number extends Instruction implements Closure {
     JVar iterator = constructor.param(DTMAxisIterator.class, "iterator");
     constructor.body().invoke("super").arg(translet).arg(dom).arg(iterator);
 
-//    MethodGenerator cons;
-//    final InstructionList il = new InstructionList();
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//
-//    cons = new MethodGenerator(ACC_PUBLIC, org.apache.bcel.generic.Type.VOID,
-//            new org.apache.bcel.generic.Type[] { Util.getJCRefType(TRANSLET_INTF_SIG), Util.getJCRefType(DOM_INTF_SIG),
-//                    Util.getJCRefType(NODE_ITERATOR_SIG) }, new String[] { "dom", "translet", "iterator" }, "<init>",
-//            _className, il, cpg);
-//
-//    il.append(ALOAD_0); // this
-//    il.append(ALOAD_1); // translet
-//    il.append(ALOAD_2); // DOM
-//    il.append(new ALOAD(3));// iterator
-//
-//    final int index = cpg.addMethodref(ClassNames[_level], "<init>", "(" + TRANSLET_INTF_SIG + DOM_INTF_SIG
-//            + NODE_ITERATOR_SIG + ")V");
-//    il.append(new INVOKESPECIAL(index));
-//    il.append(RETURN);
-//
-//    classGen.addMethod(cons);
+    // MethodGenerator cons;
+    // final InstructionList il = new InstructionList();
+    // final ConstantPoolGen cpg = classGen.getConstantPool();
+    //
+    // cons = new MethodGenerator(ACC_PUBLIC, org.apache.bcel.generic.Type.VOID,
+    // new org.apache.bcel.generic.Type[] {
+    // Util.getJCRefType(TRANSLET_INTF_SIG), Util.getJCRefType(DOM_INTF_SIG),
+    // Util.getJCRefType(NODE_ITERATOR_SIG) }, new String[] { "dom", "translet",
+    // "iterator" }, "<init>",
+    // _className, il, cpg);
+    //
+    // il.append(ALOAD_0); // this
+    // il.append(ALOAD_1); // translet
+    // il.append(ALOAD_2); // DOM
+    // il.append(new ALOAD(3));// iterator
+    //
+    // final int index = cpg.addMethodref(ClassNames[_level], "<init>", "(" +
+    // TRANSLET_INTF_SIG + DOM_INTF_SIG
+    // + NODE_ITERATOR_SIG + ")V");
+    // il.append(new INVOKESPECIAL(index));
+    // il.append(RETURN);
+    //
+    // classGen.addMethod(cons);
   }
 
-//  /**
-//   * This method compiles code that is common to matchesFrom() and
-//   * matchesCount() in the auxillary class.
-//   */
-//  private void compileLocals(NodeCounterGenerator nodeCounterGen, MatchGenerator matchGen, InstructionList il) {
-//    int field;
-//    LocalVariableGen local;
-//    final ConstantPoolGen cpg = nodeCounterGen.getConstantPool();
-//
-//    // Get NodeCounter._iterator and store locally
-//    local = matchGen.addLocalVariable("iterator", Util.getJCRefType(NODE_ITERATOR_SIG), null, null);
-//    field = cpg.addFieldref(NODE_COUNTER, "_iterator", ITERATOR_FIELD_SIG);
-//    il.append(ALOAD_0); // 'this' pointer on stack
-//    il.append(new GETFIELD(field));
-//    local.setStart(il.append(new ASTORE(local.getIndex())));
-//    matchGen.setIteratorIndex(local.getIndex());
-//
-//    // Get NodeCounter._translet and store locally
-//    local = matchGen.addLocalVariable("translet", Util.getJCRefType(TRANSLET_SIG), null, null);
-//    field = cpg.addFieldref(NODE_COUNTER, "_translet", "Lde/lyca/xalan/xsltc/Translet;");
-//    il.append(ALOAD_0); // 'this' pointer on stack
-//    il.append(new GETFIELD(field));
-//    il.append(new CHECKCAST(cpg.addClass(TRANSLET_CLASS)));
-//    local.setStart(il.append(new ASTORE(local.getIndex())));
-//    nodeCounterGen.setTransletIndex(local.getIndex());
-//
-//    // Get NodeCounter._document and store locally
-//    local = matchGen.addLocalVariable("document", Util.getJCRefType(DOM_INTF_SIG), null, null);
-//    field = cpg.addFieldref(_className, "_document", DOM_INTF_SIG);
-//    il.append(ALOAD_0); // 'this' pointer on stack
-//    il.append(new GETFIELD(field));
-//    // Make sure we have the correct DOM type on the stack!!!
-//    local.setStart(il.append(new ASTORE(local.getIndex())));
-//    matchGen.setDomIndex(local.getIndex());
-//  }
+  // /**
+  // * This method compiles code that is common to matchesFrom() and
+  // * matchesCount() in the auxillary class.
+  // */
+  // private void compileLocals(NodeCounterGenerator nodeCounterGen,
+  // MatchGenerator matchGen, InstructionList il) {
+  // int field;
+  // LocalVariableGen local;
+  // final ConstantPoolGen cpg = nodeCounterGen.getConstantPool();
+  //
+  // // Get NodeCounter._iterator and store locally
+  // local = matchGen.addLocalVariable("iterator",
+  // Util.getJCRefType(NODE_ITERATOR_SIG), null, null);
+  // field = cpg.addFieldref(NODE_COUNTER, "_iterator", ITERATOR_FIELD_SIG);
+  // il.append(ALOAD_0); // 'this' pointer on stack
+  // il.append(new GETFIELD(field));
+  // local.setStart(il.append(new ASTORE(local.getIndex())));
+  // matchGen.setIteratorIndex(local.getIndex());
+  //
+  // // Get NodeCounter._translet and store locally
+  // local = matchGen.addLocalVariable("translet",
+  // Util.getJCRefType(TRANSLET_SIG), null, null);
+  // field = cpg.addFieldref(NODE_COUNTER, "_translet",
+  // "Lde/lyca/xalan/xsltc/Translet;");
+  // il.append(ALOAD_0); // 'this' pointer on stack
+  // il.append(new GETFIELD(field));
+  // il.append(new CHECKCAST(cpg.addClass(TRANSLET_CLASS)));
+  // local.setStart(il.append(new ASTORE(local.getIndex())));
+  // nodeCounterGen.setTransletIndex(local.getIndex());
+  //
+  // // Get NodeCounter._document and store locally
+  // local = matchGen.addLocalVariable("document",
+  // Util.getJCRefType(DOM_INTF_SIG), null, null);
+  // field = cpg.addFieldref(_className, "_document", DOM_INTF_SIG);
+  // il.append(ALOAD_0); // 'this' pointer on stack
+  // il.append(new GETFIELD(field));
+  // // Make sure we have the correct DOM type on the stack!!!
+  // local.setStart(il.append(new ASTORE(local.getIndex())));
+  // matchGen.setDomIndex(local.getIndex());
+  // }
 
   private JExpression compilePatterns(CompilerContext ctx) {
- // FIXME
-//    MatchGenerator matchGen;
-//    NodeCounterGenerator nodeCounterGen;
-//
+    // FIXME
+    // MatchGenerator matchGen;
+    // NodeCounterGenerator nodeCounterGen;
+    //
     _className = ctx.xsltc().getHelperClassName();
-//    nodeCounterGen = new NodeCounterGenerator(_className, ClassNames[_level], toString(), ACC_PUBLIC | ACC_SUPER, null,
-//            classGen.getStylesheet());
-//    InstructionList il = null;
-//    ConstantPoolGen cpg = nodeCounterGen.getConstantPool();
+    // nodeCounterGen = new NodeCounterGenerator(_className, ClassNames[_level],
+    // toString(), ACC_PUBLIC | ACC_SUPER, null,
+    // classGen.getStylesheet());
+    // InstructionList il = null;
+    // ConstantPoolGen cpg = nodeCounterGen.getConstantPool();
     CompilerContext nodeCounterCtx;
     JDefinedClass nodeCounter;
     try {
@@ -368,8 +392,9 @@ final class Number extends Instruction implements Closure {
     for (int i = 0; i < closureLen; i++) {
       final VariableBase var = _closureVars.get(i).getVariable();
       nodeCounterCtx.field(JMod.PUBLIC, var.getType().toJCType(), var.getEscapedName());
-//      nodeCounterGen.addField(new Field(ACC_PUBLIC, cpg.addUtf8(var.getEscapedName()), cpg.addUtf8(var.getType()
-//              .toSignature()), null, cpg.getConstantPool()));
+      // nodeCounterGen.addField(new Field(ACC_PUBLIC,
+      // cpg.addUtf8(var.getEscapedName()), cpg.addUtf8(var.getType()
+      // .toSignature()), null, cpg.getConstantPool()));
     }
 
     // Add a single constructor to the class
@@ -383,20 +408,22 @@ final class Number extends Instruction implements Closure {
       JVar node = nodeCounterCtx.param(ctx.owner().INT, "node");
       nodeCounterCtx.pushBlock(matchesFrom.body());
       nodeCounterCtx.pushNode(node);
-//      il = new InstructionList();
-//      matchGen = new MatchGenerator(ACC_PUBLIC | ACC_FINAL, org.apache.bcel.generic.Type.BOOLEAN,
-//          new org.apache.bcel.generic.Type[] { org.apache.bcel.generic.Type.INT, }, new String[] { "node", },
-//          "matchesFrom", _className, il, cpg);
+      // il = new InstructionList();
+      // matchGen = new MatchGenerator(ACC_PUBLIC | ACC_FINAL,
+      // org.apache.bcel.generic.Type.BOOLEAN,
+      // new org.apache.bcel.generic.Type[] { org.apache.bcel.generic.Type.INT,
+      // }, new String[] { "node", },
+      // "matchesFrom", _className, il, cpg);
 
-//      compileLocals(nodeCounterGen, matchGen, il);
+      // compileLocals(nodeCounterGen, matchGen, il);
 
       // Translate Pattern
-//      il.append(matchGen.loadContextNode());
+      // il.append(matchGen.loadContextNode());
       nodeCounterCtx.currentBlock()._return(_from.toJExpression(nodeCounterCtx));
-//      _from.synthesize(nodeCounterGen, matchGen);
-//      il.append(IRETURN);
+      // _from.synthesize(nodeCounterGen, matchGen);
+      // il.append(IRETURN);
 
-//      nodeCounterGen.addMethod(matchGen);
+      // nodeCounterGen.addMethod(matchGen);
       nodeCounterCtx.popNode();
       nodeCounterCtx.popBlock();
     }
@@ -409,79 +436,84 @@ final class Number extends Instruction implements Closure {
       JVar node = nodeCounterCtx.param(ctx.owner().INT, "node");
       nodeCounterCtx.pushBlock(matchesCount.body());
       nodeCounterCtx.pushNode(node);
-//      il = new InstructionList();
-//      matchGen = new MatchGenerator(ACC_PUBLIC | ACC_FINAL, org.apache.bcel.generic.Type.BOOLEAN,
-//              new org.apache.bcel.generic.Type[] { org.apache.bcel.generic.Type.INT, }, new String[] { "node", },
-//              "matchesCount", _className, il, cpg);
+      // il = new InstructionList();
+      // matchGen = new MatchGenerator(ACC_PUBLIC | ACC_FINAL,
+      // org.apache.bcel.generic.Type.BOOLEAN,
+      // new org.apache.bcel.generic.Type[] { org.apache.bcel.generic.Type.INT,
+      // }, new String[] { "node", },
+      // "matchesCount", _className, il, cpg);
 
-//      compileLocals(nodeCounterGen, matchGen, il);
+      // compileLocals(nodeCounterGen, matchGen, il);
 
       // Translate Pattern
-//      il.append(matchGen.loadContextNode());
+      // il.append(matchGen.loadContextNode());
       nodeCounterCtx.currentBlock()._return(_count.toJExpression(nodeCounterCtx));
-//      _count.translate(nodeCounterCtx);
-//      _count.synthesize(nodeCounterGen, matchGen);
+      // _count.translate(nodeCounterCtx);
+      // _count.synthesize(nodeCounterGen, matchGen);
 
-//      il.append(IRETURN);
+      // il.append(IRETURN);
 
-//      nodeCounterGen.addMethod(matchGen);
+      // nodeCounterGen.addMethod(matchGen);
       nodeCounterCtx.popNode();
       nodeCounterCtx.popBlock();
     }
 
-//    getXSLTC().dumpClass(nodeCounterGen.getJavaClass());
-//
-//    // Push an instance of the newly created class
-//    cpg = classGen.getConstantPool();
-//    il = methodGen.getInstructionList();
-//
-//    final int index = cpg.addMethodref(_className, "<init>", "(" + TRANSLET_INTF_SIG + DOM_INTF_SIG + NODE_ITERATOR_SIG
-//            + ")V");
-//    il.append(new NEW(cpg.addClass(_className)));
-//    il.append(DUP);
-//    il.append(classGen.loadTranslet());
-//    il.append(methodGen.loadDOM());
-//    il.append(methodGen.loadIterator());
-//    il.append(new INVOKESPECIAL(index));
-//
-//    // Initialize closure variables
-//    for (int i = 0; i < closureLen; i++) {
-//      final VariableRefBase varRef = _closureVars.get(i);
-//      final VariableBase var = varRef.getVariable();
-//      final Type varType = var.getType();
-//
-//      // Store variable in new closure
-//      il.append(DUP);
-//      il.append(var.loadInstruction());
-//      il.append(new PUTFIELD(cpg.addFieldref(_className, var.getEscapedName(), varType.toSignature())));
-//    }
+    // getXSLTC().dumpClass(nodeCounterGen.getJavaClass());
+    //
+    // // Push an instance of the newly created class
+    // cpg = classGen.getConstantPool();
+    // il = methodGen.getInstructionList();
+    //
+    // final int index = cpg.addMethodref(_className, "<init>", "(" +
+    // TRANSLET_INTF_SIG + DOM_INTF_SIG + NODE_ITERATOR_SIG
+    // + ")V");
+    // il.append(new NEW(cpg.addClass(_className)));
+    // il.append(DUP);
+    // il.append(classGen.loadTranslet());
+    // il.append(methodGen.loadDOM());
+    // il.append(methodGen.loadIterator());
+    // il.append(new INVOKESPECIAL(index));
+    //
+    // // Initialize closure variables
+    // for (int i = 0; i < closureLen; i++) {
+    // final VariableRefBase varRef = _closureVars.get(i);
+    // final VariableBase var = varRef.getVariable();
+    // final Type varType = var.getType();
+    //
+    // // Store variable in new closure
+    // il.append(DUP);
+    // il.append(var.loadInstruction());
+    // il.append(new PUTFIELD(cpg.addFieldref(_className, var.getEscapedName(),
+    // varType.toSignature())));
+    // }
     return JExpr._new(nodeCounter).arg(JExpr._this()).arg(ctx.currentDom()).arg(ctx.param(ITERATOR_PNAME));
   }
 
   @Override
   public void translate(CompilerContext ctx) {
- // FIXME
-//    int index;
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//    final InstructionList il = methodGen.getInstructionList();
+    // FIXME
+    // int index;
+    // final ConstantPoolGen cpg = classGen.getConstantPool();
+    // final InstructionList il = methodGen.getInstructionList();
 
     // Push "this" for the call to characters()
-//    il.append(classGen.loadTranslet());
+    // il.append(classGen.loadTranslet());
 
     JExpression numberFieldIndex = null;
     if (hasValue()) {
-//      compileDefault(classGen, methodGen);
-//      _value.translate(classGen, methodGen);
+      // compileDefault(classGen, methodGen);
+      // _value.translate(classGen, methodGen);
       JExpression value = ctx.ref(Math.class).staticInvoke("floor").arg(JExpr.lit(0.5).plus(_value.toJExpression(ctx)));
       // Using java.lang.Math.floor(number + 0.5) to return a double value
-//      il.append(new PUSH(cpg, 0.5));
-//      il.append(DADD);
-//      index = cpg.addMethodref(MATH_CLASS, "floor", "(D)D");
-//      il.append(new INVOKESTATIC(index));
+      // il.append(new PUSH(cpg, 0.5));
+      // il.append(DADD);
+      // index = cpg.addMethodref(MATH_CLASS, "floor", "(D)D");
+      // il.append(new INVOKESTATIC(index));
 
       // Call setValue on the node counter
-//      index = cpg.addMethodref(NODE_COUNTER, "setValue", "(D)" + NODE_COUNTER_SIG);
-//      il.append(new INVOKEVIRTUAL(index));
+      // index = cpg.addMethodref(NODE_COUNTER, "setValue", "(D)" +
+      // NODE_COUNTER_SIG);
+      // il.append(new INVOKEVIRTUAL(index));
       numberFieldIndex = compileDefault(ctx).invoke("setValue").arg(value);
     } else if (isDefault()) {
       numberFieldIndex = compileDefault(ctx);
@@ -492,9 +524,10 @@ final class Number extends Instruction implements Closure {
     // Call setStartNode()
     if (!hasValue()) {
       numberFieldIndex = numberFieldIndex.invoke(SET_START_NODE).arg(ctx.currentNode());
-//      il.append(methodGen.loadContextNode());
-//      index = cpg.addMethodref(NODE_COUNTER, SET_START_NODE, "(I)" + NODE_COUNTER_SIG);
-//      il.append(new INVOKEVIRTUAL(index));
+      // il.append(methodGen.loadContextNode());
+      // index = cpg.addMethodref(NODE_COUNTER, SET_START_NODE, "(I)" +
+      // NODE_COUNTER_SIG);
+      // il.append(new INVOKEVIRTUAL(index));
     }
 
     // Call getCounter() with or without args
@@ -534,28 +567,28 @@ final class Number extends Instruction implements Closure {
         groupingSize = lit("0");
       }
 
-      ctx.currentBlock()
-          .invoke(CHARACTERSW)
-          .arg(
-              numberFieldIndex.invoke("getCounter").arg(format).arg(lang).arg(letterValue).arg(groupingSeparator)
-                  .arg(groupingSize)).arg(ctx.currentHandler());
+      ctx.currentBlock().invoke(CHARACTERSW).arg(numberFieldIndex.invoke("getCounter").arg(format).arg(lang)
+          .arg(letterValue).arg(groupingSeparator).arg(groupingSize)).arg(ctx.currentHandler());
 
-//      index = cpg.addMethodref(NODE_COUNTER, "getCounter", "(" + STRING_SIG + STRING_SIG + STRING_SIG + STRING_SIG
-//              + STRING_SIG + ")" + STRING_SIG);
-//      il.append(new INVOKEVIRTUAL(index));
+      // index = cpg.addMethodref(NODE_COUNTER, "getCounter", "(" + STRING_SIG +
+      // STRING_SIG + STRING_SIG + STRING_SIG
+      // + STRING_SIG + ")" + STRING_SIG);
+      // il.append(new INVOKEVIRTUAL(index));
     } else {
       ctx.currentBlock().invoke(CHARACTERSW).arg(numberFieldIndex.invoke("setDefaultFormatting").invoke("getCounter"))
           .arg(ctx.currentHandler());
-      //      index = cpg.addMethodref(NODE_COUNTER, "setDefaultFormatting", "()" + NODE_COUNTER_SIG);
-//      il.append(new INVOKEVIRTUAL(index));
+      // index = cpg.addMethodref(NODE_COUNTER, "setDefaultFormatting", "()" +
+      // NODE_COUNTER_SIG);
+      // il.append(new INVOKEVIRTUAL(index));
 
-//      index = cpg.addMethodref(NODE_COUNTER, "getCounter", "()" + STRING_SIG);
-//      il.append(new INVOKEVIRTUAL(index));
+      // index = cpg.addMethodref(NODE_COUNTER, "getCounter", "()" +
+      // STRING_SIG);
+      // il.append(new INVOKEVIRTUAL(index));
     }
 
     // Output the resulting string to the handler
-//    il.append(methodGen.loadHandler());
-//    index = cpg.addMethodref(TRANSLET_CLASS, CHARACTERSW, CHARACTERSW_SIG);
-//    il.append(new INVOKEVIRTUAL(index));
+    // il.append(methodGen.loadHandler());
+    // index = cpg.addMethodref(TRANSLET_CLASS, CHARACTERSW, CHARACTERSW_SIG);
+    // il.append(new INVOKEVIRTUAL(index));
   }
 }

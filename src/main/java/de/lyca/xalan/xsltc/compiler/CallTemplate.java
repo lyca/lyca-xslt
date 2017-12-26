@@ -75,6 +75,17 @@ final class CallTemplate extends Instruction {
       reportError(this, parser, ErrorMsg.REQUIRED_ATTR_ERR, "name");
     }
     parseChildren(parser);
+    int count = elementCount();
+    for (int i = 0; i < count; i++) {
+      final SyntaxTreeNode child = getContents().get(i);
+      if (!(child instanceof WithParam || child instanceof Text && ((Text) child).isIgnore())) {
+        // TODO better error message
+        final ErrorMsg error = new ErrorMsg(ErrorMsg.ILLEGAL_CHILD_ERR,
+            child.getQName().getLocalPart() + " is not a xsl:with-param", this);
+        parser.reportError(Constants.ERROR, error);
+      }
+    }
+
   }
 
   /**

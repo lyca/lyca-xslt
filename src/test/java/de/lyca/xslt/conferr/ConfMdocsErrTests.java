@@ -1,61 +1,55 @@
 package de.lyca.xslt.conferr;
 
 import static de.lyca.xslt.ResourceUtils.getSource;
+import static org.junit.Assert.fail;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 
 import javax.xml.transform.Source;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 
-import org.custommonkey.xmlunit.Transform;
-import org.custommonkey.xmlunit.exceptions.ConfigurationException;
-import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
-import de.lyca.xalan.xsltc.TransletException;
+import de.lyca.xslt.Transform;
 
+@RunWith(Parameterized.class)
 public class ConfMdocsErrTests {
 
   private static final String PACKAGE = '/' + ConfMdocsErrTests.class.getPackage().getName().replace('.', '/')
       + "/mdocserr/";
 
-  @Test(expected = TransformerException.class)
-  public void mdocserr01() throws Exception {
-    final String name = PACKAGE + "mdocserr01";
-    final Source xsl = getSource(name + ".xsl");
-    final Source xml = getSource(name + ".xml");
-    new Transform(xml, xsl).getResultString();
+  @Parameters(name = "{0}")
+  public static Collection<Object> params() {
+    Collection<Object> result = new ArrayList<>();
+    int[] exclude = {};
+    for (int i = 1; i < 5; i++) {
+      if (Arrays.binarySearch(exclude, i) >= 0) {
+        continue;
+      }
+      result.add(String.format("mdocserr%02d", i));
+    }
+    return result;
   }
 
-  @Test(expected = TransformerConfigurationException.class)
-  public void mdocserr02() throws Exception {
-    final String name = PACKAGE + "mdocserr02";
-    final Source xsl = getSource(name + ".xsl");
-    final Source xml = getSource(name + ".xml");
-    try {
-      new Transform(xml, xsl).getResultString();
-    } catch (ConfigurationException e) {
-      throw (Exception) e.getCause();
-    }
-  }
+  private String name;
 
-  @Test(expected = TransformerConfigurationException.class)
-  public void mdocserr03() throws Exception {
-    final String name = PACKAGE + "mdocserr03";
-    final Source xsl = getSource(name + ".xsl");
-    final Source xml = getSource(name + ".xml");
-    try {
-      new Transform(xml, xsl).getResultString();
-    } catch (ConfigurationException e) {
-      throw (Exception) e.getCause();
-    }
+  public ConfMdocsErrTests(String name) {
+    this.name = PACKAGE + name;
   }
 
   @Test
-  public void mdocserr04() throws Exception {
-    final String name = PACKAGE + "mdocserr04";
+  public void mdocserrTest() throws Exception {
     final Source xsl = getSource(name + ".xsl");
     final Source xml = getSource(name + ".xml");
-    System.out.println(new Transform(xml, xsl).getResultString());
+    try {
+      fail(new Transform(xml, xsl).getResultString());
+    } catch (final TransformerException e) {
+    }
   }
 
 }

@@ -1,201 +1,55 @@
 package de.lyca.xslt.conferr;
 
 import static de.lyca.xslt.ResourceUtils.getSource;
+import static org.junit.Assert.fail;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 
 import javax.xml.transform.Source;
+import javax.xml.transform.TransformerConfigurationException;
 
-import org.custommonkey.xmlunit.Transform;
-import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
+import de.lyca.xslt.Transform;
+
+@RunWith(Parameterized.class)
 public class ConfVariableErrTests {
 
   private static final String PACKAGE = '/' + ConfVariableErrTests.class.getPackage().getName().replace('.', '/')
-          + "/variableerr/";
+      + "/variableerr/";
 
-  @Test
-  @Ignore
-  public void variableerr01() throws Exception {
-    final String name = PACKAGE + "variableerr01";
-    final Source xsl = getSource(name + ".xsl");
-    final Source xml = getSource(name + ".xml");
-    final Transform t = new Transform(xml, xsl);
+  @Parameters(name = "{0}")
+  public static Collection<Object> params() {
+    Collection<Object> result = new ArrayList<>();
+    int[] exclude = {};
+    for (int i = 1; i < 22; i++) {
+      if (Arrays.binarySearch(exclude, i) >= 0) {
+        continue;
+      }
+      result.add(String.format("variableerr%02d", i));
+    }
+    return result;
+  }
+
+  private String name;
+
+  public ConfVariableErrTests(String name) {
+    this.name = PACKAGE + name;
   }
 
   @Test
-  @Ignore
-  public void variableerr02() throws Exception {
-    final String name = PACKAGE + "variableerr02";
+  public void variableerrTest() throws Exception {
     final Source xsl = getSource(name + ".xsl");
     final Source xml = getSource(name + ".xml");
-    final Transform t = new Transform(xml, xsl);
-  }
-
-  @Test
-  @Ignore
-  public void variableerr03() throws Exception {
-    final String name = PACKAGE + "variableerr03";
-    final Source xsl = getSource(name + ".xsl");
-    final Source xml = getSource(name + ".xml");
-    final Transform t = new Transform(xml, xsl);
-  }
-
-  @Test
-  @Ignore
-  public void variableerr04() throws Exception {
-    final String name = PACKAGE + "variableerr04";
-    final Source xsl = getSource(name + ".xsl");
-    final Source xml = getSource(name + ".xml");
-    final Transform t = new Transform(xml, xsl);
-  }
-
-  @Test
-  public void variableerr05() throws Exception {
-    final String name = PACKAGE + "variableerr05";
-    final Source xsl = getSource(name + ".xsl");
-    final Source xml = getSource(name + ".xml");
-    final Transform t = new Transform(xml, xsl);
-  }
-
-  @Test
-  public void variableerr06() throws Exception {
-    final String name = PACKAGE + "variableerr06";
-    final Source xsl = getSource(name + ".xsl");
-    final Source xml = getSource(name + ".xml");
-    final Transform t = new Transform(xml, xsl);
-  }
-
-  @Test
-  @Ignore
-  public void variableerr07() throws Exception {
-    final String name = PACKAGE + "variableerr07";
-    final Source xsl = getSource(name + ".xsl");
-    final Source xml = getSource(name + ".xml");
-    final Transform t = new Transform(xml, xsl);
-  }
-
-  @Test
-  public void variableerr08() throws Exception {
-    final String name = PACKAGE + "variableerr08";
-    final Source xsl = getSource(name + ".xsl");
-    final Source xml = getSource(name + ".xml");
-    final Transform t = new Transform(xml, xsl);
-  }
-
-  @Test
-  @Ignore
-  public void variableerr09() throws Exception {
-    final String name = PACKAGE + "variableerr09";
-    final Source xsl = getSource(name + ".xsl");
-    final Source xml = getSource(name + ".xml");
-    final Transform t = new Transform(xml, xsl);
-  }
-
-  @Test
-  @Ignore
-  public void variableerr10() throws Exception {
-    final String name = PACKAGE + "variableerr10";
-    final Source xsl = getSource(name + ".xsl");
-    final Source xml = getSource(name + ".xml");
-    final Transform t = new Transform(xml, xsl);
-  }
-
-  @Test
-  @Ignore
-  public void variableerr11() throws Exception {
-    final String name = PACKAGE + "variableerr11";
-    final Source xsl = getSource(name + ".xsl");
-    final Source xml = getSource(name + ".xml");
-    final Transform t = new Transform(xml, xsl);
-  }
-
-  @Test
-  @Ignore
-  public void variableerr12() throws Exception {
-    final String name = PACKAGE + "variableerr12";
-    final Source xsl = getSource(name + ".xsl");
-    final Source xml = getSource(name + ".xml");
-    final Transform t = new Transform(xml, xsl);
-  }
-
-  @Test
-  @Ignore
-  public void variableerr13() throws Exception {
-    final String name = PACKAGE + "variableerr13";
-    final Source xsl = getSource(name + ".xsl");
-    final Source xml = getSource(name + ".xml");
-    final Transform t = new Transform(xml, xsl);
-  }
-
-  @Test
-  @Ignore
-  public void variableerr14() throws Exception {
-    final String name = PACKAGE + "variableerr14";
-    final Source xsl = getSource(name + ".xsl");
-    final Source xml = getSource(name + ".xml");
-    final Transform t = new Transform(xml, xsl);
-  }
-
-  @Test
-  @Ignore
-  public void variableerr15() throws Exception {
-    final String name = PACKAGE + "variableerr15";
-    final Source xsl = getSource(name + ".xsl");
-    final Source xml = getSource(name + ".xml");
-    final Transform t = new Transform(xml, xsl);
-  }
-
-  @Test
-  @Ignore
-  public void variableerr16() throws Exception {
-    final String name = PACKAGE + "variableerr16";
-    final Source xsl = getSource(name + ".xsl");
-    final Source xml = getSource(name + ".xml");
-    final Transform t = new Transform(xml, xsl);
-  }
-
-  @Test
-  @Ignore
-  public void variableerr17() throws Exception {
-    final String name = PACKAGE + "variableerr17";
-    final Source xsl = getSource(name + ".xsl");
-    final Source xml = getSource(name + ".xml");
-    final Transform t = new Transform(xml, xsl);
-  }
-
-  @Test
-  @Ignore
-  public void variableerr18() throws Exception {
-    final String name = PACKAGE + "variableerr18";
-    final Source xsl = getSource(name + ".xsl");
-    final Source xml = getSource(name + ".xml");
-    final Transform t = new Transform(xml, xsl);
-  }
-
-  @Test
-  @Ignore
-  public void variableerr19() throws Exception {
-    final String name = PACKAGE + "variableerr19";
-    final Source xsl = getSource(name + ".xsl");
-    final Source xml = getSource(name + ".xml");
-    final Transform t = new Transform(xml, xsl);
-  }
-
-  @Test
-  @Ignore
-  public void variableerr20() throws Exception {
-    final String name = PACKAGE + "variableerr20";
-    final Source xsl = getSource(name + ".xsl");
-    final Source xml = getSource(name + ".xml");
-    final Transform t = new Transform(xml, xsl);
-  }
-
-  @Test
-  public void variableerr21() throws Exception {
-    final String name = PACKAGE + "variableerr21";
-    final Source xsl = getSource(name + ".xsl");
-    final Source xml = getSource(name + ".xml");
-    final Transform t = new Transform(xml, xsl);
+    try {
+      fail(new Transform(xml, xsl).getResultString());
+    } catch (final TransformerConfigurationException e) {
+    }
   }
 
 }

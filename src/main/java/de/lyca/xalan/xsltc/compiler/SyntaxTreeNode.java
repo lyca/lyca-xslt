@@ -405,7 +405,7 @@ public abstract class SyntaxTreeNode {
       SyntaxTreeNode parent = this;
       while (parent != null) {
         if (parent instanceof Stylesheet)
-          return (Stylesheet) parent;
+          return _stylesheet = (Stylesheet) parent;
         parent = parent.getParent();
       }
       _stylesheet = (Stylesheet) parent;

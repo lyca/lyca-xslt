@@ -169,10 +169,23 @@ public final class Template extends TopLevelElement implements Comparable<Templa
   @Override
   public void parseContents(Parser parser) {
 
+    if (!(getParent() instanceof Stylesheet)) {
+      // TODO better error reporting
+      final ErrorMsg err = new ErrorMsg(ErrorMsg.INTERNAL_ERR, "Parent is not Stylesheet", this);
+      parser.reportError(Constants.ERROR, err);
+    }
+
     final String name = getAttribute("name");
     final String mode = getAttribute("mode");
     final String match = getAttribute("match");
     final String priority = getAttribute("priority");
+
+    // TODO Perhaps revisit matcherr08
+    if (name.isEmpty() && match.isEmpty()) {
+      // TODO better error reporting
+      final ErrorMsg err = new ErrorMsg(ErrorMsg.INTERNAL_ERR, "Name and match are empty", this);
+      parser.reportError(Constants.ERROR, err);
+    }
 
     _stylesheet = super.getStylesheet();
 
@@ -265,6 +278,19 @@ public final class Template extends TopLevelElement implements Comparable<Templa
 
   @Override
   public Type typeCheck(SymbolTable stable) throws TypeCheckError {
+    List<SyntaxTreeNode> contents = getContents();
+    int size = contents.size();
+    boolean inParams = true;
+    for (int i = 0; i < size; i++) {
+      SyntaxTreeNode child = contents.get(i);
+      if (!(child instanceof Param || child instanceof Text && ((Text) child).isIgnore())) {
+        inParams = false;
+      } else if (!inParams && child instanceof Param) {
+        // TODO better error reporting
+        final ErrorMsg err = new ErrorMsg(ErrorMsg.INTERNAL_ERR, "Params must be first in template", this);
+        throw new TypeCheckError(err);
+      }
+    }
     if (_pattern != null) {
       _pattern.typeCheck(stable);
     }
@@ -278,7 +304,7 @@ public final class Template extends TopLevelElement implements Comparable<Templa
    */
   @Override
   public JStatement compile(CompilerContext ctx) {
-    if(!isNamed()){
+    if (!isNamed()) {
       CompilerContext newCtx = new CompilerContext(ctx.owner(), ctx.clazz(), ctx.stylesheet(), ctx.xsltc());
       newCtx.pushMethodContext(ctx.currentMethodContext());
       newCtx.pushNode(ctx.currentNode());
@@ -288,7 +314,8 @@ public final class Template extends TopLevelElement implements Comparable<Templa
       return newCtx.popBlock();
     }
     final String methodName = Util.escape(_name.toString());
-    return invoke(methodName).arg(ctx.currentDom()).arg(ctx.param(ITERATOR_PNAME)).arg(ctx.param(TRANSLET_OUTPUT_PNAME)).arg(ctx.currentNode());
+    return invoke(methodName).arg(ctx.currentDom()).arg(ctx.param(ITERATOR_PNAME)).arg(ctx.param(TRANSLET_OUTPUT_PNAME))
+        .arg(ctx.currentNode());
   }
 
   @Override

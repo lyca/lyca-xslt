@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.StringTokenizer;
+import java.util.regex.Pattern;
 
 import de.lyca.xalan.xsltc.compiler.util.MethodType;
 
@@ -33,6 +33,8 @@ import de.lyca.xalan.xsltc.compiler.util.MethodType;
  * @author Morten Jorgensen
  */
 final class SymbolTable {
+
+  private static final Pattern WHITESPACE = Pattern.compile("[ \\t\\n\\r\\f]+");
 
   // These Maps are used for all stylesheets
   private final Map<QName, Stylesheet> _stylesheets = new HashMap<>();
@@ -123,10 +125,7 @@ final class SymbolTable {
   }
 
   public SyntaxTreeNode lookupName(QName qname) {
-    if (_variables == null)
-      return null;
-    final String name = qname.getStringRep();
-    return _variables.get(name);
+    return _variables == null ? null : _variables.get(qname.getStringRep());
   }
 
   public AttributeSet addAttributeSet(AttributeSet atts) {
@@ -137,9 +136,7 @@ final class SymbolTable {
   }
 
   public AttributeSet lookupAttributeSet(QName name) {
-    if (_attributeSets == null)
-      return null;
-    return _attributeSets.get(name);
+    return _attributeSets == null ? null : _attributeSets.get(name);
   }
 
   /**
@@ -183,9 +180,7 @@ final class SymbolTable {
   }
 
   public String lookupNamespace(String prefix) {
-    if (_current == null)
-      return "";
-    return _current.lookupNamespace(prefix);
+    return _current == null ? null : _current.lookupNamespace(prefix);
   }
 
   /**
@@ -234,23 +229,23 @@ final class SymbolTable {
   /**
    * Exclude a series of namespaces given by a list of whitespace separated
    * namespace prefixes.
+   * 
+   * @return
    */
-  public void excludeNamespaces(String prefixes) {
+  public List<String> excludeNamespaces(String prefixes) {
+    List<String> unknownPrefixes = new ArrayList<>();
     if (prefixes != null) {
-      final StringTokenizer tokens = new StringTokenizer(prefixes);
-      while (tokens.hasMoreTokens()) {
-        final String prefix = tokens.nextToken();
-        final String uri;
-        if (prefix.equals("#default")) {
-          uri = lookupNamespace("");
-        } else {
-          uri = lookupNamespace(prefix);
-        }
+      String[] tokens = WHITESPACE.split(prefixes);
+      for (String prefix : tokens) {
+        final String uri = prefix.equals("#default") ? lookupNamespace("") : lookupNamespace(prefix);
         if (uri != null) {
           excludeURI(uri);
+        } else if (!prefix.isEmpty()) {
+          unknownPrefixes.add(prefix);
         }
       }
     }
+    return unknownPrefixes;
   }
 
   /**
@@ -271,15 +266,9 @@ final class SymbolTable {
     if (_excludedURI == null)
       return;
     if (prefixes != null) {
-      final StringTokenizer tokens = new StringTokenizer(prefixes);
-      while (tokens.hasMoreTokens()) {
-        final String prefix = tokens.nextToken();
-        final String uri;
-        if (prefix.equals("#default")) {
-          uri = lookupNamespace("");
-        } else {
-          uri = lookupNamespace(prefix);
-        }
+      String[] tokens = WHITESPACE.split(prefixes);
+      for (String prefix : tokens) {
+        final String uri = prefix.equals("#default") ? lookupNamespace("") : lookupNamespace(prefix);
         final Integer refcnt = _excludedURI.get(uri);
         if (refcnt != null) {
           _excludedURI.put(uri, new Integer(refcnt.intValue() - 1));

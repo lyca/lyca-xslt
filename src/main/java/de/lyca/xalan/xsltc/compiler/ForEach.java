@@ -76,7 +76,9 @@ final class ForEach extends Instruction {
       typeCheckContents(stable);
       return Type.Void;
     }
-    throw new TypeCheckError(this);
+    // TODO
+    final ErrorMsg err = new ErrorMsg(ErrorMsg.INTERNAL_ERR, "for-each", this);
+    throw new TypeCheckError(err);
   }
 
   @Override
@@ -103,9 +105,9 @@ final class ForEach extends Instruction {
         iterator = Sort.translateSortIterator(ctx, _select, sortObjects);
       } else {
         JExpression select;
-        if(_type instanceof ReferenceType){
+        if (_type instanceof ReferenceType) {
           select = _select.toJExpression(ctx);
-        }else{
+        } else {
           select = _select.toJExpression(ctx).invoke(SET_START_NODE).arg(ctx.currentNode());
         }
         iterator = ctx.currentBlock().decl(ctx.ref(DTMAxisIterator.class), ctx.nextTmpIterator(), select);

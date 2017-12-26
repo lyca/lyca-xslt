@@ -61,6 +61,15 @@ final class ProcessingInstruction extends Instruction {
       reportError(this, parser, ErrorMsg.ILLEGAL_PI_ERR, "xml");
     }
     parseChildren(parser);
+
+    for (SyntaxTreeNode child : getContents()) {
+      if (child instanceof XslElement) {
+        // TODO
+        final ErrorMsg err = new ErrorMsg(ErrorMsg.INTERNAL_ERR, "xsl:processing-instruction cannot contain xsl:element", this);
+        parser.reportError(Constants.ERROR, err);
+      }
+    }
+
   }
 
   @Override
@@ -80,26 +89,27 @@ final class ProcessingInstruction extends Instruction {
 
       // store the name into a variable first so _name.translate only needs to
       // be called once
-//      nameValue.setStart(il.append(new ASTORE(nameValue.getIndex())));
-//      il.append(new ALOAD(nameValue.getIndex()));
+      // nameValue.setStart(il.append(new ASTORE(nameValue.getIndex())));
+      // il.append(new ALOAD(nameValue.getIndex()));
 
       // call checkNCName if the name is an AVT
-//      final int check = cpg.addMethodref(BASIS_LIBRARY_CLASS, "checkNCName", "(" + STRING_SIG + ")V");
-//      il.append(new INVOKESTATIC(check));
+      // final int check = cpg.addMethodref(BASIS_LIBRARY_CLASS, "checkNCName",
+      // "(" + STRING_SIG + ")V");
+      // il.append(new INVOKESTATIC(check));
 
       // Save the current handler base on the stack
-//      il.append(methodGen.loadHandler());
-//      il.append(DUP); // first arg to "attributes" call
+      // il.append(methodGen.loadHandler());
+      // il.append(DUP); // first arg to "attributes" call
 
       // load name value again
-//      nameValue.setEnd(il.append(new ALOAD(nameValue.getIndex())));
+      // nameValue.setEnd(il.append(new ALOAD(nameValue.getIndex())));
     } else {
       // Save the current handler base on the stack
-//      il.append(methodGen.loadHandler());
-//      il.append(DUP); // first arg to "attributes" call
+      // il.append(methodGen.loadHandler());
+      // il.append(DUP); // first arg to "attributes" call
 
       // Push attribute name
-       nameValue = _name.toJExpression(ctx);// 2nd arg
+      nameValue = _name.toJExpression(ctx);// 2nd arg
 
     }
 
@@ -111,7 +121,7 @@ final class ProcessingInstruction extends Instruction {
 
     // get String out of the handler
     JClass stringValueHandler = ctx.ref(StringValueHandler.class);
-    JExpression valOfPI = ((JExpression)cast(stringValueHandler, ctx.popHandler())).invoke("getValueOfPI");
+    JExpression valOfPI = ((JExpression) cast(stringValueHandler, ctx.popHandler())).invoke("getValueOfPI");
     // call "processingInstruction"
     ctx.currentBlock().invoke(handler, "processingInstruction").arg(nameValue).arg(valOfPI);
   }

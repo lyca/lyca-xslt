@@ -86,7 +86,8 @@ public class Parser implements ContentHandler {
   private List<ErrorMsg> _errors; // Contains all compilation errors
   private List<ErrorMsg> _warnings; // Contains all compilation errors
 
-  private Map<QName, String> _instructionClasses; // Maps instructions to classes
+  private Map<QName, String> _instructionClasses; // Maps instructions to
+                                                  // classes
   private Map<QName, String[]> _instructionAttrs;; // reqd and opt attrs
   private Map<String, QName> _qNames;
   private Map<String, Map<String, QName>> _namespaces;
@@ -590,9 +591,9 @@ public class Parser implements ContentHandler {
   private void initInstructionAttrs() {
     initAttrTable("template", new String[] { "match", "name", "priority", "mode" });
     initAttrTable("stylesheet",
-            new String[] { "id", "version", "extension-element-prefixes", "exclude-result-prefixes" });
+        new String[] { "id", "version", "extension-element-prefixes", "exclude-result-prefixes" });
     initAttrTable("transform",
-            new String[] { "id", "version", "extension-element-prefixes", "exclude-result-prefixes" });
+        new String[] { "id", "version", "extension-element-prefixes", "exclude-result-prefixes" });
     initAttrTable("text", new String[] { "disable-output-escaping" });
     initAttrTable("if", new String[] { "test" });
     initAttrTable("choose", new String[] {});
@@ -601,7 +602,7 @@ public class Parser implements ContentHandler {
     initAttrTable("for-each", new String[] { "select" });
     initAttrTable("message", new String[] { "terminate" });
     initAttrTable("number", new String[] { "level", "count", "from", "value", "format", "lang", "letter-value",
-            "grouping-separator", "grouping-size" });
+        "grouping-separator", "grouping-size" });
     initAttrTable("comment", new String[] {});
     initAttrTable("copy", new String[] { "use-attribute-sets" });
     initAttrTable("copy-of", new String[] { "select" });
@@ -609,7 +610,7 @@ public class Parser implements ContentHandler {
     initAttrTable("with-param", new String[] { "name", "select" });
     initAttrTable("variable", new String[] { "name", "select" });
     initAttrTable("output", new String[] { "method", "version", "encoding", "omit-xml-declaration", "standalone",
-            "doctype-public", "doctype-system", "cdata-section-elements", "indent", "media-type" });
+        "doctype-public", "doctype-system", "cdata-section-elements", "indent", "media-type" });
     initAttrTable("sort", new String[] { "select", "order", "case-order", "lang", "data-type" });
     initAttrTable("key", new String[] { "name", "match", "use" });
     initAttrTable("fallback", new String[] {});
@@ -621,7 +622,7 @@ public class Parser implements ContentHandler {
     initAttrTable("apply-templates", new String[] { "select", "mode" });
     initAttrTable("apply-imports", new String[] {});
     initAttrTable("decimal-format", new String[] { "name", "decimal-separator", "grouping-separator", "infinity",
-            "minus-sign", "NaN", "percent", "per-mille", "zero-digit", "digit", "pattern-separator" });
+        "minus-sign", "NaN", "percent", "per-mille", "zero-digit", "digit", "pattern-separator" });
     initAttrTable("import", new String[] { "href" });
     initAttrTable("include", new String[] { "href" });
     initAttrTable("strip-space", new String[] { "elements" });
@@ -894,7 +895,10 @@ public class Parser implements ContentHandler {
         }
         if (node instanceof Stylesheet) {
           _xsltc.setStylesheet((Stylesheet) node);
+          ((Stylesheet) node).setSystemId(_systemId);
         }
+        node.setParent(_parentStack.peek());
+
         checkForSuperfluousAttributes(node, attributes);
       } catch (final ClassNotFoundException e) {
         final ErrorMsg err = new ErrorMsg(ErrorMsg.CLASS_NOT_FOUND_ERR, node);
@@ -979,8 +983,8 @@ public class Parser implements ContentHandler {
         if (j == legal.length) {
           final ErrorMsg err = new ErrorMsg(ErrorMsg.ILLEGAL_ATTRIBUTE_ERR, attrQName, node);
           // Workaround for the TCK failure ErrorListener.errorTests.error001..
-          err.setWarningError(true);
-          reportError(WARNING, err);
+          // err.setWarningError(true);
+          reportError(ERROR, err);
         }
       }
     }
@@ -1125,31 +1129,31 @@ public class Parser implements ContentHandler {
    */
   public void reportError(final int category, final ErrorMsg error) {
     switch (category) {
-      case Constants.INTERNAL:
-        // Unexpected internal errors, such as null-ptr exceptions, etc.
-        // Immediately terminates compilation, no translet produced
-        _errors.add(error);
-        break;
-      case Constants.UNSUPPORTED:
-        // XSLT elements that are not implemented and unsupported ext.
-        // Immediately terminates compilation, no translet produced
-        _errors.add(error);
-        break;
-      case Constants.FATAL:
-        // Fatal error in the stylesheet input (parsing or content)
-        // Immediately terminates compilation, no translet produced
-        _errors.add(error);
-        break;
-      case Constants.ERROR:
-        // Other error in the stylesheet input (parsing or content)
-        // Does not terminate compilation, no translet produced
-        _errors.add(error);
-        break;
-      case Constants.WARNING:
-        // Other error in the stylesheet input (content errors only)
-        // Does not terminate compilation, a translet is produced
-        _warnings.add(error);
-        break;
+    case Constants.INTERNAL:
+      // Unexpected internal errors, such as null-ptr exceptions, etc.
+      // Immediately terminates compilation, no translet produced
+      _errors.add(error);
+      break;
+    case Constants.UNSUPPORTED:
+      // XSLT elements that are not implemented and unsupported ext.
+      // Immediately terminates compilation, no translet produced
+      _errors.add(error);
+      break;
+    case Constants.FATAL:
+      // Fatal error in the stylesheet input (parsing or content)
+      // Immediately terminates compilation, no translet produced
+      _errors.add(error);
+      break;
+    case Constants.ERROR:
+      // Other error in the stylesheet input (parsing or content)
+      // Does not terminate compilation, no translet produced
+      _errors.add(error);
+      break;
+    case Constants.WARNING:
+      // Other error in the stylesheet input (content errors only)
+      // Does not terminate compilation, a translet is produced
+      _warnings.add(error);
+      break;
     }
   }
 
@@ -1232,7 +1236,7 @@ public class Parser implements ContentHandler {
     } else {
       final SyntaxTreeNode parent = _parentStack.peek();
       parent.addElement(element);
-      element.setParent(parent);
+      // element.setParent(parent);
     }
     element.setAttributes(new AttributeList(attributes));
     element.setPrefixMapping(_prefixMapping);
@@ -1275,9 +1279,14 @@ public class Parser implements ContentHandler {
       return;
     }
 
-    // Ignore text nodes that occur directly under <xsl:stylesheet>
-    if (parent instanceof Stylesheet)
+    // Ignore whitespace text nodes that occur directly under <xsl:stylesheet>
+    if (parent instanceof Stylesheet) {
+      if (!string.trim().isEmpty()) {
+        final ErrorMsg err = new ErrorMsg(ErrorMsg.INTERNAL_ERR, "Text not allowed in stylesheet: \"" + string.trim() + "\"");
+        reportError(ERROR, err);
+      }
       return;
+    }
 
     final SyntaxTreeNode bro = parent.lastChild();
     if (bro != null && bro instanceof Text) {
@@ -1334,7 +1343,7 @@ public class Parser implements ContentHandler {
       // Set the target to this PI's href if the parameters are
       // null or match the corresponding attributes of this PI.
       if ((_PImedia == null || _PImedia.equals(media)) && (_PItitle == null || _PImedia.equals(title))
-              && (_PIcharset == null || _PImedia.equals(charset))) {
+          && (_PIcharset == null || _PImedia.equals(charset))) {
         _target = href;
       }
     }

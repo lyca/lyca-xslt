@@ -1,93 +1,55 @@
 package de.lyca.xslt.conferr;
 
 import static de.lyca.xslt.ResourceUtils.getSource;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
+import java.util.Collection;
 
-import javax.xml.transform.ErrorListener;
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerException;
 
-import org.custommonkey.xmlunit.Transform;
-import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
+import de.lyca.xslt.Transform;
+
+@RunWith(Parameterized.class)
 public class ConfMessageErrTests {
 
   private static final String PACKAGE = '/' + ConfMessageErrTests.class.getPackage().getName().replace('.', '/')
-          + "/messageerr/";
+      + "/messageerr/";
 
-  @Test
-  @Ignore
-  public void messageerr01() throws Exception {
-    final String name = PACKAGE + "messageerr01";
-    final Source xsl = getSource(name + ".xsl");
-    final Source xml = getSource(name + ".xml");
-    final Transform t = new Transform(xml, xsl);
-    final MessageListener messageListener = new MessageListener();
-    t.setErrorListener(messageListener);
-    t.getResultString();
-    Assert.assertEquals("This message came from the MESSAGE01 test.", messageListener.getFirstMessage());
+  @Parameters(name = "{0}")
+  public static Collection<Object> params() {
+    Collection<Object> result = new ArrayList<>();
+    int[] exclude = {};
+    for (int i = 1; i < 4; i++) {
+      if (Arrays.binarySearch(exclude, i) >= 0) {
+        continue;
+      }
+      result.add(String.format("messageerr%02d", i));
+    }
+    return result;
+  }
+
+  private String name;
+
+  public ConfMessageErrTests(String name) {
+    this.name = PACKAGE + name;
   }
 
   @Test
-  @Ignore
-  public void messageerr02() throws Exception {
-    final String name = PACKAGE + "messageerr02";
+  public void messageerrTest() throws Exception {
     final Source xsl = getSource(name + ".xsl");
     final Source xml = getSource(name + ".xml");
-    final Transform t = new Transform(xml, xsl);
-    final MessageListener messageListener = new MessageListener();
-    t.setErrorListener(messageListener);
-    t.getResultString();
-    Assert.assertEquals("This message came from the MESSAGEerr02 test.", messageListener.getFirstMessage());
-
-  }
-
-  @Test
-  @Ignore
-  public void messageerr03() throws Exception {
-    final String name = PACKAGE + "messageerr03";
-    final Source xsl = getSource(name + ".xsl");
-    final Source xml = getSource(name + ".xml");
-    final Transform t = new Transform(xml, xsl);
-    final MessageListener messageListener = new MessageListener();
-    t.setErrorListener(messageListener);
-    t.getResultString();
-    Assert.assertEquals("This message came from the MESSAGE03 test.", messageListener.getFirstMessage());
-  }
-
-  private static class MessageListener implements ErrorListener {
-
-    private final List<String> messages = new ArrayList<>();
-
-    public String getFirstMessage() {
-      return messages.isEmpty() ? null : messages.get(0);
+    try {
+      fail(new Transform(xml, xsl).getResultString());
+    } catch (final TransformerException e) {
     }
-
-    public String getLastMessage() {
-      return messages.isEmpty() ? null : messages.get(messages.size() - 1);
-    }
-
-    @Override
-    public void warning(TransformerException exception) throws TransformerException {
-      messages.add(exception.getMessage());
-    }
-
-    @Override
-    public void error(TransformerException exception) throws TransformerException {
-      System.err.println(exception.getLocalizedMessage());
-      throw exception;
-    }
-
-    @Override
-    public void fatalError(TransformerException exception) throws TransformerException {
-      System.err.println(exception.getLocalizedMessage());
-      throw exception;
-    }
-
   }
 
 }

@@ -1,93 +1,55 @@
 package de.lyca.xslt.conferr;
 
 import static de.lyca.xslt.ResourceUtils.getSource;
+import static org.junit.Assert.fail;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 
 import javax.xml.transform.Source;
+import javax.xml.transform.TransformerException;
 
-import org.custommonkey.xmlunit.Transform;
-import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
+import de.lyca.xslt.Transform;
+
+@RunWith(Parameterized.class)
 public class ConfVerErrTests {
 
   private static final String PACKAGE = '/' + ConfVerErrTests.class.getPackage().getName().replace('.', '/')
-          + "/vererr/";
+      + "/vererr/";
 
-  @Test
-  @Ignore
-  public void vererr01() throws Exception {
-    final String name = PACKAGE + "vererr01";
-    final Source xsl = getSource(name + ".xsl");
-    final Source xml = getSource(name + ".xml");
-    final Transform t = new Transform(xml, xsl);
+  @Parameters(name = "{0}")
+  public static Collection<Object> params() {
+    Collection<Object> result = new ArrayList<>();
+    int[] exclude = {};
+    for (int i = 1; i < 10; i++) {
+      if (Arrays.binarySearch(exclude, i) >= 0) {
+        continue;
+      }
+      result.add(String.format("vererr%02d", i));
+    }
+    return result;
+  }
+
+  private String name;
+
+  public ConfVerErrTests(String name) {
+    this.name = PACKAGE + name;
   }
 
   @Test
-  public void vererr02() throws Exception {
-    final String name = PACKAGE + "vererr02";
+  public void selecterrTest() throws Exception {
     final Source xsl = getSource(name + ".xsl");
     final Source xml = getSource(name + ".xml");
-    final Transform t = new Transform(xml, xsl);
-  }
-
-  @Test
-  @Ignore
-  public void vererr03() throws Exception {
-    final String name = PACKAGE + "vererr03";
-    final Source xsl = getSource(name + ".xsl");
-    final Source xml = getSource(name + ".xml");
-    final Transform t = new Transform(xml, xsl);
-  }
-
-  @Test
-  public void vererr04() throws Exception {
-    final String name = PACKAGE + "vererr04";
-    final Source xsl = getSource(name + ".xsl");
-    final Source xml = getSource(name + ".xml");
-    final Transform t = new Transform(xml, xsl);
-  }
-
-  @Test
-  @Ignore
-  public void vererr05() throws Exception {
-    final String name = PACKAGE + "vererr05";
-    final Source xsl = getSource(name + ".xsl");
-    final Source xml = getSource(name + ".xml");
-    final Transform t = new Transform(xml, xsl);
-  }
-
-  @Test
-  @Ignore
-  public void vererr06() throws Exception {
-    final String name = PACKAGE + "vererr06";
-    final Source xsl = getSource(name + ".xsl");
-    final Source xml = getSource(name + ".xml");
-    final Transform t = new Transform(xml, xsl);
-  }
-
-  @Test
-  @Ignore
-  public void vererr07() throws Exception {
-    final String name = PACKAGE + "vererr07";
-    final Source xsl = getSource(name + ".xsl");
-    final Source xml = getSource(name + ".xml");
-    final Transform t = new Transform(xml, xsl);
-  }
-
-  @Test
-  public void vererr08() throws Exception {
-    final String name = PACKAGE + "vererr08";
-    final Source xsl = getSource(name + ".xsl");
-    final Source xml = getSource(name + ".xml");
-    final Transform t = new Transform(xml, xsl);
-  }
-
-  @Test
-  public void vererr09() throws Exception {
-    final String name = PACKAGE + "vererr09";
-    final Source xsl = getSource(name + ".xsl");
-    final Source xml = getSource(name + ".xml");
-    final Transform t = new Transform(xml, xsl);
+    try {
+      fail(new Transform(xml, xsl).getResultString());
+    } catch (final TransformerException e) {
+    }
   }
 
 }

@@ -10,12 +10,12 @@ import java.util.Collection;
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerConfigurationException;
 
-import org.custommonkey.xmlunit.Transform;
-import org.custommonkey.xmlunit.exceptions.ConfigurationException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+
+import de.lyca.xslt.Transform;
 
 @RunWith(Parameterized.class)
 public class ConfBoolErrTests {
@@ -47,14 +47,8 @@ public class ConfBoolErrTests {
     final Source xsl = getSource(name + ".xsl");
     final Source xml = getSource(name + ".xml");
     try {
-      new Transform(xml, xsl);
-      fail();
-    } catch (final ConfigurationException e) {
-      final Throwable t = e.getCause();
-      if (t instanceof TransformerConfigurationException) {
-        System.out.println(t.getMessage());
-      } else
-        throw e;
+      fail(new Transform(xml, xsl).getResultString());
+    } catch (final TransformerConfigurationException e) {
     }
   }
 

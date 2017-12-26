@@ -74,7 +74,7 @@ final class LiteralElement extends Instruction {
       if (result != null)
         return result;
     }
-    return _accessedPrefixes == null ? null: _accessedPrefixes.get(prefix);
+    return _accessedPrefixes == null ? null : _accessedPrefixes.get(prefix);
   }
 
   /**
@@ -177,6 +177,13 @@ final class LiteralElement extends Instruction {
    */
   @Override
   public Type typeCheck(SymbolTable stable) throws TypeCheckError {
+    if (getParent() instanceof XslAttribute) {
+      // TODO better error reporting
+      final ErrorMsg err = new ErrorMsg(ErrorMsg.INTERNAL_ERR, "A literal element cannot be child of xsl:attribute",
+          this);
+      throw new TypeCheckError(err);
+    }
+
     // Type-check all attributes
     if (_attributeElements != null) {
       for (final SyntaxTreeNode node : _attributeElements) {
@@ -244,12 +251,16 @@ final class LiteralElement extends Instruction {
       }
       // Handle xsl:exclude-result-prefixes
       else if (qname.equals(parser.getExcludeResultPrefixes())) {
-        stable.excludeNamespaces(val);
+        if (!stable.excludeNamespaces(val).isEmpty()) {
+          // TODO better error handling
+          final ErrorMsg error = new ErrorMsg(ErrorMsg.INTERNAL_ERR, "Unknown exclude-result-prefix", this);
+          parser.reportError(Constants.ERROR, error);
+        }
       } else {
         // Ignore special attributes (e.g. xmlns:prefix and xmlns)
         final String prefix = qname.getPrefix();
         if (prefix != null && prefix.equals(XMLNS_PREFIX) || prefix == null && qname.getLocalPart().equals("xmlns")
-                || uri != null && uri.equals(XSLT_URI)) {
+            || uri != null && uri.equals(XSLT_URI)) {
           continue;
         }
 
@@ -341,8 +352,7 @@ final class LiteralElement extends Instruction {
        * doesn't, it must be redeclared one more time.
        */
       if (!declaresDefaultNS && _parent instanceof XslElement && ((XslElement) _parent).declaresDefaultNS()) {
-        ctx.currentBlock().add(
-            handler.invoke("namespaceAfterStartElement").arg("").arg(""));
+        ctx.currentBlock().add(handler.invoke("namespaceAfterStartElement").arg("").arg(""));
       }
     }
 
@@ -456,7 +466,7 @@ final class LiteralElement extends Instruction {
       // We can safely return false when the instruction can produce an output
       // node.
       else if (child instanceof LiteralElement || child instanceof ValueOf || child instanceof XslElement
-              || child instanceof Comment || child instanceof Number || child instanceof ProcessingInstruction)
+          || child instanceof Comment || child instanceof Number || child instanceof ProcessingInstruction)
         return false;
       else if (child instanceof XslAttribute) {
         if (ignoreXslAttribute) {
@@ -469,7 +479,7 @@ final class LiteralElement extends Instruction {
       // <xsl:copy-of> can also copy attribute nodes to an element. Return
       // true in those cases to be safe.
       else if (child instanceof CallTemplate || child instanceof ApplyTemplates || child instanceof Copy
-              || child instanceof CopyOf)
+          || child instanceof CopyOf)
         return true;
       else if ((child instanceof If || child instanceof ForEach) && canProduceAttributeNodes(child, false))
         return true;

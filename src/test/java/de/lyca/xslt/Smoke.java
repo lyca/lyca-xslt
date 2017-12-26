@@ -45,7 +45,11 @@ public class Smoke {
 
   @BeforeClass
   public static void init() throws Exception {
-    TF = TransformerFactory.newInstance();
+    // TF =
+    // TransformerFactory.newInstance("com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl",
+    // Smoke.class.getClassLoader());
+    TF = TransformerFactory.newInstance("de.lyca.xalan.xsltc.trax.TransformerFactoryImpl",
+        Smoke.class.getClassLoader());
     final Source source = new StreamSource("src/test/java/de/lyca/xslt/NewStylesheet.xsl");
     T = TF.newTemplates(source);
     System.out.println(TF.getClass().getName());

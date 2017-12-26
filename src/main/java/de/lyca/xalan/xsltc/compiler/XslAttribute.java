@@ -176,6 +176,11 @@ final class XslAttribute extends Instruction {
 
   @Override
   public Type typeCheck(SymbolTable stable) throws TypeCheckError {
+    if (getParent() instanceof XslAttribute) {
+      // TODO better error reporting
+      final ErrorMsg err = new ErrorMsg(ErrorMsg.INTERNAL_ERR, "xsl:attribute cannot be child of xsl:attribute", this);
+      throw new TypeCheckError(err);
+    }
     if (!_ignore) {
       _name.typeCheck(stable);
       if (_namespace != null) {
