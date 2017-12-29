@@ -28,6 +28,12 @@
 					<xsl:value-of select="str:encode-uri('http://www.example.com/my  résumé',false(), 'iso-8859-1')"/>
 				</result>
 			</test>
+			<test>
+				<desc>US-ASCII specified</desc>
+				<result>
+					<xsl:value-of select="str:encode-uri('http://www.example.com/my  résumé',false(), 'US-ASCII')"/>
+				</result>
+			</test>
 		</out>
 	</xsl:template>
 

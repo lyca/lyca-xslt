@@ -3,16 +3,17 @@ package de.lyca.xslt.bugzilla;
 import static de.lyca.xslt.ResourceUtils.getSource;
 import static de.lyca.xslt.ResourceUtils.readResource;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.junit.Assert.fail;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.dom.DOMSource;
 
-import org.custommonkey.xmlunit.Transform;
-import org.custommonkey.xmlunit.exceptions.ConfigurationException;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import de.lyca.xslt.Transform;
 
 public class BugzillaTests {
 
@@ -86,11 +87,8 @@ public class BugzillaTests {
     final Source xsl = getSource(name + ".xsl");
     final Source xml = getSource(name + ".xml");
     try {
-      new Transform(xml, xsl);
-    } catch (final ConfigurationException e) {
-      final Throwable t = e.getCause();
-      if (!(t instanceof TransformerConfigurationException))
-        throw e;
+      fail(new Transform(xml, xsl).getResultString());
+    } catch (final TransformerConfigurationException e) {
     }
   }
 

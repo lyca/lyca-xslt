@@ -48,8 +48,8 @@ final class When extends Instruction {
     // Ignore xsl:if when test is false (function-available() and
     // element-available())
     final Object result = _test.evaluateAtCompileTime();
-    if (result != null && result instanceof Boolean) {
-      _ignore = !((Boolean) result).booleanValue();
+    if (result instanceof Boolean) {
+      _ignore = !(Boolean) result;
     }
 
     parseChildren(parser);

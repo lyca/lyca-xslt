@@ -17,6 +17,15 @@
  */
 package de.lyca.xalan.lib;
 
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CoderResult;
+import java.nio.charset.CodingErrorAction;
+import java.nio.charset.StandardCharsets;
+import java.text.Normalizer;
+import java.util.Arrays;
 import java.util.StringTokenizer;
 
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -312,6 +321,156 @@ public class ExsltStrings extends ExsltBase {
    */
   public static NodeList tokenize(String toTokenize) {
     return tokenize(toTokenize, " \t\n\r");
+  }
+
+  public static String decodeUri(String uri) {
+    return decode(uri, StandardCharsets.UTF_8);
+  }
+
+  public static String decodeUri(String uri, String encoding) {
+    try {
+      return decode(uri, Charset.forName(encoding));
+    } catch (Exception e) {
+      return "";
+    }
+  }
+
+  // Idea copied from private java.net.URI#decode. Adjusted to work as specified
+  // by EXSLT
+  private static String decode(String s, Charset encoding) {
+    if (s == null || s.isEmpty() || s.indexOf('%') < 0)
+      return s;
+
+    int n = s.length();
+    StringBuilder sb = new StringBuilder(n);
+    ByteBuffer bb = ByteBuffer.allocate(n);
+    CharBuffer cb = CharBuffer.allocate(n);
+    CharsetDecoder dec = encoding.newDecoder().onMalformedInput(CodingErrorAction.REPLACE)
+        .onUnmappableCharacter(CodingErrorAction.REPLACE);
+
+    // This is not horribly efficient, but it will do for now
+    char c = s.charAt(0);
+    boolean betweenBrackets = false;
+
+    for (int i = 0; i < n;) {
+      assert c == s.charAt(i); // Loop invariant
+      if (c == '[') {
+        betweenBrackets = true;
+      } else if (betweenBrackets && c == ']') {
+        betweenBrackets = false;
+      }
+      if (c != '%' || betweenBrackets) {
+        sb.append(c);
+        if (++i >= n)
+          break;
+        c = s.charAt(i);
+        continue;
+      }
+      bb.clear();
+      for (;;) {
+        assert (n - i >= 2);
+        bb.put(decode(s.charAt(++i), s.charAt(++i)));
+        if (++i >= n)
+          break;
+        c = s.charAt(i);
+        if (c != '%')
+          break;
+      }
+      bb.flip();
+      cb.clear();
+      dec.reset();
+      CoderResult cr = dec.decode(bb, cb, true);
+      assert cr.isUnderflow();
+      cr = dec.flush(cb);
+      assert cr.isUnderflow();
+      sb.append(cb.flip().toString());
+    }
+
+    return sb.toString();
+  }
+
+  private static byte decode(char c1, char c2) {
+    return (byte) (((decode(c1) & 0xf) << 4) | (decode(c2) & 0xf));
+  }
+
+  private static int decode(char c) {
+    if ((c >= '0') && (c <= '9'))
+      return c - '0';
+    if ((c >= 'a') && (c <= 'f'))
+      return c - 'a' + 10;
+    if ((c >= 'A') && (c <= 'F'))
+      return c - 'A' + 10;
+    assert false;
+    return -1;
+  }
+
+  public static String encodeUri(String uri, boolean encodeReserved) {
+    return encode(uri, encodeReserved, StandardCharsets.UTF_8);
+  }
+
+  public static String encodeUri(String uri, boolean encodeReserved, String encoding) {
+    try {
+      return encode(uri, encodeReserved, Charset.forName(encoding));
+    } catch (Exception e) {
+      return "";
+    }
+  }
+
+  // Idea copied from private java.net.URI#encode. Adjusted to work as specified
+  // by EXSLT
+  private static String encode(String s, boolean encodeReserved, Charset encoding) {
+    if (s.isEmpty())
+      return s;
+
+    String ns = Normalizer.normalize(s, Normalizer.Form.NFC);
+    ByteBuffer bb = null;
+    bb = encoding.encode(ns);
+
+    StringBuilder sb = new StringBuilder();
+    while (bb.hasRemaining()) {
+      int b = bb.get() & 0xff;
+      if (Arrays.binarySearch(alphaNum, b) >= 0 || Arrays.binarySearch(marks, b) >= 0
+          || !encodeReserved && Arrays.binarySearch(reserved, b) >= 0)
+        sb.append((char) b);
+      else if (encodeReserved && Arrays.binarySearch(reserved, b) >= 0)
+        appendEscape(sb, (byte) b);
+      else
+        appendEscape(sb, (byte) b);
+    }
+    return sb.toString();
+  }
+
+  private final static int[] reserved = { //
+      // '$', '&'. '+', ',', '/', ':', ':', '=', '?', '@'
+      0x24, 0x26, 0x2b, 0x2c, 0x2f, 0x3a, 0x3b, 0x3d, 0x3f, 0x40 //
+  };
+
+  private final static int[] alphaNum = { //
+      // '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'
+      0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, //
+      // 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
+      0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49, 0x4a, 0x4b, 0x4c, 0x4d, 0x4e, //
+      // 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'
+      0x4f, 0x50, 0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58, 0x59, 0x5a, //
+      // 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n',
+      0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x6a, 0x6b, 0x6c, 0x6d, 0x6e, //
+      // 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'
+      0x6f, 0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77, 0x78, 0x79, 0x7a //
+  };
+
+  private final static int[] marks = { //
+      // '!', '\'', '(', ')', '*', '-', '.', '_', '~'
+      0x21, 0x27, 0x28, 0x29, 0x2a, 0x2d, 0x2e, 0x5f, 0x7e };
+
+  private final static char[] hexDigits = { //
+      '0', '1', '2', '3', '4', '5', '6', '7', //
+      '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' //
+  };
+
+  private static void appendEscape(StringBuilder sb, byte b) {
+    sb.append('%');
+    sb.append(hexDigits[(b >> 4) & 0x0f]);
+    sb.append(hexDigits[(b >> 0) & 0x0f]);
   }
 
   /**

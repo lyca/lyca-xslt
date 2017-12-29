@@ -17,7 +17,6 @@
  */
 package de.lyca.xalan.xsltc.compiler;
 
-import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
@@ -58,8 +57,4 @@ final class NamespaceAlias extends TopLevelElement {
     return Type.Void;
   }
 
-  @Override
-  public void translate(CompilerContext ctx) {
-    // do nada
-  }
 }

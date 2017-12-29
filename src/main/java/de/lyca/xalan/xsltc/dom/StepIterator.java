@@ -50,7 +50,7 @@ public class StepIterator extends DTMAxisIteratorBase {
   /**
    * Temp variable to store a marked position.
    */
-  private final int _pos = -1;
+  private int _pos = -1;
 
   public StepIterator(DTMAxisIterator source, DTMAxisIterator iterator) {
     _source = source;
@@ -122,13 +122,13 @@ public class StepIterator extends DTMAxisIteratorBase {
   public void setMark() {
     _source.setMark();
     _iterator.setMark();
-    // _pos = _position;
+    _pos = _position;
   }
 
   @Override
   public void gotoMark() {
     _source.gotoMark();
     _iterator.gotoMark();
-    // _position = _pos;
+    _position = _pos;
   }
 }

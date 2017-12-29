@@ -4,75 +4,40 @@ import static de.lyca.xslt.ResourceUtils.getSource;
 import static de.lyca.xslt.ResourceUtils.readResource;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 import javax.xml.transform.Source;
 
-import org.custommonkey.xmlunit.Transform;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
+import de.lyca.xslt.Transform;
+
+@RunWith(Parameterized.class)
 public class ExtensionsJavaTests {
 
   private static final String PACKAGE = '/' + ExtensionsJavaTests.class.getPackage().getName().replace('.', '/')
-          + "/java/";
+      + "/java/";
 
-  @Test
-  public void javaBugzilla3722() throws Exception {
-    final String name = PACKAGE + "javaBugzilla3722";
-    final Source xsl = getSource(name + ".xsl");
-    final Source xml = getSource(name + ".xml");
-    final String expected = readResource(name + ".out", UTF_8);
-    final Transform t = new Transform(xml, xsl);
-    Assert.assertEquals(expected, t.getResultString());
+  @Parameters(name = "{0}")
+  public static Collection<Object> params() {
+    // Extension elements are not supported (XSLTC)
+    Arrays.asList("javaElem01", "javaRedir1", "javaRedir2", "javaSample4");
+    return Arrays.asList("javaBugzilla3722", "javaSample3");
+  }
+
+  private String name;
+
+  public ExtensionsJavaTests(String name) {
+    this.name = PACKAGE + name;
   }
 
   @Test
-  @Ignore("Extension elements are not supported (XSLTC)")
-  public void javaElem01() throws Exception {
-    final String name = PACKAGE + "javaElem01";
-    final Source xsl = getSource(name + ".xsl");
-    final Source xml = getSource(name + ".xml");
-    final String expected = readResource(name + ".out", UTF_8);
-    final Transform t = new Transform(xml, xsl);
-    Assert.assertEquals(expected, t.getResultString());
-  }
-
-  @Test
-  @Ignore("Extension elements are not supported (XSLTC)")
-  public void javaRedir1() throws Exception {
-    final String name = PACKAGE + "javaRedir1";
-    final Source xsl = getSource(name + ".xsl");
-    final Source xml = getSource(name + ".xml");
-    final String expected = readResource(name + ".out", UTF_8);
-    final Transform t = new Transform(xml, xsl);
-    Assert.assertEquals(expected, t.getResultString());
-  }
-
-  @Test
-  @Ignore("Extension elements are not supported (XSLTC)")
-  public void javaRedir2() throws Exception {
-    final String name = PACKAGE + "javaRedir2";
-    final Source xsl = getSource(name + ".xsl");
-    final Source xml = getSource(name + ".xml");
-    final String expected = readResource(name + ".out", UTF_8);
-    final Transform t = new Transform(xml, xsl);
-    Assert.assertEquals(expected, t.getResultString());
-  }
-
-  @Test
-  public void javaSample3() throws Exception {
-    final String name = PACKAGE + "javaSample3";
-    final Source xsl = getSource(name + ".xsl");
-    final Source xml = getSource(name + ".xml");
-    final String expected = readResource(name + ".out", UTF_8);
-    final Transform t = new Transform(xml, xsl);
-    Assert.assertEquals(expected, t.getResultString());
-  }
-
-  @Test
-  @Ignore("Extension elements are not supported (XSLTC)")
-  public void javaSample4() throws Exception {
-    final String name = PACKAGE + "javaSample4";
+  public void extensionsJavaTest() throws Exception {
     final Source xsl = getSource(name + ".xsl");
     final Source xml = getSource(name + ".xml");
     final String expected = readResource(name + ".out", UTF_8);

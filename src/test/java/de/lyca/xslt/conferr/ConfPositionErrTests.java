@@ -18,7 +18,6 @@ import org.junit.runners.Parameterized.Parameters;
 import de.lyca.xslt.Transform;
 
 @RunWith(Parameterized.class)
-
 public class ConfPositionErrTests {
 
   private static final String PACKAGE = '/' + ConfPositionErrTests.class.getPackage().getName().replace('.', '/')
