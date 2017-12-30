@@ -21,7 +21,6 @@ import static com.sun.codemodel.JExpr.cast;
 import static com.sun.codemodel.JExpr.lit;
 import static com.sun.codemodel.JOp.cond;
 import static de.lyca.xalan.xsltc.compiler.Constants.FATAL;
-import static de.lyca.xalan.xsltc.compiler.util.ErrorMsg.DATA_CONVERSION_ERR;
 
 import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JType;
@@ -72,7 +71,7 @@ public final class BooleanType extends Type {
     } else if (type == Type.Reference) {
       return compileTo(ctx, expr, (ReferenceType) type);
     } else {
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), type.toString());
+      final ErrorMsg err = new ErrorMsg(Messages.get().dataConversionErr(this, type), -1);
       ctx.xsltc().getParser().reportError(FATAL, err);
       return expr;
     }
@@ -125,7 +124,7 @@ public final class BooleanType extends Type {
     else if (clazz.isAssignableFrom(java.lang.Boolean.class)) {
       return compileTo(ctx, expr, Type.Reference);
     } else {
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), clazz.getName());
+      final ErrorMsg err = new ErrorMsg(Messages.get().dataConversionErr(this, clazz.getName()), -1);
       ctx.xsltc().getParser().reportError(FATAL, err);
       return expr;
     }
@@ -143,7 +142,7 @@ public final class BooleanType extends Type {
     else if (clazz.isAssignableFrom(java.lang.Boolean.class)) {
       return cast(ctx.ref(Boolean.class), expr);
     } else {
-      final ErrorMsg err = new ErrorMsg(DATA_CONVERSION_ERR, toString(), clazz.getName());
+      final ErrorMsg err = new ErrorMsg(Messages.get().dataConversionErr(this, clazz.getName()), -1);
       ctx.xsltc().getParser().reportError(FATAL, err);
       return expr;
     }

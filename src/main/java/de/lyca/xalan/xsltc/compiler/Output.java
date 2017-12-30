@@ -31,6 +31,7 @@ import com.sun.codemodel.JBlock;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
+import de.lyca.xalan.xsltc.compiler.util.Messages;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
 import de.lyca.xml.serializer.Encodings;
@@ -128,7 +129,7 @@ final class Output extends TopLevelElement {
   public Type typeCheck(SymbolTable stable) throws TypeCheckError {
     if (!(getParent() instanceof Stylesheet)) {
       // TODO
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.INTERNAL_ERR, "Parent is not Stylesheet", this);
+      final ErrorMsg err = new ErrorMsg(this, Messages.get().internalErr("Parent is not Stylesheet"));
       throw new TypeCheckError(err);
     }
     return super.typeCheck(stable);
@@ -168,7 +169,7 @@ final class Output extends TopLevelElement {
           || XML11Char.isXML11ValidQName(_method) && _method.indexOf(":") > 0) {
         outputProperties.setProperty(OutputKeys.METHOD, _method);
       } else {
-        reportError(this, parser, ErrorMsg.INVALID_METHOD_IN_OUTPUT, _method);
+        reportError(this, parser, Messages.get().invalidMethodInOutput(_method));
       }
     }
 
@@ -183,7 +184,7 @@ final class Output extends TopLevelElement {
         canonicalEncoding = Encodings.convertMime2JavaEncoding(_encoding);
         final OutputStreamWriter writer = new OutputStreamWriter(System.out, canonicalEncoding);
       } catch (final java.io.UnsupportedEncodingException e) {
-        final ErrorMsg msg = new ErrorMsg(ErrorMsg.UNSUPPORTED_ENCODING, _encoding, this);
+        final ErrorMsg msg = new ErrorMsg(this, Messages.get().unsupportedEncoding(_encoding));
         parser.reportError(Constants.WARNING, msg);
       }
       outputProperties.setProperty(OutputKeys.ENCODING, _encoding);
@@ -233,7 +234,7 @@ final class Output extends TopLevelElement {
       while (tokens.hasMoreTokens()) {
         final String qname = tokens.nextToken();
         if (!XML11Char.isXML11ValidQName(qname)) {
-          final ErrorMsg err = new ErrorMsg(ErrorMsg.INVALID_QNAME_ERR, qname, this);
+          final ErrorMsg err = new ErrorMsg(Messages.get().invalidQnameErr(qname));
           parser.reportError(Constants.ERROR, err);
         }
         expandedNames.append(parser.getQName(qname).toString()).append(' ');

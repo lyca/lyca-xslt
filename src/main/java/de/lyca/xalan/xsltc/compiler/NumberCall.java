@@ -23,6 +23,7 @@ import com.sun.codemodel.JExpression;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
+import de.lyca.xalan.xsltc.compiler.util.Messages;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
 
@@ -45,7 +46,7 @@ final class NumberCall extends FunctionCall {
       argument().typeCheck(stable);
       return _type = Type.Real;
     default:
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.ILLEGAL_ARG_ERR, this);
+      final ErrorMsg err = new ErrorMsg(Messages.get().illegalArgErr());
       throw new TypeCheckError(err);
     }
   }

@@ -26,6 +26,7 @@ import com.sun.codemodel.JVar;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
+import de.lyca.xalan.xsltc.compiler.util.Messages;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
 import de.lyca.xalan.xsltc.compiler.util.Util;
@@ -42,7 +43,7 @@ final class Copy extends Instruction {
     final String useSets = getAttribute("use-attribute-sets");
     if (useSets.length() > 0) {
       if (!Util.isValidQNames(useSets)) {
-        final ErrorMsg err = new ErrorMsg(ErrorMsg.INVALID_QNAME_ERR, useSets, this);
+        final ErrorMsg err = new ErrorMsg(this, Messages.get().invalidQnameErr(useSets));
         parser.reportError(Constants.ERROR, err);
       }
       _useSets = new UseAttributeSets(useSets, parser);
@@ -65,8 +66,8 @@ final class Copy extends Instruction {
     JBlock body = ctx.currentBlock();
 
     // Get the name of the node to copy and save for later
-    JVar name = body.decl(ctx.ref(String.class), "name", ctx.currentDom().invoke(SHALLOW_COPY).arg(ctx.currentNode())
-        .arg(ctx.currentHandler()));
+    JVar name = body.decl(ctx.ref(String.class), "name",
+        ctx.currentDom().invoke(SHALLOW_COPY).arg(ctx.currentNode()).arg(ctx.currentHandler()));
 
     JBlock _if1 = body._if(name.ne(_null()))._then();
 

@@ -25,6 +25,7 @@ import com.sun.codemodel.JExpression;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
+import de.lyca.xalan.xsltc.compiler.util.Messages;
 import de.lyca.xalan.xsltc.compiler.util.ReferenceType;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
@@ -100,12 +101,12 @@ final class WithParam extends Instruction {
     final String name = getAttribute("name");
     if (name.length() > 0) {
       if (!XML11Char.isXML11ValidQName(name)) {
-        final ErrorMsg err = new ErrorMsg(ErrorMsg.INVALID_QNAME_ERR, name, this);
+        final ErrorMsg err = new ErrorMsg(this, Messages.get().invalidQnameErr(name));
         parser.reportError(Constants.ERROR, err);
       }
       setName(parser.getQNameIgnoreDefaultNs(name));
     } else {
-      reportError(this, parser, ErrorMsg.REQUIRED_ATTR_ERR, "name");
+      reportError(this, parser, Messages.get().requiredAttrErr("name"));
     }
 
     final String select = getAttribute("select");
@@ -124,14 +125,14 @@ final class WithParam extends Instruction {
   public Type typeCheck(SymbolTable stable) throws TypeCheckError {
     if (!(getParent() instanceof ApplyTemplates || getParent() instanceof CallTemplate)) {
       // TODO better error reporting
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.INTERNAL_ERR,
-          "xsl:with-param must be child of xsl:apply-templates or xsl:call-template", this);
+      final ErrorMsg err = new ErrorMsg(this,
+          Messages.get().internalErr("xsl:with-param must be child of xsl:apply-templates or xsl:call-template"));
       throw new TypeCheckError(err);
     }
     if (_select != null && hasContents()) {
       // TODO better error reporting
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.INTERNAL_ERR,
-          "xsl:with-param element must not have both content and a select attribute", this);
+      final ErrorMsg err = new ErrorMsg(this,
+          Messages.get().internalErr("xsl:with-param element must not have both content and a select attribute"));
       throw new TypeCheckError(err);
     }
 

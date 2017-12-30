@@ -39,6 +39,7 @@ import org.xml.sax.XMLFilter;
 
 import de.lyca.xalan.ObjectFactory;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
+import de.lyca.xalan.xsltc.compiler.util.Messages;
 
 /**
  * Implementation of a transformer factory that uses an XSLTC transformer
@@ -84,11 +85,11 @@ public class SmartTransformerFactoryImpl extends SAXTransformerFactory {
 
   private void createXalanTransformerFactory() {
     final String xalanMessage = "de.lyca.xalan.xsltc.trax.SmartTransformerFactoryImpl " + "could not create an "
-            + "de.lyca.xalan.processor.TransformerFactoryImpl.";
+        + "de.lyca.xalan.processor.TransformerFactoryImpl.";
     // try to create instance of Xalan factory...
     try {
       final Class<?> xalanFactClass = ObjectFactory.findProviderClass("de.lyca.xalan.processor.TransformerFactoryImpl",
-              ObjectFactory.findClassLoader(), true);
+          ObjectFactory.findClassLoader(), true);
       _xalanFactory = (SAXTransformerFactory) xalanFactClass.newInstance();
     } catch (final ClassNotFoundException e) {
       System.err.println(xalanMessage);
@@ -180,7 +181,7 @@ public class SmartTransformerFactoryImpl extends SAXTransformerFactory {
 
     // feature name cannot be null
     if (name == null) {
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.JAXP_SET_FEATURE_NULL_NAME);
+      final ErrorMsg err = new ErrorMsg(Messages.get().jaxpSetFeatureNullName());
       throw new NullPointerException(err.toString());
     }
     // secure processing?
@@ -190,7 +191,7 @@ public class SmartTransformerFactoryImpl extends SAXTransformerFactory {
       return;
     } else {
       // unknown feature
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.JAXP_UNSUPPORTED_FEATURE, name);
+      final ErrorMsg err = new ErrorMsg(Messages.get().jaxpUnsupportedFeature(name));
       throw new TransformerConfigurationException(err.toString());
     }
   }
@@ -208,11 +209,11 @@ public class SmartTransformerFactoryImpl extends SAXTransformerFactory {
   public boolean getFeature(String name) {
     // All supported features should be listed here
     final String[] features = { DOMSource.FEATURE, DOMResult.FEATURE, SAXSource.FEATURE, SAXResult.FEATURE,
-            StreamSource.FEATURE, StreamResult.FEATURE };
+        StreamSource.FEATURE, StreamResult.FEATURE };
 
     // feature name cannot be null
     if (name == null) {
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.JAXP_GET_FEATURE_NULL_NAME);
+      final ErrorMsg err = new ErrorMsg(Messages.get().jaxpGetFeatureNullName());
       throw new NullPointerException(err.toString());
     }
 
@@ -242,7 +243,7 @@ public class SmartTransformerFactoryImpl extends SAXTransformerFactory {
 
   @Override
   public Source getAssociatedStylesheet(Source source, String media, String title, String charset)
-          throws TransformerConfigurationException {
+      throws TransformerConfigurationException {
     if (_currFactory == null) {
       createXSLTCTransformerFactory();
     }

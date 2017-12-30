@@ -31,6 +31,7 @@ import com.sun.codemodel.JExpression;
 import de.lyca.xalan.xsltc.DOM;
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
+import de.lyca.xalan.xsltc.compiler.util.Messages;
 import de.lyca.xalan.xsltc.compiler.util.NodeType;
 import de.lyca.xalan.xsltc.compiler.util.ResultTreeType;
 import de.lyca.xalan.xsltc.compiler.util.Type;
@@ -56,38 +57,26 @@ final class CastExpr extends Expression {
     InternalTypeMap.put(Type.Boolean,
         new HashSet<>(Arrays.asList(new Type[] { Type.Boolean, Type.Real, Type.String, Type.Reference, Type.Object })));
 
-    InternalTypeMap.put(
-        Type.Real,
-        new HashSet<>(Arrays.asList(new Type[] { Type.Real, Type.Int, Type.Boolean, Type.String, Type.Reference,
-            Type.Object })));
+    InternalTypeMap.put(Type.Real, new HashSet<>(
+        Arrays.asList(new Type[] { Type.Real, Type.Int, Type.Boolean, Type.String, Type.Reference, Type.Object })));
 
-    InternalTypeMap.put(
-        Type.Int,
-        new HashSet<>(Arrays.asList(new Type[] { Type.Int, Type.Real, Type.Boolean, Type.String, Type.Reference,
-            Type.Object })));
+    InternalTypeMap.put(Type.Int, new HashSet<>(
+        Arrays.asList(new Type[] { Type.Int, Type.Real, Type.Boolean, Type.String, Type.Reference, Type.Object })));
 
     InternalTypeMap.put(Type.String,
         new HashSet<>(Arrays.asList(new Type[] { Type.String, Type.Boolean, Type.Real, Type.Reference, Type.Object })));
 
-    InternalTypeMap.put(
-        Type.NodeSet,
-        new HashSet<>(Arrays.asList(new Type[] { Type.NodeSet, Type.Boolean, Type.Real, Type.String, Type.Node,
-            Type.Reference, Type.Object })));
+    InternalTypeMap.put(Type.NodeSet, new HashSet<>(Arrays.asList(
+        new Type[] { Type.NodeSet, Type.Boolean, Type.Real, Type.String, Type.Node, Type.Reference, Type.Object })));
 
-    InternalTypeMap.put(
-        Type.Node,
-        new HashSet<>(Arrays.asList(new Type[] { Type.Node, Type.Boolean, Type.Real, Type.String, Type.NodeSet,
-            Type.Reference, Type.Object })));
+    InternalTypeMap.put(Type.Node, new HashSet<>(Arrays.asList(
+        new Type[] { Type.Node, Type.Boolean, Type.Real, Type.String, Type.NodeSet, Type.Reference, Type.Object })));
 
-    InternalTypeMap.put(
-        Type.ResultTree,
-        new HashSet<>(Arrays.asList(new Type[] { Type.ResultTree, Type.Boolean, Type.Real, Type.String, Type.NodeSet,
-            Type.Reference, Type.Object })));
+    InternalTypeMap.put(Type.ResultTree, new HashSet<>(Arrays.asList(new Type[] { Type.ResultTree, Type.Boolean,
+        Type.Real, Type.String, Type.NodeSet, Type.Reference, Type.Object })));
 
-    InternalTypeMap.put(
-        Type.Reference,
-        new HashSet<>(Arrays.asList(new Type[] { Type.Reference, Type.Boolean, Type.Int, Type.Real, Type.String,
-            Type.Node, Type.NodeSet, Type.ResultTree, Type.Object })));
+    InternalTypeMap.put(Type.Reference, new HashSet<>(Arrays.asList(new Type[] { Type.Reference, Type.Boolean, Type.Int,
+        Type.Real, Type.String, Type.Node, Type.NodeSet, Type.ResultTree, Type.Object })));
 
     InternalTypeMap.put(Type.Object, new HashSet<>(Arrays.asList(new Type[] { Type.String })));
 
@@ -170,7 +159,7 @@ final class CastExpr extends Expression {
     if (maps(tleft, _type))
       return _type;
     // throw new TypeCheckError(this);
-    throw new TypeCheckError(new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, tleft.toString(), _type.toString()));
+    throw new TypeCheckError(new ErrorMsg(this, Messages.get().dataConversionErr(tleft, _type)));
   }
 
   @Override

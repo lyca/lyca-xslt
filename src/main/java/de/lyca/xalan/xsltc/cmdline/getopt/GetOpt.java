@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 
-import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
+import de.lyca.xalan.xsltc.compiler.util.Messages;
 
 /**
  * GetOpt is a Java equivalent to the C getopt() library function discussed in
@@ -85,7 +85,7 @@ public class GetOpt {
             break; // end of options
           }
         }
-      }// end option does not start with "-"
+      } // end option does not start with "-"
     } // end for args loop
 
     // attach an iterator to list of options
@@ -134,11 +134,9 @@ public class GetOpt {
       final boolean shouldHaveArg = theOptionMatcher.hasArg(c);
       final String arg = theCurrentOption.getArgument();
       if (!theOptionMatcher.match(c)) {
-        final ErrorMsg msg = new ErrorMsg(ErrorMsg.ILLEGAL_CMDLINE_OPTION_ERR, new Character(c));
-        throw new IllegalArgumentException(msg.toString());
+        throw new IllegalArgumentException(Messages.get().illegalCmdlineOptionErr(new Character(c)));
       } else if (shouldHaveArg && arg == null) {
-        final ErrorMsg msg = new ErrorMsg(ErrorMsg.CMDLINE_OPT_MISSING_ARG_ERR, new Character(c));
-        throw new MissingOptArgException(msg.toString());
+        throw new MissingOptArgException(Messages.get().cmdlineOptMissingArgErr(new Character(c)));
       }
       retval = c;
     }
@@ -243,4 +241,3 @@ public class GetOpt {
     private String theOptString = null;
   } // end class OptionMatcher
 }// end class GetOpt
-

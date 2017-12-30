@@ -38,16 +38,6 @@ public class TypeCheckError extends Exception {
     _error = error;
   }
 
-  public TypeCheckError(String code, Object param) {
-    super();
-    _error = new ErrorMsg(code, param);
-  }
-
-  public TypeCheckError(String code, Object param1, Object param2) {
-    super();
-    _error = new ErrorMsg(code, param1, param2);
-  }
-
   public ErrorMsg getErrorMsg() {
     return _error;
   }
@@ -61,9 +51,9 @@ public class TypeCheckError extends Exception {
   public String toString() {
     if (_error == null) {
       if (_node != null) {
-        _error = new ErrorMsg(ErrorMsg.TYPE_CHECK_ERR, _node.toString());
+        _error = new ErrorMsg(Messages.get().typeCheckErr(_node));
       } else {
-        _error = new ErrorMsg(ErrorMsg.TYPE_CHECK_UNK_LOC_ERR);
+        _error = new ErrorMsg(Messages.get().typeCheckUnkLocErr());
       }
     }
     return _error.toString();

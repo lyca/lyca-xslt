@@ -33,6 +33,7 @@ import com.sun.codemodel.JExpression;
 import de.lyca.xalan.xsltc.compiler.Stylesheet.OutputMethod;
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
+import de.lyca.xalan.xsltc.compiler.util.Messages;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
 import de.lyca.xalan.xsltc.compiler.util.Util;
@@ -179,8 +180,8 @@ final class LiteralElement extends Instruction {
   public Type typeCheck(SymbolTable stable) throws TypeCheckError {
     if (getParent() instanceof XslAttribute) {
       // TODO better error reporting
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.INTERNAL_ERR, "A literal element cannot be child of xsl:attribute",
-          this);
+      final ErrorMsg err = new ErrorMsg(this,
+          Messages.get().internalErr("A literal element cannot be child of xsl:attribute"));
       throw new TypeCheckError(err);
     }
 
@@ -240,7 +241,7 @@ final class LiteralElement extends Instruction {
       // attributes can override an attributes in the set.
       if (qname.equals(parser.getUseAttributeSets())) {
         if (!Util.isValidQNames(val)) {
-          final ErrorMsg err = new ErrorMsg(ErrorMsg.INVALID_QNAME_ERR, val, this);
+          final ErrorMsg err = new ErrorMsg(this, Messages.get().invalidQnameErr(val));
           parser.reportError(Constants.ERROR, err);
         }
         setFirstAttribute(new UseAttributeSets(val, parser));
@@ -253,7 +254,7 @@ final class LiteralElement extends Instruction {
       else if (qname.equals(parser.getExcludeResultPrefixes())) {
         if (!stable.excludeNamespaces(val).isEmpty()) {
           // TODO better error handling
-          final ErrorMsg error = new ErrorMsg(ErrorMsg.INTERNAL_ERR, "Unknown exclude-result-prefix", this);
+          final ErrorMsg error = new ErrorMsg(this, Messages.get().internalErr("Unknown exclude-result-prefix"));
           parser.reportError(Constants.ERROR, error);
         }
       } else {

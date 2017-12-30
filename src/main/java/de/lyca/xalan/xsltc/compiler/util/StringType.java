@@ -77,7 +77,7 @@ public class StringType extends Type {
     } else if (type == Type.Reference) {
       return compileTo(ctx, expr, (ReferenceType) type);
     } else {
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), type.toString());
+      final ErrorMsg err = new ErrorMsg(Messages.get().dataConversionErr(this, type), -1);
       ctx.xsltc().getParser().reportError(FATAL, err);
       return expr;
     }
@@ -124,7 +124,7 @@ public class StringType extends Type {
     if (clazz.isAssignableFrom(java.lang.String.class)) {
       return expr;
     } else {
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), clazz.getName());
+      final ErrorMsg err = new ErrorMsg(Messages.get().dataConversionErr(this, clazz.getName()), -1);
       ctx.xsltc().getParser().reportError(Constants.FATAL, err);
       return expr;
     }
@@ -142,7 +142,7 @@ public class StringType extends Type {
       // same internal representation, convert null to ""
       return cond(var.eq(_null()), JExpr.lit(""), var);
     } else {
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), clazz.getName());
+      final ErrorMsg err = new ErrorMsg(Messages.get().dataConversionErr(this, clazz.getName()), -1);
       ctx.xsltc().getParser().reportError(Constants.FATAL, err);
       return expr;
     }

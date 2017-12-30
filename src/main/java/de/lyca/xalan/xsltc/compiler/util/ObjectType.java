@@ -21,7 +21,6 @@ import static com.sun.codemodel.JExpr._null;
 import static com.sun.codemodel.JExpr.lit;
 import static com.sun.codemodel.JOp.cond;
 import static de.lyca.xalan.xsltc.compiler.Constants.FATAL;
-import static de.lyca.xalan.xsltc.compiler.util.ErrorMsg.DATA_CONVERSION_ERR;
 
 import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JType;
@@ -114,7 +113,7 @@ public final class ObjectType extends Type {
     if (type == Type.String) {
       return compileTo(ctx, expr, (StringType) type);
     } else {
-      final ErrorMsg err = new ErrorMsg(DATA_CONVERSION_ERR, toString(), type.toString());
+      final ErrorMsg err = new ErrorMsg(Messages.get().dataConversionErr(this, type), -1);
       ctx.xsltc().getParser().reportError(FATAL, err);
       return expr;
     }
@@ -139,7 +138,7 @@ public final class ObjectType extends Type {
   @Override
   public JExpression compileTo(CompilerContext ctx, JExpression expr, Class<?> clazz) {
     if (!clazz.isAssignableFrom(_clazz)) {
-      final ErrorMsg err = new ErrorMsg(DATA_CONVERSION_ERR, toString(), clazz.toString());
+      final ErrorMsg err = new ErrorMsg(Messages.get().dataConversionErr(this, clazz), -1);
       ctx.xsltc().getParser().reportError(FATAL, err);
     }
     return expr;

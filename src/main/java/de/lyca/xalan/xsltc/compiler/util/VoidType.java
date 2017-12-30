@@ -18,7 +18,6 @@
 package de.lyca.xalan.xsltc.compiler.util;
 
 import static de.lyca.xalan.xsltc.compiler.Constants.FATAL;
-import static de.lyca.xalan.xsltc.compiler.util.ErrorMsg.DATA_CONVERSION_ERR;
 
 import com.sun.codemodel.JExpr;
 import com.sun.codemodel.JExpression;
@@ -60,7 +59,7 @@ public final class VoidType extends Type {
     if (type == Type.String) {
       return compileTo(ctx, expr, (StringType) type);
     } else {
-      final ErrorMsg err = new ErrorMsg(DATA_CONVERSION_ERR, toString(), type.toString());
+      final ErrorMsg err = new ErrorMsg(Messages.get().dataConversionErr(this, type), -1);
       ctx.xsltc().getParser().reportError(FATAL, err);
       return expr;
     }
@@ -82,7 +81,7 @@ public final class VoidType extends Type {
   @Override
   public JExpression compileFrom(CompilerContext ctx, JExpression expr, Class<?> clazz) {
     if (!clazz.getName().equals("void")) {
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), clazz.getName());
+      final ErrorMsg err = new ErrorMsg(Messages.get().dataConversionErr(this, clazz.getName()), -1);
       ctx.xsltc().getParser().reportError(Constants.FATAL, err);
     }
     return expr;

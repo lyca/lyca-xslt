@@ -27,7 +27,7 @@ import com.sun.codemodel.JExpr;
 import com.sun.codemodel.JExpression;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
-import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
+import de.lyca.xalan.xsltc.compiler.util.Messages;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
 
@@ -50,7 +50,7 @@ final class AttributeValueTemplate extends AttributeValue {
     try {
       parseAVTemplate(value, parser);
     } catch (final NoSuchElementException e) {
-      reportError(parent, parser, ErrorMsg.ATTR_VAL_TEMPLATE_ERR, value);
+      reportError(parent, parser, Messages.get().attrValTemplateErr(value));
     }
   }
 
@@ -98,7 +98,7 @@ final class AttributeValueTemplate extends AttributeValue {
           case IN_EXPR:
           case IN_EXPR_SQUOTES:
           case IN_EXPR_DQUOTES:
-            reportError(getParent(), parser, ErrorMsg.ATTR_VAL_TEMPLATE_ERR, text);
+            reportError(getParent(), parser, Messages.get().attrValTemplateErr(text));
             break;
           }
           break;
@@ -110,7 +110,7 @@ final class AttributeValueTemplate extends AttributeValue {
               buffer.append(lookahead); // replace }} by }
               lookahead = null;
             } else {
-              reportError(getParent(), parser, ErrorMsg.ATTR_VAL_TEMPLATE_ERR, text);
+              reportError(getParent(), parser,Messages.get().attrValTemplateErr(text));
             }
             break;
           case IN_EXPR:
@@ -162,7 +162,7 @@ final class AttributeValueTemplate extends AttributeValue {
 
     // Must be in OUT_EXPR at the end of parsing
     if (state != OUT_EXPR) {
-      reportError(getParent(), parser, ErrorMsg.ATTR_VAL_TEMPLATE_ERR, text);
+      reportError(getParent(), parser, Messages.get().attrValTemplateErr(text));
     }
 
     /*

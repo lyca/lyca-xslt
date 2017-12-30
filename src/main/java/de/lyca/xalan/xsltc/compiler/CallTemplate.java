@@ -29,6 +29,7 @@ import com.sun.codemodel.JInvocation;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
+import de.lyca.xalan.xsltc.compiler.util.Messages;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
 import de.lyca.xalan.xsltc.compiler.util.Util;
@@ -67,12 +68,12 @@ final class CallTemplate extends Instruction {
     final String name = getAttribute("name");
     if (name.length() > 0) {
       if (!XML11Char.isXML11ValidQName(name)) {
-        final ErrorMsg err = new ErrorMsg(ErrorMsg.INVALID_QNAME_ERR, name, this);
+        final ErrorMsg err = new ErrorMsg(this, Messages.get().invalidQnameErr(name));
         parser.reportError(Constants.ERROR, err);
       }
       _name = parser.getQNameIgnoreDefaultNs(name);
     } else {
-      reportError(this, parser, ErrorMsg.REQUIRED_ATTR_ERR, "name");
+      reportError(this, parser, Messages.get().requiredAttrErr("name"));
     }
     parseChildren(parser);
     int count = elementCount();
@@ -80,8 +81,8 @@ final class CallTemplate extends Instruction {
       final SyntaxTreeNode child = getContents().get(i);
       if (!(child instanceof WithParam || child instanceof Text && ((Text) child).isIgnore())) {
         // TODO better error message
-        final ErrorMsg error = new ErrorMsg(ErrorMsg.ILLEGAL_CHILD_ERR,
-            child.getQName().getLocalPart() + " is not a xsl:with-param", this);
+        final ErrorMsg error = new ErrorMsg(this, Messages.get().illegalChildErr());
+        // child.getQName().getLocalPart() + " is not a xsl:with-param"
         parser.reportError(Constants.ERROR, error);
       }
     }
@@ -97,7 +98,7 @@ final class CallTemplate extends Instruction {
     if (template != null) {
       typeCheckContents(stable);
     } else {
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.TEMPLATE_UNDEF_ERR, _name, this);
+      final ErrorMsg err = new ErrorMsg(this, Messages.get().templateUndefErr(_name));
       throw new TypeCheckError(err);
     }
     return Type.Void;

@@ -21,6 +21,7 @@ import java.util.List;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
+import de.lyca.xalan.xsltc.compiler.util.Messages;
 import de.lyca.xalan.xsltc.compiler.util.ObjectType;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
@@ -54,8 +55,8 @@ final class CastCall extends FunctionCall {
   @Override
   public Type typeCheck(SymbolTable stable) throws TypeCheckError {
     // Check that the function was passed exactly two arguments
-    if (argumentCount() != 2)
-      throw new TypeCheckError(new ErrorMsg(ErrorMsg.ILLEGAL_ARG_ERR, getName(), this));
+    if (argumentCount() != 2) // TODO illegalArg
+      throw new TypeCheckError(new ErrorMsg(this, Messages.get().illegalArgErr()));
 
     // The first argument must be a literal String
     final Expression exp = argument(0);
@@ -63,13 +64,13 @@ final class CastCall extends FunctionCall {
       _className = ((LiteralExpr) exp).getValue();
       _type = Type.newObjectType(_className);
     } else
-      throw new TypeCheckError(new ErrorMsg(ErrorMsg.NEED_LITERAL_ERR, getName(), this));
+      throw new TypeCheckError(new ErrorMsg(this,Messages.get().needLiteralErr(getName())));
 
     // Second argument must be of type reference or object
     _right = argument(1);
     final Type tright = _right.typeCheck(stable);
     if (tright != Type.Reference && tright instanceof ObjectType == false)
-      throw new TypeCheckError(new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, tright, _type, this));
+      throw new TypeCheckError(new ErrorMsg(this,Messages.get().dataConversionErr(tright, _type)));
 
     return _type;
   }

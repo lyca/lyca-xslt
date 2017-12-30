@@ -128,7 +128,7 @@ public abstract class Type {
    * expression of the latter.
    */
   public JExpression compileTo(CompilerContext ctx, JExpression expr, Type type) {
-    final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), type.toString());
+    final ErrorMsg err = new ErrorMsg(Messages.get().dataConversionErr(this, type), -1);
     ctx.xsltc().getParser().reportError(Constants.FATAL, err);
     return expr;
   }
@@ -139,7 +139,7 @@ public abstract class Type {
    * external functions are called.
    */
   public JExpression compileTo(CompilerContext ctx, JExpression expr, Class<?> clazz) {
-    final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), clazz.toString());
+    final ErrorMsg err = new ErrorMsg(Messages.get().dataConversionErr(this, clazz), -1);
     ctx.xsltc().getParser().reportError(Constants.FATAL, err);
     return expr;
   }
@@ -150,7 +150,7 @@ public abstract class Type {
    * external functions are called.
    */
   public JExpression compileFrom(CompilerContext ctx, JExpression expr, Class<?> clazz) {
-    final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, clazz.toString(), toString());
+    final ErrorMsg err = new ErrorMsg(Messages.get().dataConversionErr(clazz, this), -1);
     ctx.xsltc().getParser().reportError(Constants.FATAL, err);
     return expr;
   }

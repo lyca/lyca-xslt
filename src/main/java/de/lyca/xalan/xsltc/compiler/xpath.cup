@@ -39,6 +39,7 @@ import de.lyca.xalan.xsltc.DOM;
 import de.lyca.xml.dtm.Axis;
 import de.lyca.xalan.xsltc.runtime.Operators;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
+import de.lyca.xalan.xsltc.compiler.util.Messages;
 
 parser code {:
     /**
@@ -233,8 +234,8 @@ parser code {:
 	    return super.parse();
         }
         catch (IllegalCharException e) {
-            ErrorMsg err = new ErrorMsg(ErrorMsg.ILLEGAL_CHAR_ERR,
-                                        lineNumber, e.getMessage());
+            ErrorMsg err = new ErrorMsg(Messages.get()
+                .illegalCharErr(e.getMessage()), lineNumber);
             _parser.reportError(Constants.FATAL, err);
         }
         return null;
@@ -278,7 +279,7 @@ parser code {:
 	    return new ParentLocationPath(newrlp, plp.getStep());
 	}
 	else {
-	    addError(new ErrorMsg(ErrorMsg.INTERNAL_ERR, "XPathParser.insertStep"));
+	    addError(new ErrorMsg(Messages.get().internalErr("XPathParser.insertStep"), getLineNumber()));
 	    return rlp;
 	}
     }

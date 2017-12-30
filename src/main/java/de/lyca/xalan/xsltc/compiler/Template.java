@@ -29,6 +29,7 @@ import com.sun.codemodel.JStatement;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
+import de.lyca.xalan.xsltc.compiler.util.Messages;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
 import de.lyca.xalan.xsltc.compiler.util.Util;
@@ -171,7 +172,7 @@ public final class Template extends TopLevelElement implements Comparable<Templa
 
     if (!(getParent() instanceof Stylesheet)) {
       // TODO better error reporting
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.INTERNAL_ERR, "Parent is not Stylesheet", this);
+      final ErrorMsg err = new ErrorMsg(this, Messages.get().internalErr("Parent is not Stylesheet"));
       parser.reportError(Constants.ERROR, err);
     }
 
@@ -183,7 +184,7 @@ public final class Template extends TopLevelElement implements Comparable<Templa
     // TODO Perhaps revisit matcherr08
     if (name.isEmpty() && match.isEmpty()) {
       // TODO better error reporting
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.INTERNAL_ERR, "Name and match are empty", this);
+      final ErrorMsg err = new ErrorMsg(this, Messages.get().internalErr("Name and match are empty"));
       parser.reportError(Constants.ERROR, err);
     }
 
@@ -191,7 +192,7 @@ public final class Template extends TopLevelElement implements Comparable<Templa
 
     if (name.length() > 0) {
       if (!XML11Char.isXML11ValidQName(name)) {
-        final ErrorMsg err = new ErrorMsg(ErrorMsg.INVALID_QNAME_ERR, name, this);
+        final ErrorMsg err = new ErrorMsg(this, Messages.get().invalidQnameErr(name));
         parser.reportError(Constants.ERROR, err);
       }
       _name = parser.getQNameIgnoreDefaultNs(name);
@@ -199,7 +200,7 @@ public final class Template extends TopLevelElement implements Comparable<Templa
 
     if (mode.length() > 0) {
       if (!XML11Char.isXML11ValidQName(mode)) {
-        final ErrorMsg err = new ErrorMsg(ErrorMsg.INVALID_QNAME_ERR, mode, this);
+        final ErrorMsg err = new ErrorMsg(this, Messages.get().invalidQnameErr(mode));
         parser.reportError(Constants.ERROR, err);
       }
       _mode = parser.getQNameIgnoreDefaultNs(mode);
@@ -225,7 +226,7 @@ public final class Template extends TopLevelElement implements Comparable<Templa
     if (_name != null) {
       final Template other = parser.getSymbolTable().addTemplate(this);
       if (!resolveNamedTemplates(other, parser)) {
-        final ErrorMsg err = new ErrorMsg(ErrorMsg.TEMPLATE_REDEF_ERR, _name, this);
+        final ErrorMsg err = new ErrorMsg(this, Messages.get().templateRedefErr(_name));
         parser.reportError(Constants.ERROR, err);
       }
       // Is this a simple named template?
@@ -287,7 +288,7 @@ public final class Template extends TopLevelElement implements Comparable<Templa
         inParams = false;
       } else if (!inParams && child instanceof Param) {
         // TODO better error reporting
-        final ErrorMsg err = new ErrorMsg(ErrorMsg.INTERNAL_ERR, "Params must be first in template", this);
+        final ErrorMsg err = new ErrorMsg(this, Messages.get().internalErr("Params must be first in template"));
         throw new TypeCheckError(err);
       }
     }

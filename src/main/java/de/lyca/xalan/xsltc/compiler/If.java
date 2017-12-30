@@ -23,7 +23,7 @@ import com.sun.codemodel.JExpression;
 
 import de.lyca.xalan.xsltc.compiler.util.BooleanType;
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
-import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
+import de.lyca.xalan.xsltc.compiler.util.Messages;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
 
@@ -47,7 +47,7 @@ final class If extends Instruction {
 
     // Make sure required attribute(s) have been set
     if (_test.isDummy()) {
-      reportError(this, parser, ErrorMsg.REQUIRED_ATTR_ERR, "test");
+      reportError(this, parser, Messages.get().requiredAttrErr("test"));
       return;
     }
 

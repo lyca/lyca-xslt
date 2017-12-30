@@ -21,6 +21,7 @@ import static de.lyca.xalan.xsltc.compiler.Constants.FATAL;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
+import de.lyca.xalan.xsltc.compiler.util.Messages;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
 
@@ -43,7 +44,7 @@ abstract class Instruction extends SyntaxTreeNode {
    */
   @Override
   public void translate(CompilerContext ctx) {
-    final ErrorMsg msg = new ErrorMsg(ErrorMsg.NOT_IMPLEMENTED_ERR, getClass(), this);
+    final ErrorMsg msg = new ErrorMsg(this, Messages.get().notImplementedErr(getClass()));
     getParser().reportError(FATAL, msg);
   }
 }

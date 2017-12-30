@@ -28,6 +28,7 @@ import com.sun.codemodel.JExpression;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
+import de.lyca.xalan.xsltc.compiler.util.Messages;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
 import de.lyca.xalan.xsltc.dom.LoadDocument;
@@ -59,11 +60,11 @@ final class DocumentCall extends FunctionCall {
     // At least one argument - two at most
     final int ac = argumentCount();
     if (ac < 1 || ac > 2) {
-      final ErrorMsg msg = new ErrorMsg(ErrorMsg.ILLEGAL_ARG_ERR, this);
+      final ErrorMsg msg = new ErrorMsg(this, Messages.get().illegalArgErr());
       throw new TypeCheckError(msg);
     }
     if (getStylesheet() == null) {
-      final ErrorMsg msg = new ErrorMsg(ErrorMsg.ILLEGAL_ARG_ERR, this);
+      final ErrorMsg msg = new ErrorMsg(this, Messages.get().illegalArgErr());
       throw new TypeCheckError(msg);
     }
 
@@ -71,7 +72,7 @@ final class DocumentCall extends FunctionCall {
     _arg1 = argument(0);
 
     if (_arg1 == null) {// should not happened
-      final ErrorMsg msg = new ErrorMsg(ErrorMsg.DOCUMENT_ARG_ERR, this);
+      final ErrorMsg msg = new ErrorMsg(this, Messages.get().documentArgErr());
       throw new TypeCheckError(msg);
     }
 
@@ -85,7 +86,7 @@ final class DocumentCall extends FunctionCall {
       _arg2 = argument(1);
 
       if (_arg2 == null) {// should not happened
-        final ErrorMsg msg = new ErrorMsg(ErrorMsg.DOCUMENT_ARG_ERR, this);
+        final ErrorMsg msg = new ErrorMsg(this, Messages.get().documentArgErr());
         throw new TypeCheckError(msg);
       }
 
@@ -96,7 +97,7 @@ final class DocumentCall extends FunctionCall {
       } else if (arg2Type.identicalTo(Type.NodeSet)) {
         // falls through
       } else {
-        final ErrorMsg msg = new ErrorMsg(ErrorMsg.DOCUMENT_ARG_ERR, this);
+        final ErrorMsg msg = new ErrorMsg(this, Messages.get().documentArgErr());
         throw new TypeCheckError(msg);
       }
     }

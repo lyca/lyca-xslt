@@ -24,7 +24,7 @@ import static de.lyca.xalan.xsltc.compiler.Constants.CHARACTERS;
 import com.sun.codemodel.JExpression;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
-import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
+import de.lyca.xalan.xsltc.compiler.util.Messages;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
 
@@ -44,7 +44,7 @@ final class ValueOf extends Instruction {
 
     // make sure required attribute(s) have been set
     if (_select.isDummy()) {
-      reportError(this, parser, ErrorMsg.REQUIRED_ATTR_ERR, "select");
+      reportError(this, parser, Messages.get().requiredAttrErr("select"));
       return;
     }
     final String str = getAttribute("disable-output-escaping");
@@ -81,7 +81,7 @@ final class ValueOf extends Instruction {
 
   @Override
   public void translate(CompilerContext ctx) {
-    JExpression document =  ctx.currentDom();
+    JExpression document = ctx.currentDom();
     JExpression handler = ctx.currentHandler();
 
     // Turn off character escaping if so is wanted.

@@ -26,6 +26,7 @@ import com.sun.codemodel.JConditional;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
+import de.lyca.xalan.xsltc.compiler.util.Messages;
 
 /**
  * @author Jacek Ambroziak
@@ -57,7 +58,7 @@ final class Choose extends Instruction {
       // Add a When child element when no otherwise exists
       else if (element instanceof When && otherwise != null) {
         // TODO
-        error = new ErrorMsg(ErrorMsg.INTERNAL_ERR, "when after otherwise",this);
+        error = new ErrorMsg(this, Messages.get().internalErr("when after otherwise"));
         getParser().reportError(Constants.ERROR, error);
       }
       // Add an Otherwise child element
@@ -65,7 +66,7 @@ final class Choose extends Instruction {
         if (otherwise == null) {
           otherwise = (Otherwise) element;
         } else {
-          error = new ErrorMsg(ErrorMsg.MULTIPLE_OTHERWISE_ERR, this);
+          error = new ErrorMsg(this, Messages.get().multipleOtherwiseErr());
           getParser().reportError(Constants.ERROR, error);
         }
       } else if (element instanceof Text) {
@@ -73,14 +74,14 @@ final class Choose extends Instruction {
       }
       // It is an error if we find some other element here
       else {
-        error = new ErrorMsg(ErrorMsg.WHEN_ELEMENT_ERR, this);
+        error = new ErrorMsg(this, Messages.get().whenElementErr());
         getParser().reportError(Constants.ERROR, error);
       }
     }
 
     // Make sure that there is at least one <xsl:when> element
     if (whenElements.size() == 0) {
-      error = new ErrorMsg(ErrorMsg.MISSING_WHEN_ERR, this);
+      error = new ErrorMsg(this, Messages.get().missingWhenErr());
       getParser().reportError(Constants.ERROR, error);
       return;
     }

@@ -25,6 +25,7 @@ import org.xml.sax.SAXException;
 import de.lyca.xalan.xsltc.DOM;
 import de.lyca.xalan.xsltc.StripFilter;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
+import de.lyca.xalan.xsltc.compiler.util.Messages;
 import de.lyca.xalan.xsltc.dom.DOMWSFilter;
 import de.lyca.xalan.xsltc.dom.SAXImpl;
 import de.lyca.xalan.xsltc.dom.XSLTCDTMManager;
@@ -101,7 +102,7 @@ public final class XSLTCSource implements Source {
         if (_systemId != null && _systemId.length() > 0) {
           source = new StreamSource(_systemId);
         } else {
-          final ErrorMsg err = new ErrorMsg(ErrorMsg.XSLTC_SOURCE_ERR);
+          final ErrorMsg err = new ErrorMsg(Messages.get().xsltcSourceErr());
           throw new SAXException(err.toString());
         }
       }

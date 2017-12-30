@@ -36,6 +36,7 @@ import de.lyca.xalan.xsltc.DOMEnhancedForDTM;
 import de.lyca.xalan.xsltc.StripFilter;
 import de.lyca.xalan.xsltc.TransletException;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
+import de.lyca.xalan.xsltc.compiler.util.Messages;
 import de.lyca.xalan.xsltc.dom.DOMWSFilter;
 import de.lyca.xalan.xsltc.dom.XSLTCDTMManager;
 import de.lyca.xalan.xsltc.runtime.AbstractTranslet;
@@ -117,8 +118,8 @@ final public class Transform {
         wsfilter = null;
       }
 
-      final DOMEnhancedForDTM dom = (DOMEnhancedForDTM) dtmManager.getDTM(new SAXSource(reader, new InputSource(
-              _fileName)), false, wsfilter, true, false, translet.hasIdCall());
+      final DOMEnhancedForDTM dom = (DOMEnhancedForDTM) dtmManager.getDTM(
+          new SAXSource(reader, new InputSource(_fileName)), false, wsfilter, true, false, translet.hasIdCall());
 
       dom.setDocumentURI(_fileName);
       translet.prepassDocument(dom);
@@ -154,36 +155,36 @@ final public class Transform {
       if (_debug) {
         e.printStackTrace();
       }
-      System.err.println(new ErrorMsg(ErrorMsg.RUNTIME_ERROR_KEY) + e.getMessage());
+      System.err.println(Messages.get().runtimeErrorKey() + e.getMessage());
     } catch (final RuntimeException e) {
       if (_debug) {
         e.printStackTrace();
       }
-      System.err.println(new ErrorMsg(ErrorMsg.RUNTIME_ERROR_KEY) + e.getMessage());
+      System.err.println(Messages.get().runtimeErrorKey() + e.getMessage());
     } catch (final FileNotFoundException e) {
       if (_debug) {
         e.printStackTrace();
       }
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.FILE_NOT_FOUND_ERR, _fileName);
-      System.err.println(new ErrorMsg(ErrorMsg.RUNTIME_ERROR_KEY) + err.toString());
+      final ErrorMsg err = new ErrorMsg(Messages.get().fileNotFoundErr(_fileName), -1);
+      System.err.println(Messages.get().runtimeErrorKey() + err.toString());
     } catch (final MalformedURLException e) {
       if (_debug) {
         e.printStackTrace();
       }
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.INVALID_URI_ERR, _fileName);
-      System.err.println(new ErrorMsg(ErrorMsg.RUNTIME_ERROR_KEY) + err.toString());
+      final ErrorMsg err = new ErrorMsg(Messages.get().invalidUriErr(_fileName), -1);
+      System.err.println(Messages.get().runtimeErrorKey() + err.toString());
     } catch (final ClassNotFoundException e) {
       if (_debug) {
         e.printStackTrace();
       }
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.CLASS_NOT_FOUND_ERR, _className);
-      System.err.println(new ErrorMsg(ErrorMsg.RUNTIME_ERROR_KEY) + err.toString());
+      final ErrorMsg err = new ErrorMsg(Messages.get().classNotFoundErr(_className), -1);
+      System.err.println(Messages.get().runtimeErrorKey() + err.toString());
     } catch (final UnknownHostException e) {
       if (_debug) {
         e.printStackTrace();
       }
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.INVALID_URI_ERR, _fileName);
-      System.err.println(new ErrorMsg(ErrorMsg.RUNTIME_ERROR_KEY) + err.toString());
+      final ErrorMsg err = new ErrorMsg(Messages.get().invalidUriErr(_fileName), -1);
+      System.err.println(Messages.get().runtimeErrorKey() + err.toString());
     } catch (final SAXException e) {
       final Exception ex = e.getException();
       if (_debug) {
@@ -192,7 +193,7 @@ final public class Transform {
         }
         e.printStackTrace();
       }
-      System.err.print(new ErrorMsg(ErrorMsg.RUNTIME_ERROR_KEY));
+      System.err.print(Messages.get().runtimeErrorKey());
       if (ex != null) {
         System.err.println(ex.getMessage());
       } else {
@@ -202,12 +203,12 @@ final public class Transform {
       if (_debug) {
         e.printStackTrace();
       }
-      System.err.println(new ErrorMsg(ErrorMsg.RUNTIME_ERROR_KEY) + e.getMessage());
+      System.err.println(Messages.get().runtimeErrorKey() + e.getMessage());
     }
   }
 
   public static void printUsage() {
-    System.err.println(new ErrorMsg(ErrorMsg.TRANSFORM_USAGE_STR));
+    System.err.println(new ErrorMsg(Messages.get().transformUsageStr()));
   }
 
   public static void main(String[] args) {

@@ -30,6 +30,7 @@ import com.sun.codemodel.JVar;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
+import de.lyca.xalan.xsltc.compiler.util.Messages;
 import de.lyca.xalan.xsltc.compiler.util.ObjectType;
 import de.lyca.xalan.xsltc.compiler.util.ReferenceType;
 import de.lyca.xalan.xsltc.compiler.util.Type;
@@ -82,7 +83,7 @@ final class Param extends VariableBase {
         // It is an error if the two have the same import precedence
         if (us == them) {
           final String name = _name.toString();
-          reportError(this, parser, ErrorMsg.VARIABLE_REDEF_ERR, name);
+          reportError(this, parser, Messages.get().variableRedefErr(name));
         }
         // Ignore this if previous definition has higher precedence
         else if (them > us) {
@@ -120,14 +121,14 @@ final class Param extends VariableBase {
         if (child instanceof Text && ((Text) child).isIgnore())
           continue;
         // TODO better error reporting
-        final ErrorMsg err = new ErrorMsg(ErrorMsg.INTERNAL_ERR,
-            "xsl:param element must not have both content and a select attribute", this);
+        final ErrorMsg err = new ErrorMsg(this,
+            Messages.get().internalErr("xsl:param element must not have both content and a select attribute"));
         throw new TypeCheckError(err);
       }
     }
     if (!(getParent() instanceof Stylesheet || getParent() instanceof Template)) {
       // TODO better error reporting
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.INTERNAL_ERR, "Parent is not Stylesheet or Template", this);
+      final ErrorMsg err = new ErrorMsg(this, Messages.get().internalErr("Parent is not Stylesheet or Template"));
       throw new TypeCheckError(err);
     }
 

@@ -26,7 +26,7 @@ import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JInvocation;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
-import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
+import de.lyca.xalan.xsltc.compiler.util.Messages;
 import de.lyca.xalan.xsltc.compiler.util.NodeSetType;
 import de.lyca.xalan.xsltc.compiler.util.NodeType;
 import de.lyca.xalan.xsltc.compiler.util.ReferenceType;
@@ -47,7 +47,7 @@ final class CopyOf extends Instruction {
     _select = parser.parseExpression(this, "select", null);
     // make sure required attribute(s) have been set
     if (_select.isDummy()) {
-      reportError(this, parser, ErrorMsg.REQUIRED_ATTR_ERR, "select");
+      reportError(this, parser, Messages.get().requiredAttrErr("select"));
       return;
     }
   }
@@ -56,7 +56,7 @@ final class CopyOf extends Instruction {
   public Type typeCheck(SymbolTable stable) throws TypeCheckError {
     final Type tselect = _select.typeCheck(stable);
     if (tselect instanceof NodeType || tselect instanceof NodeSetType || tselect instanceof ReferenceType
-            || tselect instanceof ResultTreeType) {
+        || tselect instanceof ResultTreeType) {
       // falls through
     } else {
       _select = new CastExpr(_select, Type.String);
@@ -83,9 +83,8 @@ final class CopyOf extends Instruction {
       JInvocation copy = ctx.currentBlock().invoke(dom, COPY);
       copy.arg(document).arg(ctx.currentHandler());
     } else if (type instanceof ReferenceType) {
-      ctx.currentBlock().add(
-          ctx.ref(BasisLibrary.class).staticInvoke(COPY).arg(select).arg(ctx.currentHandler())
-              .arg(ctx.currentNode()).arg(ctx.currentDom()));
+      ctx.currentBlock().add(ctx.ref(BasisLibrary.class).staticInvoke(COPY).arg(select).arg(ctx.currentHandler())
+          .arg(ctx.currentNode()).arg(ctx.currentDom()));
     } else {
       ctx.currentBlock().invoke(CHARACTERSW).arg(select).arg(ctx.currentHandler());
     }

@@ -20,6 +20,7 @@ package de.lyca.xalan.xsltc.compiler;
 import de.lyca.xalan.xsltc.compiler.util.BooleanType;
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
+import de.lyca.xalan.xsltc.compiler.util.Messages;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
 
@@ -56,7 +57,7 @@ final class When extends Instruction {
 
     // Make sure required attribute(s) have been set
     if (_test.isDummy()) {
-      reportError(this, parser, ErrorMsg.REQUIRED_ATTR_ERR, "test");
+      reportError(this, parser, Messages.get().requiredAttrErr("test"));
     }
   }
 
@@ -87,7 +88,7 @@ final class When extends Instruction {
    */
   @Override
   public void translate(CompilerContext ctx) {
-    final ErrorMsg msg = new ErrorMsg(ErrorMsg.STRAY_WHEN_ERR, this);
+    final ErrorMsg msg = new ErrorMsg(this, Messages.get().strayWhenErr());
     getParser().reportError(Constants.ERROR, msg);
   }
 }

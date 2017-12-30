@@ -39,6 +39,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 import de.lyca.xalan.xsltc.compiler.XSLTC;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
+import de.lyca.xalan.xsltc.compiler.util.Messages;
 
 /**
  * @author Santiago Pericas-Geertsen
@@ -148,15 +149,15 @@ public final class Util {
           input = new InputSource(systemId);
         }
       } else {
-        final ErrorMsg err = new ErrorMsg(ErrorMsg.JAXP_UNKNOWN_SOURCE_ERR);
+        final ErrorMsg err = new ErrorMsg(Messages.get().jaxpUnknownSourceErr());
         throw new TransformerConfigurationException(err.toString());
       }
       input.setSystemId(systemId);
     } catch (final NullPointerException e) {
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.JAXP_NO_SOURCE_ERR, "TransformerFactory.newTemplates()");
+      final ErrorMsg err = new ErrorMsg(Messages.get().jaxpNoSourceErr("TransformerFactory.newTemplates()"));
       throw new TransformerConfigurationException(err.toString());
     } catch (final SecurityException e) {
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.FILE_ACCESS_ERR, systemId);
+      final ErrorMsg err = new ErrorMsg(Messages.get().fileAccessErr(systemId), -1);
       throw new TransformerConfigurationException(err.toString());
     }
     return input;

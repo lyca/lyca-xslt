@@ -30,6 +30,7 @@ import com.sun.codemodel.JVar;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
+import de.lyca.xalan.xsltc.compiler.util.Messages;
 import de.lyca.xalan.xsltc.compiler.util.NodeSetType;
 import de.lyca.xalan.xsltc.compiler.util.StringType;
 import de.lyca.xalan.xsltc.compiler.util.Type;
@@ -76,7 +77,7 @@ final class Key extends TopLevelElement {
     // Get the required attributes and parser XPath expressions
     final String name = getAttribute("name");
     if (!XML11Char.isXML11ValidQName(name)) {
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.INVALID_QNAME_ERR, name, this);
+      final ErrorMsg err = new ErrorMsg(this, Messages.get().invalidQnameErr(name));
       parser.reportError(Constants.ERROR, err);
     }
 
@@ -89,21 +90,21 @@ final class Key extends TopLevelElement {
 
     // Make sure required attribute(s) have been set
     if (_name == null) {
-      reportError(this, parser, ErrorMsg.REQUIRED_ATTR_ERR, "name");
+      reportError(this, parser, Messages.get().requiredAttrErr("name"));
       return;
     }
     if (_match.isDummy()) {
-      reportError(this, parser, ErrorMsg.REQUIRED_ATTR_ERR, "match");
+      reportError(this, parser, Messages.get().requiredAttrErr("match"));
       return;
     } else if (!(_match instanceof Pattern)) {
-      reportError(this, parser, ErrorMsg.TYPE_CHECK_ERR, "match");
+      reportError(this, parser, Messages.get().typeCheckErr("match"));
       return;
     }
     if (_use.isDummy()) {
-      reportError(this, parser, ErrorMsg.REQUIRED_ATTR_ERR, "use");
+      reportError(this, parser, Messages.get().requiredAttrErr("use"));
       return;
     } else if (_use instanceof VariableRef) {
-      reportError(this, parser, ErrorMsg.TYPE_CHECK_ERR, "use");
+      reportError(this, parser, Messages.get().typeCheckErr("use"));
       return;
     }
   }
@@ -121,7 +122,7 @@ final class Key extends TopLevelElement {
   public Type typeCheck(SymbolTable stable) throws TypeCheckError {
     if (!(getParent() instanceof Stylesheet)) {
       // TODO
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.INTERNAL_ERR, "Parent is not Stylesheet", this);
+      final ErrorMsg err = new ErrorMsg(this, Messages.get().internalErr("Parent is not Stylesheet"));
       throw new TypeCheckError(err);
     }
 

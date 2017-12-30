@@ -25,6 +25,7 @@ import com.sun.codemodel.JExpression;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
+import de.lyca.xalan.xsltc.compiler.util.Messages;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
 import de.lyca.xalan.xsltc.compiler.util.Util;
@@ -48,24 +49,25 @@ final class ProcessingInstruction extends Instruction {
       _isLiteral = Util.isLiteral(name);
       if (_isLiteral) {
         if (!XML11Char.isXML11ValidNCName(name)) {
-          final ErrorMsg err = new ErrorMsg(ErrorMsg.INVALID_NCNAME_ERR, name, this);
+          final ErrorMsg err = new ErrorMsg(this, Messages.get().invalidNcnameErr(name));
           parser.reportError(Constants.ERROR, err);
         }
       }
       _name = AttributeValue.create(this, name, parser);
     } else {
-      reportError(this, parser, ErrorMsg.REQUIRED_ATTR_ERR, "name");
+      reportError(this, parser, Messages.get().requiredAttrErr("name"));
     }
 
     if (name.equals("xml")) {
-      reportError(this, parser, ErrorMsg.ILLEGAL_PI_ERR, "xml");
+      reportError(this, parser, Messages.get().illegalPiErr("xml"));
     }
     parseChildren(parser);
 
     for (SyntaxTreeNode child : getContents()) {
       if (child instanceof XslElement) {
-        // TODO
-        final ErrorMsg err = new ErrorMsg(ErrorMsg.INTERNAL_ERR, "xsl:processing-instruction cannot contain xsl:element", this);
+        // TODO better error reporting
+        final ErrorMsg err = new ErrorMsg(this,
+            Messages.get().internalErr("xsl:processing-instruction cannot contain xsl:element"));
         parser.reportError(Constants.ERROR, err);
       }
     }

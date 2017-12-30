@@ -29,6 +29,7 @@ import de.lyca.xalan.xsltc.compiler.util.BooleanType;
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.IntType;
+import de.lyca.xalan.xsltc.compiler.util.Messages;
 import de.lyca.xalan.xsltc.compiler.util.NodeType;
 import de.lyca.xalan.xsltc.compiler.util.RealType;
 import de.lyca.xalan.xsltc.compiler.util.Type;
@@ -58,7 +59,7 @@ final class Variable extends VariableBase {
         // It is an error if the two have the same import precedence
         if (us == them) {
           final String name = _name.toString();
-          reportError(this, parser, ErrorMsg.VARIABLE_REDEF_ERR, name);
+          reportError(this, parser, Messages.get().variableRedefErr(name));
         }
         // Ignore this if previous definition has higher precedence
         else if (them > us) {
@@ -84,8 +85,8 @@ final class Variable extends VariableBase {
   public Type typeCheck(SymbolTable stable) throws TypeCheckError {
     if (_select != null && hasContents()) {
       // TODO better error reporting
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.INTERNAL_ERR,
-          "xsl:variable element must not have both content and a select attribute", this);
+      final ErrorMsg err = new ErrorMsg(this,
+          Messages.get().internalErr("xsl:variable element must not have both content and a select attribute"));
       throw new TypeCheckError(err);
     }
 

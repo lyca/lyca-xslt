@@ -29,6 +29,7 @@ import com.sun.codemodel.JExpression;
 import de.lyca.xalan.ObjectFactory;
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
+import de.lyca.xalan.xsltc.compiler.util.Messages;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
 import de.lyca.xalan.xsltc.compiler.util.Util;
@@ -72,14 +73,14 @@ final class FunctionAvailableCall extends FunctionCall {
   @Override
   public Type typeCheck(SymbolTable stable) throws TypeCheckError {
     if (argumentCount() != 1) {
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.ILLEGAL_ARG_ERR, this);
+      final ErrorMsg err = new ErrorMsg(this, Messages.get().illegalArgErr());
       throw new TypeCheckError(err);
     }
     if (_type != null)
       return _type;
     if (_arg instanceof LiteralExpr)
       return _type = Type.Boolean;
-    final ErrorMsg err = new ErrorMsg(ErrorMsg.NEED_LITERAL_ERR, "function-available", this);
+    final ErrorMsg err = new ErrorMsg(this, Messages.get().needLiteralErr("function-available"));
     throw new TypeCheckError(err);
   }
 

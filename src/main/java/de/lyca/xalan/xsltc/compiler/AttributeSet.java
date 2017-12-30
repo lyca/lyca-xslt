@@ -23,14 +23,9 @@ import static de.lyca.xalan.xsltc.compiler.Constants.DOCUMENT_PNAME;
 import static de.lyca.xalan.xsltc.compiler.Constants.ERROR;
 import static de.lyca.xalan.xsltc.compiler.Constants.ITERATOR_PNAME;
 import static de.lyca.xalan.xsltc.compiler.Constants.TRANSLET_OUTPUT_PNAME;
-import static de.lyca.xalan.xsltc.compiler.util.ErrorMsg.ILLEGAL_CHILD_ERR;
-import static de.lyca.xalan.xsltc.compiler.util.ErrorMsg.INVALID_QNAME_ERR;
-import static de.lyca.xalan.xsltc.compiler.util.ErrorMsg.UNNAMED_ATTRIBSET_ERR;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Set;
 
 import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JStatement;
@@ -40,6 +35,7 @@ import de.lyca.xalan.xsltc.DOM;
 import de.lyca.xalan.xsltc.TransletException;
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
+import de.lyca.xalan.xsltc.compiler.util.Messages;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
 import de.lyca.xalan.xsltc.compiler.util.Util;
@@ -100,13 +96,13 @@ final class AttributeSet extends TopLevelElement {
     final String name = getAttribute("name");
 
     if (!XML11Char.isXML11ValidQName(name)) {
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.INVALID_QNAME_ERR, name, this);
+      final ErrorMsg err = new ErrorMsg(this, Messages.get().invalidQnameErr(name));
       parser.reportError(Constants.ERROR, err);
     }
     _name = parser.getQNameIgnoreDefaultNs(name);
     if (_name == null || _name.equals("")) {
       // TODO _name cannot be the empty string...
-      final ErrorMsg msg = new ErrorMsg(UNNAMED_ATTRIBSET_ERR, this);
+      final ErrorMsg msg = new ErrorMsg(this, Messages.get().unnamedAttribsetErr());
       parser.reportError(ERROR, msg);
     }
 
@@ -114,7 +110,7 @@ final class AttributeSet extends TopLevelElement {
     final String useSets = getAttribute("use-attribute-sets");
     if (useSets.length() > 0) {
       if (!Util.isValidQNames(useSets)) {
-        final ErrorMsg err = new ErrorMsg(INVALID_QNAME_ERR, useSets, this);
+        final ErrorMsg err = new ErrorMsg(this,Messages.get().invalidQnameErr(useSets));
         parser.reportError(ERROR, err);
       }
       _useSets = new UseAttributeSets(useSets, parser);
@@ -130,7 +126,7 @@ final class AttributeSet extends TopLevelElement {
       } else if (child instanceof Text) {
         // ignore
       } else {
-        final ErrorMsg msg = new ErrorMsg(ILLEGAL_CHILD_ERR, this);
+        final ErrorMsg msg = new ErrorMsg(this, Messages.get().illegalChildErr());
         parser.reportError(ERROR, msg);
       }
     }
@@ -156,7 +152,7 @@ final class AttributeSet extends TopLevelElement {
     if (_useSets != null) {
       if (containsSet(_name, stable)) {
         // TODO better error handling
-        reportError(this, getParser(), ErrorMsg.INTERNAL_ERR, "Circular references in attribute-sets");
+        reportError(this, getParser(), Messages.get().internalErr("Circular references in attribute-sets"));
       }
       _useSets.typeCheck(stable);
     }

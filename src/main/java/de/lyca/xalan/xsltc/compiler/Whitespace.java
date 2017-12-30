@@ -39,6 +39,7 @@ import de.lyca.xalan.xsltc.DOM;
 import de.lyca.xalan.xsltc.StripFilter;
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
+import de.lyca.xalan.xsltc.compiler.util.Messages;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
 
@@ -149,7 +150,7 @@ final class Whitespace extends TopLevelElement {
     // Get the list of elements to strip/preserve
     _elementList = getAttribute("elements");
     if (_elementList == null || _elementList.length() == 0) {
-      reportError(this, parser, ErrorMsg.REQUIRED_ATTR_ERR, "elements");
+      reportError(this, parser, Messages.get().requiredAttrErr("elements"));
       return;
     }
 
@@ -459,8 +460,8 @@ final class Whitespace extends TopLevelElement {
   @Override
   public Type typeCheck(SymbolTable stable) throws TypeCheckError {
     if (!(getParent() instanceof Stylesheet)) {
-      // TODO
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.INTERNAL_ERR, "Parent is not Stylesheet", this);
+      // TODO better error reporting
+      final ErrorMsg err = new ErrorMsg(this, Messages.get().internalErr("Parent is not Stylesheet"));
       throw new TypeCheckError(err);
     }
     return Type.Void; // We don't return anything.

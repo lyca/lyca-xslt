@@ -18,8 +18,6 @@
 package de.lyca.xalan.xsltc.compiler;
 
 import static com.sun.codemodel.JExpr._new;
-import static de.lyca.xalan.xsltc.compiler.util.ErrorMsg.ILLEGAL_CHILD_ERR;
-import static de.lyca.xalan.xsltc.compiler.util.ErrorMsg.SYMBOLS_REDEF_ERR;
 
 import java.text.DecimalFormatSymbols;
 import java.util.HashMap;
@@ -32,6 +30,7 @@ import com.sun.codemodel.JVar;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
+import de.lyca.xalan.xsltc.compiler.util.Messages;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
 import de.lyca.xml.utils.XML11Char;
@@ -88,7 +87,7 @@ final class DecimalFormatting extends TopLevelElement {
     final String name = getAttribute("name");
     if (name.length() > 0) {
       if (!XML11Char.isXML11ValidQName(name)) {
-        final ErrorMsg err = new ErrorMsg(ErrorMsg.INVALID_QNAME_ERR, name, this);
+        final ErrorMsg err = new ErrorMsg(Messages.get().invalidQnameErr(name));
         parser.reportError(Constants.ERROR, err);
       }
     }
@@ -103,16 +102,16 @@ final class DecimalFormatting extends TopLevelElement {
     if (decimalFormatting == null) {
       stable.addDecimalFormatting(_name, this);
     } else if (!equivalent(decimalFormatting)) {
-      reportError(this, parser, SYMBOLS_REDEF_ERR, _name.toString());
+      reportError(this, parser, Messages.get().symbolsRedefErr(_name));
     }
     if (elementCount() > 0) {
-      reportError(this, parser, ILLEGAL_CHILD_ERR, _name.toString());
+      reportError(this, parser, Messages.get().illegalChildErr());
     }
     for (String attr : ATTR_TO_METHOD.keySet()) {
       String val = getAttribute(attr);
       if (val.length() > 1) {
         // TODO better Error reporting
-        reportError(this, parser, ErrorMsg.ILLEGAL_CHAR_ERR, val);
+        reportError(this, parser, Messages.get().illegalCharErr(val));
       }
     }
   }

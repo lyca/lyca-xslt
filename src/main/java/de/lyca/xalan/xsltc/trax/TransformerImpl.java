@@ -70,6 +70,7 @@ import de.lyca.xalan.xsltc.StripFilter;
 import de.lyca.xalan.xsltc.Translet;
 import de.lyca.xalan.xsltc.TransletException;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
+import de.lyca.xalan.xsltc.compiler.util.Messages;
 import de.lyca.xalan.xsltc.dom.DOMWSFilter;
 import de.lyca.xalan.xsltc.dom.SAXImpl;
 import de.lyca.xalan.xsltc.dom.XSLTCDTMManager;
@@ -229,8 +230,8 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
     _tfactory = tfactory;
     stylesheetProperties = createStylesheetProperties(outputProperties);
     if (stylesheetProperties.containsKey(OutputKeys.METHOD)) {
-      defaultProperties = OutputPropertiesMapFactory.getDefaultMethodProperties(stylesheetProperties
-          .get(OutputKeys.METHOD));
+      defaultProperties = OutputPropertiesMapFactory
+          .getDefaultMethodProperties(stylesheetProperties.get(OutputKeys.METHOD));
     } else {
       defaultProperties = OutputPropertiesMapFactory.getDefaultMethodProperties("xml");
     }
@@ -275,7 +276,7 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
   public void transform(Source source, Result result) throws TransformerException {
     if (!_isIdentity) {
       if (_translet == null) {
-        final ErrorMsg err = new ErrorMsg(ErrorMsg.JAXP_NO_TRANSLET_ERR);
+        final ErrorMsg err = new ErrorMsg(Messages.get().jaxpNoTransletErr());
         throw new TransformerException(err.toString());
       }
       // Pass output properties to the translet
@@ -284,7 +285,7 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
 
     final SerializationHandler toHandler = getOutputHandler(result);
     if (toHandler == null) {
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.JAXP_NO_HANDLER_ERR);
+      final ErrorMsg err = new ErrorMsg(Messages.get().jaxpNoHandlerErr());
       throw new TransformerException(err.toString());
     }
 
@@ -379,7 +380,7 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
         // or try to get just a systemId string from Result object
         final String systemId = result.getSystemId();
         if (systemId == null) {
-          final ErrorMsg err = new ErrorMsg(ErrorMsg.JAXP_NO_RESULT_ERR);
+          final ErrorMsg err = new ErrorMsg(Messages.get().jaxpNoResultErr(result));
           throw new TransformerException(err.toString());
         }
 
@@ -513,7 +514,7 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
         } else if (_sourceSystemId != null) {
           input = new InputSource(_sourceSystemId);
         } else {
-          final ErrorMsg err = new ErrorMsg(ErrorMsg.JAXP_NO_SOURCE_ERR);
+          final ErrorMsg err = new ErrorMsg(Messages.get().jaxpNoSourceErr(null));
           throw new TransformerException(err.toString());
         }
 
@@ -557,7 +558,7 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
       final DOM dom = ((XSLTCSource) source).getDOM(null, _translet);
       ((SAXImpl) dom).copy(handler);
     } else {
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.JAXP_NO_SOURCE_ERR);
+      final ErrorMsg err = new ErrorMsg(Messages.get().jaxpNoSourceErr(null));
       throw new TransformerException(err.toString());
     }
   }
@@ -578,8 +579,8 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
       if (source instanceof StreamSource && source.getSystemId() == null
           && ((StreamSource) source).getInputStream() == null && ((StreamSource) source).getReader() == null
           || source instanceof SAXSource && ((SAXSource) source).getInputSource() == null
-          && ((SAXSource) source).getXMLReader() == null || source instanceof DOMSource
-          && ((DOMSource) source).getNode() == null) {
+              && ((SAXSource) source).getXMLReader() == null
+          || source instanceof DOMSource && ((DOMSource) source).getNode() == null) {
         final DocumentBuilderFactory builderF = DocumentBuilderFactory.newInstance();
         final DocumentBuilder builder = builderF.newDocumentBuilder();
         final String systemID = source.getSystemId();
@@ -648,7 +649,7 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
   @Override
   public void setErrorListener(ErrorListener listener) throws IllegalArgumentException {
     if (listener == null) {
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.ERROR_LISTENER_NULL_ERR, "Transformer");
+      final ErrorMsg err = new ErrorMsg(Messages.get().errorListenerNullErr("Transformer"));
       throw new IllegalArgumentException(err.toString());
     }
     _errorListener = listener;
@@ -719,7 +720,7 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
   @Override
   public String getOutputProperty(String name) throws IllegalArgumentException {
     if (!validOutputProperty(name)) {
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.JAXP_UNKNOWN_PROP_ERR, name);
+      final ErrorMsg err = new ErrorMsg(Messages.get().jaxpUnknownPropErr(name));
       throw new IllegalArgumentException(err.toString());
     }
     return getLayeredOutputProperty(name, userProperties, stylesheetProperties, defaultProperties);
@@ -762,7 +763,7 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
         if (validOutputProperty(name)) {
           userProperties.put(name, properties.getProperty(name));
         } else {
-          final ErrorMsg err = new ErrorMsg(ErrorMsg.JAXP_UNKNOWN_PROP_ERR, name);
+          final ErrorMsg err = new ErrorMsg(Messages.get().jaxpUnknownPropErr(name));
           throw new IllegalArgumentException(err.toString());
         }
       }
@@ -787,7 +788,7 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
   @Override
   public void setOutputProperty(String name, String value) throws IllegalArgumentException {
     if (!validOutputProperty(name)) {
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.JAXP_UNKNOWN_PROP_ERR, name);
+      final ErrorMsg err = new ErrorMsg(Messages.get().jaxpUnknownPropErr(name));
       throw new IllegalArgumentException(err.toString());
     }
     userProperties.put(name, value);
@@ -961,10 +962,10 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
     }
   }
 
-  private static final Set<String> VALID_OUTPUT_PROPERTIES = new HashSet<>(Arrays.asList(new String[] {
-      OutputKeys.ENCODING, OutputKeys.METHOD, OutputKeys.INDENT, OutputKeys.DOCTYPE_PUBLIC, OutputKeys.DOCTYPE_SYSTEM,
-      OutputKeys.CDATA_SECTION_ELEMENTS, OutputKeys.MEDIA_TYPE, OutputKeys.OMIT_XML_DECLARATION, OutputKeys.STANDALONE,
-      OutputKeys.VERSION }));
+  private static final Set<String> VALID_OUTPUT_PROPERTIES = new HashSet<>(
+      Arrays.asList(new String[] { OutputKeys.ENCODING, OutputKeys.METHOD, OutputKeys.INDENT, OutputKeys.DOCTYPE_PUBLIC,
+          OutputKeys.DOCTYPE_SYSTEM, OutputKeys.CDATA_SECTION_ELEMENTS, OutputKeys.MEDIA_TYPE,
+          OutputKeys.OMIT_XML_DECLARATION, OutputKeys.STANDALONE, OutputKeys.VERSION }));
 
   /**
    * Verifies if a given output property name is a property defined in the JAXP
@@ -996,7 +997,7 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
   public void setParameter(String name, Object value) {
 
     if (value == null) {
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.JAXP_INVALID_SET_PARAM_VALUE, name);
+      final ErrorMsg err = new ErrorMsg(Messages.get().jaxpInvalidSetParamValue(name));
       throw new IllegalArgumentException(err.toString());
     }
 
@@ -1125,9 +1126,9 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
     final Throwable wrapped = e.getException();
     if (wrapped != null) {
       System.err
-          .println(new ErrorMsg(ErrorMsg.ERROR_PLUS_WRAPPED_MSG, e.getMessageAndLocation(), wrapped.getMessage()));
+          .println(new ErrorMsg(Messages.get().errorPlusWrappedMsg(e.getMessageAndLocation(), wrapped.getMessage())));
     } else {
-      System.err.println(new ErrorMsg(ErrorMsg.ERROR_MSG, e.getMessageAndLocation()));
+      System.err.println(new ErrorMsg(Messages.get().errorMsg(e.getMessageAndLocation())));
     }
     throw e;
   }
@@ -1149,10 +1150,10 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
   public void fatalError(TransformerException e) throws TransformerException {
     final Throwable wrapped = e.getException();
     if (wrapped != null) {
-      System.err.println(new ErrorMsg(ErrorMsg.FATAL_ERR_PLUS_WRAPPED_MSG, e.getMessageAndLocation(), wrapped
-          .getMessage()));
+      System.err.println(
+          new ErrorMsg(Messages.get().fatalErrPlusWrappedMsg(e.getMessageAndLocation(), wrapped.getMessage())));
     } else {
-      System.err.println(new ErrorMsg(ErrorMsg.FATAL_ERR_MSG, e.getMessageAndLocation()));
+      System.err.println(new ErrorMsg(Messages.get().fatalErrMsg(e.getMessageAndLocation())));
     }
     throw e;
   }
@@ -1174,10 +1175,10 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
   public void warning(TransformerException e) throws TransformerException {
     final Throwable wrapped = e.getException();
     if (wrapped != null) {
-      System.err.println(new ErrorMsg(ErrorMsg.WARNING_PLUS_WRAPPED_MSG, e.getMessageAndLocation(), wrapped
-          .getMessage()));
+      System.err
+          .println(new ErrorMsg(Messages.get().warningPlusWrappedMsg(e.getMessageAndLocation(), wrapped.getMessage())));
     } else {
-      System.err.println(new ErrorMsg(ErrorMsg.WARNING_MSG, e.getMessageAndLocation()));
+      System.err.println(new ErrorMsg(Messages.get().warningMsg(e.getMessageAndLocation())));
     }
   }
 

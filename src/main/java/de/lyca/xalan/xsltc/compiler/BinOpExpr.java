@@ -22,6 +22,7 @@ import com.sun.codemodel.JOp;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
+import de.lyca.xalan.xsltc.compiler.util.Messages;
 import de.lyca.xalan.xsltc.compiler.util.MethodType;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
@@ -112,7 +113,7 @@ final class BinOpExpr extends Expression {
     case MOD:
       return JOp.mod(leftExpr, rightExpr);
     default:
-      final ErrorMsg msg = new ErrorMsg(ErrorMsg.ILLEGAL_BINARY_OP_ERR, this);
+      final ErrorMsg msg = new ErrorMsg(this, Messages.get().illegalBinaryOpErr());
       getParser().reportError(Constants.ERROR, msg);
       return null;
     }

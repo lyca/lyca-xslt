@@ -18,7 +18,6 @@
 package de.lyca.xalan.xsltc.compiler;
 
 import static de.lyca.xalan.xsltc.compiler.Constants.FATAL;
-import static de.lyca.xalan.xsltc.compiler.util.ErrorMsg.NOT_IMPLEMENTED_ERR;
 import static de.lyca.xml.dtm.DTMAxisIterator.SET_START_NODE;
 
 import java.util.List;
@@ -27,6 +26,7 @@ import com.sun.codemodel.JExpression;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
+import de.lyca.xalan.xsltc.compiler.util.Messages;
 import de.lyca.xalan.xsltc.compiler.util.MethodType;
 import de.lyca.xalan.xsltc.compiler.util.NodeSetType;
 import de.lyca.xalan.xsltc.compiler.util.Type;
@@ -82,7 +82,7 @@ abstract class Expression extends SyntaxTreeNode {
    */
   @Override
   public void translate(CompilerContext ctx) {
-    final ErrorMsg msg = new ErrorMsg(NOT_IMPLEMENTED_ERR, getClass(), this);
+    final ErrorMsg msg = new ErrorMsg(this, Messages.get().notImplementedErr(getClass()));
     getParser().reportError(FATAL, msg);
   }
 

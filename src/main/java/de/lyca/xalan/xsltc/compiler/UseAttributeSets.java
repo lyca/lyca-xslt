@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
-import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
+import de.lyca.xalan.xsltc.compiler.util.Messages;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
 
@@ -92,9 +92,7 @@ final class UseAttributeSets extends Instruction {
       }
       // Generate an error if the attribute set does not exist
       else {
-        final Parser parser = getParser();
-        final String atrs = name.toString();
-        reportError(this, parser, ErrorMsg.ATTRIBSET_UNDEF_ERR, atrs);
+        reportError(this, getParser(), Messages.get().attribsetUndefErr(name));
       }
     }
   }

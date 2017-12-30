@@ -23,6 +23,7 @@ import com.sun.codemodel.JExpression;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
+import de.lyca.xalan.xsltc.compiler.util.Messages;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
 
@@ -51,7 +52,7 @@ final class StartsWithCall extends FunctionCall {
 
     // Check that the function was passed exactly two arguments
     if (argumentCount() != 2) {
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.ILLEGAL_ARG_ERR, getName(), this);
+      final ErrorMsg err = new ErrorMsg(this, Messages.get().illegalArgErr());
       throw new TypeCheckError(err);
     }
 

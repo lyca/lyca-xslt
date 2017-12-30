@@ -26,6 +26,7 @@ import de.lyca.xalan.xsltc.cmdline.getopt.GetOpt;
 import de.lyca.xalan.xsltc.cmdline.getopt.GetOptsException;
 import de.lyca.xalan.xsltc.compiler.XSLTC;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
+import de.lyca.xalan.xsltc.compiler.util.Messages;
 
 /**
  * @author Jacek Ambroziak
@@ -41,9 +42,9 @@ public final class Compile {
   private static int VERSION_DELTA = 0;
 
   public static void printUsage() {
-    final StringBuilder vers = new StringBuilder("XSLTC version " + VERSION_MAJOR + "." + VERSION_MINOR
-            + (VERSION_DELTA > 0 ? "." + VERSION_DELTA : ""));
-    System.err.println(vers + "\n" + new ErrorMsg(ErrorMsg.COMPILE_USAGE_STR));
+    final StringBuilder vers = new StringBuilder(
+        "XSLTC version " + VERSION_MAJOR + "." + VERSION_MINOR + (VERSION_DELTA > 0 ? "." + VERSION_DELTA : ""));
+    System.err.println(vers + "\n" + new ErrorMsg(Messages.get().compileUsageStr()));
   }
 
   /**
@@ -69,37 +70,37 @@ public final class Compile {
       int c;
       while ((c = getopt.getNextOption()) != -1) {
         switch (c) {
-          case 'i':
-            useStdIn = true;
-            break;
-          case 'o':
-            xsltc.setClassName(getopt.getOptionArg());
-            classNameSet = true;
-            break;
-          case 'd':
-            xsltc.setDestDirectory(getopt.getOptionArg());
-            break;
-          case 'p':
-            xsltc.setPackageName(getopt.getOptionArg());
-            break;
-          case 'j':
-            xsltc.setJarFileName(getopt.getOptionArg());
-            break;
-          case 'x':
-            xsltc.setDebug(true);
-            break;
-          case 'u':
-            inputIsURL = true;
-            break;
-          case 'n':
-            xsltc.setTemplateInlining(true); // used to be 'false'
-            break;
-          case 'v':
-            // fall through to case h
-          case 'h':
-          default:
-            printUsage();
-            break;
+        case 'i':
+          useStdIn = true;
+          break;
+        case 'o':
+          xsltc.setClassName(getopt.getOptionArg());
+          classNameSet = true;
+          break;
+        case 'd':
+          xsltc.setDestDirectory(getopt.getOptionArg());
+          break;
+        case 'p':
+          xsltc.setPackageName(getopt.getOptionArg());
+          break;
+        case 'j':
+          xsltc.setJarFileName(getopt.getOptionArg());
+          break;
+        case 'x':
+          xsltc.setDebug(true);
+          break;
+        case 'u':
+          inputIsURL = true;
+          break;
+        case 'n':
+          xsltc.setTemplateInlining(true); // used to be 'false'
+          break;
+        case 'v':
+          // fall through to case h
+        case 'h':
+        default:
+          printUsage();
+          break;
         }
       }
 
@@ -107,7 +108,7 @@ public final class Compile {
 
       if (useStdIn) {
         if (!classNameSet) {
-          System.err.println(new ErrorMsg(ErrorMsg.COMPILE_STDIN_ERR));
+          System.err.println(new ErrorMsg(Messages.get().compileStdinErr()));
         }
         compileOK = xsltc.compile(System.in, xsltc.getClassName());
       } else {

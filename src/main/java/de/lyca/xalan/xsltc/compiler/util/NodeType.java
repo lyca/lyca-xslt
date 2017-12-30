@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 package de.lyca.xalan.xsltc.compiler.util;
+
 import static com.sun.codemodel.JExpr._new;
 import static com.sun.codemodel.JExpr.lit;
 import static de.lyca.xalan.xsltc.DOM.GET_STRING_VALUE_X;
@@ -91,7 +92,7 @@ public final class NodeType extends Type {
     } else if (type == Type.Object) {
       return compileTo(ctx, expr, (ObjectType) type);
     } else {
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), type.toString());
+      final ErrorMsg err = new ErrorMsg(Messages.get().dataConversionErr(this, type), -1);
       ctx.xsltc().getParser().reportError(FATAL, err);
       return expr;
     }
@@ -114,7 +115,7 @@ public final class NodeType extends Type {
     case NodeTest.PI:
       return ctx.currentDom().invoke(GET_STRING_VALUE_X).arg(expr);
     default:
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), type.toString());
+      final ErrorMsg err = new ErrorMsg(Messages.get().dataConversionErr(this, type), -1);
       ctx.xsltc().getParser().reportError(FATAL, err);
       return expr;
     }
@@ -178,29 +179,33 @@ public final class NodeType extends Type {
    */
   @Override
   public JExpression compileTo(CompilerContext ctx, JExpression expr, Class<?> clazz) {
-//    FIXME
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//    final InstructionList il = methodGen.getInstructionList();
-//
-//    final String className = clazz.getName();
-//    if (className.equals("java.lang.String")) {
-//      translateTo(classGen, methodGen, Type.String);
-//      return;
-//    }
-//
-//    il.append(methodGen.loadDOM());
-//    il.append(SWAP); // dom ref must be below node index
-//
-//    if (className.equals("org.w3c.dom.Node") || className.equals("java.lang.Object")) {
-//      final int index = cpg.addInterfaceMethodref(DOM_INTF, MAKE_NODE, MAKE_NODE_SIG);
-//      il.append(new INVOKEINTERFACE(index, 2));
-//    } else if (className.equals("org.w3c.dom.NodeList")) {
-//      final int index = cpg.addInterfaceMethodref(DOM_INTF, MAKE_NODE_LIST, MAKE_NODE_LIST_SIG);
-//      il.append(new INVOKEINTERFACE(index, 2));
-//    } else {
-//      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), className);
-//      classGen.getParser().reportError(Constants.FATAL, err);
-//    }
+    // FIXME
+    // final ConstantPoolGen cpg = classGen.getConstantPool();
+    // final InstructionList il = methodGen.getInstructionList();
+    //
+    // final String className = clazz.getName();
+    // if (className.equals("java.lang.String")) {
+    // translateTo(classGen, methodGen, Type.String);
+    // return;
+    // }
+    //
+    // il.append(methodGen.loadDOM());
+    // il.append(SWAP); // dom ref must be below node index
+    //
+    // if (className.equals("org.w3c.dom.Node") ||
+    // className.equals("java.lang.Object")) {
+    // final int index = cpg.addInterfaceMethodref(DOM_INTF, MAKE_NODE,
+    // MAKE_NODE_SIG);
+    // il.append(new INVOKEINTERFACE(index, 2));
+    // } else if (className.equals("org.w3c.dom.NodeList")) {
+    // final int index = cpg.addInterfaceMethodref(DOM_INTF, MAKE_NODE_LIST,
+    // MAKE_NODE_LIST_SIG);
+    // il.append(new INVOKEINTERFACE(index, 2));
+    // } else {
+    // final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR,
+    // toString(), className);
+    // classGen.getParser().reportError(Constants.FATAL, err);
+    // }
     return expr;
   }
 

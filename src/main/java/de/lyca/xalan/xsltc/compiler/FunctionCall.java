@@ -40,6 +40,7 @@ import com.sun.codemodel.JInvocation;
 import de.lyca.xalan.ObjectFactory;
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
+import de.lyca.xalan.xsltc.compiler.util.Messages;
 import de.lyca.xalan.xsltc.compiler.util.MethodType;
 import de.lyca.xalan.xsltc.compiler.util.ObjectType;
 import de.lyca.xalan.xsltc.compiler.util.ReferenceType;
@@ -158,55 +159,45 @@ class FunctionCall extends Expression {
       // -- Internal to Java --------------------------------------------
 
       // Type.Boolean -> { boolean(0), Boolean(1), Object(2) }
-      _internal2Java.put(
-              Type.Boolean,
-              new HashSet<>(Arrays.asList(new JavaType[] { new JavaType(Boolean.TYPE, 0),
-                      new JavaType(Boolean.class, 1), new JavaType(Object.class, 3) })));
+      _internal2Java.put(Type.Boolean, new HashSet<>(Arrays.asList(new JavaType[] { new JavaType(Boolean.TYPE, 0),
+          new JavaType(Boolean.class, 1), new JavaType(Object.class, 3) })));
 
       // Type.Real -> { double(0), Double(1), float(2), long(3), int(4),
       // short(5), byte(6), char(7), Object(8) }
-      _internal2Java.put(
-              Type.Real,
+      _internal2Java
+          .put(Type.Real,
               new HashSet<>(Arrays.asList(new JavaType[] { new JavaType(Double.TYPE, 0), new JavaType(Double.class, 1),
-                      new JavaType(Float.TYPE, 2), new JavaType(Long.TYPE, 3), new JavaType(Integer.TYPE, 4),
-                      new JavaType(Short.TYPE, 5), new JavaType(Byte.TYPE, 6), new JavaType(Character.TYPE, 7),
-                      new JavaType(Object.class, 8) })));
+                  new JavaType(Float.TYPE, 2), new JavaType(Long.TYPE, 3), new JavaType(Integer.TYPE, 4),
+                  new JavaType(Short.TYPE, 5), new JavaType(Byte.TYPE, 6), new JavaType(Character.TYPE, 7),
+                  new JavaType(Object.class, 8) })));
 
       // Type.Int must be the same as Type.Real
-      _internal2Java.put(
-              Type.Int,
+      _internal2Java
+          .put(Type.Int,
               new HashSet<>(Arrays.asList(new JavaType[] { new JavaType(Double.TYPE, 0), new JavaType(Double.class, 1),
-                      new JavaType(Float.TYPE, 2), new JavaType(Long.TYPE, 3), new JavaType(Integer.TYPE, 4),
-                      new JavaType(Short.TYPE, 5), new JavaType(Byte.TYPE, 6), new JavaType(Character.TYPE, 7),
-                      new JavaType(Object.class, 8) })));
+                  new JavaType(Float.TYPE, 2), new JavaType(Long.TYPE, 3), new JavaType(Integer.TYPE, 4),
+                  new JavaType(Short.TYPE, 5), new JavaType(Byte.TYPE, 6), new JavaType(Character.TYPE, 7),
+                  new JavaType(Object.class, 8) })));
 
       // Type.String -> { String(0), Object(1) }
-      _internal2Java.put(
-              Type.String,
-              new HashSet<>(Arrays
-                      .asList(new JavaType[] { new JavaType(String.class, 0), new JavaType(Object.class, 1) })));
+      _internal2Java.put(Type.String, new HashSet<>(
+          Arrays.asList(new JavaType[] { new JavaType(String.class, 0), new JavaType(Object.class, 1) })));
 
       // Type.NodeSet -> { NodeList(0), Node(1), Object(2), String(3) }
-      _internal2Java.put(
-              Type.NodeSet,
-              new HashSet<>(Arrays.asList(new JavaType[] { new JavaType(nodeListClass, 0), new JavaType(nodeClass, 1),
-                      new JavaType(Object.class, 2), new JavaType(String.class, 3) })));
+      _internal2Java.put(Type.NodeSet, new HashSet<>(Arrays.asList(new JavaType[] { new JavaType(nodeListClass, 0),
+          new JavaType(nodeClass, 1), new JavaType(Object.class, 2), new JavaType(String.class, 3) })));
 
       // Type.Node -> { Node(0), NodeList(1), Object(2), String(3) } TODO
       // switched nodeClass and nodeListClass
-      _internal2Java.put(
-              Type.Node,
-              new HashSet<>(Arrays.asList(new JavaType[] { new JavaType(nodeClass, 0), new JavaType(nodeListClass, 1),
-                      new JavaType(Object.class, 2), new JavaType(String.class, 3) })));
+      _internal2Java.put(Type.Node, new HashSet<>(Arrays.asList(new JavaType[] { new JavaType(nodeClass, 0),
+          new JavaType(nodeListClass, 1), new JavaType(Object.class, 2), new JavaType(String.class, 3) })));
 
       // Type.ResultTree -> { NodeList(0), Node(1), Object(2), String(3) }
-      _internal2Java.put(
-              Type.ResultTree,
-              new HashSet<>(Arrays.asList(new JavaType[] { new JavaType(nodeListClass, 0), new JavaType(nodeClass, 1),
-                      new JavaType(Object.class, 2), new JavaType(String.class, 3) })));
+      _internal2Java.put(Type.ResultTree, new HashSet<>(Arrays.asList(new JavaType[] { new JavaType(nodeListClass, 0),
+          new JavaType(nodeClass, 1), new JavaType(Object.class, 2), new JavaType(String.class, 3) })));
 
-      _internal2Java
-              .put(Type.Reference, new HashSet<>(Arrays.asList(new JavaType[] { new JavaType(Object.class, 0) })));
+      _internal2Java.put(Type.Reference,
+          new HashSet<>(Arrays.asList(new JavaType[] { new JavaType(Object.class, 0) })));
 
       // Possible conversions between Java and internal types
       _java2Internal.put(Boolean.TYPE, Type.Boolean);
@@ -367,7 +358,7 @@ class FunctionCall extends Expression {
         ErrorMsg errorMsg = e.getErrorMsg();
         if (errorMsg == null) {
           final String name = _fname.getLocalPart();
-          errorMsg = new ErrorMsg(ErrorMsg.METHOD_NOT_FOUND_ERR, name);
+          errorMsg = new ErrorMsg(this, Messages.get().methodNotFoundErr(name));
         }
         getParser().reportError(ERROR, errorMsg);
         return _type = Type.Void;
@@ -410,7 +401,7 @@ class FunctionCall extends Expression {
     final List<Constructor<?>> constructors = findConstructors();
     if (constructors == null)
       // Constructor not found in this class
-      throw new TypeCheckError(ErrorMsg.CONSTRUCTOR_NOT_FOUND, _className);
+      throw new TypeCheckError(new ErrorMsg(Messages.get().constructorNotFound(_className)));
 
     final int nConstructors = constructors.size();
     final int nArgs = _arguments.size();
@@ -462,7 +453,7 @@ class FunctionCall extends Expression {
     if (_type != null)
       return _type;
 
-    throw new TypeCheckError(ErrorMsg.ARGUMENT_CONVERSION_ERR, getMethodSignature(argsType));
+    throw new TypeCheckError(new ErrorMsg(this, Messages.get().argumentConversionErr(getMethodSignature(argsType))));
   }
 
   /**
@@ -494,7 +485,7 @@ class FunctionCall extends Expression {
         final Type firstArgType = firstArg.typeCheck(stable);
 
         if (_namespace_format == NAMESPACE_FORMAT_CLASS && firstArgType instanceof ObjectType && _clazz != null
-                && _clazz.isAssignableFrom(((ObjectType) firstArgType).getJavaClass())) {
+            && _clazz.isAssignableFrom(((ObjectType) firstArgType).getJavaClass())) {
           hasThisArgument = true;
         }
 
@@ -505,7 +496,7 @@ class FunctionCall extends Expression {
           if (firstArgType instanceof ObjectType) {
             _className = ((ObjectType) firstArgType).getJavaClassName();
           } else
-            throw new TypeCheckError(ErrorMsg.NO_JAVA_FUNCT_THIS_REF, name);
+            throw new TypeCheckError(new ErrorMsg(Messages.get().noJavaFunctThisRef(name)));
         }
       } else if (_className.length() == 0) {
         /*
@@ -516,7 +507,7 @@ class FunctionCall extends Expression {
          */
         final Parser parser = getParser();
         if (parser != null) {
-          reportWarning(this, parser, ErrorMsg.FUNCTION_RESOLVE_ERR, _fname.toString());
+          reportWarning(this, parser, Messages.get().functionResolveErr(_fname));
         }
         unresolvedExternal = true;
         return _type = Type.Int; // use "Int" as "unknown"
@@ -527,7 +518,7 @@ class FunctionCall extends Expression {
 
     if (methods == null)
       // Method not found in this class
-      throw new TypeCheckError(ErrorMsg.METHOD_NOT_FOUND_ERR, _className + "." + name);
+      throw new TypeCheckError(new ErrorMsg(this, Messages.get().methodNotFoundErr(_className + "." + name)));
 
     Class<?> extType = null;
     final int nMethods = methods.size();
@@ -593,7 +584,7 @@ class FunctionCall extends Expression {
     // It is an error if the chosen method is an instance menthod but we don't
     // have a this argument.
     if (_chosenMethod != null && _thisArgument == null && !Modifier.isStatic(_chosenMethod.getModifiers()))
-      throw new TypeCheckError(ErrorMsg.NO_JAVA_FUNCT_THIS_REF, getMethodSignature(argsType));
+      throw new TypeCheckError(new ErrorMsg(Messages.get().noJavaFunctThisRef(getMethodSignature(argsType))));
 
     if (_type != null) {
       if (_type == Type.NodeSet) {
@@ -602,7 +593,7 @@ class FunctionCall extends Expression {
       return _type;
     }
 
-    throw new TypeCheckError(ErrorMsg.ARGUMENT_CONVERSION_ERR, getMethodSignature(argsType));
+    throw new TypeCheckError(new ErrorMsg(this, Messages.get().argumentConversionErr(getMethodSignature(argsType))));
   }
 
   /**
@@ -689,8 +680,8 @@ class FunctionCall extends Expression {
         invocation.arg(expr);
       }
       // Convert the return type back to our internal type
-      return _type.getClassName().equals(declaringClass.getName()) ? invocation : _type.compileFrom(ctx, invocation,
-          declaringClass);
+      return _type.getClassName().equals(declaringClass.getName()) ? invocation
+          : _type.compileFrom(ctx, invocation, declaringClass);
     }
     // Invoke function calls that are handled in separate classes
     else {
@@ -703,11 +694,12 @@ class FunctionCall extends Expression {
       // Push "this" if it is an instance method
       JExpression thisArgument = null;
       if (_thisArgument != null) {
-          thisArgument = _thisArgument.toJExpression(ctx);
+        thisArgument = _thisArgument.toJExpression(ctx);
       }
 
-      JInvocation invocation = thisArgument == null ? ctx.ref(_chosenMethod.getDeclaringClass()).staticInvoke(
-          _chosenMethod.getName()) : thisArgument.invoke(_chosenMethod.getName());
+      JInvocation invocation = thisArgument == null
+          ? ctx.ref(_chosenMethod.getDeclaringClass()).staticInvoke(_chosenMethod.getName())
+          : thisArgument.invoke(_chosenMethod.getName());
 
       JExpression[] expressions = new JExpression[n];
       for (int i = 0; i < n; i++) {
@@ -718,8 +710,8 @@ class FunctionCall extends Expression {
       }
 
       // Convert the return type back to our internal type
-      return _type.getClassName().equals(_chosenMethod.getReturnType().getName()) ? invocation : _type.compileFrom(ctx, invocation,
-          _chosenMethod.getReturnType());
+      return _type.getClassName().equals(_chosenMethod.getReturnType().getName()) ? invocation
+          : _type.compileFrom(ctx, invocation, _chosenMethod.getReturnType());
     }
   }
 
@@ -753,7 +745,7 @@ class FunctionCall extends Expression {
           _clazz = ObjectFactory.findProviderClass(_className, ObjectFactory.findClassLoader(), true);
 
           if (_clazz == null) {
-            final ErrorMsg msg = new ErrorMsg(ErrorMsg.CLASS_NOT_FOUND_ERR, _className);
+            final ErrorMsg msg = new ErrorMsg(this, Messages.get().classNotFoundErr(_className));
             getParser().reportError(Constants.ERROR, msg);
           }
         }
@@ -765,7 +757,7 @@ class FunctionCall extends Expression {
           final int mods = methods[i].getModifiers();
           // Is it public and same number of args ?
           if (Modifier.isPublic(mods) && methods[i].getName().equals(methodName)
-                  && methods[i].getParameterTypes().length == nArgs) {
+              && methods[i].getParameterTypes().length == nArgs) {
             if (result == null) {
               result = new ArrayList<>();
             }
@@ -773,7 +765,7 @@ class FunctionCall extends Expression {
           }
         }
       } catch (final ClassNotFoundException e) {
-        final ErrorMsg msg = new ErrorMsg(ErrorMsg.CLASS_NOT_FOUND_ERR, _className);
+        final ErrorMsg msg = new ErrorMsg(this, Messages.get().classNotFoundErr(_className));
         getParser().reportError(Constants.ERROR, msg);
       }
     }
@@ -793,7 +785,7 @@ class FunctionCall extends Expression {
         _clazz = ObjectFactory.findProviderClass(_className, ObjectFactory.findClassLoader(), true);
 
         if (_clazz == null) {
-          final ErrorMsg msg = new ErrorMsg(ErrorMsg.CLASS_NOT_FOUND_ERR, _className);
+          final ErrorMsg msg = new ErrorMsg(this, Messages.get().classNotFoundErr(_className));
           getParser().reportError(Constants.ERROR, msg);
         }
       }
@@ -811,7 +803,7 @@ class FunctionCall extends Expression {
         }
       }
     } catch (final ClassNotFoundException e) {
-      final ErrorMsg msg = new ErrorMsg(ErrorMsg.CLASS_NOT_FOUND_ERR, _className);
+      final ErrorMsg msg = new ErrorMsg(this, Messages.get().classNotFoundErr(_className));
       getParser().reportError(Constants.ERROR, msg);
     }
 
@@ -852,7 +844,7 @@ class FunctionCall extends Expression {
         return "V";
       else {
         final String name = clazz.toString();
-        final ErrorMsg err = new ErrorMsg(ErrorMsg.UNKNOWN_SIG_TYPE_ERR, name);
+        final ErrorMsg err = new ErrorMsg(Messages.get().unknownSigTypeErr(name), -1);
         throw new Error(err.toString());
       }
     } else

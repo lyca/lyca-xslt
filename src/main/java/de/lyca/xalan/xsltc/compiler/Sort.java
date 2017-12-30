@@ -51,8 +51,8 @@ import de.lyca.xalan.xsltc.DOM;
 import de.lyca.xalan.xsltc.Translet;
 import de.lyca.xalan.xsltc.TransletException;
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
-import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.IntType;
+import de.lyca.xalan.xsltc.compiler.util.Messages;
 import de.lyca.xalan.xsltc.compiler.util.StringType;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
@@ -139,13 +139,13 @@ final class Sort extends Instruction implements Closure {
 
     final SyntaxTreeNode parent = getParent();
     if (!(parent instanceof ApplyTemplates) && !(parent instanceof ForEach)) {
-      reportError(this, parser, ErrorMsg.STRAY_SORT_ERR, null);
+      reportError(this, parser, Messages.get().straySortErr());
       return;
     }
 
-    if(hasContents()){
-      // TODO
-      reportError(this, parser, ErrorMsg.INTERNAL_ERR, "Childs not allowed in xsl:sort");
+    if (hasContents()) {
+      // TODO better error reporting
+      reportError(this, parser, Messages.get().internalErr("Childs not allowed in xsl:sort"));
     }
     // Parse the select expression (node string value if no expression)
     _select = parser.parseExpression(this, "select", "string(.)");
@@ -157,8 +157,8 @@ final class Sort extends Instruction implements Closure {
     }
     _order = AttributeValue.create(this, val, parser);
     if (_order instanceof SimpleAttributeValue && !("ascending".equals(val) || "descending".equals(val))) {
-      // TODO
-      reportError(this, parser, ErrorMsg.INTERNAL_ERR, "order '" + val + "' is unknown");
+      // TODO better error reporting
+      reportError(this, parser, Messages.get().internalErr("order '" + val + "' is unknown"));
     }
 
     // Get the sort data type; default is text
@@ -179,8 +179,8 @@ final class Sort extends Instruction implements Closure {
     _dataType = AttributeValue.create(this, val, parser);
     if (_dataType instanceof SimpleAttributeValue
         && !("text".equals(val) || "number".equals(val) || val.contains(":") && XML11Char.isXML11ValidQName(val))) {
-      // TODO
-      reportError(this, parser, ErrorMsg.INTERNAL_ERR, "datatype '" + val + "' not qname-but-not-ncname");
+      // TODO better error reporting
+      reportError(this, parser, Messages.get().internalErr("datatype '" + val + "' not qname-but-not-ncname"));
     }
 
     val = getAttribute("lang");
@@ -190,8 +190,8 @@ final class Sort extends Instruction implements Closure {
     _caseOrder = AttributeValue.create(this, val, parser);
     if (!val.isEmpty() && _caseOrder instanceof SimpleAttributeValue
         && !("upper-first".equals(val) || "lower-first".equals(val))) {
-      // TODO
-      reportError(this, parser, ErrorMsg.INTERNAL_ERR, "case-order '" + val + "' is unknown");
+      // TODO better error reporting
+      reportError(this, parser, Messages.get().internalErr("case-order '" + val + "' is unknown"));
     }
   }
 
@@ -265,8 +265,8 @@ final class Sort extends Instruction implements Closure {
 
   /**
    * Compiles code that instantiates a SortingIterator object. This object's
-   * constructor needs references to the current iterator and a node sort
-   * record producing objects as its parameters.
+   * constructor needs references to the current iterator and a node sort record
+   * producing objects as its parameters.
    * 
    * @param ctx
    *          TODO

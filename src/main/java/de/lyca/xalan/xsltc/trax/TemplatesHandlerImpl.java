@@ -39,6 +39,7 @@ import de.lyca.xalan.xsltc.compiler.Stylesheet;
 import de.lyca.xalan.xsltc.compiler.SyntaxTreeNode;
 import de.lyca.xalan.xsltc.compiler.XSLTC;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
+import de.lyca.xalan.xsltc.compiler.util.Messages;
 
 /**
  * Implementation of a JAXP1.1 TemplatesHandler
@@ -251,7 +252,7 @@ public class TemplatesHandlerImpl implements ContentHandler, TemplatesHandler, S
         final byte[][] bytecodes = xsltc.getBytecodes();
         if (bytecodes != null) {
           _templates = new TemplatesImpl(bytecodes, transletName, _parser.getOutputProperties(), _indentNumber,
-                  _tfactory);
+              _tfactory);
 
           // Set URIResolver on templates object
           if (_uriResolver != null) {
@@ -268,10 +269,10 @@ public class TemplatesHandlerImpl implements ContentHandler, TemplatesHandler, S
           }
           errorMessage.append(errors.get(i).toString());
         }
-        throw new SAXException(ErrorMsg.JAXP_COMPILE_ERR, new TransformerException(errorMessage.toString()));
+        throw new SAXException(Messages.get().jaxpCompileErr(), new TransformerException(errorMessage.toString()));
       }
     } catch (final CompilerException e) {
-      throw new SAXException(ErrorMsg.JAXP_COMPILE_ERR, e);
+      throw new SAXException(Messages.get().jaxpCompileErr(), e);
     }
   }
 

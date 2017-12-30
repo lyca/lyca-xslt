@@ -42,7 +42,7 @@ import com.sun.codemodel.JVar;
 
 import de.lyca.xalan.xsltc.DOM;
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
-import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
+import de.lyca.xalan.xsltc.compiler.util.Messages;
 import de.lyca.xalan.xsltc.compiler.util.RealType;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
@@ -156,7 +156,7 @@ final class Number extends Instruction implements Closure {
           _level = LEVEL_ANY;
         } else {
           // TODO better Error reporting
-          reportError(this, parser, ErrorMsg.ILLEGAL_ARG_ERR, value);
+          reportError(this, parser, Messages.get().illegalArgErr());
         }
       } else if (name.equals("format")) {
         _format = AttributeValue.create(this, value, parser);
@@ -170,14 +170,14 @@ final class Number extends Instruction implements Closure {
         if (_letterValue instanceof SimpleAttributeValue
             && !("alphabetic".equals(value) || "traditional".equals(value))) {
           // TODO better Error reporting
-          reportError(this, parser, ErrorMsg.ILLEGAL_ARG_ERR, value);
+          reportError(this, parser, Messages.get().illegalArgErr());
         }
       } else if (name.equals("grouping-separator")) {
         _groupingSeparator = AttributeValue.create(this, value, parser);
         _formatNeeded = true;
         if (_groupingSeparator instanceof SimpleAttributeValue && value.length() > 1) {
           // TODO better Error reporting
-          reportError(this, parser, ErrorMsg.ILLEGAL_CHAR_ERR, value);
+          reportError(this, parser, Messages.get().illegalCharErr(value));
         }
 
       } else if (name.equals("grouping-size")) {

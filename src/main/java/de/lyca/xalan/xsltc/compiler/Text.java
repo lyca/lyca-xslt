@@ -28,6 +28,7 @@ import com.sun.codemodel.JMethod;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
+import de.lyca.xalan.xsltc.compiler.util.Messages;
 
 /**
  * @author Jacek Ambroziak
@@ -92,8 +93,8 @@ final class Text extends Instruction {
     parseChildren(parser);
 
     if (hasContents()) {
-      // TODO
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.INTERNAL_ERR, "xsl:text should contain only #PCDATA", this);
+      // TODO better error reporting
+      final ErrorMsg err = new ErrorMsg(this, Messages.get().internalErr("xsl:text should contain only #PCDATA"));
       parser.reportError(Constants.ERROR, err);
     }
 

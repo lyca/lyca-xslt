@@ -59,6 +59,7 @@ import de.lyca.xalan.ObjectFactory;
 import de.lyca.xalan.xsltc.compiler.SourceLoader;
 import de.lyca.xalan.xsltc.compiler.XSLTC;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
+import de.lyca.xalan.xsltc.compiler.util.Messages;
 import de.lyca.xalan.xsltc.dom.XSLTCDTMManager;
 import de.lyca.xml.utils.StopParseException;
 import de.lyca.xml.utils.StylesheetPIHandler;
@@ -101,8 +102,8 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
    * see his big, brown belly divided into stiff, arched segments, on top of
    * which the bed quilt could hardly keep in position and was about to slide
    * off completely. His numerous legs, which were pitifully thin compared to
-   * the rest of his bulk, waved helplessly before his eyes.
-   * "What has happened to me?", he thought. It was no dream....
+   * the rest of his bulk, waved helplessly before his eyes. "What has happened
+   * to me?", he thought. It was no dream....
    */
   public final static String DEFAULT_TRANSLET_NAME = "GregorSamsa";
 
@@ -217,7 +218,7 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
   @Override
   public void setErrorListener(ErrorListener listener) throws IllegalArgumentException {
     if (listener == null) {
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.ERROR_LISTENER_NULL_ERR, "TransformerFactory");
+      final ErrorMsg err = new ErrorMsg(Messages.get().errorListenerNullErr("TransformerFactory"));
       throw new IllegalArgumentException(err.toString());
     }
     _errorListener = listener;
@@ -260,7 +261,7 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
     }
 
     // Throw an exception for all other attributes
-    final ErrorMsg err = new ErrorMsg(ErrorMsg.JAXP_INVALID_ATTR_ERR, name);
+    final ErrorMsg err = new ErrorMsg(Messages.get().jaxpInvalidAttrErr(name));
     throw new IllegalArgumentException(err.toString());
   }
 
@@ -345,7 +346,7 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
     }
 
     // Throw an exception for all other attributes
-    final ErrorMsg err = new ErrorMsg(ErrorMsg.JAXP_INVALID_ATTR_ERR, name);
+    final ErrorMsg err = new ErrorMsg(Messages.get().jaxpInvalidAttrErr(name));
     throw new IllegalArgumentException(err.toString());
   }
 
@@ -387,7 +388,7 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
 
     // feature name cannot be null
     if (name == null) {
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.JAXP_SET_FEATURE_NULL_NAME);
+      final ErrorMsg err = new ErrorMsg(Messages.get().jaxpSetFeatureNullName());
       throw new NullPointerException(err.toString());
     }
     // secure processing?
@@ -397,7 +398,7 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
       return;
     } else {
       // unknown feature
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.JAXP_UNSUPPORTED_FEATURE, name);
+      final ErrorMsg err = new ErrorMsg(Messages.get().jaxpUnsupportedFeature(name));
       throw new TransformerConfigurationException(err.toString());
     }
   }
@@ -415,12 +416,12 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
   public boolean getFeature(String name) {
     // All supported features should be listed here
     final String[] features = { DOMSource.FEATURE, DOMResult.FEATURE, SAXSource.FEATURE, SAXResult.FEATURE,
-            StreamSource.FEATURE, StreamResult.FEATURE, SAXTransformerFactory.FEATURE,
-            SAXTransformerFactory.FEATURE_XMLFILTER };
+        StreamSource.FEATURE, StreamResult.FEATURE, SAXTransformerFactory.FEATURE,
+        SAXTransformerFactory.FEATURE_XMLFILTER };
 
     // feature name cannot be null
     if (name == null) {
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.JAXP_GET_FEATURE_NULL_NAME);
+      final ErrorMsg err = new ErrorMsg(Messages.get().jaxpGetFeatureNullName());
       throw new NullPointerException(err.toString());
     }
 
@@ -486,7 +487,7 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
    */
   @Override
   public Source getAssociatedStylesheet(Source source, String media, String title, String charset)
-          throws TransformerConfigurationException {
+      throws TransformerConfigurationException {
 
     String baseId;
     XMLReader reader = null;
@@ -609,12 +610,8 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
     final int count = messages.size();
     for (int pos = 0; pos < count; pos++) {
       final ErrorMsg msg = messages.get(pos);
-      // Workaround for the TCK failure ErrorListener.errorTests.error001.
-      if (msg.isWarningError()) {
-        _errorListener.error(new TransformerConfigurationException(msg.toString()));
-      } else {
-        _errorListener.warning(new TransformerConfigurationException(msg.toString()));
-      }
+      // TODO Workaround for the TCK failure ErrorListener.errorTests.error001.
+      _errorListener.warning(new TransformerConfigurationException(msg.toString()));
     }
   }
 
@@ -664,10 +661,10 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
 
         return new TemplatesImpl(new Class[] { clazz }, transletName, null, _indentNumber, this);
       } catch (final ClassNotFoundException cnfe) {
-        final ErrorMsg err = new ErrorMsg(ErrorMsg.CLASS_NOT_FOUND_ERR, transletName);
+        final ErrorMsg err = new ErrorMsg(Messages.get().classNotFoundErr(transletName), -1);
         throw new TransformerConfigurationException(err.toString());
       } catch (final Exception e) {
-        final ErrorMsg err = new ErrorMsg(new ErrorMsg(ErrorMsg.RUNTIME_ERROR_KEY) + e.getMessage());
+        final ErrorMsg err = new ErrorMsg(Messages.get().runtimeErrorKey() + e.getMessage());
         throw new TransformerConfigurationException(err.toString());
       }
     }
@@ -691,9 +688,9 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
       if (bytecodes != null) {
         if (_debug) {
           if (_jarFileName != null) {
-            System.err.println(new ErrorMsg(ErrorMsg.TRANSFORM_WITH_JAR_STR, transletClassName, _jarFileName));
+            System.err.println(new ErrorMsg(Messages.get().transformWithJarStr(transletClassName, _jarFileName)));
           } else {
-            System.err.println(new ErrorMsg(ErrorMsg.TRANSFORM_WITH_TRANSLET_STR, transletClassName));
+            System.err.println(new ErrorMsg(Messages.get().transformWithTransletStr(transletClassName)));
           }
         }
 
@@ -799,7 +796,7 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
     // Check that the transformation went well before returning
     if (bytecodes == null) {
 
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.JAXP_COMPILE_ERR);
+      final ErrorMsg err = new ErrorMsg(Messages.get().jaxpCompileErr());
       final TransformerConfigurationException exc = new TransformerConfigurationException(err.toString());
 
       // Pass compiler errors to the error listener
@@ -820,7 +817,7 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
       throw exc;
     }
     final TemplatesImpl templates = new TemplatesImpl(bytecodes, transletName, xsltc.getOutputProperties(),
-            _indentNumber, this);
+        _indentNumber, this);
     // pass uriResolver to templates
     if (_uriResolver != null) {
       templates.setURIResolver(_uriResolver);
@@ -957,11 +954,11 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
     final Throwable wrapped = e.getException();
     if (wrapped != null) {
       System.err
-              .println(new ErrorMsg(ErrorMsg.ERROR_PLUS_WRAPPED_MSG, e.getMessageAndLocation(), wrapped.getMessage()));
+          .println(new ErrorMsg(Messages.get().errorPlusWrappedMsg(e.getMessageAndLocation(), wrapped.getMessage())));
     } else {
-      System.err.println(new ErrorMsg(ErrorMsg.ERROR_MSG, e.getMessageAndLocation()));
+      System.err.println(new ErrorMsg(Messages.get().errorMsg(e.getMessageAndLocation())));
     }
-//    throw e;
+    // throw e;
   }
 
   /**
@@ -981,10 +978,10 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
   public void fatalError(TransformerException e) throws TransformerException {
     final Throwable wrapped = e.getException();
     if (wrapped != null) {
-      System.err.println(new ErrorMsg(ErrorMsg.FATAL_ERR_PLUS_WRAPPED_MSG, e.getMessageAndLocation(), wrapped
-              .getMessage()));
+      System.err.println(
+          new ErrorMsg(Messages.get().fatalErrPlusWrappedMsg(e.getMessageAndLocation(), wrapped.getMessage())));
     } else {
-      System.err.println(new ErrorMsg(ErrorMsg.FATAL_ERR_MSG, e.getMessageAndLocation()));
+      System.err.println(new ErrorMsg(Messages.get().fatalErrMsg(e.getMessageAndLocation())));
     }
     throw e;
   }
@@ -1006,10 +1003,10 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
   public void warning(TransformerException e) throws TransformerException {
     final Throwable wrapped = e.getException();
     if (wrapped != null) {
-      System.err.println(new ErrorMsg(ErrorMsg.WARNING_PLUS_WRAPPED_MSG, e.getMessageAndLocation(), wrapped
-              .getMessage()));
+      System.err
+          .println(new ErrorMsg(Messages.get().warningPlusWrappedMsg(e.getMessageAndLocation(), wrapped.getMessage())));
     } else {
-      System.err.println(new ErrorMsg(ErrorMsg.WARNING_MSG, e.getMessageAndLocation()));
+      System.err.println(new ErrorMsg(Messages.get().warningMsg(e.getMessageAndLocation())));
     }
   }
 
@@ -1241,9 +1238,8 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
       while (entries.hasMoreElements()) {
         final ZipEntry entry = entries.nextElement();
         final String entryName = entry.getName();
-        if (entry.getSize() > 0
-                && (entryName.equals(transletFullName) || entryName.endsWith(".class")
-                        && entryName.startsWith(transletAuxPrefix))) {
+        if (entry.getSize() > 0 && (entryName.equals(transletFullName)
+            || entryName.endsWith(".class") && entryName.startsWith(transletAuxPrefix))) {
           try (InputStream input = jarFile.getInputStream(entry)) {
             final int size = (int) entry.getSize();
             final byte[] bytes = new byte[size];

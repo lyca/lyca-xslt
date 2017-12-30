@@ -29,6 +29,7 @@ import com.sun.codemodel.JVar;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
+import de.lyca.xalan.xsltc.compiler.util.Messages;
 import de.lyca.xalan.xsltc.compiler.util.NodeSetType;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.Util;
@@ -51,7 +52,6 @@ class VariableBase extends TopLevelElement {
   protected JVar _param; // Reference to JVM variable
   protected Expression _select; // Reference to variable expression
   protected String select; // Textual repr. of variable expr.
-
 
   // References to this variable (when local)
   protected List<VariableRefBase> _refs = new ArrayList<>(2);
@@ -163,25 +163,25 @@ class VariableBase extends TopLevelElement {
 
     if (name.length() > 0) {
       if (!XML11Char.isXML11ValidQName(name)) {
-        final ErrorMsg err = new ErrorMsg(ErrorMsg.INVALID_QNAME_ERR, name, this);
+        final ErrorMsg err = new ErrorMsg(this, Messages.get().invalidQnameErr(name));
         parser.reportError(Constants.ERROR, err);
       }
       setName(parser.getQNameIgnoreDefaultNs(name));
     } else {
-      reportError(this, parser, ErrorMsg.REQUIRED_ATTR_ERR, "name");
+      reportError(this, parser, Messages.get().requiredAttrErr("name"));
     }
 
     // Check whether variable/param of the same name is already in scope
     final VariableBase other = parser.lookupVariable(_name);
     if (other != null && other.getParent() == getParent()) {
-      reportError(this, parser, ErrorMsg.VARIABLE_REDEF_ERR, name);
+      reportError(this, parser, Messages.get().variableRedefErr(name));
     }
 
     select = getAttribute("select");
     if (select.length() > 0) {
       _select = getParser().parseExpression(this, "select", null);
       if (_select.isDummy()) {
-        reportError(this, parser, ErrorMsg.REQUIRED_ATTR_ERR, "select");
+        reportError(this, parser, Messages.get().requiredAttrErr("select"));
         return;
       }
     }

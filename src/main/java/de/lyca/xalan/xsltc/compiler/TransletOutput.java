@@ -17,9 +17,8 @@
  */
 package de.lyca.xalan.xsltc.compiler;
 
-import static de.lyca.xalan.xsltc.compiler.util.ErrorMsg.REQUIRED_ATTR_ERR;
-
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
+import de.lyca.xalan.xsltc.compiler.util.Messages;
 import de.lyca.xalan.xsltc.compiler.util.StringType;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
@@ -47,7 +46,7 @@ final class TransletOutput extends Instruction {
 
     // Verify that the filename is in fact set
     if (filename == null || filename.isEmpty()) {
-      reportError(this, parser, REQUIRED_ATTR_ERR, "file");
+      reportError(this, parser, Messages.get().requiredAttrErr("file"));
     }
 
     // Save filename as an attribute value template
@@ -81,44 +80,48 @@ final class TransletOutput extends Instruction {
    */
   @Override
   public void translate(CompilerContext ctx) {
-//    FIXME
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//    final InstructionList il = methodGen.getInstructionList();
-//    final boolean isSecureProcessing = classGen.getParser().getXSLTC().isSecureProcessing();
-//
-//    if (isSecureProcessing) {
-//      final int index = cpg.addMethodref(BASIS_LIBRARY_CLASS, "unallowed_extension_elementF", "(Ljava/lang/String;)V");
-//      il.append(new PUSH(cpg, "redirect"));
-//      il.append(new INVOKESTATIC(index));
-//      return;
-//    }
-//
-//    // Save the current output handler on the stack
-//    il.append(methodGen.loadHandler());
-//
-//    final int open = cpg.addMethodref(TRANSLET_CLASS, "openOutputHandler", "(" + STRING_SIG + "Z)"
-//            + TRANSLET_OUTPUT_SIG);
-//
-//    final int close = cpg.addMethodref(TRANSLET_CLASS, "closeOutputHandler", "(" + TRANSLET_OUTPUT_SIG + ")V");
-//
-//    // Create the new output handler (leave it on stack)
-//    il.append(classGen.loadTranslet());
-//    _filename.translate(classGen, methodGen);
-//    il.append(new PUSH(cpg, _append));
-//    il.append(new INVOKEVIRTUAL(open));
-//
-//    // Overwrite current handler
-//    il.append(methodGen.storeHandler());
-//
-//    // Translate contents with substituted handler
-//    translateContents(classGen, methodGen);
-//
-//    // Close the output handler (close file)
-//    il.append(classGen.loadTranslet());
-//    il.append(methodGen.loadHandler());
-//    il.append(new INVOKEVIRTUAL(close));
-//
-//    // Restore old output handler from stack
-//    il.append(methodGen.storeHandler());
+    // FIXME
+    // final ConstantPoolGen cpg = classGen.getConstantPool();
+    // final InstructionList il = methodGen.getInstructionList();
+    // final boolean isSecureProcessing =
+    // classGen.getParser().getXSLTC().isSecureProcessing();
+    //
+    // if (isSecureProcessing) {
+    // final int index = cpg.addMethodref(BASIS_LIBRARY_CLASS,
+    // "unallowed_extension_elementF", "(Ljava/lang/String;)V");
+    // il.append(new PUSH(cpg, "redirect"));
+    // il.append(new INVOKESTATIC(index));
+    // return;
+    // }
+    //
+    // // Save the current output handler on the stack
+    // il.append(methodGen.loadHandler());
+    //
+    // final int open = cpg.addMethodref(TRANSLET_CLASS, "openOutputHandler",
+    // "(" + STRING_SIG + "Z)"
+    // + TRANSLET_OUTPUT_SIG);
+    //
+    // final int close = cpg.addMethodref(TRANSLET_CLASS, "closeOutputHandler",
+    // "(" + TRANSLET_OUTPUT_SIG + ")V");
+    //
+    // // Create the new output handler (leave it on stack)
+    // il.append(classGen.loadTranslet());
+    // _filename.translate(classGen, methodGen);
+    // il.append(new PUSH(cpg, _append));
+    // il.append(new INVOKEVIRTUAL(open));
+    //
+    // // Overwrite current handler
+    // il.append(methodGen.storeHandler());
+    //
+    // // Translate contents with substituted handler
+    // translateContents(classGen, methodGen);
+    //
+    // // Close the output handler (close file)
+    // il.append(classGen.loadTranslet());
+    // il.append(methodGen.loadHandler());
+    // il.append(new INVOKEVIRTUAL(close));
+    //
+    // // Restore old output handler from stack
+    // il.append(methodGen.storeHandler());
   }
 }

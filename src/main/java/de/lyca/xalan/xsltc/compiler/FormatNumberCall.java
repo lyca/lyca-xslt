@@ -26,6 +26,7 @@ import com.sun.codemodel.JExpression;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
+import de.lyca.xalan.xsltc.compiler.util.Messages;
 import de.lyca.xalan.xsltc.compiler.util.RealType;
 import de.lyca.xalan.xsltc.compiler.util.StringType;
 import de.lyca.xalan.xsltc.compiler.util.Type;
@@ -55,7 +56,7 @@ final class FormatNumberCall extends FunctionCall {
   @Override
   public Type typeCheck(SymbolTable stable) throws TypeCheckError {
     if (argumentCount() < 2) {
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.ILLEGAL_ARG_ERR, this);
+      final ErrorMsg err = new ErrorMsg(this, Messages.get().illegalArgErr());
       throw new TypeCheckError(err);
     }
 

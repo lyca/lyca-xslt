@@ -25,9 +25,6 @@ import static de.lyca.xalan.xsltc.compiler.Constants.STATIC_NS_ANCESTORS_ARRAY_F
 import static de.lyca.xalan.xsltc.compiler.Constants.STATIC_PREFIX_URIS_ARRAY_FIELD;
 import static de.lyca.xalan.xsltc.compiler.Constants.STATIC_PREFIX_URIS_IDX_ARRAY_FIELD;
 import static de.lyca.xalan.xsltc.compiler.Constants.WARNING;
-import static de.lyca.xalan.xsltc.compiler.util.ErrorMsg.ILLEGAL_ELEM_NAME_ERR;
-import static de.lyca.xalan.xsltc.compiler.util.ErrorMsg.INVALID_QNAME_ERR;
-import static de.lyca.xalan.xsltc.compiler.util.ErrorMsg.NAMESPACE_UNDEF_ERR;
 
 import com.sun.codemodel.JExpr;
 import com.sun.codemodel.JExpression;
@@ -35,6 +32,7 @@ import com.sun.codemodel.JVar;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
+import de.lyca.xalan.xsltc.compiler.util.Messages;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
 import de.lyca.xalan.xsltc.compiler.util.Util;
@@ -71,7 +69,7 @@ final class XslElement extends Instruction {
     // Handle the 'name' attribute
     String name = getAttribute("name");
     if (hasAttribute("name") && name.isEmpty()) {
-      final ErrorMsg msg = new ErrorMsg(ILLEGAL_ELEM_NAME_ERR, name, this);
+      final ErrorMsg msg = new ErrorMsg(this, Messages.get().illegalElemNameErr(name));
       parser.reportError(WARNING, msg);
       parseChildren(parser);
       _ignore = true; // Ignore the element if the QName is invalid
@@ -79,7 +77,7 @@ final class XslElement extends Instruction {
 
     } else if (!hasAttribute("name")) {
       // TODO Better error
-      final ErrorMsg msg = new ErrorMsg(ErrorMsg.INTERNAL_ERR, "xsl:element needs name attribute", this);
+      final ErrorMsg msg = new ErrorMsg(this, Messages.get().internalErr("xsl:element needs name attribute"));
       parser.reportError(ERROR, msg);
     }
 
@@ -90,7 +88,7 @@ final class XslElement extends Instruction {
     _isLiteralName = Util.isLiteral(name);
     if (_isLiteralName) {
       if (!XML11Char.isXML11ValidQName(name)) {
-        final ErrorMsg msg = new ErrorMsg(ILLEGAL_ELEM_NAME_ERR, name, this);
+        final ErrorMsg msg = new ErrorMsg(this, Messages.get().illegalElemNameErr(name));
         parser.reportError(WARNING, msg);
         parseChildren(parser);
         _ignore = true; // Ignore the element if the QName is invalid
@@ -113,7 +111,7 @@ final class XslElement extends Instruction {
       if (!hasAttribute("namespace")) {
         namespace = lookupNamespace(prefix);
         if (namespace == null) {
-          final ErrorMsg err = new ErrorMsg(NAMESPACE_UNDEF_ERR, prefix, this);
+          final ErrorMsg err = new ErrorMsg(this, Messages.get().namespaceUndefErr(prefix));
           parser.reportError(WARNING, err);
           parseChildren(parser);
           _ignore = true; // Ignore the element if prefix is undeclared
@@ -152,7 +150,7 @@ final class XslElement extends Instruction {
     final String useSets = getAttribute("use-attribute-sets");
     if (useSets.length() > 0) {
       if (!Util.isValidQNames(useSets)) {
-        final ErrorMsg err = new ErrorMsg(INVALID_QNAME_ERR, useSets, this);
+        final ErrorMsg err = new ErrorMsg(this, Messages.get().invalidQnameErr(useSets));
         parser.reportError(ERROR, err);
       }
       setFirstElement(new UseAttributeSets(useSets, parser));

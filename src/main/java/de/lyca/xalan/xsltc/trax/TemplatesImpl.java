@@ -37,6 +37,7 @@ import de.lyca.xalan.ObjectFactory;
 import de.lyca.xalan.xsltc.DOM;
 import de.lyca.xalan.xsltc.Translet;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
+import de.lyca.xalan.xsltc.compiler.util.Messages;
 import de.lyca.xalan.xsltc.runtime.AbstractTranslet;
 
 /**
@@ -141,7 +142,7 @@ public final class TemplatesImpl implements Templates, Serializable {
    * must be supplied.
    */
   protected TemplatesImpl(byte[][] bytecodes, String transletName, Properties outputProperties, int indentNumber,
-          TransformerFactoryImpl tfactory) {
+      TransformerFactoryImpl tfactory) {
     _bytecodes = bytecodes;
     _name = transletName;
     _outputProperties = outputProperties;
@@ -153,7 +154,7 @@ public final class TemplatesImpl implements Templates, Serializable {
    * Create an XSLTC template object from the translet class definition(s).
    */
   protected TemplatesImpl(Class<?>[] transletClasses, String transletName, Properties outputProperties,
-          int indentNumber, TransformerFactoryImpl tfactory) {
+      int indentNumber, TransformerFactoryImpl tfactory) {
     _class = transletClasses;
     _name = transletName;
     _transletIndex = 0;
@@ -277,7 +278,7 @@ public final class TemplatesImpl implements Templates, Serializable {
   private void defineTransletClasses() throws TransformerConfigurationException {
 
     if (_bytecodes == null) {
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.NO_TRANSLET_CLASS_ERR);
+      final ErrorMsg err = new ErrorMsg(Messages.get().noTransletClassErr());
       throw new TransformerConfigurationException(err.toString());
     }
 
@@ -309,16 +310,16 @@ public final class TemplatesImpl implements Templates, Serializable {
       }
 
       if (_transletIndex < 0) {
-        final ErrorMsg err = new ErrorMsg(ErrorMsg.NO_MAIN_TRANSLET_ERR, _name);
+        final ErrorMsg err = new ErrorMsg(Messages.get().noMainTransletErr(_name));
         throw new TransformerConfigurationException(err.toString());
       }
 
       latch.countDown();
     } catch (final ClassFormatError e) {
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.TRANSLET_CLASS_ERR, _name);
+      final ErrorMsg err = new ErrorMsg(Messages.get().transletClassErr(_name));
       throw new TransformerConfigurationException(err.toString());
     } catch (final LinkageError e) {
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.TRANSLET_OBJECT_ERR, _name);
+      final ErrorMsg err = new ErrorMsg(Messages.get().transletClassErr(_name));
       throw new TransformerConfigurationException(err.toString());
     }
   }
@@ -354,13 +355,13 @@ public final class TemplatesImpl implements Templates, Serializable {
 
       return translet;
     } catch (final InstantiationException e) {
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.TRANSLET_OBJECT_ERR, _name);
+      final ErrorMsg err = new ErrorMsg(Messages.get().transletObjectErr());
       throw new TransformerConfigurationException(err.toString());
     } catch (final IllegalAccessException e) {
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.TRANSLET_OBJECT_ERR, _name);
+      final ErrorMsg err = new ErrorMsg(Messages.get().transletObjectErr());
       throw new TransformerConfigurationException(err.toString());
     } catch (final InterruptedException e) {
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.TRANSLET_OBJECT_ERR, _name);
+      final ErrorMsg err = new ErrorMsg(Messages.get().transletObjectErr());
       throw new TransformerConfigurationException(err.toString());
     }
   }

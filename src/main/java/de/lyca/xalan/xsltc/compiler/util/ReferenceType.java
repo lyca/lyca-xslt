@@ -19,7 +19,6 @@ package de.lyca.xalan.xsltc.compiler.util;
 
 import static com.sun.codemodel.JExpr.lit;
 import static de.lyca.xalan.xsltc.compiler.Constants.FATAL;
-import static de.lyca.xalan.xsltc.compiler.util.ErrorMsg.DATA_CONVERSION_ERR;
 import static de.lyca.xml.dtm.DTMAxisIterator.RESET;
 
 import com.sun.codemodel.JExpression;
@@ -78,7 +77,7 @@ public final class ReferenceType extends Type {
     } else if (type == Type.Reference) {
       return expr;
     } else {
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.INTERNAL_ERR, type.toString());
+      final ErrorMsg err = new ErrorMsg(Messages.get().internalErr(type), -1);
       ctx.xsltc().getParser().reportError(FATAL, err);
       return expr;
     }
@@ -236,7 +235,7 @@ public final class ReferenceType extends Type {
   @Override
   public JExpression compileFrom(CompilerContext ctx, JExpression expr, Class<?> clazz) {
     if (!clazz.getName().equals("java.lang.Object")) {
-      final ErrorMsg err = new ErrorMsg(DATA_CONVERSION_ERR, toString(), clazz.getName());
+      final ErrorMsg err = new ErrorMsg(Messages.get().dataConversionErr(this, clazz.getName()), -1);
       ctx.xsltc().getParser().reportError(FATAL, err);
     }
     return expr;

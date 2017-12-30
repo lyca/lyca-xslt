@@ -83,7 +83,7 @@ public final class NodeSetType extends Type {
     } else if (type == Type.Object) {
       return compileTo(ctx, expr, (ObjectType) type);
     } else {
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), type.toString());
+      final ErrorMsg err = new ErrorMsg(Messages.get().dataConversionErr(this, type), -1);
       ctx.xsltc().getParser().reportError(FATAL, err);
       return expr;
     }
@@ -100,7 +100,7 @@ public final class NodeSetType extends Type {
     } else if (clazz == org.w3c.dom.Node.class) {
       return ctx.ref(BasisLibrary.class).staticInvoke("node2Iterator").arg(expr).arg(_this()).arg(ctx.currentDom());
     } else {
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), clazz.getName());
+      final ErrorMsg err = new ErrorMsg(Messages.get().dataConversionErr(this, clazz.getName()), -1);
       ctx.xsltc().getParser().reportError(FATAL, err);
       return expr;
     }
@@ -111,7 +111,8 @@ public final class NodeSetType extends Type {
    * node-set is "true" if non-empty and "false" otherwise. Notice that the
    * function getFirstNode() is called in translateToDesynthesized().
    * 
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo(CompilerContext, JExpression, Type)
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo(CompilerContext,
+   *      JExpression, Type)
    */
   public JExpression compileTo(CompilerContext ctx, JExpression expr, BooleanType type) {
     JInvocation next = expr.invoke(NEXT);
@@ -122,7 +123,8 @@ public final class NodeSetType extends Type {
    * Translates a node-set into a string. The string value of a node-set is
    * value of its first element.
    * 
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo(CompilerContext, JExpression, Type)
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo(CompilerContext,
+   *      JExpression, Type)
    */
   public JExpression compileTo(CompilerContext ctx, JExpression expr, StringType type) {
     JVar var = ctx.currentBlock().decl(ctx.owner().INT, ctx.nextVar(), expr.invoke(NEXT));
@@ -133,7 +135,8 @@ public final class NodeSetType extends Type {
    * Expects a node-set on the stack and pushes a real. First the node-set is
    * converted to string, and from string to real.
    * 
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo(CompilerContext, JExpression, Type)
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo(CompilerContext,
+   *      JExpression, Type)
    */
   public JExpression compileTo(CompilerContext ctx, JExpression expr, RealType type) {
     return Type.String.compileTo(ctx, compileTo(ctx, expr, Type.String), Type.Real);
@@ -142,17 +145,18 @@ public final class NodeSetType extends Type {
   /**
    * Expects a node-set on the stack and pushes a node.
    * 
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo(CompilerContext, JExpression, Type)
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo(CompilerContext,
+   *      JExpression, Type)
    */
   public JExpression compileTo(CompilerContext ctx, JExpression expr, NodeType type) {
     return expr.invoke(NEXT);
   }
 
-  
   /**
    * Subsume node-set into ObjectType.
    * 
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo(CompilerContext, JExpression, Type)
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo(CompilerContext,
+   *      JExpression, Type)
    */
   public JExpression compileTo(CompilerContext ctx, JExpression expr, ObjectType type) {
     return expr;
@@ -162,7 +166,8 @@ public final class NodeSetType extends Type {
    * Expects a node-set on the stack and pushes a boxed node-set. Node sets are
    * already boxed so the translation is just a NOP.
    * 
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo(CompilerContext, JExpression, Type)
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo(CompilerContext,
+   *      JExpression, Type)
    */
   public JExpression compileTo(CompilerContext ctx, JExpression expr, ReferenceType type) {
     return expr;

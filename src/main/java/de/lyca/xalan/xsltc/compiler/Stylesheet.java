@@ -49,7 +49,6 @@ import static de.lyca.xalan.xsltc.compiler.Constants.TYPES_INDEX;
 import static de.lyca.xalan.xsltc.compiler.Constants.URIS_INDEX;
 import static de.lyca.xalan.xsltc.compiler.Constants.XHTML_URI;
 import static de.lyca.xalan.xsltc.compiler.Constants.XSLT_URI;
-import static de.lyca.xalan.xsltc.compiler.util.ErrorMsg.MULTIPLE_STYLESHEET_ERR;
 import static de.lyca.xml.dtm.DTMAxisIterator.NEXT;
 
 import java.util.ArrayList;
@@ -82,6 +81,7 @@ import de.lyca.xalan.xsltc.TransletException;
 import de.lyca.xalan.xsltc.compiler.Whitespace.WhitespaceRule;
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
+import de.lyca.xalan.xsltc.compiler.util.Messages;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
 import de.lyca.xalan.xsltc.dom.MultiDOM;
@@ -565,7 +565,7 @@ public final class Stylesheet extends SyntaxTreeNode {
     }
     // Make sure the XSL version set in this stylesheet
     if (_version.isEmpty()) {
-      reportError(this, parser, ErrorMsg.REQUIRED_ATTR_ERR, "version");
+      reportError(this, parser, Messages.get().requiredAttrErr("version"));
     }
     // Verify that the version is 1.0 and nothing else
     // else if (!_version.equals("1.0")) {
@@ -579,7 +579,7 @@ public final class Stylesheet extends SyntaxTreeNode {
     final Stylesheet sheet = stable.addStylesheet(_name, this);
     if (sheet != null) {
       // Error: more that one stylesheet defined
-      final ErrorMsg err = new ErrorMsg(MULTIPLE_STYLESHEET_ERR, this);
+      final ErrorMsg err = new ErrorMsg(this, Messages.get().multipleStylesheetErr());
       parser.reportError(ERROR, err);
     }
 
@@ -611,8 +611,8 @@ public final class Stylesheet extends SyntaxTreeNode {
     stable.pushExcludedNamespacesContext();
     stable.excludeURI(Constants.XSLT_URI);
     if (!stable.excludeNamespaces(excludePrefixes).isEmpty()) {
-      // TODO
-      final ErrorMsg error = new ErrorMsg(ErrorMsg.INTERNAL_ERR, "Unknown exclude-result-prefix", this);
+      // TODO better error reporting
+      final ErrorMsg error = new ErrorMsg(this, Messages.get().internalErr("Unknown exclude-result-prefix"));
       parser.reportError(Constants.ERROR, error);
     }
     stable.excludeNamespaces(extensionPrefixes);
@@ -620,7 +620,8 @@ public final class Stylesheet extends SyntaxTreeNode {
     final List<SyntaxTreeNode> contents = getContents();
     final int count = contents.size();
 
-    // Check the order of import We have to scan the stylesheet element's top-level elements for
+    // Check the order of import We have to scan the stylesheet element's
+    // top-level elements for
     // variables and/or parameters before we parse the other elements
     boolean inImports = true;
     for (int i = 0; i < count; i++) {
@@ -629,7 +630,7 @@ public final class Stylesheet extends SyntaxTreeNode {
         inImports = false;
       } else if (!inImports && child instanceof Import) {
         // TODO better error reporting
-        final ErrorMsg err = new ErrorMsg(ErrorMsg.INTERNAL_ERR, "Imports must be first in stylesheet", this);
+        final ErrorMsg err = new ErrorMsg(this, Messages.get().internalErr("Imports must be first in stylesheet"));
         parser.reportError(Constants.ERROR, err);
       }
     }
@@ -667,9 +668,9 @@ public final class Stylesheet extends SyntaxTreeNode {
       if (!(child instanceof TopLevelElement || child instanceof UnsupportedElement
           || child.getQName().getNamespace() != null && !child.getQName().getNamespace().isEmpty()
               && !child.getQName().getNamespace().equals(Constants.XSLT_URI))) {
-        // TODO
-        final ErrorMsg error = new ErrorMsg(ErrorMsg.INTERNAL_ERR,
-            child.getQName().getLocalPart() + " is not a Top-Level Element", this);
+        // TODO better error reporting
+        final ErrorMsg error = new ErrorMsg(this,
+            Messages.get().internalErr(child.getQName().getLocalPart() + " is not a Top-Level Element"));
         parser.reportError(Constants.ERROR, error);
       }
     }
@@ -1138,7 +1139,7 @@ public final class Stylesheet extends SyntaxTreeNode {
 
       // If nothing was changed in this pass then we have a circular ref
       if (!changed) {
-        final ErrorMsg err = new ErrorMsg(ErrorMsg.CIRCULAR_VARIABLE_ERR, input.toString(), this);
+        final ErrorMsg err = new ErrorMsg(this, Messages.get().circularVariableErr(input));
         getParser().reportError(Constants.ERROR, err);
         return result;
       }

@@ -18,6 +18,7 @@
 package de.lyca.xalan.xsltc.compiler;
 
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
+import de.lyca.xalan.xsltc.compiler.util.Messages;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
 
@@ -38,11 +39,11 @@ final class NamespaceAlias extends TopLevelElement {
   public void parseContents(Parser parser) {
     stylesheetPrefix = getAttribute("stylesheet-prefix");
     if (stylesheetPrefix.isEmpty()) {
-      reportError(this, parser, ErrorMsg.REQUIRED_ATTR_ERR, "stylesheet-prefix");
+      reportError(this, parser, Messages.get().requiredAttrErr("stylesheet-prefix"));
     }
     resultPrefix = getAttribute("result-prefix");
     if (resultPrefix.isEmpty()) {
-      reportError(this, parser, ErrorMsg.REQUIRED_ATTR_ERR, "result-prefix");
+      reportError(this, parser, Messages.get().requiredAttrErr("result-prefix"));
     }
     parser.getSymbolTable().addPrefixAlias(stylesheetPrefix, resultPrefix);
   }
@@ -51,7 +52,7 @@ final class NamespaceAlias extends TopLevelElement {
   public Type typeCheck(SymbolTable stable) throws TypeCheckError {
     if (!(getParent() instanceof Stylesheet)) {
       // TODO better error reporting
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.INTERNAL_ERR, "Parent is not Stylesheet", this);
+      final ErrorMsg err = new ErrorMsg(this, Messages.get().internalErr("Parent is not Stylesheet"));
       throw new TypeCheckError(err);
     }
     return Type.Void;

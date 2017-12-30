@@ -23,6 +23,7 @@ import com.sun.codemodel.JExpression;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
+import de.lyca.xalan.xsltc.compiler.util.Messages;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
 
@@ -44,7 +45,7 @@ final class UnresolvedRef extends VariableRefBase {
   }
 
   private ErrorMsg reportError() {
-    final ErrorMsg err = new ErrorMsg(ErrorMsg.VARIABLE_UNDEF_ERR, _variableName, this);
+    final ErrorMsg err = new ErrorMsg(this, Messages.get().variableUndefErr(_variableName));
     getParser().reportError(Constants.ERROR, err);
     return err;
   }
@@ -76,7 +77,7 @@ final class UnresolvedRef extends VariableRefBase {
   public Type typeCheck(SymbolTable stable) throws TypeCheckError {
     if (_ref != null) {
       final String name = _variableName.toString();
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.CIRCULAR_VARIABLE_ERR, name, this);
+      final ErrorMsg err = new ErrorMsg(this, Messages.get().circularVariableErr(name));
     }
     if ((_ref = resolve(getParser(), stable)) != null)
       return _type = _ref.typeCheck(stable);
@@ -92,7 +93,7 @@ final class UnresolvedRef extends VariableRefBase {
       return _null();
     }
   }
-  
+
   @Override
   public void translate(CompilerContext ctx) {
     if (_ref != null) {

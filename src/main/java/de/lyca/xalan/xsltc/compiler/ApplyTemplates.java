@@ -20,7 +20,6 @@ package de.lyca.xalan.xsltc.compiler;
 import static de.lyca.xalan.xsltc.compiler.Constants.ITERATOR_PNAME;
 import static de.lyca.xalan.xsltc.compiler.Constants.POP_PARAM_FRAME;
 import static de.lyca.xalan.xsltc.compiler.Constants.PUSH_PARAM_FRAME;
-import static de.lyca.xalan.xsltc.compiler.util.ErrorMsg.RESULT_TREE_SORT_ERR;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +28,7 @@ import com.sun.codemodel.JExpression;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
+import de.lyca.xalan.xsltc.compiler.util.Messages;
 import de.lyca.xalan.xsltc.compiler.util.NodeSetType;
 import de.lyca.xalan.xsltc.compiler.util.NodeType;
 import de.lyca.xalan.xsltc.compiler.util.ReferenceType;
@@ -60,13 +60,13 @@ final class ApplyTemplates extends Instruction {
       _select = parser.parseExpression(this, "select", null);
     } else if (hasAttribute("select")) {
       // TODO better error reporting
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.INTERNAL_ERR, "Select is empty", this);
+      final ErrorMsg err = new ErrorMsg(this,Messages.get().internalErr("Select is empty"));
       parser.reportError(Constants.ERROR, err);
     }
 
     if (mode.length() > 0) {
       if (!XML11Char.isXML11ValidQName(mode)) {
-        final ErrorMsg err = new ErrorMsg(ErrorMsg.INVALID_QNAME_ERR, mode, this);
+        final ErrorMsg err = new ErrorMsg(this, Messages.get().invalidQnameErr(mode));
         parser.reportError(Constants.ERROR, err);
       }
       _modeName = parser.getQNameIgnoreDefaultNs(mode);
@@ -79,7 +79,7 @@ final class ApplyTemplates extends Instruction {
       if (!(child instanceof Sort || child instanceof WithParam
           || child instanceof Text && ((Text) child).isIgnore())) {
         // TODO better error reporting
-        final ErrorMsg err = new ErrorMsg(ErrorMsg.ILLEGAL_CHILD_ERR, child, this);
+        final ErrorMsg err = new ErrorMsg(this,Messages.get().illegalChildErr());
         parser.reportError(Constants.ERROR, err);
       }
     }
@@ -133,7 +133,7 @@ final class ApplyTemplates extends Instruction {
     if (_type != null && _type instanceof ResultTreeType) {
       // <xsl:sort> cannot be applied to a result tree - issue warning
       if (sortObjects.size() > 0) {
-        final ErrorMsg err = new ErrorMsg(RESULT_TREE_SORT_ERR, this);
+        final ErrorMsg err = new ErrorMsg(this,Messages.get().resultTreeSortErr());
         getParser().reportError(Constants.WARNING, err);
       }
       // Put the result tree (a DOM adapter) on the stack

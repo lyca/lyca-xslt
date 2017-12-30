@@ -34,6 +34,7 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import de.lyca.xalan.xsltc.StripFilter;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
+import de.lyca.xalan.xsltc.compiler.util.Messages;
 import de.lyca.xalan.xsltc.dom.DOMWSFilter;
 import de.lyca.xalan.xsltc.dom.SAXImpl;
 import de.lyca.xalan.xsltc.dom.XSLTCDTMManager;
@@ -134,8 +135,9 @@ public class TransformerHandlerImpl implements TransformerHandler, DeclHandler {
     _result = result;
 
     if (null == result) {
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.ER_RESULT_NULL);
-      throw new IllegalArgumentException(err.toString()); // "result should not be null");
+      final ErrorMsg err = new ErrorMsg(Messages.get().erResultNull());
+      throw new IllegalArgumentException(err.toString()); // "result should not
+                                                          // be null");
     }
 
     if (_isIdentity) {
@@ -178,7 +180,7 @@ public class TransformerHandlerImpl implements TransformerHandler, DeclHandler {
   public void startDocument() throws SAXException {
     // Make sure setResult() was called before the first SAX event
     if (_result == null) {
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.JAXP_SET_RESULT_ERR);
+      final ErrorMsg err = new ErrorMsg(Messages.get().jaxpSetResultErr());
       throw new SAXException(err.toString());
     }
 
@@ -403,7 +405,7 @@ public class TransformerHandlerImpl implements TransformerHandler, DeclHandler {
    */
   @Override
   public void unparsedEntityDecl(String name, String publicId, String systemId, String notationName)
-          throws SAXException {
+      throws SAXException {
     if (_dtdHandler != null) {
       _dtdHandler.unparsedEntityDecl(name, publicId, systemId, notationName);
     }
@@ -424,7 +426,7 @@ public class TransformerHandlerImpl implements TransformerHandler, DeclHandler {
    */
   @Override
   public void attributeDecl(String eName, String aName, String type, String valueDefault, String value)
-          throws SAXException {
+      throws SAXException {
     if (_declHandler != null) {
       _declHandler.attributeDecl(eName, aName, type, valueDefault, value);
     }

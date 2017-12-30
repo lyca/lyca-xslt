@@ -23,6 +23,7 @@ import static de.lyca.xalan.xsltc.compiler.Constants.PUSH_PARAM_FRAME;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
+import de.lyca.xalan.xsltc.compiler.util.Messages;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
 
@@ -75,8 +76,8 @@ final class ApplyImports extends Instruction {
     while (parent != null) {
       if (parent instanceof ForEach) {
         // TODO better error reporting
-        final ErrorMsg err = new ErrorMsg(ErrorMsg.INTERNAL_ERR, "xsl:apply-imports not allowed in a xsl:for-each",
-            this);
+        final ErrorMsg err = new ErrorMsg(this,
+            Messages.get().internalErr("xsl:apply-imports not allowed in a xsl:for-each"));
         throw new TypeCheckError(err);
       }
       parent = parent.getParent();

@@ -33,6 +33,7 @@ import com.sun.codemodel.JVar;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
+import de.lyca.xalan.xsltc.compiler.util.Messages;
 import de.lyca.xalan.xsltc.compiler.util.NodeSetType;
 import de.lyca.xalan.xsltc.compiler.util.NodeType;
 import de.lyca.xalan.xsltc.compiler.util.ReferenceType;
@@ -59,7 +60,7 @@ final class ForEach extends Instruction {
 
     // make sure required attribute(s) have been set
     if (_select.isDummy()) {
-      reportError(this, parser, ErrorMsg.REQUIRED_ATTR_ERR, "select");
+      reportError(this, parser, Messages.get().requiredAttrErr("select"));
     }
   }
 
@@ -77,7 +78,7 @@ final class ForEach extends Instruction {
       return Type.Void;
     }
     // TODO
-    final ErrorMsg err = new ErrorMsg(ErrorMsg.INTERNAL_ERR, "for-each", this);
+    final ErrorMsg err = new ErrorMsg(this, Messages.get().internalErr("for-each"));
     throw new TypeCheckError(err);
   }
 
@@ -95,7 +96,7 @@ final class ForEach extends Instruction {
     if (_type != null && _type instanceof ResultTreeType) {
       // <xsl:sort> cannot be applied to a result tree - issue warning
       if (sortObjects.size() > 0) {
-        final ErrorMsg msg = new ErrorMsg(ErrorMsg.RESULT_TREE_SORT_ERR, this);
+        final ErrorMsg msg = new ErrorMsg(this, Messages.get().resultTreeSortErr());
         getParser().reportError(WARNING, msg);
       }
       iterator = _type.compileTo(ctx, _select.toJExpression(ctx), Type.NodeSet);

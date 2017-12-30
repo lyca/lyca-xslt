@@ -29,7 +29,7 @@ import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JInvocation;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
-import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
+import de.lyca.xalan.xsltc.compiler.util.Messages;
 import de.lyca.xalan.xsltc.compiler.util.StringType;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
@@ -188,7 +188,7 @@ final class KeyCall extends FunctionCall {
     } else if (_resolvedQName != null) {
       if (!getStylesheet().hasKey(_resolvedQName.toString())) {
         // TODO better error reporting
-        reportError(this, getParser(), ErrorMsg.ERROR_MSG, "key not existent");
+        reportError(this, getParser(), Messages.get().errorMsg("key not existent"));
       }
       name = lit(_resolvedQName.toString());
     } else {

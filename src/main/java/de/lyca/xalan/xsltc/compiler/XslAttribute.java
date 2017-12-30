@@ -21,7 +21,6 @@ import static com.sun.codemodel.JExpr.invoke;
 import static com.sun.codemodel.JExpr.lit;
 import static com.sun.codemodel.JExpr.ref;
 import static de.lyca.xalan.xsltc.compiler.Constants.XMLNS_PREFIX;
-import static de.lyca.xalan.xsltc.compiler.util.ErrorMsg.ILLEGAL_ATTR_NAME_ERR;
 
 import java.util.List;
 
@@ -29,6 +28,7 @@ import com.sun.codemodel.JExpression;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
+import de.lyca.xalan.xsltc.compiler.util.Messages;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
 import de.lyca.xalan.xsltc.compiler.util.Util;
@@ -73,14 +73,14 @@ final class XslAttribute extends Instruction {
     final String prefix = qname.getPrefix();
 
     if (prefix != null && prefix.equals(XMLNS_PREFIX) || name.equals(XMLNS_PREFIX)) {
-      reportError(this, parser, ILLEGAL_ATTR_NAME_ERR, name);
+      reportError(this, parser, Messages.get().illegalAttrNameErr(name));
       return;
     }
 
     _isLiteral = Util.isLiteral(name);
     if (_isLiteral) {
       if (!XML11Char.isXML11ValidQName(name)) {
-        reportError(this, parser, ILLEGAL_ATTR_NAME_ERR, name);
+        reportError(this, parser, Messages.get().illegalAttrNameErr(name));
         return;
       }
     }
@@ -123,7 +123,7 @@ final class XslAttribute extends Instruction {
       }
 
       // Report warning but do not ignore attribute
-      reportWarning(this, parser, ErrorMsg.STRAY_ATTRIBUTE_ERR, name);
+      reportWarning(this, parser, Messages.get().strayAttributeErr(name));
     }
 
     // Get namespace from namespace attribute?
@@ -178,7 +178,8 @@ final class XslAttribute extends Instruction {
   public Type typeCheck(SymbolTable stable) throws TypeCheckError {
     if (getParent() instanceof XslAttribute) {
       // TODO better error reporting
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.INTERNAL_ERR, "xsl:attribute cannot be child of xsl:attribute", this);
+      final ErrorMsg err = new ErrorMsg(this,
+          Messages.get().internalErr("xsl:attribute cannot be child of xsl:attribute"));
       throw new TypeCheckError(err);
     }
     if (!_ignore) {

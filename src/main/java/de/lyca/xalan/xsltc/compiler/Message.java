@@ -28,6 +28,7 @@ import com.sun.codemodel.JExpression;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
+import de.lyca.xalan.xsltc.compiler.util.Messages;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
 import de.lyca.xml.serializer.ToXMLStream;
@@ -44,7 +45,8 @@ final class Message extends Instruction {
   public void parseContents(Parser parser) {
     final String termstr = getAttribute("terminate");
     if (!("".equals(termstr) || "yes".equals(termstr) || "no".equals(termstr))) {
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.INTERNAL_ERR, "Value for terminate should equal yes or no", this);
+      // TODO better error reporting
+      final ErrorMsg err = new ErrorMsg(this, Messages.get().internalErr("Value for terminate should equal yes or no"));
       parser.reportError(Constants.ERROR, err);
     }
     _terminate = termstr.equals("yes");

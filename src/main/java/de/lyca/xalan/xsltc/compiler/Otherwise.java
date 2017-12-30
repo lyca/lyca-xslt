@@ -19,6 +19,7 @@ package de.lyca.xalan.xsltc.compiler;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
+import de.lyca.xalan.xsltc.compiler.util.Messages;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
 
@@ -36,7 +37,7 @@ final class Otherwise extends Instruction {
   @Override
   public void translate(CompilerContext ctx) {
     final Parser parser = getParser();
-    final ErrorMsg err = new ErrorMsg(ErrorMsg.STRAY_OTHERWISE_ERR, this);
+    final ErrorMsg err = new ErrorMsg(this, Messages.get().strayOtherwiseErr());
     parser.reportError(Constants.ERROR, err);
   }
 }

@@ -31,6 +31,7 @@ import de.lyca.xalan.xsltc.compiler.util.BooleanType;
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.IntType;
+import de.lyca.xalan.xsltc.compiler.util.Messages;
 import de.lyca.xalan.xsltc.compiler.util.MethodType;
 import de.lyca.xalan.xsltc.compiler.util.NodeSetType;
 import de.lyca.xalan.xsltc.compiler.util.NodeType;
@@ -150,8 +151,8 @@ final class RelationalExpr extends Expression {
         final Expression temp = _right;
         _right = _left;
         _left = temp;
-        _op = _op == Operators.GT ? Operators.LT : _op == Operators.LT ? Operators.GT
-                : _op == Operators.GE ? Operators.LE : Operators.GE;
+        _op = _op == Operators.GT ? Operators.LT
+            : _op == Operators.LT ? Operators.GT : _op == Operators.GE ? Operators.LE : Operators.GE;
         tright = _right.getType();
       }
 
@@ -212,17 +213,17 @@ final class RelationalExpr extends Expression {
       JExpression rightExp = _right.toJExpression(ctx);
 
       switch (_op) {
-        case Operators.LT:
-          return lt(leftExp, rightExp);
-        case Operators.GT:
-          return gt(leftExp, rightExp);
-        case Operators.LE:
-          return lte(leftExp, rightExp);
-        case Operators.GE:
-          return gte(leftExp, rightExp);
-        default:
-          final ErrorMsg msg = new ErrorMsg(ErrorMsg.ILLEGAL_RELAT_OP_ERR, this);
-          getParser().reportError(Constants.FATAL, msg);
+      case Operators.LT:
+        return lt(leftExp, rightExp);
+      case Operators.GT:
+        return gt(leftExp, rightExp);
+      case Operators.LE:
+        return lte(leftExp, rightExp);
+      case Operators.GE:
+        return gte(leftExp, rightExp);
+      default:
+        final ErrorMsg msg = new ErrorMsg(this, Messages.get().illegalRelatOpErr());
+        getParser().reportError(Constants.FATAL, msg);
       }
     }
     return _null();

@@ -25,6 +25,7 @@ import com.sun.codemodel.JExpression;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
+import de.lyca.xalan.xsltc.compiler.util.Messages;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
 
@@ -60,7 +61,7 @@ final class ContainsCall extends FunctionCall {
 
     // Check that the function was passed exactly two arguments
     if (argumentCount() != 2)
-      throw new TypeCheckError(ErrorMsg.ILLEGAL_ARG_ERR, getName(), this);
+      throw new TypeCheckError(new ErrorMsg(this, Messages.get().illegalArgErr()));
 
     // The first argument must be a String, or cast to a String
     _base = argument(0);

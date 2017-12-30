@@ -109,7 +109,7 @@ public final class ResultTreeType extends Type {
     } else if (type == Type.Object) {
       return compileTo(ctx, expr, (ObjectType) type);
     } else {
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), type.toString());
+      final ErrorMsg err = new ErrorMsg(Messages.get().dataConversionErr(this, type), -1);
       ctx.xsltc().getParser().reportError(FATAL, err);
       return expr;
     }
@@ -465,7 +465,7 @@ public final class ResultTreeType extends Type {
     } else if (className.equals("java.lang.String")) {
       return compileTo(ctx, expr, Type.String);
     } else {
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), className);
+      final ErrorMsg err = new ErrorMsg(Messages.get().dataConversionErr(this, className), -1);
       ctx.xsltc().getParser().reportError(Constants.FATAL, err);
       return expr;
     }

@@ -24,6 +24,7 @@ import org.xml.sax.XMLReader;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
+import de.lyca.xalan.xsltc.compiler.util.Messages;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
 import de.lyca.xml.utils.SystemIDResolver;
@@ -71,14 +72,14 @@ final class Import extends TopLevelElement {
       }
 
       if (context.checkForLoop(docToLoad)) {
-        final ErrorMsg msg = new ErrorMsg(ErrorMsg.CIRCULAR_INCLUDE_ERR, docToLoad, this);
+        final ErrorMsg msg = new ErrorMsg(this, Messages.get().circularIncludeErr(docToLoad));
         parser.reportError(Constants.FATAL, msg);
         return;
       }
 
       // Return if we could not resolve the URL
       if (input == null) {
-        final ErrorMsg msg = new ErrorMsg(ErrorMsg.FILE_NOT_FOUND_ERR, docToLoad, this);
+        final ErrorMsg msg = new ErrorMsg(this, Messages.get().fileNotFoundErr(docToLoad));
         parser.reportError(Constants.FATAL, msg);
         return;
       }
@@ -135,7 +136,7 @@ final class Import extends TopLevelElement {
   public Type typeCheck(SymbolTable stable) throws TypeCheckError {
     if (!(getParent() instanceof Stylesheet)) {
       // TODO better error reporting
-      final ErrorMsg err = new ErrorMsg(ErrorMsg.INTERNAL_ERR, "Parent is not Stylesheet", this);
+      final ErrorMsg err = new ErrorMsg(this, Messages.get().internalErr("Parent is not Stylesheet"));
       throw new TypeCheckError(err);
     }
     return Type.Void;

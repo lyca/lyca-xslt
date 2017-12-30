@@ -18,7 +18,6 @@
 package de.lyca.xalan.xsltc.compiler;
 
 import static de.lyca.xalan.xsltc.compiler.Constants.FATAL;
-import static de.lyca.xalan.xsltc.compiler.util.ErrorMsg.NOT_IMPLEMENTED_ERR;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +26,7 @@ import com.sun.codemodel.JStatement;
 
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
+import de.lyca.xalan.xsltc.compiler.util.Messages;
 import de.lyca.xalan.xsltc.compiler.util.Type;
 import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
 
@@ -51,7 +51,7 @@ class TopLevelElement extends SyntaxTreeNode {
    */
   @Override
   public void translate(CompilerContext ctx) {
-    final ErrorMsg msg = new ErrorMsg(NOT_IMPLEMENTED_ERR, getClass(), this);
+    final ErrorMsg msg = new ErrorMsg(this, Messages.get().notImplementedErr(getClass()));
     getParser().reportError(FATAL, msg);
   }
 
@@ -61,12 +61,12 @@ class TopLevelElement extends SyntaxTreeNode {
    */
   public JStatement compile(CompilerContext ctx) {
     return null;
-//    FIXME
-//    final InstructionList result, save = methodGen.getInstructionList();
-//    methodGen.setInstructionList(result = new InstructionList());
-//    translate(classGen, methodGen);
-//    methodGen.setInstructionList(save);
-//    return result;
+    // FIXME
+    // final InstructionList result, save = methodGen.getInstructionList();
+    // methodGen.setInstructionList(result = new InstructionList());
+    // translate(classGen, methodGen);
+    // methodGen.setInstructionList(save);
+    // return result;
   }
 
   /**
