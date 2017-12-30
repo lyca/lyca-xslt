@@ -20,8 +20,6 @@ package de.lyca.xalan.xsltc.runtime;
 /**
  * @author Morten Jorgensen
  */
-public class MessageHandler {
-  public void displayMessage(String msg) {
-    System.err.println(msg);
-  }
+public interface MessageHandler {
+  void displayMessage(String msg);
 }

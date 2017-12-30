@@ -32,13 +32,6 @@ final class ApplyImports extends Instruction {
   private int _precedence;
 
   /**
-   * Returns true if this <xsl:apply-imports/> element has parameters
-   */
-  public boolean hasWithParams() {
-    return hasContents();
-  }
-
-  /**
    * Determine the lowest import precedence for any stylesheet imported or
    * included by the stylesheet in which this <xsl:apply-imports/> element
    * occured. The templates that are imported by the stylesheet in which this

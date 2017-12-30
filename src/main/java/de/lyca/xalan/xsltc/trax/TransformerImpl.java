@@ -196,7 +196,7 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
    * This class wraps an ErrorListener into a MessageHandler in order to capture
    * messages reported via xsl:message.
    */
-  static class MessageHandler extends de.lyca.xalan.xsltc.runtime.MessageHandler {
+  static class MessageHandler implements de.lyca.xalan.xsltc.runtime.MessageHandler {
     private final ErrorListener _errorListener;
 
     public MessageHandler(ErrorListener errorListener) {

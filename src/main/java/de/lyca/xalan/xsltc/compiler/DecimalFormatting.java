@@ -148,14 +148,14 @@ final class DecimalFormatting extends TopLevelElement {
     JVar dfs = ctx.currentBlock().decl(decimalFormatSymbols, ctx.nextDecimalFormatting(),
         _new(decimalFormatSymbols).arg(locale.staticRef("US")));
     String tmp = getAttribute("NaN");
-    if (tmp == null || tmp.isEmpty()) {
+    if (tmp.isEmpty()) {
       ctx.currentBlock().invoke(dfs, "setNaN").arg("NaN");
     } else {
       ctx.currentBlock().invoke(dfs, "setNaN").arg(tmp);
     }
 
     tmp = getAttribute("infinity");
-    if (tmp == null || tmp.isEmpty()) {
+    if (tmp.isEmpty()) {
       ctx.currentBlock().invoke(dfs, "setInfinity").arg("Infinity");
     } else {
       ctx.currentBlock().invoke(dfs, "setInfinity").arg(tmp);
