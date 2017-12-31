@@ -23,6 +23,7 @@ import static com.sun.codemodel.JExpr.cast;
 import static com.sun.codemodel.JExpr.invoke;
 import static com.sun.codemodel.JExpr.lit;
 import static de.lyca.xalan.xsltc.DOM.GET_AXIS_ITERATOR;
+import static de.lyca.xalan.xsltc.DOM.GET_NAMESPACE_AXIS_ITERATOR;
 import static de.lyca.xalan.xsltc.DOM.GET_NODE_VALUE_ITERATOR;
 import static de.lyca.xalan.xsltc.DOM.GET_TYPED_AXIS_ITERATOR;
 import static de.lyca.xalan.xsltc.compiler.Constants.TRANSLET_PNAME;
@@ -228,25 +229,13 @@ final class Step extends RelativeLocationPath {
         if (_type == Type.Node) {
           // Put context node on stack if using Type.Node
           return ctx.currentNode();
-          // il.append(methodGen.loadContextNode());
         } else {
           if (parent instanceof ParentLocationPath) {
             // Wrap the context node in a singleton iterator if not.
             return _new(ctx.ref(SingletonIterator.class)).arg(ctx.currentNode());
-//            final int init = cpg.addMethodref(SINGLETON_ITERATOR, "<init>", "(" + NODE_SIG + ")V");
-//            il.append(new NEW(cpg.addClass(SINGLETON_ITERATOR)));
-//            il.append(DUP);
-//            il.append(methodGen.loadContextNode());
-//            il.append(new INVOKESPECIAL(init));
           } else {
             // DOM.getAxisIterator(int axis);
             return ctx.currentDom().invoke(GET_AXIS_ITERATOR).arg(axis.staticRef(_axis.name()));
-//            final int git = cpg.addInterfaceMethodref(DOM_INTF, "getAxisIterator", "(Lde/lyca/xml/dtm/Axis;)"
-//                + NODE_ITERATOR_SIG);
-//            il.append(methodGen.loadDOM());
-//            il.append(factory.createFieldAccess("de.lyca.xml.dtm.Axis", _axis.name(), Type.Axis.toJCType(),
-//                org.apache.bcel.Constants.GETSTATIC));
-//            il.append(new INVOKEINTERFACE(git, 2));
           }
         }
       }
@@ -260,52 +249,34 @@ final class Step extends RelativeLocationPath {
 
       // "ELEMENT" or "*" or "@*" or ".." or "@attr" with a parent.
       switch (_nodeType) {
-        case NodeTest.ATTRIBUTE:
-          _axis = Axis.ATTRIBUTE;
-        case NodeTest.ANODE:
-          // DOM.getAxisIterator(int axis);
-          invocation = invoke(ctx.currentDom(), GET_AXIS_ITERATOR).arg(axis.staticRef(_axis.name()));
-//          final int git = cpg.addInterfaceMethodref(DOM_INTF, "getAxisIterator", "(Lde/lyca/xml/dtm/Axis;)"
-//              + NODE_ITERATOR_SIG);
-//          il.append(methodGen.loadDOM());
-//          il.append(factory.createFieldAccess("de.lyca.xml.dtm.Axis", _axis.name(), Type.Axis.toJCType(),
-//              org.apache.bcel.Constants.GETSTATIC));
-//          il.append(new INVOKEINTERFACE(git, 2));
-          break;
-        default:
-          if (star > 1) {
-            final String namespace;
-            if (_axis == Axis.ATTRIBUTE) {
-              namespace = name.substring(0, star - 2);
-            } else {
-              namespace = name.substring(0, star - 1);
-            }
-  
-            final int nsType = xsltc.registerNamespace(namespace);
-            // FIXME
-//            final int ns = cpg.addInterfaceMethodref(DOM_INTF, "getNamespaceAxisIterator", "(Lde/lyca/xml/dtm/Axis;I)"
-//                + NODE_ITERATOR_SIG);
-//            il.append(methodGen.loadDOM());
-//            il.append(factory.createFieldAccess("de.lyca.xml.dtm.Axis", _axis.name(), Type.Axis.toJCType(),
-//                org.apache.bcel.Constants.GETSTATIC));
-//            il.append(new PUSH(cpg, nsType));
-//            il.append(new INVOKEINTERFACE(ns, 3));
-            break;
+      case NodeTest.ATTRIBUTE:
+        _axis = Axis.ATTRIBUTE;
+      case NodeTest.ANODE:
+        // DOM.getAxisIterator(int axis);
+        invocation = invoke(ctx.currentDom(), GET_AXIS_ITERATOR).arg(axis.staticRef(_axis.name()));
+        break;
+      default:
+        if (star > 1) {
+          final String namespace;
+          if (_axis == Axis.ATTRIBUTE) {
+            namespace = name.substring(0, star - 2);
+          } else {
+            namespace = name.substring(0, star - 1);
           }
-        case NodeTest.ELEMENT:
-          // DOM.getTypedAxisIterator(int axis, int type);
-          invocation = invoke(ctx.currentDom(), GET_TYPED_AXIS_ITERATOR).arg(axis.staticRef(_axis.name()))
-              .arg(lit(_nodeType));
-//          final int ty = cpg.addInterfaceMethodref(DOM_INTF, "getTypedAxisIterator", "(Lde/lyca/xml/dtm/Axis;I)"
-//              + NODE_ITERATOR_SIG);
-//          // Get the typed iterator we're after
-//          il.append(methodGen.loadDOM());
-//          il.append(factory.createFieldAccess("de.lyca.xml.dtm.Axis", _axis.name(), Type.Axis.toJCType(),
-//              org.apache.bcel.Constants.GETSTATIC));
-//          il.append(new PUSH(cpg, _nodeType));
-//          il.append(new INVOKEINTERFACE(ty, 3));
-  
+
+          final int nsType = xsltc.registerNamespace(namespace);
+          // DTMAxisIterator getNamespaceAxisIterator(final Axis axis, final int
+          // ns);
+          invocation = invoke(ctx.currentDom(), GET_NAMESPACE_AXIS_ITERATOR).arg(axis.staticRef(_axis.name()))
+              .arg(lit(nsType));
           break;
+        }
+      case NodeTest.ELEMENT:
+        // Get the typed iterator we're after
+        // DOM.getTypedAxisIterator(int axis, int type);
+        invocation = invoke(ctx.currentDom(), GET_TYPED_AXIS_ITERATOR).arg(axis.staticRef(_axis.name()))
+            .arg(lit(_nodeType));
+        break;
       }
     }
     return invocation;
