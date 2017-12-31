@@ -5,16 +5,18 @@ import static de.lyca.xslt.ResourceUtils.readResource;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 
 import javax.xml.transform.Source;
 
-import org.custommonkey.xmlunit.Transform;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+
+import de.lyca.xslt.Transform;
 
 @RunWith(Parameterized.class)
 public class ConfVariableTests {
@@ -25,13 +27,12 @@ public class ConfVariableTests {
   @Parameters(name = "{0}")
   public static Collection<Object> params() {
     Collection<Object> result = new ArrayList<>();
-    for (int i = 1; i < 20; i++) {
-      result.add(String.format("variable%02d", i));
-    }
-    for (int i = 21; i < 56; i++) {
-      result.add(String.format("variable%02d", i));
-    }
-    for (int i = 57; i < 71; i++) {
+    // 20, 56: Redefinition of variable not supported
+    int[] exclude = { 20, 56 };
+    for (int i = 1; i < 71; i++) {
+      if (Arrays.binarySearch(exclude, i) >= 0) {
+        continue;
+      }
       result.add(String.format("variable%02d", i));
     }
     return result;

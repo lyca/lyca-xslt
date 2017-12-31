@@ -5,16 +5,18 @@ import static de.lyca.xslt.ResourceUtils.readResource;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 
 import javax.xml.transform.Source;
 
-import org.custommonkey.xmlunit.Transform;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+
+import de.lyca.xslt.Transform;
 
 @RunWith(Parameterized.class)
 public class ConfWhitespaceTests {
@@ -25,16 +27,12 @@ public class ConfWhitespaceTests {
   @Parameters(name = "{0}")
   public static Collection<Object> params() {
     Collection<Object> result = new ArrayList<>();
-    for (int i = 1; i < 14; i++) {
-      result.add(String.format("whitespace%02d", i));
-    }
-    for (int i = 15; i < 16; i++) {
-      result.add(String.format("whitespace%02d", i));
-    }
-    for (int i = 17; i < 24; i++) {
-      result.add(String.format("whitespace%02d", i));
-    }
-    for (int i = 35; i < 37; i++) {
+    // Non existent
+    int[] exclude = { 14, 16, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34 };
+    for (int i = 1; i < 37; i++) {
+      if (Arrays.binarySearch(exclude, i) >= 0) {
+        continue;
+      }
       result.add(String.format("whitespace%02d", i));
     }
     return result;

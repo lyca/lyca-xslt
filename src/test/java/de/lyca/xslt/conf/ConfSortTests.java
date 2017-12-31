@@ -5,16 +5,18 @@ import static de.lyca.xslt.ResourceUtils.readResource;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 
 import javax.xml.transform.Source;
 
-import org.custommonkey.xmlunit.Transform;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+
+import de.lyca.xslt.Transform;
 
 @RunWith(Parameterized.class)
 public class ConfSortTests {
@@ -24,10 +26,12 @@ public class ConfSortTests {
   @Parameters(name = "{0}")
   public static Collection<Object> params() {
     Collection<Object> result = new ArrayList<>();
-    for (int i = 1; i < 17; i++) {
-      result.add(String.format("sort%02d", i));
-    }
-    for (int i = 20; i < 42; i++) {
+    // Non existent
+    int[] exclude = { 17, 18, 19 };
+    for (int i = 1; i < 42; i++) {
+      if (Arrays.binarySearch(exclude, i) >= 0) {
+        continue;
+      }
       result.add(String.format("sort%02d", i));
     }
     return result;

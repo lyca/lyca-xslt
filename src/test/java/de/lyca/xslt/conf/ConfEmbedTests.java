@@ -5,16 +5,18 @@ import static de.lyca.xslt.ResourceUtils.readResource;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 
 import javax.xml.transform.Source;
 
-import org.custommonkey.xmlunit.Transform;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+
+import de.lyca.xslt.Transform;
 
 @RunWith(Parameterized.class)
 public class ConfEmbedTests {
@@ -24,12 +26,14 @@ public class ConfEmbedTests {
   @Parameters(name = "{0}")
   public static Collection<Object[]> params() {
     Collection<Object[]> result = new ArrayList<>();
-    for (int i = 1; i < 5; i++) {
-      result.add(new Object[] { String.format("embed%02d", i), i == 3 || i == 4 ? ".xsl" : ".xml" });
-    }
+    // 5, 6: non existent
     // 8 ignored as it has to be called differently...
-    for (int i = 7; i < 8; i++) {
-      result.add(new Object[] { String.format("embed%02d", i), ".xml" });
+    int[] exclude = { 5, 6, 8 };
+    for (int i = 1; i < 9; i++) {
+      if (Arrays.binarySearch(exclude, i) >= 0) {
+        continue;
+      }
+      result.add(new Object[] { String.format("embed%02d", i), i == 3 || i == 4 ? ".xsl" : ".xml" });
     }
     return result;
   }

@@ -10,12 +10,13 @@ import java.util.Collection;
 
 import javax.xml.transform.Source;
 
-import org.custommonkey.xmlunit.Transform;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+
+import de.lyca.xslt.Transform;
 
 @RunWith(Parameterized.class)
 public class ConfNamespaceTests {
@@ -26,7 +27,8 @@ public class ConfNamespaceTests {
   @Parameters(name = "{0}")
   public static Collection<Object> params() {
     Collection<Object> result = new ArrayList<>();
-    // 141 @Ignore("Namespace handling in RTF needs more insight")
+    // 141: Namespace handling in RTF needs more insight
+    // Rest: Non existent
     int[] exclude = { 76, 85, 114, 118, 129, 133, 135, 136, 141 };
     for (int i = 1; i < 143; i++) {
       if (Arrays.binarySearch(exclude, i) >= 0) {

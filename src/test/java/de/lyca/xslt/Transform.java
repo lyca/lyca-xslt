@@ -30,6 +30,9 @@ import javax.xml.transform.stream.StreamResult;
 public class Transform {
   private static final TransformerFactory TF = TransformerFactory.newInstance();
 
+//  private static final TransformerFactory TF = TransformerFactory.newInstance(
+//      "com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl", Transform.class.getClassLoader());
+
   private final Source inputSource;
   private Transformer transformer;
 
@@ -47,4 +50,9 @@ public class Transform {
   public void setErrorListener(ErrorListener errorListener) {
     transformer.setErrorListener(errorListener);
   }
+
+  public void setParameter(String name, Object value) {
+    transformer.setParameter(name, value);
+}
+
 }

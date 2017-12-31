@@ -6,10 +6,10 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 import javax.xml.transform.Source;
 
-import org.custommonkey.xmlunit.Transform;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
+
+import de.lyca.xslt.Transform;
 
 public class ConfSortLangTests {
 
@@ -28,7 +28,6 @@ public class ConfSortLangTests {
   }
 
   @Test
-  @Ignore("Collation is not used / lang attribute is ignored")
   public void sortAlphabetPolish() throws Exception {
     final String name = PACKAGE + "sort-alphabet-polish";
     final Source xsl = getSource(name + ".xsl");
@@ -40,7 +39,6 @@ public class ConfSortLangTests {
   }
 
   @Test
-  @Ignore("Collation is not used / lang attribute is ignored")
   public void sortAlphabetRussian() throws Exception {
     final String name = PACKAGE + "sort-alphabet-russian";
     final Source xsl = getSource(name + ".xsl");

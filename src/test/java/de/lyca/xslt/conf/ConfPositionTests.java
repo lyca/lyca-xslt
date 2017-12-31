@@ -9,12 +9,13 @@ import java.util.Collection;
 
 import javax.xml.transform.Source;
 
-import org.custommonkey.xmlunit.Transform;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+
+import de.lyca.xslt.Transform;
 
 @RunWith(Parameterized.class)
 public class ConfPositionTests {
@@ -25,10 +26,7 @@ public class ConfPositionTests {
   @Parameters(name = "{0}")
   public static Collection<Object> params() {
     Collection<Object> result = new ArrayList<>();
-    for (int i = 1; i < 17; i++) {
-      result.add(String.format("position%02d", i));
-    }
-    for (int i = 17; i < 114; i++) {
+    for (int i = 1; i < 114; i++) {
       result.add(String.format("position%02d", i));
     }
     return result;

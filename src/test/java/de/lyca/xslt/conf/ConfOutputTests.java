@@ -13,12 +13,13 @@ import java.util.Collection;
 
 import javax.xml.transform.Source;
 
-import org.custommonkey.xmlunit.Transform;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+
+import de.lyca.xslt.Transform;
 
 @RunWith(Parameterized.class)
 public class ConfOutputTests {
@@ -31,13 +32,13 @@ public class ConfOutputTests {
   private String name;
   private Charset encoding;
 
-//  22  @Ignore("EBCDIC-CP-IT encoding problem, so who cares ;-)")
-//  59  @Ignore("Some whitespace problems?")
-//  63  @Ignore("Html tag vs. xml tag issues?")
-
   @Parameters(name = "{0}")
   public static Collection<Object[]> params() {
     Collection<Object[]> result = new ArrayList<>();
+    // 22: EBCDIC-CP-IT encoding problem, so who cares ;-)
+    // 59: Some whitespace problems?
+    // 63: Html tag vs. xml tag issues?
+    // Rest non existent
     int[] exclude = { 22, 31, 59, 63, 83, 108 };
     for (int i = 1; i < 115; i++) {
       if (Arrays.binarySearch(exclude, i) >= 0) {

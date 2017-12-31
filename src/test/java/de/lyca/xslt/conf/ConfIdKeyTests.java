@@ -10,12 +10,13 @@ import java.util.Collection;
 
 import javax.xml.transform.Source;
 
-import org.custommonkey.xmlunit.Transform;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+
+import de.lyca.xslt.Transform;
 
 @RunWith(Parameterized.class)
 public class ConfIdKeyTests {
@@ -25,8 +26,9 @@ public class ConfIdKeyTests {
   @Parameters(name = "{0}")
   public static Collection<Object> params() {
     Collection<Object> result = new ArrayList<>();
-    // 31 @Ignore("Needs investigation! Section: 12.4 Miscellaneous Additional Functions")
-    // 49 @Ignore("Needs investigation! Section: 12.4 Generate-ID")
+    // 14: Non existent
+    // 31: Needs investigation! Section: 12.4 Miscellaneous Additional Functions
+    // 49: Needs investigation! Section: 12.4 Generate-ID
     int[] exclude = { 14, 31, 49 };
     for (int i = 1; i < 64; i++) {
       if (Arrays.binarySearch(exclude, i) >= 0) {

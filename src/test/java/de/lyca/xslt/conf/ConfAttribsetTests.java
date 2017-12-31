@@ -10,12 +10,13 @@ import java.util.Collection;
 
 import javax.xml.transform.Source;
 
-import org.custommonkey.xmlunit.Transform;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+
+import de.lyca.xslt.Transform;
 
 @RunWith(Parameterized.class)
 public class ConfAttribsetTests {
@@ -26,6 +27,8 @@ public class ConfAttribsetTests {
   @Parameters(name = "{0}")
   public static Collection<Object> params() {
     Collection<Object> result = new ArrayList<>();
+    // 15, 23: xmlns cannot be used as attribute name
+    // 24: overriding prefix not supported in the moment
     int[] exclude = { 15, 23, 24 };
     for (int i = 1; i < 50; i++) {
       if (Arrays.binarySearch(exclude, i) >= 0) {

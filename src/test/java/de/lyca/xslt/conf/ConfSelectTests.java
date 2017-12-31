@@ -7,16 +7,18 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 
 import javax.xml.transform.Source;
 
-import org.custommonkey.xmlunit.Transform;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+
+import de.lyca.xslt.Transform;
 
 @RunWith(Parameterized.class)
 public class ConfSelectTests {
@@ -27,10 +29,12 @@ public class ConfSelectTests {
   @Parameters(name = "{0}")
   public static Collection<Object[]> params() {
     Collection<Object[]> result = new ArrayList<>();
-    for (int i = 1; i < 46; i++) {
-      result.add(new Object[] { String.format("select%02d", i), UTF_8 });
-    }
-    for (int i = 47; i < 87; i++) {
+    // Non existent
+    int[] exclude = { 46 };
+    for (int i = 1; i < 87; i++) {
+      if (Arrays.binarySearch(exclude, i) >= 0) {
+        continue;
+      }
       result.add(new Object[] { String.format("select%02d", i), i == 73 ? ISO_8859_1 : UTF_8 });
     }
     return result;

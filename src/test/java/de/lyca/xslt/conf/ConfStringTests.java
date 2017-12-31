@@ -5,16 +5,18 @@ import static de.lyca.xslt.ResourceUtils.readResource;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 
 import javax.xml.transform.Source;
 
-import org.custommonkey.xmlunit.Transform;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+
+import de.lyca.xslt.Transform;
 
 @RunWith(Parameterized.class)
 public class ConfStringTests {
@@ -25,13 +27,12 @@ public class ConfStringTests {
   @Parameters(name = "{0}")
   public static Collection<Object> params() {
     Collection<Object> result = new ArrayList<>();
-    for (int i = 1; i < 3; i++) {
-      result.add(String.format("string%02d", i));
-    }
-    for (int i = 4; i < 23; i++) {
-      result.add(String.format("string%02d", i));
-    }
-    for (int i = 30; i < 144; i++) {
+    // Non existent
+    int[] exclude = { 3, 23, 24, 25, 26, 27, 28, 29 };
+    for (int i = 1; i < 144; i++) {
+      if (Arrays.binarySearch(exclude, i) >= 0) {
+        continue;
+      }
       result.add(String.format("string%02d", i));
     }
     return result;
