@@ -450,10 +450,14 @@ final class Step extends RelativeLocationPath {
       }
       // Handle '//*[n]' expression
       else if (predicate.isNthDescendant()) {
-        // FIXME
+        // DOM.getNthDescendant(int node, int n, boolean includeself);
+        return invoke(ctx.currentDom(), "getNthDescendant")
+            .arg(lit(predicate.getPosType()))
+            .arg(predicate.toJExpression(ctx))
+            .arg(lit(false));
 //        return invoke(method.listParams()[0], "getNthDescendant").arg(lit(NodeTest.ELEMENT)).arg(lit(rType)).arg(predicate.compile(definedClass, method)).arg(lit(((EqualityExpr)predicate.getExpr()).getOp()));
 
-        //        il.append(methodGen.loadDOM());
+//        il.append(methodGen.loadDOM());
 //        // il.append(new ICONST(NodeTest.ELEMENT));
 //        il.append(new ICONST(predicate.getPosType()));
 //        predicate.translate(ctx);
@@ -545,7 +549,7 @@ final class Step extends RelativeLocationPath {
 //        il.append(new INVOKESPECIAL(idx));
       }
     }
-    return null;
+//    return null;
   }
 
   /**

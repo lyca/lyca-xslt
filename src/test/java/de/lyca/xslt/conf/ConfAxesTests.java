@@ -28,7 +28,7 @@ public class ConfAxesTests {
     Collection<Object> result = new ArrayList<>();
     // Non existent
     int[] exclude = { 118 };
-    for (int i = 1; i < 132; i++) {
+    for (int i = 1; i < 133; i++) {
       if (Arrays.binarySearch(exclude, i) >= 0) {
         continue;
       }

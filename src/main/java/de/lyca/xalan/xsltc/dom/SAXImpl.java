@@ -1468,8 +1468,11 @@ public final class SAXImpl extends SAX2DTM2 implements DOMEnhancedForDTM, DOMBui
    */
   @Override
   public DTMAxisIterator getNthDescendant(int type, int n, boolean includeself) {
-    final DTMAxisIterator source = new TypedDescendantIterator(type);
-    return new NthDescendantIterator(n);
+    DTMAxisIterator typedAxisIterator = getTypedAxisIterator(includeself ? Axis.DESCENDANTORSELF : Axis.DESCENDANT,
+        type);
+    return new NthIterator(typedAxisIterator, n);
+    // final DTMAxisIterator source = new TypedDescendantIterator(type);
+    // return new NthDescendantIterator(n);
   }
 
   /**

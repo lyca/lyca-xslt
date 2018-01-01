@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?><out>
+<child number="2"/>
+<child number="5">
+		<grand-child number="1"/>
+		<grand-child number="2"/>
+		<grand-child number="3"/>
+		<grand-child number="4"/>
+	</child>
+<child number="7"/>
+</out>
