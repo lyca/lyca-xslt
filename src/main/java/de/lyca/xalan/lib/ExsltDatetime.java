@@ -131,6 +131,9 @@ public class ExsltDatetime {
    * include a time zone.
    */
   public static String date(String datetimeIn) throws ParseException {
+    if (datetimeIn == null || datetimeIn.isEmpty())
+      return EMPTY_STR;
+
     final String[] edz = getEraDatetimeZone(datetimeIn);
     final String leader = edz[0];
     final String datetime = edz[1];
@@ -242,7 +245,7 @@ public class ExsltDatetime {
 
     final String[] formats = { dt, d, gym, gy };
     final double yr = getNumber(datetime, formats, Calendar.YEAR);
-    if (ad || yr == Double.NaN)
+    if (ad || Double.isNaN(yr))
       return yr;
     else
       return -yr;
@@ -542,7 +545,7 @@ public class ExsltDatetime {
 
     final String[] formats = { dt, d, gym, gy };
     final double dbl = getNumber(datetime, formats, Calendar.YEAR);
-    if (dbl == Double.NaN)
+    if (Double.isNaN(dbl))
       return new XNumber(Double.NaN);
     final int yr = (int) dbl;
     return new XBoolean(yr % 400 == 0 || yr % 100 != 0 && yr % 4 == 0);

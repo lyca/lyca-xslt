@@ -724,7 +724,7 @@ final class Mode {
         elemPrio = elementTest.getPriority();
         elemPos = elementTest.getPosition();
       }
-      if (elemPrio == Double.NaN || elemPrio < nodePrio || elemPrio == nodePrio && elemPos < nodePos) {
+      if (Double.isNaN(elemPrio) || elemPrio < nodePrio || elemPrio == nodePrio && elemPos < nodePos) {
         elementInvocation = _childNodeTestSeq.compile(ctx, null);
       }
 
@@ -1035,7 +1035,7 @@ final class Mode {
         elemPrio = elementTest.getPriority();
         elemPos = elementTest.getPosition();
       }
-      if (elemPrio == Double.NaN || elemPrio < nodePrio || elemPrio == nodePrio && elemPos < nodePos) {
+      if (Double.isNaN(elemPrio) || elemPrio < nodePrio || elemPrio == nodePrio && elemPos < nodePos) {
         elementInvocation = _childNodeTestSeq.compile(ctx, null);
       }
 
