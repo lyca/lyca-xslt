@@ -25,8 +25,7 @@ public class ExsltStringsTests {
 
   @Parameters(name = "{0}")
   public static Collection<Object> params() {
-    // strings5 has some problems with 4-byte UTF-8 character
-    return Arrays.asList("strings1", "strings2", "strings3", "strings4", "strings6", "strings7", "strings8",
+    return Arrays.asList("strings1", "strings2", "strings3", "strings4", "strings5", "strings6", "strings7", "strings8",
         "strings9", "strings10", "strings11");
   }
 

@@ -1489,7 +1489,17 @@ abstract public class ToStream extends SerializerBase {
             // If the character is in the encoding, and
             // not in the normal ASCII range, we also
             // just leave it get added on to the clean characters
-
+          } else if (Encodings.isHighUTF16Surrogate(ch) && i < end - 1 && Encodings.isLowUTF16Surrogate(chars[i + 1])) {
+            // So, this is a (valid) surrogate pair XALANJ-2419
+            if (!m_encodingInfo.isInEncoding(ch, chars[i + 1])) {
+              int codepoint = Encodings.toCodePoint(ch, chars[i + 1]);
+              writeOutCleanChars(chars, i, lastDirtyCharProcessed);
+              writer.write("&#");
+              writer.write(Integer.toString(codepoint));
+              writer.write(';');
+              lastDirtyCharProcessed = i + 1;
+            }
+            i++; // skip the low surrogate, too
           } else {
             // This is a fallback plan, we should never get here
             // but if the character wasn't previously handled
