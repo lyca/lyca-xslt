@@ -1,0 +1,11 @@
+<p>ancestor::item<ul>
+<li>1 / 3 : Item 1</li>
+<li>2 / 3 : Item 2</li>
+<li>3 / 3 : Item 3</li>
+</ul>
+</p><p>ancestor::item/@name<ul>
+<li>1 / 3 : Item 1</li>
+<li>2 / 3 : Item 2</li>
+<li>3 / 3 : Item 3</li>
+</ul>
+</p>

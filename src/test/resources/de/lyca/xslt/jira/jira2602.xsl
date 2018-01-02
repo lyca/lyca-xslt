@@ -4,19 +4,27 @@
 <!-- FileName: jira2419 -->
 <!-- Document: http://www.w3.org/TR/xpath -->
 <!-- DocVersion: 19991116 -->
-<!-- Purpose: Test UTF-8 encoding -->
+<!-- Purpose: Test for nth-descendant axis. -->
 
-<xsl:output method="xml" encoding="UTF-8" indent="no" />
+<xsl:output method="html" encoding="UTF-8" indent="yes" />
+<xsl:strip-space elements="*"/>
 
-<xsl:template match="/">
-  <out>
-    <xsl:text>&#10;</xsl:text>
-    <xsl:text>ASCII: abc&#10;</xsl:text>
-    <xsl:text>ISO-8859-1: &#230;&#248;&#229;&#10;</xsl:text>
-    <xsl:text>CHINESE: &#38345;&#28023;&#20117;&#10;</xsl:text>
-    <xsl:text>ASTRAL: &#65584;&#164;&#65586;&#10;</xsl:text>
-  </out>
-</xsl:template>
+	<xsl:template match="//item[@name='Item 4']">
+		<p>ancestor::item<ul>
+		<xsl:for-each select="ancestor::item">
+			<li>
+				<xsl:value-of select="position()" /> / <xsl:value-of select="last()" /> : <xsl:value-of select="@name" />
+			</li>
+		</xsl:for-each>
+		</ul></p>
+		<p>ancestor::item/@name<ul>
+		<xsl:for-each select="ancestor::item/@name">
+			<li>
+				<xsl:value-of select="position()" /> / <xsl:value-of select="last()" /> : <xsl:value-of select="." />
+			</li>
+		</xsl:for-each>
+		</ul></p>
+	</xsl:template>
 
   <!--
    * Licensed to the Apache Software Foundation (ASF) under one

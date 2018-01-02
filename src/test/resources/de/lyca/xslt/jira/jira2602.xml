@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='utf-8' standalone='yes' ?>
+<root>
+  <item name="Item 1">
+    <item name="Item 2">
+      <item name="Item 3">
+        <item name="Item 4" />
+      </item>
+    </item>
+  </item>
+</root>
