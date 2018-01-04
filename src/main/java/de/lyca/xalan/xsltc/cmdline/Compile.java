@@ -93,7 +93,7 @@ public final class Compile {
           inputIsURL = true;
           break;
         case 'n':
-          xsltc.setTemplateInlining(true); // used to be 'false'
+          // TODO support removed xsltc.setTemplateInlining(true); // used to be 'false'
           break;
         case 'v':
           // fall through to case h

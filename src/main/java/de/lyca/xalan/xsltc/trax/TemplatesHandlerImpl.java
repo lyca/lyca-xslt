@@ -92,12 +92,6 @@ public class TemplatesHandlerImpl implements ContentHandler, TemplatesHandler, S
       xsltc.setSecureProcessing(true);
     }
 
-    if ("true".equals(tfactory.getAttribute(TransformerFactoryImpl.ENABLE_INLINING))) {
-      xsltc.setTemplateInlining(true);
-    } else {
-      xsltc.setTemplateInlining(false);
-    }
-
     _parser = xsltc.getParser();
   }
 
@@ -215,12 +209,6 @@ public class TemplatesHandlerImpl implements ContentHandler, TemplatesHandler, S
         stylesheet = _parser.makeStylesheet(root);
         stylesheet.setSystemId(_systemId);
         stylesheet.setParentStylesheet(null);
-
-        if (xsltc.getTemplateInlining()) {
-          stylesheet.setTemplateInlining(true);
-        } else {
-          stylesheet.setTemplateInlining(false);
-        }
 
         // Set a document loader (for xsl:include/import) if defined
         if (_uriResolver != null) {

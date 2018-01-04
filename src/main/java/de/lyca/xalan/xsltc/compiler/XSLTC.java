@@ -128,13 +128,6 @@ public final class XSLTC {
   private List<Integer> _prefixURIPairsIdx;
 
   /**
-   * Set to true if template inlining is requested. Template inlining used to be
-   * the default, but we have found that Hotspots does a better job with shorter
-   * methods, so the default is *not* to inline now.
-   */
-  private boolean _templateInlining = false;
-
-  /**
    * State of the secure processing feature.
    */
   private boolean _isSecureProcessing = false;
@@ -231,23 +224,6 @@ public final class XSLTC {
    */
   public void setSourceLoader(SourceLoader loader) {
     _loader = loader;
-  }
-
-  /**
-   * Set a flag indicating if templates are to be inlined or not. The default is
-   * to do inlining, but this causes problems when the stylesheets have a large
-   * number of templates (e.g. branch targets exceeding 64K or a length of a
-   * method exceeding 64K).
-   */
-  public void setTemplateInlining(boolean templateInlining) {
-    _templateInlining = templateInlining;
-  }
-
-  /**
-   * Return the state of the template inlining feature.
-   */
-  public boolean getTemplateInlining() {
-    return _templateInlining;
   }
 
   /**
@@ -371,7 +347,6 @@ public final class XSLTC {
         _stylesheet.setSourceLoader(_loader);
         _stylesheet.setSystemId(systemId);
         _stylesheet.setParentStylesheet(null);
-        _stylesheet.setTemplateInlining(_templateInlining);
         _parser.setCurrentStylesheet(_stylesheet);
 
         // Create AST under the Stylesheet element (parse & type-check)

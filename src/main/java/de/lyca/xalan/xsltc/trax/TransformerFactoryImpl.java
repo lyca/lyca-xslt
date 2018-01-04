@@ -154,11 +154,6 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
   private boolean _debug = false;
 
   /**
-   * Set to <code>true</code> when templates are inlined.
-   */
-  private boolean _enableInlining = false;
-
-  /**
    * Set to <code>true</code> when we want to generate translet classes from the
    * stylesheet.
    */
@@ -253,12 +248,6 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
       return _generateTranslet ? Boolean.TRUE : Boolean.FALSE;
     else if (name.equals(AUTO_TRANSLET))
       return _autoTranslet ? Boolean.TRUE : Boolean.FALSE;
-    else if (name.equals(ENABLE_INLINING)) {
-      if (_enableInlining)
-        return Boolean.TRUE;
-      else
-        return Boolean.FALSE;
-    }
 
     // Throw an exception for all other attributes
     final ErrorMsg err = new ErrorMsg(Messages.get().jaxpInvalidAttrErr(name));
@@ -321,14 +310,6 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
         return;
       } else if (value instanceof String) {
         _debug = ((String) value).equalsIgnoreCase("true");
-        return;
-      }
-    } else if (name.equals(ENABLE_INLINING)) {
-      if (value instanceof Boolean) {
-        _enableInlining = ((Boolean) value).booleanValue();
-        return;
-      } else if (value instanceof String) {
-        _enableInlining = ((String) value).equalsIgnoreCase("true");
         return;
       }
     } else if (name.equals(INDENT_NUMBER)) {
@@ -707,11 +688,7 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
     if (_debug) {
       xsltc.setDebug(true);
     }
-    if (_enableInlining) {
-      xsltc.setTemplateInlining(true);
-    } else {
-      xsltc.setTemplateInlining(false);
-    }
+
     if (_isSecureProcessing) {
       xsltc.setSecureProcessing(true);
     }
