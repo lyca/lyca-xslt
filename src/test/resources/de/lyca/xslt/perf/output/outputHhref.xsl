@@ -2,8 +2,9 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
 <xsl:output method="html"/>
 
-  <!-- Purpose: ESC of non-ASCII chars in URI attribute	values using method 
-       cited in Section B.2.1 of HTML 4.0 Spec. -->
+  <!-- Purpose: ESC of non-ASCII chars in URI attribute	values using method cited
+       in Section B.2.1 of HTML 4.0 Spec, and also escaping ampersands in URI
+       attribute values, as Section B.2.2 states.  -->
 
 <xsl:template match="doc">
   <html>

@@ -8,16 +8,14 @@ import javax.xml.transform.Source;
 
 import org.custommonkey.xmlunit.Transform;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class PerfOutputTests {
 
   private static final String PACKAGE = '/' + PerfOutputTests.class.getPackage().getName().replace('.', '/')
-          + "/output/";
+      + "/output/";
 
   @Test
-  @Ignore("'&amp;' is not decoded to '&' in href. Check spec for expectation.")
   public void outputHhref() throws Exception {
     final String name = PACKAGE + "outputHhref";
     final Source xsl = getSource(name + ".xsl");

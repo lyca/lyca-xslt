@@ -8,7 +8,7 @@
 <br>
   spacer
   
-    <p>1. "&amp;"  <A HREF="&ItemSpace 1">ItemSpace 1</A>
+    <p>1. "&amp;"  <A HREF="&amp;ItemSpace 1">ItemSpace 1</A>
 </p>
 <p>2. "&lt;"   <img src="<"></p>
 <p>3. "&gt;"   <IMG src=">"></p>
@@ -17,7 +17,7 @@
 </p>
 <p>6. "&copy;" <a HREF="%C2%A9">ItemSpace 1</a>
 </p>
-<p>7. "#" <A href="&{text()}between#after">Note the amp-double-braces should be escaped differently</A>
+<p>7. "#" <A href="&amp;{text()}between#after">Note the amp-double-braces should be escaped differently</A>
 </p>
 <p>8. "&yen;" <A href="%C2%A5after">ItemSpace 1</A>
 </p>
@@ -35,7 +35,7 @@
 <br>
   spacer
   
-    <p>1. "&amp;"  <A HREF="&Item2">Item2</A>
+    <p>1. "&amp;"  <A HREF="&amp;Item2">Item2</A>
 </p>
 <p>2. "&lt;"   <img src="<"></p>
 <p>3. "&gt;"   <IMG src=">"></p>
@@ -44,7 +44,7 @@
 </p>
 <p>6. "&copy;" <a HREF="%C2%A9">Item2</a>
 </p>
-<p>7. "#" <A href="&{text()}between#after">Note the amp-double-braces should be escaped differently</A>
+<p>7. "#" <A href="&amp;{text()}between#after">Note the amp-double-braces should be escaped differently</A>
 </p>
 <p>8. "&yen;" <A href="%C2%A5after">Item2</A>
 </p>
@@ -62,7 +62,7 @@
 <br>
   spacer
   
-    <p>1. "&amp;"  <A HREF="&ItemTab%093">ItemTab	3</A>
+    <p>1. "&amp;"  <A HREF="&amp;ItemTab%093">ItemTab	3</A>
 </p>
 <p>2. "&lt;"   <img src="<"></p>
 <p>3. "&gt;"   <IMG src=">"></p>
@@ -71,7 +71,7 @@
 </p>
 <p>6. "&copy;" <a HREF="%C2%A9">ItemTab	3</a>
 </p>
-<p>7. "#" <A href="&{text()}between#after">Note the amp-double-braces should be escaped differently</A>
+<p>7. "#" <A href="&amp;{text()}between#after">Note the amp-double-braces should be escaped differently</A>
 </p>
 <p>8. "&yen;" <A href="%C2%A5after">ItemTab	3</A>
 </p>
@@ -90,7 +90,7 @@
 <br>
   spacer
   
-    <p>1. "&amp;"  <A HREF="&Item A">Item A</A>
+    <p>1. "&amp;"  <A HREF="&amp;Item A">Item A</A>
 </p>
 <p>2. "&lt;"   <img src="<"></p>
 <p>3. "&gt;"   <IMG src=">"></p>
@@ -99,7 +99,7 @@
 </p>
 <p>6. "&copy;" <a HREF="%C2%A9">Item A</a>
 </p>
-<p>7. "#" <A href="&{text()}between#after">Note the amp-double-braces should be escaped differently</A>
+<p>7. "#" <A href="&amp;{text()}between#after">Note the amp-double-braces should be escaped differently</A>
 </p>
 <p>8. "&yen;" <A href="%C2%A5after">Item A</A>
 </p>
@@ -117,7 +117,7 @@
 <br>
   spacer
   
-    <p>1. "&amp;"  <A HREF="&Item B">Item B</A>
+    <p>1. "&amp;"  <A HREF="&amp;Item B">Item B</A>
 </p>
 <p>2. "&lt;"   <img src="<"></p>
 <p>3. "&gt;"   <IMG src=">"></p>
@@ -126,7 +126,7 @@
 </p>
 <p>6. "&copy;" <a HREF="%C2%A9">Item B</a>
 </p>
-<p>7. "#" <A href="&{text()}between#after">Note the amp-double-braces should be escaped differently</A>
+<p>7. "#" <A href="&amp;{text()}between#after">Note the amp-double-braces should be escaped differently</A>
 </p>
 <p>8. "&yen;" <A href="%C2%A5after">Item B</A>
 </p>
