@@ -21,23 +21,28 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
+import java.util.stream.Collectors;
 
 import javax.tools.JavaCompiler;
 import javax.tools.JavaCompiler.CompilationTask;
+import javax.tools.JavaFileManager;
 import javax.tools.JavaFileObject;
 import javax.tools.StandardJavaFileManager;
 import javax.tools.ToolProvider;
@@ -45,13 +50,18 @@ import javax.tools.ToolProvider;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
+import com.sun.codemodel.CodeWriter;
 import com.sun.codemodel.JCodeModel;
 import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JFieldVar;
+import com.sun.codemodel.JPackage;
+import com.sun.codemodel.writer.FileCodeWriter;
+import com.sun.codemodel.writer.ZipCodeWriter;
 
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
+import de.lyca.xalan.xsltc.compiler.util.InMemoryJavaFileManager;
+import de.lyca.xalan.xsltc.compiler.util.StringCodeWriter;
 import de.lyca.xalan.xsltc.compiler.util.Util;
-import de.lyca.xalan.xsltc.trax.TransformerFactoryImpl;
 import de.lyca.xml.dtm.DTM;
 
 /**
@@ -102,12 +112,17 @@ public final class XSLTC {
   private List<StringBuilder> m_characterData;
 
   // These define the various methods for outputting the translet
-  public static final int FILE_OUTPUT = 0;
-  public static final int JAR_OUTPUT = 1;
-  public static final int BYTEARRAY_OUTPUT = 2;
-  public static final int CLASSLOADER_OUTPUT = 3;
-  public static final int BYTEARRAY_AND_FILE_OUTPUT = 4;
-  public static final int BYTEARRAY_AND_JAR_OUTPUT = 5;
+  public enum Out {
+    BYTES, FILES, JAR
+  }
+
+  public static final EnumSet<Out> BYTEARRAY = EnumSet.of(Out.BYTES);
+  public static final EnumSet<Out> CLASS_FILES = EnumSet.of(Out.FILES);
+  public static final EnumSet<Out> CLASS_JAR = EnumSet.of(Out.JAR);
+  public static final EnumSet<Out> BYTEARRAY_AND_CLASS_FILES = EnumSet.of(Out.BYTES, Out.FILES);
+  public static final EnumSet<Out> BYTEARRAY_AND_CLASS_JAR = EnumSet.of(Out.BYTES, Out.JAR);
+
+  private Set<Out> output = BYTEARRAY;
 
   // Compiler options (passed from command line or XSLTC client)
   private boolean _debug = false; // -x
@@ -115,10 +130,9 @@ public final class XSLTC {
   private String _className = null; // -o <class-name>
   private String _packageName = null; // -p <package-name>
   private File _destDir = null; // -d <directory-name>
-  private int _outputType = FILE_OUTPUT; // by default
+  // private int _outputType = FILE_OUTPUT; // by default
 
   private List<byte[]> _classes;
-  private JCodeModel _codeModel;
   private boolean _callsNodeset = false;
   private boolean _multiDocument = false;
   private boolean _hasIdCall = false;
@@ -163,8 +177,8 @@ public final class XSLTC {
   /**
    * Only for user by the internal TrAX implementation.
    */
-  public void setOutputType(int type) {
-    _outputType = type;
+  public void setOutputType(Set<Out> output) {
+    this.output = output;
   }
 
   /**
@@ -181,7 +195,6 @@ public final class XSLTC {
     reset();
     _reader = null;
     _classes = new ArrayList<>();
-    _codeModel = null;
   }
 
   /**
@@ -432,8 +445,8 @@ public final class XSLTC {
    *          The output type
    * @return JVM bytecodes that represent translet class definition
    */
-  public byte[][] compile(String name, InputSource input, int outputType) {
-    _outputType = outputType;
+  public byte[][] compile(String name, InputSource input, Set<Out> output) {
+    this.output = output;
     if (compile(input, name))
       return getBytecodes();
     else
@@ -451,7 +464,7 @@ public final class XSLTC {
    * @return JVM bytecodes that represent translet class definition
    */
   public byte[][] compile(String name, InputSource input) {
-    return compile(name, input, BYTEARRAY_OUTPUT);
+    return compile(name, input, BYTEARRAY);
   }
 
   /**
@@ -581,28 +594,17 @@ public final class XSLTC {
     return className.replace('.', File.separatorChar) + ".java";
   }
 
-  /**
-   * Generate an output File object to send the translet to
-   */
-  private File getOutputFile(String className) {
-    if (TransformerFactoryImpl.DEFAULT_TRANSLET_NAME.equals(className))
-      return new File(System.getProperty("java.io.tmpdir"), classFileName(className));
-    if (_destDir != null)
-      return new File(_destDir, classFileName(className));
-    else
-      return new File(classFileName(className));
+  private Path getOutputDirectory(JPackage pkg) {
+    Path outputDirectory = getOutputDirectory();
+    return pkg.isUnnamed() ? outputDirectory : outputDirectory.resolve(toDirName(pkg));
   }
 
-  /**
-   * Generate an output File object to send the translet to
-   */
-  private File getInputFile(String className) {
-    if (TransformerFactoryImpl.DEFAULT_TRANSLET_NAME.equals(className))
-      return new File(System.getProperty("java.io.tmpdir"), sourceFileName(className));
-    if (_destDir != null)
-      return new File(_destDir, sourceFileName(className));
-    else
-      return new File(sourceFileName(className));
+  private Path getOutputDirectory() {
+    return _destDir == null ? Paths.get(System.getProperty("java.io.tmpdir")) : _destDir.toPath();
+  }
+
+  private static String toDirName(JPackage pkg) {
+    return pkg.name().replace('.', File.separatorChar);
   }
 
   /**
@@ -641,7 +643,7 @@ public final class XSLTC {
     } else {
       _jarFileName = jarFileName + JAR_EXT;
     }
-    _outputType = JAR_OUTPUT;
+    output = CLASS_JAR;
   }
 
   public String getJarFileName() {
@@ -849,64 +851,77 @@ public final class XSLTC {
   }
 
   public void dumpClass(JCodeModel jCodeModel, JDefinedClass definedClass) {
-
-    String fullName = definedClass.fullName();
-    if (_outputType == FILE_OUTPUT || _outputType == BYTEARRAY_AND_FILE_OUTPUT) {
-      final File outFile = getOutputFile(fullName);
-      final String parentDir = outFile.getParent();
-      if (parentDir != null) {
-        final File parentFile = new File(parentDir);
-        if (!parentFile.exists()) {
-          parentFile.mkdirs();
-        }
-      }
-    }
-
     try {
-      switch (_outputType) {
-      case FILE_OUTPUT:
-        jCodeModel.build(getOutputFile(fullName));
-        break;
-      case JAR_OUTPUT:
-        _codeModel = jCodeModel;
-        // FIXME
-        // _bcelClasses.add(jCodeModel);
-        break;
-      case BYTEARRAY_OUTPUT:
-      case BYTEARRAY_AND_FILE_OUTPUT:
-      case BYTEARRAY_AND_JAR_OUTPUT:
-      case CLASSLOADER_OUTPUT:
-        final File inFile = getInputFile(fullName);
-        Path parentDir = inFile.toPath().getParent();
-        if (parentDir == null) {
-          parentDir = Paths.get(System.getProperty("java.io.tmpdir"));
-        }
-        Files.createDirectories(parentDir);
-        jCodeModel.build(parentDir.toFile());
-        JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-        StandardJavaFileManager fileManager = compiler.getStandardFileManager(null, null, null);
-        Iterable<? extends JavaFileObject> fileObjects = fileManager.getJavaFileObjects(inFile);
-        CompilationTask task = compiler.getTask(null, fileManager, null, null, null, fileObjects);
-        Boolean result = task.call();
-        if (result == true) {
-          System.out.println("Compilation has succeeded");
-        }
-        _classes.add(Files.readAllBytes(Paths.get(getOutputFile(fullName).toURI())));
-        for (Iterator<JDefinedClass> iterator = definedClass.classes(); iterator.hasNext();) {
-          JDefinedClass definedInnerClass = iterator.next();
-          _classes.add(Files.readAllBytes(Paths.get(getOutputFile(definedInnerClass.binaryName()).toURI())));
-        }
-        if (_outputType == BYTEARRAY_AND_FILE_OUTPUT) {
-          // jCodeModel.build(getOutputFile(definedClass.fullName()));
-        } else if (_outputType == BYTEARRAY_AND_JAR_OUTPUT) {
-          _codeModel = jCodeModel;
-        }
+      JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
 
-        break;
+      CodeWriter codeWriter;
+      if (output.contains(Out.FILES)) {
+        codeWriter = new FileCodeWriter(getOutputDirectory(definedClass._package()).toFile());
+      } else if (output.contains(Out.JAR)) {
+        Path zipPath = getOutputDirectory().resolve(definedClass.name() + ".zip");
+        OutputStream zipStream = Files.newOutputStream(zipPath);
+        codeWriter = new ZipCodeWriter(zipStream);
+      } else {
+        codeWriter = new StringCodeWriter();
+      }
+
+      jCodeModel.build(codeWriter);
+
+      JavaFileManager fileManager;
+      Iterable<? extends JavaFileObject> fileObjects;
+      Path outputDirectory = null;
+      String classFileName = null;
+      if (output.contains(Out.FILES) || output.contains(Out.JAR)) {
+        fileManager = compiler.getStandardFileManager(null, null, null);
+        classFileName = classFileName(definedClass.name());
+        outputDirectory = getOutputDirectory(definedClass._package());
+      } else {
+        fileManager = new InMemoryJavaFileManager(compiler);
+      }
+
+      if (output.contains(Out.FILES)) {
+        fileObjects = ((StandardJavaFileManager) fileManager)
+            .getJavaFileObjects(outputDirectory.resolve(sourceFileName(definedClass.name())).toFile());
+      } else if (output.contains(Out.JAR)) {
+        // TODO
+        fileObjects = ((StandardJavaFileManager) fileManager)
+            .getJavaFileObjects(outputDirectory.resolve(sourceFileName(definedClass.name())).toFile());
+      } else {
+        fileObjects = ((StringCodeWriter) codeWriter).getJavaFileObjects();
+      }
+
+      CompilationTask task = compiler.getTask(null, fileManager, null, null, null, fileObjects);
+      task.call();
+      fileManager.close();
+
+      if (output.contains(Out.BYTES)) {
+        if (output.contains(Out.FILES) || output.contains(Out.JAR)) {
+          _classes.add(Files.readAllBytes(outputDirectory.resolve(classFileName)));
+          for (Iterator<JDefinedClass> iterator = definedClass.classes(); iterator.hasNext();) {
+            JDefinedClass definedInnerClass = iterator.next();
+            _classes.add(Files.readAllBytes(outputDirectory.resolve(classFileName(definedInnerClass.binaryName()))));
+          }
+        } else {
+          _classes = ((InMemoryJavaFileManager) fileManager).getInMemoryJavaFileObjects().stream()
+              .map(j -> j.getClassBytes()).collect(Collectors.toList());
+        }
       }
     } catch (final Exception e) {
       e.printStackTrace();
     }
+
+    // if (_outputType == FILE_OUTPUT || _outputType ==
+    // BYTEARRAY_AND_FILE_OUTPUT) {
+    // final File outFile = getOutputFile(fullName);
+    // final String parentDir = outFile.getParent();
+    // if (parentDir != null) {
+    // final File parentFile = new File(parentDir);
+    // if (!parentFile.exists()) {
+    // parentFile.mkdirs();
+    // }
+    // }
+    // }
+
   }
 
   /**

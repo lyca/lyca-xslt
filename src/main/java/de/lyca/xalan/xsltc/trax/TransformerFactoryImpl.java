@@ -30,6 +30,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -58,6 +59,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
 import de.lyca.xalan.ObjectFactory;
 import de.lyca.xalan.xsltc.compiler.SourceLoader;
 import de.lyca.xalan.xsltc.compiler.XSLTC;
+import de.lyca.xalan.xsltc.compiler.XSLTC.Out;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.Messages;
 import de.lyca.xalan.xsltc.dom.XSLTCDTMManager;
@@ -157,7 +159,7 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
    * Set to <code>true</code> when we want to generate translet classes from the
    * stylesheet.
    */
-  private boolean _generateTranslet = true;
+  private boolean _generateTranslet = false;
 
   /**
    * If this is set to <code>true</code>, we attempt to use translet classes for
@@ -711,7 +713,7 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
     }
 
     // Set the attributes for translet generation
-    int outputType = XSLTC.BYTEARRAY_OUTPUT;
+    Set<Out> outputType = XSLTC.BYTEARRAY_AND_CLASS_FILES;
     if (_generateTranslet || _autoTranslet) {
       // Set the translet name
       xsltc.setClassName(getTransletBaseName(source));
@@ -736,9 +738,9 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
 
       if (_jarFileName != null) {
         xsltc.setJarFileName(_jarFileName);
-        outputType = XSLTC.BYTEARRAY_AND_JAR_OUTPUT;
+        outputType = XSLTC.BYTEARRAY_AND_CLASS_JAR;
       } else {
-        outputType = XSLTC.BYTEARRAY_AND_FILE_OUTPUT;
+        outputType = XSLTC.BYTEARRAY_AND_CLASS_FILES;
       }
     }
 
