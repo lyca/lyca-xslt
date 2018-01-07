@@ -25,7 +25,10 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.stream.StreamResult;
+
+import org.w3c.dom.Document;
 
 public class Transform {
   private static final TransformerFactory TF = TransformerFactory.newInstance();
@@ -47,12 +50,18 @@ public class Transform {
     return outputWriter.toString();
   }
 
+  public Document getResultDocument() throws TransformerException {
+    DOMResult result = new DOMResult();
+    transformer.transform(inputSource, result);
+    return (Document) result.getNode();
+  }
+
   public void setErrorListener(ErrorListener errorListener) {
     transformer.setErrorListener(errorListener);
   }
 
   public void setParameter(String name, Object value) {
     transformer.setParameter(name, value);
-}
+  }
 
 }

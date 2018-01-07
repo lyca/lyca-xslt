@@ -7,7 +7,6 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 import javax.xml.xpath.XPathVariableResolver;
 
-import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
@@ -15,6 +14,7 @@ import org.junit.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
+import de.lyca.xpath.DocumentUtils;
 import de.lyca.xpath.NamespaceContextBuilder;
 import de.lyca.xpath.XPathVariableResolverBuilder;
 
@@ -34,21 +34,21 @@ public class XPathStringTests {
   @Test
   public void string01() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string01.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("14", xpath.evaluate("string-length('This is a test')", doc));
   }
 
   @Test
   public void string02() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string02.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("4", xpath.evaluate("string-length(doc)", doc));
   }
 
   @Test
   public void string04() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string04.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("27", xpath.evaluate("string-length()", doc));
     Assert.assertEquals("12", xpath.evaluate("string-length(doc/a)", doc));
   }
@@ -56,42 +56,42 @@ public class XPathStringTests {
   @Test
   public void string05() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string05.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("Test", xpath.evaluate("string(doc)", doc));
   }
 
   @Test
   public void string06() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string06.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("true", xpath.evaluate("starts-with('ENCYCLOPEDIA', 'ENCY')", doc));
   }
 
   @Test
   public void string07() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string07.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("true", xpath.evaluate("contains('ENCYCLOPEDIA', 'CYCL')", doc));
   }
 
   @Test
   public void string08() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string08.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("1999", xpath.evaluate("substring-before('1999/04/01', '/')", doc));
   }
 
   @Test
   public void string09() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string09.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("04/01", xpath.evaluate("substring-after('1999/04/01', '/')", doc));
   }
 
   @Test
   public void string10() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string10.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("ab cd ef", xpath.evaluate("normalize-space('\t\n\r\nab\ncd\t\n\r\nef\t\n\r ')", doc));
     Assert.assertEquals("This is a normalized text node from the source document.",
             xpath.evaluate("normalize-space(doc/a)", doc));
@@ -100,14 +100,14 @@ public class XPathStringTests {
   @Test
   public void string11() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string11.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("BAr", xpath.evaluate("translate('bar','abc','ABC')", doc));
   }
 
   @Test
   public void string12() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string12.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("xyz", xpath.evaluate("concat('x','yz')", doc));
   }
 
@@ -115,14 +115,14 @@ public class XPathStringTests {
   @Ignore("No format-number in XPath")
   public void string13() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string13.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("1", xpath.evaluate("format-number(1, '#,##0')", doc));
   }
 
   @Test
   public void string14() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string14.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     final XPath local = xpathfactory.newXPath();
     final XPathVariableResolver resolver = new XPathVariableResolverBuilder().var("which",
             local.evaluate("doc/av//*", doc, XPathConstants.NODESET)).build();
@@ -133,63 +133,63 @@ public class XPathStringTests {
   @Test
   public void string15() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string15.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("1999", xpath.evaluate("substring('1999/04/01', 1, 4)", doc));
   }
 
   @Test
   public void string16() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string16.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("234", xpath.evaluate("substring('12345', 1.5, 2.6)", doc));
   }
 
   @Test
   public void string17() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string17.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("12", xpath.evaluate("substring('12345', 0, 3)", doc));
   }
 
   @Test
   public void string18() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string18.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("", xpath.evaluate("substring('12345', 0 div 0, 3)", doc));
   }
 
   @Test
   public void string19() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string19.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("", xpath.evaluate("substring('12345', 1, 0 div 0)", doc));
   }
 
   @Test
   public void string20() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string20.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("12345", xpath.evaluate("substring('12345', -42, 1 div 0)", doc));
   }
 
   @Test
   public void string21() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string21.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("", xpath.evaluate("substring('12345', -1 div 0, 1 div 0)", doc));
   }
 
   @Test
   public void string22() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string22.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("", xpath.evaluate("substring(foo, 12, 3)", doc));
   }
 
   @Test
   public void string30() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string30.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     final XPath local = xpathfactory.newXPath();
     local.setNamespaceContext(new NamespaceContextBuilder().add("baz1", "http://xsl.lotus.com/ns1")
             .add("baz2", "http://xsl.lotus.com/ns2").build());
@@ -199,7 +199,7 @@ public class XPathStringTests {
   @Test
   public void string31() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string31.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     final XPath local = xpathfactory.newXPath();
     local.setNamespaceContext(new NamespaceContextBuilder().add("baz1", "http://xsl.lotus.com/ns1")
             .add("baz2", "http://xsl.lotus.com/ns2").build());
@@ -209,7 +209,7 @@ public class XPathStringTests {
   @Test
   public void string32() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string32.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     final XPath local = xpathfactory.newXPath();
     local.setNamespaceContext(new NamespaceContextBuilder().add("baz1", "http://xsl.lotus.com/ns1")
             .add("baz2", "http://xsl.lotus.com/ns2").build());
@@ -219,7 +219,7 @@ public class XPathStringTests {
   @Test
   public void string33() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string33.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     final XPath local = xpathfactory.newXPath();
     local.setNamespaceContext(new NamespaceContextBuilder().add("baz1", "http://xsl.lotus.com/ns1")
             .add("baz2", "http://xsl.lotus.com/ns2").build());
@@ -229,7 +229,7 @@ public class XPathStringTests {
   @Test
   public void string34() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string34.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     final XPath local = xpathfactory.newXPath();
     local.setNamespaceContext(new NamespaceContextBuilder().add("baz1", "http://xsl.lotus.com/ns1")
             .add("baz2", "http://xsl.lotus.com/ns2").build());
@@ -239,7 +239,7 @@ public class XPathStringTests {
   @Test
   public void string35() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string35.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     final XPath local = xpathfactory.newXPath();
     local.setNamespaceContext(new NamespaceContextBuilder().add("baz1", "http://xsl.lotus.com/ns1")
             .add("baz2", "http://xsl.lotus.com/ns2").build());
@@ -249,7 +249,7 @@ public class XPathStringTests {
   @Test
   public void string36() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string36.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     final XPath local = xpathfactory.newXPath();
     local.setNamespaceContext(new NamespaceContextBuilder().add("baz1", "http://xsl.lotus.com/ns1")
             .add("baz2", "http://xsl.lotus.com/ns2").build());
@@ -259,42 +259,42 @@ public class XPathStringTests {
   @Test
   public void string37() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string37.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("", xpath.evaluate("string(foo)", doc));
   }
 
   @Test
   public void string38() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string38.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("0", xpath.evaluate("string(0)", doc));
   }
 
   @Test
   public void string39() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string39.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("2", xpath.evaluate("string(2)", doc));
   }
 
   @Test
   public void string40() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string40.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("test", xpath.evaluate("string('test')", doc));
   }
 
   @Test
   public void string41() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string41.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("", xpath.evaluate("string('')", doc));
   }
 
   @Test
   public void string42() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string42.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     final XPath local = xpathfactory.newXPath();
     final XPathVariableResolver resolver = new XPathVariableResolverBuilder().var("ResultTreeFragTest",
             local.evaluate("doc", doc, XPathConstants.NODESET)).build();
@@ -305,7 +305,7 @@ public class XPathStringTests {
   @Test
   public void string43() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string43.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     final XPath local = xpathfactory.newXPath();
     final XPathVariableResolver resolver = new XPathVariableResolverBuilder().var("emptyResultTreeFragTest",
             local.evaluate("foo", doc, XPathConstants.NODESET)).build();
@@ -316,91 +316,91 @@ public class XPathStringTests {
   @Test
   public void string44() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string44.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("true", xpath.evaluate("starts-with('ENCYCLOPEDIA', 'EN')", doc));
   }
 
   @Test
   public void string45() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string45.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("false", xpath.evaluate("starts-with('ENCYCLOPEDIA', 'en')", doc));
   }
 
   @Test
   public void string46() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string46.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("false", xpath.evaluate("starts-with('ab', 'abc')", doc));
   }
 
   @Test
   public void string47() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string47.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("false", xpath.evaluate("starts-with('abc', 'bc')", doc));
   }
 
   @Test
   public void string48() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string48.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("true", xpath.evaluate("starts-with('abc','')", doc));
   }
 
   @Test
   public void string49() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string49.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("true", xpath.evaluate("starts-with('','')", doc));
   }
 
   @Test
   public void string50() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string50.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("true", xpath.evaluate("starts-with('true()', 'tr')", doc));
   }
 
   @Test
   public void string51() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string51.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("true", xpath.evaluate("starts-with(doc, 'ENCY')", doc));
   }
 
   @Test
   public void string52() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string52.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("false", xpath.evaluate("starts-with(doc, 'test')", doc));
   }
 
   @Test
   public void string53() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string53.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("true", xpath.evaluate("starts-with(doc/@attr, 'slam')", doc));
   }
 
   @Test
   public void string54() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string54.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("false", xpath.evaluate("starts-with(doc/@attr, 'wich')", doc));
   }
 
   @Test
   public void string55() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string55.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("false", xpath.evaluate("contains('ENCYCLOPEDIA', 'TEST')", doc));
   }
 
   @Test
   public void string56() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string56.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     final XPath local = xpathfactory.newXPath();
     final XPathVariableResolver resolver = new XPathVariableResolverBuilder().var("find", "CY")
             .var("node", local.evaluate("doc", doc, XPathConstants.NODESET)).build();
@@ -411,203 +411,203 @@ public class XPathStringTests {
   @Test
   public void string57() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string57.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("true", xpath.evaluate("contains(concat(.,'BC'),concat('A','B','C'))", doc));
   }
 
   @Test
   public void string58() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string58.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("false", xpath.evaluate("contains('ab', 'abc')", doc));
   }
 
   @Test
   public void string59() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string59.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("true", xpath.evaluate("contains('abc', 'bc')", doc));
   }
 
   @Test
   public void string60() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string60.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("false", xpath.evaluate("contains('abc', 'bcd')", doc));
   }
 
   @Test
   public void string61() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string61.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("true", xpath.evaluate("contains('abc','')", doc));
   }
 
   @Test
   public void string62() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string62.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("true", xpath.evaluate("contains('','')", doc));
   }
 
   @Test
   public void string63() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string63.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("true", xpath.evaluate("contains('true()', 'e')", doc));
   }
 
   @Test
   public void string64() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string64.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("true", xpath.evaluate("contains(doc, 'CYCL')", doc));
   }
 
   @Test
   public void string65() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string65.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("false", xpath.evaluate("contains(doc, 'TEST')", doc));
   }
 
   @Test
   public void string66() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string66.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("true", xpath.evaluate("contains(doc/@attr, 'amwi')", doc));
   }
 
   @Test
   public void string67() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string67.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("false", xpath.evaluate("contains(doc/@attr, 'TEST')", doc));
   }
 
   @Test
   public void string68() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string68.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("", xpath.evaluate("substring-before('ENCYCLOPEDIA', '/')", doc));
   }
 
   @Test
   public void string69() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string69.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("EN", xpath.evaluate("substring-before('ENCYCLOPEDIA', 'C')", doc));
   }
 
   @Test
   public void string70() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string70.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("", xpath.evaluate("substring-before('ENCYCLOPEDIA', 'c')", doc));
   }
 
   @Test
   public void string71() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string71.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("1999", xpath.evaluate("substring-before(doc, '/')", doc));
   }
 
   @Test
   public void string72() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string72.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("", xpath.evaluate("substring-before(foo, '/')", doc));
   }
 
   @Test
   public void string73() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string73.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("", xpath.evaluate("substring-before(doc/@attr, 'z')", doc));
   }
 
   @Test
   public void string74() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string74.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("", xpath.evaluate("substring-before(doc/@attr, 'D')", doc));
   }
 
   @Test
   public void string75() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string75.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("abc", xpath.evaluate("substring-before(doc/@attr, 'd')", doc));
   }
 
   @Test
   public void string76() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string76.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("", xpath.evaluate("substring-after('ENCYCLOPEDIA', '/')", doc));
   }
 
   @Test
   public void string77() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string77.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("YCLOPEDIA", xpath.evaluate("substring-after('ENCYCLOPEDIA', 'C')", doc));
   }
 
   @Test
   public void string78() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string78.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("", xpath.evaluate("substring-after('abcdefghijk','l')", doc));
   }
 
   @Test
   public void string79() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string79.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("999/04/01", xpath.evaluate("substring-after('1999/04/01', '1')", doc));
   }
 
   @Test
   public void string80() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string80.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("04/01", xpath.evaluate("substring-after(doc, '/')", doc));
   }
 
   @Test
   public void string81() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string81.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("", xpath.evaluate("substring-after(foo, '/')", doc));
   }
 
   @Test
   public void string82() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string82.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("", xpath.evaluate("substring-after(doc/@attr, 'z')", doc));
   }
 
   @Test
   public void string83() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string83.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("", xpath.evaluate("substring-after(doc/@attr, 'D')", doc));
   }
 
   @Test
   public void string84() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string84.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("efg", xpath.evaluate("substring-after(doc/@attr, 'd')", doc));
   }
 
   @Test
   public void string85() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string85.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     final XPath local = xpathfactory.newXPath();
     final XPathVariableResolver resolver = new XPathVariableResolverBuilder().var("thisvalue",
             "This       is       a       test").build();
@@ -619,28 +619,28 @@ public class XPathStringTests {
   @Test
   public void string86() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string86.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("This is a normalized string.", xpath.evaluate("normalize-space()", doc));
   }
 
   @Test
   public void string87() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string87.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("BAR", xpath.evaluate("translate('BAR','abc','ABC')", doc));
   }
 
   @Test
   public void string88() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string88.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("bar", xpath.evaluate("translate('bar','RAB','xyz')", doc));
   }
 
   @Test
   public void string89() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string89.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("BAT", xpath.evaluate("translate('BAR','Rab','TxX')", doc));
     Assert.assertEquals("B`B", xpath.evaluate("translate(\"B'B\",\"'\",'`')", doc));
   }
@@ -648,105 +648,105 @@ public class XPathStringTests {
   @Test
   public void string90() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string90.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("BAr", xpath.evaluate("translate(doc/a,'abc','ABC')", doc));
   }
 
   @Test
   public void string91() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string91.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("baR", xpath.evaluate("translate(doc/b,'ABC','abc')", doc));
   }
 
   @Test
   public void string92() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string92.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("heIIT", xpath.evaluate("translate(doc/a/@attrib,'lo','IT')", doc));
   }
 
   @Test
   public void string93() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string93.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("HEiit", xpath.evaluate("translate(doc/b/@attrib,'LO','it')", doc));
   }
 
   @Test
   public void string94() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string94.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("HELLO", xpath.evaluate("translate(doc/b/@attrib,'lo','it')", doc));
   }
 
   @Test
   public void string95() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string95.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("AAA", xpath.evaluate("translate('zzaaazzz','abcz','ABC')", doc));
   }
 
   @Test
   public void string96() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string96.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("xxAAAxxxx", xpath.evaluate("translate('ddaaadddd','abcd','ABCxy')", doc));
   }
 
   @Test
   public void string97() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string97.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("abcdef", xpath.evaluate("concat('a','b','c','d','ef')", doc));
   }
 
   @Test
   public void string98() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string98.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("ab", xpath.evaluate("concat(doc/a, doc/b)", doc));
   }
 
   @Test
   public void string99() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string99.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("abcdef", xpath.evaluate("concat(doc/a, doc/b, doc/c, doc/d, doc/e)", doc));
   }
 
   @Test
   public void string100() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string100.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("cd34", xpath.evaluate("concat('cd', '34')", doc));
   }
 
   @Test
   public void string101() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string101.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("cd34", xpath.evaluate("concat('cd', 34)", doc));
   }
 
   @Test
   public void string102() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string102.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("bc23", xpath.evaluate("concat('bc', string(23))", doc));
   }
 
   @Test
   public void string103() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string103.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("a34", xpath.evaluate("concat(doc/a, 34)", doc));
   }
 
   @Test
   public void string104() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string104.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("falsely", xpath.evaluate("concat(false(),'ly')", doc));
   }
 
@@ -754,7 +754,7 @@ public class XPathStringTests {
   @Ignore
   public void string105() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string105.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("", xpath.evaluate("concat(doc/*, doc/*[@attr='whatsup'])", doc));
   }
 
@@ -762,14 +762,14 @@ public class XPathStringTests {
   @Ignore("No format-number in XPath")
   public void string106() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string106.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("1000", xpath.evaluate("format-number(1000, '###0')", doc));
   }
 
   @Test
   public void string107() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string107.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     final XPath local = xpathfactory.newXPath();
     final XPathVariableResolver resolver = new XPathVariableResolverBuilder().var("ResultTreeFragTest",
             local.evaluate("doc/av", doc, XPathConstants.NODESET)).build();
@@ -783,7 +783,7 @@ public class XPathStringTests {
   @Ignore("No format-number in XPath")
   public void string108() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string108.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("01", xpath.evaluate("format-number(1, '00')", doc));
   }
 
@@ -791,7 +791,7 @@ public class XPathStringTests {
   @Ignore("No format-number in XPath")
   public void string109() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string109.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("01.0", xpath.evaluate("format-number(1, '00.0')", doc));
   }
 
@@ -799,84 +799,84 @@ public class XPathStringTests {
   @Ignore("No format-number in XPath")
   public void string110() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string110.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("25%", xpath.evaluate("format-number(0.25, '00%')", doc));
   }
 
   @Test
   public void string111() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string111.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("PED", xpath.evaluate("substring('ENCYCLOPEDIA', 8, 3)", doc));
   }
 
   @Test
   public void string112() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string112.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("PEDIA", xpath.evaluate("substring('ENCYCLOPEDIA', 8)", doc));
   }
 
   @Test
   public void string113() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string113.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("", xpath.evaluate("substring('abcdefghijk',0 div 0, 5)", doc));
   }
 
   @Test
   public void string114() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string114.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("defghi", xpath.evaluate("substring('abcdefghijk',4, 6)", doc));
   }
 
   @Test
   public void string115() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string115.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("", xpath.evaluate("substring('1999/04/01', 1, 0)", doc));
   }
 
   @Test
   public void string116() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string116.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("1999", xpath.evaluate("substring(doc, 1, 4)", doc));
   }
 
   @Test
   public void string117() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string117.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("", xpath.evaluate("substring(foo, 2, 2)", doc));
   }
 
   @Test
   public void string118() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string118.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("abc", xpath.evaluate("substring(doc/@attr, 1, 3)", doc));
   }
 
   @Test
   public void string119() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string119.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("defg", xpath.evaluate("substring(doc/@attr, 4)", doc));
   }
 
   @Test
   public void string120() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string120.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("cdef", xpath.evaluate("substring(doc/@attr, 2.5, 3.6)", doc));
   }
 
   @Test
   public void string121() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string121.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     final XPath local = xpathfactory.newXPath();
     final XPathVariableResolver resolver = new XPathVariableResolverBuilder().var("s",
             local.evaluate("doc/a", doc, XPathConstants.NODESET)).build();
@@ -887,14 +887,14 @@ public class XPathStringTests {
   @Test
   public void string122() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string122.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("\nb\nc\nd\ne", xpath.evaluate("string(doc/av//*)", doc));
   }
 
   @Test
   public void string123() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string123.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("TestingString", xpath.evaluate("string()", doc));
   }
 
@@ -902,56 +902,56 @@ public class XPathStringTests {
   @Ignore
   public void string124() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string124.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("", xpath.evaluate("contains(doc/text(), 'SYMBOL 180 \f \"')", doc));
   }
 
   @Test
   public void string125() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string125.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("false", xpath.evaluate("contains(doc/main,doc/sub)", doc));
   }
 
   @Test
   public void string126() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string126.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("true", xpath.evaluate("contains(doc/main,doc/sub)", doc));
   }
 
   @Test
   public void string127() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string127.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("false", xpath.evaluate("contains(doc/main,doc/sub)", doc));
   }
 
   @Test
   public void string128() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string128.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("false", xpath.evaluate("contains(doc/main,doc/sub)", doc));
   }
 
   @Test
   public void string129() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string129.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("true", xpath.evaluate("contains(doc,'&')", doc));
   }
 
   @Test
   public void string130() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string130.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("true", xpath.evaluate("contains(doc, '\u00B0')", doc));
   }
 
   @Test
   public void string131() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string131.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("17", xpath.evaluate("string()", doc));
   }
 
@@ -959,7 +959,7 @@ public class XPathStringTests {
   @Ignore
   public void string132() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string132.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("", xpath.evaluate("", doc));
   }
 
@@ -967,7 +967,7 @@ public class XPathStringTests {
   @Ignore
   public void string133() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string133.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("", xpath.evaluate("", doc));
   }
 
@@ -975,7 +975,7 @@ public class XPathStringTests {
   @Ignore
   public void string134() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string134.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("", xpath.evaluate("", doc));
   }
 
@@ -983,28 +983,28 @@ public class XPathStringTests {
   @Ignore
   public void string135() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string135.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("", xpath.evaluate("", doc));
   }
 
   @Test
   public void string136() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string136.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("abrtor", xpath.evaluate("translate(doc/a,'abe','bao')", doc));
   }
 
   @Test
   public void string137() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string137.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("b*rb*r*t*", xpath.evaluate("translate(doc/a,'aeiouy','******')", doc));
   }
 
   @Test
   public void string138() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string138.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     final XPath local = xpathfactory.newXPath();
     final XPathVariableResolver resolver = new XPathVariableResolverBuilder().var("pt1", "aqu'").var("pt2", "\"eos")
             .build();
@@ -1015,7 +1015,7 @@ public class XPathStringTests {
   @Test
   public void string139() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string139.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     final XPath local = xpathfactory.newXPath();
     final XPathVariableResolver resolver = new XPathVariableResolverBuilder().var("pt1", "aqu'").var("pt2", "\"eos")
             .build();
@@ -1027,14 +1027,14 @@ public class XPathStringTests {
   @Ignore
   public void string140() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string140.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("", xpath.evaluate("", doc));
   }
 
   @Test
   public void string141() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string141.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals(
             "t1t2t3t4t5t6t7t8t9t10t11t12t13t14t15t16t17t18t19t20t21t22t23t24t25t26t27t28t29t30t31t32t33t34t35t36t37t38t39t40t41t42t43t44t45"
                     + "t46t47t48t49t50t51t52t53t54t55t56t57t58t59t60t61t62t63t64t65t66t67t68t69t70t71t72t73t74t75t76t77t78t79t80t81t82t83t84t85t86"
@@ -1170,14 +1170,14 @@ public class XPathStringTests {
   @Test
   public void string142() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string142.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("0", xpath.evaluate("string-length(substring-before('abcde',''))", doc));
   }
 
   @Test
   public void string143() throws Exception {
     final InputSource xml = getInputSource(PACKAGE + "string143.xml");
-    final Document doc = XMLUnit.buildTestDocument(xml);
+    final Document doc = DocumentUtils.fromSource(xml);
     Assert.assertEquals("ABCDE", xpath.evaluate("substring-after('ABCDE','')", doc));
   }
 

@@ -6,10 +6,10 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 import javax.xml.transform.Source;
 
-import org.custommonkey.xmlunit.Diff;
-import org.custommonkey.xmlunit.Transform;
 import org.junit.Assert;
 import org.junit.Test;
+
+import de.lyca.xslt.Transform;
 
 public class ApiTests {
 
@@ -44,8 +44,7 @@ public class ApiTests {
     final Source xml = getSource(name + ".xml");
     final String expected = readResource(name + ".out", UTF_8);
     final Transform t = new Transform(xml, xsl);
-    final Diff diff = new Diff(expected, t.getResultString());
-    Assert.assertTrue("XSL transformation failure.", diff.identical());
+    Assert.assertEquals(expected, t.getResultString());
   }
 
   @Test

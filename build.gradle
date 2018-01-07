@@ -4,7 +4,7 @@ apply plugin: 'java-library-distribution'
 apply plugin: 'findbugs'
 
 sourceCompatibility = 1.8
-version = '1.0'
+version = '0.9.5'
 
 //jar {
 //    manifest {
@@ -22,11 +22,9 @@ configurations {
 
 dependencies {
     compile 'xerces:xercesImpl:2.11.0'
-//    compile 'org.apache.bcel:bcel:5.2'
     compile 'edu.princeton.cup:java-cup:10k'
     compile 'com.sun.codemodel:codemodel:2.6'
     testCompile 'junit:junit:4.12'
-    testCompile 'xmlunit:xmlunit:1.6'
     lexer files('tools/JLex.jar')
 }
 
