@@ -305,13 +305,6 @@ final class Sort extends Instruction implements Closure {
       final JClass axis = ctx.ref(Axis.class);
       ctx.currentBlock().decl(dtmAxisIterator, ctx.nextTmpIterator(),
           ctx.currentDom().invoke(GET_AXIS_ITERATOR).arg(axis.staticRef(Axis.CHILD.name())));
-      // final int children = cpg.addInterfaceMethodref(DOM_INTF,
-      // "getAxisIterator", "(Lde/lyca/xml/dtm/Axis;)" + NODE_ITERATOR_SIG);
-      // il.append(methodGen.loadDOM());
-      // il.append(factory.createFieldAccess("de.lyca.xml.dtm.Axis",
-      // Axis.CHILD.name(), Type.Axis.toJCType(),
-      // org.apache.bcel.Constants.GETSTATIC));
-      // il.append(new INVOKEINTERFACE(children, 2));
     } else {
       ctx.currentBlock().decl(dtmAxisIterator, ctx.nextTmpIterator(), nodeSet.toJExpression(ctx));
       // nodeSet.translate(ctx);

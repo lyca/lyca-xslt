@@ -60,8 +60,8 @@ public class Constants {
   public static final String DOCUMENT_PNAME = "document";
   public static final String TRANSLET_PNAME = "translet";
 
+  // TODO add to SerializationHandler
   public static final String CHARACTERSW = "characters";
-  public static final String CHARACTERS = "characters";
   public static final String APPLY_TEMPLATES = "applyTemplates";
   public static final String GET_ELEMENT_VALUE = "getElementValue";
   public static final String ADD_ITERATOR = "addIterator";

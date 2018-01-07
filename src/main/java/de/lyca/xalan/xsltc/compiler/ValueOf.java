@@ -19,7 +19,7 @@ package de.lyca.xalan.xsltc.compiler;
 
 import static com.sun.codemodel.JExpr.FALSE;
 import static com.sun.codemodel.JExpr.TRUE;
-import static de.lyca.xalan.xsltc.compiler.Constants.CHARACTERS;
+import static de.lyca.xalan.xsltc.DOM.CHARACTERS;
 
 import com.sun.codemodel.JExpression;
 

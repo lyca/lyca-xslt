@@ -21,11 +21,11 @@ import static com.sun.codemodel.JExpr.TRUE;
 import static com.sun.codemodel.JExpr._this;
 import static com.sun.codemodel.JExpr.invoke;
 import static com.sun.codemodel.JExpr.lit;
+import static de.lyca.xalan.xsltc.DOM.CHARACTERS;
 import static de.lyca.xalan.xsltc.DOM.GET_CHILDREN;
 import static de.lyca.xalan.xsltc.DOM.GET_EXPANDED_TYPE_ID;
 import static de.lyca.xalan.xsltc.DOM.GET_NAMESPACE_TYPE;
 import static de.lyca.xalan.xsltc.compiler.Constants.APPLY_TEMPLATES;
-import static de.lyca.xalan.xsltc.compiler.Constants.CHARACTERS;
 import static de.lyca.xalan.xsltc.compiler.Constants.DOCUMENT_PNAME;
 import static de.lyca.xalan.xsltc.compiler.Constants.ITERATOR_PNAME;
 import static de.lyca.xalan.xsltc.compiler.Constants.NODE_PNAME;
@@ -627,12 +627,6 @@ final class Mode {
       // Append first code in applyTemplates() - get type of current node
       
       body.invoke(GET_NAMESPACE_TYPE).arg(ctx.currentNode());
-      // FIXME
-//      final int getNS = cpg.addInterfaceMethodref(DOM_INTF, "getNamespaceType", "(I)I");
-//      body.append(methodGen.loadDOM());
-//      body.append(new ILOAD(_currentIndex));
-//      body.append(new INVOKEINTERFACE(getNS, 2));
-//      body.append(new SWITCH(types, targets, defaultTarget));
       return body;
     } else
       return null;

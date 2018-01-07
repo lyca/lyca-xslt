@@ -25,6 +25,7 @@ import static com.sun.codemodel.JExpr.lit;
 import static de.lyca.xalan.xsltc.DOM.GET_AXIS_ITERATOR;
 import static de.lyca.xalan.xsltc.DOM.GET_NAMESPACE_AXIS_ITERATOR;
 import static de.lyca.xalan.xsltc.DOM.GET_NODE_VALUE_ITERATOR;
+import static de.lyca.xalan.xsltc.DOM.GET_NTH_DESCENDANT;
 import static de.lyca.xalan.xsltc.DOM.GET_TYPED_AXIS_ITERATOR;
 import static de.lyca.xalan.xsltc.compiler.Constants.TRANSLET_PNAME;
 
@@ -290,109 +291,6 @@ final class Step extends RelativeLocationPath {
    */
   @Override
   public void translate(CompilerContext ctx) {
-// FIXME
-//    final ConstantPoolGen cpg = classGen.getConstantPool();
-//    final InstructionList il = methodGen.getInstructionList();
-//    final InstructionFactory factory = new InstructionFactory(classGen, cpg);
-//
-//    if (hasPredicates()) {
-//      translatePredicates(classGen, methodGen);
-//    } else {
-//      int star = 0;
-//      String name = null;
-//      final XSLTC xsltc = getParser().getXSLTC();
-//
-//      if (_nodeType >= DTM.NTYPES) {
-//        final List<String> ni = xsltc.getNamesIndex();
-//
-//        name = ni.get(_nodeType - DTM.NTYPES);
-//        star = name.lastIndexOf('*');
-//      }
-//
-//      // If it is an attribute, but not '@*', '@pre:*' or '@node()',
-//      // and has no parent
-//      if (_axis == Axis.ATTRIBUTE && _nodeType != NodeTest.ATTRIBUTE && _nodeType != NodeTest.ANODE
-//              && !hasParentPattern() && star == 0) {
-//        final int iter = cpg.addInterfaceMethodref(DOM_INTF, "getTypedAxisIterator", "(Lde/lyca/xml/dtm/Axis;I)" + NODE_ITERATOR_SIG);
-//        il.append(methodGen.loadDOM());
-//        il.append(factory.createFieldAccess("de.lyca.xml.dtm.Axis", Axis.ATTRIBUTE.name(), Type.Axis.toJCType(), org.apache.bcel.Constants.GETSTATIC));
-//        il.append(new PUSH(cpg, _nodeType));
-//        il.append(new INVOKEINTERFACE(iter, 3));
-//        return;
-//      }
-//
-//      final SyntaxTreeNode parent = getParent();
-//      // Special case for '.'
-//      if (isAbbreviatedDot()) {
-//        if (_type == Type.Node) {
-//          // Put context node on stack if using Type.Node
-//          il.append(methodGen.loadContextNode());
-//        } else {
-//          if (parent instanceof ParentLocationPath) {
-//            // Wrap the context node in a singleton iterator if not.
-//            final int init = cpg.addMethodref(SINGLETON_ITERATOR, "<init>", "(" + NODE_SIG + ")V");
-//            il.append(new NEW(cpg.addClass(SINGLETON_ITERATOR)));
-//            il.append(DUP);
-//            il.append(methodGen.loadContextNode());
-//            il.append(new INVOKESPECIAL(init));
-//          } else {
-//            // DOM.getAxisIterator(int axis);
-//            final int git = cpg.addInterfaceMethodref(DOM_INTF, "getAxisIterator", "(Lde/lyca/xml/dtm/Axis;)" + NODE_ITERATOR_SIG);
-//            il.append(methodGen.loadDOM());
-//            il.append(factory.createFieldAccess("de.lyca.xml.dtm.Axis", _axis.name(), Type.Axis.toJCType(), org.apache.bcel.Constants.GETSTATIC));
-//            il.append(new INVOKEINTERFACE(git, 2));
-//          }
-//        }
-//        return;
-//      }
-//
-//      // Special case for /foo/*/bar
-//      if (parent instanceof ParentLocationPath && parent.getParent() instanceof ParentLocationPath) {
-//        if (_nodeType == NodeTest.ELEMENT && !_hadPredicates) {
-//          _nodeType = NodeTest.ANODE;
-//        }
-//      }
-//
-//      // "ELEMENT" or "*" or "@*" or ".." or "@attr" with a parent.
-//      switch (_nodeType) {
-//        case NodeTest.ATTRIBUTE:
-//          _axis = Axis.ATTRIBUTE;
-//        case NodeTest.ANODE:
-//          // DOM.getAxisIterator(int axis);
-//          final int git = cpg.addInterfaceMethodref(DOM_INTF, "getAxisIterator", "(Lde/lyca/xml/dtm/Axis;)" + NODE_ITERATOR_SIG);
-//          il.append(methodGen.loadDOM());
-//          il.append(factory.createFieldAccess("de.lyca.xml.dtm.Axis", _axis.name(), Type.Axis.toJCType(), org.apache.bcel.Constants.GETSTATIC));
-//          il.append(new INVOKEINTERFACE(git, 2));
-//          break;
-//        default:
-//          if (star > 1) {
-//            final String namespace;
-//            if (_axis == Axis.ATTRIBUTE) {
-//              namespace = name.substring(0, star - 2);
-//            } else {
-//              namespace = name.substring(0, star - 1);
-//            }
-//
-//            final int nsType = xsltc.registerNamespace(namespace);
-//            final int ns = cpg.addInterfaceMethodref(DOM_INTF, "getNamespaceAxisIterator", "(Lde/lyca/xml/dtm/Axis;I)" + NODE_ITERATOR_SIG);
-//            il.append(methodGen.loadDOM());
-//            il.append(factory.createFieldAccess("de.lyca.xml.dtm.Axis", _axis.name(), Type.Axis.toJCType(), org.apache.bcel.Constants.GETSTATIC));
-//            il.append(new PUSH(cpg, nsType));
-//            il.append(new INVOKEINTERFACE(ns, 3));
-//            break;
-//          }
-//        case NodeTest.ELEMENT:
-//          // DOM.getTypedAxisIterator(int axis, int type);
-//          final int ty = cpg.addInterfaceMethodref(DOM_INTF, "getTypedAxisIterator", "(Lde/lyca/xml/dtm/Axis;I)" + NODE_ITERATOR_SIG);
-//          // Get the typed iterator we're after
-//          il.append(methodGen.loadDOM());
-//          il.append(factory.createFieldAccess("de.lyca.xml.dtm.Axis", _axis.name(), Type.Axis.toJCType(), org.apache.bcel.Constants.GETSTATIC));
-//          il.append(new PUSH(cpg, _nodeType));
-//          il.append(new INVOKEINTERFACE(ty, 3));
-//
-//          break;
-//      }
-//    }
   }
 
   /**
@@ -451,19 +349,8 @@ final class Step extends RelativeLocationPath {
       // Handle '//*[n]' expression
       else if (predicate.isNthDescendant()) {
         // DOM.getNthDescendant(int node, int n, boolean includeself);
-        return invoke(ctx.currentDom(), "getNthDescendant")
-            .arg(lit(predicate.getPosType()))
-            .arg(predicate.toJExpression(ctx))
-            .arg(lit(false));
-//        return invoke(method.listParams()[0], "getNthDescendant").arg(lit(NodeTest.ELEMENT)).arg(lit(rType)).arg(predicate.compile(definedClass, method)).arg(lit(((EqualityExpr)predicate.getExpr()).getOp()));
-
-//        il.append(methodGen.loadDOM());
-//        // il.append(new ICONST(NodeTest.ELEMENT));
-//        il.append(new ICONST(predicate.getPosType()));
-//        predicate.translate(ctx);
-//        il.append(new ICONST(0));
-//        idx = cpg.addInterfaceMethodref(DOM_INTF, "getNthDescendant", "(IIZ)" + NODE_ITERATOR_SIG);
-//        il.append(new INVOKEINTERFACE(idx, 4));
+        return invoke(ctx.currentDom(), GET_NTH_DESCENDANT).arg(lit(predicate.getPosType()))
+            .arg(predicate.toJExpression(ctx)).arg(lit(false));
       }
       // Handle 'elem[n]' expression
       else if (predicate.isNthPositionFilter()) {

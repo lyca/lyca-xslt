@@ -569,26 +569,9 @@ final class Number extends Instruction implements Closure {
 
       ctx.currentBlock().invoke(CHARACTERSW).arg(numberFieldIndex.invoke("getCounter").arg(format).arg(lang)
           .arg(letterValue).arg(groupingSeparator).arg(groupingSize)).arg(ctx.currentHandler());
-
-      // index = cpg.addMethodref(NODE_COUNTER, "getCounter", "(" + STRING_SIG +
-      // STRING_SIG + STRING_SIG + STRING_SIG
-      // + STRING_SIG + ")" + STRING_SIG);
-      // il.append(new INVOKEVIRTUAL(index));
     } else {
       ctx.currentBlock().invoke(CHARACTERSW).arg(numberFieldIndex.invoke("setDefaultFormatting").invoke("getCounter"))
           .arg(ctx.currentHandler());
-      // index = cpg.addMethodref(NODE_COUNTER, "setDefaultFormatting", "()" +
-      // NODE_COUNTER_SIG);
-      // il.append(new INVOKEVIRTUAL(index));
-
-      // index = cpg.addMethodref(NODE_COUNTER, "getCounter", "()" +
-      // STRING_SIG);
-      // il.append(new INVOKEVIRTUAL(index));
     }
-
-    // Output the resulting string to the handler
-    // il.append(methodGen.loadHandler());
-    // index = cpg.addMethodref(TRANSLET_CLASS, CHARACTERSW, CHARACTERSW_SIG);
-    // il.append(new INVOKEVIRTUAL(index));
-  }
+}
 }

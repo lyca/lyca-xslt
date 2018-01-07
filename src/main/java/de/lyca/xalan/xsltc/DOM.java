@@ -53,8 +53,8 @@ public interface DOM {
 //  String GET_TYPED_CHILDREN = "getTypedChildren";
   String GET_AXIS_ITERATOR = "getAxisIterator";
   String GET_TYPED_AXIS_ITERATOR = "getTypedAxisIterator";
-  String GET_NTH_DESCENDANT = "getNthDescendant"; // TODO
-  String GET_NAMESPACE_AXIS_ITERATOR = "getNamespaceAxisIterator"; // TODO
+  String GET_NTH_DESCENDANT = "getNthDescendant";
+  String GET_NAMESPACE_AXIS_ITERATOR = "getNamespaceAxisIterator";
   String GET_NODE_VALUE_ITERATOR = "getNodeValueIterator";
   String ORDER_NODES = "orderNodes";
   String GET_NODE_NAME = "getNodeName";

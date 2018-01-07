@@ -20,6 +20,7 @@ package de.lyca.xalan.xsltc.compiler;
 import static com.sun.codemodel.JExpr.FALSE;
 import static com.sun.codemodel.JExpr.TRUE;
 import static com.sun.codemodel.JExpr.lit;
+import static de.lyca.xalan.xsltc.DOM.CHARACTERS;
 import static de.lyca.xalan.xsltc.compiler.Constants.STATIC_CHAR_DATA_FIELD;
 
 import com.sun.codemodel.JDefinedClass;
@@ -177,9 +178,9 @@ final class Text extends Instruction {
       // Call characters(String) or characters(char[],int,int), as
       // appropriate.
       if (!canLoadAsArrayOffsetLength()) {
-        ctx.currentBlock().add(handler.invoke("characters").arg(_text));
+        ctx.currentBlock().add(handler.invoke(CHARACTERS).arg(_text));
       } else {
-        loadAsArrayOffsetLength(ctx, "characters");
+        loadAsArrayOffsetLength(ctx, CHARACTERS);
       }
 
       // Restore character escaping setting to whatever it was.
