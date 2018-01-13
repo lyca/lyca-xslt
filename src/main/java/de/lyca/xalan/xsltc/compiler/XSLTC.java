@@ -18,16 +18,13 @@
 package de.lyca.xalan.xsltc.compiler;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -35,9 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.jar.Attributes;
-import java.util.jar.JarOutputStream;
-import java.util.jar.Manifest;
 import java.util.stream.Collectors;
 
 import javax.tools.JavaCompiler;
@@ -56,7 +50,6 @@ import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JFieldVar;
 import com.sun.codemodel.JPackage;
 import com.sun.codemodel.writer.FileCodeWriter;
-import com.sun.codemodel.writer.ZipCodeWriter;
 
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.InMemoryJavaFileManager;
@@ -113,24 +106,18 @@ public final class XSLTC {
 
   // These define the various methods for outputting the translet
   public enum Out {
-    BYTES, FILES, JAR
+    BYTES, FILES
   }
 
   public static final EnumSet<Out> BYTEARRAY = EnumSet.of(Out.BYTES);
-  public static final EnumSet<Out> CLASS_FILES = EnumSet.of(Out.FILES);
-  public static final EnumSet<Out> CLASS_JAR = EnumSet.of(Out.JAR);
   public static final EnumSet<Out> BYTEARRAY_AND_CLASS_FILES = EnumSet.of(Out.BYTES, Out.FILES);
-  public static final EnumSet<Out> BYTEARRAY_AND_CLASS_JAR = EnumSet.of(Out.BYTES, Out.JAR);
 
   private Set<Out> output = BYTEARRAY;
 
   // Compiler options (passed from command line or XSLTC client)
   private boolean _debug = false; // -x
-  private String _jarFileName = null; // -j <jar-file-name>
   private String _className = null; // -o <class-name>
-  private String _packageName = null; // -p <package-name>
   private File _destDir = null; // -d <directory-name>
-  // private int _outputType = FILE_OUTPUT; // by default
 
   private List<byte[]> _classes;
   private boolean _callsNodeset = false;
@@ -156,8 +143,7 @@ public final class XSLTC {
   /**
    * Set the state of the secure processing feature.
    * 
-   * @param flag
-   *          TODO
+   * @param flag TODO
    */
   public void setSecureProcessing(boolean flag) {
     _isSecureProcessing = flag;
@@ -184,8 +170,7 @@ public final class XSLTC {
   /**
    * Only for user by the internal TrAX implementation.
    * 
-   * @param output
-   *          TODO
+   * @param output TODO
    */
   public void setOutputType(Set<Out> output) {
     this.output = output;
@@ -241,28 +226,22 @@ public final class XSLTC {
   }
 
   /**
-   * Defines an external SourceLoader to provide the compiler with documents
-   * referenced in xsl:include/import
+   * Defines an external SourceLoader to provide the compiler with documents referenced in xsl:include/import
    * 
-   * @param loader
-   *          The SourceLoader to use for include/import
+   * @param loader The SourceLoader to use for include/import
    */
   public void setSourceLoader(SourceLoader loader) {
     _loader = loader;
   }
 
   /**
-   * Set the parameters to use to locate the correct
-   * {@literal <?xml-stylesheet ...?>} processing instruction in the case where
-   * the input document to the compiler (and parser) is an XML document.
+   * Set the parameters to use to locate the correct {@literal <?xml-stylesheet ...?>} processing instruction in the
+   * case where the input document to the compiler (and parser) is an XML document.
    * 
-   * @param media
-   *          The media attribute to be matched. May be null, in which case the
-   *          prefered templates will be used (i.e. alternate = no).
-   * @param title
-   *          The value of the title attribute to match. May be null.
-   * @param charset
-   *          The value of the charset attribute to match. May be null.
+   * @param media The media attribute to be matched. May be null, in which case the prefered templates will be used
+   *        (i.e. alternate = no).
+   * @param title The value of the title attribute to match. May be null.
+   * @param charset The value of the charset attribute to match. May be null.
    */
   public void setPIParameters(String media, String title, String charset) {
     _parser.setPIParameters(media, title, charset);
@@ -271,8 +250,7 @@ public final class XSLTC {
   /**
    * Compiles an XSL stylesheet pointed to by a URL
    * 
-   * @param url
-   *          An URL containing the input XSL stylesheet
+   * @param url An URL containing the input XSL stylesheet
    * @return TODO
    */
   public boolean compile(URL url) {
@@ -291,10 +269,8 @@ public final class XSLTC {
   /**
    * Compiles an XSL stylesheet pointed to by a URL
    * 
-   * @param url
-   *          An URL containing the input XSL stylesheet
-   * @param name
-   *          The name to assign to the translet class
+   * @param url An URL containing the input XSL stylesheet
+   * @param name The name to assign to the translet class
    * @return TODO
    */
   public boolean compile(URL url, String name) {
@@ -313,10 +289,8 @@ public final class XSLTC {
   /**
    * Compiles an XSL stylesheet passed in through an InputStream
    * 
-   * @param stream
-   *          An InputStream that will pass in the stylesheet contents
-   * @param name
-   *          The name of the translet class to generate
+   * @param stream An InputStream that will pass in the stylesheet contents
+   * @param name The name of the translet class to generate
    * @return 'true' if the compilation was successful
    */
   public boolean compile(InputStream stream, String name) {
@@ -328,10 +302,8 @@ public final class XSLTC {
   /**
    * Compiles an XSL stylesheet passed in through an InputStream
    * 
-   * @param input
-   *          An InputSource that will pass in the stylesheet contents
-   * @param name
-   *          The name of the translet class to generate - can be null
+   * @param input An InputSource that will pass in the stylesheet contents
+   * @param name The name of the translet class to generate - can be null
    * @return 'true' if the compilation was successful
    */
   public boolean compile(InputSource input, String name) {
@@ -407,8 +379,7 @@ public final class XSLTC {
   /**
    * Compiles a set of stylesheets pointed to by a List of URLs
    * 
-   * @param stylesheetURLs
-   *          A List containing URLs pointing to the stylesheets
+   * @param stylesheetURLs A List containing URLs pointing to the stylesheets
    * @return 'true' if the compilation was successful
    */
   public boolean compile(List<URL> stylesheetURLs) {
@@ -448,15 +419,12 @@ public final class XSLTC {
   }
 
   /**
-   * Compiles a stylesheet pointed to by a URL. The result is put in a set of
-   * byte arrays. One byte array for each generated class.
+   * Compiles a stylesheet pointed to by a URL. The result is put in a set of byte arrays. One byte array for each
+   * generated class.
    * 
-   * @param name
-   *          The name of the translet class to generate
-   * @param input
-   *          An InputSource that will pass in the stylesheet contents
-   * @param output
-   *          The output types
+   * @param name The name of the translet class to generate
+   * @param input An InputSource that will pass in the stylesheet contents
+   * @param output The output types
    * @return JVM bytecodes that represent translet class definition
    */
   public byte[][] compile(String name, InputSource input, Set<Out> output) {
@@ -468,13 +436,11 @@ public final class XSLTC {
   }
 
   /**
-   * Compiles a stylesheet pointed to by a URL. The result is put in a set of
-   * byte arrays. One byte array for each generated class.
+   * Compiles a stylesheet pointed to by a URL. The result is put in a set of byte arrays. One byte array for each
+   * generated class.
    * 
-   * @param name
-   *          The name of the translet class to generate
-   * @param input
-   *          An InputSource that will pass in the stylesheet contents
+   * @param name The name of the translet class to generate
+   * @param input An InputSource that will pass in the stylesheet contents
    * @return JVM bytecodes that represent translet class definition
    */
   public byte[][] compile(String name, InputSource input) {
@@ -484,8 +450,7 @@ public final class XSLTC {
   /**
    * Set the XMLReader to use for parsing the next input stylesheet
    * 
-   * @param reader
-   *          XMLReader (SAX2 parser) to use
+   * @param reader XMLReader (SAX2 parser) to use
    */
   public void setXMLReader(XMLReader reader) {
     _reader = reader;
@@ -533,11 +498,10 @@ public final class XSLTC {
   }
 
   /**
-   * This method is called by the XPathParser when it encounters a call to the
-   * document() function. Affects the DOM used by the translet.
+   * This method is called by the XPathParser when it encounters a call to the document() function. Affects the DOM used
+   * by the translet.
    * 
-   * @param flag
-   *          TODO
+   * @param flag TODO
    */
   protected void setMultiDocument(boolean flag) {
     _multiDocument = flag;
@@ -548,11 +512,10 @@ public final class XSLTC {
   }
 
   /**
-   * This method is called by the XPathParser when it encounters a call to the
-   * nodeset() extension function. Implies multi document.
+   * This method is called by the XPathParser when it encounters a call to the nodeset() extension function. Implies
+   * multi document.
    * 
-   * @param flag
-   *          TODO
+   * @param flag TODO
    */
   protected void setCallsNodeset(boolean flag) {
     if (flag) {
@@ -574,23 +537,17 @@ public final class XSLTC {
   }
 
   /**
-   * Set the class name for the generated translet. This class name is
-   * overridden if multiple stylesheets are compiled in one go using the
-   * compile(List urls) method.
+   * Set the class name for the generated translet. This class name is overridden if multiple stylesheets are compiled
+   * in one go using the compile(List urls) method.
    * 
-   * @param className
-   *          The name to assign to the translet class
+   * @param className The name to assign to the translet class
    */
   public void setClassName(String className) {
     final String base = Util.baseName(className);
     final String noext = Util.noExtName(base);
     final String name = Util.toJavaName(noext);
 
-    if (_packageName == null) {
-      _className = name;
-    } else {
-      _className = _packageName + '.' + name;
-    }
+    _className = name;
   }
 
   /**
@@ -603,16 +560,16 @@ public final class XSLTC {
   }
 
   /**
-   * Convert for Java class name of local system file name. (Replace '.' with
-   * '/' on UNIX and replace '.' by '\' on Windows/DOS.)
+   * Convert for Java class name of local system file name. (Replace '.' with '/' on UNIX and replace '.' by '\' on
+   * Windows/DOS.)
    */
   private String classFileName(final String className) {
     return className.replace('.', File.separatorChar) + ".class";
   }
 
   /**
-   * Convert for Java source name of local system file name. (Replace '.' with
-   * '/' on UNIX and replace '.' by '\' on Windows/DOS.)
+   * Convert for Java source name of local system file name. (Replace '.' with '/' on UNIX and replace '.' by '\' on
+   * Windows/DOS.)
    */
   private String sourceFileName(final String className) {
     return className.replace('.', File.separatorChar) + ".java";
@@ -632,11 +589,9 @@ public final class XSLTC {
   }
 
   /**
-   * Set the destination directory for the translet. The current working
-   * directory will be used by default.
+   * Set the destination directory for the translet. The current working directory will be used by default.
    * 
-   * @param dstDirName
-   *          TODO
+   * @param dstDirName TODO
    * @return TODO
    */
   public boolean setDestDirectory(String dstDirName) {
@@ -651,44 +606,9 @@ public final class XSLTC {
   }
 
   /**
-   * Set an optional package name for the translet and auxiliary classes
-   * 
-   * @param packageName
-   *          TODO
-   */
-  public void setPackageName(String packageName) {
-    _packageName = packageName;
-    if (_className != null) {
-      setClassName(_className);
-    }
-  }
-
-  /**
-   * Set the name of an optional JAR-file to dump the translet and auxiliary
-   * classes to
-   * 
-   * @param jarFileName
-   *          TODO
-   */
-  public void setJarFileName(String jarFileName) {
-    final String JAR_EXT = ".jar";
-    if (jarFileName.endsWith(JAR_EXT)) {
-      _jarFileName = jarFileName;
-    } else {
-      _jarFileName = jarFileName + JAR_EXT;
-    }
-    output = CLASS_JAR;
-  }
-
-  public String getJarFileName() {
-    return _jarFileName;
-  }
-
-  /**
    * Set the top-level stylesheet
    * 
-   * @param stylesheet
-   *          TODO
+   * @param stylesheet TODO
    */
   public void setStylesheet(Stylesheet stylesheet) {
     if (_stylesheet == null) {
@@ -706,11 +626,9 @@ public final class XSLTC {
   }
 
   /**
-   * Registers an attribute and gives it a type so that it can be mapped to DOM
-   * attribute types at run-time.
+   * Registers an attribute and gives it a type so that it can be mapped to DOM attribute types at run-time.
    * 
-   * @param name
-   *          TODO
+   * @param name TODO
    * @return TODO
    */
   public int registerAttribute(QName name) {
@@ -733,11 +651,9 @@ public final class XSLTC {
   }
 
   /**
-   * Registers an element and gives it a type so that it can be mapped to DOM
-   * element types at run-time.
+   * Registers an element and gives it a type so that it can be mapped to DOM element types at run-time.
    * 
-   * @param name
-   *          TODO
+   * @param name TODO
    * @return TODO
    */
   public int registerElement(QName name) {
@@ -754,11 +670,9 @@ public final class XSLTC {
   }
 
   /**
-   * Registers a namespace prefix and gives it a type so that it can be mapped
-   * to DOM namespace types at run-time.
+   * Registers a namespace prefix and gives it a type so that it can be mapped to DOM namespace types at run-time.
    * 
-   * @param name
-   *          TODO
+   * @param name TODO
    * @return TODO
    */
   public int registerNamespacePrefix(QName name) {
@@ -779,11 +693,9 @@ public final class XSLTC {
   }
 
   /**
-   * Registers a namespace and gives it a type so that it can be mapped to DOM
-   * namespace types at run-time.
+   * Registers a namespace and gives it a type so that it can be mapped to DOM namespace types at run-time.
    * 
-   * @param name
-   *          TODO
+   * @param name TODO
    * @return TODO
    */
   public int registerNamespacePrefix(String name) {
@@ -797,11 +709,9 @@ public final class XSLTC {
   }
 
   /**
-   * Registers a namespace and gives it a type so that it can be mapped to DOM
-   * namespace types at run-time.
+   * Registers a namespace and gives it a type so that it can be mapped to DOM namespace types at run-time.
    * 
-   * @param namespaceURI
-   *          TODO
+   * @param namespaceURI TODO
    * @return TODO
    */
   public int registerNamespace(String namespaceURI) {
@@ -815,19 +725,14 @@ public final class XSLTC {
   }
 
   /**
-   * Registers namespace declarations that the stylesheet might need to look up
-   * dynamically - for instance, if an <code>xsl:element</code> has a a
-   * <code>name</code> attribute with variable parts and has no
-   * <code>namespace</code> attribute.
+   * Registers namespace declarations that the stylesheet might need to look up dynamically - for instance, if an
+   * <code>xsl:element</code> has a a <code>name</code> attribute with variable parts and has no <code>namespace</code>
+   * attribute.
    * 
-   * @param prefixMap
-   *          a <code>Map</code> mapping namespace prefixes to URIs. Must not be
-   *          <code>null</code>. The default namespace and namespace
-   *          undeclarations are represented by a zero-length string.
-   * @param ancestorID
-   *          The <code>int</code> node ID of the nearest ancestor in the
-   *          stylesheet that declares namespaces, or a value less than zero if
-   *          there is no such ancestor
+   * @param prefixMap a <code>Map</code> mapping namespace prefixes to URIs. Must not be <code>null</code>. The default
+   *        namespace and namespace undeclarations are represented by a zero-length string.
+   * @param ancestorID The <code>int</code> node ID of the nearest ancestor in the stylesheet that declares namespaces,
+   *        or a value less than zero if there is no such ancestor
    * @return A new node ID for the stylesheet element
    */
   public int registerStylesheetPrefixMappingForRuntime(Map<String, String> prefixMap, int ancestorID) {
@@ -917,10 +822,6 @@ public final class XSLTC {
       CodeWriter codeWriter;
       if (output.contains(Out.FILES)) {
         codeWriter = new FileCodeWriter(getOutputDirectory(definedClass._package()).toFile());
-      } else if (output.contains(Out.JAR)) {
-        Path zipPath = getOutputDirectory().resolve(definedClass.name() + ".zip");
-        OutputStream zipStream = Files.newOutputStream(zipPath);
-        codeWriter = new ZipCodeWriter(zipStream);
       } else {
         codeWriter = new StringCodeWriter();
       }
@@ -931,7 +832,7 @@ public final class XSLTC {
       Iterable<? extends JavaFileObject> fileObjects;
       Path outputDirectory = null;
       String classFileName = null;
-      if (output.contains(Out.FILES) || output.contains(Out.JAR)) {
+      if (output.contains(Out.FILES)) {
         fileManager = compiler.getStandardFileManager(null, null, null);
         classFileName = classFileName(definedClass.name());
         outputDirectory = getOutputDirectory(definedClass._package());
@@ -942,10 +843,6 @@ public final class XSLTC {
       if (output.contains(Out.FILES)) {
         fileObjects = ((StandardJavaFileManager) fileManager)
             .getJavaFileObjects(outputDirectory.resolve(sourceFileName(definedClass.name())).toFile());
-      } else if (output.contains(Out.JAR)) {
-        // TODO
-        fileObjects = ((StandardJavaFileManager) fileManager)
-            .getJavaFileObjects(outputDirectory.resolve(sourceFileName(definedClass.name())).toFile());
       } else {
         fileObjects = ((StringCodeWriter) codeWriter).getJavaFileObjects();
       }
@@ -954,76 +851,25 @@ public final class XSLTC {
       task.call();
       fileManager.close();
 
-      if (output.contains(Out.BYTES)) {
-        if (output.contains(Out.FILES) || output.contains(Out.JAR)) {
-          _classes.add(Files.readAllBytes(outputDirectory.resolve(classFileName)));
-          for (Iterator<JDefinedClass> iterator = definedClass.classes(); iterator.hasNext();) {
-            JDefinedClass definedInnerClass = iterator.next();
-            _classes.add(Files.readAllBytes(outputDirectory.resolve(classFileName(definedInnerClass.binaryName()))));
-          }
-        } else {
-          _classes = ((InMemoryJavaFileManager) fileManager).getInMemoryJavaFileObjects().stream()
-              .map(j -> j.getClassBytes()).collect(Collectors.toList());
+      if (output.contains(Out.FILES)) {
+        _classes.add(Files.readAllBytes(outputDirectory.resolve(classFileName)));
+        for (Iterator<JDefinedClass> iterator = definedClass.classes(); iterator.hasNext();) {
+          JDefinedClass definedInnerClass = iterator.next();
+          _classes.add(Files.readAllBytes(outputDirectory.resolve(classFileName(definedInnerClass.binaryName()))));
         }
+      } else {
+        _classes = ((InMemoryJavaFileManager) fileManager).getInMemoryJavaFileObjects().stream()
+            .map(j -> j.getClassBytes()).collect(Collectors.toList());
       }
     } catch (final Exception e) {
       e.printStackTrace();
     }
-
-    // if (_outputType == FILE_OUTPUT || _outputType ==
-    // BYTEARRAY_AND_FILE_OUTPUT) {
-    // final File outFile = getOutputFile(fullName);
-    // final String parentDir = outFile.getParent();
-    // if (parentDir != null) {
-    // final File parentFile = new File(parentDir);
-    // if (!parentFile.exists()) {
-    // parentFile.mkdirs();
-    // }
-    // }
-    // }
-
-  }
-
-  /**
-   * TODO Generate output JAR-file and packages
-   * 
-   * @throws IOException
-   *           TODO
-   */
-  public void outputToJar() throws IOException {
-    // create the manifest
-    final Manifest manifest = new Manifest();
-    final Attributes atrs = manifest.getMainAttributes();
-    atrs.put(Attributes.Name.MANIFEST_VERSION, "1.2");
-
-    final Map<String, Attributes> map = manifest.getEntries();
-    // create manifest
-    final String now = new Date().toString();
-    final Attributes.Name dateAttr = new Attributes.Name("Date");
-    // for (final JavaClass clazz : _bcelClasses) {
-    // final String className = clazz.getClassName().replace('.', '/');
-    // final Attributes attr = new Attributes();
-    // attr.put(dateAttr, now);
-    // map.put(className + ".class", attr);
-    // }
-
-    final File jarFile = new File(_destDir, _jarFileName);
-    final JarOutputStream jos = new JarOutputStream(new FileOutputStream(jarFile), manifest);
-    // for (final JavaClass clazz : _bcelClasses) {
-    // final String className = clazz.getClassName().replace('.', '/');
-    // jos.putNextEntry(new JarEntry(className + ".class"));
-    // final ByteArrayOutputStream out = new ByteArrayOutputStream(2048);
-    // clazz.dump(out); // dump() closes it's output stream
-    // out.writeTo(jos);
-    // }
-    jos.close();
   }
 
   /**
    * Turn debugging messages on/off
    * 
-   * @param debug
-   *          TODO
+   * @param debug TODO
    */
   public void setDebug(boolean debug) {
     _debug = debug;
@@ -1039,22 +885,18 @@ public final class XSLTC {
   }
 
   /**
-   * Retrieve a string representation of the character data to be stored in the
-   * translet as a <code>char[]</code>. There may be more than one such array
-   * required.
+   * Retrieve a string representation of the character data to be stored in the translet as a <code>char[]</code>. There
+   * may be more than one such array required.
    * 
-   * @param index
-   *          The index of the <code>char[]</code>. Zero-based.
-   * @return String The character data to be stored in the corresponding
-   *         <code>char[]</code>.
+   * @param index The index of the <code>char[]</code>. Zero-based.
+   * @return String The character data to be stored in the corresponding <code>char[]</code>.
    */
   public String getCharacterData(int index) {
     return m_characterData.get(index).toString();
   }
 
   /**
-   * Get the number of char[] arrays, thus far, that will be created to store
-   * literal text in the stylesheet.
+   * Get the number of char[] arrays, thus far, that will be created to store literal text in the stylesheet.
    * 
    * @return TODO
    */
@@ -1063,12 +905,9 @@ public final class XSLTC {
   }
 
   /**
-   * Add literal text to char arrays that will be used to store character data
-   * in the stylesheet.
+   * Add literal text to char arrays that will be used to store character data in the stylesheet.
    * 
-   * @param newData
-   *          String data to be added to char arrays. Pre-condition:
-   *          <code>newData.length() &le; 21845</code>
+   * @param newData String data to be added to char arrays. Pre-condition: <code>newData.length() &le; 21845</code>
    * @return int offset at which character data will be stored
    */
   public int addCharacterData(String newData) {

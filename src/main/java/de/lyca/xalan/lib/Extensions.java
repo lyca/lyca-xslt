@@ -17,9 +17,6 @@
  */
 package de.lyca.xalan.lib;
 
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Map;
 import java.util.StringTokenizer;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -34,9 +31,7 @@ import org.w3c.dom.Text;
 import org.w3c.dom.traversal.NodeIterator;
 import org.xml.sax.SAXNotSupportedException;
 
-import de.lyca.xalan.ObjectFactory;
 import de.lyca.xalan.extensions.ExpressionContext;
-import de.lyca.xalan.xslt.EnvironmentCheck;
 import de.lyca.xpath.NodeSet;
 import de.lyca.xpath.objects.XBoolean;
 import de.lyca.xpath.objects.XNumber;
@@ -239,99 +234,6 @@ public class Extensions {
    */
   public static NodeList tokenize(String toTokenize) {
     return tokenize(toTokenize, " \t\n\r");
-  }
-
-  /**
-   * Return a Node of basic debugging information from the EnvironmentCheck utility about the Java environment.
-   * 
-   * <p>
-   * Simply calls the {@link de.lyca.xalan.xslt.EnvironmentCheck} utility to grab info about the Java environment and
-   * CLASSPATH, etc., and then returns the resulting Node. Stylesheets can then maniuplate this data or simply
-   * xsl:copy-of the Node. Note that we first attempt to load the more advanced org.apache.env.Which utility by
-   * reflection; only if that fails to we still use the internal version. Which is available from
-   * <a href="http://xml.apache.org/commons/">http://xml.apache.org/commons/</a>.
-   * </p>
-   * 
-   * <p>
-   * We throw a WrappedRuntimeException in the unlikely case that reading information from the environment throws us an
-   * exception. (Is this really the best thing to do?)
-   * </p>
-   * 
-   * @param myContext an <code>ExpressionContext</code> passed in by the extension mechanism. This must be an
-   *        XPathContext.
-   * @return a Node as described above.
-   */
-  public static Node checkEnvironment(ExpressionContext myContext) {
-
-    Document factoryDocument;
-    try {
-      final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-      final DocumentBuilder db = dbf.newDocumentBuilder();
-      factoryDocument = db.newDocument();
-    } catch (final ParserConfigurationException pce) {
-      throw new de.lyca.xml.utils.WrappedRuntimeException(pce);
-    }
-
-    Node resultNode = null;
-    try {
-      // First use reflection to try to load Which, which is a
-      // better version of EnvironmentCheck
-      resultNode = checkEnvironmentUsingWhich(myContext, factoryDocument);
-
-      if (null != resultNode)
-        return resultNode;
-
-      // If reflection failed, fallback to our internal EnvironmentCheck
-      EnvironmentCheck envChecker = new EnvironmentCheck();
-      final Map<String, Object> h = envChecker.getEnvironmentHash();
-      resultNode = factoryDocument.createElement("checkEnvironmentExtension");
-      envChecker.appendEnvironmentReport(resultNode, factoryDocument, h);
-      envChecker = null;
-    } catch (final Exception e) {
-      throw new de.lyca.xml.utils.WrappedRuntimeException(e);
-    }
-
-    return resultNode;
-  }
-
-  /**
-   * Private worker method to attempt to use org.apache.env.Which.
-   * 
-   * @param myContext an <code>ExpressionContext</code> passed in by the extension mechanism. This must be an
-   *        XPathContext.
-   * @param factoryDocument providing createElement services, etc.
-   * @return a Node with environment info; null if any error
-   */
-  private static Node checkEnvironmentUsingWhich(ExpressionContext myContext, Document factoryDocument) {
-    final String WHICH_CLASSNAME = "org.apache.env.Which";
-    final String WHICH_METHODNAME = "which";
-    final Class<?>[] WHICH_METHOD_ARGS = { java.util.Hashtable.class, java.lang.String.class, java.lang.String.class };
-    try {
-      // Use reflection to try to find xml-commons utility 'Which'
-      final Class<?> clazz = ObjectFactory.findProviderClass(WHICH_CLASSNAME, ObjectFactory.findClassLoader(), true);
-      if (null == clazz)
-        return null;
-
-      // Fully qualify names since this is the only method they're used in
-      final java.lang.reflect.Method method = clazz.getMethod(WHICH_METHODNAME, WHICH_METHOD_ARGS);
-      final Hashtable<String, Object> intermediate = new Hashtable<>();
-
-      // Call the method with our Hashtable, common options, and ignore return
-      // value
-      final Object[] methodArgs = { intermediate, "XmlCommons;Xalan;Xerces;Crimson;Ant", "" };
-      method.invoke(null, methodArgs);
-
-      final Map<String, Object> report = new HashMap<String, Object>(intermediate);
-
-      // Create a parent to hold the report and append hash to it
-      final Node resultNode = factoryDocument.createElement("checkEnvironmentExtension");
-      de.lyca.xml.utils.Map2Node.appendMapToNode(report, "whichReport", resultNode, factoryDocument);
-
-      return resultNode;
-    } catch (final Throwable t) {
-      // Simply return null; no need to report error
-      return null;
-    }
   }
 
   /**

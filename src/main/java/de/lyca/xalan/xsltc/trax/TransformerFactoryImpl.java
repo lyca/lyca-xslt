@@ -18,21 +18,12 @@
 package de.lyca.xalan.xsltc.trax;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
@@ -58,7 +49,6 @@ import org.xml.sax.XMLFilter;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
-import de.lyca.xalan.ObjectFactory;
 import de.lyca.xalan.xsltc.compiler.SourceLoader;
 import de.lyca.xalan.xsltc.compiler.XSLTC;
 import de.lyca.xalan.xsltc.compiler.XSLTC.Out;
@@ -79,18 +69,13 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
   // Public constants for attributes supported by the XSLTC TransformerFactory.
   public final static String TRANSLET_NAME = "translet-name";
   public final static String DESTINATION_DIRECTORY = "destination-directory";
-  public final static String PACKAGE_NAME = "package-name";
-  public final static String JAR_NAME = "jar-name";
   public final static String GENERATE_TRANSLET = "generate-translet";
-  public final static String AUTO_TRANSLET = "auto-translet";
-  public final static String USE_CLASSPATH = "use-classpath";
   public final static String DEBUG = "debug";
-  public final static String ENABLE_INLINING = "enable-inlining";
   public final static String INDENT_NUMBER = "indent-number";
 
   /**
-   * This error listener is used only for this factory and is not passed to the
-   * Templates or Transformer objects that we create.
+   * This error listener is used only for this factory and is not passed to the Templates or Transformer objects that we
+   * create.
    */
   private ErrorListener _errorListener = this;
 
@@ -100,14 +85,11 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
   private URIResolver _uriResolver = null;
 
   /**
-   * As Gregor Samsa awoke one morning from uneasy dreams he found himself
-   * transformed in his bed into a gigantic insect. He was lying on his hard, as
-   * it were armour plated, back, and if he lifted his head a little he could
-   * see his big, brown belly divided into stiff, arched segments, on top of
-   * which the bed quilt could hardly keep in position and was about to slide
-   * off completely. His numerous legs, which were pitifully thin compared to
-   * the rest of his bulk, waved helplessly before his eyes. "What has happened
-   * to me?", he thought. It was no dream....
+   * As Gregor Samsa awoke one morning from uneasy dreams he found himself transformed in his bed into a gigantic
+   * insect. He was lying on his hard, as it were armour plated, back, and if he lifted his head a little he could see
+   * his big, brown belly divided into stiff, arched segments, on top of which the bed quilt could hardly keep in
+   * position and was about to slide off completely. His numerous legs, which were pitifully thin compared to the rest
+   * of his bulk, waved helplessly before his eyes. "What has happened to me?", he thought. It was no dream....
    */
   public final static String DEFAULT_TRANSLET_NAME = "GregorSamsa";
 
@@ -122,60 +104,14 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
   private String _destinationDirectory = null;
 
   /**
-   * The package name prefix for all generated translet classes
-   */
-  private String _packageName = null;
-
-  /**
-   * The jar file name which the translet classes are packaged into
-   */
-  private String _jarFileName = null;
-
-  /**
-   * This Map is used to store parameters for locating <?xml-stylesheet ...?>
-   * processing instructions in XML docs.
-   */
-  private final Map<Source, PIParamWrapper> _piParams = null;
-
-  /**
-   * The above map stores objects of this class.
-   */
-  private static class PIParamWrapper {
-    public String _media = null;
-    public String _title = null;
-    public String _charset = null;
-
-    public PIParamWrapper(String media, String title, String charset) {
-      _media = media;
-      _title = title;
-      _charset = charset;
-    }
-  }
-
-  /**
    * Set to <code>true</code> when debugging is enabled.
    */
   private boolean _debug = false;
 
   /**
-   * Set to <code>true</code> when we want to generate translet classes from the
-   * stylesheet.
+   * Set to <code>true</code> when we want to generate translet classes from the stylesheet.
    */
   private boolean _generateTranslet = false;
-
-  /**
-   * If this is set to <code>true</code>, we attempt to use translet classes for
-   * transformation if possible without compiling the stylesheet. The translet
-   * class is only used if its timestamp is newer than the timestamp of the
-   * stylesheet.
-   */
-  private boolean _autoTranslet = false;
-
-  /**
-   * If this is set to <code>true</code>, we attempt to load the translet from
-   * the CLASSPATH.
-   */
-  private boolean _useClasspath = false;
 
   /**
    * Number of indent spaces when indentation is turned on.
@@ -183,9 +119,8 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
   private int _indentNumber = -1;
 
   /**
-   * The provider of the XSLTC DTM Manager service. This is fixed for any
-   * instance of this class. In order to change service providers, a new XSLTC
-   * <code>TransformerFactory</code> must be instantiated.
+   * The provider of the XSLTC DTM Manager service. This is fixed for any instance of this class. In order to change
+   * service providers, a new XSLTC <code>TransformerFactory</code> must be instantiated.
    * 
    * @see XSLTCDTMManager#getDTMManagerClass()
    */
@@ -206,12 +141,10 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
   }
 
   /**
-   * SAXTransformerFactory implementation. Set the error
-   * event listener for the TransformerFactory, which is used for the processing
-   * of transformation instructions, and not for the transformation itself.
+   * SAXTransformerFactory implementation. Set the error event listener for the TransformerFactory, which is used for
+   * the processing of transformation instructions, and not for the transformation itself.
    * 
-   * @param listener
-   *          The error listener to use with the TransformerFactory
+   * @param listener The error listener to use with the TransformerFactory
    * @throws IllegalArgumentException TODO
    */
   @Override
@@ -224,8 +157,7 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
   }
 
   /**
-   * SAXTransformerFactory implementation. Get the error
-   * event handler for the TransformerFactory.
+   * SAXTransformerFactory implementation. Get the error event handler for the TransformerFactory.
    * 
    * @return The error listener used with the TransformerFactory
    */
@@ -235,11 +167,9 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
   }
 
   /**
-   * SAXTransformerFactory implementation. Returns the
-   * value set for a TransformerFactory attribute
+   * SAXTransformerFactory implementation. Returns the value set for a TransformerFactory attribute
    * 
-   * @param name
-   *          The attribute name
+   * @param name The attribute name
    * @return An object representing the attribute value
    * @throws IllegalArgumentException TODO
    */
@@ -250,8 +180,6 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
       return _transletName;
     else if (name.equals(GENERATE_TRANSLET))
       return _generateTranslet ? Boolean.TRUE : Boolean.FALSE;
-    else if (name.equals(AUTO_TRANSLET))
-      return _autoTranslet ? Boolean.TRUE : Boolean.FALSE;
 
     // Throw an exception for all other attributes
     final ErrorMsg err = new ErrorMsg(Messages.get().jaxpInvalidAttrErr(name));
@@ -259,13 +187,10 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
   }
 
   /**
-   * SAXTransformerFactory implementation. Sets the value
-   * for a TransformerFactory attribute.
+   * SAXTransformerFactory implementation. Sets the value for a TransformerFactory attribute.
    * 
-   * @param name
-   *          The attribute name
-   * @param value
-   *          An object representing the attribute value
+   * @param name The attribute name
+   * @param value An object representing the attribute value
    * @throws IllegalArgumentException TODO
    */
   @Override
@@ -278,34 +203,12 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
     } else if (name.equals(DESTINATION_DIRECTORY) && value instanceof String) {
       _destinationDirectory = (String) value;
       return;
-    } else if (name.equals(PACKAGE_NAME) && value instanceof String) {
-      _packageName = (String) value;
-      return;
-    } else if (name.equals(JAR_NAME) && value instanceof String) {
-      _jarFileName = (String) value;
-      return;
     } else if (name.equals(GENERATE_TRANSLET)) {
       if (value instanceof Boolean) {
         _generateTranslet = ((Boolean) value).booleanValue();
         return;
       } else if (value instanceof String) {
         _generateTranslet = ((String) value).equalsIgnoreCase("true");
-        return;
-      }
-    } else if (name.equals(AUTO_TRANSLET)) {
-      if (value instanceof Boolean) {
-        _autoTranslet = ((Boolean) value).booleanValue();
-        return;
-      } else if (value instanceof String) {
-        _autoTranslet = ((String) value).equalsIgnoreCase("true");
-        return;
-      }
-    } else if (name.equals(USE_CLASSPATH)) {
-      if (value instanceof Boolean) {
-        _useClasspath = ((Boolean) value).booleanValue();
-        return;
-      } else if (value instanceof String) {
-        _useClasspath = ((String) value).equalsIgnoreCase("true");
         return;
       }
     } else if (name.equals(DEBUG)) {
@@ -337,36 +240,27 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
 
   /**
    * <p>
-   * Set a feature for this <code>TransformerFactory</code> and
-   * <code>Transformer</code>s or <code>Template</code>s created by this
-   * factory.
+   * Set a feature for this <code>TransformerFactory</code> and <code>Transformer</code>s or <code>Template</code>s
+   * created by this factory.
    * </p>
    * 
    * <p>
-   * Feature names are fully qualified {@link java.net.URI}s. Implementations
-   * may define their own features. An {@link TransformerConfigurationException}
-   * is thrown if this <code>TransformerFactory</code> or the
-   * <code>Transformer</code>s or <code>Template</code>s it creates cannot
-   * support the feature. It is possible for an <code>TransformerFactory</code>
-   * to expose a feature value but be unable to change its state.
+   * Feature names are fully qualified {@link java.net.URI}s. Implementations may define their own features. An
+   * {@link TransformerConfigurationException} is thrown if this <code>TransformerFactory</code> or the
+   * <code>Transformer</code>s or <code>Template</code>s it creates cannot support the feature. It is possible for an
+   * <code>TransformerFactory</code> to expose a feature value but be unable to change its state.
    * </p>
    * 
    * <p>
-   * See {@link javax.xml.transform.TransformerFactory} for full documentation
-   * of specific features.
+   * See {@link javax.xml.transform.TransformerFactory} for full documentation of specific features.
    * </p>
    * 
-   * @param name
-   *          Feature name.
-   * @param value
-   *          Is feature state <code>true</code> or <code>false</code>.
+   * @param name Feature name.
+   * @param value Is feature state <code>true</code> or <code>false</code>.
    * 
-   * @throws TransformerConfigurationException
-   *           if this <code>TransformerFactory</code> or the
-   *           <code>Transformer</code>s or <code>Template</code>s it creates
-   *           cannot support this feature.
-   * @throws NullPointerException
-   *           If the <code>name</code> parameter is null.
+   * @throws TransformerConfigurationException if this <code>TransformerFactory</code> or the <code>Transformer</code>s
+   *         or <code>Template</code>s it creates cannot support this feature.
+   * @throws NullPointerException If the <code>name</code> parameter is null.
    */
   @Override
   public void setFeature(String name, boolean value) throws TransformerConfigurationException {
@@ -389,12 +283,10 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
   }
 
   /**
-   * SAXTransformerFactory implementation. Look up the
-   * value of a feature (to see if it is supported). This method must be updated
-   * as the various methods and features of this class are implemented.
+   * SAXTransformerFactory implementation. Look up the value of a feature (to see if it is supported). This method must
+   * be updated as the various methods and features of this class are implemented.
    * 
-   * @param name
-   *          The feature name
+   * @param name The feature name
    * @return 'true' if feature is supported, 'false' if not
    */
   @Override
@@ -424,12 +316,11 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
   }
 
   /**
-   * SAXTransformerFactory implementation. Get the object
-   * that is used by default during the transformation to resolve URIs used in
-   * document(), xsl:import, or xsl:include.
+   * SAXTransformerFactory implementation. Get the object that is used by default during the transformation to resolve
+   * URIs used in document(), xsl:import, or xsl:include.
    * 
-   * @return The URLResolver used for this TransformerFactory and all Templates
-   *         and Transformer objects created using this factory
+   * @return The URLResolver used for this TransformerFactory and all Templates and Transformer objects created using
+   *         this factory
    */
   @Override
   public URIResolver getURIResolver() {
@@ -437,14 +328,12 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
   }
 
   /**
-   * SAXTransformerFactory implementation. Set the object
-   * that is used by default during the transformation to resolve URIs used in
-   * document(), xsl:import, or xsl:include. Note that this does not affect
-   * Templates and Transformers that are already created with this factory.
+   * SAXTransformerFactory implementation. Set the object that is used by default during the transformation to resolve
+   * URIs used in document(), xsl:import, or xsl:include. Note that this does not affect Templates and Transformers that
+   * are already created with this factory.
    * 
-   * @param resolver
-   *          The URLResolver used for this TransformerFactory and all Templates
-   *          and Transformer objects created using this factory
+   * @param resolver The URLResolver used for this TransformerFactory and all Templates and Transformer objects created
+   *        using this factory
    */
   @Override
   public void setURIResolver(URIResolver resolver) {
@@ -452,21 +341,15 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
   }
 
   /**
-   * SAXTransformerFactory implementation. Get the
-   * stylesheet specification(s) associated via the xml-stylesheet processing
-   * instruction (see http://www.w3.org/TR/xml-stylesheet/) with the document
-   * document specified in the source parameter, and that match the given
-   * criteria.
+   * SAXTransformerFactory implementation. Get the stylesheet specification(s) associated via the xml-stylesheet
+   * processing instruction (see http://www.w3.org/TR/xml-stylesheet/) with the document document specified in the
+   * source parameter, and that match the given criteria.
    * 
-   * @param source
-   *          The XML source document.
-   * @param media
-   *          The media attribute to be matched. May be null, in which case the
-   *          prefered templates will be used (i.e. alternate = no).
-   * @param title
-   *          The value of the title attribute to match. May be null.
-   * @param charset
-   *          The value of the charset attribute to match. May be null.
+   * @param source The XML source document.
+   * @param media The media attribute to be matched. May be null, in which case the prefered templates will be used
+   *        (i.e. alternate = no).
+   * @param title The value of the title attribute to match. May be null.
+   * @param charset The value of the charset attribute to match. May be null.
    * @return A Source object suitable for passing to the TransformerFactory.
    * @throws TransformerConfigurationException TODO
    */
@@ -547,8 +430,7 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
   }
 
   /**
-   * SAXTransformerFactory implementation. Create a
-   * Transformer object that copies the input document to the result.
+   * SAXTransformerFactory implementation. Create a Transformer object that copies the input document to the result.
    * 
    * @return A Transformer object that simply copies the source to the result.
    * @throws TransformerConfigurationException TODO
@@ -567,10 +449,9 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
   }
 
   /**
-   * SAXTransformerFactory implementation. Process the
-   * Source into a Templates object, which is a a compiled representation of the
-   * source. Note that this method should not be used with XSLTC, as the
-   * time-consuming compilation is done for each and every transformation.
+   * SAXTransformerFactory implementation. Process the Source into a Templates object, which is a a compiled
+   * representation of the source. Note that this method should not be used with XSLTC, as the time-consuming
+   * compilation is done for each and every transformation.
    * 
    * @return A Templates object that can be used to create Transformers.
    * @throws TransformerConfigurationException TODO
@@ -619,74 +500,15 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
   }
 
   /**
-   * SAXTransformerFactory implementation. Process the
-   * Source into a Templates object, which is a a compiled representation of the
-   * source.
+   * SAXTransformerFactory implementation. Process the Source into a Templates object, which is a a compiled
+   * representation of the source.
    * 
-   * @param source
-   *          The input stylesheet - DOMSource not supported!!!
+   * @param source The input stylesheet - DOMSource not supported!!!
    * @return A Templates object that can be used to create Transformers.
    * @throws TransformerConfigurationException TODO
    */
   @Override
   public TemplatesImpl newTemplates(Source source) throws TransformerConfigurationException {
-    // If the _useClasspath attribute is true, try to load the translet from
-    // the CLASSPATH and create a template object using the loaded
-    // translet.
-    if (_useClasspath) {
-      String transletName = getTransletBaseName(source);
-
-      if (_packageName != null) {
-        transletName = _packageName + "." + transletName;
-      }
-
-      try {
-        final Class<?> clazz = ObjectFactory.findProviderClass(transletName, ObjectFactory.findClassLoader(), true);
-        resetTransientAttributes();
-
-        return new TemplatesImpl(new Class[] { clazz }, transletName, null, _indentNumber, this);
-      } catch (final ClassNotFoundException cnfe) {
-        final ErrorMsg err = new ErrorMsg(Messages.get().classNotFoundErr(transletName), -1);
-        throw new TransformerConfigurationException(err.toString());
-      } catch (final Exception e) {
-        final ErrorMsg err = new ErrorMsg(Messages.get().runtimeErrorKey() + e.getMessage());
-        throw new TransformerConfigurationException(err.toString());
-      }
-    }
-
-    // If _autoTranslet is true, we will try to load the bytecodes
-    // from the translet classes without compiling the stylesheet.
-    if (_autoTranslet) {
-      byte[][] bytecodes = null;
-      String transletClassName = getTransletBaseName(source);
-
-      if (_packageName != null) {
-        transletClassName = _packageName + "." + transletClassName;
-      }
-
-      if (_jarFileName != null) {
-        bytecodes = getBytecodesFromJar(source, transletClassName);
-      } else {
-        bytecodes = getBytecodesFromClasses(source, transletClassName);
-      }
-
-      if (bytecodes != null) {
-        if (_debug) {
-          if (_jarFileName != null) {
-            System.err.println(new ErrorMsg(Messages.get().transformWithJarStr(transletClassName, _jarFileName)));
-          } else {
-            System.err.println(new ErrorMsg(Messages.get().transformWithTransletStr(transletClassName)));
-          }
-        }
-
-        // Reset the per-session attributes to their default values
-        // after each newTemplates() call.
-        resetTransientAttributes();
-
-        return new TemplatesImpl(bytecodes, transletClassName, null, _indentNumber, this);
-      }
-    }
-
     // Create and initialize a stylesheet compiler
     final XSLTC xsltc = new XSLTC();
     if (_debug) {
@@ -703,20 +525,9 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
       xsltc.setSourceLoader(this);
     }
 
-    // Pass parameters to the Parser to make sure it locates the correct
-    // <?xml-stylesheet ...?> PI in an XML input document
-    if (_piParams != null && _piParams.get(source) != null) {
-      // Get the parameters for this Source object
-      final PIParamWrapper p = _piParams.get(source);
-      // Pass them on to the compiler (which will pass then to the parser)
-      if (p != null) {
-        xsltc.setPIParameters(p._media, p._title, p._charset);
-      }
-    }
-
     // Set the attributes for translet generation
     Set<Out> outputType = XSLTC.BYTEARRAY_AND_CLASS_FILES;
-    if (_generateTranslet || _autoTranslet) {
+    if (_generateTranslet) {
       // Set the translet name
       xsltc.setClassName(getTransletBaseName(source));
 
@@ -734,30 +545,13 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
         }
       }
 
-      if (_packageName != null) {
-        xsltc.setPackageName(_packageName);
-      }
-
-      if (_jarFileName != null) {
-        xsltc.setJarFileName(_jarFileName);
-        outputType = XSLTC.BYTEARRAY_AND_CLASS_JAR;
-      } else {
-        outputType = XSLTC.BYTEARRAY_AND_CLASS_FILES;
-      }
+      outputType = XSLTC.BYTEARRAY_AND_CLASS_FILES;
     }
 
     // Compile the stylesheet
     final InputSource input = Util.getInputSource(xsltc, source);
     final byte[][] bytecodes = xsltc.compile(null, input, outputType);
     final String transletName = xsltc.getClassName();
-
-    // Output to the jar file if the jar file name is set.
-    if ((_generateTranslet || _autoTranslet) && bytecodes != null && _jarFileName != null) {
-      try {
-        xsltc.outputToJar();
-      } catch (final java.io.IOException e) {
-      }
-    }
 
     // Reset the per-session attributes to their default values
     // after each newTemplates() call.
@@ -807,9 +601,8 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
   }
 
   /**
-   * SAXTransformerFactory implementation. Get a
-   * TemplatesHandler object that can process SAX ContentHandler events into a
-   * Templates object.
+   * SAXTransformerFactory implementation. Get a TemplatesHandler object that can process SAX ContentHandler events into
+   * a Templates object.
    * 
    * @return A TemplatesHandler object that can handle SAX events
    * @throws TransformerConfigurationException TODO
@@ -824,9 +617,8 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
   }
 
   /**
-   * SAXTransformerFactory implementation. Get a
-   * TransformerHandler object that can process SAX ContentHandler events into a
-   * Result. This method will return a pure copy transformer.
+   * SAXTransformerFactory implementation. Get a TransformerHandler object that can process SAX ContentHandler events
+   * into a Result. This method will return a pure copy transformer.
    * 
    * @return A TransformerHandler object that can handle SAX events
    * @throws TransformerConfigurationException TODO
@@ -841,12 +633,10 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
   }
 
   /**
-   * SAXTransformerFactory implementation. Get a
-   * TransformerHandler object that can process SAX ContentHandler events into a
-   * Result, based on the transformation instructions specified by the argument.
+   * SAXTransformerFactory implementation. Get a TransformerHandler object that can process SAX ContentHandler events
+   * into a Result, based on the transformation instructions specified by the argument.
    * 
-   * @param src
-   *          The source of the transformation instructions.
+   * @param src The source of the transformation instructions.
    * @return A TransformerHandler object that can handle SAX events
    * @throws TransformerConfigurationException TODO
    */
@@ -860,12 +650,10 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
   }
 
   /**
-   * SAXTransformerFactory implementation. Get a
-   * TransformerHandler object that can process SAX ContentHandler events into a
-   * Result, based on the transformation instructions specified by the argument.
+   * SAXTransformerFactory implementation. Get a TransformerHandler object that can process SAX ContentHandler events
+   * into a Result, based on the transformation instructions specified by the argument.
    * 
-   * @param templates
-   *          Represents a pre-processed stylesheet
+   * @param templates Represents a pre-processed stylesheet
    * @return A TransformerHandler object that can handle SAX events
    * @throws TransformerConfigurationException TODO
    */
@@ -876,11 +664,10 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
   }
 
   /**
-   * SAXTransformerFactory implementation. Create an
-   * XMLFilter that uses the given source as the transformation instructions.
+   * SAXTransformerFactory implementation. Create an XMLFilter that uses the given source as the transformation
+   * instructions.
    * 
-   * @param src
-   *          The source of the transformation instructions.
+   * @param src The source of the transformation instructions.
    * @return An XMLFilter object, or null if this feature is not supported.
    * @throws TransformerConfigurationException TODO
    */
@@ -893,11 +680,10 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
   }
 
   /**
-   * SAXTransformerFactory implementation. Create an
-   * XMLFilter that uses the given source as the transformation instructions.
+   * SAXTransformerFactory implementation. Create an XMLFilter that uses the given source as the transformation
+   * instructions.
    * 
-   * @param templates
-   *          The source of the transformation instructions.
+   * @param templates The source of the transformation instructions.
    * @return An XMLFilter object, or null if this feature is not supported.
    * @throws TransformerConfigurationException TODO
    */
@@ -919,16 +705,12 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
   }
 
   /**
-   * Receive notification of a recoverable error. The transformer must continue
-   * to provide normal parsing events after invoking this method. It should
-   * still be possible for the application to process the document through to
-   * the end.
+   * Receive notification of a recoverable error. The transformer must continue to provide normal parsing events after
+   * invoking this method. It should still be possible for the application to process the document through to the end.
    * 
-   * @param e
-   *          The warning information encapsulated in a transformer exception.
-   * @throws TransformerException
-   *           if the application chooses to discontinue the transformation
-   *           (always does in our case).
+   * @param e The warning information encapsulated in a transformer exception.
+   * @throws TransformerException if the application chooses to discontinue the transformation (always does in our
+   *         case).
    */
   @Override
   public void error(TransformerException e) throws TransformerException {
@@ -943,17 +725,13 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
   }
 
   /**
-   * Receive notification of a non-recoverable error. The application must
-   * assume that the transformation cannot continue after the Transformer has
-   * invoked this method, and should continue (if at all) only to collect
-   * addition error messages. In fact, Transformers are free to stop reporting
-   * events once this method has been invoked.
+   * Receive notification of a non-recoverable error. The application must assume that the transformation cannot
+   * continue after the Transformer has invoked this method, and should continue (if at all) only to collect addition
+   * error messages. In fact, Transformers are free to stop reporting events once this method has been invoked.
    * 
-   * @param e
-   *          warning information encapsulated in a transformer exception.
-   * @throws TransformerException
-   *           if the application chooses to discontinue the transformation
-   *           (always does in our case).
+   * @param e warning information encapsulated in a transformer exception.
+   * @throws TransformerException if the application chooses to discontinue the transformation (always does in our
+   *         case).
    */
   @Override
   public void fatalError(TransformerException e) throws TransformerException {
@@ -968,17 +746,13 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
   }
 
   /**
-   * Receive notification of a warning. Transformers can use this method to
-   * report conditions that are not errors or fatal errors. The default
-   * behaviour is to take no action. After invoking this method, the Transformer
-   * must continue with the transformation. It should still be possible for the
-   * application to process the document through to the end.
+   * Receive notification of a warning. Transformers can use this method to report conditions that are not errors or
+   * fatal errors. The default behaviour is to take no action. After invoking this method, the Transformer must continue
+   * with the transformation. It should still be possible for the application to process the document through to the
+   * end.
    * 
-   * @param e
-   *          The warning information encapsulated in a transformer exception.
-   * @throws TransformerException
-   *           if the application chooses to discontinue the transformation
-   *           (never does in our case).
+   * @param e The warning information encapsulated in a transformer exception.
+   * @throws TransformerException if the application chooses to discontinue the transformation (never does in our case).
    */
   @Override
   public void warning(TransformerException e) throws TransformerException {
@@ -992,15 +766,12 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
   }
 
   /**
-   * This method implements XSLTC's SourceLoader interface. It is used to glue a
-   * TrAX URIResolver to the XSLTC compiler's Input and Import classes.
+   * This method implements XSLTC's SourceLoader interface. It is used to glue a TrAX URIResolver to the XSLTC
+   * compiler's Input and Import classes.
    * 
-   * @param href
-   *          The URI of the document to load
-   * @param context
-   *          The URI of the currently loaded document
-   * @param xsltc
-   *          The compiler that resuests the document
+   * @param href The URI of the document to load
+   * @param context The URI of the currently loaded document
+   * @param xsltc The compiler that resuests the document
    * @return An InputSource with the loaded document
    */
   @Override
@@ -1023,260 +794,14 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
   private void resetTransientAttributes() {
     _transletName = DEFAULT_TRANSLET_NAME;
     _destinationDirectory = null;
-    _packageName = null;
-    _jarFileName = null;
   }
 
   /**
-   * Load the translet classes from local .class files and return the bytecode
-   * array.
+   * Return the base class name of the translet. The translet name is resolved using the following rules: 1. if the
+   * _transletName attribute is set and its value is not "GregorSamsa", then _transletName is returned. 2. otherwise get
+   * the translet name from the base name of the system ID 3. return "GregorSamsa" if the result from step 2 is null.
    * 
-   * @param source
-   *          The xsl source
-   * @param fullClassName
-   *          The full name of the translet
-   * @return The bytecode array
-   */
-  private byte[][] getBytecodesFromClasses(Source source, String fullClassName) {
-    if (fullClassName == null)
-      return null;
-
-    final String xslFileName = getStylesheetFileName(source);
-    File xslFile = null;
-    if (xslFileName != null) {
-      xslFile = new File(xslFileName);
-    }
-
-    // Find the base name of the translet
-    final String transletName;
-    final int lastDotIndex = fullClassName.lastIndexOf('.');
-    if (lastDotIndex > 0) {
-      transletName = fullClassName.substring(lastDotIndex + 1);
-    } else {
-      transletName = fullClassName;
-    }
-
-    // Construct the path name for the translet class file
-    String transletPath = fullClassName.replace('.', '/');
-    if (_destinationDirectory != null) {
-      transletPath = _destinationDirectory + "/" + transletPath + ".class";
-    } else {
-      if (xslFile != null && xslFile.getParent() != null) {
-        transletPath = xslFile.getParent() + "/" + transletPath + ".class";
-      } else {
-        transletPath = transletPath + ".class";
-      }
-    }
-
-    // Return null if the translet class file does not exist.
-    final File transletFile = new File(transletPath);
-    if (!transletFile.exists())
-      return null;
-
-    // Compare the timestamps of the translet and the xsl file.
-    // If the translet is older than the xsl file, return null
-    // so that the xsl file is used for the transformation and
-    // the translet is regenerated.
-    if (xslFile != null && xslFile.exists()) {
-      final long xslTimestamp = xslFile.lastModified();
-      final long transletTimestamp = transletFile.lastModified();
-      if (transletTimestamp < xslTimestamp)
-        return null;
-    }
-
-    // Load the translet into a bytecode array.
-    final List<byte[]> bytecodes = new ArrayList<>();
-    final int fileLength = (int) transletFile.length();
-    if (fileLength > 0) {
-      FileInputStream input = null;
-      try {
-        input = new FileInputStream(transletFile);
-      } catch (final FileNotFoundException e) {
-        return null;
-      }
-
-      final byte[] bytes = new byte[fileLength];
-      try {
-        readFromInputStream(bytes, input, fileLength);
-        input.close();
-      } catch (final IOException e) {
-        return null;
-      }
-
-      bytecodes.add(bytes);
-    } else
-      return null;
-
-    // Find the parent directory of the translet.
-    String transletParentDir = transletFile.getParent();
-    if (transletParentDir == null) {
-      transletParentDir = System.getProperty("user.dir");
-    }
-
-    final File transletParentFile = new File(transletParentDir);
-
-    // Find all the auxiliary files which have a name pattern of
-    // "transletClass$nnn.class".
-    final String transletAuxPrefix = transletName + "$";
-    final File[] auxfiles = transletParentFile.listFiles(new FilenameFilter() {
-      @Override
-      public boolean accept(File dir, String name) {
-        return name.endsWith(".class") && name.startsWith(transletAuxPrefix);
-      }
-    });
-
-    // Load the auxiliary class files and add them to the bytecode array.
-    for (int i = 0; i < auxfiles.length; i++) {
-      final File auxfile = auxfiles[i];
-      final int auxlength = (int) auxfile.length();
-      if (auxlength > 0) {
-        FileInputStream auxinput = null;
-        try {
-          auxinput = new FileInputStream(auxfile);
-        } catch (final FileNotFoundException e) {
-          continue;
-        }
-
-        final byte[] bytes = new byte[auxlength];
-
-        try {
-          readFromInputStream(bytes, auxinput, auxlength);
-          auxinput.close();
-        } catch (final IOException e) {
-          continue;
-        }
-
-        bytecodes.add(bytes);
-      }
-    }
-
-    // Convert the list of byte[] to byte[][].
-    final int count = bytecodes.size();
-    if (count > 0) {
-      final byte[][] result = new byte[count][1];
-      for (int i = 0; i < count; i++) {
-        result[i] = bytecodes.get(i);
-      }
-
-      return result;
-    } else
-      return null;
-  }
-
-  /**
-   * Load the translet classes from the jar file and return the bytecode.
-   * 
-   * @param source
-   *          The xsl source
-   * @param fullClassName
-   *          The full name of the translet
-   * @return The bytecode array
-   */
-  private byte[][] getBytecodesFromJar(Source source, String fullClassName) {
-    final String xslFileName = getStylesheetFileName(source);
-    File xslFile = null;
-    if (xslFileName != null) {
-      xslFile = new File(xslFileName);
-    }
-
-    // Construct the path for the jar file
-    String jarPath = null;
-    if (_destinationDirectory != null) {
-      jarPath = _destinationDirectory + "/" + _jarFileName;
-    } else {
-      if (xslFile != null && xslFile.getParent() != null) {
-        jarPath = xslFile.getParent() + "/" + _jarFileName;
-      } else {
-        jarPath = _jarFileName;
-      }
-    }
-
-    // Return null if the jar file does not exist.
-    final File file = new File(jarPath);
-    if (!file.exists())
-      return null;
-
-    // Compare the timestamps of the jar file and the xsl file. Return null
-    // if the xsl file is newer than the jar file.
-    if (xslFile != null && xslFile.exists()) {
-      final long xslTimestamp = xslFile.lastModified();
-      final long transletTimestamp = file.lastModified();
-      if (transletTimestamp < xslTimestamp)
-        return null;
-    }
-
-    // Create a ZipFile object for the jar file
-    try (ZipFile jarFile = new ZipFile(file)) {
-      final String transletPath = fullClassName.replace('.', '/');
-      final String transletAuxPrefix = transletPath + "$";
-      final String transletFullName = transletPath + ".class";
-
-      final List<byte[]> bytecodes = new ArrayList<>();
-
-      // Iterate through all entries in the jar file to find the
-      // translet and auxiliary classes.
-      final Enumeration<? extends ZipEntry> entries = jarFile.entries();
-      while (entries.hasMoreElements()) {
-        final ZipEntry entry = entries.nextElement();
-        final String entryName = entry.getName();
-        if (entry.getSize() > 0 && (entryName.equals(transletFullName)
-            || entryName.endsWith(".class") && entryName.startsWith(transletAuxPrefix))) {
-          try (InputStream input = jarFile.getInputStream(entry)) {
-            final int size = (int) entry.getSize();
-            final byte[] bytes = new byte[size];
-            readFromInputStream(bytes, input, size);
-            bytecodes.add(bytes);
-          } catch (final IOException e) {
-            return null;
-          }
-        }
-      }
-
-      // Convert the list of byte[] to byte[][].
-      final int count = bytecodes.size();
-      if (count > 0) {
-        final byte[][] result = new byte[count][1];
-        for (int i = 0; i < count; i++) {
-          result[i] = bytecodes.get(i);
-        }
-
-        return result;
-      } else
-        return null;
-    } catch (final IOException e) {
-      return null;
-    }
-  }
-
-  /**
-   * Read a given number of bytes from the InputStream into a byte array.
-   * 
-   * @param bytes
-   *          The byte array to store the input content.
-   * @param input
-   *          The input stream.
-   * @param size
-   *          The number of bytes to read.
-   */
-  private void readFromInputStream(byte[] bytes, InputStream input, int size) throws IOException {
-    int n = 0;
-    int offset = 0;
-    int length = size;
-    while (length > 0 && (n = input.read(bytes, offset, length)) > 0) {
-      offset = offset + n;
-      length = length - n;
-    }
-  }
-
-  /**
-   * Return the base class name of the translet. The translet name is resolved
-   * using the following rules: 1. if the _transletName attribute is set and its
-   * value is not "GregorSamsa", then _transletName is returned. 2. otherwise
-   * get the translet name from the base name of the system ID 3. return
-   * "GregorSamsa" if the result from step 2 is null.
-   * 
-   * @param source
-   *          The input Source
+   * @param source The input Source
    * @return The name of the translet class
    */
   private String getTransletBaseName(Source source) {
@@ -1300,10 +825,8 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
   /**
    * Return the local file name from the systemId of the Source object
    * 
-   * @param source
-   *          The Source
-   * @return The file name in the local filesystem, or null if the systemId does
-   *         not represent a local file.
+   * @param source The Source
+   * @return The file name in the local filesystem, or null if the systemId does not represent a local file.
    */
   private String getStylesheetFileName(Source source) {
     final String systemId = source.getSystemId();
@@ -1330,6 +853,7 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
 
   /**
    * Returns the Class object the provides the XSLTC DTM Manager service.
+   * 
    * @return TODO
    */
   protected Class<?> getDTMManagerClass() {
