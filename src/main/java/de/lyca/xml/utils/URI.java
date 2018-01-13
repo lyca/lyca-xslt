@@ -24,30 +24,24 @@ import de.lyca.xml.res.XMLErrorResources;
 import de.lyca.xml.res.XMLMessages;
 
 /**
- * A class to represent a Uniform Resource Identifier (URI). This class is
- * designed to handle the parsing of URIs and provide access to the various
- * components (scheme, host, port, userinfo, path, query string and fragment)
- * that may constitute a URI.
+ * A class to represent a Uniform Resource Identifier (URI). This class is designed to handle the parsing of URIs and
+ * provide access to the various components (scheme, host, port, userinfo, path, query string and fragment) that may
+ * constitute a URI.
  * <p>
- * Parsing of a URI specification is done according to the URI syntax described
- * in RFC 2396 <http://www.ietf.org/rfc/rfc2396.txt?number=2396>. Every URI
- * consists of a scheme, followed by a colon (':'), followed by a
- * scheme-specific part. For URIs that follow the "generic URI" syntax, the
- * scheme- specific part begins with two slashes ("//") and may be followed by
- * an authority segment (comprised of user information, host, and port), path
- * segment, query segment and fragment. Note that RFC 2396 no longer specifies
- * the use of the parameters segment and excludes the "user:password" syntax as
- * part of the authority segment. If "user:password" appears in a URI, the
- * entire user/password string is stored as userinfo.
+ * Parsing of a URI specification is done according to the URI syntax described in
+ * <a href="http://www.ietf.org/rfc/rfc2396.txt?number=2396">RFC 2396</a>. Every URI consists of a scheme, followed by a
+ * colon (':'), followed by a scheme-specific part. For URIs that follow the "generic URI" syntax, the scheme- specific
+ * part begins with two slashes ("//") and may be followed by an authority segment (comprised of user information, host,
+ * and port), path segment, query segment and fragment. Note that RFC 2396 no longer specifies the use of the parameters
+ * segment and excludes the "user:password" syntax as part of the authority segment. If "user:password" appears in a
+ * URI, the entire user/password string is stored as userinfo.
  * <p>
- * For URIs that do not follow the "generic URI" syntax (e.g. mailto), the
- * entire scheme-specific part is treated as the "path" portion of the URI.
+ * For URIs that do not follow the "generic URI" syntax (e.g. mailto), the entire scheme-specific part is treated as the
+ * "path" portion of the URI.
  * <p>
- * Note that, unlike the java.net.URL class, this class does not provide any
- * built-in network access functionality nor does it provide any scheme-specific
- * functionality (for example, it does not know a default port for a specific
- * scheme). Rather, it only knows the grammar and basic set of operations that
- * can be applied to a URI.
+ * Note that, unlike the java.net.URL class, this class does not provide any built-in network access functionality nor
+ * does it provide any scheme-specific functionality (for example, it does not know a default port for a specific
+ * scheme). Rather, it only knows the grammar and basic set of operations that can be applied to a URI.
  * 
  * 
  */
@@ -55,27 +49,23 @@ public class URI implements Serializable {
   static final long serialVersionUID = 7096266377907081897L;
 
   /**
-   * MalformedURIExceptions are thrown in the process of building a URI or
-   * setting fields on a URI when an operation would result in an invalid URI
-   * specification.
+   * MalformedURIExceptions are thrown in the process of building a URI or setting fields on a URI when an operation
+   * would result in an invalid URI specification.
    * 
    */
   public static class MalformedURIException extends IOException {
 
     /**
-     * Constructs a <code>MalformedURIException</code> with no specified detail
-     * message.
+     * Constructs a <code>MalformedURIException</code> with no specified detail message.
      */
     public MalformedURIException() {
       super();
     }
 
     /**
-     * Constructs a <code>MalformedURIException</code> with the specified detail
-     * message.
+     * Constructs a <code>MalformedURIException</code> with the specified detail message.
      * 
-     * @param p_msg
-     *          the detail message.
+     * @param p_msg the detail message.
      */
     public MalformedURIException(String p_msg) {
       super(p_msg);
@@ -86,8 +76,7 @@ public class URI implements Serializable {
   private static final String RESERVED_CHARACTERS = ";/?:@&=+$,";
 
   /**
-   * URI punctuation mark characters - these, combined with alphanumerics,
-   * constitute the "unreserved" characters
+   * URI punctuation mark characters - these, combined with alphanumerics, constitute the "unreserved" characters
    */
   private static final String MARK_CHARACTERS = "-_.!~*'() ";
 
@@ -155,63 +144,49 @@ public class URI implements Serializable {
   }
 
   /**
-   * Construct a new URI from another URI. All fields for this URI are set equal
-   * to the fields of the URI passed in.
+   * Construct a new URI from another URI. All fields for this URI are set equal to the fields of the URI passed in.
    * 
-   * @param p_other
-   *          the URI to copy (cannot be null)
+   * @param p_other the URI to copy (cannot be null)
    */
   public URI(URI p_other) {
     initialize(p_other);
   }
 
   /**
-   * Construct a new URI from a URI specification string. If the specification
-   * follows the "generic URI" syntax, (two slashes following the first colon),
-   * the specification will be parsed accordingly - setting the scheme,
-   * userinfo, host,port, path, query string and fragment fields as necessary.
-   * If the specification does not follow the "generic URI" syntax, the
-   * specification is parsed into a scheme and scheme-specific part (stored as
-   * the path) only.
+   * Construct a new URI from a URI specification string. If the specification follows the "generic URI" syntax, (two
+   * slashes following the first colon), the specification will be parsed accordingly - setting the scheme, userinfo,
+   * host,port, path, query string and fragment fields as necessary. If the specification does not follow the "generic
+   * URI" syntax, the specification is parsed into a scheme and scheme-specific part (stored as the path) only.
    * 
-   * @param p_uriSpec
-   *          the URI specification string (cannot be null or empty)
+   * @param p_uriSpec the URI specification string (cannot be null or empty)
    * 
-   * @throws MalformedURIException
-   *           if p_uriSpec violates any syntax rules
+   * @throws MalformedURIException if p_uriSpec violates any syntax rules
    */
   public URI(String p_uriSpec) throws MalformedURIException {
     this((URI) null, p_uriSpec);
   }
 
   /**
-   * Construct a new URI from a base URI and a URI specification string. The URI
-   * specification string may be a relative URI.
+   * Construct a new URI from a base URI and a URI specification string. The URI specification string may be a relative
+   * URI.
    * 
-   * @param p_base
-   *          the base URI (cannot be null if p_uriSpec is null or empty)
-   * @param p_uriSpec
-   *          the URI specification string (cannot be null or empty if p_base is
-   *          null)
+   * @param p_base the base URI (cannot be null if p_uriSpec is null or empty)
+   * @param p_uriSpec the URI specification string (cannot be null or empty if p_base is null)
    * 
-   * @throws MalformedURIException
-   *           if p_uriSpec violates any syntax rules
+   * @throws MalformedURIException if p_uriSpec violates any syntax rules
    */
   public URI(URI p_base, String p_uriSpec) throws MalformedURIException {
     initialize(p_base, p_uriSpec);
   }
 
   /**
-   * Construct a new URI that does not follow the generic URI syntax. Only the
-   * scheme and scheme-specific part (stored as the path) are initialized.
+   * Construct a new URI that does not follow the generic URI syntax. Only the scheme and scheme-specific part (stored
+   * as the path) are initialized.
    * 
-   * @param p_scheme
-   *          the URI scheme (cannot be null or empty)
-   * @param p_schemeSpecificPart
-   *          the scheme-specific part (cannot be null or empty)
+   * @param p_scheme the URI scheme (cannot be null or empty)
+   * @param p_schemeSpecificPart the scheme-specific part (cannot be null or empty)
    * 
-   * @throws MalformedURIException
-   *           if p_scheme violates any syntax rules
+   * @throws MalformedURIException if p_scheme violates any syntax rules
    */
   public URI(String p_scheme, String p_schemeSpecificPart) throws MalformedURIException {
 
@@ -226,83 +201,81 @@ public class URI implements Serializable {
   }
 
   /**
-   * Construct a new URI that follows the generic URI syntax from its component
-   * parts. Each component is validated for syntax and some basic semantic
-   * checks are performed as well. See the individual setter methods for
-   * specifics.
+   * Construct a new URI that follows the generic URI syntax from its component parts. Each component is validated for
+   * syntax and some basic semantic checks are performed as well. See the individual setter methods for specifics.
    * 
-   * @param p_scheme
-   *          the URI scheme (cannot be null or empty)
-   * @param p_host
-   *          the hostname or IPv4 address for the URI
-   * @param p_path
-   *          the URI path - if the path contains '?' or '#', then the query
-   *          string and/or fragment will be set from the path; however, if the
-   *          query and fragment are specified both in the path and as separate
-   *          parameters, an exception is thrown
-   * @param p_queryString
-   *          the URI query string (cannot be specified if path is null)
-   * @param p_fragment
-   *          the URI fragment (cannot be specified if path is null)
+   * @param p_scheme the URI scheme (cannot be null or empty)
+   * @param p_host the hostname or IPv4 address for the URI
+   * @param p_path the URI path - if the path contains '?' or '#', then the query string and/or fragment will be set
+   *        from the path; however, if the query and fragment are specified both in the path and as separate parameters,
+   *        an exception is thrown
+   * @param p_queryString the URI query string (cannot be specified if path is null)
+   * @param p_fragment the URI fragment (cannot be specified if path is null)
    * 
-   * @throws MalformedURIException
-   *           if any of the parameters violates syntax rules or semantic rules
+   * @throws MalformedURIException if any of the parameters violates syntax rules or semantic rules
    */
   public URI(String p_scheme, String p_host, String p_path, String p_queryString, String p_fragment)
-          throws MalformedURIException {
+      throws MalformedURIException {
     this(p_scheme, null, p_host, -1, p_path, p_queryString, p_fragment);
   }
 
   /**
-   * Construct a new URI that follows the generic URI syntax from its component
-   * parts. Each component is validated for syntax and some basic semantic
-   * checks are performed as well. See the individual setter methods for
-   * specifics.
+   * Construct a new URI that follows the generic URI syntax from its component parts. Each component is validated for
+   * syntax and some basic semantic checks are performed as well. See the individual setter methods for specifics.
    * 
-   * @param p_scheme
-   *          the URI scheme (cannot be null or empty)
-   * @param p_userinfo
-   *          the URI userinfo (cannot be specified if host is null)
-   * @param p_host
-   *          the hostname or IPv4 address for the URI
-   * @param p_port
-   *          the URI port (may be -1 for "unspecified"; cannot be specified if
-   *          host is null)
-   * @param p_path
-   *          the URI path - if the path contains '?' or '#', then the query
-   *          string and/or fragment will be set from the path; however, if the
-   *          query and fragment are specified both in the path and as separate
-   *          parameters, an exception is thrown
-   * @param p_queryString
-   *          the URI query string (cannot be specified if path is null)
-   * @param p_fragment
-   *          the URI fragment (cannot be specified if path is null)
+   * @param p_scheme the URI scheme (cannot be null or empty)
+   * @param p_userinfo the URI userinfo (cannot be specified if host is null)
+   * @param p_host the hostname or IPv4 address for the URI
+   * @param p_port the URI port (may be -1 for "unspecified"; cannot be specified if host is null)
+   * @param p_path the URI path - if the path contains '?' or '#', then the query string and/or fragment will be set
+   *        from the path; however, if the query and fragment are specified both in the path and as separate parameters,
+   *        an exception is thrown
+   * @param p_queryString the URI query string (cannot be specified if path is null)
+   * @param p_fragment the URI fragment (cannot be specified if path is null)
    * 
-   * @throws MalformedURIException
-   *           if any of the parameters violates syntax rules or semantic rules
+   * @throws MalformedURIException if any of the parameters violates syntax rules or semantic rules
    */
   public URI(String p_scheme, String p_userinfo, String p_host, int p_port, String p_path, String p_queryString,
-          String p_fragment) throws MalformedURIException {
+      String p_fragment) throws MalformedURIException {
 
     if (p_scheme == null || p_scheme.trim().length() == 0)
-      throw new MalformedURIException(XMLMessages.createXMLMessage(XMLErrorResources.ER_SCHEME_REQUIRED, null)); // "Scheme is required!");
+      throw new MalformedURIException(XMLMessages.createXMLMessage(XMLErrorResources.ER_SCHEME_REQUIRED, null)); // "Scheme
+                                                                                                                 // is
+                                                                                                                 // required!");
 
     if (p_host == null) {
       if (p_userinfo != null)
-        throw new MalformedURIException(XMLMessages.createXMLMessage(XMLErrorResources.ER_NO_USERINFO_IF_NO_HOST, null)); // "Userinfo may not be specified if host is not specified!");
+        throw new MalformedURIException(
+            XMLMessages.createXMLMessage(XMLErrorResources.ER_NO_USERINFO_IF_NO_HOST, null)); // "Userinfo may not be
+                                                                                              // specified if host is
+                                                                                              // not specified!");
 
       if (p_port != -1)
-        throw new MalformedURIException(XMLMessages.createXMLMessage(XMLErrorResources.ER_NO_PORT_IF_NO_HOST, null)); // "Port may not be specified if host is not specified!");
+        throw new MalformedURIException(XMLMessages.createXMLMessage(XMLErrorResources.ER_NO_PORT_IF_NO_HOST, null)); // "Port
+                                                                                                                      // may
+                                                                                                                      // not
+                                                                                                                      // be
+                                                                                                                      // specified
+                                                                                                                      // if
+                                                                                                                      // host
+                                                                                                                      // is
+                                                                                                                      // not
+                                                                                                                      // specified!");
     }
 
     if (p_path != null) {
       if (p_path.indexOf('?') != -1 && p_queryString != null)
         throw new MalformedURIException(
-                XMLMessages.createXMLMessage(XMLErrorResources.ER_NO_QUERY_STRING_IN_PATH, null)); // "Query string cannot be specified in path and query string!");
+            XMLMessages.createXMLMessage(XMLErrorResources.ER_NO_QUERY_STRING_IN_PATH, null)); // "Query string cannot
+                                                                                               // be specified in path
+                                                                                               // and query string!");
 
       if (p_path.indexOf('#') != -1 && p_fragment != null)
-        throw new MalformedURIException(XMLMessages.createXMLMessage(XMLErrorResources.ER_NO_FRAGMENT_STRING_IN_PATH,
-                null)); // "Fragment cannot be specified in both the path and fragment!");
+        throw new MalformedURIException(
+            XMLMessages.createXMLMessage(XMLErrorResources.ER_NO_FRAGMENT_STRING_IN_PATH, null)); // "Fragment cannot be
+                                                                                                  // specified in both
+                                                                                                  // the path and
+                                                                                                  // fragment!");
     }
 
     setScheme(p_scheme);
@@ -317,8 +290,7 @@ public class URI implements Serializable {
   /**
    * Initialize all fields of this URI from another URI.
    * 
-   * @param p_other
-   *          the URI to copy (cannot be null)
+   * @param p_other the URI to copy (cannot be null)
    */
   private void initialize(URI p_other) {
 
@@ -332,25 +304,23 @@ public class URI implements Serializable {
   }
 
   /**
-   * Initializes this URI from a base URI and a URI specification string. See
-   * RFC 2396 Section 4 and Appendix B for specifications on parsing the URI and
-   * Section 5 for specifications on resolving relative URIs and relative paths.
+   * Initializes this URI from a base URI and a URI specification string. See RFC 2396 Section 4 and Appendix B for
+   * specifications on parsing the URI and Section 5 for specifications on resolving relative URIs and relative paths.
    * 
-   * @param p_base
-   *          the base URI (may be null if p_uriSpec is an absolute URI)
-   * @param p_uriSpec
-   *          the URI spec string which may be an absolute or relative URI (can
-   *          only be null/empty if p_base is not null)
+   * @param p_base the base URI (may be null if p_uriSpec is an absolute URI)
+   * @param p_uriSpec the URI spec string which may be an absolute or relative URI (can only be null/empty if p_base is
+   *        not null)
    * 
-   * @throws MalformedURIException
-   *           if p_base is null and p_uriSpec is not an absolute URI or if
-   *           p_uriSpec violates syntax rules
+   * @throws MalformedURIException if p_base is null and p_uriSpec is not an absolute URI or if p_uriSpec violates
+   *         syntax rules
    */
   private void initialize(URI p_base, String p_uriSpec) throws MalformedURIException {
 
     if (p_base == null && (p_uriSpec == null || p_uriSpec.trim().length() == 0))
-      throw new MalformedURIException(XMLMessages.createXMLMessage(XMLErrorResources.ER_CANNOT_INIT_URI_EMPTY_PARMS,
-              null)); // "Cannot initialize URI with empty parameters.");
+      throw new MalformedURIException(
+          XMLMessages.createXMLMessage(XMLErrorResources.ER_CANNOT_INIT_URI_EMPTY_PARMS, null)); // "Cannot initialize
+                                                                                                 // URI with empty
+                                                                                                 // parameters.");
 
     // just make a copy of the base if spec is empty
     if (p_uriSpec == null || p_uriSpec.trim().length() == 0) {
@@ -367,8 +337,12 @@ public class URI implements Serializable {
     final int colonIndex = uriSpec.indexOf(':');
     if (colonIndex < 0) {
       if (p_base == null)
-        throw new MalformedURIException(XMLMessages.createXMLMessage(XMLErrorResources.ER_NO_SCHEME_IN_URI,
-                new Object[] { uriSpec })); // "No scheme found in URI: "+uriSpec);
+        throw new MalformedURIException(
+            XMLMessages.createXMLMessage(XMLErrorResources.ER_NO_SCHEME_IN_URI, new Object[] { uriSpec })); // "No
+                                                                                                            // scheme
+                                                                                                            // found in
+                                                                                                            // URI:
+                                                                                                            // "+uriSpec);
     } else {
       initializeScheme(uriSpec);
       uriSpec = uriSpec.substring(colonIndex + 1);
@@ -392,7 +366,7 @@ public class URI implements Serializable {
         // c) if <p_base> is not hierarchical, it can be ignored.
         //
         if (uriSpec.startsWith("/") || !m_scheme.equals(p_base.m_scheme)
-                || !p_base.getSchemeSpecificPart().startsWith("/")) {
+            || !p_base.getSchemeSpecificPart().startsWith("/")) {
           p_base = null;
         }
       }
@@ -542,11 +516,9 @@ public class URI implements Serializable {
   /**
    * Initialize the scheme for this URI from a URI string spec.
    * 
-   * @param p_uriSpec
-   *          the URI specification (cannot be null)
+   * @param p_uriSpec the URI specification (cannot be null)
    * 
-   * @throws MalformedURIException
-   *           if URI does not have a conformant scheme
+   * @throws MalformedURIException if URI does not have a conformant scheme
    */
   private void initializeScheme(String p_uriSpec) throws MalformedURIException {
 
@@ -568,21 +540,22 @@ public class URI implements Serializable {
     scheme = p_uriSpec.substring(0, index);
 
     if (scheme.length() == 0)
-      throw new MalformedURIException(XMLMessages.createXMLMessage(XMLErrorResources.ER_NO_SCHEME_INURI, null)); // "No scheme found in URI.");
+      throw new MalformedURIException(XMLMessages.createXMLMessage(XMLErrorResources.ER_NO_SCHEME_INURI, null)); // "No
+                                                                                                                 // scheme
+                                                                                                                 // found
+                                                                                                                 // in
+                                                                                                                 // URI.");
     else {
       setScheme(scheme);
     }
   }
 
   /**
-   * Initialize the authority (userinfo, host and port) for this URI from a URI
-   * string spec.
+   * Initialize the authority (userinfo, host and port) for this URI from a URI string spec.
    * 
-   * @param p_uriSpec
-   *          the URI specification (cannot be null)
+   * @param p_uriSpec the URI specification (cannot be null)
    * 
-   * @throws MalformedURIException
-   *           if p_uriSpec violates syntax rules
+   * @throws MalformedURIException if p_uriSpec violates syntax rules
    */
   private void initializeAuthority(String p_uriSpec) throws MalformedURIException {
 
@@ -666,11 +639,9 @@ public class URI implements Serializable {
   /**
    * Initialize the path for this URI from a URI string spec.
    * 
-   * @param p_uriSpec
-   *          the URI specification (cannot be null)
+   * @param p_uriSpec the URI specification (cannot be null)
    * 
-   * @throws MalformedURIException
-   *           if p_uriSpec violates syntax rules
+   * @throws MalformedURIException if p_uriSpec violates syntax rules
    */
   private void initializePath(String p_uriSpec) throws MalformedURIException {
 
@@ -693,12 +664,16 @@ public class URI implements Serializable {
       // check for valid escape sequence
       if (testChar == '%') {
         if (index + 2 >= end || !isHex(p_uriSpec.charAt(index + 1)) || !isHex(p_uriSpec.charAt(index + 2)))
-          throw new MalformedURIException(XMLMessages.createXMLMessage(
-                  XMLErrorResources.ER_PATH_CONTAINS_INVALID_ESCAPE_SEQUENCE, null)); // "Path contains invalid escape sequence!");
+          throw new MalformedURIException(
+              XMLMessages.createXMLMessage(XMLErrorResources.ER_PATH_CONTAINS_INVALID_ESCAPE_SEQUENCE, null)); // "Path
+                                                                                                               // contains
+                                                                                                               // invalid
+                                                                                                               // escape
+                                                                                                               // sequence!");
       } else if (!isReservedCharacter(testChar) && !isUnreservedCharacter(testChar)) {
         if ('\\' != testChar)
           throw new MalformedURIException(XMLMessages.createXMLMessage(XMLErrorResources.ER_PATH_INVALID_CHAR,
-                  new Object[] { String.valueOf(testChar) })); // "Path contains invalid character: "
+              new Object[] { String.valueOf(testChar) })); // "Path contains invalid character: "
         // + testChar);
       }
 
@@ -764,8 +739,8 @@ public class URI implements Serializable {
   }
 
   /**
-   * Get the scheme-specific part for this URI (everything following the scheme
-   * and the first colon). See RFC 2396 Section 5.2 for spec.
+   * Get the scheme-specific part for this URI (everything following the scheme and the first colon). See RFC 2396
+   * Section 5.2 for spec.
    * 
    * @return the scheme-specific part for this URI
    */
@@ -838,15 +813,11 @@ public class URI implements Serializable {
   /**
    * Get the path for this URI (optionally with the query string and fragment).
    * 
-   * @param p_includeQueryString
-   *          if true (and query string is not null), then a "?" followed by the
-   *          query string will be appended
-   * @param p_includeFragment
-   *          if true (and fragment is not null), then a "#" followed by the
-   *          fragment will be appended
+   * @param p_includeQueryString if true (and query string is not null), then a "?" followed by the query string will be
+   *        appended
+   * @param p_includeFragment if true (and fragment is not null), then a "#" followed by the fragment will be appended
    * 
-   * @return the path for this URI possibly including the query string and
-   *         fragment
+   * @return the path for this URI possibly including the query string and fragment
    */
   public String getPath(boolean p_includeQueryString, boolean p_includeFragment) {
 
@@ -866,8 +837,8 @@ public class URI implements Serializable {
   }
 
   /**
-   * Get the path for this URI. Note that the value returned is the path only
-   * and does not include the query string or fragment.
+   * Get the path for this URI. Note that the value returned is the path only and does not include the query string or
+   * fragment.
    * 
    * @return the path for this URI.
    */
@@ -878,9 +849,8 @@ public class URI implements Serializable {
   /**
    * Get the query string for this URI.
    * 
-   * @return the query string for this URI. Null is returned if there was no "?"
-   *         in the URI spec, empty string if there was a "?" but no query
-   *         string following it.
+   * @return the query string for this URI. Null is returned if there was no "?" in the URI spec, empty string if there
+   *         was a "?" but no query string following it.
    */
   public String getQueryString() {
     return m_queryString;
@@ -889,44 +859,47 @@ public class URI implements Serializable {
   /**
    * Get the fragment for this URI.
    * 
-   * @return the fragment for this URI. Null is returned if there was no "#" in
-   *         the URI spec, empty string if there was a "#" but no fragment
-   *         following it.
+   * @return the fragment for this URI. Null is returned if there was no "#" in the URI spec, empty string if there was
+   *         a "#" but no fragment following it.
    */
   public String getFragment() {
     return m_fragment;
   }
 
   /**
-   * Set the scheme for this URI. The scheme is converted to lowercase before it
-   * is set.
+   * Set the scheme for this URI. The scheme is converted to lowercase before it is set.
    * 
-   * @param p_scheme
-   *          the scheme for this URI (cannot be null)
+   * @param p_scheme the scheme for this URI (cannot be null)
    * 
-   * @throws MalformedURIException
-   *           if p_scheme is not a conformant scheme name
+   * @throws MalformedURIException if p_scheme is not a conformant scheme name
    */
   public void setScheme(String p_scheme) throws MalformedURIException {
 
     if (p_scheme == null)
-      throw new MalformedURIException(XMLMessages.createXMLMessage(XMLErrorResources.ER_SCHEME_FROM_NULL_STRING, null)); // "Cannot set scheme from null string!");
+      throw new MalformedURIException(XMLMessages.createXMLMessage(XMLErrorResources.ER_SCHEME_FROM_NULL_STRING, null)); // "Cannot
+                                                                                                                         // set
+                                                                                                                         // scheme
+                                                                                                                         // from
+                                                                                                                         // null
+                                                                                                                         // string!");
 
     if (!isConformantSchemeName(p_scheme))
-      throw new MalformedURIException(XMLMessages.createXMLMessage(XMLErrorResources.ER_SCHEME_NOT_CONFORMANT, null)); // "The scheme is not conformant.");
+      throw new MalformedURIException(XMLMessages.createXMLMessage(XMLErrorResources.ER_SCHEME_NOT_CONFORMANT, null)); // "The
+                                                                                                                       // scheme
+                                                                                                                       // is
+                                                                                                                       // not
+                                                                                                                       // conformant.");
 
     m_scheme = p_scheme.toLowerCase();
   }
 
   /**
-   * Set the userinfo for this URI. If a non-null value is passed in and the
-   * host value is null, then an exception is thrown.
+   * Set the userinfo for this URI. If a non-null value is passed in and the host value is null, then an exception is
+   * thrown.
    * 
-   * @param p_userinfo
-   *          the userinfo for this URI
+   * @param p_userinfo the userinfo for this URI
    * 
-   * @throws MalformedURIException
-   *           if p_userinfo contains invalid characters
+   * @throws MalformedURIException if p_userinfo contains invalid characters
    */
   public void setUserinfo(String p_userinfo) throws MalformedURIException {
 
@@ -959,14 +932,11 @@ public class URI implements Serializable {
   }
 
   /**
-   * Set the host for this URI. If null is passed in, the userinfo field is also
-   * set to null and the port is set to -1.
+   * Set the host for this URI. If null is passed in, the userinfo field is also set to null and the port is set to -1.
    * 
-   * @param p_host
-   *          the host for this URI
+   * @param p_host the host for this URI
    * 
-   * @throws MalformedURIException
-   *           if p_host is not a valid IP address or DNS hostname.
+   * @throws MalformedURIException if p_host is not a valid IP address or DNS hostname.
    */
   public void setHost(String p_host) throws MalformedURIException {
 
@@ -975,48 +945,50 @@ public class URI implements Serializable {
       m_userinfo = null;
       m_port = -1;
     } else if (!isWellFormedAddress(p_host))
-      throw new MalformedURIException(XMLMessages.createXMLMessage(XMLErrorResources.ER_HOST_ADDRESS_NOT_WELLFORMED,
-              null)); // "Host is not a well formed address!");
+      throw new MalformedURIException(
+          XMLMessages.createXMLMessage(XMLErrorResources.ER_HOST_ADDRESS_NOT_WELLFORMED, null)); // "Host is not a well
+                                                                                                 // formed address!");
 
     m_host = p_host;
   }
 
   /**
-   * Set the port for this URI. -1 is used to indicate that the port is not
-   * specified, otherwise valid port numbers are between 0 and 65535. If a valid
-   * port number is passed in and the host field is null, an exception is
-   * thrown.
+   * Set the port for this URI. -1 is used to indicate that the port is not specified, otherwise valid port numbers are
+   * between 0 and 65535. If a valid port number is passed in and the host field is null, an exception is thrown.
    * 
-   * @param p_port
-   *          the port number for this URI
+   * @param p_port the port number for this URI
    * 
-   * @throws MalformedURIException
-   *           if p_port is not -1 and not a valid port number
+   * @throws MalformedURIException if p_port is not -1 and not a valid port number
    */
   public void setPort(int p_port) throws MalformedURIException {
 
     if (p_port >= 0 && p_port <= 65535) {
       if (m_host == null)
-        throw new MalformedURIException(XMLMessages.createXMLMessage(XMLErrorResources.ER_PORT_WHEN_HOST_NULL, null)); // "Port cannot be set when host is null!");
+        throw new MalformedURIException(XMLMessages.createXMLMessage(XMLErrorResources.ER_PORT_WHEN_HOST_NULL, null)); // "Port
+                                                                                                                       // cannot
+                                                                                                                       // be
+                                                                                                                       // set
+                                                                                                                       // when
+                                                                                                                       // host
+                                                                                                                       // is
+                                                                                                                       // null!");
     } else if (p_port != -1)
-      throw new MalformedURIException(XMLMessages.createXMLMessage(XMLErrorResources.ER_INVALID_PORT, null)); // "Invalid port number!");
+      throw new MalformedURIException(XMLMessages.createXMLMessage(XMLErrorResources.ER_INVALID_PORT, null)); // "Invalid
+                                                                                                              // port
+                                                                                                              // number!");
 
     m_port = p_port;
   }
 
   /**
-   * Set the path for this URI. If the supplied path is null, then the query
-   * string and fragment are set to null as well. If the supplied path includes
-   * a query string and/or fragment, these fields will be parsed and set as
-   * well. Note that, for URIs following the "generic URI" syntax, the path
-   * specified should start with a slash. For URIs that do not follow the
-   * generic URI syntax, this method sets the scheme-specific part.
+   * Set the path for this URI. If the supplied path is null, then the query string and fragment are set to null as
+   * well. If the supplied path includes a query string and/or fragment, these fields will be parsed and set as well.
+   * Note that, for URIs following the "generic URI" syntax, the path specified should start with a slash. For URIs that
+   * do not follow the generic URI syntax, this method sets the scheme-specific part.
    * 
-   * @param p_path
-   *          the path for this URI (may be null)
+   * @param p_path the path for this URI (may be null)
    * 
-   * @throws MalformedURIException
-   *           if p_path contains invalid characters
+   * @throws MalformedURIException if p_path contains invalid characters
    */
   public void setPath(String p_path) throws MalformedURIException {
 
@@ -1030,17 +1002,14 @@ public class URI implements Serializable {
   }
 
   /**
-   * Append to the end of the path of this URI. If the current path does not end
-   * in a slash and the path to be appended does not begin with a slash, a slash
-   * will be appended to the current path before the new segment is added. Also,
-   * if the current path ends in a slash and the new segment begins with a
-   * slash, the extra slash will be removed before the new segment is appended.
+   * Append to the end of the path of this URI. If the current path does not end in a slash and the path to be appended
+   * does not begin with a slash, a slash will be appended to the current path before the new segment is added. Also, if
+   * the current path ends in a slash and the new segment begins with a slash, the extra slash will be removed before
+   * the new segment is appended.
    * 
-   * @param p_addToPath
-   *          the new segment to be added to the current path
+   * @param p_addToPath the new segment to be added to the current path
    * 
-   * @throws MalformedURIException
-   *           if p_addToPath contains syntax errors
+   * @throws MalformedURIException if p_addToPath contains syntax errors
    */
   public void appendPath(String p_addToPath) throws MalformedURIException {
 
@@ -1048,8 +1017,11 @@ public class URI implements Serializable {
       return;
 
     if (!isURIString(p_addToPath))
-      throw new MalformedURIException(XMLMessages.createXMLMessage(XMLErrorResources.ER_PATH_INVALID_CHAR,
-              new Object[] { p_addToPath })); // "Path contains invalid character!");
+      throw new MalformedURIException(
+          XMLMessages.createXMLMessage(XMLErrorResources.ER_PATH_INVALID_CHAR, new Object[] { p_addToPath })); // "Path
+                                                                                                               // contains
+                                                                                                               // invalid
+                                                                                                               // character!");
 
     if (m_path == null || m_path.trim().length() == 0) {
       if (p_addToPath.startsWith("/")) {
@@ -1073,16 +1045,13 @@ public class URI implements Serializable {
   }
 
   /**
-   * Set the query string for this URI. A non-null value is valid only if this
-   * is an URI conforming to the generic URI syntax and the path value is not
-   * null.
+   * Set the query string for this URI. A non-null value is valid only if this is an URI conforming to the generic URI
+   * syntax and the path value is not null.
    * 
-   * @param p_queryString
-   *          the query string for this URI
+   * @param p_queryString the query string for this URI
    * 
-   * @throws MalformedURIException
-   *           if p_queryString is not null and this URI does not conform to the
-   *           generic URI syntax or if the path is null
+   * @throws MalformedURIException if p_queryString is not null and this URI does not conform to the generic URI syntax
+   *         or if the path is null
    */
   public void setQueryString(String p_queryString) throws MalformedURIException {
 
@@ -1100,26 +1069,42 @@ public class URI implements Serializable {
   }
 
   /**
-   * Set the fragment for this URI. A non-null value is valid only if this is a
-   * URI conforming to the generic URI syntax and the path value is not null.
+   * Set the fragment for this URI. A non-null value is valid only if this is a URI conforming to the generic URI syntax
+   * and the path value is not null.
    * 
-   * @param p_fragment
-   *          the fragment for this URI
+   * @param p_fragment the fragment for this URI
    * 
-   * @throws MalformedURIException
-   *           if p_fragment is not null and this URI does not conform to the
-   *           generic URI syntax or if the path is null
+   * @throws MalformedURIException if p_fragment is not null and this URI does not conform to the generic URI syntax or
+   *         if the path is null
    */
   public void setFragment(String p_fragment) throws MalformedURIException {
 
     if (p_fragment == null) {
       m_fragment = null;
     } else if (!isGenericURI())
-      throw new MalformedURIException(XMLMessages.createXMLMessage(XMLErrorResources.ER_FRAG_FOR_GENERIC_URI, null)); // "Fragment can only be set for a generic URI!");
+      throw new MalformedURIException(XMLMessages.createXMLMessage(XMLErrorResources.ER_FRAG_FOR_GENERIC_URI, null)); // "Fragment
+                                                                                                                      // can
+                                                                                                                      // only
+                                                                                                                      // be
+                                                                                                                      // set
+                                                                                                                      // for
+                                                                                                                      // a
+                                                                                                                      // generic
+                                                                                                                      // URI!");
     else if (getPath() == null)
-      throw new MalformedURIException(XMLMessages.createXMLMessage(XMLErrorResources.ER_FRAG_WHEN_PATH_NULL, null)); // "Fragment cannot be set when path is null!");
+      throw new MalformedURIException(XMLMessages.createXMLMessage(XMLErrorResources.ER_FRAG_WHEN_PATH_NULL, null)); // "Fragment
+                                                                                                                     // cannot
+                                                                                                                     // be
+                                                                                                                     // set
+                                                                                                                     // when
+                                                                                                                     // path
+                                                                                                                     // is
+                                                                                                                     // null!");
     else if (!isURIString(p_fragment))
-      throw new MalformedURIException(XMLMessages.createXMLMessage(XMLErrorResources.ER_FRAG_INVALID_CHAR, null)); // "Fragment contains invalid character!");
+      throw new MalformedURIException(XMLMessages.createXMLMessage(XMLErrorResources.ER_FRAG_INVALID_CHAR, null)); // "Fragment
+                                                                                                                   // contains
+                                                                                                                   // invalid
+                                                                                                                   // character!");
     else {
       m_fragment = p_fragment;
     }
@@ -1128,11 +1113,9 @@ public class URI implements Serializable {
   /**
    * Determines if the passed-in Object is equivalent to this URI.
    * 
-   * @param p_test
-   *          the Object to test for equality.
+   * @param p_test the Object to test for equality.
    * 
-   * @return true if p_test is a URI with all values equal to this URI, false
-   *         otherwise
+   * @return true if p_test is a URI with all values equal to this URI, false otherwise
    */
   @Override
   public boolean equals(Object p_test) {
@@ -1140,19 +1123,19 @@ public class URI implements Serializable {
     if (p_test instanceof URI) {
       final URI testURI = (URI) p_test;
 
-      if ((m_scheme == null && testURI.m_scheme == null || m_scheme != null && testURI.m_scheme != null
-              && m_scheme.equals(testURI.m_scheme))
-              && (m_userinfo == null && testURI.m_userinfo == null || m_userinfo != null && testURI.m_userinfo != null
-                      && m_userinfo.equals(testURI.m_userinfo))
-              && (m_host == null && testURI.m_host == null || m_host != null && testURI.m_host != null
-                      && m_host.equals(testURI.m_host))
-              && m_port == testURI.m_port
-              && (m_path == null && testURI.m_path == null || m_path != null && testURI.m_path != null
-                      && m_path.equals(testURI.m_path))
-              && (m_queryString == null && testURI.m_queryString == null || m_queryString != null
-                      && testURI.m_queryString != null && m_queryString.equals(testURI.m_queryString))
-              && (m_fragment == null && testURI.m_fragment == null || m_fragment != null && testURI.m_fragment != null
-                      && m_fragment.equals(testURI.m_fragment)))
+      if ((m_scheme == null && testURI.m_scheme == null
+          || m_scheme != null && testURI.m_scheme != null && m_scheme.equals(testURI.m_scheme))
+          && (m_userinfo == null && testURI.m_userinfo == null
+              || m_userinfo != null && testURI.m_userinfo != null && m_userinfo.equals(testURI.m_userinfo))
+          && (m_host == null && testURI.m_host == null
+              || m_host != null && testURI.m_host != null && m_host.equals(testURI.m_host))
+          && m_port == testURI.m_port
+          && (m_path == null && testURI.m_path == null
+              || m_path != null && testURI.m_path != null && m_path.equals(testURI.m_path))
+          && (m_queryString == null && testURI.m_queryString == null
+              || m_queryString != null && testURI.m_queryString != null && m_queryString.equals(testURI.m_queryString))
+          && (m_fragment == null && testURI.m_fragment == null
+              || m_fragment != null && testURI.m_fragment != null && m_fragment.equals(testURI.m_fragment)))
         return true;
     }
 
@@ -1192,13 +1175,11 @@ public class URI implements Serializable {
   }
 
   /**
-   * Determine whether a scheme conforms to the rules for a scheme name. A
-   * scheme is conformant if it starts with an alphanumeric, and contains only
-   * alphanumerics, '+','-' and '.'.
+   * Determine whether a scheme conforms to the rules for a scheme name. A scheme is conformant if it starts with an
+   * alphanumeric, and contains only alphanumerics, '+','-' and '.'.
    * 
    * 
-   * @param p_scheme
-   *          The sheme name to check
+   * @param p_scheme The sheme name to check
    * @return true if the scheme is conformant, false otherwise
    */
   public static boolean isConformantSchemeName(String p_scheme) {
@@ -1222,18 +1203,14 @@ public class URI implements Serializable {
   }
 
   /**
-   * Determine whether a string is syntactically capable of representing a valid
-   * IPv4 address or the domain name of a network host. A valid IPv4 address
-   * consists of four decimal digit groups separated by a '.'. A hostname
-   * consists of domain labels (each of which must begin and end with an
-   * alphanumeric but may contain '-') separated & by a '.'. See RFC 2396
-   * Section 3.2.2.
+   * Determine whether a string is syntactically capable of representing a valid IPv4 address or the domain name of a
+   * network host. A valid IPv4 address consists of four decimal digit groups separated by a '.'. A hostname consists of
+   * domain labels (each of which must begin and end with an alphanumeric but may contain '-') separated by a '.'. See
+   * RFC 2396 Section 3.2.2.
    * 
    * 
-   * @param p_address
-   *          The address string to check
-   * @return true if the string is a syntactically valid IPv4 address or
-   *         hostname
+   * @param p_address The address string to check
+   * @return true if the string is a syntactically valid IPv4 address or hostname
    */
   public static boolean isWellFormedAddress(String p_address) {
 
@@ -1306,8 +1283,7 @@ public class URI implements Serializable {
    * Determine whether a char is a digit.
    * 
    * 
-   * @param p_char
-   *          the character to check
+   * @param p_char the character to check
    * @return true if the char is betweeen '0' and '9', false otherwise
    */
   private static boolean isDigit(char p_char) {
@@ -1318,10 +1294,8 @@ public class URI implements Serializable {
    * Determine whether a character is a hexadecimal character.
    * 
    * 
-   * @param p_char
-   *          the character to check
-   * @return true if the char is betweeen '0' and '9', 'a' and 'f' or 'A' and
-   *         'F', false otherwise
+   * @param p_char the character to check
+   * @return true if the char is betweeen '0' and '9', 'a' and 'f' or 'A' and 'F', false otherwise
    */
   private static boolean isHex(char p_char) {
     return isDigit(p_char) || p_char >= 'a' && p_char <= 'f' || p_char >= 'A' && p_char <= 'F';
@@ -1331,8 +1305,7 @@ public class URI implements Serializable {
    * Determine whether a char is an alphabetic character: a-z or A-Z
    * 
    * 
-   * @param p_char
-   *          the character to check
+   * @param p_char the character to check
    * @return true if the char is alphabetic, false otherwise
    */
   private static boolean isAlpha(char p_char) {
@@ -1343,8 +1316,7 @@ public class URI implements Serializable {
    * Determine whether a char is an alphanumeric: 0-9, a-z or A-Z
    * 
    * 
-   * @param p_char
-   *          the character to check
+   * @param p_char the character to check
    * @return true if the char is alphanumeric, false otherwise
    */
   private static boolean isAlphanum(char p_char) {
@@ -1352,12 +1324,10 @@ public class URI implements Serializable {
   }
 
   /**
-   * Determine whether a character is a reserved character: ';', '/', '?', ':',
-   * '@', '&', '=', '+', '$' or ','
+   * Determine whether a character is a reserved character: ';', '/', '?', ':', '@', '&', '=', '+', '$' or ','
    * 
    * 
-   * @param p_char
-   *          the character to check
+   * @param p_char the character to check
    * @return true if the string contains any reserved characters
    */
   private static boolean isReservedCharacter(char p_char) {
@@ -1368,8 +1338,7 @@ public class URI implements Serializable {
    * Determine whether a char is an unreserved character.
    * 
    * 
-   * @param p_char
-   *          the character to check
+   * @param p_char the character to check
    * @return true if the char is unreserved, false otherwise
    */
   private static boolean isUnreservedCharacter(char p_char) {
@@ -1377,13 +1346,11 @@ public class URI implements Serializable {
   }
 
   /**
-   * Determine whether a given string contains only URI characters (also called
-   * "uric" in RFC 2396). uric consist of all reserved characters, unreserved
-   * characters and escaped characters.
+   * Determine whether a given string contains only URI characters (also called "uric" in RFC 2396). uric consist of all
+   * reserved characters, unreserved characters and escaped characters.
    * 
    * 
-   * @param p_uric
-   *          URI string
+   * @param p_uric URI string
    * @return true if the string is comprised of uric, false otherwise
    */
   private static boolean isURIString(String p_uric) {

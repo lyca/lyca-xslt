@@ -17,6 +17,8 @@
  */
 package de.lyca.xpath.axes;
 
+import javax.xml.transform.TransformerException;
+
 import org.w3c.dom.DOMException;
 
 import de.lyca.xml.dtm.Axis;
@@ -36,7 +38,6 @@ import de.lyca.xpath.patterns.NodeTest;
  * descendant-or-self, or "//foo" patterns.
  * 
  * @see de.lyca.xpath.axes.LocPathIterator
- * @xsl.usage advanced
  */
 public class DescendantIterator extends LocPathIterator {
   static final long serialVersionUID = -1190338607743976938L;
@@ -50,9 +51,9 @@ public class DescendantIterator extends LocPathIterator {
    *          The position within the op map, which contains the location path
    *          expression for this itterator.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
-  DescendantIterator(Compiler compiler, int opPos, int analysis) throws javax.xml.transform.TransformerException {
+  DescendantIterator(Compiler compiler, int opPos, int analysis) throws TransformerException {
 
     super(compiler, opPos, analysis, false);
 
@@ -135,7 +136,7 @@ public class DescendantIterator extends LocPathIterator {
    * 
    * @return A cloned NodeIterator set of the start of the query.
    * 
-   * @throws CloneNotSupportedException
+   * @throws CloneNotSupportedException TODO
    */
   @Override
   public DTMIterator cloneWithReset() throws CloneNotSupportedException {
@@ -258,9 +259,10 @@ public class DescendantIterator extends LocPathIterator {
    * @param xctxt
    *          The XPath runtime context.
    * @return the first node out of the nodeset, or DTM.NULL.
+   * @throws TransformerException TODO
    */
   @Override
-  public int asNode(XPathContext xctxt) throws javax.xml.transform.TransformerException {
+  public int asNode(XPathContext xctxt) throws TransformerException {
     if (getPredicateCount() > 0)
       return super.asNode(xctxt);
 

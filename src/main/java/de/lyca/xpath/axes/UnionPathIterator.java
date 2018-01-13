@@ -17,7 +17,10 @@
  */
 package de.lyca.xpath.axes;
 
+import java.io.IOException;
 import java.util.List;
+
+import javax.xml.transform.TransformerException;
 
 import de.lyca.xml.dtm.Axis;
 import de.lyca.xml.dtm.DTM;
@@ -36,8 +39,6 @@ import de.lyca.xpath.compiler.OpMap;
  * href="http://www.w3.org/TR/xpath#NT-UnionExpr">UnionExpr</a>. As each node is
  * iterated via nextNode(), the node is also stored in the NodeVector, so that
  * previousNode() can easily be done.
- * 
- * @xsl.usage advanced
  */
 public class UnionPathIterator extends LocPathIterator implements Cloneable, DTMIterator, java.io.Serializable,
         PathComponent {
@@ -61,6 +62,7 @@ public class UnionPathIterator extends LocPathIterator implements Cloneable, DTM
    * 
    * @param context
    *          The XPath runtime context for this transformation.
+   * @param environment TODO
    */
   @Override
   public void setRoot(int context, Object environment) {
@@ -140,9 +142,9 @@ public class UnionPathIterator extends LocPathIterator implements Cloneable, DTM
    *          The position of this iterator in the opcode list from the
    *          compiler.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
-  public UnionPathIterator(Compiler compiler, int opPos) throws javax.xml.transform.TransformerException {
+  public UnionPathIterator(Compiler compiler, int opPos) throws TransformerException {
 
     super();
 
@@ -162,10 +164,10 @@ public class UnionPathIterator extends LocPathIterator implements Cloneable, DTM
    * 
    * @return Object that is derived from LocPathIterator.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
   public static LocPathIterator createUnionIterator(Compiler compiler, int opPos)
-          throws javax.xml.transform.TransformerException {
+          throws TransformerException {
     // For the moment, I'm going to first create a full UnionPathIterator, and
     // then see if I can reduce it to a UnionChildIterator. It would obviously
     // be more effecient to just test for the conditions for a
@@ -232,16 +234,15 @@ public class UnionPathIterator extends LocPathIterator implements Cloneable, DTM
    * @param stream
    *          Input stream to read from
    * 
-   * @throws java.io.IOException
-   * @throws javax.xml.transform.TransformerException
+   * @throws IOException TODO
+   * @throws TransformerException TODO
    */
-  private void readObject(java.io.ObjectInputStream stream) throws java.io.IOException,
-          javax.xml.transform.TransformerException {
+  private void readObject(java.io.ObjectInputStream stream) throws IOException, TransformerException {
     try {
       stream.defaultReadObject();
       m_clones = new IteratorPool(this);
     } catch (final ClassNotFoundException cnfe) {
-      throw new javax.xml.transform.TransformerException(cnfe);
+      throw new TransformerException(cnfe);
     }
   }
 
@@ -250,7 +251,7 @@ public class UnionPathIterator extends LocPathIterator implements Cloneable, DTM
    * 
    * @return A clone of this iterator that holds the same node position.
    * 
-   * @throws CloneNotSupportedException
+   * @throws CloneNotSupportedException TODO
    */
   @Override
   public Object clone() throws CloneNotSupportedException {
@@ -279,10 +280,9 @@ public class UnionPathIterator extends LocPathIterator implements Cloneable, DTM
    * 
    * @return New location path iterator.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
-  protected LocPathIterator createDTMIterator(Compiler compiler, int opPos)
-          throws javax.xml.transform.TransformerException {
+  protected LocPathIterator createDTMIterator(Compiler compiler, int opPos) throws TransformerException {
     final LocPathIterator lpi = (LocPathIterator) WalkerFactory.newDTMIterator(compiler, opPos,
             compiler.getLocationPathDepth() <= 0);
     return lpi;
@@ -299,10 +299,9 @@ public class UnionPathIterator extends LocPathIterator implements Cloneable, DTM
    * @param count
    *          The insert position of the iterator.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
-  protected void loadLocationPaths(Compiler compiler, int opPos, int count)
-          throws javax.xml.transform.TransformerException {
+  protected void loadLocationPaths(Compiler compiler, int opPos, int count) throws TransformerException {
 
     // TODO: Handle unwrapped FilterExpr
     final int steptype = compiler.getOp(opPos);
@@ -492,6 +491,8 @@ public class UnionPathIterator extends LocPathIterator implements Cloneable, DTM
   }
 
   /**
+   * @param owner TODO
+   * @param visitor TODO
    * @see de.lyca.xpath.XPathVisitable#callVisitors(ExpressionOwner,
    *      XPathVisitor)
    */

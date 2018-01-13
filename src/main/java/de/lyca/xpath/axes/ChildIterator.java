@@ -17,6 +17,8 @@
  */
 package de.lyca.xpath.axes;
 
+import javax.xml.transform.TransformerException;
+
 import de.lyca.xml.dtm.Axis;
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xml.dtm.DTMFilter;
@@ -28,7 +30,6 @@ import de.lyca.xpath.compiler.Compiler;
  * any children of the context node.
  * 
  * @see de.lyca.xpath.axes.LocPathIterator
- * @xsl.usage advanced
  */
 public class ChildIterator extends LocPathIterator {
   static final long serialVersionUID = -6935428015142993583L;
@@ -44,9 +45,9 @@ public class ChildIterator extends LocPathIterator {
    * @param analysis
    *          Analysis bits of the entire pattern.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
-  ChildIterator(Compiler compiler, int opPos, int analysis) throws javax.xml.transform.TransformerException {
+  ChildIterator(Compiler compiler, int opPos, int analysis) throws TransformerException {
     super(compiler, opPos, analysis, false);
 
     // This iterator matches all kinds of nodes
@@ -63,9 +64,10 @@ public class ChildIterator extends LocPathIterator {
    * @param xctxt
    *          The XPath runtime context.
    * @return the first node out of the nodeset, or DTM.NULL.
+   * @throws TransformerException TODO
    */
   @Override
-  public int asNode(XPathContext xctxt) throws javax.xml.transform.TransformerException {
+  public int asNode(XPathContext xctxt) throws TransformerException {
     final int current = xctxt.getCurrentNode();
 
     final DTM dtm = xctxt.getDTM(current);

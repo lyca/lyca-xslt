@@ -17,10 +17,14 @@
  */
 package de.lyca.xpath.objects;
 
+import javax.xml.transform.TransformerException;
+
 import org.w3c.dom.NodeList;
 
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xml.dtm.DTMIterator;
+import de.lyca.xml.utils.FastStringBuffer;
+import de.lyca.xml.utils.WrappedRuntimeException;
 import de.lyca.xml.utils.XMLString;
 import de.lyca.xpath.Expression;
 import de.lyca.xpath.ExpressionNode;
@@ -30,8 +34,6 @@ import de.lyca.xpath.axes.RTFIterator;
 /**
  * This class represents an XPath result tree fragment object, and is capable of
  * converting the RTF to other types, such as a string.
- * 
- * @xsl.usage general
  */
 public class XRTreeFrag extends XObject implements Cloneable {
   static final long serialVersionUID = -3201553822254911567L;
@@ -41,7 +43,9 @@ public class XRTreeFrag extends XObject implements Cloneable {
 
   /**
    * Create an XRTreeFrag Object.
-   * 
+   * @param root TODO
+   * @param xctxt TODO
+   * @param parent TODO 
    */
   public XRTreeFrag(int root, XPathContext xctxt, ExpressionNode parent) {
     super(null);
@@ -51,7 +55,8 @@ public class XRTreeFrag extends XObject implements Cloneable {
 
   /**
    * Create an XRTreeFrag Object.
-   * 
+   * @param root TODO
+   * @param xctxt TODO
    */
   public XRTreeFrag(int root, XPathContext xctxt) {
     super(null);
@@ -83,7 +88,7 @@ public class XRTreeFrag extends XObject implements Cloneable {
 
   /**
    * Create an XRTreeFrag Object.
-   * 
+   * @param expr TODO 
    */
   public XRTreeFrag(Expression expr) {
     super(expr);
@@ -142,9 +147,10 @@ public class XRTreeFrag extends XObject implements Cloneable {
    * Cast result object to a number.
    * 
    * @return The result tree fragment as a number or NaN
+   * @throws TransformerException TODO
    */
   @Override
-  public double num() throws javax.xml.transform.TransformerException {
+  public double num() throws TransformerException {
 
     final XMLString s = xstr();
 
@@ -180,11 +186,10 @@ public class XRTreeFrag extends XObject implements Cloneable {
 
   /**
    * Cast result object to a string.
-   * 
-   * @return The string this wraps or the empty string if null
+   * TODO documentaion
    */
   @Override
-  public void appendToFsb(de.lyca.xml.utils.FastStringBuffer fsb) {
+  public void appendToFsb(FastStringBuffer fsb) {
     final XString xstring = (XString) xstr();
     xstring.appendToFsb(fsb);
   }
@@ -242,8 +247,6 @@ public class XRTreeFrag extends XObject implements Cloneable {
    *          Object to compare this to
    * 
    * @return True if the two objects are equal
-   * 
-   * @throws javax.xml.transform.TransformerException
    */
   @Override
   public boolean equals(XObject obj2) {
@@ -267,8 +270,8 @@ public class XRTreeFrag extends XObject implements Cloneable {
         return xstr().equals(obj2.xstr());
       else
         return super.equals(obj2);
-    } catch (final javax.xml.transform.TransformerException te) {
-      throw new de.lyca.xml.utils.WrappedRuntimeException(te);
+    } catch (final TransformerException te) {
+      throw new WrappedRuntimeException(te);
     }
   }
 

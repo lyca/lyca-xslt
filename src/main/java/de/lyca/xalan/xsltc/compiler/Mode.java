@@ -65,7 +65,7 @@ import de.lyca.xml.serializer.SerializationHandler;
  * @author Jacek Ambroziak
  * @author Santiago Pericas-Geertsen
  * @author Morten Jorgensen
- * @author Erwin Bolwidt <ejb@klomp.org>
+ * @author Erwin Bolwidt {@literal <ejb@klomp.org>}
  * @author G. Todd Miller
  */
 final class Mode {

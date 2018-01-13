@@ -25,8 +25,6 @@ import de.lyca.xml.res.XMLMessages;
 
 /**
  * Pool of object of a given type to pick from to help memory usage
- * 
- * @xsl.usage internal
  */
 public class ObjectPool implements java.io.Serializable {
   static final long serialVersionUID = -8519013691660936643L;

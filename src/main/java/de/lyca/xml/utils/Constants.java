@@ -19,8 +19,6 @@ package de.lyca.xml.utils;
 
 /**
  * Primary constants used by the XSLT Processor
- * 
- * @xsl.usage advanced
  */
 public class Constants {
 

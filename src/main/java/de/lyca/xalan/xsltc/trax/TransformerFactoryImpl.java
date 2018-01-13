@@ -35,6 +35,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import javax.xml.XMLConstants;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.ErrorListener;
@@ -52,6 +53,7 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 import org.xml.sax.XMLFilter;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
@@ -197,20 +199,20 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
   private boolean _isSecureProcessing = false;
 
   /**
-   * javax.xml.transform.sax.TransformerFactory implementation.
+   * SAXTransformerFactory implementation.
    */
   public TransformerFactoryImpl() {
     m_DTMManagerClass = XSLTCDTMManager.getDTMManagerClass();
   }
 
   /**
-   * javax.xml.transform.sax.TransformerFactory implementation. Set the error
+   * SAXTransformerFactory implementation. Set the error
    * event listener for the TransformerFactory, which is used for the processing
    * of transformation instructions, and not for the transformation itself.
    * 
    * @param listener
    *          The error listener to use with the TransformerFactory
-   * @throws IllegalArgumentException
+   * @throws IllegalArgumentException TODO
    */
   @Override
   public void setErrorListener(ErrorListener listener) throws IllegalArgumentException {
@@ -222,7 +224,7 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
   }
 
   /**
-   * javax.xml.transform.sax.TransformerFactory implementation. Get the error
+   * SAXTransformerFactory implementation. Get the error
    * event handler for the TransformerFactory.
    * 
    * @return The error listener used with the TransformerFactory
@@ -233,13 +235,13 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
   }
 
   /**
-   * javax.xml.transform.sax.TransformerFactory implementation. Returns the
+   * SAXTransformerFactory implementation. Returns the
    * value set for a TransformerFactory attribute
    * 
    * @param name
    *          The attribute name
    * @return An object representing the attribute value
-   * @throws IllegalArgumentException
+   * @throws IllegalArgumentException TODO
    */
   @Override
   public Object getAttribute(String name) throws IllegalArgumentException {
@@ -257,14 +259,14 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
   }
 
   /**
-   * javax.xml.transform.sax.TransformerFactory implementation. Sets the value
+   * SAXTransformerFactory implementation. Sets the value
    * for a TransformerFactory attribute.
    * 
    * @param name
    *          The attribute name
    * @param value
    *          An object representing the attribute value
-   * @throws IllegalArgumentException
+   * @throws IllegalArgumentException TODO
    */
   @Override
   public void setAttribute(String name, Object value) throws IllegalArgumentException {
@@ -387,7 +389,7 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
   }
 
   /**
-   * javax.xml.transform.sax.TransformerFactory implementation. Look up the
+   * SAXTransformerFactory implementation. Look up the
    * value of a feature (to see if it is supported). This method must be updated
    * as the various methods and features of this class are implemented.
    * 
@@ -422,7 +424,7 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
   }
 
   /**
-   * javax.xml.transform.sax.TransformerFactory implementation. Get the object
+   * SAXTransformerFactory implementation. Get the object
    * that is used by default during the transformation to resolve URIs used in
    * document(), xsl:import, or xsl:include.
    * 
@@ -435,7 +437,7 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
   }
 
   /**
-   * javax.xml.transform.sax.TransformerFactory implementation. Set the object
+   * SAXTransformerFactory implementation. Set the object
    * that is used by default during the transformation to resolve URIs used in
    * document(), xsl:import, or xsl:include. Note that this does not affect
    * Templates and Transformers that are already created with this factory.
@@ -450,7 +452,7 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
   }
 
   /**
-   * javax.xml.transform.sax.TransformerFactory implementation. Get the
+   * SAXTransformerFactory implementation. Get the
    * stylesheet specification(s) associated via the xml-stylesheet processing
    * instruction (see http://www.w3.org/TR/xml-stylesheet/) with the document
    * document specified in the source parameter, and that match the given
@@ -466,7 +468,7 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
    * @param charset
    *          The value of the charset attribute to match. May be null.
    * @return A Source object suitable for passing to the TransformerFactory.
-   * @throws TransformerConfigurationException
+   * @throws TransformerConfigurationException TODO
    */
   @Override
   public Source getAssociatedStylesheet(Source source, String media, String title, String charset)
@@ -503,7 +505,7 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
         if (_isSecureProcessing) {
           try {
             factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-          } catch (final org.xml.sax.SAXException e) {
+          } catch (final SAXException e) {
           }
         }
 
@@ -527,11 +529,11 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
     } catch (final StopParseException e) {
       // startElement encountered so do not parse further
 
-    } catch (final javax.xml.parsers.ParserConfigurationException e) {
+    } catch (final ParserConfigurationException e) {
 
       throw new TransformerConfigurationException("getAssociatedStylesheets failed", e);
 
-    } catch (final org.xml.sax.SAXException se) {
+    } catch (final SAXException se) {
 
       throw new TransformerConfigurationException("getAssociatedStylesheets failed", se);
 
@@ -545,11 +547,11 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
   }
 
   /**
-   * javax.xml.transform.sax.TransformerFactory implementation. Create a
+   * SAXTransformerFactory implementation. Create a
    * Transformer object that copies the input document to the result.
    * 
    * @return A Transformer object that simply copies the source to the result.
-   * @throws TransformerConfigurationException
+   * @throws TransformerConfigurationException TODO
    */
   @Override
   public TransformerImpl newTransformer() throws TransformerConfigurationException {
@@ -565,13 +567,13 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
   }
 
   /**
-   * javax.xml.transform.sax.TransformerFactory implementation. Process the
+   * SAXTransformerFactory implementation. Process the
    * Source into a Templates object, which is a a compiled representation of the
    * source. Note that this method should not be used with XSLTC, as the
    * time-consuming compilation is done for each and every transformation.
    * 
    * @return A Templates object that can be used to create Transformers.
-   * @throws TransformerConfigurationException
+   * @throws TransformerConfigurationException TODO
    */
   @Override
   public TransformerImpl newTransformer(Source source) throws TransformerConfigurationException {
@@ -617,14 +619,14 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
   }
 
   /**
-   * javax.xml.transform.sax.TransformerFactory implementation. Process the
+   * SAXTransformerFactory implementation. Process the
    * Source into a Templates object, which is a a compiled representation of the
    * source.
    * 
    * @param source
    *          The input stylesheet - DOMSource not supported!!!
    * @return A Templates object that can be used to create Transformers.
-   * @throws TransformerConfigurationException
+   * @throws TransformerConfigurationException TODO
    */
   @Override
   public TemplatesImpl newTemplates(Source source) throws TransformerConfigurationException {
@@ -805,12 +807,12 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
   }
 
   /**
-   * javax.xml.transform.sax.SAXTransformerFactory implementation. Get a
+   * SAXTransformerFactory implementation. Get a
    * TemplatesHandler object that can process SAX ContentHandler events into a
    * Templates object.
    * 
    * @return A TemplatesHandler object that can handle SAX events
-   * @throws TransformerConfigurationException
+   * @throws TransformerConfigurationException TODO
    */
   @Override
   public TemplatesHandlerImpl newTemplatesHandler() throws TransformerConfigurationException {
@@ -822,12 +824,12 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
   }
 
   /**
-   * javax.xml.transform.sax.SAXTransformerFactory implementation. Get a
+   * SAXTransformerFactory implementation. Get a
    * TransformerHandler object that can process SAX ContentHandler events into a
    * Result. This method will return a pure copy transformer.
    * 
    * @return A TransformerHandler object that can handle SAX events
-   * @throws TransformerConfigurationException
+   * @throws TransformerConfigurationException TODO
    */
   @Override
   public TransformerHandlerImpl newTransformerHandler() throws TransformerConfigurationException {
@@ -839,14 +841,14 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
   }
 
   /**
-   * javax.xml.transform.sax.SAXTransformerFactory implementation. Get a
+   * SAXTransformerFactory implementation. Get a
    * TransformerHandler object that can process SAX ContentHandler events into a
    * Result, based on the transformation instructions specified by the argument.
    * 
    * @param src
    *          The source of the transformation instructions.
    * @return A TransformerHandler object that can handle SAX events
-   * @throws TransformerConfigurationException
+   * @throws TransformerConfigurationException TODO
    */
   @Override
   public TransformerHandlerImpl newTransformerHandler(Source src) throws TransformerConfigurationException {
@@ -858,14 +860,14 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
   }
 
   /**
-   * javax.xml.transform.sax.SAXTransformerFactory implementation. Get a
+   * SAXTransformerFactory implementation. Get a
    * TransformerHandler object that can process SAX ContentHandler events into a
    * Result, based on the transformation instructions specified by the argument.
    * 
    * @param templates
    *          Represents a pre-processed stylesheet
    * @return A TransformerHandler object that can handle SAX events
-   * @throws TransformerConfigurationException
+   * @throws TransformerConfigurationException TODO
    */
   @Override
   public TransformerHandlerImpl newTransformerHandler(Templates templates) throws TransformerConfigurationException {
@@ -874,13 +876,13 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
   }
 
   /**
-   * javax.xml.transform.sax.SAXTransformerFactory implementation. Create an
+   * SAXTransformerFactory implementation. Create an
    * XMLFilter that uses the given source as the transformation instructions.
    * 
    * @param src
    *          The source of the transformation instructions.
    * @return An XMLFilter object, or null if this feature is not supported.
-   * @throws TransformerConfigurationException
+   * @throws TransformerConfigurationException TODO
    */
   @Override
   public XMLFilter newXMLFilter(Source src) throws TransformerConfigurationException {
@@ -891,13 +893,13 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
   }
 
   /**
-   * javax.xml.transform.sax.SAXTransformerFactory implementation. Create an
+   * SAXTransformerFactory implementation. Create an
    * XMLFilter that uses the given source as the transformation instructions.
    * 
    * @param templates
    *          The source of the transformation instructions.
    * @return An XMLFilter object, or null if this feature is not supported.
-   * @throws TransformerConfigurationException
+   * @throws TransformerConfigurationException TODO
    */
   @Override
   public XMLFilter newXMLFilter(Templates templates) throws TransformerConfigurationException {
@@ -1328,6 +1330,7 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
 
   /**
    * Returns the Class object the provides the XSLTC DTM Manager service.
+   * @return TODO
    */
   protected Class<?> getDTMManagerClass() {
     return m_DTMManagerClass;

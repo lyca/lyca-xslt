@@ -52,7 +52,7 @@ import de.lyca.xalan.xsltc.runtime.BasisLibrary;
  * @author Jacek Ambroziak
  * @author Santiago Pericas-Geertsen
  * @author Morten Jorgensen
- * @author Erwin Bolwidt <ejb@klomp.org>
+ * @author Erwin Bolwidt {@literal <ejb@klomp.org>}
  * @author Todd Miller
  */
 class FunctionCall extends Expression {

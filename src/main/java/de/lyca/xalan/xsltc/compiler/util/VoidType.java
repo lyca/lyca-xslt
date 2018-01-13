@@ -49,10 +49,14 @@ public final class VoidType extends Type {
   }
 
   /**
-   * Translates a void into an object of internal type <code>type</code>. This
-   * translation is needed when calling external functions that return void.
+   * Translates a void into an object of internal type <code>type</code>. This translation is needed when calling
+   * external functions that return void.
    * 
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
+   * @param ctx TODO
+   * @param expr TODO
+   * @param type TODO
+   * @return TODO
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo
    */
   @Override
   public JExpression compileTo(CompilerContext ctx, JExpression expr, Type type) {
@@ -68,15 +72,22 @@ public final class VoidType extends Type {
   /**
    * Translates a void into a string by pushing the empty string ''.
    * 
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
+   * @param ctx TODO
+   * @param expr TODO
+   * @param type TODO
+   * @return TODO
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo
    */
   public JExpression compileTo(CompilerContext ctx, JExpression expr, StringType type) {
     return JExpr.lit("");
   }
 
   /**
-   * Translates an external (primitive) Java type into a void. Only an external
-   * "void" can be converted to this class.
+   * Translates an external (primitive) Java type into a void. Only an external "void" can be converted to this class.
+   * @param ctx TODO
+   * @param expr TODO
+   * @param clazz TODO
+   * @return TODO
    */
   @Override
   public JExpression compileFrom(CompilerContext ctx, JExpression expr, Class<?> clazz) {

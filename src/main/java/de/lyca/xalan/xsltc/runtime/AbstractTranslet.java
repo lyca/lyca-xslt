@@ -167,7 +167,7 @@ public abstract class AbstractTranslet implements Translet {
   /**
    * Add a new global or local parameter if not already in the current frame.
    * The 'isDefault' parameter is set to true if the value passed is the default
-   * value from the <xsl:parameter> element's select attribute or element body.
+   * value from the {@literal <xsl:parameter>} element's select attribute or element body.
    */
   public final Object addParameter(String name, Object value, boolean isDefault) {
     // Local parameters need to be re-evaluated for each iteration
@@ -492,7 +492,7 @@ public abstract class AbstractTranslet implements Translet {
 
   /**
    * This method builds key indexes - it is overridden in the compiled translet
-   * in cases where the <xsl:key> element is used
+   * in cases where the {@literal <xsl:key>} element is used
    */
   @Override
   public void buildKeys(DOM document, DTMAxisIterator iterator, SerializationHandler handler, int root)
@@ -502,7 +502,7 @@ public abstract class AbstractTranslet implements Translet {
 
   /**
    * This method builds key indexes - it is overridden in the compiled translet
-   * in cases where the <xsl:key> element is used
+   * in cases where the {@literal <xsl:key>} element is used
    */
   public void setKeyIndexDom(String name, DOM document) {
     getKeyIndex(name).setDom(document);

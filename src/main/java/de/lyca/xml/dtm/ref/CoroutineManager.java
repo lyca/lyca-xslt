@@ -123,8 +123,6 @@ public class CoroutineManager {
    * Limit on the coroutine ID numbers accepted. I didn't want the in-use table
    * to grow without bound. If we switch to a more efficient sparse-array
    * mechanism, it may be possible to raise or eliminate this boundary.
-   * 
-   * @xsl.usage internal
    */
   static final int m_unreasonableId = 1024;
 
@@ -182,10 +180,10 @@ public class CoroutineManager {
    * </p>
    * 
    * @param coroutineID
-   *          If >=0, requests that we reserve this number. If <0, requests that
+   *          If {@literal >=0}, requests that we reserve this number. If {@literal <0}, requests that
    *          we find, reserve, and return an available ID number.
    * 
-   * @return If >=0, the ID number to be used by this coroutine. If <0, an error
+   * @return If {@literal >=0}, the ID number to be used by this coroutine. If {@literal <0}, an error
    *         occurred -- the ID requested was already in use, or we couldn't
    *         assign one without going over the "unreasonable value" mark
    * */
@@ -224,10 +222,11 @@ public class CoroutineManager {
    * @param thisCoroutine
    *          the identifier of this coroutine, so we can recognize when we are
    *          being resumed.
-   * @exception java.lang.NoSuchMethodException
-   *              if thisCoroutine isn't a registered member of this group.
-   *              %REVIEW% whether this is the best choice.
-   * */
+   * @return TODO
+   * @throws NoSuchMethodException
+   *           if thisCoroutine isn't a registered member of this group.
+   *           %REVIEW% whether this is the best choice.
+   */
   public synchronized Object co_entry_pause(int thisCoroutine) throws NoSuchMethodException {
     if (!m_activeIDs.get(thisCoroutine))
       throw new java.lang.NoSuchMethodException();
@@ -258,10 +257,11 @@ public class CoroutineManager {
    *          to see if we're the ones being resumed.
    * @param toCoroutine
    *          Integer identifier for the coroutine we wish to invoke.
-   * @exception java.lang.NoSuchMethodException
-   *              if toCoroutine isn't a registered member of this group.
-   *              %REVIEW% whether this is the best choice.
-   * */
+   * @return TODO
+   * @throws NoSuchMethodException
+   *           if toCoroutine isn't a registered member of this group. %REVIEW%
+   *           whether this is the best choice.
+   */
   public synchronized Object co_resume(Object arg_object, int thisCoroutine, int toCoroutine)
           throws NoSuchMethodException {
     if (!m_activeIDs.get(toCoroutine))
@@ -328,7 +328,7 @@ public class CoroutineManager {
    *          Integer identifier for the coroutine leaving the set.
    * @param toCoroutine
    *          Integer identifier for the coroutine we wish to invoke.
-   * @exception java.lang.NoSuchMethodException
+   * @throws java.lang.NoSuchMethodException
    *              if toCoroutine isn't a registered member of this group.
    *              %REVIEW% whether this is the best choice.
    * */

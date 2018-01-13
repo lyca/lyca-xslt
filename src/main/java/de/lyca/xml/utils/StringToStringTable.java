@@ -20,8 +20,6 @@ package de.lyca.xml.utils;
 /**
  * A very simple lookup table that stores a list of strings, the even number
  * strings being keys, and the odd number strings being values.
- * 
- * @xsl.usage internal
  */
 public class StringToStringTable {
 

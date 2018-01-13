@@ -23,8 +23,6 @@ import de.lyca.xpath.XPathContext;
 /**
  * This class represents an XPath null object, and is capable of converting the
  * null to other types, such as a string.
- * 
- * @xsl.usage general
  */
 public class XNull extends XNodeSet {
   static final long serialVersionUID = -6841683711458983005L;

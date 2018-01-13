@@ -19,6 +19,8 @@ package de.lyca.xpath.functions;
 
 import java.util.List;
 
+import javax.xml.transform.TransformerException;
+
 import de.lyca.xalan.res.XSLMessages;
 import de.lyca.xalan.res.XSLTErrorResources;
 import de.lyca.xml.dtm.DTM;
@@ -33,8 +35,6 @@ import de.lyca.xpath.patterns.StepPattern;
 
 /**
  * Execute the current() function.
- * 
- * @xsl.usage advanced
  */
 public class FuncCurrent extends Function {
   static final long serialVersionUID = 5715316804877715008L;
@@ -46,10 +46,10 @@ public class FuncCurrent extends Function {
    *          The current execution context.
    * @return A valid XObject.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
   @Override
-  public XObject execute(XPathContext xctxt) throws javax.xml.transform.TransformerException {
+  public XObject execute(XPathContext xctxt) throws TransformerException {
 
     final SubContextList subContextList = xctxt.getCurrentNodeList();
     int currentNode = DTM.NULL;

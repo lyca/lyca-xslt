@@ -23,8 +23,6 @@ package de.lyca.xml.utils.res;
 
 /**
  * The Korean resource bundle.
- * 
- * @xsl.usage internal
  */
 public class XResources_ko extends XResourceBundle {
 

@@ -18,10 +18,13 @@
 package de.lyca.xalan.extensions;
 
 import javax.xml.transform.ErrorListener;
+import javax.xml.transform.TransformerException;
 
 import org.w3c.dom.Node;
 import org.w3c.dom.traversal.NodeIterator;
 
+import de.lyca.xml.utils.QName;
+import de.lyca.xpath.XPathContext;
 import de.lyca.xpath.objects.XObject;
 
 /**
@@ -35,21 +38,21 @@ public interface ExpressionContext {
    * 
    * @return The current context node.
    */
-  public Node getContextNode();
+  Node getContextNode();
 
   /**
    * Get the current context node list.
    * 
    * @return An iterator for the current context list, as defined in XSLT.
    */
-  public NodeIterator getContextNodes();
+  NodeIterator getContextNodes();
 
   /**
    * Get the error listener.
    * 
    * @return The registered error listener.
    */
-  public ErrorListener getErrorListener();
+  ErrorListener getErrorListener();
 
   /**
    * Get the value of a node as a number.
@@ -58,7 +61,7 @@ public interface ExpressionContext {
    *          Node to be converted to a number. May be null.
    * @return value of n as a number.
    */
-  public double toNumber(Node n);
+  double toNumber(Node n);
 
   /**
    * Get the value of a node as a string.
@@ -67,7 +70,7 @@ public interface ExpressionContext {
    *          Node to be converted to a string. May be null.
    * @return value of n as a string, or an empty string if n is null.
    */
-  public String toString(Node n);
+  String toString(Node n);
 
   /**
    * Get a variable based on it's qualified name.
@@ -77,9 +80,10 @@ public interface ExpressionContext {
    * 
    * @return The evaluated value of the variable.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException
+   *           TODO
    */
-  public XObject getVariableOrParam(de.lyca.xml.utils.QName qname) throws javax.xml.transform.TransformerException;
+  XObject getVariableOrParam(QName qname) throws TransformerException;
 
   /**
    * Get the XPathContext that owns this ExpressionContext.
@@ -88,8 +92,9 @@ public interface ExpressionContext {
    * and TransformerImpl.
    * 
    * @return The current XPathContext.
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException
+   *           TODO
    */
-  public de.lyca.xpath.XPathContext getXPathContext() throws javax.xml.transform.TransformerException;
+  XPathContext getXPathContext() throws TransformerException;
 
 }

@@ -47,7 +47,7 @@ import de.lyca.xml.dtm.DTMAxisIterator;
 /**
  * @author Jacek Ambroziak
  * @author Santiago Pericas-Geertsen
- * @author Erwin Bolwidt <ejb@klomp.org>
+ * @author Erwin Bolwidt {@literal <ejb@klomp.org>}
  */
 class StepPattern extends RelativePathPattern {
 

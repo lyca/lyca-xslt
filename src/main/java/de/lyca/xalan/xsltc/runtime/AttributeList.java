@@ -22,10 +22,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.xml.sax.Attributes;
+
 /**
  * @author Morten Jorgensen
  */
-public class AttributeList implements org.xml.sax.Attributes {
+public class AttributeList implements Attributes {
 
   private final static String CDATASTRING = "CDATA";
 
@@ -46,7 +48,7 @@ public class AttributeList implements org.xml.sax.Attributes {
   /**
    * Attributes clone constructor
    */
-  public AttributeList(org.xml.sax.Attributes attributes) {
+  public AttributeList(Attributes attributes) {
     this();
     if (attributes != null) {
       final int count = attributes.getLength();

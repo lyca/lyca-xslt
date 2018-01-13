@@ -32,7 +32,7 @@ import de.lyca.xml.utils.SystemIDResolver;
 /**
  * @author Jacek Ambroziak
  * @author Morten Jorgensen
- * @author Erwin Bolwidt <ejb@klomp.org>
+ * @author Erwin Bolwidt {@literal <ejb@klomp.org>}
  * @author Gunnlaugur Briem <gthb@dimon.is>
  */
 final class Include extends TopLevelElement {

@@ -65,7 +65,8 @@ public class DTMNodeIterator implements NodeIterator {
   /**
    * Public constructor: Wrap a DTMNodeIterator around an existing and
    * preconfigured DTMIterator
-   * */
+   * @param dtmIterator TODO
+   */
   public DTMNodeIterator(DTMIterator dtmIterator) {
     try {
       dtm_iter = (DTMIterator) dtmIterator.clone();
@@ -77,7 +78,8 @@ public class DTMNodeIterator implements NodeIterator {
   /**
    * Access the wrapped DTMIterator. I'm not sure whether anyone will need this
    * or not, but let's write it and think about it.
-   * */
+   * @return TODO
+   */
   public DTMIterator getDTMIterator() {
     return dtm_iter;
   }
@@ -138,6 +140,7 @@ public class DTMNodeIterator implements NodeIterator {
 
   /**
    * Return a mask describing which node types are presented via the iterator.
+   * @return TODO
    **/
   @Override
   public int getWhatToShow() {

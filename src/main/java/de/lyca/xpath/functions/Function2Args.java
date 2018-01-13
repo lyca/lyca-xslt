@@ -27,8 +27,6 @@ import de.lyca.xpath.res.XPATHMessages;
 
 /**
  * Base class for functions that accept two arguments.
- * 
- * @xsl.usage advanced
  */
 public class Function2Args extends FunctionOneArg {
   static final long serialVersionUID = 5574294996842710641L;

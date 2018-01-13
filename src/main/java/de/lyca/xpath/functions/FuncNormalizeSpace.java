@@ -17,7 +17,10 @@
  */
 package de.lyca.xpath.functions;
 
+import javax.xml.transform.TransformerException;
+
 import org.xml.sax.ContentHandler;
+import org.xml.sax.SAXException;
 
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xml.utils.XMLString;
@@ -27,8 +30,6 @@ import de.lyca.xpath.objects.XString;
 
 /**
  * Execute the normalize-space() function.
- * 
- * @xsl.usage advanced
  */
 public class FuncNormalizeSpace extends FunctionDef1Arg {
   static final long serialVersionUID = -3377956872032190880L;
@@ -36,35 +37,27 @@ public class FuncNormalizeSpace extends FunctionDef1Arg {
   /**
    * Execute the function. The function must return a valid object.
    * 
-   * @param xctxt
-   *          The current execution context.
+   * @param xctxt The current execution context.
    * @return A valid XObject.
-   * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
   @Override
-  public XObject execute(XPathContext xctxt) throws javax.xml.transform.TransformerException {
+  public XObject execute(XPathContext xctxt) throws TransformerException {
     final XMLString s1 = getArg0AsString(xctxt);
 
     return (XString) s1.fixWhiteSpace(true, true, false);
   }
 
   /**
-   * Execute an expression in the XPath runtime context, and return the result
-   * of the expression.
+   * Execute an expression in the XPath runtime context, and return the result of the expression.
    * 
-   * 
-   * @param xctxt
-   *          The XPath runtime context.
-   * 
-   * @return The result of the expression in the form of a <code>XObject</code>.
-   * 
-   * @throws javax.xml.transform.TransformerException
-   *           if a runtime exception occurs.
+   * @param xctxt The XPath runtime context.
+   * @throws TransformerException if a runtime exception occurs.
+   * @throws SAXException TODO
    */
   @Override
   public void executeCharsToContentHandler(XPathContext xctxt, ContentHandler handler)
-          throws javax.xml.transform.TransformerException, org.xml.sax.SAXException {
+      throws TransformerException, SAXException {
     if (Arg0IsNodesetExpr()) {
       final int node = getArg0AsNode(xctxt);
       if (DTM.NULL != node) {

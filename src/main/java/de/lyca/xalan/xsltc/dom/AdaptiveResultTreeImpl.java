@@ -24,7 +24,13 @@ import javax.xml.transform.SourceLocator;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.Attributes;
+import org.xml.sax.ContentHandler;
+import org.xml.sax.DTDHandler;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
+import org.xml.sax.ext.DeclHandler;
+import org.xml.sax.ext.LexicalHandler;
 
 import de.lyca.xalan.xsltc.DOM;
 import de.lyca.xalan.xsltc.StripFilter;
@@ -50,10 +56,10 @@ import de.lyca.xml.utils.XMLString;
  *      &lt;xsl:call-template name = "test"&gt;
  *         &lt;xsl:with-param name="a" select="."/&gt;
  *      &lt;/xsl:call-template&gt;
- *    &lt;/xsl:variable>
+ *    &lt;/xsl:variable&gt;
  * </pre>
  * <p>
- * In this example the result produced by <xsl:call-template> is likely to be a
+ * In this example the result produced by {@literal <xsl:call-template>} is likely to be a
  * single Text node. But it can also be a DOM tree. This kind of RTF cannot be
  * modelled by SimpleResultTreeImpl.
  * <p>
@@ -975,8 +981,7 @@ public class AdaptiveResultTreeImpl extends SimpleResultTreeImpl {
   }
 
   @Override
-  public void dispatchCharactersEvents(int nodeHandle, org.xml.sax.ContentHandler ch, boolean normalize)
-          throws org.xml.sax.SAXException {
+  public void dispatchCharactersEvents(int nodeHandle, ContentHandler ch, boolean normalize) throws SAXException {
     if (_dom != null) {
       _dom.dispatchCharactersEvents(nodeHandle, ch, normalize);
     } else {
@@ -985,7 +990,7 @@ public class AdaptiveResultTreeImpl extends SimpleResultTreeImpl {
   }
 
   @Override
-  public void dispatchToEvents(int nodeHandle, org.xml.sax.ContentHandler ch) throws org.xml.sax.SAXException {
+  public void dispatchToEvents(int nodeHandle, ContentHandler ch) throws SAXException {
     if (_dom != null) {
       _dom.dispatchToEvents(nodeHandle, ch);
     } else {
@@ -1010,7 +1015,7 @@ public class AdaptiveResultTreeImpl extends SimpleResultTreeImpl {
   }
 
   @Override
-  public org.xml.sax.ContentHandler getContentHandler() {
+  public ContentHandler getContentHandler() {
     if (_dom != null)
       return _dom.getContentHandler();
     else
@@ -1018,7 +1023,7 @@ public class AdaptiveResultTreeImpl extends SimpleResultTreeImpl {
   }
 
   @Override
-  public org.xml.sax.ext.LexicalHandler getLexicalHandler() {
+  public LexicalHandler getLexicalHandler() {
     if (_dom != null)
       return _dom.getLexicalHandler();
     else
@@ -1026,7 +1031,7 @@ public class AdaptiveResultTreeImpl extends SimpleResultTreeImpl {
   }
 
   @Override
-  public org.xml.sax.EntityResolver getEntityResolver() {
+  public EntityResolver getEntityResolver() {
     if (_dom != null)
       return _dom.getEntityResolver();
     else
@@ -1034,7 +1039,7 @@ public class AdaptiveResultTreeImpl extends SimpleResultTreeImpl {
   }
 
   @Override
-  public org.xml.sax.DTDHandler getDTDHandler() {
+  public DTDHandler getDTDHandler() {
     if (_dom != null)
       return _dom.getDTDHandler();
     else
@@ -1042,7 +1047,7 @@ public class AdaptiveResultTreeImpl extends SimpleResultTreeImpl {
   }
 
   @Override
-  public org.xml.sax.ErrorHandler getErrorHandler() {
+  public ErrorHandler getErrorHandler() {
     if (_dom != null)
       return _dom.getErrorHandler();
     else
@@ -1050,7 +1055,7 @@ public class AdaptiveResultTreeImpl extends SimpleResultTreeImpl {
   }
 
   @Override
-  public org.xml.sax.ext.DeclHandler getDeclHandler() {
+  public DeclHandler getDeclHandler() {
     if (_dom != null)
       return _dom.getDeclHandler();
     else

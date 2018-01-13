@@ -23,6 +23,7 @@ import javax.xml.transform.ErrorListener;
 import javax.xml.transform.TransformerException;
 
 import org.xml.sax.ContentHandler;
+import org.xml.sax.SAXException;
 
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xml.dtm.DTMIterator;
@@ -86,10 +87,10 @@ public abstract class Expression implements java.io.Serializable, ExpressionNode
    * 
    * @return The result of the expression in the form of a <code>XObject</code>.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException
    *           if a runtime exception occurs.
    */
-  public XObject execute(XPathContext xctxt, int currentNode) throws javax.xml.transform.TransformerException {
+  public XObject execute(XPathContext xctxt, int currentNode) throws TransformerException {
 
     // For now, the current node is already pushed.
     return execute(xctxt);
@@ -111,11 +112,11 @@ public abstract class Expression implements java.io.Serializable, ExpressionNode
    * 
    * @return The result of the expression in the form of a <code>XObject</code>.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException
    *           if a runtime exception occurs.
    */
   public XObject execute(XPathContext xctxt, int currentNode, DTM dtm, int expType)
-          throws javax.xml.transform.TransformerException {
+          throws TransformerException {
 
     // For now, the current node is already pushed.
     return execute(xctxt);
@@ -131,10 +132,10 @@ public abstract class Expression implements java.io.Serializable, ExpressionNode
    * 
    * @return The result of the expression in the form of a <code>XObject</code>.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException
    *           if a runtime exception occurs.
    */
-  public abstract XObject execute(XPathContext xctxt) throws javax.xml.transform.TransformerException;
+  public abstract XObject execute(XPathContext xctxt) throws TransformerException;
 
   /**
    * Execute an expression in the XPath runtime context, and return the result
@@ -149,10 +150,10 @@ public abstract class Expression implements java.io.Serializable, ExpressionNode
    * 
    * @return The result of the expression in the form of a <code>XObject</code>.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException
    *           if a runtime exception occurs.
    */
-  public XObject execute(XPathContext xctxt, boolean destructiveOK) throws javax.xml.transform.TransformerException {
+  public XObject execute(XPathContext xctxt, boolean destructiveOK) throws TransformerException {
     return execute(xctxt);
   }
 
@@ -164,9 +165,9 @@ public abstract class Expression implements java.io.Serializable, ExpressionNode
    *          The XPath runtime context.
    * @return The expression evaluated as a double.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
-  public double num(XPathContext xctxt) throws javax.xml.transform.TransformerException {
+  public double num(XPathContext xctxt) throws TransformerException {
     return execute(xctxt).num();
   }
 
@@ -178,9 +179,9 @@ public abstract class Expression implements java.io.Serializable, ExpressionNode
    *          The XPath runtime context.
    * @return false
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
-  public boolean bool(XPathContext xctxt) throws javax.xml.transform.TransformerException {
+  public boolean bool(XPathContext xctxt) throws TransformerException {
     return execute(xctxt).bool();
   }
 
@@ -192,9 +193,9 @@ public abstract class Expression implements java.io.Serializable, ExpressionNode
    *          The XPath runtime context.
    * @return The string this wraps or the empty string if null
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
-  public XMLString xstr(XPathContext xctxt) throws javax.xml.transform.TransformerException {
+  public XMLString xstr(XPathContext xctxt) throws TransformerException {
     return execute(xctxt).xstr();
   }
 
@@ -216,9 +217,9 @@ public abstract class Expression implements java.io.Serializable, ExpressionNode
    *          The XPath runtime context.
    * @return the first node out of the nodeset, or DTM.NULL.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
-  public int asNode(XPathContext xctxt) throws javax.xml.transform.TransformerException {
+  public int asNode(XPathContext xctxt) throws TransformerException {
     final DTMIterator iter = execute(xctxt).iter();
     return iter.nextNode();
   }
@@ -237,11 +238,8 @@ public abstract class Expression implements java.io.Serializable, ExpressionNode
    * @throws TransformerException
    *           thrown if the active ProblemListener decides the error condition
    *           is severe enough to halt processing.
-   * 
-   * @throws javax.xml.transform.TransformerException
-   * @xsl.usage experimental
    */
-  public DTMIterator asIterator(XPathContext xctxt, int contextNode) throws javax.xml.transform.TransformerException {
+  public DTMIterator asIterator(XPathContext xctxt, int contextNode) throws TransformerException {
 
     try {
       xctxt.pushCurrentNodeAndExpression(contextNode, contextNode);
@@ -266,11 +264,8 @@ public abstract class Expression implements java.io.Serializable, ExpressionNode
    * @throws TransformerException
    *           thrown if the active ProblemListener decides the error condition
    *           is severe enough to halt processing.
-   * 
-   * @throws javax.xml.transform.TransformerException
-   * @xsl.usage experimental
    */
-  public DTMIterator asIteratorRaw(XPathContext xctxt, int contextNode) throws javax.xml.transform.TransformerException {
+  public DTMIterator asIteratorRaw(XPathContext xctxt, int contextNode) throws TransformerException {
 
     try {
       xctxt.pushCurrentNodeAndExpression(contextNode, contextNode);
@@ -288,16 +283,15 @@ public abstract class Expression implements java.io.Serializable, ExpressionNode
    * 
    * 
    * @param xctxt
-   *          The XPath runtime context. NEEDSDOC @param handler
+   *          The XPath runtime context.
+   * @param handler TODO
    * 
-   * @return The result of the expression in the form of a <code>XObject</code>.
-   * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException
    *           if a runtime exception occurs.
-   * @throws org.xml.sax.SAXException
+   * @throws SAXException TODO
    */
   public void executeCharsToContentHandler(XPathContext xctxt, ContentHandler handler)
-          throws javax.xml.transform.TransformerException, org.xml.sax.SAXException {
+          throws TransformerException, SAXException {
 
     final XObject obj = execute(xctxt);
 
@@ -327,7 +321,8 @@ public abstract class Expression implements java.io.Serializable, ExpressionNode
    *          to the variable reference qname. The position of the QName in the
    *          list from the start of the list will be its position in the stack
    *          frame (but variables above the globalsTop value will need to be
-   *          offset to the current stack frame). NEEDSDOC @param globalsSize
+   *          offset to the current stack frame).
+   * @param globalsSize TODO
    */
   public abstract void fixupVariables(List<QName> vars, int globalsSize);
 
@@ -348,6 +343,7 @@ public abstract class Expression implements java.io.Serializable, ExpressionNode
    * as this. It is to be used by the deepEquals method. I'm bottlenecking it
    * here because I'm not totally confident that comparing the class objects is
    * the best way to do this.
+   * @param expr TODO
    * 
    * @return true of the passed in class is the exact same class as this class.
    */
@@ -374,9 +370,8 @@ public abstract class Expression implements java.io.Serializable, ExpressionNode
    * @throws TransformerException
    *           if the current ErrorListoner determines to throw an exception.
    * 
-   * @throws javax.xml.transform.TransformerException
    */
-  public void warn(XPathContext xctxt, String msg, Object[] args) throws javax.xml.transform.TransformerException {
+  public void warn(XPathContext xctxt, String msg, Object[] args) throws TransformerException {
 
     final java.lang.String fmsg = XPATHMessages.createXPATHWarning(msg, args);
 
@@ -398,10 +393,8 @@ public abstract class Expression implements java.io.Serializable, ExpressionNode
    * 
    * @throws RuntimeException
    *           if the b argument is false.
-   * 
-   * @throws javax.xml.transform.TransformerException
    */
-  public void assertion(boolean b, java.lang.String msg) {
+  public void assertion(boolean b, String msg) {
 
     if (!b) {
       final java.lang.String fMsg = XPATHMessages.createXPATHMessage(
@@ -426,10 +419,8 @@ public abstract class Expression implements java.io.Serializable, ExpressionNode
    * 
    * @throws TransformerException
    *           if the current ErrorListoner determines to throw an exception.
-   * 
-   * @throws javax.xml.transform.TransformerException
    */
-  public void error(XPathContext xctxt, String msg, Object[] args) throws javax.xml.transform.TransformerException {
+  public void error(XPathContext xctxt, String msg, Object[] args) throws TransformerException {
 
     final java.lang.String fmsg = XPATHMessages.createXPATHMessage(msg, args);
 
@@ -458,6 +449,7 @@ public abstract class Expression implements java.io.Serializable, ExpressionNode
 
   /**
    * This pair of methods are used to inform the node of its parent.
+   * @param n TODO
    */
   @Override
   public void exprSetParent(ExpressionNode n) {
@@ -473,6 +465,8 @@ public abstract class Expression implements java.io.Serializable, ExpressionNode
   /**
    * This method tells the node to add its argument to the node's list of
    * children.
+   * @param n TODO
+   * @param i TODO
    */
   @Override
   public void exprAddChild(ExpressionNode n, int i) {
@@ -482,13 +476,16 @@ public abstract class Expression implements java.io.Serializable, ExpressionNode
   /**
    * This method returns a child node. The children are numbered from zero, left
    * to right.
+   * @param i TODO
    */
   @Override
   public ExpressionNode exprGetChild(int i) {
     return null;
   }
 
-  /** Return the number of children the node has. */
+  /** Return the number of children the node has.
+   * @return TODO 
+   */
   @Override
   public int exprGetNumChildren() {
     return 0;

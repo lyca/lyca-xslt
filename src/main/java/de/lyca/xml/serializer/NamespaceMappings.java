@@ -36,32 +36,30 @@ import org.xml.sax.SAXException;
  * For example:
  * 
  * <pre>
- * <chapter xmlns:p1="def">
- *   <paragraph xmlns:p2="ghi">
- *      <sentance xmlns:p3="jkl">
- *      </sentance>
- *    </paragraph>
- *    <paragraph xlmns:p4="mno">
- *    </paragraph>
- * </chapter>
+ * &lt;chapter xmlns:p1="def"&gt;
+ *   &lt;paragraph xmlns:p2="ghi"&gt;
+ *      &lt;sentence xmlns:p3="jkl"&gt;
+ *      &lt;/sentence&gt;
+ *    &lt;/paragraph&gt;
+ *    &lt;paragraph xlmns:p4="mno"&gt;
+ *    &lt;/paragraph&gt;
+ * &lt;/chapter&gt;
  * </pre>
  * 
- * When the <chapter> element is encounted the prefix "p1" associated with uri
- * "def" is pushed on the stack with depth 1. When the first <paragraph> is
- * encountered "p2" and "ghi" are pushed with depth 2. When the <sentance> is
- * encountered "p3" and "jkl" are pushed with depth 3. When </sentance> occurs
+ * When the {@literal <chapter>} element is encountered the prefix "p1" associated with uri
+ * "def" is pushed on the stack with depth 1. When the first {@literal <paragraph>} is
+ * encountered "p2" and "ghi" are pushed with depth 2. When the {@literal <sentence>} is
+ * encountered "p3" and "jkl" are pushed with depth 3. When {@literal </sentence>} occurs
  * the popNamespaces(3) will pop "p3"/"jkl" off the stack. Of course
  * popNamespaces(2) would pop anything with depth 2 or greater.
  * 
- * So prefix/uri pairs are pushed and poped off the stack as elements are
+ * So prefix/uri pairs are pushed and popped off the stack as elements are
  * processed. At any given moment of processing the currently visible prefixes
  * are on the stack and a prefix can be found given a uri, or a uri can be found
  * given a prefix.
  * 
  * This class is intended for internal use only. However, it is made public
  * because other packages require it.
- * 
- * @xsl.usage internal
  */
 public class NamespaceMappings {
   /**

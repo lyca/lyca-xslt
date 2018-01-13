@@ -17,7 +17,11 @@
  */
 package de.lyca.xpath.axes;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.util.List;
+
+import javax.xml.transform.TransformerException;
 
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xml.dtm.DTMIterator;
@@ -56,17 +60,16 @@ public abstract class PredicatedNodeTest extends NodeTest implements SubContextL
    * @param stream
    *          Input stream to read from
    * 
-   * @throws java.io.IOException
-   * @throws javax.xml.transform.TransformerException
+   * @throws IOException TODO
+   * @throws TransformerException TODO
    */
-  private void readObject(java.io.ObjectInputStream stream) throws java.io.IOException,
-          javax.xml.transform.TransformerException {
+  private void readObject(ObjectInputStream stream) throws IOException, TransformerException {
     try {
       stream.defaultReadObject();
       m_predicateIndex = -1;
       resetProximityPositions();
     } catch (final ClassNotFoundException cnfe) {
-      throw new javax.xml.transform.TransformerException(cnfe);
+      throw new TransformerException(cnfe);
     }
   }
 
@@ -77,6 +80,7 @@ public abstract class PredicatedNodeTest extends NodeTest implements SubContextL
    *         one.
    * 
    * @throws CloneNotSupportedException
+   *           TODO
    */
   @Override
   public Object clone() throws CloneNotSupportedException {
@@ -145,9 +149,10 @@ public abstract class PredicatedNodeTest extends NodeTest implements SubContextL
    * @param opPos
    *          The op code position of this location step.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException
+   *           TODO
    */
-  protected void initPredicateInfo(Compiler compiler, int opPos) throws javax.xml.transform.TransformerException {
+  protected void initPredicateInfo(Compiler compiler, int opPos) throws TransformerException {
 
     final int pos = compiler.getFirstPredicateOpPos(opPos);
 
@@ -181,7 +186,8 @@ public abstract class PredicatedNodeTest extends NodeTest implements SubContextL
    */
   public int getProximityPosition() {
 
-    // System.out.println("getProximityPosition - m_predicateIndex: "+m_predicateIndex);
+    // System.out.println("getProximityPosition - m_predicateIndex:
+    // "+m_predicateIndex);
     return getProximityPosition(m_predicateIndex);
   }
 
@@ -199,13 +205,12 @@ public abstract class PredicatedNodeTest extends NodeTest implements SubContextL
   }
 
   /**
-   * Get the index of the last node that can be itterated to.
-   * 
+   * Get the index of the last node that can be iterated to.
    * 
    * @param xctxt
    *          XPath runtime context.
    * 
-   * @return the index of the last node that can be itterated to.
+   * @return the index of the last node that can be iterated to.
    */
   @Override
   public abstract int getLastPos(XPathContext xctxt);
@@ -250,9 +255,10 @@ public abstract class PredicatedNodeTest extends NodeTest implements SubContextL
    * @param i
    *          The index into the m_proximityPositions array.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException
+   *           TODO
    */
-  public void initProximityPosition(int i) throws javax.xml.transform.TransformerException {
+  public void initProximityPosition(int i) throws TransformerException {
     m_proximityPositions[i] = 0;
   }
 
@@ -300,9 +306,9 @@ public abstract class PredicatedNodeTest extends NodeTest implements SubContextL
    * 
    * @return the result of executing the predicate expressions.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
-  boolean executePredicates(int context, XPathContext xctxt) throws javax.xml.transform.TransformerException {
+  boolean executePredicates(int context, XPathContext xctxt) throws TransformerException {
 
     final int nPredicates = getPredicateCount();
     // System.out.println("nPredicates: "+nPredicates);
@@ -316,9 +322,11 @@ public abstract class PredicatedNodeTest extends NodeTest implements SubContextL
       xctxt.pushCurrentNode(context);
 
       for (int i = 0; i < nPredicates; i++) {
-        // System.out.println("Executing predicate expression - waiting count: "+m_lpi.getWaitingCount());
+        // System.out.println("Executing predicate expression - waiting count:
+        // "+m_lpi.getWaitingCount());
         final XObject pred = m_predicates[i].execute(xctxt);
-        // System.out.println("\nBack from executing predicate expression - waiting count: "+m_lpi.getWaitingCount());
+        // System.out.println("\nBack from executing predicate expression -
+        // waiting count: "+m_lpi.getWaitingCount());
         // System.out.println("pred.getType(): "+pred.getType());
         if (XObject.CLASS_NUMBER == pred.getType()) {
           if (DEBUG_PREDICATECOUNTING) {
@@ -444,7 +452,7 @@ public abstract class PredicatedNodeTest extends NodeTest implements SubContextL
 
         return DTMIterator.FILTER_ACCEPT;
       }
-    } catch (final javax.xml.transform.TransformerException se) {
+    } catch (final TransformerException se) {
 
       // TODO: Fix this.
       throw new RuntimeException(se.getMessage());

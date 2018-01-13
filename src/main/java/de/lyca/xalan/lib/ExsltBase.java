@@ -23,15 +23,13 @@ import org.w3c.dom.NodeList;
 import de.lyca.xml.dtm.ref.DTMNodeProxy;
 
 /**
- * The base class for some EXSLT extension classes. It contains common utility
- * methods to be used by the sub-classes.
+ * The base class for some EXSLT extension classes. It contains common utility methods to be used by the sub-classes.
  */
 public abstract class ExsltBase {
   /**
    * Return the string value of a Node
    * 
-   * @param n
-   *          The Node.
+   * @param n The Node.
    * @return The string value of the Node
    */
   protected static String toString(Node n) {
@@ -53,11 +51,9 @@ public abstract class ExsltBase {
   }
 
   /**
-   * Convert the string value of a Node to a number. Return NaN if the string is
-   * not a valid number.
+   * Convert the string value of a Node to a number. Return NaN if the string is not a valid number.
    * 
-   * @param n
-   *          The Node.
+   * @param n The Node.
    * @return The number value of the Node
    */
   protected static double toNumber(Node n) {

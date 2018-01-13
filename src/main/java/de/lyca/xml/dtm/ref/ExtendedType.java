@@ -69,6 +69,13 @@ public final class ExtendedType {
    * Redefine this ExtendedType object to represent a different extended type.
    * This is intended to be used ONLY on the hashET object. Using it elsewhere
    * will mess up existing hashtable entries!
+   * 
+   * @param nodetype
+   *          TODO
+   * @param namespace
+   *          TODO
+   * @param localName
+   *          TODO
    */
   protected void redefine(int nodetype, String namespace, String localName) {
     this.nodetype = nodetype;
@@ -81,6 +88,15 @@ public final class ExtendedType {
    * Redefine this ExtendedType object to represent a different extended type.
    * This is intended to be used ONLY on the hashET object. Using it elsewhere
    * will mess up existing hashtable entries!
+   * 
+   * @param nodetype
+   *          TODO
+   * @param namespace
+   *          TODO
+   * @param localName
+   *          TODO
+   * @param hash
+   *          TODO
    */
   protected void redefine(int nodetype, String namespace, String localName, int hash) {
     this.nodetype = nodetype;
@@ -91,6 +107,8 @@ public final class ExtendedType {
 
   /**
    * Override the hashCode() method in the Object class
+   * 
+   * @return TODO
    */
   @Override
   public int hashCode() {
@@ -113,7 +131,9 @@ public final class ExtendedType {
   }
 
   /**
-   * Return the node type
+   * Return the node type.
+   * 
+   * @return the node type
    */
   public int getNodeType() {
     return nodetype;
@@ -121,6 +141,8 @@ public final class ExtendedType {
 
   /**
    * Return the local name
+   * 
+   * @return the local name
    */
   public String getLocalName() {
     return localName;
@@ -128,6 +150,8 @@ public final class ExtendedType {
 
   /**
    * Return the namespace
+   * 
+   * @return the namespace
    */
   public String getNamespace() {
     return namespace;

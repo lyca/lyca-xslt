@@ -28,21 +28,29 @@ public interface NodeIterator extends Cloneable {
 
   /**
    * Callers should not call next() after it returns END.
+   * 
+   * @return TODO
    */
   public int next();
 
   /**
    * Resets the iterator to the last start node.
+   * 
+   * @return TODO
    */
   public NodeIterator reset();
 
   /**
    * Returns the number of elements in this iterator.
+   * 
+   * @return TODO
    */
   public int getLast();
 
   /**
    * Returns the position of the current node in the set.
+   * 
+   * @return TODO
    */
   public int getPosition();
 
@@ -59,21 +67,30 @@ public interface NodeIterator extends Cloneable {
   /**
    * Set start to END should 'close' the iterator, i.e. subsequent call to
    * next() should return END.
+   * 
+   * @param node TODO
+   * @return TODO
    */
   public NodeIterator setStartNode(int node);
 
   /**
    * True if this iterator has a reversed axis.
+   * 
+   * @return TODO
    */
   public boolean isReverse();
 
   /**
    * Returns a deep copy of this iterator.
+   * 
+   * @return TODO
    */
   public NodeIterator cloneIterator();
 
   /**
    * Prevents or allows iterator restarts.
+   * 
+   * @param isRestartable TODO
    */
   public void setRestartable(boolean isRestartable);
 

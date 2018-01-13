@@ -22,8 +22,6 @@ import java.util.Map;
 
 /**
  * Table of strings to operation code lookups.
- * 
- * @xsl.usage internal
  */
 public class Keywords {
 

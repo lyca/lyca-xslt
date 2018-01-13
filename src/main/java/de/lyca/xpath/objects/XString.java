@@ -19,7 +19,14 @@ package de.lyca.xpath.objects;
 
 import java.util.Locale;
 
+import javax.xml.transform.TransformerException;
+
+import org.xml.sax.ContentHandler;
+import org.xml.sax.SAXException;
+import org.xml.sax.ext.LexicalHandler;
+
 import de.lyca.xml.dtm.DTM;
+import de.lyca.xml.utils.WrappedRuntimeException;
 import de.lyca.xml.utils.XMLCharacterRecognizer;
 import de.lyca.xml.utils.XMLString;
 import de.lyca.xml.utils.XMLStringFactory;
@@ -30,8 +37,6 @@ import de.lyca.xpath.XPathVisitor;
 /**
  * This class represents an XPath string object, and is capable of converting
  * the string to other types, such as a number.
- * 
- * @xsl.usage general
  */
 public class XString extends XObject implements XMLString {
   static final long serialVersionUID = 2020470518395094525L;
@@ -188,10 +193,10 @@ public class XString extends XObject implements XMLString {
    * @param ch
    *          A non-null reference to a ContentHandler.
    * 
-   * @throws org.xml.sax.SAXException
+   * @throws SAXException TODO
    */
   @Override
-  public void dispatchCharactersEvents(org.xml.sax.ContentHandler ch) throws org.xml.sax.SAXException {
+  public void dispatchCharactersEvents(ContentHandler ch) throws SAXException {
 
     final String str = str();
 
@@ -205,10 +210,10 @@ public class XString extends XObject implements XMLString {
    * @param lh
    *          A non-null reference to a LexicalHandler.
    * 
-   * @throws org.xml.sax.SAXException
+   * @throws SAXException TODO
    */
   @Override
-  public void dispatchAsComment(org.xml.sax.ext.LexicalHandler lh) throws org.xml.sax.SAXException {
+  public void dispatchAsComment(LexicalHandler lh) throws SAXException {
 
     final String str = str();
 
@@ -236,7 +241,7 @@ public class XString extends XObject implements XMLString {
    *          the index of the character.
    * @return the character at the specified index of this string. The first
    *         character is at index <code>0</code>.
-   * @exception IndexOutOfBoundsException
+   * @throws IndexOutOfBoundsException
    *              if the <code>index</code> argument is negative or not less
    *              than the length of this string.
    */
@@ -256,7 +261,7 @@ public class XString extends XObject implements XMLString {
    *          the destination array.
    * @param dstBegin
    *          the start offset in the destination array.
-   * @exception IndexOutOfBoundsException
+   * @throws IndexOutOfBoundsException
    *              If any of the following is true:
    *              <ul>
    *              <li><code>srcBegin</code> is negative.
@@ -267,7 +272,7 @@ public class XString extends XObject implements XMLString {
    *              <li><code>dstBegin+(srcEnd-srcBegin)</code> is larger than
    *              <code>dst.length</code>
    *              </ul>
-   * @exception NullPointerException
+   * @throws NullPointerException
    *              if <code>dst</code> is <code>null</code>
    */
   @Override
@@ -282,8 +287,6 @@ public class XString extends XObject implements XMLString {
    *          Object to compare this to
    * 
    * @return true if the two objects are equal
-   * 
-   * @throws javax.xml.transform.TransformerException
    */
   @Override
   public boolean equals(XObject obj2) {
@@ -306,8 +309,8 @@ public class XString extends XObject implements XMLString {
       // function.
       else if (XObject.CLASS_NUMBER == t)
         return obj2.num() == num();
-    } catch (final javax.xml.transform.TransformerException te) {
-      throw new de.lyca.xml.utils.WrappedRuntimeException(te);
+    } catch (final TransformerException te) {
+      throw new WrappedRuntimeException(te);
     }
 
     // Otherwise, both objects to be compared are converted to strings as
@@ -419,7 +422,7 @@ public class XString extends XObject implements XMLString {
    *         lexicographically less than the string argument; and a value
    *         greater than <code>0</code> if this string is lexicographically
    *         greater than the string argument.
-   * @exception java.lang.NullPointerException
+   * @throws java.lang.NullPointerException
    *              if <code>anotherString</code> is <code>null</code>.
    */
   @Override
@@ -495,7 +498,7 @@ public class XString extends XObject implements XMLString {
    *         <pre>
    * this.subString(toffset).startsWith(prefix)
    * </pre>
-   * @exception java.lang.NullPointerException
+   * @throws java.lang.NullPointerException
    *              if <code>prefix</code> is <code>null</code>.
    */
   @Override
@@ -514,7 +517,7 @@ public class XString extends XObject implements XMLString {
    *         <code>true</code> will be returned if the argument is an empty
    *         string or is equal to this <code>String</code> object as determined
    *         by the {@link #equals(Object)} method.
-   * @exception java.lang.NullPointerException
+   * @throws java.lang.NullPointerException
    *              if <code>prefix</code> is <code>null</code>.
    */
   @Override
@@ -540,7 +543,7 @@ public class XString extends XObject implements XMLString {
    *         <pre>
    * this.subString(toffset).startsWith(prefix)
    * </pre>
-   * @exception java.lang.NullPointerException
+   * @throws java.lang.NullPointerException
    *              if <code>prefix</code> is <code>null</code>.
    */
   @Override
@@ -577,7 +580,7 @@ public class XString extends XObject implements XMLString {
    *         <code>true</code> will be returned if the argument is an empty
    *         string or is equal to this <code>String</code> object as determined
    *         by the {@link #equals(Object)} method.
-   * @exception java.lang.NullPointerException
+   * @throws java.lang.NullPointerException
    *              if <code>prefix</code> is <code>null</code>.
    */
   @Override
@@ -596,7 +599,7 @@ public class XString extends XObject implements XMLString {
    *         <code>true</code> if the argument is the empty string or is equal
    *         to this <code>String</code> object as determined by the
    *         {@link #equals(Object)} method.
-   * @exception java.lang.NullPointerException
+   * @throws java.lang.NullPointerException
    *              if <code>suffix</code> is <code>null</code>.
    */
   @Override
@@ -659,7 +662,7 @@ public class XString extends XObject implements XMLString {
    * returned--that is, the smallest value <i>k</i> such that: <blockquote>
    * 
    * <pre>
-   * (this.charAt(<i>k</i>) == ch) && (<i>k</i> >= fromIndex)
+   * (this.charAt(<i>k</i>) == ch) {@literal &&} (<i>k</i> {@literal >=} fromIndex)
    * </pre>
    * 
    * </blockquote> is true. If no such character occurs in this string at or
@@ -715,7 +718,7 @@ public class XString extends XObject implements XMLString {
    * <blockquote>
    * 
    * <pre>
-   * this.charAt(k) == ch) && (k <= fromIndex)
+   * this.charAt(k) == ch) {@literal &&} (k {@literal <=} fromIndex)
    * </pre>
    * 
    * </blockquote> is true.
@@ -756,7 +759,7 @@ public class XString extends XObject implements XMLString {
    *         then the index of the first character of the first such substring
    *         is returned; if it does not occur as a substring, <code>-1</code>
    *         is returned.
-   * @exception java.lang.NullPointerException
+   * @throws java.lang.NullPointerException
    *              if <code>str</code> is <code>null</code>.
    */
   @Override
@@ -781,7 +784,7 @@ public class XString extends XObject implements XMLString {
    *         then the index of the first character of the first such substring
    *         is returned; if it does not occur as a substring, <code>-1</code>
    *         is returned.
-   * @exception java.lang.NullPointerException
+   * @throws java.lang.NullPointerException
    *              if <code>str</code> is <code>null</code>.
    */
   @Override
@@ -795,7 +798,7 @@ public class XString extends XObject implements XMLString {
    * is the smallest value <i>k</i> such that: <blockquote>
    * 
    * <pre>
-   * this.startsWith(str, <i>k</i>) && (<i>k</i> >= fromIndex)
+   * this.startsWith(str, <i>k</i>) {@literal &&} (<i>k</i> {@literal >=} fromIndex)
    * </pre>
    * 
    * </blockquote> is <code>true</code>.
@@ -815,7 +818,7 @@ public class XString extends XObject implements XMLString {
    *         index of the first character of the first such substring is
    *         returned. If it does not occur as a substring starting at
    *         <code>fromIndex</code> or beyond, <code>-1</code> is returned.
-   * @exception java.lang.NullPointerException
+   * @throws java.lang.NullPointerException
    *              if <code>str</code> is <code>null</code>
    */
   @Override
@@ -841,7 +844,7 @@ public class XString extends XObject implements XMLString {
    *         within this object, then the index of the first character of the
    *         last such substring is returned. If it does not occur as a
    *         substring, <code>-1</code> is returned.
-   * @exception java.lang.NullPointerException
+   * @throws java.lang.NullPointerException
    *              if <code>str</code> is <code>null</code>.
    */
   @Override
@@ -867,7 +870,7 @@ public class XString extends XObject implements XMLString {
    *         the last such substring is returned. If it does not occur as a
    *         substring starting at <code>fromIndex</code> or earlier,
    *         <code>-1</code> is returned.
-   * @exception java.lang.NullPointerException
+   * @throws java.lang.NullPointerException
    *              if <code>str</code> is <code>null</code>.
    */
   @Override
@@ -893,7 +896,7 @@ public class XString extends XObject implements XMLString {
    * @param beginIndex
    *          the beginning index, inclusive.
    * @return the specified substring.
-   * @exception IndexOutOfBoundsException
+   * @throws IndexOutOfBoundsException
    *              if <code>beginIndex</code> is negative or larger than the
    *              length of this <code>String</code> object.
    */
@@ -913,7 +916,7 @@ public class XString extends XObject implements XMLString {
    * @param endIndex
    *          the ending index, exclusive.
    * @return the specified substring.
-   * @exception IndexOutOfBoundsException
+   * @throws IndexOutOfBoundsException
    *              if the <code>beginIndex</code> is negative, or
    *              <code>endIndex</code> is larger than the length of this
    *              <code>String</code> object, or <code>beginIndex</code> is
@@ -932,7 +935,7 @@ public class XString extends XObject implements XMLString {
    *          <code>String</code>.
    * @return a string that represents the concatenation of this object's
    *         characters followed by the string argument's characters.
-   * @exception java.lang.NullPointerException
+   * @throws java.lang.NullPointerException
    *              if <code>str</code> is <code>null</code>.
    */
   @Override

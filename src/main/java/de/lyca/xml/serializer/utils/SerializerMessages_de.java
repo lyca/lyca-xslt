@@ -31,8 +31,6 @@ import java.util.ListResourceBundle;
  * 
  * This class is not a public API, it is only public because it is used in
  * de.lyca.xml.serializer.
- * 
- * @xsl.usage internal
  */
 public class SerializerMessages_de extends ListResourceBundle {
 

@@ -65,8 +65,6 @@ import de.lyca.xpath.res.XPATHMessages;
  * An instance of this class compiles an XPath string expression into a
  * Expression object. This class compiles the string into a sequence of
  * operation codes (op map) and then builds from that into an Expression tree.
- * 
- * @xsl.usage advanced
  */
 public class Compiler extends OpMap {
 
@@ -109,8 +107,7 @@ public class Compiler extends OpMap {
    * 
    * @throws TransformerException
    *           if there is a syntax or other error.
-   * @xsl.usage advanced
-   */
+     */
   public Expression compile(int opPos) throws TransformerException {
 
     final int op = getOp(opPos);
@@ -328,7 +325,7 @@ public class Compiler extends OpMap {
   }
 
   /**
-   * Compile a '<=' operation.
+   * {@literal Compile a '<=' operation.}
    * 
    * @param opPos
    *          The current position in the m_opMap array.
@@ -343,7 +340,7 @@ public class Compiler extends OpMap {
   }
 
 /**
-   * Compile a '<' operation.
+   * {@literal Compile a '<' operation.}
    * 
    * @param opPos The current position in the m_opMap array.
    *
@@ -356,7 +353,7 @@ public class Compiler extends OpMap {
   }
 
   /**
-   * Compile a '>=' operation.
+   * {@literal Compile a '>=' operation.}
    * 
    * @param opPos
    *          The current position in the m_opMap array.
@@ -371,7 +368,7 @@ public class Compiler extends OpMap {
   }
 
   /**
-   * Compile a '>' operation.
+   * {@literal Compile a '>' operation.}
    * 
    * @param opPos
    *          The current position in the m_opMap array.
@@ -541,9 +538,6 @@ public class Compiler extends OpMap {
    *          The current position in the m_opMap array.
    * 
    * @return reference to {@link de.lyca.xpath.objects.XString} instance.
-   * 
-   * @throws TransformerException
-   *           if a error occurs creating the Expression.
    */
   protected Expression literal(int opPos) {
 
@@ -559,9 +553,6 @@ public class Compiler extends OpMap {
    *          The current position in the m_opMap array.
    * 
    * @return reference to {@link de.lyca.xpath.objects.XNumber} instance.
-   * 
-   * @throws TransformerException
-   *           if a error occurs creating the Expression.
    */
   protected Expression numberlit(int opPos) {
 

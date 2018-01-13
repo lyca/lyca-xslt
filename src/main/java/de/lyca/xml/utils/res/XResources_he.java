@@ -23,8 +23,6 @@ package de.lyca.xml.utils.res;
 
 /**
  * The Hebrew resource bundle.
- * 
- * @xsl.usage internal
  */
 public class XResources_he extends XResourceBundle {
 

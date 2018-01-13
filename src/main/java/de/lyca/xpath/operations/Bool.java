@@ -17,6 +17,8 @@
  */
 package de.lyca.xpath.operations;
 
+import javax.xml.transform.TransformerException;
+
 import de.lyca.xpath.XPathContext;
 import de.lyca.xpath.objects.XBoolean;
 import de.lyca.xpath.objects.XObject;
@@ -37,10 +39,10 @@ public class Bool extends UnaryOperation {
    * @return non-null reference to the XObject that represents the result of the
    *         operation.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
   @Override
-  public XObject operate(XObject right) throws javax.xml.transform.TransformerException {
+  public XObject operate(XObject right) throws TransformerException {
 
     if (XObject.CLASS_BOOLEAN == right.getType())
       return right;
@@ -56,10 +58,10 @@ public class Bool extends UnaryOperation {
    * 
    * @return The result of the operation as a boolean.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
   @Override
-  public boolean bool(XPathContext xctxt) throws javax.xml.transform.TransformerException {
+  public boolean bool(XPathContext xctxt) throws TransformerException {
     return m_right.bool(xctxt);
   }
 

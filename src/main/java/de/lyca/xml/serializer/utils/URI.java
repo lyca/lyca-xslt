@@ -51,8 +51,6 @@ import java.io.IOException;
  * A minor change from the original is that this class no longer implements
  * Serializable, and the serialVersionUID magic field is dropped, and the class
  * is no longer "public".
- * 
- * @xsl.usage internal
  */
 final class URI {
   /**

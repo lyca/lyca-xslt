@@ -24,8 +24,6 @@ import java.util.ResourceBundle;
 
 /**
  * A utility class for issuing XML error messages.
- * 
- * @xsl.usage internal
  */
 public class XMLMessages {
 
@@ -153,7 +151,7 @@ public class XMLMessages {
    * @param className
    *          The class name of the resource bundle.
    * @return the ResourceBundle
-   * @throws MissingResourceException
+   * @throws MissingResourceException TODO
    */
   public static ListResourceBundle loadResourceBundle(String className) throws MissingResourceException {
     final Locale locale = Locale.getDefault();

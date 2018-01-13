@@ -23,8 +23,6 @@ package de.lyca.xml.utils.res;
 
 /**
  * The Chinese(Taiwan) resource bundle.
- * 
- * @xsl.usage internal
  */
 public class XResources_zh_TW extends XResourceBundle {
 

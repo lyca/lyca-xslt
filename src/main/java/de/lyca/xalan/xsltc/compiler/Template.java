@@ -39,7 +39,7 @@ import de.lyca.xml.utils.XML11Char;
  * @author Jacek Ambroziak
  * @author Santiago Pericas-Geertsen
  * @author Morten Jorgensen
- * @author Erwin Bolwidt <ejb@klomp.org>
+ * @author Erwin Bolwidt {@literal <ejb@klomp.org>}
  */
 public final class Template extends TopLevelElement implements Comparable<Template> {
 
@@ -253,6 +253,8 @@ public final class Template extends TopLevelElement implements Comparable<Templa
    * matching on the root node o) add the LRE root node (the only child of the
    * Stylesheet) as our only child node o) set the empty Stylesheet as our
    * parent o) set this template as the Stylesheet's only child
+   * @param stylesheet TODO
+   * @param parser TODO
    */
   public void parseSimplified(Stylesheet stylesheet, Parser parser) {
 

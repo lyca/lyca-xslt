@@ -48,11 +48,11 @@ public final class Compile {
   }
 
   /**
-   * This method implements the command line compiler. See the USAGE_STRING
-   * constant for a description. It may make sense to move the command-line
-   * handling to a separate package (ie. make one xsltc.cmdline.Compiler class
-   * that contains this main() method and one xsltc.cmdline.Transform class that
-   * contains the DefaultRun stuff).
+   * This method implements the command line compiler. See the USAGE_STRING constant for a description. It may make
+   * sense to move the command-line handling to a separate package (ie. make one xsltc.cmdline.Compiler class that
+   * contains this main() method and one xsltc.cmdline.Transform class that contains the DefaultRun stuff).
+   * 
+   * @param args TODO
    */
   public static void main(String[] args) {
     try {
@@ -70,37 +70,37 @@ public final class Compile {
       int c;
       while ((c = getopt.getNextOption()) != -1) {
         switch (c) {
-        case 'i':
-          useStdIn = true;
-          break;
-        case 'o':
-          xsltc.setClassName(getopt.getOptionArg());
-          classNameSet = true;
-          break;
-        case 'd':
-          xsltc.setDestDirectory(getopt.getOptionArg());
-          break;
-        case 'p':
-          xsltc.setPackageName(getopt.getOptionArg());
-          break;
-        case 'j':
-          xsltc.setJarFileName(getopt.getOptionArg());
-          break;
-        case 'x':
-          xsltc.setDebug(true);
-          break;
-        case 'u':
-          inputIsURL = true;
-          break;
-        case 'n':
-          // TODO support removed xsltc.setTemplateInlining(true); // used to be 'false'
-          break;
-        case 'v':
-          // fall through to case h
-        case 'h':
-        default:
-          printUsage();
-          break;
+          case 'i':
+            useStdIn = true;
+            break;
+          case 'o':
+            xsltc.setClassName(getopt.getOptionArg());
+            classNameSet = true;
+            break;
+          case 'd':
+            xsltc.setDestDirectory(getopt.getOptionArg());
+            break;
+          case 'p':
+            xsltc.setPackageName(getopt.getOptionArg());
+            break;
+          case 'j':
+            xsltc.setJarFileName(getopt.getOptionArg());
+            break;
+          case 'x':
+            xsltc.setDebug(true);
+            break;
+          case 'u':
+            inputIsURL = true;
+            break;
+          case 'n':
+            // TODO support removed xsltc.setTemplateInlining(true); // used to be 'false'
+            break;
+          case 'v':
+            // fall through to case h
+          case 'h':
+          default:
+            printUsage();
+            break;
         }
       }
 

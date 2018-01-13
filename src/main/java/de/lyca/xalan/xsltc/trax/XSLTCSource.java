@@ -42,6 +42,9 @@ public final class XSLTCSource implements Source {
 
   /**
    * Create a new XSLTC-specific source from a system ID
+   * 
+   * @param systemId
+   *          TODO
    */
   public XSLTCSource(String systemId) {
     _systemId = systemId;
@@ -49,6 +52,9 @@ public final class XSLTCSource implements Source {
 
   /**
    * Create a new XSLTC-specific source from a JAXP Source
+   * 
+   * @param source
+   *          TODO
    */
   public XSLTCSource(Source source) {
     _source = source;
@@ -88,6 +94,14 @@ public final class XSLTCSource implements Source {
 
   /**
    * Internal interface which returns a DOM for a given DTMManager and translet.
+   * 
+   * @param dtmManager
+   *          TODO
+   * @param translet
+   *          TODO
+   * @return TODO
+   * @throws SAXException
+   *           TODO
    */
   protected DOM getDOM(XSLTCDTMManager dtmManager, AbstractTranslet translet) throws SAXException {
     SAXImpl idom = _dom.get();

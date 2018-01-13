@@ -19,6 +19,8 @@ package de.lyca.xpath.axes;
 
 import java.util.List;
 
+import javax.xml.transform.TransformerException;
+
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xml.utils.PrefixResolver;
 import de.lyca.xml.utils.QName;
@@ -50,10 +52,9 @@ public class WalkingIterator extends LocPathIterator implements ExpressionOwner 
    *          True if walkers should be loaded, or false if this is a derived
    *          iterator and it doesn't wish to load child walkers.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
-  WalkingIterator(Compiler compiler, int opPos, int analysis, boolean shouldLoadWalkers)
-          throws javax.xml.transform.TransformerException {
+  WalkingIterator(Compiler compiler, int opPos, int analysis, boolean shouldLoadWalkers) throws TransformerException {
     super(compiler, opPos, analysis, shouldLoadWalkers);
 
     final int firstStepPos = OpMap.getFirstChildPos(opPos);
@@ -100,7 +101,7 @@ public class WalkingIterator extends LocPathIterator implements ExpressionOwner 
    * 
    * @return A clone of this iterator that holds the same node position.
    * 
-   * @throws CloneNotSupportedException
+   * @throws CloneNotSupportedException TODO
    */
   @Override
   public Object clone() throws CloneNotSupportedException {
@@ -194,8 +195,7 @@ public class WalkingIterator extends LocPathIterator implements ExpressionOwner 
    * 
    * @return The head of the walker list, or null if this iterator does not
    *         implement walkers.
-   * @xsl.usage advanced
-   */
+     */
   public final AxesWalker getFirstWalker() {
     return m_firstWalker;
   }
@@ -205,8 +205,7 @@ public class WalkingIterator extends LocPathIterator implements ExpressionOwner 
    * 
    * @param walker
    *          Should be a valid AxesWalker.
-   * @xsl.usage advanced
-   */
+     */
   public final void setFirstWalker(AxesWalker walker) {
     m_firstWalker = walker;
   }
@@ -216,8 +215,7 @@ public class WalkingIterator extends LocPathIterator implements ExpressionOwner 
    * 
    * @param walker
    *          The last used walker, or null.
-   * @xsl.usage advanced
-   */
+     */
   public final void setLastUsedWalker(AxesWalker walker) {
     m_lastUsedWalker = walker;
   }
@@ -226,8 +224,7 @@ public class WalkingIterator extends LocPathIterator implements ExpressionOwner 
    * Get the last used walker.
    * 
    * @return The last used walker, or null.
-   * @xsl.usage advanced
-   */
+     */
   public final AxesWalker getLastUsedWalker() {
     return m_lastUsedWalker;
   }

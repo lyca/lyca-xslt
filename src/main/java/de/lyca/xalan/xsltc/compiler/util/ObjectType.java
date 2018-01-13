@@ -38,11 +38,9 @@ public final class ObjectType extends Type {
   private Class<?> _clazz = java.lang.Object.class;
 
   /**
-   * Used to represent a Java Class type such is required to support non-static
-   * java functions.
+   * Used to represent a Java Class type such is required to support non-static java functions.
    * 
-   * @param javaClassName
-   *          name of the class such as 'com.foo.Processor'
+   * @param javaClassName name of the class such as 'com.foo.Processor'
    */
   protected ObjectType(String javaClassName) {
     _javaClassName = javaClassName;
@@ -60,8 +58,8 @@ public final class ObjectType extends Type {
   }
 
   /**
-   * Must return the same value for all ObjectType instances. This is needed in
-   * CastExpr to ensure the mapping table is used correctly.
+   * Must return the same value for all ObjectType instances. This is needed in CastExpr to ensure the mapping table is
+   * used correctly.
    */
   @Override
   public int hashCode() {
@@ -102,11 +100,14 @@ public final class ObjectType extends Type {
   }
 
   /**
-   * Compiles an expression into an expression of internal type
-   * <code>type</code>. This translation is needed when calling external
-   * functions that return void.
+   * Compiles an expression into an expression of internal type <code>type</code>. This translation is needed when
+   * calling external functions that return void.
    * 
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
+   * @param ctx TODO
+   * @param expr TODO
+   * @param type TODO
+   * @return TODO
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo
    */
   @Override
   public JExpression compileTo(CompilerContext ctx, JExpression expr, Type type) {
@@ -120,10 +121,13 @@ public final class ObjectType extends Type {
   }
 
   /**
-   * Expects an integer on the stack and pushes its string value by calling
-   * <code>Integer.toString(int i)</code>.
+   * Expects an integer on the stack and pushes its string value by calling <code>Integer.toString(int i)</code>.
    * 
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
+   * @param ctx TODO
+   * @param expr TODO
+   * @param type TODO
+   * @return TODO
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo
    */
   public JExpression compileTo(CompilerContext ctx, JExpression expr, StringType type) {
     JVar var = ctx.currentBlock().decl(ctx.ref(Object.class), ctx.nextVar(), expr);
@@ -131,9 +135,14 @@ public final class ObjectType extends Type {
   }
 
   /**
-   * Translates an object of this type to the external (Java) type denoted by
-   * <code>clazz</code>. This method is used to translate parameters when
-   * external functions are called.
+   * Translates an object of this type to the external (Java) type denoted by <code>clazz</code>. This method is used to
+   * translate parameters when external functions are called.
+   * 
+   * @param ctx TODO
+   * @param expr TODO
+   * @param clazz TODO
+   * @return TODO
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo
    */
   @Override
   public JExpression compileTo(CompilerContext ctx, JExpression expr, Class<?> clazz) {
@@ -146,6 +155,11 @@ public final class ObjectType extends Type {
 
   /**
    * Translates an external Java type into an Object type
+   * 
+   * @param ctx TODO
+   * @param expr TODO
+   * @param clazz TODO
+   * @return TODO
    */
   @Override
   public JExpression compileFrom(CompilerContext ctx, JExpression expr, Class<?> clazz) {

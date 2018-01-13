@@ -61,12 +61,10 @@ public final class NodeSetType extends Type {
   }
 
   /**
-   * Compiles a node-set expression into an expresion of internal type
-   * <code>type</code>. The compilation to int is undefined since node-sets are
-   * always converted to reals in arithmetic expressions.
+   * Compiles a node-set expression into an expresion of internal type <code>type</code>. The compilation to int is
+   * undefined since node-sets are always converted to reals in arithmetic expressions.
    * 
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo(CompilerContext,
-   *      JExpression, Type)
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo(CompilerContext, JExpression, Type)
    */
   @Override
   public JExpression compileTo(CompilerContext ctx, JExpression expr, Type type) {
@@ -90,8 +88,8 @@ public final class NodeSetType extends Type {
   }
 
   /**
-   * Translates an external Java Class into an internal type. Expects the Java
-   * object on the stack, pushes the internal type
+   * Translates an external Java Class into an internal type. Expects the Java object on the stack, pushes the internal
+   * type
    */
   @Override
   public JExpression compileFrom(CompilerContext ctx, JExpression expr, Class<?> clazz) {
@@ -107,12 +105,14 @@ public final class NodeSetType extends Type {
   }
 
   /**
-   * Translates a node-set into a synthesized boolean. The boolean value of a
-   * node-set is "true" if non-empty and "false" otherwise. Notice that the
-   * function getFirstNode() is called in translateToDesynthesized().
+   * Translates a node-set into a synthesized boolean. The boolean value of a node-set is "true" if non-empty and
+   * "false" otherwise. Notice that the function getFirstNode() is called in translateToDesynthesized().
    * 
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo(CompilerContext,
-   *      JExpression, Type)
+   * @param ctx TODO
+   * @param expr TODO
+   * @param type TODO
+   * @return TODO
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo(CompilerContext, JExpression, Type)
    */
   public JExpression compileTo(CompilerContext ctx, JExpression expr, BooleanType type) {
     JInvocation next = expr.invoke(NEXT);
@@ -120,11 +120,13 @@ public final class NodeSetType extends Type {
   }
 
   /**
-   * Translates a node-set into a string. The string value of a node-set is
-   * value of its first element.
+   * Translates a node-set into a string. The string value of a node-set is value of its first element.
    * 
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo(CompilerContext,
-   *      JExpression, Type)
+   * @param ctx TODO
+   * @param expr TODO
+   * @param type TODO
+   * @return TODO
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo(CompilerContext, JExpression, Type)
    */
   public JExpression compileTo(CompilerContext ctx, JExpression expr, StringType type) {
     JVar var = ctx.currentBlock().decl(ctx.owner().INT, ctx.nextVar(), expr.invoke(NEXT));
@@ -132,11 +134,14 @@ public final class NodeSetType extends Type {
   }
 
   /**
-   * Expects a node-set on the stack and pushes a real. First the node-set is
-   * converted to string, and from string to real.
+   * Expects a node-set on the stack and pushes a real. First the node-set is converted to string, and from string to
+   * real.
    * 
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo(CompilerContext,
-   *      JExpression, Type)
+   * @param ctx TODO
+   * @param expr TODO
+   * @param type TODO
+   * @return TODO
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo(CompilerContext, JExpression, Type)
    */
   public JExpression compileTo(CompilerContext ctx, JExpression expr, RealType type) {
     return Type.String.compileTo(ctx, compileTo(ctx, expr, Type.String), Type.Real);
@@ -145,8 +150,11 @@ public final class NodeSetType extends Type {
   /**
    * Expects a node-set on the stack and pushes a node.
    * 
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo(CompilerContext,
-   *      JExpression, Type)
+   * @param ctx TODO
+   * @param expr TODO
+   * @param type TODO
+   * @return TODO
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo(CompilerContext, JExpression, Type)
    */
   public JExpression compileTo(CompilerContext ctx, JExpression expr, NodeType type) {
     return expr.invoke(NEXT);
@@ -155,28 +163,38 @@ public final class NodeSetType extends Type {
   /**
    * Subsume node-set into ObjectType.
    * 
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo(CompilerContext,
-   *      JExpression, Type)
+   * @param ctx TODO
+   * @param expr TODO
+   * @param type TODO
+   * @return TODO
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo(CompilerContext, JExpression, Type)
    */
   public JExpression compileTo(CompilerContext ctx, JExpression expr, ObjectType type) {
     return expr;
   }
 
   /**
-   * Expects a node-set on the stack and pushes a boxed node-set. Node sets are
-   * already boxed so the translation is just a NOP.
+   * Expects a node-set on the stack and pushes a boxed node-set. Node sets are already boxed so the translation is just
+   * a NOP.
    * 
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo(CompilerContext,
-   *      JExpression, Type)
+   * @param ctx TODO
+   * @param expr TODO
+   * @param type TODO
+   * @return TODO
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo(CompilerContext, JExpression, Type)
    */
   public JExpression compileTo(CompilerContext ctx, JExpression expr, ReferenceType type) {
     return expr;
   }
 
   /**
-   * Translates a node-set into the Java type denoted by <code>clazz</code>.
-   * Expects a node-set on the stack and pushes an object of the appropriate
-   * type after coercion.
+   * Translates a node-set into the Java type denoted by <code>clazz</code>. Expects a node-set on the stack and pushes
+   * an object of the appropriate type after coercion.
+   * 
+   * @param ctx TODO
+   * @param expr TODO
+   * @param clazz TODO
+   * @return TODO
    */
   public JExpression compileTo(CompilerContext ctx, JExpression expr, Class<?> clazz) {
     if (clazz == org.w3c.dom.Node.class) {
@@ -191,6 +209,8 @@ public final class NodeSetType extends Type {
 
   /**
    * Returns the class name of an internal type's external representation.
+   * 
+   * @return NODE_ITERATOR
    */
   @Override
   public String getClassName() {

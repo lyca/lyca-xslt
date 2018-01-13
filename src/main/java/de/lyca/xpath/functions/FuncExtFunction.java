@@ -20,6 +20,8 @@ package de.lyca.xpath.functions;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.transform.TransformerException;
+
 import de.lyca.xml.utils.QName;
 import de.lyca.xpath.Expression;
 import de.lyca.xpath.ExpressionNode;
@@ -36,8 +38,6 @@ import de.lyca.xpath.res.XPATHMessages;
  * An object of this class represents an extension call expression. When the
  * expression executes, it calls ExtensionsTable#extFunction, and then converts
  * the result to the appropriate XObject.
- * 
- * @xsl.usage advanced
  */
 public class FuncExtFunction extends Function {
   static final long serialVersionUID = 5196115554693708718L;
@@ -177,12 +177,12 @@ public class FuncExtFunction extends Function {
    *          The current execution context.
    * @return A valid XObject.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
   @Override
-  public XObject execute(XPathContext xctxt) throws javax.xml.transform.TransformerException {
+  public XObject execute(XPathContext xctxt) throws TransformerException {
     if (xctxt.isSecureProcessing())
-      throw new javax.xml.transform.TransformerException(XPATHMessages.createXPATHMessage(
+      throw new TransformerException(XPATHMessages.createXPATHMessage(
               XPATHErrorResources.ER_EXTENSION_FUNCTION_CANNOT_BE_INVOKED, new Object[] { toString() }));
 
     XObject result;

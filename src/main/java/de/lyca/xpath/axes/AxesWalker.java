@@ -19,6 +19,8 @@ package de.lyca.xpath.axes;
 
 import java.util.List;
 
+import javax.xml.transform.TransformerException;
+
 import de.lyca.xml.dtm.Axis;
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xml.dtm.DTMAxisTraverser;
@@ -43,6 +45,8 @@ public class AxesWalker extends PredicatedNodeTest implements Cloneable, PathCom
    * 
    * @param locPathIterator
    *          non-null reference to the parent iterator.
+   * @param axis
+   *          TODO
    */
   public AxesWalker(LocPathIterator locPathIterator, Axis axis) {
     super(locPathIterator);
@@ -64,9 +68,10 @@ public class AxesWalker extends PredicatedNodeTest implements Cloneable, PathCom
    * @param stepType
    *          The type of location step.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException
+   *           TODO
    */
-  public void init(Compiler compiler, int opPos, int stepType) throws javax.xml.transform.TransformerException {
+  public void init(Compiler compiler, int opPos, int stepType) throws TransformerException {
 
     initPredicateInfo(compiler, opPos);
 
@@ -79,6 +84,7 @@ public class AxesWalker extends PredicatedNodeTest implements Cloneable, PathCom
    * @return A new AxesWalker that can be used without mutating this one.
    * 
    * @throws CloneNotSupportedException
+   *           TODO
    */
   @Override
   public Object clone() throws CloneNotSupportedException {
@@ -218,8 +224,9 @@ public class AxesWalker extends PredicatedNodeTest implements Cloneable, PathCom
     m_currentNode = root;
 
     if (DTM.NULL == root)
-      throw new RuntimeException(XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_SETTING_WALKER_ROOT_TO_NULL,
-              null)); // "\n !!!! Error! Setting the root of a walker to null!!!");
+      throw new RuntimeException(
+          // "\n !!!! Error! Setting the root of a walker to null!!!");
+          XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_SETTING_WALKER_ROOT_TO_NULL, null));
 
     resetProximityPositions();
   }
@@ -433,6 +440,8 @@ public class AxesWalker extends PredicatedNodeTest implements Cloneable, PathCom
   /**
    * Get the DTM for this walker.
    * 
+   * @param node
+   *          TODO
    * @return Non-null reference to a DTM.
    */
   public DTM getDTM(int node) {

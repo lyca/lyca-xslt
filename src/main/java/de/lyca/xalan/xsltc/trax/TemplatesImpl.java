@@ -43,7 +43,7 @@ import de.lyca.xalan.xsltc.runtime.AbstractTranslet;
 /**
  * @author Morten Jorgensen
  * @author G. Todd Millerj
- * @author Jochen Cordes <Jochen.Cordes@t-online.de>
+ * @author Jochen Cordes {@literal <Jochen.Cordes@t-online.de>}
  * @author Santiago Pericas-Geertsen
  * 
  *         TODO Where is synchronization needed?
@@ -140,6 +140,17 @@ public final class TemplatesImpl implements Templates, Serializable {
    * Create an XSLTC template object from the bytecodes. The bytecodes for the
    * translet and auxiliary classes, plus the name of the main translet class,
    * must be supplied.
+   * 
+   * @param bytecodes
+   *          TODO
+   * @param transletName
+   *          TODO
+   * @param outputProperties
+   *          TODO
+   * @param indentNumber
+   *          TODO
+   * @param tfactory
+   *          TODO
    */
   protected TemplatesImpl(byte[][] bytecodes, String transletName, Properties outputProperties, int indentNumber,
       TransformerFactoryImpl tfactory) {
@@ -152,6 +163,11 @@ public final class TemplatesImpl implements Templates, Serializable {
 
   /**
    * Create an XSLTC template object from the translet class definition(s).
+   * @param transletClasses TODO
+   * @param transletName TODO
+   * @param outputProperties TODO
+   * @param indentNumber TODO
+   * @param tfactory TODO
    */
   protected TemplatesImpl(Class<?>[] transletClasses, String transletName, Properties outputProperties,
       int indentNumber, TransformerFactoryImpl tfactory) {
@@ -201,6 +217,9 @@ public final class TemplatesImpl implements Templates, Serializable {
 
   /**
    * Store URIResolver needed for Transformers.
+   * 
+   * @param resolver
+   *          TODO
    */
   public void setURIResolver(URIResolver resolver) {
     _uriResolver = resolver;
@@ -209,6 +228,9 @@ public final class TemplatesImpl implements Templates, Serializable {
   /**
    * The TransformerFactory must pass us the translet bytecodes using this
    * method before we can create any translet instances
+   * 
+   * @param bytecodes
+   *          TODO
    */
   protected void setTransletBytecodes(byte[][] bytecodes) {
     _bytecodes = bytecodes;
@@ -216,6 +238,8 @@ public final class TemplatesImpl implements Templates, Serializable {
 
   /**
    * Returns the translet bytecodes stored in this template
+   * 
+   * @return TODO
    */
   public byte[][] getTransletBytecodes() {
     return _bytecodes;
@@ -223,6 +247,8 @@ public final class TemplatesImpl implements Templates, Serializable {
 
   /**
    * Returns the translet bytecodes stored in this template
+   * 
+   * @return TODO
    */
   public Class<?>[] getTransletClasses() {
     try {
@@ -241,6 +267,8 @@ public final class TemplatesImpl implements Templates, Serializable {
 
   /**
    * Returns the index of the main class in array of bytecodes
+   * 
+   * @return TODO
    */
   public int getTransletIndex() {
     try {
@@ -259,6 +287,9 @@ public final class TemplatesImpl implements Templates, Serializable {
 
   /**
    * The TransformerFactory should call this method to set the translet name
+   * 
+   * @param name
+   *          TODO
    */
   protected void setTransletName(String name) {
     _name = name;
@@ -266,6 +297,8 @@ public final class TemplatesImpl implements Templates, Serializable {
 
   /**
    * Returns the name of the main translet class stored in this template
+   * 
+   * @return TODO
    */
   protected String getTransletName() {
     return _name;
@@ -274,6 +307,9 @@ public final class TemplatesImpl implements Templates, Serializable {
   /**
    * Defines the translet class and auxiliary classes. Returns a reference to
    * the Class object that defines the main class
+   * 
+   * @throws TransformerConfigurationException
+   *           TODO
    */
   private void defineTransletClasses() throws TransformerConfigurationException {
 
@@ -328,6 +364,10 @@ public final class TemplatesImpl implements Templates, Serializable {
    * This method generates an instance of the translet class that is wrapped
    * inside this Template. The translet instance will later be wrapped inside a
    * Transformer object.
+   * 
+   * @return TODO
+   * @throws TransformerConfigurationException
+   *           TODO
    */
   private Translet getTransletInstance() throws TransformerConfigurationException {
     try {
@@ -369,7 +409,8 @@ public final class TemplatesImpl implements Templates, Serializable {
   /**
    * Implements JAXP's Templates.newTransformer()
    * 
-   * @throws TransformerConfigurationException
+   * @return TODO
+   * @throws TransformerConfigurationException TODO
    */
   @Override
   public TransformerImpl newTransformer() throws TransformerConfigurationException {
@@ -391,6 +432,8 @@ public final class TemplatesImpl implements Templates, Serializable {
    * Implements JAXP's Templates.getOutputProperties(). We need to instanciate a
    * translet to get the output settings, so we might as well just instanciate a
    * Transformer and use its implementation of this method.
+   * 
+   * @return TODO
    */
   @Override
   public Properties getOutputProperties() {
@@ -403,6 +446,8 @@ public final class TemplatesImpl implements Templates, Serializable {
 
   /**
    * Return the thread local copy of the stylesheet DOM.
+   * 
+   * @return TODO
    */
   public DOM getStylesheetDOM() {
     return _sdom.get();
@@ -410,6 +455,9 @@ public final class TemplatesImpl implements Templates, Serializable {
 
   /**
    * Set the thread local copy of the stylesheet DOM.
+   * 
+   * @param sdom
+   *          TODO
    */
   public void setStylesheetDOM(DOM sdom) {
     _sdom.set(sdom);

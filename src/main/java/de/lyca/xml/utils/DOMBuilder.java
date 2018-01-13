@@ -31,6 +31,7 @@ import org.w3c.dom.Text;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
+import org.xml.sax.SAXException;
 import org.xml.sax.ext.LexicalHandler;
 
 import de.lyca.xml.res.XMLErrorResources;
@@ -39,8 +40,6 @@ import de.lyca.xml.res.XMLMessages;
 /**
  * This class takes SAX events (in addition to some extra events that SAX
  * doesn't handle yet) and adds the result to a document or document fragment.
- * 
- * @xsl.usage general
  */
 public class DOMBuilder implements ContentHandler, LexicalHandler {
 
@@ -170,8 +169,9 @@ public class DOMBuilder implements ContentHandler, LexicalHandler {
    * 
    * @param newNode
    *          New node to append
+   * @throws SAXException TODO
    */
-  protected void append(Node newNode) throws org.xml.sax.SAXException {
+  protected void append(Node newNode) throws SAXException {
 
     final Node currentNode = m_currentNode;
 
@@ -197,7 +197,7 @@ public class DOMBuilder implements ContentHandler, LexicalHandler {
         final String data = newNode.getNodeValue();
 
         if (null != data && data.trim().length() > 0)
-          throw new org.xml.sax.SAXException(XMLMessages.createXMLMessage(
+          throw new SAXException(XMLMessages.createXMLMessage(
                   XMLErrorResources.ER_CANT_OUTPUT_TEXT_BEFORE_DOC, null)); // "Warning: can't output text before document element!  Ignoring...");
 
         ok = false;
@@ -205,7 +205,7 @@ public class DOMBuilder implements ContentHandler, LexicalHandler {
         if (m_doc.getDocumentElement() != null) {
           ok = false;
 
-          throw new org.xml.sax.SAXException(XMLMessages.createXMLMessage(
+          throw new SAXException(XMLMessages.createXMLMessage(
                   XMLErrorResources.ER_CANT_HAVE_MORE_THAN_ONE_ROOT, null)); // "Can't have more than one root on a DOM!");
         }
       }
@@ -262,10 +262,10 @@ public class DOMBuilder implements ContentHandler, LexicalHandler {
    * The SAX parser will invoke this method only once, before any other methods
    * in this interface or in DTDHandler (except for setDocumentLocator).
    * </p>
+   * @throws SAXException TODO
    */
   @Override
-  public void startDocument() throws org.xml.sax.SAXException {
-
+  public void startDocument() throws SAXException {
     // No action for the moment.
   }
 
@@ -278,10 +278,10 @@ public class DOMBuilder implements ContentHandler, LexicalHandler {
    * until it has either abandoned parsing (because of an unrecoverable error)
    * or reached the end of input.
    * </p>
+   * @throws SAXException TODO
    */
   @Override
-  public void endDocument() throws org.xml.sax.SAXException {
-
+  public void endDocument() throws SAXException {
     // No action for the moment.
   }
 
@@ -312,11 +312,12 @@ public class DOMBuilder implements ContentHandler, LexicalHandler {
    *          The element name.
    * @param atts
    *          The attributes attached to the element, if any.
+   * @throws SAXException TODO
    * @see #endElement
    * @see org.xml.sax.Attributes
    */
   @Override
-  public void startElement(String ns, String localName, String name, Attributes atts) throws org.xml.sax.SAXException {
+  public void startElement(String ns, String localName, String name, Attributes atts) throws SAXException {
     appendTextNode();
     Element elem;
 
@@ -396,15 +397,12 @@ public class DOMBuilder implements ContentHandler, LexicalHandler {
       // append(elem);
     } catch (final java.lang.Exception de) {
       // de.printStackTrace();
-      throw new org.xml.sax.SAXException(de);
+      throw new SAXException(de);
     }
 
   }
 
   /**
-   * 
-   * 
-   * 
    * Receive notification of the end of an element.
    * 
    * <p>
@@ -418,16 +416,16 @@ public class DOMBuilder implements ContentHandler, LexicalHandler {
    * attached to the name.
    * </p>
    * 
-   * 
    * @param ns
    *          the namespace of the element
    * @param localName
    *          The local part of the qualified name of the element
    * @param name
    *          The element name
+   * @throws SAXException TODO
    */
   @Override
-  public void endElement(String ns, String localName, String name) throws org.xml.sax.SAXException {
+  public void endElement(String ns, String localName, String name) throws SAXException {
     appendTextNode();
     m_elemStack.pop();
     m_currentNode = m_elemStack.isEmpty() ? null : (Node) m_elemStack.peek();
@@ -442,7 +440,6 @@ public class DOMBuilder implements ContentHandler, LexicalHandler {
    *          The associated ID.
    */
   public void setIDAttribute(String id, Element elem) {
-
     // Do nothing. This method is meant to be overiden.
   }
 
@@ -474,11 +471,12 @@ public class DOMBuilder implements ContentHandler, LexicalHandler {
    *          The start position in the array.
    * @param length
    *          The number of characters to read from the array.
+   * @throws SAXException TODO
    * @see #ignorableWhitespace
    * @see org.xml.sax.Locator
    */
   @Override
-  public void characters(char ch[], int start, int length) throws org.xml.sax.SAXException {
+  public void characters(char ch[], int start, int length) throws SAXException {
     if (isOutsideDocElem() && de.lyca.xml.utils.XMLCharacterRecognizer.isWhiteSpace(ch, start, length))
       return; // avoid DOM006 Hierarchy request error
 
@@ -491,7 +489,7 @@ public class DOMBuilder implements ContentHandler, LexicalHandler {
     m_textBuffer.append(ch, start, length);
   }
 
-  private void appendTextNode() throws org.xml.sax.SAXException {
+  private void appendTextNode() throws SAXException {
     if (m_textBuffer.length() > 0) {
       Text text = m_doc.createTextNode(m_textBuffer.toString());
       append(text);
@@ -510,8 +508,9 @@ public class DOMBuilder implements ContentHandler, LexicalHandler {
    *          Index to start of characters in the array
    * @param length
    *          Number of characters in the array
+   * @throws SAXException TODO
    */
-  public void charactersRaw(char ch[], int start, int length) throws org.xml.sax.SAXException {
+  public void charactersRaw(char ch[], int start, int length) throws SAXException {
     if (isOutsideDocElem() && de.lyca.xml.utils.XMLCharacterRecognizer.isWhiteSpace(ch, start, length))
       return; // avoid DOM006 Hierarchy request error
 
@@ -531,12 +530,13 @@ public class DOMBuilder implements ContentHandler, LexicalHandler {
    * @param name
    *          The name of the entity. If it is a parameter entity, the name will
    *          begin with '%'.
+   * @throws SAXException TODO
    * @see #endEntity
    * @see org.xml.sax.ext.DeclHandler#internalEntityDecl
    * @see org.xml.sax.ext.DeclHandler#externalEntityDecl
    */
   @Override
-  public void startEntity(String name) throws org.xml.sax.SAXException {
+  public void startEntity(String name) throws SAXException {
 
     // Almost certainly the wrong behavior...
     // entityReference(name);
@@ -547,10 +547,11 @@ public class DOMBuilder implements ContentHandler, LexicalHandler {
    * 
    * @param name
    *          The name of the entity that is ending.
+   * @throws SAXException TODO
    * @see #startEntity
    */
   @Override
-  public void endEntity(String name) throws org.xml.sax.SAXException {
+  public void endEntity(String name) throws SAXException {
   }
 
   /**
@@ -558,8 +559,9 @@ public class DOMBuilder implements ContentHandler, LexicalHandler {
    * 
    * @param name
    *          name of the entity reference
+   * @throws SAXException TODO
    */
-  public void entityReference(String name) throws org.xml.sax.SAXException {
+  public void entityReference(String name) throws SAXException {
     append(m_doc.createEntityReference(name));
   }
 
@@ -591,10 +593,11 @@ public class DOMBuilder implements ContentHandler, LexicalHandler {
    *          The start position in the array.
    * @param length
    *          The number of characters to read from the array.
+   * @throws SAXException TODO
    * @see #characters
    */
   @Override
-  public void ignorableWhitespace(char ch[], int start, int length) throws org.xml.sax.SAXException {
+  public void ignorableWhitespace(char ch[], int start, int length) throws SAXException {
     if (isOutsideDocElem())
       return; // avoid DOM006 Hierarchy request error
 
@@ -631,9 +634,10 @@ public class DOMBuilder implements ContentHandler, LexicalHandler {
    *          The processing instruction target.
    * @param data
    *          The processing instruction data, or null if none was supplied.
+   * @throws SAXException TODO
    */
   @Override
-  public void processingInstruction(String target, String data) throws org.xml.sax.SAXException {
+  public void processingInstruction(String target, String data) throws SAXException {
     appendTextNode();
     append(m_doc.createProcessingInstruction(target, data));
   }
@@ -650,9 +654,10 @@ public class DOMBuilder implements ContentHandler, LexicalHandler {
    *          The starting position in the array.
    * @param length
    *          The number of characters to use from the array.
+   * @throws SAXException TODO
    */
   @Override
-  public void comment(char ch[], int start, int length) throws org.xml.sax.SAXException {
+  public void comment(char ch[], int start, int length) throws SAXException {
     appendTextNode();
     append(m_doc.createComment(new String(ch, start, length)));
   }
@@ -663,10 +668,11 @@ public class DOMBuilder implements ContentHandler, LexicalHandler {
   /**
    * Report the start of a CDATA section.
    * 
+   * @throws SAXException TODO
    * @see #endCDATA
    */
   @Override
-  public void startCDATA() throws org.xml.sax.SAXException {
+  public void startCDATA() throws SAXException {
     m_inCData = true;
     append(m_doc.createCDATASection(""));
   }
@@ -674,10 +680,11 @@ public class DOMBuilder implements ContentHandler, LexicalHandler {
   /**
    * Report the end of a CDATA section.
    * 
+   * @throws SAXException TODO
    * @see #startCDATA
    */
   @Override
-  public void endCDATA() throws org.xml.sax.SAXException {
+  public void endCDATA() throws SAXException {
     m_inCData = false;
   }
 
@@ -709,10 +716,11 @@ public class DOMBuilder implements ContentHandler, LexicalHandler {
    *          The start position in the array.
    * @param length
    *          The number of characters to read from the array.
+   * @throws SAXException TODO
    * @see #ignorableWhitespace
    * @see org.xml.sax.Locator
    */
-  public void cdata(char ch[], int start, int length) throws org.xml.sax.SAXException {
+  public void cdata(char ch[], int start, int length) throws SAXException {
     if (isOutsideDocElem() && de.lyca.xml.utils.XMLCharacterRecognizer.isWhiteSpace(ch, start, length))
       return; // avoid DOM006 Hierarchy request error
 
@@ -736,11 +744,12 @@ public class DOMBuilder implements ContentHandler, LexicalHandler {
    * @param systemId
    *          The declared system identifier for the external DTD subset, or
    *          null if none was declared.
+   * @throws SAXException TODO
    * @see #endDTD
    * @see #startEntity
    */
   @Override
-  public void startDTD(String name, String publicId, String systemId) throws org.xml.sax.SAXException {
+  public void startDTD(String name, String publicId, String systemId) throws SAXException {
 
     // Do nothing for now.
   }
@@ -748,10 +757,11 @@ public class DOMBuilder implements ContentHandler, LexicalHandler {
   /**
    * Report the end of DTD declarations.
    * 
+   * @throws SAXException TODO
    * @see #startDTD
    */
   @Override
-  public void endDTD() throws org.xml.sax.SAXException {
+  public void endDTD() throws SAXException {
 
     // Do nothing for now.
   }
@@ -785,11 +795,12 @@ public class DOMBuilder implements ContentHandler, LexicalHandler {
    *          The Namespace prefix being declared.
    * @param uri
    *          The Namespace URI the prefix is mapped to.
+   * @throws SAXException TODO
    * @see #endPrefixMapping
    * @see #startElement
    */
   @Override
-  public void startPrefixMapping(String prefix, String uri) throws org.xml.sax.SAXException {
+  public void startPrefixMapping(String prefix, String uri) throws SAXException {
     if (null == prefix || prefix.length() == 0) {
       prefix = "xmlns";
     } else {
@@ -810,11 +821,12 @@ public class DOMBuilder implements ContentHandler, LexicalHandler {
    * 
    * @param prefix
    *          The prefix that was being mapping.
+   * @throws SAXException TODO
    * @see #startPrefixMapping
    * @see #endElement
    */
   @Override
-  public void endPrefixMapping(String prefix) throws org.xml.sax.SAXException {
+  public void endPrefixMapping(String prefix) throws SAXException {
   }
 
   /**
@@ -832,8 +844,9 @@ public class DOMBuilder implements ContentHandler, LexicalHandler {
    * @param name
    *          The name of the skipped entity. If it is a parameter entity, the
    *          name will begin with '%'.
+   * @throws SAXException TODO
    */
   @Override
-  public void skippedEntity(String name) throws org.xml.sax.SAXException {
+  public void skippedEntity(String name) throws SAXException {
   }
 }

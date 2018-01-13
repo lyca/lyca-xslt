@@ -139,7 +139,7 @@ public class DTMManagerDefault extends DTMManager {
    *          adding this offset to the node-number field of the public DTM
    *          Handle. For the first DTM ID accessing each DTM, this is 0; for
    *          overflow addressing it will be a multiple of
-   *          1<<IDENT_DTM_NODE_BITS.
+   *          {@literal 1<<IDENT_DTM_NODE_BITS}.
    */
   synchronized public void addDTM(DTM dtm, int id, int offset) {
     if (id >= IDENT_MAX_DTMS)
@@ -177,6 +177,7 @@ public class DTMManagerDefault extends DTMManager {
 
   /**
    * Get the first free DTM ID available. %OPT% Linear search is inefficient!
+   * @return TODO
    */
   synchronized public int getFirstFreeDTMID() {
     final int n = m_dtms.length;
@@ -792,9 +793,9 @@ public class DTMManagerDefault extends DTMManager {
   /**
    * return the expanded name table.
    * 
-   * NEEDSDOC @param dtm
+   * @param dtm TODO
    * 
-   * NEEDSDOC ($objectName$) @return
+   * @return TODO
    */
   public ExpandedNameTable getExpandedNameTable(DTM dtm) {
     return m_expandedNameTable;

@@ -42,7 +42,7 @@ import de.lyca.xalan.xsltc.runtime.Operators;
  * @author Jacek Ambroziak
  * @author Santiago Pericas-Geertsen
  * @author Morten Jorgensen
- * @author Erwin Bolwidt <ejb@klomp.org>
+ * @author Erwin Bolwidt {@literal <ejb@klomp.org>}
  */
 final class EqualityExpr extends Expression {
 

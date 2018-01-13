@@ -19,6 +19,8 @@ package de.lyca.xpath.patterns;
 
 import java.util.List;
 
+import javax.xml.transform.TransformerException;
+
 import de.lyca.xml.dtm.Axis;
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xml.dtm.DTMIterator;
@@ -32,8 +34,6 @@ import de.lyca.xpath.objects.XObject;
 
 /**
  * Match pattern step that contains a function.
- * 
- * @xsl.usage advanced
  */
 public class FunctionPattern extends StepPattern {
   static final long serialVersionUID = -5426793413091209944L;
@@ -42,7 +42,9 @@ public class FunctionPattern extends StepPattern {
    * Construct a FunctionPattern from a {@link de.lyca.xpath.functions.Function
    * expression}.
    * 
-   * NEEDSDOC @param expr
+   * @param expr TODO
+   * @param axis TODO
+   * @param predicateAxis TODO
    */
   public FunctionPattern(Expression expr, Axis axis, Axis predicateAxis) {
 
@@ -101,10 +103,11 @@ public class FunctionPattern extends StepPattern {
    *         {@link de.lyca.xpath.patterns.NodeTest#SCORE_QNAME}, or
    *         {@link de.lyca.xpath.patterns.NodeTest#SCORE_OTHER}.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException
+   *           TODO
    */
   @Override
-  public XObject execute(XPathContext xctxt, int context) throws javax.xml.transform.TransformerException {
+  public XObject execute(XPathContext xctxt, int context) throws TransformerException {
 
     final DTMIterator nl = m_functionExpr.asIterator(xctxt, context);
     XNumber score = SCORE_NONE;
@@ -141,11 +144,12 @@ public class FunctionPattern extends StepPattern {
    *         {@link de.lyca.xpath.patterns.NodeTest#SCORE_QNAME}, or
    *         {@link de.lyca.xpath.patterns.NodeTest#SCORE_OTHER}.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException
+   *           TODO
    */
   @Override
   public XObject execute(XPathContext xctxt, int context, DTM dtm, int expType)
-          throws javax.xml.transform.TransformerException {
+      throws TransformerException {
 
     final DTMIterator nl = m_functionExpr.asIterator(xctxt, context);
     XNumber score = SCORE_NONE;
@@ -181,10 +185,11 @@ public class FunctionPattern extends StepPattern {
    *         {@link de.lyca.xpath.patterns.NodeTest#SCORE_QNAME}, or
    *         {@link de.lyca.xpath.patterns.NodeTest#SCORE_OTHER}.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException
+   *           TODO
    */
   @Override
-  public XObject execute(XPathContext xctxt) throws javax.xml.transform.TransformerException {
+  public XObject execute(XPathContext xctxt) throws TransformerException {
 
     int context = xctxt.getCurrentNode();
     final DTMIterator nl = m_functionExpr.asIterator(xctxt, context);

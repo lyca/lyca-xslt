@@ -46,6 +46,7 @@ public interface DOMCache {
    *          The href argument passed to the document function.
    * @param translet
    *          A reference to the translet requesting the document
+   * @return TODO
    */
   public DOM retrieveDocument(String baseURI, String href, Translet translet);
 

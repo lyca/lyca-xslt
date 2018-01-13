@@ -32,8 +32,6 @@ import de.lyca.xml.utils.URI.MalformedURIException;
  * declared to throw TransformerException. Please see code comments for details
  * on how resolution is performed.
  * </p>
- * 
- * @xsl.usage internal
  */
 public class SystemIDResolver {
 

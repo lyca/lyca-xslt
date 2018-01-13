@@ -24,8 +24,6 @@ import java.util.ResourceBundle;
 
 /**
  * The default (english) resource bundle.
- * 
- * @xsl.usage internal
  */
 public class XResourceBundle extends ListResourceBundle {
 

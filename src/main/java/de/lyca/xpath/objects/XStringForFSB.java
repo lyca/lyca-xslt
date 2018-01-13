@@ -17,6 +17,10 @@
  */
 package de.lyca.xpath.objects;
 
+import org.xml.sax.ContentHandler;
+import org.xml.sax.SAXException;
+import org.xml.sax.ext.LexicalHandler;
+
 import de.lyca.xml.utils.FastStringBuffer;
 import de.lyca.xml.utils.XMLCharacterRecognizer;
 import de.lyca.xml.utils.XMLString;
@@ -88,9 +92,9 @@ public class XStringForFSB extends XString {
   }
 
   /**
+   * TODO
    * Cast result object to a string.
-   * 
-   * @return The string this wraps or the empty string if null
+   * The string this wraps or the empty string if null
    */
   @Override
   public void appendToFsb(de.lyca.xml.utils.FastStringBuffer fsb) {
@@ -171,10 +175,10 @@ public class XStringForFSB extends XString {
    * @param ch
    *          A non-null reference to a ContentHandler.
    * 
-   * @throws org.xml.sax.SAXException
+   * @throws SAXException TODO
    */
   @Override
-  public void dispatchCharactersEvents(org.xml.sax.ContentHandler ch) throws org.xml.sax.SAXException {
+  public void dispatchCharactersEvents(ContentHandler ch) throws SAXException {
     fsb().sendSAXcharacters(ch, m_start, m_length);
   }
 
@@ -185,10 +189,10 @@ public class XStringForFSB extends XString {
    * @param lh
    *          A non-null reference to a LexicalHandler.
    * 
-   * @throws org.xml.sax.SAXException
+   * @throws SAXException TODO
    */
   @Override
-  public void dispatchAsComment(org.xml.sax.ext.LexicalHandler lh) throws org.xml.sax.SAXException {
+  public void dispatchAsComment(LexicalHandler lh) throws SAXException {
     fsb().sendSAXComment(lh, m_start, m_length);
   }
 
@@ -213,7 +217,7 @@ public class XStringForFSB extends XString {
    *          the index of the character.
    * @return the character at the specified index of this string. The first
    *         character is at index <code>0</code>.
-   * @exception IndexOutOfBoundsException
+   * @throws IndexOutOfBoundsException
    *              if the <code>index</code> argument is negative or not less
    *              than the length of this string.
    */
@@ -233,7 +237,7 @@ public class XStringForFSB extends XString {
    *          the destination array.
    * @param dstBegin
    *          the start offset in the destination array.
-   * @exception IndexOutOfBoundsException
+   * @throws IndexOutOfBoundsException
    *              If any of the following is true:
    *              <ul>
    *              <li><code>srcBegin</code> is negative.
@@ -244,7 +248,7 @@ public class XStringForFSB extends XString {
    *              <li><code>dstBegin+(srcEnd-srcBegin)</code> is larger than
    *              <code>dst.length</code>
    *              </ul>
-   * @exception NullPointerException
+   * @throws NullPointerException
    *              if <code>dst</code> is <code>null</code>
    */
   @Override
@@ -319,8 +323,6 @@ public class XStringForFSB extends XString {
    *          Object to compare this to
    * 
    * @return true if the two objects are equal
-   * 
-   * @throws javax.xml.transform.TransformerException
    */
   @Override
   public boolean equals(XObject obj2) {
@@ -359,8 +361,6 @@ public class XStringForFSB extends XString {
    *          Object to compare this to
    * 
    * @return true if the two objects are equal
-   * 
-   * @throws javax.xml.transform.TransformerException
    */
   @Override
   public boolean equals(String anotherString) {
@@ -452,7 +452,7 @@ public class XStringForFSB extends XString {
    *         lexicographically less than the string argument; and a value
    *         greater than <code>0</code> if this string is lexicographically
    *         greater than the string argument.
-   * @exception java.lang.NullPointerException
+   * @throws java.lang.NullPointerException
    *              if <code>anotherString</code> is <code>null</code>.
    */
   @Override
@@ -579,7 +579,7 @@ public class XStringForFSB extends XString {
    *         <pre>
    * this.subString(toffset).startsWith(prefix)
    * </pre>
-   * @exception java.lang.NullPointerException
+   * @throws java.lang.NullPointerException
    *              if <code>prefix</code> is <code>null</code>.
    */
   @Override
@@ -616,7 +616,7 @@ public class XStringForFSB extends XString {
    *         <code>true</code> will be returned if the argument is an empty
    *         string or is equal to this <code>String</code> object as determined
    *         by the {@link #equals(Object)} method.
-   * @exception java.lang.NullPointerException
+   * @throws java.lang.NullPointerException
    *              if <code>prefix</code> is <code>null</code>.
    * @since JDK1. 0
    */
@@ -660,7 +660,7 @@ public class XStringForFSB extends XString {
    * returned--that is, the smallest value <i>k</i> such that: <blockquote>
    * 
    * <pre>
-   * (this.charAt(<i>k</i>) == ch) && (<i>k</i> >= fromIndex)
+   * (this.charAt(<i>k</i>) == ch) {@literal &&} (<i>k</i> {@literal >=} fromIndex)
    * </pre>
    * 
    * </blockquote> is true. If no such character occurs in this string at or
@@ -719,7 +719,7 @@ public class XStringForFSB extends XString {
    * @param beginIndex
    *          the beginning index, inclusive.
    * @return the specified substring.
-   * @exception IndexOutOfBoundsException
+   * @throws IndexOutOfBoundsException
    *              if <code>beginIndex</code> is negative or larger than the
    *              length of this <code>String</code> object.
    */
@@ -748,7 +748,7 @@ public class XStringForFSB extends XString {
    * @param endIndex
    *          the ending index, exclusive.
    * @return the specified substring.
-   * @exception IndexOutOfBoundsException
+   * @throws IndexOutOfBoundsException
    *              if the <code>beginIndex</code> is negative, or
    *              <code>endIndex</code> is larger than the length of this
    *              <code>String</code> object, or <code>beginIndex</code> is
@@ -780,7 +780,7 @@ public class XStringForFSB extends XString {
    *          <code>String</code>.
    * @return a string that represents the concatenation of this object's
    *         characters followed by the string argument's characters.
-   * @exception java.lang.NullPointerException
+   * @throws java.lang.NullPointerException
    *              if <code>str</code> is <code>null</code>.
    */
   @Override

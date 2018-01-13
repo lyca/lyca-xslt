@@ -723,10 +723,10 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
    * @param ch
    *          A non-null reference to a ContentHandler.
    * 
-   * @throws org.xml.sax.SAXException
+   * @throws SAXException TODO
    */
   @Override
-  public void dispatchToEvents(int nodeHandle, org.xml.sax.ContentHandler ch) throws org.xml.sax.SAXException {
+  public void dispatchToEvents(int nodeHandle, ContentHandler ch) throws SAXException {
 
     DTMTreeWalker treeWalker = m_walker;
     final ContentHandler prevCH = treeWalker.getcontentHandler();
@@ -1582,7 +1582,7 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
     try {
       systemId = SystemIDResolver.getAbsoluteURI(systemId, getDocumentBaseURI());
     } catch (final Exception e) {
-      throw new org.xml.sax.SAXException(e);
+      throw new SAXException(e);
     }
 
     // private static final int ENTITY_FIELD_PUBLICID = 0;
@@ -2342,7 +2342,7 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
    * Report the beginning of an entity in content.
    * 
    * <p>
-   * <strong>NOTE:</entity> entity references in attribute values -- and the
+   * <strong>NOTE:</strong> entity references in attribute values -- and the
    * start and end of the document entity -- are never reported.
    * </p>
    * 

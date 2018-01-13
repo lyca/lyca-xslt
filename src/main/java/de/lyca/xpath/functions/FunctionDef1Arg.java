@@ -17,6 +17,8 @@
  */
 package de.lyca.xpath.functions;
 
+import javax.xml.transform.TransformerException;
+
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xml.utils.XMLString;
 import de.lyca.xpath.XPathContext;
@@ -27,8 +29,6 @@ import de.lyca.xpath.res.XPATHMessages;
 /**
  * Base class for functions that accept one argument that can be defaulted if
  * not specified.
- * 
- * @xsl.usage advanced
  */
 public class FunctionDef1Arg extends FunctionOneArg {
   static final long serialVersionUID = 2325189412814149264L;
@@ -43,10 +43,10 @@ public class FunctionDef1Arg extends FunctionOneArg {
    * @return The first node of the executed nodeset, or the current context node
    *         if the first argument is null.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException
    *           if an error occurs while executing the argument expression.
    */
-  protected int getArg0AsNode(XPathContext xctxt) throws javax.xml.transform.TransformerException {
+  protected int getArg0AsNode(XPathContext xctxt) throws TransformerException {
 
     return null == m_arg0 ? xctxt.getCurrentNode() : m_arg0.asNode(xctxt);
   }
@@ -71,10 +71,10 @@ public class FunctionDef1Arg extends FunctionOneArg {
    * @return The string value of the first argument, or the string value of the
    *         current context node if the first argument is null.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException
    *           if an error occurs while executing the argument expression.
    */
-  protected XMLString getArg0AsString(XPathContext xctxt) throws javax.xml.transform.TransformerException {
+  protected XMLString getArg0AsString(XPathContext xctxt) throws TransformerException {
     if (null == m_arg0) {
       final int currentNode = xctxt.getCurrentNode();
       if (DTM.NULL == currentNode)
@@ -99,10 +99,10 @@ public class FunctionDef1Arg extends FunctionOneArg {
    * @return The number value of the first argument, or the number value of the
    *         current context node if the first argument is null.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException
    *           if an error occurs while executing the argument expression.
    */
-  protected double getArg0AsNumber(XPathContext xctxt) throws javax.xml.transform.TransformerException {
+  protected double getArg0AsNumber(XPathContext xctxt) throws TransformerException {
 
     if (null == m_arg0) {
       final int currentNode = xctxt.getCurrentNode();

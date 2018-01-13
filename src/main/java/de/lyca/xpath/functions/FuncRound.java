@@ -17,14 +17,14 @@
  */
 package de.lyca.xpath.functions;
 
+import javax.xml.transform.TransformerException;
+
 import de.lyca.xpath.XPathContext;
 import de.lyca.xpath.objects.XNumber;
 import de.lyca.xpath.objects.XObject;
 
 /**
  * Execute the round() function.
- * 
- * @xsl.usage advanced
  */
 public class FuncRound extends FunctionOneArg {
   static final long serialVersionUID = -7970583902573826611L;
@@ -36,10 +36,10 @@ public class FuncRound extends FunctionOneArg {
    *          The current execution context.
    * @return A valid XObject.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
   @Override
-  public XObject execute(XPathContext xctxt) throws javax.xml.transform.TransformerException {
+  public XObject execute(XPathContext xctxt) throws TransformerException {
     final XObject obj = m_arg0.execute(xctxt);
     final double val = obj.num();
     if (val >= -0.5 && val < 0)

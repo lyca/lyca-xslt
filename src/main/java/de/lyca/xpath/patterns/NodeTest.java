@@ -20,6 +20,8 @@ package de.lyca.xpath.patterns;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.transform.TransformerException;
+
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xml.dtm.DTMFilter;
 import de.lyca.xml.utils.QName;
@@ -34,8 +36,6 @@ import de.lyca.xpath.objects.XObject;
 /**
  * This is the basic node test class for both match patterns and location path
  * steps.
- * 
- * @xsl.usage advanced
  */
 public class NodeTest extends Expression {
   static final long serialVersionUID = -5736721866747906182L;
@@ -538,10 +538,10 @@ public class NodeTest extends Expression {
    *         {@link de.lyca.xpath.patterns.NodeTest#SCORE_QNAME}, or
    *         {@link de.lyca.xpath.patterns.NodeTest#SCORE_OTHER}.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
   @Override
-  public XObject execute(XPathContext xctxt, int context) throws javax.xml.transform.TransformerException {
+  public XObject execute(XPathContext xctxt, int context) throws TransformerException {
 
     final DTM dtm = xctxt.getDTM(context);
     final short nodeType = dtm.getNodeType(context);
@@ -609,11 +609,11 @@ public class NodeTest extends Expression {
    *         {@link de.lyca.xpath.patterns.NodeTest#SCORE_QNAME}, or
    *         {@link de.lyca.xpath.patterns.NodeTest#SCORE_OTHER}.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
   @Override
   public XObject execute(XPathContext xctxt, int context, DTM dtm, int expType)
-          throws javax.xml.transform.TransformerException {
+          throws TransformerException {
 
     if (m_whatToShow == DTMFilter.SHOW_ALL)
       return m_score;
@@ -675,10 +675,10 @@ public class NodeTest extends Expression {
    *         {@link de.lyca.xpath.patterns.NodeTest#SCORE_QNAME}, or
    *         {@link de.lyca.xpath.patterns.NodeTest#SCORE_OTHER}.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
   @Override
-  public XObject execute(XPathContext xctxt) throws javax.xml.transform.TransformerException {
+  public XObject execute(XPathContext xctxt) throws TransformerException {
     return execute(xctxt, xctxt.getCurrentNode());
   }
 

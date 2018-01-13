@@ -40,8 +40,8 @@ import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
  * @author Jacek Ambroziak
  * @author Santiago Pericas-Geertsen
  * @author Morten Jorgensen
- * @author Erwin Bolwidt <ejb@klomp.org>
- * @author John Howard <JohnH@schemasoft.com>
+ * @author Erwin Bolwidt {@literal <ejb@klomp.org>}
+ * @author John Howard {@literal <JohnH@schemasoft.com>}
  */
 final class Param extends VariableBase {
 

@@ -25,8 +25,6 @@ package de.lyca.xml.serializer;
  * org.apache.project-name.Version.getVersion() be a standard way to get version
  * information.
  * </P>
- * 
- * @xsl.usage general
  */
 public final class Version {
 

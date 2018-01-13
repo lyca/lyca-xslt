@@ -65,11 +65,14 @@ public final class RealType extends NumberType {
   }
 
   /**
-   * Compiles a real expression into an expression of internal type
-   * <code>type</code>. The translation to int is undefined since reals are
-   * never converted to ints.
+   * Compiles a real expression into an expression of internal type <code>type</code>. The translation to int is
+   * undefined since reals are never converted to ints.
    * 
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
+   * @param ctx TODO
+   * @param expr TODO
+   * @param type TODO
+   * @return TODO
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo
    */
   @Override
   public JExpression compileTo(CompilerContext ctx, JExpression expr, Type type) {
@@ -89,20 +92,26 @@ public final class RealType extends NumberType {
   }
 
   /**
-   * Expects a real on the stack and pushes its string value by calling
-   * <code>Double.toString(double d)</code>.
+   * Expects a real on the stack and pushes its string value by calling <code>Double.toString(double d)</code>.
    * 
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
+   * @param ctx TODO
+   * @param expr TODO
+   * @param type TODO
+   * @return TODO
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo
    */
   public JExpression compileTo(CompilerContext ctx, JExpression expr, StringType type) {
     return ctx.ref(BasisLibrary.class).staticInvoke("realToString").arg(expr);
   }
 
   /**
-   * Expects a real on the stack and pushes a 0 if that number is 0.0 and a 1
-   * otherwise.
+   * Expects a real on the stack and pushes a 0 if that number is 0.0 and a 1 otherwise.
    * 
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
+   * @param ctx TODO
+   * @param expr TODO
+   * @param type TODO
+   * @return TODO
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo
    */
   public JExpression compileTo(CompilerContext ctx, JExpression expr, BooleanType type) {
     return ne(expr, lit(0.0)).cand(ne(expr, lit(-0.0)))
@@ -112,26 +121,39 @@ public final class RealType extends NumberType {
   /**
    * Expects a real on the stack and pushes a truncated integer value
    * 
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
+   * @param ctx TODO
+   * @param expr TODO
+   * @param type TODO
+   * @return TODO
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo
    */
   public JExpression compileTo(CompilerContext ctx, JExpression expr, IntType type) {
     return ctx.ref(BasisLibrary.class).staticInvoke("realToInt").arg(expr);
   }
 
   /**
-   * Expects a double on the stack and pushes a boxed double. Boxed double are
-   * represented by an instance of <code>java.lang.Double</code>.
+   * Expects a double on the stack and pushes a boxed double. Boxed double are represented by an instance of
+   * <code>java.lang.Double</code>.
    * 
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
+   * @param ctx TODO
+   * @param expr TODO
+   * @param type TODO
+   * @return TODO
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo
    */
   public JExpression compileTo(CompilerContext ctx, JExpression expr, ReferenceType type) {
     return ctx.ref(Double.class).staticInvoke("valueOf").arg(expr);
   }
 
   /**
-   * Translates a real into the Java type denoted by <code>clazz</code>. Expects
-   * a real on the stack and pushes a number of the appropriate type after
-   * coercion.
+   * Translates a real into the Java type denoted by <code>clazz</code>. Expects a real on the stack and pushes a number
+   * of the appropriate type after coercion.
+   * 
+   * @param ctx TODO
+   * @param expr TODO
+   * @param clazz TODO
+   * @return TODO
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo
    */
   @Override
   public JExpression compileTo(CompilerContext ctx, JExpression expr, Class<?> clazz) {
@@ -161,8 +183,13 @@ public final class RealType extends NumberType {
   }
 
   /**
-   * Translates an external (primitive) Java type into a real. Expects a java
-   * object on the stack and pushes a real (i.e., a double).
+   * Translates an external (primitive) Java type into a real. Expects a java object on the stack and pushes a real
+   * (i.e., a double).
+   * 
+   * @param ctx TODO
+   * @param expr TODO
+   * @param clazz TODO
+   * @return TODO
    */
   @Override
   public JExpression compileFrom(CompilerContext ctx, JExpression expr, Class<?> clazz) {

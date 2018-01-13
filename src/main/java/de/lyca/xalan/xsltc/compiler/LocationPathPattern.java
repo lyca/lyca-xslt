@@ -75,6 +75,8 @@ public abstract class LocationPathPattern extends Pattern {
    * precedence - highest precedence wins o) then check priority - highest
    * priority wins o) then check the position - the template that occured last
    * wins
+   * @param other TODO
+   * @return TODO
    */
   public boolean noSmallerThan(LocationPathPattern other) {
     if (_importPrecedence > other._importPrecedence)

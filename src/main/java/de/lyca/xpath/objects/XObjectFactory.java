@@ -57,7 +57,7 @@ public class XObjectFactory {
 
   /**
    * Create the right XObject based on the type of the object passed. This
-   * function <emph>can</emph> make an XObject that exposes DOM Nodes,
+   * function <em>can</em> make an XObject that exposes DOM Nodes,
    * NodeLists, and NodeIterators to the XSLT stylesheet as node-sets.
    * 
    * @param val

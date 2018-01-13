@@ -19,8 +19,6 @@ package de.lyca.xml.utils;
 
 import java.io.File;
 
-import javax.xml.transform.TransformerException;
-
 import org.w3c.dom.Comment;
 import org.w3c.dom.Element;
 import org.w3c.dom.EntityReference;
@@ -30,14 +28,15 @@ import org.w3c.dom.ProcessingInstruction;
 import org.w3c.dom.Text;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
+import org.xml.sax.SAXException;
 import org.xml.sax.ext.LexicalHandler;
 import org.xml.sax.helpers.LocatorImpl;
+
+import de.lyca.xml.dtm.ref.dom2dtm.DOM2DTM.CharacterNodeHandler;
 
 /**
  * This class does a pre-order walk of the DOM tree, calling a ContentHandler
  * interface as it goes.
- * 
- * @xsl.usage advanced
  */
 
 public class TreeWalker {
@@ -64,9 +63,7 @@ public class TreeWalker {
   }
 
   /**
-   * Get the ContentHandler used for the tree walk.
-   * 
-   * @return the ContentHandler used for the tree walk
+   * Set the ContentHandler used for the tree walk.
    */
   public void setContentHandler(ContentHandler ch) {
     m_contentHandler = ch;
@@ -147,9 +144,9 @@ public class TreeWalker {
    * @param pos
    *          Node in the tree where to start traversal
    * 
-   * @throws TransformerException
+   * @throws SAXException TODO
    */
-  public void traverse(Node pos) throws org.xml.sax.SAXException {
+  public void traverse(Node pos) throws SAXException {
     m_contentHandler.startDocument();
 
     traverseFragment(pos);
@@ -166,9 +163,9 @@ public class TreeWalker {
    * @param pos
    *          Node in the tree where to start traversal
    * 
-   * @throws TransformerException
+   * @throws SAXException TODO
    */
-  public void traverseFragment(Node pos) throws org.xml.sax.SAXException {
+  public void traverseFragment(Node pos) throws SAXException {
     final Node top = pos;
 
     while (null != pos) {
@@ -217,9 +214,9 @@ public class TreeWalker {
    * @param top
    *          Node in the tree where to end traversal
    * 
-   * @throws TransformerException
+   * @throws SAXException TODO
    */
-  public void traverse(Node pos, Node top) throws org.xml.sax.SAXException {
+  public void traverse(Node pos, Node top) throws SAXException {
 
     m_contentHandler.startDocument();
 
@@ -258,10 +255,11 @@ public class TreeWalker {
 
   /**
    * Optimized dispatch of characters.
+   * @throws SAXException TODO
    */
-  private final void dispatachChars(Node node) throws org.xml.sax.SAXException {
-    if (m_contentHandler instanceof de.lyca.xml.dtm.ref.dom2dtm.DOM2DTM.CharacterNodeHandler) {
-      ((de.lyca.xml.dtm.ref.dom2dtm.DOM2DTM.CharacterNodeHandler) m_contentHandler).characters(node);
+  private final void dispatachChars(Node node) throws SAXException {
+    if (m_contentHandler instanceof CharacterNodeHandler) {
+      ((CharacterNodeHandler) m_contentHandler).characters(node);
     } else {
       final String data = ((Text) node).getData();
       m_contentHandler.characters(data.toCharArray(), 0, data.length());
@@ -275,9 +273,9 @@ public class TreeWalker {
    * @param node
    *          Node to process
    * 
-   * @throws org.xml.sax.SAXException
+   * @throws SAXException TODO
    */
-  protected void startNode(Node node) throws org.xml.sax.SAXException {
+  protected void startNode(Node node) throws SAXException {
 
     if (m_contentHandler instanceof NodeConsumer) {
       ((NodeConsumer) m_contentHandler).setOriginatingNode(node);
@@ -408,9 +406,9 @@ public class TreeWalker {
    * @param node
    *          Node we just finished processing
    * 
-   * @throws org.xml.sax.SAXException
+   * @throws SAXException TODO
    */
-  protected void endNode(Node node) throws org.xml.sax.SAXException {
+  protected void endNode(Node node) throws SAXException {
 
     switch (node.getNodeType()) {
       case Node.DOCUMENT_NODE:

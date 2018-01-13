@@ -19,6 +19,8 @@ package de.lyca.xpath.functions;
 
 import java.util.StringTokenizer;
 
+import javax.xml.transform.TransformerException;
+
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xml.dtm.DTMIterator;
 import de.lyca.xml.utils.StringVector;
@@ -30,8 +32,6 @@ import de.lyca.xpath.res.XPATHErrorResources;
 
 /**
  * Execute the Id() function.
- * 
- * @xsl.usage advanced
  */
 public class FuncId extends FunctionOneArg {
   static final long serialVersionUID = 8930573966143567310L;
@@ -101,10 +101,10 @@ public class FuncId extends FunctionOneArg {
    *          The current execution context.
    * @return A valid XObject.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException
    */
   @Override
-  public XObject execute(XPathContext xctxt) throws javax.xml.transform.TransformerException {
+  public XObject execute(XPathContext xctxt) throws TransformerException {
 
     final int context = xctxt.getCurrentNode();
     final DTM dtm = xctxt.getDTM(context);

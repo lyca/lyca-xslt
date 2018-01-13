@@ -112,7 +112,7 @@ public class DefaultApplyXSLTProperties extends ApplyXSLTProperties {
       * Returns a URL which is constrained to a trusted IP host.
       * @param xURL URL or file path to be made safe 
       * @return Safe URL
-      * @exception MalformedURLException Thrown when xURL is not a valid URL
+      * @throws MalformedURLException Thrown when xURL is not a valid URL
       * @see #setLocalHost
       * @see #getLocalHost
       */
@@ -165,7 +165,7 @@ public class DefaultApplyXSLTProperties extends ApplyXSLTProperties {
       * If there is no request parameter for the XML document, return the configured default.
       * @param request May contain an XML document URL parameter
       * @return String form of XML URL
-      * @exception MalformedURLException Thrown when request URL is not a valid URL or path
+      * @throws MalformedURLException Thrown when request URL is not a valid URL or path
       * @see #toSafeURL
       */
     public String getXMLurl(HttpServletRequest request)
@@ -182,7 +182,7 @@ public class DefaultApplyXSLTProperties extends ApplyXSLTProperties {
       * from the request.
       * @param request May contain an XSL stylesheet URL parameter
       * @return String form of request XSL URL, or null if request contains no xslURL parameter
-      * @exception MalformedURLException Thrown when request URL is not a valid URL or path
+      * @throws MalformedURLException Thrown when request URL is not a valid URL or path
       * @see #toSafeURL
       */
     public String getXSLRequestURL(HttpServletRequest request)
@@ -199,7 +199,7 @@ public class DefaultApplyXSLTProperties extends ApplyXSLTProperties {
       * If there is no request parameter for the XSL stylesheet, return the configured default.
       * @param request May contain an XSL stylesheet URL parameter
       * @return String form of XSL URL
-      * @exception MalformedURLException Thrown when request URL is not a valid URL or path
+      * @throws MalformedURLException Thrown when request URL is not a valid URL or path
       * @see #toSafeURL
       */
     public String getXSLurl(HttpServletRequest request)

@@ -44,12 +44,14 @@ public abstract class Pattern extends Expression {
    * {@link de.lyca.xalan.xsltc.compiler.AlternativePattern#translate}) then a
    * GOTO must be appended to the instruction list after calling
    * <code>translate</code>.
+   * @param ctx TODO
    */
   @Override
   public abstract void translate(CompilerContext ctx);
 
   /**
    * Returns the priority of this pattern (section 5.5 in the XSLT spec).
+   * @return TODO
    */
   public abstract double getPriority();
 }

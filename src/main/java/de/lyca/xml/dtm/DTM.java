@@ -234,7 +234,7 @@ public interface DTM {
    * Get an iterator that can navigate over an XPath Axis, predicated by the
    * extended type ID.
    * 
-   * @param axis
+   * @param axis TODO
    * @param type
    *          An extended type ID.
    * 
@@ -360,8 +360,8 @@ public interface DTM {
    *          handle to original node from where the first child was relative to
    *          (needed to return nodes in document order).
    * @param namespaceHandle
-   *          handle to node which must be of type NAMESPACE_NODE. NEEDSDOC @param
-   *          inScope
+   *          handle to node which must be of type NAMESPACE_NODE.
+   * @param inScope TODO
    * @return handle of next namespace, or DTM.NULL to indicate none exists.
    */
   int getNextNamespaceNode(int baseHandle, int namespaceHandle, boolean inScope);
@@ -470,7 +470,9 @@ public interface DTM {
    * returned. Any additional nodes that are created that have this expanded
    * name will use this ID.
    * 
-   * NEEDSDOC @param namespace NEEDSDOC @param localName NEEDSDOC @param type
+   * @param namespace TODO
+   * @param localName TODO
+   * @param type TODO
    * 
    * @return the expanded-name id of the node.
    */
@@ -588,7 +590,6 @@ public interface DTM {
    * @param nodeHandle
    *          The node id.
    * @return the number of ancestors, plus one
-   * @xsl.usage internal
    */
   short getLevel(int nodeHandle);
 
@@ -759,7 +760,7 @@ public interface DTM {
    * Return true if the xsl:strip-space or xsl:preserve-space was processed
    * during construction of the document contained in this DTM.
    * 
-   * NEEDSDOC ($objectName$) @return
+   * @return TODO
    */
   boolean supportsPreStripping();
 
@@ -862,7 +863,7 @@ public interface DTM {
    *          href="http://www.w3.org/TR/xpath#function-normalize-space"
    *          >normalize-space</a> function.
    * 
-   * @throws SAXException
+   * @throws SAXException TODO
    */
   void dispatchCharactersEvents(int nodeHandle, ContentHandler ch, boolean normalize) throws SAXException;
 
@@ -875,7 +876,7 @@ public interface DTM {
    * @param ch
    *          A non-null reference to a ContentHandler.
    * 
-   * @throws SAXException
+   * @throws SAXException TODO
    */
   void dispatchToEvents(int nodeHandle, ContentHandler ch) throws SAXException;
 

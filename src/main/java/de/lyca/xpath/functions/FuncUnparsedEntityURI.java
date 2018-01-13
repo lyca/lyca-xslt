@@ -17,13 +17,14 @@
  */
 package de.lyca.xpath.functions;
 
+import javax.xml.transform.TransformerException;
+
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xpath.XPathContext;
 import de.lyca.xpath.objects.XObject;
 import de.lyca.xpath.objects.XString;
 
 /**
- * @xsl.usage advanced
  */
 public class FuncUnparsedEntityURI extends FunctionOneArg {
   static final long serialVersionUID = 845309759097448178L;
@@ -35,10 +36,10 @@ public class FuncUnparsedEntityURI extends FunctionOneArg {
    *          The current execution context.
    * @return A valid XObject.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
   @Override
-  public XObject execute(XPathContext xctxt) throws javax.xml.transform.TransformerException {
+  public XObject execute(XPathContext xctxt) throws TransformerException {
 
     final String name = m_arg0.execute(xctxt).str();
     final int context = xctxt.getCurrentNode();

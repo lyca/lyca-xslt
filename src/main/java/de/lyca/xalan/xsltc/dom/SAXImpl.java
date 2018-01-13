@@ -68,7 +68,7 @@ import de.lyca.xml.utils.XMLStringFactory;
  * @author Jacek Ambroziak
  * @author Santiago Pericas-Geertsen
  * @author Morten Jorgensen
- * @author Douglas Sellers <douglasjsellers@hotmail.com>
+ * @author Douglas Sellers {@literal <douglasjsellers@hotmail.com>}
  */
 public final class SAXImpl extends SAX2DTM2 implements DOMEnhancedForDTM, DOMBuilder {
 
@@ -849,7 +849,7 @@ public final class SAXImpl extends SAX2DTM2 implements DOMEnhancedForDTM, DOMBui
 
   /**
    * Specialized interface used by DOM2SAX. This one has an extra Node parameter
-   * to build the Node -> id map.
+   * to build the Node {@literal ->} id map.
    */
   public void startElement(String uri, String localName, String qname, Attributes attributes, Node node)
           throws SAXException {
@@ -1151,7 +1151,7 @@ public final class SAXImpl extends SAX2DTM2 implements DOMEnhancedForDTM, DOMBui
   /**
    * Do not think that this returns an iterator for the namespace axis. It
    * returns an iterator with nodes that belong in a certain namespace, such as
-   * with <xsl:apply-templates select="blob/foo:*"/> The 'axis' specifies the
+   * with {@literal <xsl:apply-templates select="blob/foo:*"/>} The 'axis' specifies the
    * axis for the base iterator from which the nodes are taken, while 'ns'
    * specifies the namespace URI type.
    */
@@ -1177,7 +1177,7 @@ public final class SAXImpl extends SAX2DTM2 implements DOMEnhancedForDTM, DOMBui
   /**
    * Iterator that handles node tests that test for a namespace, but have a wild
    * card for the local name of the node, i.e., node tests of the form
-   * <axis>::<prefix>:*
+   * {@literal <axis>::<prefix>:*}
    */
   public final class NamespaceWildcardIterator extends InternalAxisIteratorBase {
     /**

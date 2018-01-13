@@ -18,8 +18,7 @@
 package de.lyca.xml.dtm;
 
 /**
- * This interface is meant to be implemented by a client of the DTM, and allows
- * stripping of whitespace nodes.
+ * This interface is meant to be implemented by a client of the DTM, and allows stripping of whitespace nodes.
  */
 public interface DTMWSFilter {
 
@@ -41,13 +40,12 @@ public interface DTMWSFilter {
   }
 
   /**
-   * Test whether whitespace-only text nodes are visible in the logical view of
-   * <code>DTM</code>. Normally, this function will be called by the
-   * implementation of <code>DTM</code>; it is not normally called directly from
-   * user code.
+   * Test whether whitespace-only text nodes are visible in the logical view of <code>DTM</code>. Normally, this
+   * function will be called by the implementation of <code>DTM</code>; it is not normally called directly from user
+   * code.
    * 
-   * @param elementHandle
-   *          int Handle of the element.
+   * @param elementHandle int Handle of the element.
+   * @param dtm TODO
    * @return one of NOTSTRIP, STRIP, or INHERIT.
    */
   Mode getShouldStripSpace(int elementHandle, DTM dtm);

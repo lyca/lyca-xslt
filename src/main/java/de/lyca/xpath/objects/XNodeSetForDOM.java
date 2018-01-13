@@ -17,6 +17,8 @@
  */
 package de.lyca.xpath.objects;
 
+import javax.xml.transform.TransformerException;
+
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.traversal.NodeIterator;
@@ -96,10 +98,10 @@ public class XNodeSetForDOM extends XNodeSet {
    * 
    * @return null
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
   @Override
-  public NodeIterator nodeset() throws javax.xml.transform.TransformerException {
+  public NodeIterator nodeset() throws TransformerException {
     return m_origObj instanceof NodeIterator ? (NodeIterator) m_origObj : super.nodeset();
   }
 
@@ -108,10 +110,10 @@ public class XNodeSetForDOM extends XNodeSet {
    * 
    * @return null
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
   @Override
-  public NodeList nodelist() throws javax.xml.transform.TransformerException {
+  public NodeList nodelist() throws TransformerException {
     return m_origObj instanceof NodeList ? (NodeList) m_origObj : super.nodelist();
   }
 

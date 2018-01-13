@@ -17,14 +17,14 @@
  */
 package de.lyca.xpath.functions;
 
+import javax.xml.transform.TransformerException;
+
 import de.lyca.xpath.XPathContext;
 import de.lyca.xpath.objects.XBoolean;
 import de.lyca.xpath.objects.XObject;
 
 /**
  * Execute the StartsWith() function.
- * 
- * @xsl.usage advanced
  */
 public class FuncStartsWith extends Function2Args {
   static final long serialVersionUID = 2194585774699567928L;
@@ -36,10 +36,10 @@ public class FuncStartsWith extends Function2Args {
    *          The current execution context.
    * @return A valid XObject.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
   @Override
-  public XObject execute(XPathContext xctxt) throws javax.xml.transform.TransformerException {
+  public XObject execute(XPathContext xctxt) throws TransformerException {
     return m_arg0.execute(xctxt).xstr().startsWith(m_arg1.execute(xctxt).xstr()) ? XBoolean.S_TRUE : XBoolean.S_FALSE;
   }
 }

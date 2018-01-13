@@ -17,6 +17,8 @@
  */
 package de.lyca.xpath.operations;
 
+import javax.xml.transform.TransformerException;
+
 import de.lyca.xpath.XPathContext;
 import de.lyca.xpath.objects.XBoolean;
 import de.lyca.xpath.objects.XObject;
@@ -37,10 +39,10 @@ public class And extends Operation {
    * @return {@link de.lyca.xpath.objects.XBoolean#S_TRUE} or
    *         {@link de.lyca.xpath.objects.XBoolean#S_FALSE}.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
   @Override
-  public XObject execute(XPathContext xctxt) throws javax.xml.transform.TransformerException {
+  public XObject execute(XPathContext xctxt) throws TransformerException {
 
     final XObject expr1 = m_left.execute(xctxt);
 
@@ -60,10 +62,10 @@ public class And extends Operation {
    * 
    * @return The result of the operation as a boolean.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
   @Override
-  public boolean bool(XPathContext xctxt) throws javax.xml.transform.TransformerException {
+  public boolean bool(XPathContext xctxt) throws TransformerException {
     return m_left.bool(xctxt) && m_right.bool(xctxt);
   }
 

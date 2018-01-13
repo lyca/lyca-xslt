@@ -20,8 +20,10 @@ package de.lyca.xpath.jaxp;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.TransformerException;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFunctionException;
 import javax.xml.xpath.XPathFunctionResolver;
 import javax.xml.xpath.XPathVariableResolver;
 
@@ -31,6 +33,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.traversal.NodeIterator;
 import org.xml.sax.InputSource;
 
+import de.lyca.xpath.XPathContext;
 import de.lyca.xpath.objects.XObject;
 import de.lyca.xpath.res.XPATHErrorResources;
 import de.lyca.xpath.res.XPATHMessages;
@@ -83,22 +86,22 @@ public class XPathExpressionImpl implements javax.xml.xpath.XPathExpression {
     this.xpath = xpath;
   }
 
-  public Object eval(Object item, QName returnType) throws javax.xml.transform.TransformerException {
+  public Object eval(Object item, QName returnType) throws TransformerException {
     final XObject resultObject = eval(item);
     return getResultAsType(resultObject, returnType);
   }
 
-  private XObject eval(Object contextItem) throws javax.xml.transform.TransformerException {
-    de.lyca.xpath.XPathContext xpathSupport = null;
+  private XObject eval(Object contextItem) throws TransformerException {
+    XPathContext xpathSupport = null;
 
     // Create an XPathContext that doesn't support pushing and popping of
     // variable resolution scopes. Sufficient for simple XPath 1.0
     // expressions.
     if (functionResolver != null) {
       final JAXPExtensionsProvider jep = new JAXPExtensionsProvider(functionResolver, featureSecureProcessing);
-      xpathSupport = new de.lyca.xpath.XPathContext(jep, false);
+      xpathSupport = new XPathContext(jep, false);
     } else {
-      xpathSupport = new de.lyca.xpath.XPathContext(false);
+      xpathSupport = new XPathContext(false);
     }
 
     xpathSupport.setVarStack(new JAXPVariableStack(variableResolver));
@@ -174,15 +177,15 @@ public class XPathExpressionImpl implements javax.xml.xpath.XPathExpression {
     }
     try {
       return eval(item, returnType);
-    } catch (final java.lang.NullPointerException npe) {
+    } catch (final NullPointerException npe) {
       // If VariableResolver returns null Or if we get
       // NullPointerException at this stage for some other reason
       // then we have to reurn XPathException
       throw new XPathExpressionException(npe);
-    } catch (final javax.xml.transform.TransformerException te) {
+    } catch (final TransformerException te) {
       final Throwable nestedException = te.getException();
-      if (nestedException instanceof javax.xml.xpath.XPathFunctionException)
-        throw (javax.xml.xpath.XPathFunctionException) nestedException;
+      if (nestedException instanceof XPathFunctionException)
+        throw (XPathFunctionException) nestedException;
       else
         // For any other exceptions we need to throw
         // XPathExpressionException ( as per spec )
@@ -352,7 +355,7 @@ public class XPathExpressionImpl implements javax.xml.xpath.XPathExpression {
   }
 
   private Object getResultAsType(XObject resultObject, QName returnType)
-          throws javax.xml.transform.TransformerException {
+          throws TransformerException {
     // XPathConstants.STRING
     if (returnType.equals(XPathConstants.STRING))
       return resultObject.str();

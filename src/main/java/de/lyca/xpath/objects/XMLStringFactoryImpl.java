@@ -23,8 +23,6 @@ import de.lyca.xml.utils.XMLStringFactory;
 
 /**
  * Class XMLStringFactoryImpl creates XString versions of XMLStrings.
- * 
- * @xsl.usage internal
  */
 public class XMLStringFactoryImpl extends XMLStringFactory {
   /** The XMLStringFactory to pass to DTM construction. */

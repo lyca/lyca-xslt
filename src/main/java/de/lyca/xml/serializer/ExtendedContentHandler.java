@@ -47,8 +47,6 @@ import org.xml.sax.SAXException;
  * <pre>
  * addAttribute(namespaceURI, localName, qName, type, value)
  * </pre>
- * 
- * @xsl.usage internal
  */
 public interface ExtendedContentHandler extends ContentHandler {
   /**

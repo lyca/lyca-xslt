@@ -159,12 +159,15 @@ public class DTMDocumentImpl implements DTM, ContentHandler, LexicalHandler {
   /**
    * Construct a DTM.
    * 
+   * @param mgr TODO
    * @param documentNumber
    *          the ID number assigned to this document. It will be shifted up
    *          into the high bits and returned as part of all node ID numbers, so
    *          those IDs indicate which document they came from as well as a
    *          location within the document. It is the DTMManager's
    *          responsibility to assign a unique number to each document.
+   * @param whiteSpaceFilter TODO
+   * @param xstringfactory TODO
    */
   public DTMDocumentImpl(DTMManager mgr, int documentNumber, DTMWSFilter whiteSpaceFilter,
           XMLStringFactory xstringfactory) {
@@ -1314,7 +1317,7 @@ public class DTMDocumentImpl implements DTM, ContentHandler, LexicalHandler {
    * Given a node handle, advance to its next descendant. If not yet resolved,
    * waits for more nodes to be added to the document and tries again.
    * 
-   * @param subtreeRootHandle
+   * @param subtreeRootHandle TODO
    * @param nodeHandle
    *          int Handle of the node.
    * @return handle of next descendant, or DTM.NULL to indicate none exists.
@@ -1362,7 +1365,7 @@ public class DTMDocumentImpl implements DTM, ContentHandler, LexicalHandler {
    * 
    * @param axisContextHandle
    *          the start of the axis that is being traversed.
-   * @param nodeHandle
+   * @param nodeHandle TODO
    * @return handle of next sibling, or DTM.NULL to indicate none exists.
    */
   public int getNextFollowing(int axisContextHandle, int nodeHandle) {
@@ -1834,7 +1837,6 @@ public class DTMDocumentImpl implements DTM, ContentHandler, LexicalHandler {
    * @param nodeHandle
    *          The node id.
    * @return the number of ancestors, plus one
-   * @xsl.usage internal
    */
   @Override
   public short getLevel(int nodeHandle) {
@@ -2154,7 +2156,7 @@ public class DTMDocumentImpl implements DTM, ContentHandler, LexicalHandler {
    * @param ch
    *          A non-null reference to a ContentHandler.
    * 
-   * @throws org.xml.sax.SAXException
+   * @throws SAXException TODO
    */
   @Override
   public void dispatchCharactersEvents(int nodeHandle, ContentHandler ch, boolean normalize) throws SAXException {
@@ -2168,9 +2170,8 @@ public class DTMDocumentImpl implements DTM, ContentHandler, LexicalHandler {
    * @param ch
    *          A non-null reference to a ContentHandler.
    * 
-   * @throws org.xml.sax.SAXException
+   * @throws SAXException TODO
    */
-
   @Override
   public void dispatchToEvents(int nodeHandle, ContentHandler ch) throws SAXException {
   }
@@ -2480,7 +2481,7 @@ public class DTMDocumentImpl implements DTM, ContentHandler, LexicalHandler {
    * extended type ID.
    * 
    * 
-   * @param axis
+   * @param axis TODO
    * @param type
    *          An extended type ID.
    * 

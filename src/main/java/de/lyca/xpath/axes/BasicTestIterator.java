@@ -17,6 +17,8 @@
  */
 package de.lyca.xpath.axes;
 
+import javax.xml.transform.TransformerException;
+
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xml.dtm.DTMFilter;
 import de.lyca.xml.dtm.DTMIterator;
@@ -32,22 +34,18 @@ public abstract class BasicTestIterator extends LocPathIterator {
   static final long serialVersionUID = 3505378079378096623L;
 
   /**
-   * Create a LocPathIterator object.
-   * 
-   * @param nscontext
-   *          The namespace context for this iterator, should be OK if null.
+   * Create a BasicTestIterator object.
    */
   protected BasicTestIterator() {
   }
 
   /**
-   * Create a LocPathIterator object.
+   * Create a BasicTestIterator object.
    * 
    * @param nscontext
    *          The namespace context for this iterator, should be OK if null.
    */
   protected BasicTestIterator(PrefixResolver nscontext) {
-
     super(nscontext);
   }
 
@@ -61,18 +59,20 @@ public abstract class BasicTestIterator extends LocPathIterator {
    * @param opPos
    *          The position of this iterator in the opcode list from the
    *          compiler.
+   * @param analysis
+   *          TODO
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException
+   *           TODO
    */
-  protected BasicTestIterator(Compiler compiler, int opPos, int analysis)
-          throws javax.xml.transform.TransformerException {
+  protected BasicTestIterator(Compiler compiler, int opPos, int analysis) throws TransformerException {
     super(compiler, opPos, analysis, false);
 
     final int firstStepPos = OpMap.getFirstChildPos(opPos);
     final int whatToShow = compiler.getWhatToShow(firstStepPos);
 
-    if (0 == (whatToShow & (DTMFilter.SHOW_ATTRIBUTE | DTMFilter.SHOW_NAMESPACE | DTMFilter.SHOW_ELEMENT | DTMFilter.SHOW_PROCESSING_INSTRUCTION))
-            || whatToShow == DTMFilter.SHOW_ALL) {
+    if (0 == (whatToShow & (DTMFilter.SHOW_ATTRIBUTE | DTMFilter.SHOW_NAMESPACE | DTMFilter.SHOW_ELEMENT
+        | DTMFilter.SHOW_PROCESSING_INSTRUCTION)) || whatToShow == DTMFilter.SHOW_ALL) {
       initNodeTest(whatToShow);
     } else {
       initNodeTest(whatToShow, compiler.getStepNS(firstStepPos), compiler.getStepLocalName(firstStepPos));
@@ -90,14 +90,17 @@ public abstract class BasicTestIterator extends LocPathIterator {
    * @param opPos
    *          The position of this iterator in the opcode list from the
    *          compiler.
+   * @param analysis
+   *          TODO
    * @param shouldLoadWalkers
    *          True if walkers should be loaded, or false if this is a derived
    *          iterator and it doesn't wish to load child walkers.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException
+   *           TODO
    */
   protected BasicTestIterator(Compiler compiler, int opPos, int analysis, boolean shouldLoadWalkers)
-          throws javax.xml.transform.TransformerException {
+      throws TransformerException {
     super(compiler, opPos, analysis, shouldLoadWalkers);
   }
 
@@ -181,6 +184,7 @@ public abstract class BasicTestIterator extends LocPathIterator {
    * @return A cloned NodeIterator set of the start of the query.
    * 
    * @throws CloneNotSupportedException
+   *           TODO
    */
   @Override
   public DTMIterator cloneWithReset() throws CloneNotSupportedException {

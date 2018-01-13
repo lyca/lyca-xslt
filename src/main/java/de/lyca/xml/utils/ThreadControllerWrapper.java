@@ -18,8 +18,8 @@
 package de.lyca.xml.utils;
 
 /**
- * A utility class that wraps the ThreadController, which is used by
- * IncrementalSAXSource for the incremental building of DTM.
+ * A utility class that wraps the ThreadController, which is used by IncrementalSAXSource for the incremental building
+ * of DTM.
  */
 public class ThreadControllerWrapper {
 
@@ -35,27 +35,22 @@ public class ThreadControllerWrapper {
   }
 
   /**
-   * Thread controller utility class for incremental SAX source. Must be
-   * overriden with a derived class to support thread pooling.
+   * Thread controller utility class for incremental SAX source. Must be overriden with a derived class to support
+   * thread pooling.
    * 
    * All thread-related stuff is in this class.
    */
   public static class ThreadController {
 
     /**
-     * Will get a thread from the pool, execute the task and return the thread
-     * to the pool.
+     * Will get a thread from the pool, execute the task and return the thread to the pool.
      * 
      * The return value is used only to wait for completion
      * 
-     * 
-     * NEEDSDOC @param task
-     * 
-     * @param priority
-     *          if >0 the task will run with the given priority ( doesn't seem
-     *          to be used in xalan, since it's allways the default )
-     * @return The thread that is running the task, can be used to wait for
-     *         completion
+     * @param task TODO
+     * @param priority if {@literal >0} the task will run with the given priority ( doesn't seem to be used in xalan,
+     *        since it's allways the default )
+     * @return The thread that is running the task, can be used to wait for completion
      */
     public Thread run(Runnable task, int priority) {
 

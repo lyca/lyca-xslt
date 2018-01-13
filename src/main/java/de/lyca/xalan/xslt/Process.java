@@ -19,6 +19,7 @@ package de.lyca.xalan.xslt;
 
 import java.io.FileOutputStream;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -29,7 +30,10 @@ import java.util.ResourceBundle;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
@@ -52,7 +56,11 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.EntityResolver;
+import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXNotRecognizedException;
+import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
@@ -61,11 +69,10 @@ import de.lyca.xalan.Version;
 import de.lyca.xalan.res.XSLMessages;
 import de.lyca.xalan.res.XSLTErrorResources;
 import de.lyca.xml.utils.DefaultErrorHandler;
+import de.lyca.xml.utils.WrappedRuntimeException;
 
 /**
  * The main() method handles the Xalan command-line interface.
- * 
- * @xsl.usage general
  */
 public class Process {
   /**
@@ -150,8 +157,8 @@ public class Process {
     /**
      * The default diagnostic writer...
      */
-    final java.io.PrintWriter diagnosticsWriter = new PrintWriter(System.err, true);
-    java.io.PrintWriter dumpWriter = diagnosticsWriter;
+    final PrintWriter diagnosticsWriter = new PrintWriter(System.err, true);
+    PrintWriter dumpWriter = diagnosticsWriter;
     final ResourceBundle resbundle = XSLMessages
             .loadResourceBundle(de.lyca.xml.utils.res.XResourceBundle.ERROR_RESOURCES);
     String flavor = "s2s";
@@ -610,24 +617,24 @@ public class Process {
 
                 // Use JAXP1.1 ( if possible )
                 try {
-                  final javax.xml.parsers.SAXParserFactory factory = javax.xml.parsers.SAXParserFactory.newInstance();
+                  final SAXParserFactory factory = SAXParserFactory.newInstance();
 
                   factory.setNamespaceAware(true);
 
                   if (isSecureProcessing) {
                     try {
                       factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-                    } catch (final org.xml.sax.SAXException se) {
+                    } catch (final SAXException se) {
                     }
                   }
 
-                  final javax.xml.parsers.SAXParser jaxpParser = factory.newSAXParser();
+                  final SAXParser jaxpParser = factory.newSAXParser();
 
                   reader = jaxpParser.getXMLReader();
-                } catch (final javax.xml.parsers.ParserConfigurationException ex) {
-                  throw new org.xml.sax.SAXException(ex);
-                } catch (final javax.xml.parsers.FactoryConfigurationError ex1) {
-                  throw new org.xml.sax.SAXException(ex1.toString());
+                } catch (final ParserConfigurationException ex) {
+                  throw new SAXException(ex);
+                } catch (final FactoryConfigurationError ex1) {
+                  throw new SAXException(ex1.toString());
                 } catch (final NoSuchMethodError ex2) {
                 } catch (final AbstractMethodError ame) {
                 }
@@ -641,18 +648,18 @@ public class Process {
                 reader.setContentHandler(th);
                 reader.setDTDHandler(th);
 
-                if (th instanceof org.xml.sax.ErrorHandler) {
-                  reader.setErrorHandler((org.xml.sax.ErrorHandler) th);
+                if (th instanceof ErrorHandler) {
+                  reader.setErrorHandler((ErrorHandler) th);
                 }
 
                 try {
                   reader.setProperty("http://xml.org/sax/properties/lexical-handler", th);
-                } catch (final org.xml.sax.SAXNotRecognizedException e) {
-                } catch (final org.xml.sax.SAXNotSupportedException e) {
+                } catch (final SAXNotRecognizedException e) {
+                } catch (final SAXNotSupportedException e) {
                 }
                 try {
                   reader.setFeature("http://xml.org/sax/features/namespace-prefixes", true);
-                } catch (final org.xml.sax.SAXException se) {
+                } catch (final SAXException se) {
                 }
 
                 th.setResult(strResult);
@@ -665,24 +672,24 @@ public class Process {
 
                 // Use JAXP1.1 ( if possible )
                 try {
-                  final javax.xml.parsers.SAXParserFactory factory = javax.xml.parsers.SAXParserFactory.newInstance();
+                  final SAXParserFactory factory = SAXParserFactory.newInstance();
 
                   factory.setNamespaceAware(true);
 
                   if (isSecureProcessing) {
                     try {
                       factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-                    } catch (final org.xml.sax.SAXException se) {
+                    } catch (final SAXException se) {
                     }
                   }
 
-                  final javax.xml.parsers.SAXParser jaxpParser = factory.newSAXParser();
+                  final SAXParser jaxpParser = factory.newSAXParser();
 
                   reader = jaxpParser.getXMLReader();
-                } catch (final javax.xml.parsers.ParserConfigurationException ex) {
-                  throw new org.xml.sax.SAXException(ex);
-                } catch (final javax.xml.parsers.FactoryConfigurationError ex1) {
-                  throw new org.xml.sax.SAXException(ex1.toString());
+                } catch (final ParserConfigurationException ex) {
+                  throw new SAXException(ex);
+                } catch (final FactoryConfigurationError ex1) {
+                  throw new SAXException(ex1.toString());
                 } catch (final NoSuchMethodError ex2) {
                 } catch (final AbstractMethodError ame) {
                 }
@@ -733,7 +740,7 @@ public class Process {
             if (writer != null) {
               writer.close();
             }
-          } catch (final java.io.IOException ie) {
+          } catch (final IOException ie) {
           }
         }
 
@@ -748,8 +755,8 @@ public class Process {
         }
 
       } catch (Throwable throwable) {
-        while (throwable instanceof de.lyca.xml.utils.WrappedRuntimeException) {
-          throwable = ((de.lyca.xml.utils.WrappedRuntimeException) throwable).getException();
+        while (throwable instanceof WrappedRuntimeException) {
+          throwable = ((WrappedRuntimeException) throwable).getException();
         }
 
         if (throwable instanceof NullPointerException || throwable instanceof ClassCastException) {

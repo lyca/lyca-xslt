@@ -32,7 +32,7 @@ import de.lyca.xml.dtm.ref.DTMAxisIteratorBase;
  * 
  * @author Jacek Ambroziak
  * @author Santiago Pericas-Geertsen
- * @author Erwin Bolwidt <ejb@klomp.org>
+ * @author Erwin Bolwidt {@literal <ejb@klomp.org>}
  * @author Morten Jorgensen
  */
 public class StepIterator extends DTMAxisIteratorBase {

@@ -39,8 +39,6 @@ import org.xml.sax.ext.LexicalHandler;
  * handler, the ultimate xsl:output method is known to be "xml".
  * 
  * This class is not a public API.
- * 
- * @xsl.usage internal
  */
 public final class ToXMLSAXHandler extends ToSAXHandler {
 
@@ -460,7 +458,7 @@ public final class ToXMLSAXHandler extends ToSAXHandler {
 
   /**
    * Start an element in the output document. This might be an XML element
-   * (<elem>data</elem> type) or a CDATA section.
+   * ({@literal <elem>data</elem>} type) or a CDATA section.
    */
   @Override
   public void startElement(String elementNamespaceURI, String elementLocalName, String elementName) throws SAXException {
@@ -622,7 +620,7 @@ public final class ToXMLSAXHandler extends ToSAXHandler {
 
   }
 
-  private void ensurePrefixIsDeclared(String ns, String rawName) throws org.xml.sax.SAXException {
+  private void ensurePrefixIsDeclared(String ns, String rawName) throws SAXException {
 
     if (ns != null && ns.length() > 0) {
       int index;

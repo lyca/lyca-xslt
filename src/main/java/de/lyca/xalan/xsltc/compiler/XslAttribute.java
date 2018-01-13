@@ -41,7 +41,7 @@ import de.lyca.xml.utils.XML11Char;
  * @author Jacek Ambroziak
  * @author Santiago Pericas-Geertsen
  * @author Morten Jorgensen
- * @author Erwin Bolwidt <ejb@klomp.org>
+ * @author Erwin Bolwidt {@literal <ejb@klomp.org>}
  * @author Gunnlaugur Briem <gthb@dimon.is>
  */
 final class XslAttribute extends Instruction {

@@ -24,8 +24,6 @@ import org.w3c.dom.DOMStringList;
 
 /**
  * This class implemets the DOM Level 3 Core interface DOMStringList.
- * 
- * @xsl.usage internal
  */
 final class DOMStringListImpl implements DOMStringList {
 

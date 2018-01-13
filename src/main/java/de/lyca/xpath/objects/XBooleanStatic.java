@@ -17,11 +17,13 @@
  */
 package de.lyca.xpath.objects;
 
+import javax.xml.transform.TransformerException;
+
+import de.lyca.xml.utils.WrappedRuntimeException;
+
 /**
  * This class doesn't have any XPathContext, so override whatever to ensure it
  * works OK.
- * 
- * @xsl.usage internal
  */
 public class XBooleanStatic extends XBoolean {
   static final long serialVersionUID = -8064147275772687409L;
@@ -53,15 +55,13 @@ public class XBooleanStatic extends XBoolean {
    *          Object to compare to this
    * 
    * @return True if the two objects are equal
-   * 
-   * @throws javax.xml.transform.TransformerException
    */
   @Override
   public boolean equals(XObject obj2) {
     try {
       return m_val == obj2.bool();
-    } catch (final javax.xml.transform.TransformerException te) {
-      throw new de.lyca.xml.utils.WrappedRuntimeException(te);
+    } catch (final TransformerException te) {
+      throw new WrappedRuntimeException(te);
     }
   }
 }

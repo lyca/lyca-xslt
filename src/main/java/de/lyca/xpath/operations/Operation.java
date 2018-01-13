@@ -19,6 +19,8 @@ package de.lyca.xpath.operations;
 
 import java.util.List;
 
+import javax.xml.transform.TransformerException;
+
 import de.lyca.xml.utils.QName;
 import de.lyca.xpath.Expression;
 import de.lyca.xpath.ExpressionOwner;
@@ -108,10 +110,10 @@ public class Operation extends Expression implements ExpressionOwner {
    * 
    * @return The XObject result of the operation.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
   @Override
-  public XObject execute(XPathContext xctxt) throws javax.xml.transform.TransformerException {
+  public XObject execute(XPathContext xctxt) throws TransformerException {
 
     final XObject left = m_left.execute(xctxt, true);
     final XObject right = m_right.execute(xctxt, true);
@@ -134,9 +136,9 @@ public class Operation extends Expression implements ExpressionOwner {
    * @return non-null reference to the XObject that represents the result of the
    *         operation.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
-  public XObject operate(XObject left, XObject right) throws javax.xml.transform.TransformerException {
+  public XObject operate(XObject left, XObject right) throws TransformerException {
     return null; // no-op
   }
 

@@ -36,8 +36,6 @@ import java.io.Writer;
  * and the underlying writer may not be UTF-8 encoding. There may also be
  * encoding differences. So the main pupose of this class is to provide a
  * resonable facsimile of the true output.
- * 
- * @xsl.usage internal
  */
 final class SerializerTraceWriter extends Writer implements WriterChain {
 
@@ -166,7 +164,7 @@ final class SerializerTraceWriter extends Writer implements WriterChain {
    * 
    * @param c
    *          int specifying a character to be written.
-   * @exception IOException
+   * @throws IOException
    *              If an I/O error occurs
    */
   @Override
@@ -208,7 +206,7 @@ final class SerializerTraceWriter extends Writer implements WriterChain {
    * @param length
    *          Number of characters to write
    * 
-   * @exception IOException
+   * @throws IOException
    *              If an I/O error occurs
    * 
    * @throws java.io.IOException
@@ -263,7 +261,7 @@ final class SerializerTraceWriter extends Writer implements WriterChain {
    * @param s
    *          String to be written
    * 
-   * @exception IOException
+   * @throws IOException
    *              If an I/O error occurs
    */
   @Override

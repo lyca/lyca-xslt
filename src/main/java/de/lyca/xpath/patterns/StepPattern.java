@@ -19,6 +19,8 @@ package de.lyca.xpath.patterns;
 
 import java.util.List;
 
+import javax.xml.transform.TransformerException;
+
 import de.lyca.xml.dtm.Axis;
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xml.dtm.DTMAxisTraverser;
@@ -34,8 +36,6 @@ import de.lyca.xpath.objects.XObject;
 
 /**
  * This class represents a single pattern match step.
- * 
- * @xsl.usage advanced
  */
 public class StepPattern extends NodeTest implements SubContextList, ExpressionOwner {
   static final long serialVersionUID = 9071668960168152644L;
@@ -326,10 +326,11 @@ public class StepPattern extends NodeTest implements SubContextList, ExpressionO
    *         {@link de.lyca.xpath.patterns.NodeTest#SCORE_QNAME}, or
    *         {@link de.lyca.xpath.patterns.NodeTest#SCORE_OTHER}.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException
+   *           TODO
    */
   @Override
-  public XObject execute(XPathContext xctxt, int currentNode) throws javax.xml.transform.TransformerException {
+  public XObject execute(XPathContext xctxt, int currentNode) throws TransformerException {
 
     final DTM dtm = xctxt.getDTM(currentNode);
 
@@ -355,10 +356,11 @@ public class StepPattern extends NodeTest implements SubContextList, ExpressionO
    *         {@link de.lyca.xpath.patterns.NodeTest#SCORE_QNAME}, or
    *         {@link de.lyca.xpath.patterns.NodeTest#SCORE_OTHER}.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException
+   *           TODO
    */
   @Override
-  public XObject execute(XPathContext xctxt) throws javax.xml.transform.TransformerException {
+  public XObject execute(XPathContext xctxt) throws TransformerException {
     return execute(xctxt, xctxt.getCurrentNode());
   }
 
@@ -378,12 +380,11 @@ public class StepPattern extends NodeTest implements SubContextList, ExpressionO
    * 
    * @return The result of the expression in the form of a <code>XObject</code>.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException
    *           if a runtime exception occurs.
    */
   @Override
-  public XObject execute(XPathContext xctxt, int currentNode, DTM dtm, int expType)
-          throws javax.xml.transform.TransformerException {
+  public XObject execute(XPathContext xctxt, int currentNode, DTM dtm, int expType) throws TransformerException {
 
     if (m_whatToShow == NodeTest.SHOW_BYFUNCTION) {
       if (null != m_relativePathPattern)
@@ -477,10 +478,10 @@ public class StepPattern extends NodeTest implements SubContextList, ExpressionO
           xctxt.popCurrentNode();
         }
       }
-    } catch (final javax.xml.transform.TransformerException se) {
+    } catch (final TransformerException se) {
 
       // TODO: should keep throw sax exception...
-      throw new java.lang.RuntimeException(se.getMessage());
+      throw new RuntimeException(se.getMessage());
     }
 
     return pos == 1;
@@ -560,10 +561,10 @@ public class StepPattern extends NodeTest implements SubContextList, ExpressionO
           xctxt.popCurrentNode();
         }
       }
-    } catch (final javax.xml.transform.TransformerException se) {
+    } catch (final TransformerException se) {
 
       // TODO: should keep throw sax exception...
-      throw new java.lang.RuntimeException(se.getMessage());
+      throw new RuntimeException(se.getMessage());
     }
 
     return pos;
@@ -619,10 +620,11 @@ public class StepPattern extends NodeTest implements SubContextList, ExpressionO
    *         {@link de.lyca.xpath.patterns.NodeTest#SCORE_QNAME}, or
    *         {@link de.lyca.xpath.patterns.NodeTest#SCORE_OTHER}.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException
+   *           TODO
    */
   protected final XObject executeRelativePathPattern(XPathContext xctxt, DTM dtm, int currentNode)
-          throws javax.xml.transform.TransformerException {
+      throws TransformerException {
 
     XObject score = NodeTest.SCORE_NONE;
     final int context = currentNode;
@@ -660,10 +662,10 @@ public class StepPattern extends NodeTest implements SubContextList, ExpressionO
    * 
    * @return true if the node should be accepted, false otherwise.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException
+   *           TODO
    */
-  protected final boolean executePredicates(XPathContext xctxt, DTM dtm, int currentNode)
-          throws javax.xml.transform.TransformerException {
+  protected final boolean executePredicates(XPathContext xctxt, DTM dtm, int currentNode) throws TransformerException {
 
     boolean result = true;
     boolean positionAlreadySeen = false;
@@ -799,9 +801,10 @@ public class StepPattern extends NodeTest implements SubContextList, ExpressionO
    *         {@link de.lyca.xpath.patterns.NodeTest#SCORE_QNAME}, or
    *         {@link de.lyca.xpath.patterns.NodeTest#SCORE_OTHER}.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException
+   *           TODO
    */
-  public double getMatchScore(XPathContext xctxt, int context) throws javax.xml.transform.TransformerException {
+  public double getMatchScore(XPathContext xctxt, int context) throws TransformerException {
 
     xctxt.pushCurrentNode(context);
     xctxt.pushCurrentExpressionNode(context);
@@ -865,6 +868,10 @@ public class StepPattern extends NodeTest implements SubContextList, ExpressionO
   }
 
   /**
+   * @param owner
+   *          TODO
+   * @param visitor
+   *          TODO
    * @see de.lyca.xpath.XPathVisitable#callVisitors(ExpressionOwner,
    *      XPathVisitor)
    */
@@ -878,6 +885,9 @@ public class StepPattern extends NodeTest implements SubContextList, ExpressionO
   /**
    * Call the visitors on the subtree. Factored out from callVisitors so it may
    * be called by derived classes.
+   * 
+   * @param visitor
+   *          TODO
    */
   protected void callSubtreeVisitors(XPathVisitor visitor) {
     if (null != m_predicates) {

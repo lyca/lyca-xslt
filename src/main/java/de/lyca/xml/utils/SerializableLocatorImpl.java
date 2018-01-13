@@ -17,6 +17,10 @@
  */
 package de.lyca.xml.utils;
 
+import java.io.Serializable;
+
+import org.xml.sax.Locator;
+
 /**
  * The standard SAX implementation of LocatorImpl is not serializable, limiting
  * its utility as "a persistent snapshot of a locator". This is a quick hack to
@@ -34,7 +38,7 @@ package de.lyca.xml.utils;
  * @author Joe Kesselman
  * @version 1.0
  */
-public class SerializableLocatorImpl implements org.xml.sax.Locator, java.io.Serializable
+public class SerializableLocatorImpl implements Locator, Serializable
 
 {
   static final long serialVersionUID = -2660312888446371460L;
@@ -65,7 +69,7 @@ public class SerializableLocatorImpl implements org.xml.sax.Locator, java.io.Ser
    * @param locator
    *          The locator to copy.
    */
-  public SerializableLocatorImpl(org.xml.sax.Locator locator) {
+  public SerializableLocatorImpl(Locator locator) {
     setPublicId(locator.getPublicId());
     setSystemId(locator.getSystemId());
     setLineNumber(locator.getLineNumber());

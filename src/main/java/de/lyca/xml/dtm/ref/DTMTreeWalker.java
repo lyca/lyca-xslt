@@ -18,7 +18,6 @@
 package de.lyca.xml.dtm.ref;
 
 import javax.xml.transform.Result;
-import javax.xml.transform.TransformerException;
 
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
@@ -36,8 +35,6 @@ import de.lyca.xml.utils.XMLString;
  * 
  * I think normally this class should not be needed, because of
  * DTM#dispatchToEvents.
- * 
- * @xsl.usage advanced
  */
 public class DTMTreeWalker {
 
@@ -88,6 +85,8 @@ public class DTMTreeWalker {
    * @param contentHandler
    *          The implemention of the contentHandler operation (toXMLString,
    *          digest, ...)
+   * @param dtm
+   *          TODO
    */
   public DTMTreeWalker(ContentHandler contentHandler, DTM dtm) {
     m_contentHandler = contentHandler;
@@ -104,7 +103,8 @@ public class DTMTreeWalker {
    *          Node in the tree at which to start (and end) traversal -- in other
    *          words, the root of the subtree to traverse over.
    * 
-   * @throws TransformerException
+   * @throws SAXException
+   *           TODO
    */
   public void traverse(int pos) throws SAXException {
     // %REVIEW% Why isn't this just traverse(pos,pos)?
@@ -156,9 +156,10 @@ public class DTMTreeWalker {
    *          Node in the tree where to end traversal. If top==DTM.NULL, run
    *          through end of document.
    * 
-   * @throws TransformerException
+   * @throws SAXException
+   *           TODO
    */
-  public void traverse(int pos, int top) throws org.xml.sax.SAXException {
+  public void traverse(int pos, int top) throws SAXException {
     // %OPT% Can we simplify the loop conditionals by adding:
     // if(top==DTM.NULL) top=0
     // -- or by simply ignoring this case and relying on the fact that
@@ -208,7 +209,8 @@ public class DTMTreeWalker {
    * @param node
    *          Node to process
    * 
-   * @throws org.xml.sax.SAXException
+   * @throws SAXException
+   *           TODO
    */
   protected void startNode(int node) throws SAXException {
 
@@ -237,8 +239,8 @@ public class DTMTreeWalker {
       case DTM.ELEMENT_NODE:
         final DTM dtm = m_dtm;
 
-        for (int nsn = dtm.getFirstNamespaceNode(node, true); DTM.NULL != nsn; nsn = dtm.getNextNamespaceNode(node,
-                nsn, true)) {
+        for (int nsn = dtm.getFirstNamespaceNode(node, true); DTM.NULL != nsn; nsn = dtm.getNextNamespaceNode(node, nsn,
+            true)) {
           // String prefix = dtm.getPrefix(nsn);
           final String prefix = dtm.getNodeNameX(nsn);
 
@@ -246,8 +248,10 @@ public class DTMTreeWalker {
 
         }
 
-        // System.out.println("m_dh.getNamespaceOfNode(node): "+m_dh.getNamespaceOfNode(node));
-        // System.out.println("m_dh.getLocalNameOfNode(node): "+m_dh.getLocalNameOfNode(node));
+        // System.out.println("m_dh.getNamespaceOfNode(node):
+        // "+m_dh.getNamespaceOfNode(node));
+        // System.out.println("m_dh.getLocalNameOfNode(node):
+        // "+m_dh.getLocalNameOfNode(node));
         String ns = dtm.getNamespaceURI(node);
         if (null == ns) {
           ns = "";
@@ -258,7 +262,7 @@ public class DTMTreeWalker {
 
         for (int i = dtm.getFirstAttribute(node); i != DTM.NULL; i = dtm.getNextAttribute(i)) {
           attrs.addAttribute(dtm.getNamespaceURI(i), dtm.getLocalName(i), dtm.getNodeName(i), "CDATA",
-                  dtm.getNodeValue(i));
+              dtm.getNodeValue(i));
         }
 
         m_contentHandler.startElement(ns, m_dtm.getLocalName(node), m_dtm.getNodeName(node), attrs);
@@ -323,7 +327,8 @@ public class DTMTreeWalker {
    * @param node
    *          Node we just finished processing
    * 
-   * @throws org.xml.sax.SAXException
+   * @throws SAXException
+   *           TODO
    */
   protected void endNode(int node) throws SAXException {
 
@@ -339,7 +344,7 @@ public class DTMTreeWalker {
         m_contentHandler.endElement(ns, m_dtm.getLocalName(node), m_dtm.getNodeName(node));
 
         for (int nsn = m_dtm.getFirstNamespaceNode(node, true); DTM.NULL != nsn; nsn = m_dtm.getNextNamespaceNode(node,
-                nsn, true)) {
+            nsn, true)) {
           // String prefix = m_dtm.getPrefix(nsn);
           final String prefix = m_dtm.getNodeNameX(nsn);
 
@@ -360,4 +365,3 @@ public class DTMTreeWalker {
     }
   }
 } // TreeWalker
-

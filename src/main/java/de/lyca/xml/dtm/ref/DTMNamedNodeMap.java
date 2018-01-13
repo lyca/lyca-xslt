@@ -36,8 +36,6 @@ import de.lyca.xml.dtm.DTM;
  * ***** Also note that there's no fastpath for the by-name query; we search
  * linearly until we find it or fail to find it. Again, that could be optimized
  * at some cost in object creation/storage.
- * 
- * @xsl.usage internal
  */
 public class DTMNamedNodeMap implements NamedNodeMap {
 
@@ -145,7 +143,7 @@ public class DTMNamedNodeMap implements NamedNodeMap {
    * @return If the new <code>Node</code> replaces an existing node the replaced
    *         <code>Node</code> is returned, otherwise <code>null</code> is
    *         returned.
-   * @exception DOMException
+   * @throws DOMException
    *              WRONG_DOCUMENT_ERR: Raised if <code>arg</code> was created
    *              from a different document than the one that created this map. <br>
    *              NO_MODIFICATION_ALLOWED_ERR: Raised if this map is readonly. <br>
@@ -171,7 +169,7 @@ public class DTMNamedNodeMap implements NamedNodeMap {
    *          The <code>nodeName</code> of the node to remove.
    * 
    * @return The node removed from this map if a node with such a name exists.
-   * @exception DOMException
+   * @throws DOMException
    *              NOT_FOUND_ERR: Raised if there is no node named
    *              <code>name</code> in this map. <br>
    *              NO_MODIFICATION_ALLOWED_ERR: Raised if this map is readonly.
@@ -224,7 +222,7 @@ public class DTMNamedNodeMap implements NamedNodeMap {
    * @return If the new <code>Node</code> replaces an existing node the replaced
    *         <code>Node</code> is returned, otherwise <code>null</code> is
    *         returned.
-   * @exception DOMException
+   * @throws DOMException
    *              WRONG_DOCUMENT_ERR: Raised if <code>arg</code> was created
    *              from a different document than the one that created this map. <br>
    *              NO_MODIFICATION_ALLOWED_ERR: Raised if this map is readonly. <br>
@@ -256,7 +254,7 @@ public class DTMNamedNodeMap implements NamedNodeMap {
    * 
    * @return The node removed from this map if a node with such a local name and
    *         namespace URI exists.
-   * @exception DOMException
+   * @throws DOMException
    *              NOT_FOUND_ERR: Raised if there is no node with the specified
    *              <code>namespaceURI</code> and <code>localName</code> in this
    *              map. <br>
@@ -270,8 +268,6 @@ public class DTMNamedNodeMap implements NamedNodeMap {
 
   /**
    * Simple implementation of DOMException.
-   * 
-   * @xsl.usage internal
    */
   public static class DTMException extends DOMException {
     static final long serialVersionUID = -8290238117162437678L;
@@ -279,8 +275,8 @@ public class DTMNamedNodeMap implements NamedNodeMap {
     /**
      * Constructs a DOM/DTM exception.
      * 
-     * @param code
-     * @param message
+     * @param code TODO
+     * @param message TODO
      */
     public DTMException(short code, String message) {
       super(code, message);
@@ -289,8 +285,7 @@ public class DTMNamedNodeMap implements NamedNodeMap {
     /**
      * Constructor DTMException
      * 
-     * 
-     * @param code
+     * @param code TODO
      */
     public DTMException(short code) {
       super(code, "");

@@ -50,8 +50,6 @@ import de.lyca.xpath.res.XPATHMessages;
  * </p>
  * 
  * @see org.w3c.dom.xpath.XPathExpression
- * 
- * @xsl.usage internal
  */
 class XPathExpressionImpl implements XPathExpression {
 
@@ -121,10 +119,10 @@ class XPathExpressionImpl implements XPathExpression {
    *          <code>XPathResult</code>.
    * @return The result of the evaluation of the XPath expression.For XPath 1.0
    *         results, this object will be of type <code>XPathResult</code>.
-   * @exception XPathException
+   * @throws XPathException
    *              TYPE_ERR: Raised if the result cannot be converted to return
    *              the specified type.
-   * @exception DOMException
+   * @throws DOMException
    *              WRONG_DOCUMENT_ERR: The Node is from a document that is not
    *              supported by the XPathEvaluator that created this
    *              <code>XPathExpression</code>. <br>
@@ -132,8 +130,7 @@ class XPathExpressionImpl implements XPathExpression {
    *              XPath context node.
    * 
    * @see org.w3c.dom.xpath.XPathExpression#evaluate(Node, short, XPathResult)
-   * @xsl.usage internal
-   */
+     */
   @Override
   public Object evaluate(Node contextNode, short type, Object result) throws XPathException, DOMException {
 

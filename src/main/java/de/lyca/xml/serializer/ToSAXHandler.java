@@ -19,6 +19,7 @@ package de.lyca.xml.serializer;
 
 import java.util.List;
 
+import org.w3c.dom.Node;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.ErrorHandler;
@@ -31,8 +32,6 @@ import org.xml.sax.ext.LexicalHandler;
  * To...SAXHandler serializers.
  * 
  * This class is not a public API.
- * 
- * @xsl.usage internal
  */
 public abstract class ToSAXHandler extends SerializerBase {
   public ToSAXHandler() {
@@ -98,7 +97,7 @@ public abstract class ToSAXHandler extends SerializerBase {
    * @param characters
    *          The string of characters to process.
    * 
-   * @throws org.xml.sax.SAXException
+   * @throws SAXException TODO
    * 
    * @see ExtendedContentHandler#characters(String)
    */
@@ -160,14 +159,11 @@ public abstract class ToSAXHandler extends SerializerBase {
    * method additional namespace or attribute information can occur before or
    * after this call, that is associated with this element.
    * 
-   * @throws org.xml.sax.SAXException
+   * @throws SAXException
    *           Any SAX exception, possibly wrapping another exception.
    * @see org.xml.sax.ContentHandler#startElement
    * @see org.xml.sax.ContentHandler#endElement
    * @see org.xml.sax.AttributeList
-   * 
-   * @throws org.xml.sax.SAXException
-   * 
    * @see org.xml.sax.ContentHandler#startElement(String,String,String,Attributes)
    */
   @Override
@@ -303,10 +299,10 @@ public abstract class ToSAXHandler extends SerializerBase {
    * 
    * @param node
    *          the Node to serialize
-   * @throws org.xml.sax.SAXException
+   * @throws SAXException TODO
    */
   @Override
-  public void characters(org.w3c.dom.Node node) throws org.xml.sax.SAXException {
+  public void characters(Node node) throws SAXException {
     // Get the node's value as a String and use that String as if
     // it were an input character notification.
     final String data = node.getNodeValue();

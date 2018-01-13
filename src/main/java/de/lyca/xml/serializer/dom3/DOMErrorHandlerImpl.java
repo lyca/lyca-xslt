@@ -24,8 +24,6 @@ import org.w3c.dom.DOMErrorHandler;
  * This is the default implementation of the ErrorHandler interface and is used
  * if one is not provided. The default implementation simply reports DOMErrors
  * to System.err.
- * 
- * @xsl.usage internal
  */
 final class DOMErrorHandlerImpl implements DOMErrorHandler {
 

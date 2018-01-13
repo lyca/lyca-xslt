@@ -27,7 +27,6 @@ import java.util.Properties;
  * of this package.
  * 
  * @see java.util.Properties
- * @xsl.usage internal
  */
 public final class OutputPropertyUtils {
   /**

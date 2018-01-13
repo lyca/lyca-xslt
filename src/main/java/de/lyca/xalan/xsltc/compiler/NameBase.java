@@ -32,7 +32,7 @@ import de.lyca.xalan.xsltc.runtime.BasisLibrary;
 
 /**
  * @author Morten Jorgensen
- * @author Erwin Bolwidt <ejb@klomp.org>
+ * @author Erwin Bolwidt {@literal <ejb@klomp.org>}
  */
 class NameBase extends FunctionCall {
 

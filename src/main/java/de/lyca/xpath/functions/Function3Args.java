@@ -27,8 +27,6 @@ import de.lyca.xpath.res.XPATHMessages;
 
 /**
  * Base class for functions that accept three arguments.
- * 
- * @xsl.usage advanced
  */
 public class Function3Args extends Function2Args {
   static final long serialVersionUID = 7915240747161506646L;

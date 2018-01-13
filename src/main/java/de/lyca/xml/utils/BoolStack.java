@@ -21,8 +21,6 @@ import java.util.EmptyStackException;
 
 /**
  * Simple stack for boolean values.
- * 
- * @xsl.usage internal
  */
 public final class BoolStack implements Cloneable {
 

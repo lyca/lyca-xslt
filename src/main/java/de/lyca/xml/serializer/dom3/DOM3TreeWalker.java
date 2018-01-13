@@ -61,8 +61,6 @@ import de.lyca.xml.serializer.utils.XMLChar;
  * and serialize a DOM Node (Level 2 or Level 3) as specified in the DOM Level 3
  * LS Recommedation by evaluating and applying DOMConfiguration parameters and
  * filters if any during serialization.
- * 
- * @xsl.usage internal
  */
 final class DOM3TreeWalker {
 
@@ -246,9 +244,9 @@ final class DOM3TreeWalker {
    * @param pos
    *          Node in the tree where to start traversal
    * 
-   * @throws TransformerException
+   * @throws SAXException TODO
    */
-  public void traverse(Node pos) throws org.xml.sax.SAXException {
+  public void traverse(Node pos) throws SAXException {
     fSerializer.startDocument();
 
     // Determine if the Node is a DOM Level 3 Core Node.
@@ -322,9 +320,9 @@ final class DOM3TreeWalker {
    * @param top
    *          Node in the tree where to end traversal
    * 
-   * @throws TransformerException
+   * @throws SAXException TODO
    */
-  public void traverse(Node pos, Node top) throws org.xml.sax.SAXException {
+  public void traverse(Node pos, Node top) throws SAXException {
 
     fSerializer.startDocument();
 
@@ -382,8 +380,10 @@ final class DOM3TreeWalker {
 
   /**
    * Optimized dispatch of characters.
+   * @param node TODO
+   * @throws SAXException TODO
    */
-  private final void dispatachChars(Node node) throws org.xml.sax.SAXException {
+  private final void dispatachChars(Node node) throws SAXException {
     if (fSerializer != null) {
       fSerializer.characters(node);
     } else {
@@ -398,9 +398,9 @@ final class DOM3TreeWalker {
    * @param node
    *          Node to process
    * 
-   * @throws org.xml.sax.SAXException
+   * @throws SAXException TODO
    */
-  protected void startNode(Node node) throws org.xml.sax.SAXException {
+  protected void startNode(Node node) throws SAXException {
     if (node instanceof Locator) {
       final Locator loc = (Locator) node;
       fLocator.setColumnNumber(loc.getColumnNumber());
@@ -450,9 +450,9 @@ final class DOM3TreeWalker {
    * @param node
    *          Node we just finished processing
    * 
-   * @throws org.xml.sax.SAXException
+   * @throws SAXException TODO
    */
-  protected void endNode(Node node) throws org.xml.sax.SAXException {
+  protected void endNode(Node node) throws SAXException {
 
     switch (node.getNodeType()) {
       case Node.DOCUMENT_NODE:

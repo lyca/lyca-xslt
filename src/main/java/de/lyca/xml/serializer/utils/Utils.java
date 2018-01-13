@@ -22,8 +22,6 @@ package de.lyca.xml.serializer.utils;
  * 
  * This class is not a public API, it is only public because it is used by the
  * serializer.
- * 
- * @xsl.usage internal
  */
 public final class Utils {
   /**

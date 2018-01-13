@@ -19,8 +19,6 @@ package de.lyca.xpath;
 
 /**
  * This object represents a Source Tree, and any associated information.
- * 
- * @xsl.usage internal
  */
 public class SourceTree {
 

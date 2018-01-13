@@ -35,8 +35,6 @@ package de.lyca.xml.serializer;
  * 
  * @see OutputPropertiesFactory
  * @see Serializer
- * 
- * @xsl.usage general
  */
 public final class Method {
   /**

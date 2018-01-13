@@ -23,8 +23,6 @@ import java.util.Map;
 /**
  * This class is in support of SerializerToHTML, and acts as a sort of element
  * representative for HTML elements.
- * 
- * @xsl.usage internal
  */
 class ElemDesc {
 

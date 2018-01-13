@@ -17,6 +17,8 @@
  */
 package de.lyca.xpath.axes;
 
+import javax.xml.transform.TransformerException;
+
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xpath.XPathContext;
 import de.lyca.xpath.compiler.Compiler;
@@ -26,7 +28,6 @@ import de.lyca.xpath.compiler.Compiler;
  * self axes without any predicates.
  * 
  * @see de.lyca.xpath.axes.LocPathIterator
- * @xsl.usage advanced
  */
 public class SelfIteratorNoPredicate extends LocPathIterator {
   static final long serialVersionUID = -4226887905279814201L;
@@ -42,18 +43,18 @@ public class SelfIteratorNoPredicate extends LocPathIterator {
    * @param analysis
    *          Analysis bits.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
-  SelfIteratorNoPredicate(Compiler compiler, int opPos, int analysis) throws javax.xml.transform.TransformerException {
+  SelfIteratorNoPredicate(Compiler compiler, int opPos, int analysis) throws TransformerException {
     super(compiler, opPos, analysis, false);
   }
 
   /**
    * Create a SelfIteratorNoPredicate object.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
-  public SelfIteratorNoPredicate() throws javax.xml.transform.TransformerException {
+  public SelfIteratorNoPredicate() throws TransformerException {
     super(null);
   }
 
@@ -95,9 +96,10 @@ public class SelfIteratorNoPredicate extends LocPathIterator {
    * @param xctxt
    *          The XPath runtime context.
    * @return the first node out of the nodeset, or DTM.NULL.
+   * @throws TransformerException TODO
    */
   @Override
-  public int asNode(XPathContext xctxt) throws javax.xml.transform.TransformerException {
+  public int asNode(XPathContext xctxt) throws TransformerException {
     return xctxt.getCurrentNode();
   }
 

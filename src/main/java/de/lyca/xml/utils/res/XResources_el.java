@@ -23,8 +23,6 @@ package de.lyca.xml.utils.res;
 
 /**
  * The Greek resource bundle.
- * 
- * @xsl.usage internal
  */
 public class XResources_el extends XResourceBundle {
 

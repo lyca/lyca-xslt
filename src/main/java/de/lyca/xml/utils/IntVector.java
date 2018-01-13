@@ -24,8 +24,6 @@ package de.lyca.xml.utils;
  * when more storage is needed, a larger array is obtained and all existing data
  * is recopied into it. As a result, read/write access to existing nodes is O(1)
  * fast but appending may be O(N**2) slow. See also SuballocatedIntVector.
- * 
- * @xsl.usage internal
  */
 public class IntVector implements Cloneable {
 
@@ -102,9 +100,7 @@ public class IntVector implements Cloneable {
   }
 
   /**
-   * Get the length of the list.
-   * 
-   * @return length of the list
+   * Set the length of the list.
    */
   public final void setSize(int sz) {
     m_firstFree = sz;

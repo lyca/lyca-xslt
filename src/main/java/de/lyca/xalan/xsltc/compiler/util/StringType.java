@@ -61,12 +61,14 @@ public class StringType extends Type {
   }
 
   /**
-   * Compiles a string expression into an object of internal type
-   * <code>type</code>. The compilation to int is undefined since strings are
-   * always converted to reals in arithmetic expressions.
+   * Compiles a string expression into an object of internal type <code>type</code>. The compilation to int is undefined
+   * since strings are always converted to reals in arithmetic expressions.
    * 
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo(CompilerContext,
-   *      JExpression, Type)
+   * @param ctx TODO
+   * @param expr TODO
+   * @param type TODO
+   * @return TODO
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo(CompilerContext, JExpression, Type)
    */
   @Override
   public JExpression compileTo(CompilerContext ctx, JExpression expr, Type type) {
@@ -86,29 +88,38 @@ public class StringType extends Type {
   /**
    * Compiles a string expression into a boolean expression.
    * 
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo(CompilerContext,
-   *      JExpression, Type)
+   * @param ctx TODO
+   * @param expr TODO
+   * @param type TODO
+   * @return TODO
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo(CompilerContext, JExpression, Type)
    */
   public JExpression compileTo(CompilerContext ctx, JExpression expr, BooleanType type) {
     return expr.invoke("length").gt(lit(0));
   }
 
   /**
-   * Compiles a string expression into a real expression by calling
-   * stringToReal() from the basis library.
+   * Compiles a string expression into a real expression by calling stringToReal() from the basis library.
    * 
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo(CompilerContext,
-   *      JExpression, Type)
+   * @param ctx TODO
+   * @param expr TODO
+   * @param type TODO
+   * @return TODO
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo(CompilerContext, JExpression, Type)
    */
   public JExpression compileTo(CompilerContext ctx, JExpression expr, RealType type) {
     return ctx.ref(BasisLibrary.class).staticInvoke(STRING_TO_REAL).arg(expr);
   }
 
   /**
-   * Expects a string expression and returns a boxed string. As strings are
-   * already boxed so the compilation just returns the given expression.
+   * Expects a string expression and returns a boxed string. As strings are already boxed so the compilation just
+   * returns the given expression.
    * 
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
+   * @param ctx TODO
+   * @param expr TODO
+   * @param type TODO
+   * @return TODO
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo
    */
   public JExpression compileTo(CompilerContext ctx, JExpression expr, ReferenceType type) {
     return expr;
@@ -117,7 +128,11 @@ public class StringType extends Type {
   /**
    * Compiles an internal string expression into an external (Java) string.
    * 
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#translateFrom
+   * @param ctx TODO
+   * @param expr TODO
+   * @param clazz TODO
+   * @return TODO
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo
    */
   public JExpression compileTo(CompilerContext ctx, JExpression expr, Class<?> clazz) {
     // Is String <: clazz? I.e. clazz in { String, Object }
@@ -133,7 +148,11 @@ public class StringType extends Type {
   /**
    * Translates an external (primitive) Java type into a string.
    * 
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#translateFrom
+   * @param ctx TODO
+   * @param expr TODO
+   * @param clazz TODO
+   * @return TODO
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileFrom
    */
   @Override
   public JExpression compileFrom(CompilerContext ctx, JExpression expr, Class<?> clazz) {
@@ -150,6 +169,7 @@ public class StringType extends Type {
 
   /**
    * Returns the class name of an internal type's external representation.
+   * @return TODO
    */
   @Override
   public String getClassName() {

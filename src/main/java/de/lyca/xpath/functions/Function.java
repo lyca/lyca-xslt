@@ -17,6 +17,8 @@
  */
 package de.lyca.xpath.functions;
 
+import javax.xml.transform.TransformerException;
+
 import de.lyca.xpath.Expression;
 import de.lyca.xpath.ExpressionOwner;
 import de.lyca.xpath.XPathContext;
@@ -32,8 +34,6 @@ import de.lyca.xpath.res.XPATHMessages;
  * that the derived class may process it's own arguments, which is faster since
  * the arguments don't have to be added to an array, but causes a larger code
  * footprint.
- * 
- * @xsl.usage advanced
  */
 public abstract class Function extends Expression {
   static final long serialVersionUID = 6927661240854599768L;
@@ -92,10 +92,10 @@ public abstract class Function extends Expression {
    *          The execution current context.
    * @return A valid XObject.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
   @Override
-  public XObject execute(XPathContext xctxt) throws javax.xml.transform.TransformerException {
+  public XObject execute(XPathContext xctxt) throws TransformerException {
 
     // Programmer's assert. (And, no, I don't want the method to be abstract).
     System.out.println("Error! Function.execute should not be called!");

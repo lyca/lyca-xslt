@@ -111,8 +111,6 @@ import org.w3c.dom.ls.LSSerializerFilter;
  * @see de.lyca.xml.serializer.Serializer
  * @see de.lyca.xml.serializer.DOMSerializer
  * 
- * @xsl.usage advanced
- * 
  */
 public interface DOM3Serializer {
   /**

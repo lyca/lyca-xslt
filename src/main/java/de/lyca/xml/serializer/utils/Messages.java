@@ -76,8 +76,6 @@ import java.util.ResourceBundle;
  * 
  * This class is not a public API, it is only public because it is used in
  * de.lyca.xml.serializer.
- * 
- * @xsl.usage internal
  */
 public final class Messages {
   /** The local object to use. */
@@ -98,8 +96,6 @@ public final class Messages {
    *          class name is without a language suffix. If the value passed is
    *          null then loadResourceBundle(errorResourceClass) needs to be
    *          called explicitly before any messages are created.
-   * 
-   * @xsl.usage internal
    */
   Messages(String resourceBundle) {
 
@@ -111,8 +107,6 @@ public final class Messages {
    * locale is used. This method needs to be called before loadResourceBundle().
    * 
    * @param locale non-null reference to Locale object.
-   * 
-   * @xsl.usage internal
    */
   // public void setLocale(Locale locale)
   // {
@@ -123,7 +117,6 @@ public final class Messages {
    * Get the Locale object that is being used.
    * 
    * @return non-null reference to Locale object.
-   * @xsl.usage internal
    */
   private Locale getLocale() {
     return m_locale;
@@ -140,7 +133,6 @@ public final class Messages {
    *          created.
    * 
    * @return The formatted message string.
-   * @xsl.usage internal
    */
   public final String createMessage(String msgKey, Object args[]) {
     if (m_resourceBundle == null) {
@@ -169,7 +161,6 @@ public final class Messages {
    *          created.
    * 
    * @return The formatted message string.
-   * @xsl.usage internal
    */
   private final String createMsg(ListResourceBundle fResourceBundle, String msgKey, Object args[]) // throws
                                                                                                    // Exception
@@ -246,8 +237,7 @@ public final class Messages {
    *          the name of the class that implements ListResourceBundle, without
    *          language suffix.
    * @return the ResourceBundle
-   * @throws MissingResourceException
-   * @xsl.usage internal
+   * @throws MissingResourceException TODO
    */
   private ListResourceBundle loadResourceBundle(String resourceBundle) throws MissingResourceException {
     m_resourceBundleName = resourceBundle;

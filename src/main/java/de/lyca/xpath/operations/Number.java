@@ -17,6 +17,8 @@
  */
 package de.lyca.xpath.operations;
 
+import javax.xml.transform.TransformerException;
+
 import de.lyca.xpath.XPathContext;
 import de.lyca.xpath.objects.XNumber;
 import de.lyca.xpath.objects.XObject;
@@ -37,10 +39,10 @@ public class Number extends UnaryOperation {
    * @return non-null reference to the XObject that represents the result of the
    *         operation.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
   @Override
-  public XObject operate(XObject right) throws javax.xml.transform.TransformerException {
+  public XObject operate(XObject right) throws TransformerException {
 
     if (XObject.CLASS_NUMBER == right.getType())
       return right;
@@ -56,10 +58,10 @@ public class Number extends UnaryOperation {
    * 
    * @return The result of the operation as a double.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
   @Override
-  public double num(XPathContext xctxt) throws javax.xml.transform.TransformerException {
+  public double num(XPathContext xctxt) throws TransformerException {
 
     return m_right.num(xctxt);
   }

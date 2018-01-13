@@ -41,8 +41,6 @@ import de.lyca.xml.res.XMLMessages;
 
 /**
  * To be subclassed by classes that wish to fake being nodes.
- * 
- * @xsl.usage internal
  */
 public class UnImplNode implements Node, Element, NodeList, Document {
 
@@ -1341,10 +1339,6 @@ public class UnImplNode implements Node, Element, NodeList, Document {
    * 
    * @param arg
    *          The node to compare equality with.
-   * @param deep
-   *          If <code>true</code>, recursively compare the subtrees; if
-   *          <code>false</code>, compare only the nodes themselves (and its
-   *          attributes, if it is an <code>Element</code>).
    * @return If the nodes, and possibly subtrees are equal, <code>true</code>
    *         otherwise <code>false</code>.
    * @since DOM Level 3
@@ -1395,8 +1389,8 @@ public class UnImplNode implements Node, Element, NodeList, Document {
    * starting from this node. Use lookupNamespaceURI(null) to lookup the default
    * namespace
    * 
-   * @param namespaceURI
-   * @return th URI for the namespace
+   * @param specifiedPrefix TODO
+   * @return the URI for the namespace
    * @since DOM Level 3
    */
   @Override
@@ -1602,7 +1596,7 @@ public class UnImplNode implements Node, Element, NodeList, Document {
    * textual content. <br>
    * The string returned is made of the text content of this node depending on
    * its type, as defined below:
-   * <table border='1'>
+   * <table border='1' summary=''>
    * <tr>
    * <th>Node type</th>
    * <th>Content</th>
@@ -1628,9 +1622,9 @@ public class UnImplNode implements Node, Element, NodeList, Document {
    * </tr>
    * </table>
    * 
-   * @exception DOMException
+   * @throws DOMException
    *              NO_MODIFICATION_ALLOWED_ERR: Raised when the node is readonly.
-   * @exception DOMException
+   * @throws DOMException
    *              DOMSTRING_SIZE_ERR: Raised when it would return more
    *              characters than fit in a <code>DOMString</code> variable on
    *              the implementation platform.
@@ -1653,7 +1647,7 @@ public class UnImplNode implements Node, Element, NodeList, Document {
    * textual content. <br>
    * The string returned is made of the text content of this node depending on
    * its type, as defined below:
-   * <table border='1'>
+   * <table border='1' summary=''>
    * <tr>
    * <th>Node type</th>
    * <th>Content</th>
@@ -1679,9 +1673,9 @@ public class UnImplNode implements Node, Element, NodeList, Document {
    * </tr>
    * </table>
    * 
-   * @exception DOMException
+   * @throws DOMException
    *              NO_MODIFICATION_ALLOWED_ERR: Raised when the node is readonly.
-   * @exception DOMException
+   * @throws DOMException
    *              DOMSTRING_SIZE_ERR: Raised when it would return more
    *              characters than fit in a <code>DOMString</code> variable on
    *              the implementation platform.

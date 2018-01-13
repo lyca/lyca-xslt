@@ -23,8 +23,6 @@ package de.lyca.xml.utils.res;
 
 /**
  * The Swedish resource bundle.
- * 
- * @xsl.usage internal
  */
 public class XResources_sv extends XResourceBundle {
 

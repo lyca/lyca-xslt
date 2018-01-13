@@ -35,8 +35,6 @@ import de.lyca.xml.serializer.utils.Utils;
  * 
  * This class is not a public API, it is public because it is used from another
  * package.
- * 
- * @xsl.usage internal
  */
 public class ToHTMLStream extends ToStream {
 
@@ -490,10 +488,10 @@ public class ToHTMLStream extends ToStream {
   /**
    * Receive notification of the beginning of a document.
    * 
-   * @throws org.xml.sax.SAXException
+   * @throws SAXException
    *           Any SAX exception, possibly wrapping another exception.
    * 
-   * @throws org.xml.sax.SAXException
+   * @throws SAXException
    */
   @Override
   protected void startDocumentInternal() throws SAXException {
@@ -550,10 +548,8 @@ public class ToHTMLStream extends ToStream {
   /**
    * Receive notification of the end of a document.
    * 
-   * @throws org.xml.sax.SAXException
+   * @throws SAXException
    *           Any SAX exception, possibly wrapping another exception.
-   * 
-   * @throws org.xml.sax.SAXException
    */
   @Override
   public final void endDocument() throws SAXException {
@@ -583,7 +579,7 @@ public class ToHTMLStream extends ToStream {
    *          The element type name.
    * @param atts
    *          The attributes attached to the element, if any.
-   * @throws org.xml.sax.SAXException
+   * @throws SAXException
    *           Any SAX exception, possibly wrapping another exception.
    * @see #endElement
    * @see org.xml.sax.AttributeList
@@ -708,7 +704,7 @@ public class ToHTMLStream extends ToStream {
    * @param localName
    * @param name
    *          The element type name
-   * @throws org.xml.sax.SAXException
+   * @throws SAXException
    *           Any SAX exception, possibly wrapping another exception.
    */
   @Override
@@ -832,7 +828,7 @@ public class ToHTMLStream extends ToStream {
    * @param elemDesc
    *          The description of the HTML element that has this attribute.
    * 
-   * @throws org.xml.sax.SAXException
+   * @throws IOException TODO
    */
   protected void processAttribute(Writer writer, String name, String value, ElemDesc elemDesc)
           throws IOException {
@@ -884,7 +880,7 @@ public class ToHTMLStream extends ToStream {
    *          True if we should try to encode as per
    *          http://www.ietf.org/rfc/rfc2396.txt.
    * 
-   * @throws org.xml.sax.SAXException
+   * @throws IOException
    *           if a bad surrogate pair is detected.
    */
   public void writeAttrURI(final Writer writer, String string, boolean doURLEscaping) throws IOException {
@@ -1105,7 +1101,7 @@ public class ToHTMLStream extends ToStream {
    * @param encoding
    *          CURRENTLY NOT IMPLEMENTED.
    * 
-   * @throws org.xml.sax.SAXException
+   * @throws IOException TODO
    */
   @Override
   public void writeAttrString(final Writer writer, String string, String encoding) throws IOException {
@@ -1219,12 +1215,10 @@ public class ToHTMLStream extends ToStream {
    *          The start position in the array.
    * @param length
    *          The number of characters to read from the array.
-   * @throws org.xml.sax.SAXException
+   * @throws SAXException
    *           Any SAX exception, possibly wrapping another exception.
    * @see #ignorableWhitespace
    * @see org.xml.sax.Locator
-   * 
-   * @throws org.xml.sax.SAXException
    */
   @Override
   public final void characters(char chars[], int start, int length) throws SAXException {
@@ -1283,12 +1277,10 @@ public class ToHTMLStream extends ToStream {
    *          The start position in the array.
    * @param length
    *          The number of characters to read from the array.
-   * @throws org.xml.sax.SAXException
+   * @throws SAXException
    *           Any SAX exception, possibly wrapping another exception.
    * @see #ignorableWhitespace
    * @see org.xml.sax.Locator
-   * 
-   * @throws org.xml.sax.SAXException
    */
   @Override
   public final void cdata(char ch[], int start, int length) throws SAXException {
@@ -1311,7 +1303,7 @@ public class ToHTMLStream extends ToStream {
         // writer.write(ch, start, length);
         writeNormalizedChars(ch, start, length, true, m_lineSepUse);
       } catch (final IOException ioe) {
-        throw new org.xml.sax.SAXException(Utils.messages.createMessage(MsgKey.ER_OIERROR, null), ioe);
+        throw new SAXException(Utils.messages.createMessage(MsgKey.ER_OIERROR, null), ioe);
         // "IO error", ioe);
       }
     } else {
@@ -1326,10 +1318,8 @@ public class ToHTMLStream extends ToStream {
    *          The processing instruction target.
    * @param data
    *          The processing instruction data, or null if none was supplied.
-   * @throws org.xml.sax.SAXException
+   * @throws SAXException
    *           Any SAX exception, possibly wrapping another exception.
-   * 
-   * @throws org.xml.sax.SAXException
    */
   @Override
   public void processingInstruction(String target, String data) throws SAXException {
@@ -1406,7 +1396,7 @@ public class ToHTMLStream extends ToStream {
    * @param name
    *          non-null reference to entity name string.
    * 
-   * @throws org.xml.sax.SAXException
+   * @throws SAXException TODO
    */
   @Override
   public final void entityReference(String name) throws SAXException {
@@ -1439,7 +1429,8 @@ public class ToHTMLStream extends ToStream {
    * @param nAttrs
    *          the number of attributes in m_attributes to be processed
    * 
-   * @throws org.xml.sax.SAXException
+   * @throws IOException TODO
+   * @throws SAXException TODO
    */
   @Override
   public void processAttributes(java.io.Writer writer, int nAttrs) throws IOException, SAXException {
@@ -1453,10 +1444,10 @@ public class ToHTMLStream extends ToStream {
 
   /**
    * For the enclosing elements starting tag write out out any attributes
-   * followed by ">". At this point we also mark if this element is a
+   * followed by {@literal ">"}. At this point we also mark if this element is a
    * cdata-section-element.
    * 
-   * @throws org.xml.sax.SAXException
+   * @throws SAXException TODO
    */
   @Override
   protected void closeStartTag() throws SAXException {
@@ -1531,7 +1522,7 @@ public class ToHTMLStream extends ToStream {
   /**
    * Report the end of DTD declarations.
    * 
-   * @throws org.xml.sax.SAXException
+   * @throws SAXException
    *           The application may raise an exception.
    * @see #startDTD
    */
@@ -1684,8 +1675,6 @@ public class ToHTMLStream extends ToStream {
      * 
      * This class is a copy of the one in de.lyca.xml.utils. It exists to cut
      * the serializers dependancy on that package.
-     * 
-     * @xsl.usage internal
      */
 
     /** Size of the m_nextChar array. */
@@ -1848,8 +1837,6 @@ public class ToHTMLStream extends ToStream {
 
     /**
      * The node representation for the trie.
-     * 
-     * @xsl.usage internal
      */
     private static class Node {
 

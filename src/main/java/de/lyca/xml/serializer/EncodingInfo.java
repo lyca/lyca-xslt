@@ -41,10 +41,10 @@ package de.lyca.xml.serializer;
  * unicode values (<code>m_first</code> to <code>m_last</code>). It will handle
  * a certain range of values explicitly (<code>m_explFirst</code> to
  * <code>m_explLast</code>). If the unicode point is before that explicit range,
- * that is it is in the range <code>m_first <= value < m_explFirst</code>, then
+ * that is it is in the range <code>{@literal m_first <= value < m_explFirst}</code>, then
  * it will delegate to another EncodingInfo object for The root of such a tree,
  * m_before. Likewise for values in the range
- * <code>m_explLast < value <= m_last</code>, but delgating to
+ * <code>{@literal m_explLast < value <= m_last}</code>, but delgating to
  * <code>m_after</code>
  * <p>
  * Actually figuring out if a code point is in the encoding is expensive. So the
@@ -56,8 +56,6 @@ package de.lyca.xml.serializer;
  * serializer.
  * <p>
  * This class is not a public API.
- * 
- * @xsl.usage internal
  */
 public final class EncodingInfo {
 
@@ -99,7 +97,6 @@ public final class EncodingInfo {
    *          the char in question.
    *          <p>
    *          This method is not a public API.
-   * @xsl.usage internal
    */
   public boolean isInEncoding(char ch) {
     if (m_encoding == null) {
@@ -123,7 +120,6 @@ public final class EncodingInfo {
    *          a char that is the low char of a high/low surrogate pair.
    *          <p>
    *          This method is not a public API.
-   * @xsl.usage internal
    */
   public boolean isInEncoding(char high, char low) {
     if (m_encoding == null) {
@@ -166,8 +162,6 @@ public final class EncodingInfo {
    * <p>
    * This interface is not a public API, and should only be used internally
    * within the serializer.
-   * 
-   * @xsl.usage internal
    */
   private interface InEncoding {
     /**
@@ -399,8 +393,6 @@ public final class EncodingInfo {
    * @param encoding
    *          the Java name of the enocding.
    * 
-   * @xsl.usage internal
-   * 
    */
   private static boolean inEncoding(char ch, String encoding) {
     boolean isInEncoding;
@@ -441,8 +433,6 @@ public final class EncodingInfo {
    *          the low char of a high/low surrogate pair.
    * @param encoding
    *          the Java name of the encoding.
-   * 
-   * @xsl.usage internal
    * 
    */
   private static boolean inEncoding(char high, char low, String encoding) {
@@ -529,8 +519,6 @@ public final class EncodingInfo {
    * {@link #isInEncoding(char, char)} for surrogate pairs.
    * <p>
    * This method is not a public API.
-   * 
-   * @xsl.usage internal
    */
   public final char getHighChar() {
     return m_highCharInContiguousGroup;

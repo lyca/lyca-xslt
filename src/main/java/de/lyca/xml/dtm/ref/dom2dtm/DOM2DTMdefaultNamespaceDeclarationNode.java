@@ -215,6 +215,7 @@ public class DOM2DTMdefaultNamespaceDeclarationNode implements Attr, TypeInfo {
    * Non-DOM method, part of the temporary kluge %REVIEW% This would be a
    * pruning problem, but since it will always be added to the root element and
    * we prune on elements, we shouldn't have to worry.
+   * @return TODO
    */
   public int getHandleOfNode() {
     return handle;
@@ -239,7 +240,11 @@ public class DOM2DTMdefaultNamespaceDeclarationNode implements Attr, TypeInfo {
   }
 
   /**
-   * @see or.gw3c.dom.TypeInfo#isDerivedFrom(String,String,int)
+   * @param ns TODO
+   * @param localName TODO
+   * @param derivationMethod TODO
+   * @return TODO
+   * @see org.w3c.dom.TypeInfo#isDerivedFrom(String,String,int)
    */
   @Override
   public boolean isDerivedFrom(String ns, String localName, int derivationMethod) {
@@ -358,10 +363,6 @@ public class DOM2DTMdefaultNamespaceDeclarationNode implements Attr, TypeInfo {
    * 
    * @param arg
    *          The node to compare equality with.
-   * @param deep
-   *          If <code>true</code>, recursively compare the subtrees; if
-   *          <code>false</code>, compare only the nodes themselves (and its
-   *          attributes, if it is an <code>Element</code>).
    * @return If the nodes, and possibly subtrees are equal, <code>true</code>
    *         otherwise <code>false</code>.
    * @since DOM Level 3
@@ -412,8 +413,8 @@ public class DOM2DTMdefaultNamespaceDeclarationNode implements Attr, TypeInfo {
    * given prefix, starting from this node. Use lookupNamespaceURI(null) to
    * lookup the default namespace
    * 
-   * @param namespaceURI
-   * @return th URI for the namespace
+   * @param specifiedPrefix TODO
+   * @return the URI for the namespace
    * @since DOM Level 3
    */
   @Override
@@ -541,7 +542,7 @@ public class DOM2DTMdefaultNamespaceDeclarationNode implements Attr, TypeInfo {
    * DOM Level 3 - Experimental: Look up the prefix associated to the given
    * namespace URI, starting from this node.
    * 
-   * @param namespaceURI
+   * @param namespaceURI TODO
    * @return the prefix for the namespace
    */
   @Override
@@ -619,7 +620,7 @@ public class DOM2DTMdefaultNamespaceDeclarationNode implements Attr, TypeInfo {
    * textual content. <br>
    * The string returned is made of the text content of this node depending on
    * its type, as defined below:
-   * <table border='1'>
+   * <table border='1' summary=''>
    * <tr>
    * <th>Node type</th>
    * <th>Content</th>
@@ -645,9 +646,9 @@ public class DOM2DTMdefaultNamespaceDeclarationNode implements Attr, TypeInfo {
    * </tr>
    * </table>
    * 
-   * @exception DOMException
+   * @throws DOMException
    *              NO_MODIFICATION_ALLOWED_ERR: Raised when the node is readonly.
-   * @exception DOMException
+   * @throws DOMException
    *              DOMSTRING_SIZE_ERR: Raised when it would return more
    *              characters than fit in a <code>DOMString</code> variable on
    *              the implementation platform.
@@ -670,7 +671,7 @@ public class DOM2DTMdefaultNamespaceDeclarationNode implements Attr, TypeInfo {
    * textual content. <br>
    * The string returned is made of the text content of this node depending on
    * its type, as defined below:
-   * <table border='1'>
+   * <table border='1' summary=''>
    * <tr>
    * <th>Node type</th>
    * <th>Content</th>
@@ -696,9 +697,9 @@ public class DOM2DTMdefaultNamespaceDeclarationNode implements Attr, TypeInfo {
    * </tr>
    * </table>
    * 
-   * @exception DOMException
+   * @throws DOMException
    *              NO_MODIFICATION_ALLOWED_ERR: Raised when the node is readonly.
-   * @exception DOMException
+   * @throws DOMException
    *              DOMSTRING_SIZE_ERR: Raised when it would return more
    *              characters than fit in a <code>DOMString</code> variable on
    *              the implementation platform.

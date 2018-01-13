@@ -19,6 +19,8 @@ package de.lyca.xpath.compiler;
 
 import java.util.List;
 
+import javax.xml.transform.TransformerException;
+
 import de.lyca.xml.utils.PrefixResolver;
 import de.lyca.xpath.res.XPATHErrorResources;
 
@@ -89,9 +91,9 @@ class Lexer {
    * @param pat
    *          XSLT Expression.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
-  void tokenize(String pat) throws javax.xml.transform.TransformerException {
+  void tokenize(String pat) throws TransformerException {
     tokenize(pat, null);
   }
 
@@ -104,9 +106,9 @@ class Lexer {
    * @param targetStrings
    *          List to hold Strings, may be null.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
-  void tokenize(String pat, List<String> targetStrings) throws javax.xml.transform.TransformerException {
+  void tokenize(String pat, List<String> targetStrings) throws TransformerException {
 
     m_compiler.m_currentPattern = pat;
     m_patternMapSize = 0;
@@ -500,12 +502,11 @@ class Lexer {
    * @param posOfScan
    *          The end of the name index.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    * 
    * @return -1 always.
    */
-  private int mapNSTokens(String pat, int startSubstring, int posOfNSSep, int posOfScan)
-          throws javax.xml.transform.TransformerException {
+  private int mapNSTokens(String pat, int startSubstring, int posOfNSSep, int posOfScan) throws TransformerException {
 
     String prefix = "";
 

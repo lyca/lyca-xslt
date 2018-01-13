@@ -19,8 +19,6 @@ package de.lyca.xml.utils;
 
 /**
  * A very simple table that stores a list of strings, optimized for small lists.
- * 
- * @xsl.usage internal
  */
 public class StringVector implements java.io.Serializable {
   static final long serialVersionUID = 4995234972032919748L;

@@ -23,8 +23,6 @@ import org.xml.sax.ext.LexicalHandler;
 /**
  * This interface has extensions to the standard SAX LexicalHandler interface.
  * This interface is intended to be used by a serializer.
- * 
- * @xsl.usage internal
  */
 public interface ExtendedLexicalHandler extends LexicalHandler {
   /**

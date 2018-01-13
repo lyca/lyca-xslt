@@ -69,7 +69,8 @@ public class TransformerHandlerImpl implements TransformerHandler, DeclHandler {
   private boolean _isIdentity = false;
 
   /**
-   * Cosntructor - pass in reference to a TransformerImpl object
+   * Constructor - pass in reference to a TransformerImpl object
+   * @param transformer TODO
    */
   public TransformerHandlerImpl(TransformerImpl transformer) {
     // Save the reference to the transformer
@@ -86,7 +87,7 @@ public class TransformerHandlerImpl implements TransformerHandler, DeclHandler {
   }
 
   /**
-   * Implements javax.xml.transform.sax.TransformerHandler.getSystemId() Get the
+   * Implements javax.xml.transform.sax.TransformerHandler#getSystemId() Get the
    * base ID (URI or system ID) from where relative URLs will be resolved.
    * 
    * @return The systemID that was set with setSystemId(String id)
@@ -97,7 +98,7 @@ public class TransformerHandlerImpl implements TransformerHandler, DeclHandler {
   }
 
   /**
-   * Implements javax.xml.transform.sax.TransformerHandler.setSystemId() Get the
+   * Implements javax.xml.transform.sax.TransformerHandler#setSystemId() Get the
    * base ID (URI or system ID) from where relative URLs will be resolved.
    * 
    * @param id
@@ -109,7 +110,7 @@ public class TransformerHandlerImpl implements TransformerHandler, DeclHandler {
   }
 
   /**
-   * Implements javax.xml.transform.sax.TransformerHandler.getTransformer() Get
+   * Implements javax.xml.transform.sax.TransformerHandler#getTransformer() Get
    * the Transformer associated with this handler, which is needed in order to
    * set parameters and output properties.
    * 
@@ -121,7 +122,7 @@ public class TransformerHandlerImpl implements TransformerHandler, DeclHandler {
   }
 
   /**
-   * Implements javax.xml.transform.sax.TransformerHandler.setResult() Enables
+   * Implements javax.xml.transform.sax.TransformerHandler#setResult() Enables
    * the user of the TransformerHandler to set the to set the Result for the
    * transformation.
    * 
@@ -164,7 +165,7 @@ public class TransformerHandlerImpl implements TransformerHandler, DeclHandler {
   }
 
   /**
-   * Implements org.xml.sax.ContentHandler.characters() Receive notification of
+   * Implements ContentHandler#characters() Receive notification of
    * character data.
    */
   @Override
@@ -173,7 +174,7 @@ public class TransformerHandlerImpl implements TransformerHandler, DeclHandler {
   }
 
   /**
-   * Implements org.xml.sax.ContentHandler.startDocument() Receive notification
+   * Implements ContentHandler#startDocument() Receive notification
    * of the beginning of a document.
    */
   @Override
@@ -223,7 +224,7 @@ public class TransformerHandlerImpl implements TransformerHandler, DeclHandler {
   }
 
   /**
-   * Implements org.xml.sax.ContentHandler.endDocument() Receive notification of
+   * Implements ContentHandler#endDocument() Receive notification of
    * the end of a document.
    */
   @Override
@@ -253,7 +254,7 @@ public class TransformerHandlerImpl implements TransformerHandler, DeclHandler {
   }
 
   /**
-   * Implements org.xml.sax.ContentHandler.startElement() Receive notification
+   * Implements ContentHandler#startElement() Receive notification
    * of the beginning of an element.
    */
   @Override
@@ -262,7 +263,7 @@ public class TransformerHandlerImpl implements TransformerHandler, DeclHandler {
   }
 
   /**
-   * Implements org.xml.sax.ContentHandler.endElement() Receive notification of
+   * Implements ContentHandler#endElement() Receive notification of
    * the end of an element.
    */
   @Override
@@ -271,7 +272,7 @@ public class TransformerHandlerImpl implements TransformerHandler, DeclHandler {
   }
 
   /**
-   * Implements org.xml.sax.ContentHandler.processingInstruction() Receive
+   * Implements ContentHandler#processingInstruction() Receive
    * notification of a processing instruction.
    */
   @Override
@@ -280,7 +281,7 @@ public class TransformerHandlerImpl implements TransformerHandler, DeclHandler {
   }
 
   /**
-   * Implements org.xml.sax.ext.LexicalHandler.startCDATA()
+   * Implements LexicalHandler#startCDATA()
    */
   @Override
   public void startCDATA() throws SAXException {
@@ -290,7 +291,7 @@ public class TransformerHandlerImpl implements TransformerHandler, DeclHandler {
   }
 
   /**
-   * Implements org.xml.sax.ext.LexicalHandler.endCDATA()
+   * Implements LexicalHandler#endCDATA()
    */
   @Override
   public void endCDATA() throws SAXException {
@@ -300,7 +301,7 @@ public class TransformerHandlerImpl implements TransformerHandler, DeclHandler {
   }
 
   /**
-   * Implements org.xml.sax.ext.LexicalHandler.comment() Receieve notification
+   * Implements LexicalHandler#comment() Receieve notification
    * of a comment
    */
   @Override
@@ -311,7 +312,7 @@ public class TransformerHandlerImpl implements TransformerHandler, DeclHandler {
   }
 
   /**
-   * Implements org.xml.sax.ContentHandler.ignorableWhitespace() Receive
+   * Implements ContentHandler#ignorableWhitespace() Receive
    * notification of ignorable whitespace in element content. Similar to
    * characters(char[], int, int).
    */
@@ -321,7 +322,7 @@ public class TransformerHandlerImpl implements TransformerHandler, DeclHandler {
   }
 
   /**
-   * Implements org.xml.sax.ContentHandler.setDocumentLocator() Receive an
+   * Implements ContentHandler#setDocumentLocator() Receive an
    * object for locating the origin of SAX document events.
    */
   @Override
@@ -334,7 +335,7 @@ public class TransformerHandlerImpl implements TransformerHandler, DeclHandler {
   }
 
   /**
-   * Implements org.xml.sax.ContentHandler.skippedEntity() Receive notification
+   * Implements ContentHandler#skippedEntity() Receive notification
    * of a skipped entity.
    */
   @Override
@@ -343,7 +344,7 @@ public class TransformerHandlerImpl implements TransformerHandler, DeclHandler {
   }
 
   /**
-   * Implements org.xml.sax.ContentHandler.startPrefixMapping() Begin the scope
+   * Implements ContentHandler#startPrefixMapping() Begin the scope
    * of a prefix-URI Namespace mapping.
    */
   @Override
@@ -352,7 +353,7 @@ public class TransformerHandlerImpl implements TransformerHandler, DeclHandler {
   }
 
   /**
-   * Implements org.xml.sax.ContentHandler.endPrefixMapping() End the scope of a
+   * Implements ContentHandler#endPrefixMapping() End the scope of a
    * prefix-URI Namespace mapping.
    */
   @Override
@@ -361,7 +362,7 @@ public class TransformerHandlerImpl implements TransformerHandler, DeclHandler {
   }
 
   /**
-   * Implements org.xml.sax.ext.LexicalHandler.startDTD()
+   * Implements LexicalHandler#startDTD()
    */
   @Override
   public void startDTD(String name, String publicId, String systemId) throws SAXException {
@@ -371,7 +372,7 @@ public class TransformerHandlerImpl implements TransformerHandler, DeclHandler {
   }
 
   /**
-   * Implements org.xml.sax.ext.LexicalHandler.endDTD()
+   * Implements LexicalHandler#endDTD()
    */
   @Override
   public void endDTD() throws SAXException {
@@ -381,7 +382,7 @@ public class TransformerHandlerImpl implements TransformerHandler, DeclHandler {
   }
 
   /**
-   * Implements org.xml.sax.ext.LexicalHandler.startEntity()
+   * Implements LexicalHandler#startEntity()
    */
   @Override
   public void startEntity(String name) throws SAXException {
@@ -391,7 +392,7 @@ public class TransformerHandlerImpl implements TransformerHandler, DeclHandler {
   }
 
   /**
-   * Implements org.xml.sax.ext.LexicalHandler.endEntity()
+   * Implements LexicalHandler#endEntity()
    */
   @Override
   public void endEntity(String name) throws SAXException {

@@ -23,8 +23,6 @@ package de.lyca.xml.utils.res;
 
 /**
  * The Japanese (Hiragana) resource bundle.
- * 
- * @xsl.usage internal
  */
 public class XResources_ja_JP_HI extends XResourceBundle {
 

@@ -17,6 +17,8 @@
  */
 package de.lyca.xpath.functions;
 
+import javax.xml.transform.TransformerException;
+
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xml.dtm.DTMIterator;
 import de.lyca.xml.utils.XMLString;
@@ -26,8 +28,6 @@ import de.lyca.xpath.objects.XObject;
 
 /**
  * Execute the Sum() function.
- * 
- * @xsl.usage advanced
  */
 public class FuncSum extends FunctionOneArg {
   static final long serialVersionUID = -2719049259574677519L;
@@ -39,10 +39,10 @@ public class FuncSum extends FunctionOneArg {
    *          The current execution context.
    * @return A valid XObject.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
   @Override
-  public XObject execute(XPathContext xctxt) throws javax.xml.transform.TransformerException {
+  public XObject execute(XPathContext xctxt) throws TransformerException {
 
     final DTMIterator nodes = m_arg0.asIterator(xctxt, xctxt.getCurrentNode());
     double sum = 0.0;

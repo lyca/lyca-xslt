@@ -100,6 +100,7 @@ public interface DTMAxisIterator extends Cloneable {
 
   /**
    * Set if restartable.
+   * @param isRestartable TODO
    */
   void setRestartable(boolean isRestartable);
 

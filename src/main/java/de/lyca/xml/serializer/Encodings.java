@@ -39,8 +39,6 @@ import de.lyca.xalan.SecuritySupport;
  * <p>
  * This class is not a public API. It is only public because it is used outside
  * of this package.
- * 
- * @xsl.usage internal
  */
 
 public final class Encodings {
@@ -61,7 +59,6 @@ public final class Encodings {
    * @return A suitable writer
    * @throws UnsupportedEncodingException
    *           There is no convertor to support this encoding
-   * @xsl.usage internal
    */
   static Writer getWriter(OutputStream output, String encoding) throws UnsupportedEncodingException {
 
@@ -100,7 +97,6 @@ public final class Encodings {
    *          The encoding
    * @return The object that is used to determine if characters are in the given
    *         encoding.
-   * @xsl.usage internal
    */
   static EncodingInfo getEncodingInfo(String encoding) {
     EncodingInfo ei;
@@ -149,7 +145,6 @@ public final class Encodings {
    *          a String of ASCII characters
    * @return an uppercased version of the input String, possibly the same
    *         String.
-   * @xsl.usage internal
    */
   static private String toUpperCaseFast(final String s) {
 
@@ -200,7 +195,6 @@ public final class Encodings {
    *          which case a default will be found.
    * 
    * @return The ISO-style encoding string, or null if failure.
-   * @xsl.usage internal
    */
   static String getMimeEncoding(String encoding) {
 
@@ -247,7 +241,6 @@ public final class Encodings {
    *          non-null reference to encoding string, java style.
    * 
    * @return ISO-style encoding string.
-   * @xsl.usage internal
    */
   private static String convertJava2MimeEncoding(String encoding) {
     final EncodingInfo enc = _encodingTableKeyJava.get(toUpperCaseFast(encoding));
@@ -267,7 +260,6 @@ public final class Encodings {
    * @return ISO-style encoding string.
    *         <p>
    *         This method is not a public API.
-   * @xsl.usage internal
    */
   public static String convertMime2JavaEncoding(String encoding) {
 
@@ -285,8 +277,6 @@ public final class Encodings {
    * System property "encodings" formatted using URL syntax may define an
    * external encodings list. Thanks to Sergey Ushakov for the code
    * contribution!
-   * 
-   * @xsl.usage internal
    */
   private static EncodingInfo[] loadEncodingInfo() {
     try {
@@ -383,7 +373,6 @@ public final class Encodings {
    * 
    * @param ch
    *          the character to test
-   * @xsl.usage internal
    */
   static boolean isHighUTF16Surrogate(char ch) {
     return '\uD800' <= ch && ch <= '\uDBFF';
@@ -396,7 +385,6 @@ public final class Encodings {
    * 
    * @param ch
    *          the character to test
-   * @xsl.usage internal
    */
   static boolean isLowUTF16Surrogate(char ch) {
     return '\uDC00' <= ch && ch <= '\uDFFF';
@@ -411,7 +399,6 @@ public final class Encodings {
    *          the high char of the high/low pair
    * @param lowSurrogate
    *          the low char of the high/low pair
-   * @xsl.usage internal
    */
   static int toCodePoint(char highSurrogate, char lowSurrogate) {
     final int codePoint = (highSurrogate - 0xd800 << 10) + lowSurrogate - 0xdc00 + 0x10000;
@@ -426,7 +413,6 @@ public final class Encodings {
    * 
    * @param ch
    *          the char.
-   * @xsl.usage internal
    */
   static int toCodePoint(char ch) {
     final int codePoint = ch;
@@ -448,7 +434,6 @@ public final class Encodings {
    *         point is unknown.
    *         <p>
    *         This method is not a public API.
-   * @xsl.usage internal
    */
   static public char getHighChar(String encoding) {
     final char highCodePoint;

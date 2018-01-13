@@ -71,8 +71,6 @@ import org.w3c.dom.xpath.XPathNamespace;
  * 
  * This implementation wraps the DOM attribute node that contained the namespace
  * declaration.
- * 
- * @xsl.usage internal
  */
 
 class XPathNamespaceImpl implements XPathNamespace {

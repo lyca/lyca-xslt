@@ -17,6 +17,8 @@
  */
 package de.lyca.xpath.functions;
 
+import javax.xml.transform.TransformerException;
+
 import de.lyca.xml.utils.XMLString;
 import de.lyca.xpath.XPathContext;
 import de.lyca.xpath.objects.XObject;
@@ -24,8 +26,6 @@ import de.lyca.xpath.objects.XString;
 
 /**
  * Execute the SubstringAfter() function.
- * 
- * @xsl.usage advanced
  */
 public class FuncSubstringAfter extends Function2Args {
   static final long serialVersionUID = -8119731889862512194L;
@@ -37,10 +37,10 @@ public class FuncSubstringAfter extends Function2Args {
    *          The current execution context.
    * @return A valid XObject.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
   @Override
-  public XObject execute(XPathContext xctxt) throws javax.xml.transform.TransformerException {
+  public XObject execute(XPathContext xctxt) throws TransformerException {
 
     final XMLString s1 = m_arg0.execute(xctxt).xstr();
     final XMLString s2 = m_arg1.execute(xctxt).xstr();

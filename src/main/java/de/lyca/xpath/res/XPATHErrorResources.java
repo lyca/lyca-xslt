@@ -28,8 +28,6 @@ import java.util.ResourceBundle;
  * Static string constant for the Key and update the contents array with Key,
  * Value pair Also you need to update the count of messages(MAX_CODE)or the
  * count of warnings(MAX_WARNING) [ Information purpose only]
- * 
- * @xsl.usage advanced
  */
 public class XPATHErrorResources extends ListResourceBundle {
 
@@ -756,7 +754,7 @@ public class XPATHErrorResources extends ListResourceBundle {
    * @param className
    *          Name of local-specific subclass.
    * @return the ResourceBundle
-   * @throws MissingResourceException
+   * @throws MissingResourceException TODO
    */
   public static final XPATHErrorResources loadResourceBundle(String className) throws MissingResourceException {
 

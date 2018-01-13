@@ -25,6 +25,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.xml.sax.helpers.NamespaceSupport;
+
 /**
  * Encapsulate Namespace tracking logic for use by SAX drivers.
  * 
@@ -44,7 +46,7 @@ import java.util.Map;
  * 
  * @see org.xml.sax.helpers.NamespaceSupport
  * */
-public class NamespaceSupport2 extends org.xml.sax.helpers.NamespaceSupport {
+public class NamespaceSupport2 extends NamespaceSupport {
   // //////////////////////////////////////////////////////////////////
   // Internal state.
   // //////////////////////////////////////////////////////////////////

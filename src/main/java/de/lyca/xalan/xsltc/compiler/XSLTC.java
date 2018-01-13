@@ -155,6 +155,9 @@ public final class XSLTC {
 
   /**
    * Set the state of the secure processing feature.
+   * 
+   * @param flag
+   *          TODO
    */
   public void setSecureProcessing(boolean flag) {
     _isSecureProcessing = flag;
@@ -162,6 +165,8 @@ public final class XSLTC {
 
   /**
    * Return the state of the secure processing feature.
+   * 
+   * @return TODO
    */
   public boolean isSecureProcessing() {
     return _isSecureProcessing;
@@ -169,6 +174,8 @@ public final class XSLTC {
 
   /**
    * Only for user by the internal TrAX implementation.
+   * 
+   * @return TODO
    */
   public Parser getParser() {
     return _parser;
@@ -176,6 +183,9 @@ public final class XSLTC {
 
   /**
    * Only for user by the internal TrAX implementation.
+   * 
+   * @param output
+   *          TODO
    */
   public void setOutputType(Set<Out> output) {
     this.output = output;
@@ -183,6 +193,8 @@ public final class XSLTC {
 
   /**
    * Only for user by the internal TrAX implementation.
+   * 
+   * @return TODO
    */
   public Properties getOutputProperties() {
     return _parser.getOutputProperties();
@@ -240,9 +252,9 @@ public final class XSLTC {
   }
 
   /**
-   * Set the parameters to use to locate the correct <?xml-stylesheet ...?>
-   * processing instruction in the case where the input document to the compiler
-   * (and parser) is an XML document.
+   * Set the parameters to use to locate the correct
+   * {@literal <?xml-stylesheet ...?>} processing instruction in the case where
+   * the input document to the compiler (and parser) is an XML document.
    * 
    * @param media
    *          The media attribute to be matched. May be null, in which case the
@@ -261,6 +273,7 @@ public final class XSLTC {
    * 
    * @param url
    *          An URL containing the input XSL stylesheet
+   * @return TODO
    */
   public boolean compile(URL url) {
     try {
@@ -282,6 +295,7 @@ public final class XSLTC {
    *          An URL containing the input XSL stylesheet
    * @param name
    *          The name to assign to the translet class
+   * @return TODO
    */
   public boolean compile(URL url, String name) {
     try {
@@ -441,8 +455,8 @@ public final class XSLTC {
    *          The name of the translet class to generate
    * @param input
    *          An InputSource that will pass in the stylesheet contents
-   * @param outputType
-   *          The output type
+   * @param output
+   *          The output types
    * @return JVM bytecodes that represent translet class definition
    */
   public byte[][] compile(String name, InputSource input, Set<Out> output) {
@@ -479,6 +493,8 @@ public final class XSLTC {
 
   /**
    * Get the XMLReader to use for parsing the next input stylesheet
+   * 
+   * @return TODO
    */
   public XMLReader getXMLReader() {
     return _reader;
@@ -519,6 +535,9 @@ public final class XSLTC {
   /**
    * This method is called by the XPathParser when it encounters a call to the
    * document() function. Affects the DOM used by the translet.
+   * 
+   * @param flag
+   *          TODO
    */
   protected void setMultiDocument(boolean flag) {
     _multiDocument = flag;
@@ -531,6 +550,9 @@ public final class XSLTC {
   /**
    * This method is called by the XPathParser when it encounters a call to the
    * nodeset() extension function. Implies multi document.
+   * 
+   * @param flag
+   *          TODO
    */
   protected void setCallsNodeset(boolean flag) {
     if (flag) {
@@ -573,6 +595,8 @@ public final class XSLTC {
 
   /**
    * Get the class name for the generated translet.
+   * 
+   * @return TODO
    */
   public String getClassName() {
     return _className;
@@ -610,6 +634,10 @@ public final class XSLTC {
   /**
    * Set the destination directory for the translet. The current working
    * directory will be used by default.
+   * 
+   * @param dstDirName
+   *          TODO
+   * @return TODO
    */
   public boolean setDestDirectory(String dstDirName) {
     final File dir = new File(dstDirName);
@@ -624,6 +652,9 @@ public final class XSLTC {
 
   /**
    * Set an optional package name for the translet and auxiliary classes
+   * 
+   * @param packageName
+   *          TODO
    */
   public void setPackageName(String packageName) {
     _packageName = packageName;
@@ -635,6 +666,9 @@ public final class XSLTC {
   /**
    * Set the name of an optional JAR-file to dump the translet and auxiliary
    * classes to
+   * 
+   * @param jarFileName
+   *          TODO
    */
   public void setJarFileName(String jarFileName) {
     final String JAR_EXT = ".jar";
@@ -652,6 +686,9 @@ public final class XSLTC {
 
   /**
    * Set the top-level stylesheet
+   * 
+   * @param stylesheet
+   *          TODO
    */
   public void setStylesheet(Stylesheet stylesheet) {
     if (_stylesheet == null) {
@@ -661,6 +698,8 @@ public final class XSLTC {
 
   /**
    * Returns the top-level stylesheet
+   * 
+   * @return TODO
    */
   public Stylesheet getStylesheet() {
     return _stylesheet;
@@ -669,6 +708,10 @@ public final class XSLTC {
   /**
    * Registers an attribute and gives it a type so that it can be mapped to DOM
    * attribute types at run-time.
+   * 
+   * @param name
+   *          TODO
+   * @return TODO
    */
   public int registerAttribute(QName name) {
     Integer code = _attributes.get(name.toString());
@@ -692,6 +735,10 @@ public final class XSLTC {
   /**
    * Registers an element and gives it a type so that it can be mapped to DOM
    * element types at run-time.
+   * 
+   * @param name
+   *          TODO
+   * @return TODO
    */
   public int registerElement(QName name) {
     // Register element (full QName)
@@ -709,8 +756,11 @@ public final class XSLTC {
   /**
    * Registers a namespace prefix and gives it a type so that it can be mapped
    * to DOM namespace types at run-time.
+   * 
+   * @param name
+   *          TODO
+   * @return TODO
    */
-
   public int registerNamespacePrefix(QName name) {
 
     Integer code = _namespacePrefixes.get(name.toString());
@@ -731,6 +781,10 @@ public final class XSLTC {
   /**
    * Registers a namespace and gives it a type so that it can be mapped to DOM
    * namespace types at run-time.
+   * 
+   * @param name
+   *          TODO
+   * @return TODO
    */
   public int registerNamespacePrefix(String name) {
     Integer code = _namespacePrefixes.get(name);
@@ -745,6 +799,10 @@ public final class XSLTC {
   /**
    * Registers a namespace and gives it a type so that it can be mapped to DOM
    * namespace types at run-time.
+   * 
+   * @param namespaceURI
+   *          TODO
+   * @return TODO
    */
   public int registerNamespace(String namespaceURI) {
     Integer code = _namespaces.get(namespaceURI);
@@ -845,6 +903,8 @@ public final class XSLTC {
 
   /**
    * Returns a unique name for every helper class needed to execute a translet.
+   * 
+   * @return TODO
    */
   public String getHelperClassName() {
     return getClassName() + '_' + _helperClassSerial++;
@@ -926,6 +986,9 @@ public final class XSLTC {
 
   /**
    * TODO Generate output JAR-file and packages
+   * 
+   * @throws IOException
+   *           TODO
    */
   public void outputToJar() throws IOException {
     // create the manifest
@@ -958,6 +1021,9 @@ public final class XSLTC {
 
   /**
    * Turn debugging messages on/off
+   * 
+   * @param debug
+   *          TODO
    */
   public void setDebug(boolean debug) {
     _debug = debug;
@@ -965,6 +1031,8 @@ public final class XSLTC {
 
   /**
    * Get current debugging message setting
+   * 
+   * @return TODO
    */
   public boolean debug() {
     return _debug;
@@ -987,6 +1055,8 @@ public final class XSLTC {
   /**
    * Get the number of char[] arrays, thus far, that will be created to store
    * literal text in the stylesheet.
+   * 
+   * @return TODO
    */
   public int getCharacterDataCount() {
     return m_characterData == null ? 0 : m_characterData.size();

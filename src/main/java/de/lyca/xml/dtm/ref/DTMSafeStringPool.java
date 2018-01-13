@@ -54,6 +54,7 @@ public class DTMSafeStringPool extends DTMStringPool {
    * Command-line unit test driver. This test relies on the fact that this
    * version of the pool assigns indices consecutively, starting from zero, as
    * new unique strings are encountered.
+   * @param args TODO
    */
   public static void main(String[] args) {
     final String[] word = { "Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten",

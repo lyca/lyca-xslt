@@ -51,8 +51,7 @@ import de.lyca.xml.serializer.SerializationHandler;
 import de.lyca.xml.utils.XML11Char;
 
 /**
- * Standard XSLT functions. All standard functions expect the current node and
- * the DOM as their last two arguments.
+ * Standard XSLT functions. All standard functions expect the current node and the DOM as their last two arguments.
  */
 public final class BasisLibrary {
 
@@ -198,8 +197,7 @@ public final class BasisLibrary {
   }
 
   /**
-   * XSLT Standard function substring(). Must take a double because of
-   * conversions resulting into NaNs and rounding.
+   * XSLT Standard function substring(). Must take a double because of conversions resulting into NaNs and rounding.
    */
   public static String substringF(String value, double start) {
     try {
@@ -222,8 +220,7 @@ public final class BasisLibrary {
   }
 
   /**
-   * XSLT Standard function substring(). Must take a double because of
-   * conversions resulting into NaNs and rounding.
+   * XSLT Standard function substring(). Must take a double because of conversions resulting into NaNs and rounding.
    */
   public static String substringF(String value, double start, double length) {
     try {
@@ -369,28 +366,26 @@ public final class BasisLibrary {
   }
 
   /**
-   * External functions that cannot be resolved are replaced with a call to this
-   * method. This method will generate a runtime errors. A good stylesheet
-   * checks whether the function exists using conditional constructs, and never
-   * really tries to call it if it doesn't exist. But simple stylesheets may
-   * result in a call to this method. The compiler should generate a warning if
-   * it encounters a call to an unresolved external function.
+   * External functions that cannot be resolved are replaced with a call to this method. This method will generate a
+   * runtime errors. A good stylesheet checks whether the function exists using conditional constructs, and never really
+   * tries to call it if it doesn't exist. But simple stylesheets may result in a call to this method. The compiler
+   * should generate a warning if it encounters a call to an unresolved external function.
    */
   public static void unresolved_externalF(String name) {
     runTimeError(EXTERNAL_FUNC_ERR, name);
   }
 
   /**
-   * Utility function to throw a runtime error on the use of an extension
-   * function when the secure processing feature is set to true.
+   * Utility function to throw a runtime error on the use of an extension function when the secure processing feature is
+   * set to true.
    */
   public static void unallowed_extension_functionF(String name) {
     runTimeError(UNALLOWED_EXTENSION_FUNCTION_ERR, name);
   }
 
   /**
-   * Utility function to throw a runtime error on the use of an extension
-   * element when the secure processing feature is set to true.
+   * Utility function to throw a runtime error on the use of an extension element when the secure processing feature is
+   * set to true.
    */
   public static void unallowed_extension_elementF(String name) {
     runTimeError(UNALLOWED_EXTENSION_ELEMENT_ERR, name);
@@ -399,9 +394,8 @@ public final class BasisLibrary {
   /**
    * Utility function to throw a runtime error for an unsupported element.
    * 
-   * This is only used in forward-compatibility mode, when the control flow
-   * cannot be determined. In 1.0 mode, the error message is emitted at compile
-   * time.
+   * This is only used in forward-compatibility mode, when the control flow cannot be determined. In 1.0 mode, the error
+   * message is emitted at compile time.
    */
   public static void unsupported_ElementF(String qname, boolean isExtension) {
     if (isExtension) {
@@ -699,7 +693,7 @@ public final class BasisLibrary {
       if (left instanceof Boolean || right instanceof Boolean) {
         result = booleanF(left) == booleanF(right);
       } else if (left instanceof Double || right instanceof Double || left instanceof Integer
-              || right instanceof Integer) {
+          || right instanceof Integer) {
         result = numberF(left, dom) == numberF(right, dom);
       } else { // compare them as strings
         result = stringF(left, dom).equals(stringF(right, dom));
@@ -794,7 +788,7 @@ public final class BasisLibrary {
 
   private static boolean hasSimpleType(Object obj) {
     return obj instanceof Boolean || obj instanceof Double || obj instanceof Integer || obj instanceof String
-            || obj instanceof Node || obj instanceof DOM;
+        || obj instanceof Node || obj instanceof DOM;
   }
 
   /**
@@ -838,8 +832,8 @@ public final class BasisLibrary {
   }
 
   /**
-   * Utility function: used in RealType to convert a real to a string. Removes
-   * the decimal if null. TODO make Local aware?
+   * Utility function: used in RealType to convert a real to a string. Removes the decimal if null. TODO make Local
+   * aware?
    */
   public static String realToString(double d) {
     final double m = Math.abs(d);
@@ -866,9 +860,8 @@ public final class BasisLibrary {
   }
 
   /**
-   * Utility function: used to format/adjust a double to a string. The
-   * DecimalFormat object comes from the 'formatSymbols' hashtable in
-   * AbstractTranslet.
+   * Utility function: used to format/adjust a double to a string. The DecimalFormat object comes from the
+   * 'formatSymbols' hashtable in AbstractTranslet.
    */
   private static FieldPosition _fieldPosition = new FieldPosition(0);
 
@@ -881,7 +874,7 @@ public final class BasisLibrary {
       final StringBuffer result = new StringBuffer();
       if (pattern != defaultPattern) {
         // TODO
-//        formatter = (DecimalFormat) formatter.clone();
+        // formatter = (DecimalFormat) formatter.clone();
         formatter.applyLocalizedPattern(pattern);
       }
       formatter.format(number, result, _fieldPosition);
@@ -893,8 +886,8 @@ public final class BasisLibrary {
   }
 
   /**
-   * Utility function: used to convert references to node-sets. If the obj is an
-   * instanceof Node then create a singleton iterator.
+   * Utility function: used to convert references to node-sets. If the obj is an instanceof Node then create a singleton
+   * iterator.
    */
   public static DTMAxisIterator referenceToNodeSet(Object obj) {
     // Convert var/param -> node
@@ -1028,8 +1021,7 @@ public final class BasisLibrary {
   }
 
   /**
-   * Utility function used to convert a w3c NodeList into a internal DOM
-   * iterator.
+   * Utility function used to convert a w3c NodeList into a internal DOM iterator.
    */
   public static DTMAxisIterator nodeList2Iterator(org.w3c.dom.NodeList nodeList, Translet translet, DOM dom) {
     // First pass: build w3c DOM for all nodes not proxied from our DOM.
@@ -1119,7 +1111,7 @@ public final class BasisLibrary {
       final DOM idom = (DOM) dtmManager.getDTM(new DOMSource(doc), false, null, true, false);
       // Create DOMAdapter and register with MultiDOM
       final DOMAdapter domAdapter = new DOMAdapter(idom, translet.getNamesArray(), translet.getUrisArray(),
-              translet.getTypesArray(), translet.getNamespaceArray());
+          translet.getTypesArray(), translet.getNamespaceArray());
       multiDOM.addDOMAdapter(domAdapter);
 
       final DTMAxisIterator iter1 = idom.getAxisIterator(Axis.CHILD);
@@ -1190,8 +1182,8 @@ public final class BasisLibrary {
   }
 
   /**
-   * Utility function: used with nth position filters to convert a sequence of
-   * nodes to just one single node (the one at position n).
+   * Utility function: used with nth position filters to convert a sequence of nodes to just one single node (the one at
+   * position n).
    */
   public static DTMAxisIterator getSingleNode(DTMAxisIterator iterator) {
     final int node = iterator.next();
@@ -1230,8 +1222,8 @@ public final class BasisLibrary {
   }
 
   /**
-   * Utility function to check if xsl:attribute has a valid qname This method
-   * should only be invoked if the name attribute is an AVT
+   * Utility function to check if xsl:attribute has a valid qname This method should only be invoked if the name
+   * attribute is an AVT
    */
   public static void checkAttribQName(String name) {
     final int firstOccur = name.indexOf(':');
@@ -1263,8 +1255,8 @@ public final class BasisLibrary {
   }
 
   /**
-   * Utility function to check if a name is a valid ncname This method should
-   * only be invoked if the attribute value is an AVT
+   * Utility function to check if a name is a valid ncname This method should only be invoked if the attribute value is
+   * an AVT
    */
   public static void checkNCName(String name) {
     if (!XML11Char.isXML11ValidNCName(name)) {
@@ -1273,8 +1265,8 @@ public final class BasisLibrary {
   }
 
   /**
-   * Utility function to check if a name is a valid qname This method should
-   * only be invoked if the attribute value is an AVT
+   * Utility function to check if a name is a valid qname This method should only be invoked if the attribute value is
+   * an AVT
    */
   public static void checkQName(String name) {
     if (!XML11Char.isXML11ValidQName(name)) {
@@ -1285,10 +1277,11 @@ public final class BasisLibrary {
   /**
    * Utility function for the implementation of xsl:element.
    */
-  public static String startXslElement(String qname, String namespace, SerializationHandler handler, DOM dom, int node) {
+  public static String startXslElement(String qname, String namespace, SerializationHandler handler, DOM dom,
+      int node) {
     try {
       // Get prefix from qname
-//      String prefix = "";
+      // String prefix = "";
       final int index = qname.indexOf(':');
 
       if (index > 0) {
@@ -1304,8 +1297,8 @@ public final class BasisLibrary {
       } else {
         // Need to generate a prefix?
         if (namespace != null && namespace.length() > 0) {
-//          prefix = generatePrefix();
-//          qname = prefix + ':' + qname;
+          // prefix = generatePrefix();
+          // qname = prefix + ':' + qname;
           handler.startElement(namespace, qname, qname);
           handler.namespaceAfterStartElement("", namespace);
         } else {
@@ -1321,42 +1314,30 @@ public final class BasisLibrary {
 
   /**
    * <p>
-   * Look up the namespace for a lexical QName using the namespace declarations
-   * available at a particular location in the stylesheet.
+   * Look up the namespace for a lexical QName using the namespace declarations available at a particular location in
+   * the stylesheet.
    * </p>
    * <p>
-   * See
-   * {@link de.lyca.xalan.xsltc.compiler.Stylesheet#compileStaticInitializer(de.lyca.xalan.xsltc.compiler.util.ClassGenerator)}
-   * for more information about the <code>ancestorNodeIDs</code>,
-   * <code>prefixURIsIndex</code> and <code>prefixURIPairs</code arrays.
+   * See {@link de.lyca.xalan.xsltc.compiler.Stylesheet} for more information about the <code>ancestorNodeIDs</code>,
+   * <code>prefixURIsIndex</code> and <code>prefixURIPairs</code> arrays.
    * </p>
    * 
-   * @param lexicalQName
-   *          The QName as a <code>java.lang.String</code>
-   * @param stylesheetNodeID
-   *          An <code>int</code> representing the element in the stylesheet
-   *          relative to which the namespace of the lexical QName is to be
-   *          determined
-   * @param ancestorNodeIDs
-   *          An <code>int</code> array, indexed by stylesheet node IDs,
-   *          containing the ID of the nearest ancestor node in the stylesheet
-   *          that has namespace declarations, or <code>-1</code> if there is no
-   *          such ancestor
-   * @param prefixURIsIndex
-   *          An <code>int</code> array, indexed by stylesheet node IDs,
-   *          containing the index into the <code>prefixURIPairs</code> array of
-   *          the first prefix declared on that stylesheet node
-   * @param prefixURIPairs
-   *          A <code>java.lang.String</code> array that contains pairs of
-   * @param ignoreDefault
-   *          A <code>boolean</code> indicating whether any default namespace
-   *          decarlation should be considered
-   * @return The namespace of the lexical QName or a zero-length string if the
-   *         QName is in no namespace or no namespace declaration for the prefix
-   *         of the QName was found
+   * @param lexicalQName The QName as a <code>java.lang.String</code>
+   * @param stylesheetNodeID An <code>int</code> representing the element in the stylesheet relative to which the
+   *        namespace of the lexical QName is to be determined
+   * @param ancestorNodeIDs An <code>int</code> array, indexed by stylesheet node IDs, containing the ID of the nearest
+   *        ancestor node in the stylesheet that has namespace declarations, or <code>-1</code> if there is no such
+   *        ancestor
+   * @param prefixURIsIndex An <code>int</code> array, indexed by stylesheet node IDs, containing the index into the
+   *        <code>prefixURIPairs</code> array of the first prefix declared on that stylesheet node
+   * @param prefixURIPairs A <code>java.lang.String</code> array that contains pairs of
+   * @param ignoreDefault A <code>boolean</code> indicating whether any default namespace decarlation should be
+   *        considered
+   * @return The namespace of the lexical QName or a zero-length string if the QName is in no namespace or no namespace
+   *         declaration for the prefix of the QName was found
    */
   public static String lookupStylesheetQNameNamespace(String lexicalQName, int stylesheetNodeID, int[] ancestorNodeIDs,
-          int[] prefixURIsIndex, String[] prefixURIPairs, boolean ignoreDefault) {
+      int[] prefixURIsIndex, String[] prefixURIPairs, boolean ignoreDefault) {
     String prefix = getPrefix(lexicalQName);
     String uri = "";
 
@@ -1375,7 +1356,7 @@ public final class BasisLibrary {
         // prefixURIPairs.length-1 if I is the last node)
         final int prefixStartIdx = prefixURIsIndex[currentNodeID];
         final int prefixLimitIdx = currentNodeID + 1 < prefixURIsIndex.length ? prefixURIsIndex[currentNodeID + 1]
-                : prefixURIPairs.length;
+            : prefixURIPairs.length;
 
         for (int prefixIdx = prefixStartIdx; prefixIdx < prefixLimitIdx; prefixIdx = prefixIdx + 2) {
           // Did we find the declaration of our prefix
@@ -1392,48 +1373,36 @@ public final class BasisLibrary {
 
   /**
    * <p>
-   * Look up the namespace for a lexical QName using the namespace declarations
-   * available at a particular location in the stylesheet and return the
-   * expanded QName
+   * Look up the namespace for a lexical QName using the namespace declarations available at a particular location in
+   * the stylesheet and return the expanded QName
    * </p>
    * <p>
-   * See
-   * {@link de.lyca.xalan.xsltc.compiler.Stylesheet#compileStaticInitializer(de.lyca.xalan.xsltc.compiler.util.ClassGenerator)}
-   * for more information about the <code>ancestorNodeIDs</code>,
-   * <code>prefixURIsIndex</code> and <code>prefixURIPairs</code arrays.
+   * See {@link de.lyca.xalan.xsltc.compiler.Stylesheet} for more information about the <code>ancestorNodeIDs</code>,
+   * <code>prefixURIsIndex</code> and <code>prefixURIPairs</code> arrays.
    * </p>
    * 
-   * @param lexicalQName
-   *          The QName as a <code>java.lang.String</code>
-   * @param stylesheetNodeID
-   *          An <code>int</code> representing the element in the stylesheet
-   *          relative to which the namespace of the lexical QName is to be
-   *          determined
-   * @param ancestorNodeIDs
-   *          An <code>int</code> array, indexed by stylesheet node IDs,
-   *          containing the ID of the nearest ancestor node in the stylesheet
-   *          that has namespace declarations, or <code>-1</code> if there is no
-   *          such ancestor
-   * @param prefixURIsIndex
-   *          An <code>int</code> array, indexed by stylesheet node IDs,
-   *          containing the index into the <code>prefixURIPairs</code> array of
-   *          the first prefix declared on that stylesheet node
-   * @param prefixURIPairs
-   *          A <code>java.lang.String</code> array that contains pairs of
-   * @param ignoreDefault
-   *          A <code>boolean</code> indicating whether any default namespace
-   *          decarlation should be considered
-   * @return The expanded QName in the form "uri:localName" or just "localName"
-   *         if the QName is in no namespace or no namespace declaration for the
-   *         prefix of the QName was found
+   * @param lexicalQName The QName as a <code>java.lang.String</code>
+   * 
+   * @param stylesheetNodeID An <code>int</code> representing the element in the stylesheet relative to which the
+   *        namespace of the lexical QName is to be determined
+   * @param ancestorNodeIDs An <code>int</code> array, indexed by stylesheet node IDs, containing the ID of the nearest
+   *        ancestor node in the stylesheet that has namespace declarations, or <code>-1</code> if there is no such
+   *        ancestor
+   * @param prefixURIsIndex An <code>int</code> array, indexed by stylesheet node IDs, containing the index into the
+   *        <code>prefixURIPairs</code> array of the first prefix declared on that stylesheet node
+   * @param prefixURIPairs A <code>java.lang.String</code> array that contains pairs of
+   * @param ignoreDefault A <code>boolean</code> indicating whether any default namespace decarlation should be
+   *        considered
+   * @return The expanded QName in the form "uri:localName" or just "localName" if the QName is in no namespace or no
+   *         namespace declaration for the prefix of the QName was found
    */
   public static String expandStylesheetQNameRef(String lexicalQName, int stylesheetNodeID, int[] ancestorNodeIDs,
-          int[] prefixURIsIndex, String[] prefixURIPairs, boolean ignoreDefault) {
+      int[] prefixURIsIndex, String[] prefixURIPairs, boolean ignoreDefault) {
     String expandedQName;
     final String prefix = getPrefix(lexicalQName);
     final String localName = prefix != null ? lexicalQName.substring(prefix.length() + 1) : lexicalQName;
     final String uri = lookupStylesheetQNameNamespace(lexicalQName, stylesheetNodeID, ancestorNodeIDs, prefixURIsIndex,
-            prefixURIPairs, ignoreDefault);
+        prefixURIPairs, ignoreDefault);
 
     // Handle case when prefix is not resolved
     if (prefix != null && prefix.length() != 0 && (uri == null || uri.length() == 0)) {
@@ -1550,11 +1519,9 @@ public final class BasisLibrary {
   }
 
   /**
-   * Utility method to allow setting parameters of the form
-   * {namespaceuri}localName which get mapped to an instance variable in the
-   * class Hence a parameter of the form "{http://foo.bar}xyz" will be replaced
-   * with the corresponding values by the BasisLibrary's utility method
-   * mapQNametoJavaName and thus get mapped to legal java variable names
+   * Utility method to allow setting parameters of the form {namespaceuri}localName which get mapped to an instance
+   * variable in the class Hence a parameter of the form "{http://foo.bar}xyz" will be replaced with the corresponding
+   * values by the BasisLibrary's utility method mapQNametoJavaName and thus get mapped to legal java variable names
    */
   public static String mapQNameToJavaName(String base) {
     return replace(Util.escape(base), "{}?#%*",

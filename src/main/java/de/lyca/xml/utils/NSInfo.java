@@ -20,8 +20,6 @@ package de.lyca.xml.utils;
 /**
  * This class holds information about the namespace info of a node. It is used
  * to optimize namespace lookup in a generic DOM.
- * 
- * @xsl.usage internal
  */
 public class NSInfo {
 

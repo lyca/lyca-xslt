@@ -23,8 +23,6 @@ package de.lyca.xml.utils.res;
 
 /**
  * The Spanish resource bundle.
- * 
- * @xsl.usage internal
  */
 public class XResources_es extends XResourceBundle {
 

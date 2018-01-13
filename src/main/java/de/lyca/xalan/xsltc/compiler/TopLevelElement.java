@@ -58,6 +58,8 @@ class TopLevelElement extends SyntaxTreeNode {
   /**
    * Translate this node into a fresh instruction list. The original instruction
    * list is saved and restored.
+   * @param ctx TODO
+   * @return TODO
    */
   public JStatement compile(CompilerContext ctx) {
     return null;
@@ -72,6 +74,7 @@ class TopLevelElement extends SyntaxTreeNode {
   /**
    * Add a dependency with other top-level elements like variables, parameters
    * or keys.
+   * @param other TODO
    */
   public void addDependency(TopLevelElement other) {
     if (_dependencies == null) {
@@ -85,6 +88,7 @@ class TopLevelElement extends SyntaxTreeNode {
   /**
    * Get the list of dependencies with other top-level elements like variables,
    * parameteres or keys.
+   * @return TODO
    */
   public List<TopLevelElement> getDependencies() {
     return _dependencies;

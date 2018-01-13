@@ -17,11 +17,13 @@
  */
 package de.lyca.xpath.objects;
 
+import javax.xml.transform.TransformerException;
+
+import de.lyca.xml.utils.WrappedRuntimeException;
+
 /**
  * This class represents an XPath boolean object, and is capable of converting
  * the boolean to other types, such as a string.
- * 
- * @xsl.usage advanced
  */
 public class XBoolean extends XObject {
   static final long serialVersionUID = -2964933058866100881L;
@@ -29,15 +31,13 @@ public class XBoolean extends XObject {
   /**
    * A true boolean object so we don't have to keep creating them.
    * 
-   * @xsl.usage internal
-   */
+     */
   public static final XBoolean S_TRUE = new XBooleanStatic(true);
 
   /**
    * A true boolean object so we don't have to keep creating them.
    * 
-   * @xsl.usage internal
-   */
+     */
   public static final XBoolean S_FALSE = new XBooleanStatic(false);
 
   /**
@@ -146,8 +146,6 @@ public class XBoolean extends XObject {
    *          Object to compare to this
    * 
    * @return True if the two objects are equal
-   * 
-   * @throws javax.xml.transform.TransformerException
    */
   @Override
   public boolean equals(XObject obj2) {
@@ -160,8 +158,8 @@ public class XBoolean extends XObject {
 
     try {
       return m_val == obj2.bool();
-    } catch (final javax.xml.transform.TransformerException te) {
-      throw new de.lyca.xml.utils.WrappedRuntimeException(te);
+    } catch (final TransformerException te) {
+      throw new WrappedRuntimeException(te);
     }
   }
 

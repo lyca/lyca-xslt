@@ -30,7 +30,7 @@ import de.lyca.xml.dtm.DTM;
 /**
  * @author Jacek Ambroziak
  * @author Santiago Pericas-Geertsen
- * @author Erwin Bolwidt <ejb@klomp.org>
+ * @author Erwin Bolwidt {@literal <ejb@klomp.org>}
  */
 public final class ReferenceType extends Type {
   protected ReferenceType() {
@@ -56,7 +56,14 @@ public final class ReferenceType extends Type {
    * translation to int is undefined since references are always converted to
    * reals in arithmetic expressions.
    * 
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
+   * @param ctx
+   *          TODO
+   * @param expr
+   *          TODO
+   * @param type
+   *          TODO
+   * @return TODO
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo
    */
   @Override
   public JExpression compileTo(CompilerContext ctx, JExpression expr, Type type) {
@@ -86,7 +93,14 @@ public final class ReferenceType extends Type {
   /**
    * Translates reference into object of internal type <code>type</code>.
    * 
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
+   * @param ctx
+   *          TODO
+   * @param expr
+   *          TODO
+   * @param type
+   *          TODO
+   * @return TODO
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo
    */
   public JExpression compileTo(CompilerContext ctx, JExpression expr, StringType type) {
     JExpression currentNode = ctx.currentNode();
@@ -100,7 +114,14 @@ public final class ReferenceType extends Type {
   /**
    * Translates a reference into an object of internal type <code>type</code>.
    * 
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
+   * @param ctx
+   *          TODO
+   * @param expr
+   *          TODO
+   * @param type
+   *          TODO
+   * @return TODO
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo
    */
   public JExpression compileTo(CompilerContext ctx, JExpression expr, RealType type) {
     return ctx.ref(BasisLibrary.class).staticInvoke("numberF").arg(expr).arg(ctx.currentDom());
@@ -109,7 +130,14 @@ public final class ReferenceType extends Type {
   /**
    * Translates a reference to an object of internal type <code>type</code>.
    * 
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
+   * @param ctx
+   *          TODO
+   * @param expr
+   *          TODO
+   * @param type
+   *          TODO
+   * @return TODO
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo
    */
   public JExpression compileTo(CompilerContext ctx, JExpression expr, BooleanType type) {
     return ctx.ref(BasisLibrary.class).staticInvoke("booleanF").arg(expr);
@@ -118,7 +146,14 @@ public final class ReferenceType extends Type {
   /**
    * Casts a reference into a NodeIterator.
    * 
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
+   * @param ctx
+   *          TODO
+   * @param expr
+   *          TODO
+   * @param type
+   *          TODO
+   * @return TODO
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo
    */
   public JExpression compileTo(CompilerContext ctx, JExpression expr, NodeSetType type) {
     // Reset this iterator
@@ -128,7 +163,14 @@ public final class ReferenceType extends Type {
   /**
    * Casts a reference into a Node.
    * 
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
+   * @param ctx
+   *          TODO
+   * @param expr
+   *          TODO
+   * @param type
+   *          TODO
+   * @return TODO
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo
    */
   public JExpression compileTo(CompilerContext ctx, JExpression expr, NodeType type) {
     return Type.NodeSet.compileTo(ctx, compileTo(ctx, expr, Type.NodeSet), type);
@@ -137,7 +179,14 @@ public final class ReferenceType extends Type {
   /**
    * Casts a reference into a ResultTree.
    * 
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
+   * @param ctx
+   *          TODO
+   * @param expr
+   *          TODO
+   * @param type
+   *          TODO
+   * @return TODO
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo
    */
   public JExpression compileTo(CompilerContext ctx, JExpression expr, ResultTreeType type) {
     return ctx.ref(BasisLibrary.class).staticInvoke("referenceToResultTree").arg(expr);
@@ -146,7 +195,14 @@ public final class ReferenceType extends Type {
   /**
    * Subsume reference into ObjectType.
    * 
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
+   * @param ctx
+   *          TODO
+   * @param expr
+   *          TODO
+   * @param type
+   *          TODO
+   * @return TODO
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo
    */
   public JExpression compileTo(CompilerContext ctx, JExpression expr, ObjectType type) {
     return expr;
@@ -154,6 +210,14 @@ public final class ReferenceType extends Type {
 
   /**
    * Translates a reference into the Java type denoted by <code>clazz</code>.
+   * 
+   * @param ctx
+   *          TODO
+   * @param expr
+   *          TODO
+   * @param clazz
+   *          TODO
+   * @return TODO
    */
   @Override
   public JExpression compileTo(CompilerContext ctx, JExpression expr, Class<?> clazz) {
@@ -231,6 +295,14 @@ public final class ReferenceType extends Type {
   /**
    * Translates an external Java type into a reference. Only conversion allowed
    * is from java.lang.Object.
+   * 
+   * @param ctx
+   *          TODO
+   * @param expr
+   *          TODO
+   * @param clazz
+   *          TODO
+   * @return TODO
    */
   @Override
   public JExpression compileFrom(CompilerContext ctx, JExpression expr, Class<?> clazz) {

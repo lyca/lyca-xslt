@@ -32,7 +32,7 @@ import org.xml.sax.ext.LexicalHandler;
  * Note that interaction is via the deliverMoreNodes method, and therefore
  * coroutine support is not exposed here.
  * </p>
- * */
+ */
 public interface IncrementalSAXSource {
   // ------------------------------------------------------------------
   // SAX Output API
@@ -40,16 +40,25 @@ public interface IncrementalSAXSource {
 
   /**
    * Register a SAX-style content handler for us to output to
+   * 
+   * @param handler
+   *          TODO
    */
   void setContentHandler(ContentHandler handler);
 
   /**
    * Register a SAX-style lexical handler for us to output to
+   * 
+   * @param handler
+   *          TODO
    */
   void setLexicalHandler(LexicalHandler handler);
 
   /**
    * Register a SAX-style DTD handler for us to output to
+   * 
+   * @param handler
+   *          TODO
    */
   void setDTDHandler(DTDHandler handler);
 
@@ -72,7 +81,7 @@ public interface IncrementalSAXSource {
    * @return Boolean.TRUE if the IncrementalSAXSource believes more data may be
    *         available for further parsing. Boolean.FALSE if parsing ran to
    *         completion, or was ended by deliverMoreNodes(false).
-   * */
+   */
   Object deliverMoreNodes(boolean parsemore);
 
   // ------------------------------------------------------------------
@@ -85,10 +94,12 @@ public interface IncrementalSAXSource {
    * which runs the previously supplied XMLReader's parse() operation. In
    * others, it may do other forms of initialization.
    * 
+   * @param source
+   *          TODO
    * @throws SAXException
    *           is parse thread is already in progress or parsing can not be
    *           started.
-   * */
+   */
   void startParse(InputSource source) throws SAXException;
 
-} // class IncrementalSAXSource
+}

@@ -17,14 +17,14 @@
  */
 package de.lyca.xpath.functions;
 
+import javax.xml.transform.TransformerException;
+
 import de.lyca.xpath.XPathContext;
 import de.lyca.xpath.objects.XBoolean;
 import de.lyca.xpath.objects.XObject;
 
 /**
  * Execute the Contains() function.
- * 
- * @xsl.usage advanced
  */
 public class FuncContains extends Function2Args {
   static final long serialVersionUID = 5084753781887919723L;
@@ -36,10 +36,10 @@ public class FuncContains extends Function2Args {
    *          The current execution context.
    * @return A valid XObject.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
   @Override
-  public XObject execute(XPathContext xctxt) throws javax.xml.transform.TransformerException {
+  public XObject execute(XPathContext xctxt) throws TransformerException {
 
     final String s1 = m_arg0.execute(xctxt).str();
     final String s2 = m_arg1.execute(xctxt).str();

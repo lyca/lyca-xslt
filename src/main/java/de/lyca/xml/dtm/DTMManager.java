@@ -28,26 +28,23 @@ import de.lyca.xml.utils.PrefixResolver;
 import de.lyca.xml.utils.XMLStringFactory;
 
 /**
- * A DTMManager instance can be used to create DTM and DTMIterator objects, and
- * manage the DTM objects in the system.
+ * A DTMManager instance can be used to create DTM and DTMIterator objects, and manage the DTM objects in the system.
  * 
  * <p>
- * The system property that determines which Factory implementation to create is
- * named "de.lyca.xml.utils.DTMFactory". This property names a concrete subclass
- * of the DTMFactory abstract class. If the property is not defined, a platform
+ * The system property that determines which Factory implementation to create is named "de.lyca.xml.utils.DTMFactory".
+ * This property names a concrete subclass of the DTMFactory abstract class. If the property is not defined, a platform
  * default is be used.
  * </p>
  * 
  * <p>
- * An instance of this class <emph>must</emph> be safe to use across thread
- * instances. It is expected that a client will create a single instance of a
- * DTMManager to use across multiple threads. This will allow sharing of DTMs
- * across multiple processes.
+ * An instance of this class <em>must</em> be safe to use across thread instances. It is expected that a client will
+ * create a single instance of a DTMManager to use across multiple threads. This will allow sharing of DTMs across
+ * multiple processes.
  * </p>
  * 
  * <p>
- * Note: this class is incomplete right now. It will be pretty much modeled
- * after javax.xml.transform.TransformerFactory in terms of its factory support.
+ * Note: this class is incomplete right now. It will be pretty much modeled after javax.xml.transform.TransformerFactory
+ * in terms of its factory support.
  * </p>
  * 
  * <p>
@@ -87,44 +84,33 @@ public abstract class DTMManager {
    * Set the XMLStringFactory used for the DTMs.
    * 
    * 
-   * @param xsf
-   *          a valid XMLStringFactory object, should not be null.
+   * @param xsf a valid XMLStringFactory object, should not be null.
    */
   public void setXMLStringFactory(XMLStringFactory xsf) {
     m_xsf = xsf;
   }
 
   /**
-   * Obtain a new instance of a <code>DTMManager</code>. This static method
-   * creates a new factory instance This method uses the following ordered
-   * lookup procedure to determine the <code>DTMManager</code> implementation
-   * class to load:
+   * Obtain a new instance of a <code>DTMManager</code>. This static method creates a new factory instance This method
+   * uses the following ordered lookup procedure to determine the <code>DTMManager</code> implementation class to load:
    * <ul>
-   * <li>
-   * Use the <code>de.lyca.xml.dtm.DTMManager</code> system property.</li>
-   * <li>
-   * Use the JAVA_HOME(the parent directory where jdk is
-   * installed)/lib/xalan.properties for a property file that contains the name
-   * of the implementation class keyed on the same value as the system property
-   * defined above.</li>
-   * <li>
-   * Use the Services API (as detailed in the JAR specification), if available,
-   * to determine the classname. The Services API will look for a classname in
-   * the file <code>META-INF/services/de.lyca.xml.dtm.DTMManager</code> in jars
-   * available to the runtime.</li>
-   * <li>
-   * Use the default <code>DTMManager</code> classname, which is
+   * <li>Use the <code>de.lyca.xml.dtm.DTMManager</code> system property.</li>
+   * <li>Use the JAVA_HOME(the parent directory where jdk is installed)/lib/xalan.properties for a property file that
+   * contains the name of the implementation class keyed on the same value as the system property defined above.</li>
+   * <li>Use the Services API (as detailed in the JAR specification), if available, to determine the classname. The
+   * Services API will look for a classname in the file <code>META-INF/services/de.lyca.xml.dtm.DTMManager</code> in
+   * jars available to the runtime.</li>
+   * <li>Use the default <code>DTMManager</code> classname, which is
    * <code>de.lyca.xml.dtm.ref.DTMManagerDefault</code>.</li>
    * </ul>
    * 
    * Once an application has obtained a reference to a <code>
-   * DTMManager</code> it can use the factory to configure and obtain parser
-   * instances.
+   * DTMManager</code> it can use the factory to configure and obtain parser instances.
    * 
+   * @param xsf TODO
    * @return new DTMManager instance, never null.
    * 
-   * @throws DTMConfigurationException
-   *           if the implementation is not available or cannot be instantiated.
+   * @throws DTMConfigurationException if the implementation is not available or cannot be instantiated.
    */
   public static DTMManager newInstance(XMLStringFactory xsf) throws DTMConfigurationException {
     DTMManager factoryImpl = null;
@@ -132,7 +118,7 @@ public abstract class DTMManager {
       factoryImpl = (DTMManager) ObjectFactory.createObject(defaultPropName, defaultClassName);
     } catch (final ObjectFactory.ConfigurationError e) {
       throw new DTMConfigurationException(XMLMessages.createXMLMessage(XMLErrorResources.ER_NO_DEFAULT_IMPL, null),
-              e.getException());
+          e.getException());
       // "No default implementation found");
     }
 
@@ -146,49 +132,38 @@ public abstract class DTMManager {
   }
 
   /**
-   * Get an instance of a DTM, loaded with the content from the specified
-   * source. If the unique flag is true, a new instance will always be returned.
-   * Otherwise it is up to the DTMManager to return a new instance or an
-   * instance that it already created and may be being used by someone else.
+   * Get an instance of a DTM, loaded with the content from the specified source. If the unique flag is true, a new
+   * instance will always be returned. Otherwise it is up to the DTMManager to return a new instance or an instance that
+   * it already created and may be being used by someone else.
    * 
-   * (More parameters may eventually need to be added for error handling and
-   * entity resolution, and to better control selection of implementations.)
+   * (More parameters may eventually need to be added for error handling and entity resolution, and to better control
+   * selection of implementations.)
    * 
-   * @param source
-   *          the specification of the source object, which may be null, in
-   *          which case it is assumed that node construction will take by some
-   *          other means.
-   * @param unique
-   *          true if the returned DTM must be unique, probably because it is
-   *          going to be mutated.
-   * @param whiteSpaceFilter
-   *          Enables filtering of whitespace nodes, and may be null.
-   * @param incremental
-   *          true if the DTM should be built incrementally, if possible.
-   * @param doIndexing
-   *          true if the caller considers it worth it to use indexing schemes.
+   * @param source the specification of the source object, which may be null, in which case it is assumed that node
+   *        construction will take by some other means.
+   * @param unique true if the returned DTM must be unique, probably because it is going to be mutated.
+   * @param whiteSpaceFilter Enables filtering of whitespace nodes, and may be null.
+   * @param incremental true if the DTM should be built incrementally, if possible.
+   * @param doIndexing true if the caller considers it worth it to use indexing schemes.
    * 
    * @return a non-null DTM reference.
    */
-  public abstract DTM getDTM(Source source, boolean unique, DTMWSFilter whiteSpaceFilter,
-          boolean incremental, boolean doIndexing);
+  public abstract DTM getDTM(Source source, boolean unique, DTMWSFilter whiteSpaceFilter, boolean incremental,
+      boolean doIndexing);
 
   /**
    * Get the instance of DTM that "owns" a node handle.
    * 
-   * @param nodeHandle
-   *          the nodeHandle.
+   * @param nodeHandle the nodeHandle.
    * 
    * @return a non-null DTM reference.
    */
   public abstract DTM getDTM(int nodeHandle);
 
   /**
-   * Given a W3C DOM node, try and return a DTM handle. Note: calling this may
-   * be non-optimal.
+   * Given a W3C DOM node, try and return a DTM handle. Note: calling this may be non-optimal.
    * 
-   * @param node
-   *          Non-null reference to a DOM node.
+   * @param node Non-null reference to a DOM node.
    * 
    * @return a valid DTM handle.
    */
@@ -202,71 +177,56 @@ public abstract class DTMManager {
   public abstract DTM createDocumentFragment();
 
   /**
-   * Release a DTM either to a lru pool, or completely remove reference. DTMs
-   * without system IDs are always hard deleted. State: experimental.
+   * Release a DTM either to a lru pool, or completely remove reference. DTMs without system IDs are always hard
+   * deleted. State: experimental.
    * 
-   * @param dtm
-   *          The DTM to be released.
-   * @param shouldHardDelete
-   *          True if the DTM should be removed no matter what.
-   * @return true if the DTM was removed, false if it was put back in a lru
-   *         pool.
+   * @param dtm The DTM to be released.
+   * @param shouldHardDelete True if the DTM should be removed no matter what.
+   * @return true if the DTM was removed, false if it was put back in a lru pool.
    */
   public abstract boolean release(DTM dtm, boolean shouldHardDelete);
 
   /**
-   * Create a new <code>DTMIterator</code> based on an XPath <a
-   * href="http://www.w3.org/TR/xpath#NT-LocationPath>LocationPath</a> or a <a
-   * href="http://www.w3.org/TR/xpath#NT-UnionExpr">UnionExpr</a>.
+   * Create a new <code>DTMIterator</code> based on an XPath
+   * <a href="http://www.w3.org/TR/xpath#NT-LocationPath">LocationPath</a> or a
+   * <a href="http://www.w3.org/TR/xpath#NT-UnionExpr">UnionExpr</a>.
    * 
-   * @param xpathCompiler
-   *          ??? Somehow we need to pass in a subpart of the expression. I hate
-   *          to do this with strings, since the larger expression has already
-   *          been parsed.
+   * @param xpathCompiler ??? Somehow we need to pass in a subpart of the expression. I hate to do this with strings,
+   *        since the larger expression has already been parsed.
    * 
-   * @param pos
-   *          The position in the expression.
+   * @param pos The position in the expression.
    * @return The newly created <code>DTMIterator</code>.
    */
   public abstract DTMIterator createDTMIterator(Object xpathCompiler, int pos);
 
   /**
-   * Create a new <code>DTMIterator</code> based on an XPath <a
-   * href="http://www.w3.org/TR/xpath#NT-LocationPath>LocationPath</a> or a <a
-   * href="http://www.w3.org/TR/xpath#NT-UnionExpr">UnionExpr</a>.
+   * Create a new <code>DTMIterator</code> based on an XPath
+   * <a href="http://www.w3.org/TR/xpath#NT-LocationPath">LocationPath</a> or a
+   * <a href="http://www.w3.org/TR/xpath#NT-UnionExpr">UnionExpr</a>.
    * 
-   * @param xpathString
-   *          Must be a valid string expressing a <a href=
-   *          "http://www.w3.org/TR/xpath#NT-LocationPath>LocationPath</a> or a
-   *          <a href="http://www.w3.org/TR/xpath#NT-UnionExpr">UnionExpr</a>.
+   * @param xpathString Must be a valid string expressing a
+   *        <a href="http://www.w3.org/TR/xpath#NT-LocationPath">LocationPath</a> or a
+   *        <a href="http://www.w3.org/TR/xpath#NT-UnionExpr">UnionExpr</a>.
    * 
-   * @param presolver
-   *          An object that can resolve prefixes to namespace URLs.
+   * @param presolver An object that can resolve prefixes to namespace URLs.
    * 
    * @return The newly created <code>DTMIterator</code>.
    */
   public abstract DTMIterator createDTMIterator(String xpathString, PrefixResolver presolver);
 
   /**
-   * Create a new <code>DTMIterator</code> based only on a whatToShow and a
-   * DTMFilter. The traversal semantics are defined as the descendant access.
+   * Create a new <code>DTMIterator</code> based only on a whatToShow and a DTMFilter. The traversal semantics are
+   * defined as the descendant access.
    * <p>
-   * Note that DTMIterators may not be an exact match to DOM NodeIterators. They
-   * are initialized and used in much the same way as a NodeIterator, but their
-   * response to document mutation is not currently defined.
+   * Note that DTMIterators may not be an exact match to DOM NodeIterators. They are initialized and used in much the
+   * same way as a NodeIterator, but their response to document mutation is not currently defined.
    * 
-   * @param whatToShow
-   *          This flag specifies which node types may appear in the logical
-   *          view of the tree presented by the iterator. See the description of
-   *          <code>NodeFilter</code> for the set of possible <code>SHOW_</code>
-   *          values.These flags can be combined using <code>OR</code>.
-   * @param filter
-   *          The <code>NodeFilter</code> to be used with this
-   *          <code>DTMFilter</code>, or <code>null</code> to indicate no
-   *          filter.
-   * @param entityReferenceExpansion
-   *          The value of this flag determines whether entity reference nodes
-   *          are expanded.
+   * @param whatToShow This flag specifies which node types may appear in the logical view of the tree presented by the
+   *        iterator. See the description of <code>NodeFilter</code> for the set of possible <code>SHOW_</code>
+   *        values.These flags can be combined using <code>OR</code>.
+   * @param filter The <code>NodeFilter</code> to be used with this <code>DTMFilter</code>, or <code>null</code> to
+   *        indicate no filter.
+   * @param entityReferenceExpansion The value of this flag determines whether entity reference nodes are expanded.
    * 
    * @return The newly created <code>DTMIterator</code>.
    */
@@ -275,8 +235,7 @@ public abstract class DTMManager {
   /**
    * Create a new <code>DTMIterator</code> that holds exactly one node.
    * 
-   * @param node
-   *          The node handle that the DTMIterator will iterate to.
+   * @param node The node handle that the DTMIterator will iterate to.
    * 
    * @return The newly created <code>DTMIterator</code>.
    */
@@ -286,9 +245,8 @@ public abstract class DTMManager {
   public boolean m_incremental = false;
 
   /*
-   * Flag set by FEATURE_SOURCE_LOCATION. This feature specifies whether the
-   * transformation phase should keep track of line and column numbers for the
-   * input source document.
+   * Flag set by FEATURE_SOURCE_LOCATION. This feature specifies whether the transformation phase should keep track of
+   * line and column numbers for the input source document.
    */
   public boolean m_source_location = false;
 
@@ -303,13 +261,11 @@ public abstract class DTMManager {
   }
 
   /**
-   * Set a flag indicating whether an incremental transform is desired This flag
-   * should have the same value as the FEATURE_INCREMENTAL feature which is set
-   * by the TransformerFactory.setAttribut() method before a DTMManager is
+   * Set a flag indicating whether an incremental transform is desired This flag should have the same value as the
+   * FEATURE_INCREMENTAL feature which is set by the TransformerFactory.setAttribut() method before a DTMManager is
    * created
    * 
-   * @param incremental
-   *          boolean to use to set m_incremental.
+   * @param incremental boolean to use to set m_incremental.
    * 
    */
   public void setIncremental(boolean incremental) {
@@ -317,8 +273,8 @@ public abstract class DTMManager {
   }
 
   /**
-   * Get a flag indicating whether the transformation phase should keep track of
-   * line and column numbers for the input source document.
+   * Get a flag indicating whether the transformation phase should keep track of line and column numbers for the input
+   * source document.
    * 
    * @return source location boolean
    * 
@@ -328,13 +284,11 @@ public abstract class DTMManager {
   }
 
   /**
-   * Set a flag indicating whether the transformation phase should keep track of
-   * line and column numbers for the input source document. This flag should
-   * have the same value as the FEATURE_SOURCE_LOCATION feature which is set by
-   * the TransformerFactory.setAttribut() method before a DTMManager is created
+   * Set a flag indicating whether the transformation phase should keep track of line and column numbers for the input
+   * source document. This flag should have the same value as the FEATURE_SOURCE_LOCATION feature which is set by the
+   * TransformerFactory.setAttribut() method before a DTMManager is created
    * 
-   * @param sourceLocation
-   *          boolean to use to set m_source_location
+   * @param sourceLocation boolean to use to set m_source_location
    */
   public void setSource_location(boolean sourceLocation) {
     m_source_location = sourceLocation;
@@ -355,53 +309,48 @@ public abstract class DTMManager {
   }
 
   /**
-   * This value, set at compile time, controls how many bits of the DTM node
-   * identifier numbers are used to identify a node within a document, and thus
-   * sets the maximum number of nodes per document. The remaining bits are used
-   * to identify the DTM document which contains this node.
+   * This value, set at compile time, controls how many bits of the DTM node identifier numbers are used to identify a
+   * node within a document, and thus sets the maximum number of nodes per document. The remaining bits are used to
+   * identify the DTM document which contains this node.
    * 
-   * If you change IDENT_DTM_NODE_BITS, be sure to rebuild _ALL_ the files which
-   * use it... including the IDKey testcases.
+   * If you change IDENT_DTM_NODE_BITS, be sure to rebuild _ALL_ the files which use it... including the IDKey
+   * testcases.
    * 
-   * (FuncGenerateKey currently uses the node identifier directly and thus is
-   * affected when this changes. The IDKEY results will still be _correct_
-   * (presuming no other breakage), but simple equality comparison against the
-   * previous "golden" files will probably complain.)
-   * */
+   * (FuncGenerateKey currently uses the node identifier directly and thus is affected when this changes. The IDKEY
+   * results will still be _correct_ (presuming no other breakage), but simple equality comparison against the previous
+   * "golden" files will probably complain.)
+   */
   public static final int IDENT_DTM_NODE_BITS = 16;
 
   /**
-   * When this bitmask is ANDed with a DTM node handle number, the result is the
-   * low bits of the node's index number within that DTM. To obtain the high
-   * bits, add the DTM ID portion's offset as assigned in the DTM Manager.
+   * When this bitmask is ANDed with a DTM node handle number, the result is the low bits of the node's index number
+   * within that DTM. To obtain the high bits, add the DTM ID portion's offset as assigned in the DTM Manager.
    */
   public static final int IDENT_NODE_DEFAULT = (1 << IDENT_DTM_NODE_BITS) - 1;
 
   /**
-   * When this bitmask is ANDed with a DTM node handle number, the result is the
-   * DTM's document identity number.
+   * When this bitmask is ANDed with a DTM node handle number, the result is the DTM's document identity number.
    */
   public static final int IDENT_DTM_DEFAULT = ~IDENT_NODE_DEFAULT;
 
   /**
-   * This is the maximum number of DTMs available. The highest DTM is one less
-   * than this.
+   * This is the maximum number of DTMs available. The highest DTM is one less than this.
    */
   public static final int IDENT_MAX_DTMS = (IDENT_DTM_DEFAULT >>> IDENT_DTM_NODE_BITS) + 1;
 
   /**
    * %TBD% Doc
    * 
-   * NEEDSDOC @param dtm
+   * @param dtm TODO
    * 
-   * NEEDSDOC ($objectName$) @return
+   * @return TODO
    */
   public abstract int getDTMIdentity(DTM dtm);
 
   /**
    * %TBD% Doc
    * 
-   * NEEDSDOC ($objectName$) @return
+   * @return TODO
    */
   public int getDTMIdentityMask() {
     return IDENT_DTM_DEFAULT;
@@ -410,7 +359,7 @@ public abstract class DTMManager {
   /**
    * %TBD% Doc
    * 
-   * NEEDSDOC ($objectName$) @return
+   * @return TODO
    */
   public int getNodeIdentityMask() {
     return IDENT_NODE_DEFAULT;

@@ -19,6 +19,10 @@ package de.lyca.xml.utils;
 
 import java.util.Locale;
 
+import org.xml.sax.ContentHandler;
+import org.xml.sax.SAXException;
+import org.xml.sax.ext.LexicalHandler;
+
 /**
  * This class is meant to be an interface to character strings, whether they be
  * java Strings or <code>de.lyca.xml.utils.FastStringBuffer</code>s, or other
@@ -35,9 +39,9 @@ public interface XMLString {
    * @param ch
    *          A non-null reference to a ContentHandler.
    * 
-   * @throws org.xml.sax.SAXException
+   * @throws SAXException TODO
    */
-  public abstract void dispatchCharactersEvents(org.xml.sax.ContentHandler ch) throws org.xml.sax.SAXException;
+  public abstract void dispatchCharactersEvents(ContentHandler ch) throws SAXException;
 
   /**
    * Directly call the comment method on the passed LexicalHandler for the
@@ -46,9 +50,9 @@ public interface XMLString {
    * @param lh
    *          A non-null reference to a LexicalHandler.
    * 
-   * @throws org.xml.sax.SAXException
+   * @throws SAXException TODO
    */
-  public abstract void dispatchAsComment(org.xml.sax.ext.LexicalHandler lh) throws org.xml.sax.SAXException;
+  public abstract void dispatchAsComment(LexicalHandler lh) throws SAXException;
 
   /**
    * Conditionally trim all leading and trailing whitespace in the specified
@@ -87,7 +91,7 @@ public interface XMLString {
    *          the index of the character.
    * @return the character at the specified index of this string. The first
    *         character is at index <code>0</code>.
-   * @exception IndexOutOfBoundsException
+   * @throws IndexOutOfBoundsException
    *              if the <code>index</code> argument is negative or not less
    *              than the length of this string.
    */
@@ -104,7 +108,7 @@ public interface XMLString {
    *          the destination array.
    * @param dstBegin
    *          the start offset in the destination array.
-   * @exception IndexOutOfBoundsException
+   * @throws IndexOutOfBoundsException
    *              If any of the following is true:
    *              <ul>
    *              <li><code>srcBegin</code> is negative.
@@ -115,7 +119,7 @@ public interface XMLString {
    *              <li><code>dstBegin+(srcEnd-srcBegin)</code> is larger than
    *              <code>dst.length</code>
    *              </ul>
-   * @exception NullPointerException
+   * @throws NullPointerException
    *              if <code>dst</code> is <code>null</code>
    */
   public abstract void getChars(int srcBegin, int srcEnd, char dst[], int dstBegin);
@@ -194,7 +198,7 @@ public interface XMLString {
    *         lexicographically less than the string argument; and a value
    *         greater than <code>0</code> if this string is lexicographically
    *         greater than the string argument.
-   * @exception java.lang.NullPointerException
+   * @throws java.lang.NullPointerException
    *              if <code>anotherString</code> is <code>null</code>.
    */
   public abstract int compareTo(XMLString anotherString);
@@ -237,7 +241,7 @@ public interface XMLString {
    *         <pre>
    * this.subString(toffset).startsWith(prefix)
    * </pre>
-   * @exception java.lang.NullPointerException
+   * @throws java.lang.NullPointerException
    *              if <code>prefix</code> is <code>null</code>.
    */
   public abstract boolean startsWith(String prefix, int toffset);
@@ -260,7 +264,7 @@ public interface XMLString {
    *         <pre>
    * this.subString(toffset).startsWith(prefix)
    * </pre>
-   * @exception java.lang.NullPointerException
+   * @throws java.lang.NullPointerException
    *              if <code>prefix</code> is <code>null</code>.
    */
   public abstract boolean startsWith(XMLString prefix, int toffset);
@@ -276,7 +280,7 @@ public interface XMLString {
    *         <code>true</code> will be returned if the argument is an empty
    *         string or is equal to this <code>String</code> object as determined
    *         by the {@link #equals(Object)} method.
-   * @exception java.lang.NullPointerException
+   * @throws java.lang.NullPointerException
    *              if <code>prefix</code> is <code>null</code>.
    * @since JDK1. 0
    */
@@ -293,7 +297,7 @@ public interface XMLString {
    *         <code>true</code> will be returned if the argument is an empty
    *         string or is equal to this <code>String</code> object as determined
    *         by the {@link #equals(Object)} method.
-   * @exception java.lang.NullPointerException
+   * @throws java.lang.NullPointerException
    *              if <code>prefix</code> is <code>null</code>.
    * @since JDK1. 0
    */
@@ -310,7 +314,7 @@ public interface XMLString {
    *         <code>true</code> if the argument is the empty string or is equal
    *         to this <code>String</code> object as determined by the
    *         {@link #equals(Object)} method.
-   * @exception java.lang.NullPointerException
+   * @throws java.lang.NullPointerException
    *              if <code>suffix</code> is <code>null</code>.
    */
   public abstract boolean endsWith(String suffix);
@@ -365,7 +369,7 @@ public interface XMLString {
    * returned--that is, the smallest value <i>k</i> such that: <blockquote>
    * 
    * <pre>
-   * (this.charAt(<i>k</i>) == ch) && (<i>k</i> >= fromIndex)
+   * (this.charAt(<i>k</i>) == ch) {@literal &&} (<i>k</i> {@literal >=} fromIndex)
    * </pre>
    * 
    * </blockquote> is true. If no such character occurs in this string at or
@@ -415,7 +419,7 @@ public interface XMLString {
    * <blockquote>
    * 
    * <pre>
-   * this.charAt(k) == ch) && (k <= fromIndex)
+   * this.charAt(k) == ch) {@literal &&} (k {@literal <=} fromIndex)
    * </pre>
    * 
    * </blockquote> is true.
@@ -453,7 +457,7 @@ public interface XMLString {
    *         then the index of the first character of the first such substring
    *         is returned; if it does not occur as a substring, <code>-1</code>
    *         is returned.
-   * @exception java.lang.NullPointerException
+   * @throws java.lang.NullPointerException
    *              if <code>str</code> is <code>null</code>.
    */
   public abstract int indexOf(String str);
@@ -475,7 +479,7 @@ public interface XMLString {
    *         then the index of the first character of the first such substring
    *         is returned; if it does not occur as a substring, <code>-1</code>
    *         is returned.
-   * @exception java.lang.NullPointerException
+   * @throws java.lang.NullPointerException
    *              if <code>str</code> is <code>null</code>.
    */
   public abstract int indexOf(XMLString str);
@@ -486,7 +490,7 @@ public interface XMLString {
    * is the smallest value <i>k</i> such that: <blockquote>
    * 
    * <pre>
-   * this.startsWith(str, <i>k</i>) && (<i>k</i> >= fromIndex)
+   * this.startsWith(str, <i>k</i>) {@literal &&} (<i>k</i> {@literal >=} fromIndex)
    * </pre>
    * 
    * </blockquote> is <code>true</code>.
@@ -506,7 +510,7 @@ public interface XMLString {
    *         index of the first character of the first such substring is
    *         returned. If it does not occur as a substring starting at
    *         <code>fromIndex</code> or beyond, <code>-1</code> is returned.
-   * @exception java.lang.NullPointerException
+   * @throws java.lang.NullPointerException
    *              if <code>str</code> is <code>null</code>
    */
   public abstract int indexOf(String str, int fromIndex);
@@ -529,7 +533,7 @@ public interface XMLString {
    *         within this object, then the index of the first character of the
    *         last such substring is returned. If it does not occur as a
    *         substring, <code>-1</code> is returned.
-   * @exception java.lang.NullPointerException
+   * @throws java.lang.NullPointerException
    *              if <code>str</code> is <code>null</code>.
    */
   public abstract int lastIndexOf(String str);
@@ -552,7 +556,7 @@ public interface XMLString {
    *         the last such substring is returned. If it does not occur as a
    *         substring starting at <code>fromIndex</code> or earlier,
    *         <code>-1</code> is returned.
-   * @exception java.lang.NullPointerException
+   * @throws java.lang.NullPointerException
    *              if <code>str</code> is <code>null</code>.
    */
   public abstract int lastIndexOf(String str, int fromIndex);
@@ -575,7 +579,7 @@ public interface XMLString {
    * @param beginIndex
    *          the beginning index, inclusive.
    * @return the specified substring.
-   * @exception IndexOutOfBoundsException
+   * @throws IndexOutOfBoundsException
    *              if <code>beginIndex</code> is negative or larger than the
    *              length of this <code>String</code> object.
    */
@@ -592,7 +596,7 @@ public interface XMLString {
    * @param endIndex
    *          the ending index, exclusive.
    * @return the specified substring.
-   * @exception IndexOutOfBoundsException
+   * @throws IndexOutOfBoundsException
    *              if the <code>beginIndex</code> is negative, or
    *              <code>endIndex</code> is larger than the length of this
    *              <code>String</code> object, or <code>beginIndex</code> is
@@ -608,7 +612,7 @@ public interface XMLString {
    *          <code>String</code>.
    * @return a string that represents the concatenation of this object's
    *         characters followed by the string argument's characters.
-   * @exception java.lang.NullPointerException
+   * @throws java.lang.NullPointerException
    *              if <code>str</code> is <code>null</code>.
    */
   public abstract XMLString concat(String str);

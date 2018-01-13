@@ -40,8 +40,6 @@ import org.xml.sax.SAXParseException;
  * 
  * This class is not a public API, it is only public because it is used across
  * package boundaries.
- * 
- * @xsl.usage internal
  */
 public class EmptySerializer implements SerializationHandler {
   protected static final String ERR = "EmptySerializer method not over-ridden";

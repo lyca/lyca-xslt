@@ -24,10 +24,13 @@ import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 import javax.xml.xpath.XPathFunction;
+import javax.xml.xpath.XPathFunctionException;
 import javax.xml.xpath.XPathFunctionResolver;
 import javax.xml.xpath.XPathVariableResolver;
 
@@ -39,6 +42,7 @@ import org.xml.sax.SAXException;
 
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xpath.XPath;
+import de.lyca.xpath.XPathContext;
 import de.lyca.xpath.objects.XObject;
 import de.lyca.xpath.res.XPATHErrorResources;
 import de.lyca.xpath.res.XPATHMessages;
@@ -192,7 +196,7 @@ public class XPathImpl implements javax.xml.xpath.XPath {
     }
   }
 
-  private XObject eval(String expression, Object contextItem) throws javax.xml.transform.TransformerException {
+  private XObject eval(String expression, Object contextItem) throws TransformerException {
     final de.lyca.xpath.XPath xpath = new de.lyca.xpath.XPath(expression, null, prefixResolver,
             de.lyca.xpath.XPath.SELECT);
     de.lyca.xpath.XPathContext xpathSupport = null;
@@ -202,9 +206,9 @@ public class XPathImpl implements javax.xml.xpath.XPath {
     // expressions.
     if (functionResolver != null) {
       final JAXPExtensionsProvider jep = new JAXPExtensionsProvider(functionResolver, featureSecureProcessing);
-      xpathSupport = new de.lyca.xpath.XPathContext(jep, false);
+      xpathSupport = new XPathContext(jep, false);
     } else {
-      xpathSupport = new de.lyca.xpath.XPathContext(false);
+      xpathSupport = new XPathContext(false);
     }
 
     XObject xobj = null;
@@ -292,15 +296,15 @@ public class XPathImpl implements javax.xml.xpath.XPath {
 
       final XObject resultObject = eval(expression, item);
       return getResultAsType(resultObject, returnType);
-    } catch (final java.lang.NullPointerException npe) {
+    } catch (final NullPointerException npe) {
       // If VariableResolver returns null Or if we get
       // NullPointerException at this stage for some other reason
       // then we have to reurn XPathException
       throw new XPathExpressionException(npe);
-    } catch (final javax.xml.transform.TransformerException te) {
+    } catch (final TransformerException te) {
       final Throwable nestedException = te.getException();
-      if (nestedException instanceof javax.xml.xpath.XPathFunctionException)
-        throw (javax.xml.xpath.XPathFunctionException) nestedException;
+      if (nestedException instanceof XPathFunctionException)
+        throw (XPathFunctionException) nestedException;
       else
         // For any other exceptions we need to throw
         // XPathExpressionException ( as per spec )
@@ -318,7 +322,7 @@ public class XPathImpl implements javax.xml.xpath.XPath {
   }
 
   private Object getResultAsType(XObject resultObject, QName returnType)
-          throws javax.xml.transform.TransformerException {
+          throws TransformerException {
     // XPathConstants.STRING
     if (returnType.equals(XPathConstants.STRING))
       return resultObject.str();
@@ -425,7 +429,7 @@ public class XPathImpl implements javax.xml.xpath.XPath {
       final XPathExpressionImpl ximpl = new XPathExpressionImpl(xpath, prefixResolver, functionResolver,
               variableResolver, featureSecureProcessing);
       return ximpl;
-    } catch (final javax.xml.transform.TransformerException te) {
+    } catch (final TransformerException te) {
       throw new XPathExpressionException(te);
     }
   }
@@ -515,10 +519,10 @@ public class XPathImpl implements javax.xml.xpath.XPath {
       throw new XPathExpressionException(e);
     } catch (final IOException e) {
       throw new XPathExpressionException(e);
-    } catch (final javax.xml.transform.TransformerException te) {
+    } catch (final TransformerException te) {
       final Throwable nestedException = te.getException();
-      if (nestedException instanceof javax.xml.xpath.XPathFunctionException)
-        throw (javax.xml.xpath.XPathFunctionException) nestedException;
+      if (nestedException instanceof XPathFunctionException)
+        throw (XPathFunctionException) nestedException;
       else
         throw new XPathExpressionException(te);
     }

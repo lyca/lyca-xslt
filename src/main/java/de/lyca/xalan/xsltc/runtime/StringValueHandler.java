@@ -96,8 +96,8 @@ public final class StringValueHandler extends EmptySerializer {
   }
 
   /**
-   * The value of a PI must not contain the substring "?>". Should that
-   * substring be present, replace it by "? >".
+   * The value of a PI must not contain the substring {@literal "?>"}. Should that substring be present, replace it by
+   * {@literal "? >"}.
    */
   public String getValueOfPI() {
     final String value = getValue();

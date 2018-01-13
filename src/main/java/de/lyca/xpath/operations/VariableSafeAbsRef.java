@@ -17,6 +17,8 @@
  */
 package de.lyca.xpath.operations;
 
+import javax.xml.transform.TransformerException;
+
 import de.lyca.xml.dtm.DTMManager;
 import de.lyca.xpath.Expression;
 import de.lyca.xpath.XPathContext;
@@ -49,10 +51,10 @@ public class VariableSafeAbsRef extends Variable {
    * 
    * @return The evaluated variable, or an empty nodeset if not found.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
   @Override
-  public XObject execute(XPathContext xctxt, boolean destructiveOK) throws javax.xml.transform.TransformerException {
+  public XObject execute(XPathContext xctxt, boolean destructiveOK) throws TransformerException {
     XNodeSet xns = (XNodeSet) super.execute(xctxt, destructiveOK);
     final DTMManager dtmMgr = xctxt.getDTMManager();
     final int context = xctxt.getContextNode();

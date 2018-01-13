@@ -42,7 +42,6 @@ import de.lyca.xml.utils.PrefixResolverDefault;
  * </p>
  * 
  * @see org.w3c.dom.xpath.XPathNSResolver
- * @xsl.usage internal
  */
 class XPathNSResolverImpl extends PrefixResolverDefault implements XPathNSResolver {
 

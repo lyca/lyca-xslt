@@ -25,8 +25,6 @@ import de.lyca.xml.utils.WrappedRuntimeException;
 
 /**
  * Pool of object of a given type to pick from to help memory usage
- * 
- * @xsl.usage internal
  */
 public final class IteratorPool implements java.io.Serializable {
   static final long serialVersionUID = -460927331149566998L;
@@ -56,6 +54,7 @@ public final class IteratorPool implements java.io.Serializable {
    * Get an instance of the given object in this pool
    * 
    * @return An instance of the given object
+   * @throws CloneNotSupportedException TODO
    */
   public synchronized DTMIterator getInstanceOrThrow() throws CloneNotSupportedException {
     // Check if the pool is empty.

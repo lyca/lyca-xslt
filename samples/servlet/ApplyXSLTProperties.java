@@ -108,7 +108,7 @@ public class ApplyXSLTProperties {
       * Returns the current setting for "URL".
       * @param request Request to check for parameter value
       * @return String value for "URL"
-      * @exception MalformedURLException Will not be thrown
+      * @throws MalformedURLException Will not be thrown
       */
     public String getXMLurl(HttpServletRequest request)
     throws MalformedURLException
@@ -123,7 +123,7 @@ public class ApplyXSLTProperties {
       * Returns the current setting for "xslURL".
       * @param request Request to check for parameter value
       * @return String value for "xslURL"
-      * @exception MalformedURLException Will not be thrown
+      * @throws MalformedURLException Will not be thrown
       */
     public String getXSLurl(HttpServletRequest request)
     throws MalformedURLException

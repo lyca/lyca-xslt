@@ -19,6 +19,8 @@ package de.lyca.xpath.functions;
 
 import java.util.List;
 
+import javax.xml.transform.TransformerException;
+
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xml.dtm.DTMIterator;
 import de.lyca.xml.utils.QName;
@@ -30,8 +32,6 @@ import de.lyca.xpath.objects.XObject;
 
 /**
  * Execute the Position() function.
- * 
- * @xsl.usage advanced
  */
 public class FuncPosition extends Function {
   static final long serialVersionUID = -9092846348197271582L;
@@ -110,10 +110,10 @@ public class FuncPosition extends Function {
    *          The current execution context.
    * @return A valid XObject.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
   @Override
-  public XObject execute(XPathContext xctxt) throws javax.xml.transform.TransformerException {
+  public XObject execute(XPathContext xctxt) throws TransformerException {
     final double pos = getPositionInContextNodeList(xctxt);
 
     return new XNumber(pos);

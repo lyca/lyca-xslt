@@ -187,12 +187,12 @@ public abstract class DTMAxisIteratorBase implements DTMAxisIterator {
 
   /**
    * Do any final cleanup that is required before returning the node that was
-   * passed in, and then return it. The intended use is <br />
+   * passed in, and then return it. The intended use is <br>
    * <code>return returnNode(node);</code>
    * 
    * %REVIEW% If we're calling it purely for side effects, should we really be
-   * bothering with a return value? Something like <br />
-   * <code> accept(node); return node; </code> <br />
+   * bothering with a return value? Something like <br>
+   * <code> accept(node); return node; </code> <br>
    * would probably optimize just about as well and avoid questions about
    * whether what's returned could ever be different from what's passed in.
    * 

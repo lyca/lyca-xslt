@@ -24,8 +24,6 @@ import org.xml.sax.Attributes;
 
 /**
  * Wraps a DOM attribute list in a SAX Attributes.
- * 
- * @xsl.usage internal
  */
 public class AttList implements Attributes {
 

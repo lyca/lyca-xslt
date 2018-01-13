@@ -72,7 +72,7 @@ import java_cup.runtime.Symbol;
  * @author Santiago Pericas-Geertsen
  * @author G. Todd Miller
  * @author Morten Jorgensen
- * @author Erwin Bolwidt <ejb@klomp.org>
+ * @author Erwin Bolwidt {@literal <ejb@klomp.org>}
  */
 public class Parser implements ContentHandler {
 
@@ -340,6 +340,12 @@ public class Parser implements ContentHandler {
    * Create an instance of the <code>Stylesheet</code> class, and then parse,
    * typecheck and compile the instance. Must be called after
    * <code>parse()</code>.
+   * 
+   * @param element
+   *          TODO
+   * @return TODO
+   * @throws CompilerException
+   *           TODO
    */
   public Stylesheet makeStylesheet(SyntaxTreeNode element) throws CompilerException {
     try {
@@ -368,6 +374,9 @@ public class Parser implements ContentHandler {
 
   /**
    * Instanciates a SAX2 parser and generate the AST from the input.
+   * 
+   * @param stylesheet
+   *          TODO
    */
   public void createAST(Stylesheet stylesheet) {
     try {
@@ -484,9 +493,10 @@ public class Parser implements ContentHandler {
   private String _PIcharset = null;
 
   /**
-   * Set the parameters to use to locate the correct <?xml-stylesheet ...?>
-   * processing instruction in the case where the input document is an XML
-   * document with one or more references to a stylesheet.
+   * Set the parameters to use to locate the correct
+   * {@literal <?xml-stylesheet ...?>} processing instruction in the case where
+   * the input document is an XML document with one or more references to a
+   * stylesheet.
    * 
    * @param media
    *          The media attribute to be matched. May be null, in which case the
@@ -955,6 +965,11 @@ public class Parser implements ContentHandler {
   /**
    * checks the list of attributes against a list of allowed attributes for a
    * particular element node.
+   * 
+   * @param node
+   *          TODO
+   * @param attrs
+   *          TODO
    */
   private void checkForSuperfluousAttributes(SyntaxTreeNode node, Attributes attrs) {
     final QName qname = node.getQName();
@@ -998,6 +1013,7 @@ public class Parser implements ContentHandler {
    *          - XSL element where the expression occured
    * @param exp
    *          - textual representation of the expression
+   * @return TODO
    */
   public Expression parseExpression(SyntaxTreeNode parent, String exp) {
     return (Expression) parseTopLevel(parent, "<EXPRESSION>" + exp, null);
@@ -1012,6 +1028,7 @@ public class Parser implements ContentHandler {
    *          - name of this element's attribute to get expression from
    * @param def
    *          - default expression (if the attribute was not found)
+   * @return TODO
    */
   public Expression parseExpression(SyntaxTreeNode parent, String attr, String def) {
     // Get the textual representation of the expression (if any)
@@ -1031,6 +1048,7 @@ public class Parser implements ContentHandler {
    *          - XSL element where the pattern occured
    * @param pattern
    *          - textual representation of the pattern
+   * @return TODO
    */
   public Pattern parsePattern(SyntaxTreeNode parent, String pattern) {
     return (Pattern) parseTopLevel(parent, "<PATTERN>" + pattern, pattern);
@@ -1045,6 +1063,7 @@ public class Parser implements ContentHandler {
    *          - name of this element's attribute to get pattern from
    * @param def
    *          - default pattern (if the attribute was not found)
+   * @return TODO
    */
   public Pattern parsePattern(SyntaxTreeNode parent, String attr, String def) {
     // Get the textual representation of the pattern (if any)
@@ -1060,6 +1079,14 @@ public class Parser implements ContentHandler {
   /**
    * Parse an XPath expression or pattern using the generated XPathParser The
    * method will return a Dummy node if the XPath parser fails.
+   * 
+   * @param parent
+   *          TODO
+   * @param text
+   *          TODO
+   * @param expression
+   *          TODO
+   * @return TODO
    */
   private SyntaxTreeNode parseTopLevel(SyntaxTreeNode parent, String text, String expression) {
     final int line = getLineNumber();
@@ -1094,6 +1121,8 @@ public class Parser implements ContentHandler {
 
   /**
    * Returns true if there were any errors during compilation
+   * 
+   * @return TODO
    */
   public boolean errorsFound() {
     return _errors.size() > 0;
@@ -1127,34 +1156,39 @@ public class Parser implements ContentHandler {
 
   /**
    * Common error/warning message handler
+   * 
+   * @param category
+   *          TODO
+   * @param error
+   *          TODO
    */
   public void reportError(final int category, final ErrorMsg error) {
     switch (category) {
-    case Constants.INTERNAL:
-      // Unexpected internal errors, such as null-ptr exceptions, etc.
-      // Immediately terminates compilation, no translet produced
-      _errors.add(error);
-      break;
-    case Constants.UNSUPPORTED:
-      // XSLT elements that are not implemented and unsupported ext.
-      // Immediately terminates compilation, no translet produced
-      _errors.add(error);
-      break;
-    case Constants.FATAL:
-      // Fatal error in the stylesheet input (parsing or content)
-      // Immediately terminates compilation, no translet produced
-      _errors.add(error);
-      break;
-    case Constants.ERROR:
-      // Other error in the stylesheet input (parsing or content)
-      // Does not terminate compilation, no translet produced
-      _errors.add(error);
-      break;
-    case Constants.WARNING:
-      // Other error in the stylesheet input (content errors only)
-      // Does not terminate compilation, a translet is produced
-      _warnings.add(error);
-      break;
+      case Constants.INTERNAL:
+        // Unexpected internal errors, such as null-ptr exceptions, etc.
+        // Immediately terminates compilation, no translet produced
+        _errors.add(error);
+        break;
+      case Constants.UNSUPPORTED:
+        // XSLT elements that are not implemented and unsupported ext.
+        // Immediately terminates compilation, no translet produced
+        _errors.add(error);
+        break;
+      case Constants.FATAL:
+        // Fatal error in the stylesheet input (parsing or content)
+        // Immediately terminates compilation, no translet produced
+        _errors.add(error);
+        break;
+      case Constants.ERROR:
+        // Other error in the stylesheet input (parsing or content)
+        // Does not terminate compilation, no translet produced
+        _errors.add(error);
+        break;
+      case Constants.WARNING:
+        // Other error in the stylesheet input (content errors only)
+        // Does not terminate compilation, a translet is produced
+        _warnings.add(error);
+        break;
     }
   }
 
@@ -1192,6 +1226,8 @@ public class Parser implements ContentHandler {
   /**
    * SAX2: Begin the scope of a prefix-URI Namespace mapping. This has to be
    * passed on to the symbol table!
+   * @param prefix TODO
+   * @param uri TODO
    */
   @Override
   public void startPrefixMapping(String prefix, String uri) {
@@ -1204,6 +1240,7 @@ public class Parser implements ContentHandler {
   /**
    * SAX2: End the scope of a prefix-URI Namespace mapping. This has to be
    * passed on to the symbol table!
+   * @param prefix TODO
    */
   @Override
   public void endPrefixMapping(String prefix) {

@@ -22,6 +22,7 @@ import java.io.IOException;
 import org.w3c.dom.DOMErrorHandler;
 import org.w3c.dom.Node;
 import org.w3c.dom.ls.LSSerializerFilter;
+import org.xml.sax.SAXException;
 
 import de.lyca.xml.serializer.DOM3Serializer;
 import de.lyca.xml.serializer.SerializationHandler;
@@ -29,8 +30,6 @@ import de.lyca.xml.serializer.utils.WrappedRuntimeException;
 
 /**
  * This class implements the DOM3Serializer interface.
- * 
- * @xsl.usage internal
  */
 public final class DOM3SerializerImpl implements DOM3Serializer {
 
@@ -112,7 +111,7 @@ public final class DOM3SerializerImpl implements DOM3Serializer {
               fNewLine);
 
       walker.traverse(node);
-    } catch (final org.xml.sax.SAXException se) {
+    } catch (final SAXException se) {
       throw new WrappedRuntimeException(se);
     }
   }

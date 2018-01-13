@@ -36,8 +36,6 @@ package de.lyca.xml.utils;
  * skip values and setElementAt a higher index again, you may see old data
  * reappear in the truncated-and-restored section. Doing anything else would
  * have performance costs.
- * 
- * @xsl.usage internal
  */
 public class SuballocatedByteVector {
   /** Size of blocks to allocate */

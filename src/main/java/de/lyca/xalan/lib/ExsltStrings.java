@@ -48,46 +48,34 @@ import de.lyca.xpath.NodeSet;
  *    xmlns:str="http://exslt.org/strings"
  * </pre>
  * 
- * The documentation for each function has been copied from the relevant EXSLT
- * Implementer page.
+ * The documentation for each function has been copied from the relevant EXSLT Implementer page.
  * 
  * @see <a href="http://www.exslt.org/">EXSLT</a>
- * 
- * @xsl.usage general
  */
 public class ExsltStrings extends ExsltBase {
   /**
    * The str:align function aligns a string within another string.
    * <p>
-   * The first argument gives the target string to be aligned. The second
-   * argument gives the padding string within which it is to be aligned.
+   * The first argument gives the target string to be aligned. The second argument gives the padding string within which
+   * it is to be aligned.
    * <p>
-   * If the target string is shorter than the padding string then a range of
-   * characters in the padding string are repaced with those in the target
-   * string. Which characters are replaced depends on the value of the third
-   * argument, which gives the type of alignment. It can be one of 'left',
-   * 'right' or 'center'. If no third argument is given or if it is not one of
-   * these values, then it defaults to left alignment.
+   * If the target string is shorter than the padding string then a range of characters in the padding string are
+   * repaced with those in the target string. Which characters are replaced depends on the value of the third argument,
+   * which gives the type of alignment. It can be one of 'left', 'right' or 'center'. If no third argument is given or
+   * if it is not one of these values, then it defaults to left alignment.
    * <p>
-   * With left alignment, the range of characters replaced by the target string
-   * begins with the first character in the padding string. With right
-   * alignment, the range of characters replaced by the target string ends with
-   * the last character in the padding string. With center alignment, the range
-   * of characters replaced by the target string is in the middle of the padding
-   * string, such that either the number of unreplaced characters on either side
-   * of the range is the same or there is one less on the left than there is on
-   * the right.
+   * With left alignment, the range of characters replaced by the target string begins with the first character in the
+   * padding string. With right alignment, the range of characters replaced by the target string ends with the last
+   * character in the padding string. With center alignment, the range of characters replaced by the target string is in
+   * the middle of the padding string, such that either the number of unreplaced characters on either side of the range
+   * is the same or there is one less on the left than there is on the right.
    * <p>
-   * If the target string is longer than the padding string, then it is
-   * truncated to be the same length as the padding string and returned.
+   * If the target string is longer than the padding string, then it is truncated to be the same length as the padding
+   * string and returned.
    * 
-   * @param targetStr
-   *          The target string
-   * @param paddingStr
-   *          The padding string
-   * @param type
-   *          The type of alignment
-   * 
+   * @param targetStr The target string
+   * @param paddingStr The padding string
+   * @param type The type of alignment
    * @return The string after alignment
    */
   public static String align(String targetStr, String paddingStr, String type) {
@@ -107,20 +95,21 @@ public class ExsltStrings extends ExsltBase {
 
   /**
    * See above
+   * 
+   * @param targetStr The target string
+   * @param paddingStr The padding string
+   * @return The string after alignment
    */
   public static String align(String targetStr, String paddingStr) {
     return align(targetStr, paddingStr, "left");
   }
 
   /**
-   * The str:concat function takes a node set and returns the concatenation of
-   * the string values of the nodes in that node set. If the node set is empty,
-   * it returns an empty string.
+   * The str:concat function takes a node set and returns the concatenation of the string values of the nodes in that
+   * node set. If the node set is empty, it returns an empty string.
    * 
-   * @param nl
-   *          A node set
-   * @return The concatenation of the string values of the nodes in that node
-   *         set
+   * @param nl A node set
+   * @return The concatenation of the string values of the nodes in that node set
    */
   public static String concat(NodeList nl) {
     final StringBuilder sb = new StringBuilder();
@@ -137,20 +126,15 @@ public class ExsltStrings extends ExsltBase {
   }
 
   /**
-   * The str:padding function creates a padding string of a certain length. The
-   * first argument gives the length of the padding string to be created. The
-   * second argument gives a string to be used to create the padding. This
-   * string is repeated as many times as is necessary to create a string of the
-   * length specified by the first argument; if the string is more than a
-   * character long, it may have to be truncated to produce the required length.
-   * If no second argument is specified, it defaults to a space (' '). If the
-   * second argument is an empty string, str:padding returns an empty string.
+   * The str:padding function creates a padding string of a certain length. The first argument gives the length of the
+   * padding string to be created. The second argument gives a string to be used to create the padding. This string is
+   * repeated as many times as is necessary to create a string of the length specified by the first argument; if the
+   * string is more than a character long, it may have to be truncated to produce the required length. If no second
+   * argument is specified, it defaults to a space (' '). If the second argument is an empty string, str:padding returns
+   * an empty string.
    * 
-   * @param length
-   *          The length of the padding string to be created
-   * @param pattern
-   *          The string to be used as pattern
-   * 
+   * @param length The length of the padding string to be created
+   * @param pattern The string to be used as pattern
    * @return A padding string of the given length
    */
   public static String padding(double length, String pattern) {
@@ -176,34 +160,33 @@ public class ExsltStrings extends ExsltBase {
 
   /**
    * See above
+   * 
+   * @param length The length of the padding string to be created
+   * @return A padding string of the given length
    */
   public static String padding(double length) {
     return padding(length, " ");
   }
 
   /**
-   * The str:split function splits up a string and returns a node set of token
-   * elements, each containing one token from the string.
+   * The str:split function splits up a string and returns a node set of token elements, each containing one token from
+   * the string.
    * <p>
-   * The first argument is the string to be split. The second argument is a
-   * pattern string. The string given by the first argument is split at any
-   * occurrence of this pattern. For example:
+   * The first argument is the string to be split. The second argument is a pattern string. The string given by the
+   * first argument is split at any occurrence of this pattern. For example:
    * 
    * <pre>
    * str:split('a, simple, list', ', ') gives the node set consisting of: 
    * 
-   * <token>a</token>
-   * <token>simple</token>
-   * <token>list</token>
+   * {@literal <token>a</token>}
+   * {@literal <token>simple</token>}
+   * {@literal <token>list</token>}
    * </pre>
    * 
-   * If the second argument is omitted, the default is the string '&#x20;' (i.e.
-   * a space).
+   * If the second argument is omitted, the default is the string '&#x20;' (i.e. a space).
    * 
-   * @param str
-   *          The string to be split
-   * @param pattern
-   *          The pattern
+   * @param str The string to be split
+   * @param pattern The pattern
    * 
    * @return A node set of split tokens
    */
@@ -241,45 +224,44 @@ public class ExsltStrings extends ExsltBase {
 
   /**
    * See above
+   * 
+   * @param str The string to be split
+   * @return A node set of split tokens
    */
   public static NodeList split(String str) {
     return split(str, " ");
   }
 
   /**
-   * The str:tokenize function splits up a string and returns a node set of
-   * token elements, each containing one token from the string.
+   * The str:tokenize function splits up a string and returns a node set of token elements, each containing one token
+   * from the string.
    * <p>
-   * The first argument is the string to be tokenized. The second argument is a
-   * string consisting of a number of characters. Each character in this string
-   * is taken as a delimiting character. The string given by the first argument
-   * is split at any occurrence of any of these characters. For example:
+   * The first argument is the string to be tokenized. The second argument is a string consisting of a number of
+   * characters. Each character in this string is taken as a delimiting character. The string given by the first
+   * argument is split at any occurrence of any of these characters. For example:
    * 
    * <pre>
    * str:tokenize('2001-06-03T11:40:23', '-T:') gives the node set consisting of: 
    * 
-   * <token>2001</token>
-   * <token>06</token>
-   * <token>03</token>
-   * <token>11</token>
-   * <token>40</token>
-   * <token>23</token>
+   * {@literal <token>2001</token>}
+   * {@literal <token>06</token>}
+   * {@literal <token>03</token>}
+   * {@literal <token>11</token>}
+   * {@literal <token>40</token>}
+   * {@literal <token>23</token>}
    * </pre>
    * 
-   * If the second argument is omitted, the default is the string
-   * '&#x9;&#xA;&#xD;&#x20;' (i.e. whitespace characters).
+   * If the second argument is omitted, the default is the string {@literal '&#x9;&#xA;&#xD;&#x20;'} (i.e. whitespace
+   * characters).
    * <p>
-   * If the second argument is an empty string, the function returns a set of
-   * token elements, each of which holds a single character.
+   * If the second argument is an empty string, the function returns a set of token elements, each of which holds a
+   * single character.
    * <p>
-   * Note: This one is different from the tokenize extension function in the
-   * Xalan namespace. The one in Xalan returns a set of Text nodes, while this
-   * one wraps the Text nodes inside the token Element nodes.
+   * Note: This one is different from the tokenize extension function in the Xalan namespace. The one in Xalan returns a
+   * set of Text nodes, while this one wraps the Text nodes inside the token Element nodes.
    * 
-   * @param toTokenize
-   *          The string to be tokenized
-   * @param delims
-   *          The delimiter string
+   * @param toTokenize The string to be tokenized
+   * @param delims The delimiter string
    * 
    * @return A node set of split token elements
    */
@@ -318,6 +300,9 @@ public class ExsltStrings extends ExsltBase {
 
   /**
    * See above
+   * 
+   * @param toTokenize The string to be tokenized
+   * @return A node set of split token elements
    */
   public static NodeList tokenize(String toTokenize) {
     return tokenize(toTokenize, " \t\n\r");
@@ -474,12 +459,11 @@ public class ExsltStrings extends ExsltBase {
   }
 
   /**
-   * This class is not loaded until first referenced (see Java Language
-   * Specification by Gosling/Joy/Steele, section 12.4.1)
+   * This class is not loaded until first referenced (see Java Language Specification by Gosling/Joy/Steele, section
+   * 12.4.1)
    * 
-   * The static members are created when this class is first referenced, as a
-   * lazy initialization not needing checking against null or any
-   * synchronization.
+   * The static members are created when this class is first referenced, as a lazy initialization not needing checking
+   * against null or any synchronization.
    * 
    */
   private static class DocumentHolder {

@@ -17,6 +17,8 @@
  */
 package de.lyca.xpath.axes;
 
+import javax.xml.transform.TransformerException;
+
 import de.lyca.xml.dtm.Axis;
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xml.dtm.DTMFilter;
@@ -29,8 +31,7 @@ import de.lyca.xpath.compiler.OpMap;
  * one step, and perhaps a predicate, that only go forward (i.e. it can not be
  * used with ancestors, preceding, etc.)
  * 
- * @see de.lyca.xpath.axes#ChildTestIterator
- * @xsl.usage advanced
+ * @see de.lyca.xpath.axes.ChildTestIterator
  */
 public class OneStepIteratorForward extends ChildTestIterator {
   static final long serialVersionUID = -1576936606178190566L;
@@ -45,10 +46,11 @@ public class OneStepIteratorForward extends ChildTestIterator {
    * @param opPos
    *          The position within the op map, which contains the location path
    *          expression for this itterator.
+   * @param analysis TODO
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
-  OneStepIteratorForward(Compiler compiler, int opPos, int analysis) throws javax.xml.transform.TransformerException {
+  OneStepIteratorForward(Compiler compiler, int opPos, int analysis) throws TransformerException {
     super(compiler, opPos, analysis);
     final int firstStepPos = OpMap.getFirstChildPos(opPos);
 
@@ -61,8 +63,6 @@ public class OneStepIteratorForward extends ChildTestIterator {
    * 
    * @param axis
    *          One of the de.lyca.xml.dtm.Axis integers.
-   * 
-   * @throws javax.xml.transform.TransformerException
    */
   public OneStepIteratorForward(Axis axis) {
     super(null);
@@ -77,6 +77,7 @@ public class OneStepIteratorForward extends ChildTestIterator {
    * 
    * @param context
    *          The XPath runtime context for this transformation.
+   * @param environment TODO
    */
   @Override
   public void setRoot(int context, Object environment) {
@@ -126,7 +127,7 @@ public class OneStepIteratorForward extends ChildTestIterator {
   // }
 
   /**
-   * Get the next node via getFirstAttribute && getNextAttribute.
+   * Get the next node via getFirstAttribute {@literal &&} getNextAttribute.
    */
   @Override
   protected int getNextNode() {
@@ -151,13 +152,7 @@ public class OneStepIteratorForward extends ChildTestIterator {
    */
   @Override
   public boolean deepEquals(Expression expr) {
-    if (!super.deepEquals(expr))
-      return false;
-
-    if (m_axis != ((OneStepIteratorForward) expr).m_axis)
-      return false;
-
-    return true;
+    return super.deepEquals(expr) && m_axis == ((OneStepIteratorForward) expr).m_axis;
   }
 
 }

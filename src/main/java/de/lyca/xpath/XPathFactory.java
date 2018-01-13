@@ -24,8 +24,6 @@ import de.lyca.xml.utils.PrefixResolver;
 /**
  * Factory class for creating an XPath. Implementors of XPath derivatives will
  * need to make a derived class of this.
- * 
- * @xsl.usage advanced
  */
 public interface XPathFactory {
 

@@ -17,6 +17,8 @@
  */
 package de.lyca.xpath.functions;
 
+import javax.xml.transform.TransformerException;
+
 import de.lyca.xml.dtm.DTMIterator;
 import de.lyca.xpath.XPathContext;
 import de.lyca.xpath.objects.XNumber;
@@ -24,8 +26,6 @@ import de.lyca.xpath.objects.XObject;
 
 /**
  * Execute the Count() function.
- * 
- * @xsl.usage advanced
  */
 public class FuncCount extends FunctionOneArg {
   static final long serialVersionUID = -7116225100474153751L;
@@ -37,10 +37,10 @@ public class FuncCount extends FunctionOneArg {
    *          The current execution context.
    * @return A valid XObject.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
   @Override
-  public XObject execute(XPathContext xctxt) throws javax.xml.transform.TransformerException {
+  public XObject execute(XPathContext xctxt) throws TransformerException {
 
     // DTMIterator nl = m_arg0.asIterator(xctxt, xctxt.getCurrentNode());
 

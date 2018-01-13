@@ -17,6 +17,8 @@
  */
 package de.lyca.xpath.patterns;
 
+import javax.xml.transform.TransformerException;
+
 import de.lyca.xml.dtm.Axis;
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xml.dtm.DTMAxisTraverser;
@@ -34,6 +36,10 @@ public class ContextMatchStepPattern extends StepPattern {
   /**
    * Construct a ContextMatchStepPattern.
    * 
+   * @param axis
+   *          TODO
+   * @param paxis
+   *          TODO
    */
   public ContextMatchStepPattern(Axis axis, Axis paxis) {
     super(DTMFilter.SHOW_ALL, axis, paxis);
@@ -52,10 +58,11 @@ public class ContextMatchStepPattern extends StepPattern {
    *         {@link de.lyca.xpath.patterns.NodeTest#SCORE_QNAME}, or
    *         {@link de.lyca.xpath.patterns.NodeTest#SCORE_OTHER}.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException
+   *           TODO
    */
   @Override
-  public XObject execute(XPathContext xctxt) throws javax.xml.transform.TransformerException {
+  public XObject execute(XPathContext xctxt) throws TransformerException {
 
     if (xctxt.getIteratorRoot() == xctxt.getCurrentNode())
       return getStaticScore();
@@ -69,17 +76,18 @@ public class ContextMatchStepPattern extends StepPattern {
    * 
    * @param xctxt
    *          The XPath runtime context. NEEDSDOC @param prevStep
-   * 
+   * @param prevStep
+   *          TODO
    * @return {@link de.lyca.xpath.patterns.NodeTest#SCORE_NODETEST},
    *         {@link de.lyca.xpath.patterns.NodeTest#SCORE_NONE},
    *         {@link de.lyca.xpath.patterns.NodeTest#SCORE_NSWILD},
    *         {@link de.lyca.xpath.patterns.NodeTest#SCORE_QNAME}, or
    *         {@link de.lyca.xpath.patterns.NodeTest#SCORE_OTHER}.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException
+   *           TODO
    */
-  public XObject executeRelativePathPattern(XPathContext xctxt, StepPattern prevStep)
-          throws javax.xml.transform.TransformerException {
+  public XObject executeRelativePathPattern(XPathContext xctxt, StepPattern prevStep) throws TransformerException {
 
     XObject score = NodeTest.SCORE_NONE;
     final int context = xctxt.getCurrentNode();
@@ -99,7 +107,8 @@ public class ContextMatchStepPattern extends StepPattern {
 
       traverser = dtm.getAxisTraverser(axis);
 
-      for (int relative = traverser.first(context); DTM.NULL != relative; relative = traverser.next(context, relative)) {
+      for (int relative = traverser.first(context); DTM.NULL != relative; relative = traverser.next(context,
+          relative)) {
         try {
           xctxt.pushCurrentNode(relative);
 
@@ -119,8 +128,8 @@ public class ContextMatchStepPattern extends StepPattern {
             for (int i = 0; i < 2; i++) {
               final DTMAxisTraverser atraverser = dtm.getAxisTraverser(xaxis);
 
-              for (int arelative = atraverser.first(relative); DTM.NULL != arelative; arelative = atraverser.next(
-                      relative, arelative)) {
+              for (int arelative = atraverser.first(relative); DTM.NULL != arelative; arelative = atraverser
+                  .next(relative, arelative)) {
                 try {
                   xctxt.pushCurrentNode(arelative);
 

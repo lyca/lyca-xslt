@@ -26,7 +26,7 @@ public interface SourceLoader {
 
   /**
    * This interface is used to plug external document loaders into XSLTC (used
-   * with the <xsl:include> and <xsl:import> elements.
+   * with the {@literal <xsl:include>} and {@literal <xsl:import>} elements.
    * 
    * @param href
    *          The URI of the document to load

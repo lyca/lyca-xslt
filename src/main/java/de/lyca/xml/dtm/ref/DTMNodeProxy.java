@@ -55,10 +55,9 @@ import de.lyca.xpath.NodeSet;
  * DTMNodeProxy may be subclassed further to present specific DOM node types.
  * 
  * @see org.w3c.dom
- * @xsl.usage internal
  */
-public class DTMNodeProxy implements Node, Document, Text, Element, Attr, ProcessingInstruction, Comment,
-        DocumentFragment {
+public class DTMNodeProxy
+    implements Node, Document, Text, Element, Attr, ProcessingInstruction, Comment, DocumentFragment {
 
   /** The DTM for this node. */
   public DTM dtm;
@@ -147,6 +146,7 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
    * FUTURE DOM: Test node identity, in lieu of Node==Node
    * 
    * @param other
+   *          TODO
    * 
    * @return true if the given node has the same handle as this node.
    */
@@ -161,8 +161,7 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
   }
 
   /**
-   * 
-   * 
+   * @return TODO
    * @see org.w3c.dom.Node
    */
   @Override
@@ -175,13 +174,13 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
    * directed to. It is defined differently in HTML and XML.
    * <p>
    * In XML, a PI's "target" is the first (whitespace-delimited) token following
-   * the "<?" token that begins the PI.
+   * the {@literal "<?"} token that begins the PI.
    * <p>
    * In HTML, target is always null.
    * <p>
    * Note that getNodeName is aliased to getTarget.
    * 
-   * 
+   * @return TODO
    */
   @Override
   public final String getTarget() {
@@ -189,8 +188,7 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
   } // getTarget():String
 
   /**
-   * 
-   * 
+   * @return TODO
    * @see org.w3c.dom.Node as of DOM Level 2
    */
   @Override
@@ -210,8 +208,10 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
   /**
    * 
    * @param prefix
+   *          TODO
    * 
    * @throws DOMException
+   *           TODO
    * @see org.w3c.dom.Node as of DOM Level 2 -- DTMNodeProxy is read-only
    */
   @Override
@@ -220,8 +220,7 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
   }
 
   /**
-   * 
-   * 
+   * @return TODO
    * @see org.w3c.dom.Node as of DOM Level 2
    */
   @Override
@@ -241,7 +240,9 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
    * Draft of the DOM.
    * 
    * @param feature
+   *          TODO
    * @param version
+   *          TODO
    * 
    * @return false
    */
@@ -256,7 +257,9 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
    * should always return false.
    * 
    * @param feature
+   *          TODO
    * @param version
+   *          TODO
    * 
    * @return false
    * @see org.w3c.dom.Node as of DOM Level 2
@@ -268,10 +271,9 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
   }
 
   /**
-   * 
-   * 
-   * 
+   * @return TODO
    * @throws DOMException
+   *           TODO TODO
    * @see org.w3c.dom.Node
    */
   @Override
@@ -283,6 +285,7 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
    * @return The string value of the node
    * 
    * @throws DOMException
+   *           TODO
    */
   public final String getStringValue() throws DOMException {
     return dtm.getStringValue(node).toString();
@@ -291,8 +294,10 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
   /**
    * 
    * @param nodeValue
+   *          TODO
    * 
    * @throws DOMException
+   *           TODO
    * @see org.w3c.dom.Node -- DTMNodeProxy is read-only
    */
   @Override
@@ -301,8 +306,7 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
   }
 
   /**
-   * 
-   * 
+   * @return TODO
    * @see org.w3c.dom.Node
    */
   @Override
@@ -311,8 +315,7 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
   }
 
   /**
-   * 
-   * 
+   * @return TODO
    * @see org.w3c.dom.Node
    */
   @Override
@@ -327,8 +330,7 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
   }
 
   /**
-   * 
-   * 
+   * @return TODO
    * @see org.w3c.dom.Node
    */
   public final Node getOwnerNode() {
@@ -339,8 +341,7 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
   }
 
   /**
-   * 
-   * 
+   * @return TODO
    * @see org.w3c.dom.Node
    */
   @Override
@@ -355,8 +356,7 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
   }
 
   /**
-   * 
-   * 
+   * @return TODO
    * @see org.w3c.dom.Node
    */
   @Override
@@ -368,8 +368,7 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
   }
 
   /**
-   * 
-   * 
+   * @return TODO
    * @see org.w3c.dom.Node
    */
   @Override
@@ -381,8 +380,7 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
   }
 
   /**
-   * 
-   * 
+   * @return TODO
    * @see org.w3c.dom.Node
    */
   @Override
@@ -394,8 +392,7 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
   }
 
   /**
-   * 
-   * 
+   * @return TODO
    * @see org.w3c.dom.Node
    */
   @Override
@@ -413,8 +410,7 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
   // DTMNamedNodeMap m_attrs;
 
   /**
-   * 
-   * 
+   * @return TODO
    * @see org.w3c.dom.Node
    */
   @Override
@@ -426,10 +422,9 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
   /**
    * Method hasAttribute
    * 
-   * 
    * @param name
-   * 
-   * 
+   *          TODO
+   * @return TODO
    */
   @Override
   public boolean hasAttribute(String name) {
@@ -439,11 +434,11 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
   /**
    * Method hasAttributeNS
    * 
-   * 
    * @param namespaceURI
+   *          TODO
    * @param localName
-   * 
-   * 
+   *          TODO
+   * @return TODO
    */
   @Override
   public boolean hasAttributeNS(String namespaceURI, String localName) {
@@ -451,8 +446,7 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
   }
 
   /**
-   * 
-   * 
+   * @return TODO
    * @see org.w3c.dom.Node
    */
   @Override
@@ -462,13 +456,13 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
   }
 
   /**
-   * 
    * @param newChild
+   *          TODO
    * @param refChild
-   * 
-   * 
-   * 
+   *          TODO
+   * @return TODO
    * @throws DOMException
+   *           TODO
    * @see org.w3c.dom.Node -- DTMNodeProxy is read-only
    */
   @Override
@@ -477,13 +471,13 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
   }
 
   /**
-   * 
    * @param newChild
+   *          TODO
    * @param oldChild
-   * 
-   * 
-   * 
+   *          TODO
+   * @return TODO
    * @throws DOMException
+   *           TODO
    * @see org.w3c.dom.Node -- DTMNodeProxy is read-only
    */
   @Override
@@ -492,12 +486,11 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
   }
 
   /**
-   * 
    * @param oldChild
-   * 
-   * 
-   * 
+   *          TODO
+   * @return TODO
    * @throws DOMException
+   *           TODO
    * @see org.w3c.dom.Node -- DTMNodeProxy is read-only
    */
   @Override
@@ -506,12 +499,11 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
   }
 
   /**
-   * 
    * @param newChild
-   * 
-   * 
-   * 
+   *          TODO
+   * @return TODO
    * @throws DOMException
+   *           TODO
    * @see org.w3c.dom.Node -- DTMNodeProxy is read-only
    */
   @Override
@@ -520,8 +512,7 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
   }
 
   /**
-   * 
-   * 
+   * @return TODO
    * @see org.w3c.dom.Node
    */
   @Override
@@ -530,10 +521,9 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
   }
 
   /**
-   * 
    * @param deep
-   * 
-   * 
+   *          TODO
+   * @return TODO
    * @see org.w3c.dom.Node -- DTMNodeProxy is read-only
    */
   @Override
@@ -542,8 +532,7 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
   }
 
   /**
-   * 
-   * 
+   * @return TODO
    * @see org.w3c.dom.Document
    */
   @Override
@@ -552,8 +541,7 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
   }
 
   /**
-   * 
-   * 
+   * @return TODO
    * @see org.w3c.dom.Document
    */
   @Override
@@ -566,14 +554,15 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
    * and hence not have a clear-cut Document Element. We can make it work in the
    * well-formed cases but would that be confusing for others?
    * 
-   * 
+   * @return TODO
    * @see org.w3c.dom.Document
    */
   @Override
   public final Element getDocumentElement() {
     final int dochandle = dtm.getDocument();
     int elementhandle = DTM.NULL;
-    for (int kidhandle = dtm.getFirstChild(dochandle); kidhandle != DTM.NULL; kidhandle = dtm.getNextSibling(kidhandle)) {
+    for (int kidhandle = dtm.getFirstChild(dochandle); kidhandle != DTM.NULL; kidhandle = dtm
+        .getNextSibling(kidhandle)) {
       switch (dtm.getNodeType(kidhandle)) {
         case Node.ELEMENT_NODE:
           if (elementhandle != DTM.NULL) {
@@ -603,12 +592,11 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
   }
 
   /**
-   * 
    * @param tagName
-   * 
-   * 
-   * 
+   *          TODO
+   * @return TODO
    * @throws DOMException
+   *           TODO
    * @see org.w3c.dom.Document
    */
   @Override
@@ -617,8 +605,7 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
   }
 
   /**
-   * 
-   * 
+   * @return TODO
    * @see org.w3c.dom.Document
    */
   @Override
@@ -627,10 +614,9 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
   }
 
   /**
-   * 
    * @param data
-   * 
-   * 
+   *          TODO
+   * @return TODO
    * @see org.w3c.dom.Document
    */
   @Override
@@ -639,10 +625,9 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
   }
 
   /**
-   * 
    * @param data
-   * 
-   * 
+   *          TODO
+   * @return TODO
    * @see org.w3c.dom.Document
    */
   @Override
@@ -651,12 +636,11 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
   }
 
   /**
-   * 
    * @param data
-   * 
-   * 
-   * 
+   *          TODO
+   * @return TODO
    * @throws DOMException
+   *           TODO
    * @see org.w3c.dom.Document
    */
   @Override
@@ -667,11 +651,14 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
   /**
    * 
    * @param target
+   *          TODO
    * @param data
+   *          TODO
    * 
    * 
    * 
    * @throws DOMException
+   *           TODO
    * @see org.w3c.dom.Document
    */
   @Override
@@ -682,10 +669,12 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
   /**
    * 
    * @param name
+   *          TODO
    * 
    * 
    * 
    * @throws DOMException
+   *           TODO
    * @see org.w3c.dom.Document
    */
   @Override
@@ -696,10 +685,12 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
   /**
    * 
    * @param name
+   *          TODO
    * 
    * 
    * 
    * @throws DOMException
+   *           TODO
    * @see org.w3c.dom.Document
    */
   @Override
@@ -710,6 +701,7 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
   /**
    * 
    * @param tagname
+   *          TODO
    * 
    * 
    * @see org.w3c.dom.Document
@@ -740,9 +732,13 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
   /**
    * 
    * @param listVector
+   *          TODO
    * @param tempNode
+   *          TODO
    * @param tagname
+   *          TODO
    * @param isTagNameWildCard
+   *          TODO
    * 
    * 
    *          Private method to be used for recursive iterations to obtain
@@ -767,11 +763,14 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
   /**
    * 
    * @param importedNode
+   *          TODO
    * @param deep
+   *          TODO
    * 
    * 
    * 
    * @throws DOMException
+   *           TODO
    * @see org.w3c.dom.Document as of DOM Level 2 -- DTMNodeProxy is read-only
    */
   @Override
@@ -782,11 +781,14 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
   /**
    * 
    * @param namespaceURI
+   *          TODO
    * @param qualifiedName
+   *          TODO
    * 
    * 
    * 
    * @throws DOMException
+   *           TODO
    * @see org.w3c.dom.Document as of DOM Level 2
    */
   @Override
@@ -797,11 +799,14 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
   /**
    * 
    * @param namespaceURI
+   *          TODO
    * @param qualifiedName
+   *          TODO
    * 
    * 
    * 
    * @throws DOMException
+   *           TODO
    * @see org.w3c.dom.Document as of DOM Level 2
    */
   @Override
@@ -812,7 +817,9 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
   /**
    * 
    * @param namespaceURI
+   *          TODO
    * @param localName
+   *          TODO
    * 
    * 
    * @see org.w3c.dom.Document as of DOM Level 2
@@ -828,11 +835,11 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
         final NodeList nodeList = retNode.getChildNodes();
         for (int i = 0; i < nodeList.getLength(); i++) {
           traverseChildren(listVector, nodeList.item(i), namespaceURI, localName, isNamespaceURIWildCard,
-                  isLocalNameWildCard);
+              isLocalNameWildCard);
         }
       } else if (DTM.DOCUMENT_NODE == retNode.getNodeType()) {
         traverseChildren(listVector, dtm.getNode(node), namespaceURI, localName, isNamespaceURIWildCard,
-                isLocalNameWildCard);
+            isLocalNameWildCard);
       }
     }
     final int size = listVector.size();
@@ -846,32 +853,39 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
   /**
    * 
    * @param listVector
+   *          TODO
    * @param tempNode
+   *          TODO
    * @param namespaceURI
+   *          TODO
    * @param localname
+   *          TODO
    * @param isNamespaceURIWildCard
+   *          TODO
    * @param isLocalNameWildCard
+   *          TODO
    * 
    *          Private method to be used for recursive iterations to obtain
    *          elements by tag name and namespaceURI.
    */
   private final void traverseChildren(List<Node> listVector, Node tempNode, String namespaceURI, String localname,
-          boolean isNamespaceURIWildCard, boolean isLocalNameWildCard) {
+      boolean isNamespaceURIWildCard, boolean isLocalNameWildCard) {
     if (tempNode == null)
       return;
     else {
       if (tempNode.getNodeType() == DTM.ELEMENT_NODE
-              && (isLocalNameWildCard || tempNode.getLocalName().equals(localname))) {
+          && (isLocalNameWildCard || tempNode.getLocalName().equals(localname))) {
         final String nsURI = tempNode.getNamespaceURI();
-        if (namespaceURI == null && nsURI == null || isNamespaceURIWildCard || namespaceURI != null
-                && namespaceURI.equals(nsURI)) {
+        if (namespaceURI == null && nsURI == null || isNamespaceURIWildCard
+            || namespaceURI != null && namespaceURI.equals(nsURI)) {
           listVector.add(tempNode);
         }
       }
       if (tempNode.hasChildNodes()) {
         final NodeList nl = tempNode.getChildNodes();
         for (int i = 0; i < nl.getLength(); i++) {
-          traverseChildren(listVector, nl.item(i), namespaceURI, localname, isNamespaceURIWildCard, isLocalNameWildCard);
+          traverseChildren(listVector, nl.item(i), namespaceURI, localname, isNamespaceURIWildCard,
+              isLocalNameWildCard);
         }
       }
     }
@@ -880,6 +894,7 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
   /**
    * 
    * @param elementId
+   *          TODO
    * 
    * 
    * @see org.w3c.dom.Document as of DOM Level 2
@@ -892,10 +907,12 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
   /**
    * 
    * @param offset
+   *          TODO
    * 
    * 
    * 
    * @throws DOMException
+   *           TODO
    * @see org.w3c.dom.Text
    */
   @Override
@@ -908,6 +925,7 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
    * 
    * 
    * @throws DOMException
+   *           TODO
    * @see org.w3c.dom.CharacterData
    */
   @Override
@@ -918,8 +936,10 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
   /**
    * 
    * @param data
+   *          TODO
    * 
    * @throws DOMException
+   *           TODO
    * @see org.w3c.dom.CharacterData
    */
   @Override
@@ -941,11 +961,14 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
   /**
    * 
    * @param offset
+   *          TODO
    * @param count
+   *          TODO
    * 
    * 
    * 
    * @throws DOMException
+   *           TODO
    * @see org.w3c.dom.CharacterData
    */
   @Override
@@ -956,8 +979,10 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
   /**
    * 
    * @param arg
+   *          TODO
    * 
    * @throws DOMException
+   *           TODO
    * @see org.w3c.dom.CharacterData
    */
   @Override
@@ -968,9 +993,12 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
   /**
    * 
    * @param offset
+   *          TODO
    * @param arg
+   *          TODO
    * 
    * @throws DOMException
+   *           TODO
    * @see org.w3c.dom.CharacterData
    */
   @Override
@@ -981,9 +1009,12 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
   /**
    * 
    * @param offset
+   *          TODO
    * @param count
+   *          TODO
    * 
    * @throws DOMException
+   *           TODO
    * @see org.w3c.dom.CharacterData
    */
   @Override
@@ -994,10 +1025,14 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
   /**
    * 
    * @param offset
+   *          TODO
    * @param count
+   *          TODO
    * @param arg
+   *          TODO
    * 
    * @throws DOMException
+   *           TODO
    * @see org.w3c.dom.CharacterData
    */
   @Override
@@ -1018,6 +1053,7 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
   /**
    * 
    * @param name
+   *          TODO
    * 
    * 
    * @see org.w3c.dom.Element
@@ -1033,9 +1069,12 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
   /**
    * 
    * @param name
+   *          TODO
    * @param value
+   *          TODO
    * 
    * @throws DOMException
+   *           TODO
    * @see org.w3c.dom.Element
    */
   @Override
@@ -1046,8 +1085,10 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
   /**
    * 
    * @param name
+   *          TODO
    * 
    * @throws DOMException
+   *           TODO
    * @see org.w3c.dom.Element
    */
   @Override
@@ -1058,6 +1099,7 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
   /**
    * 
    * @param name
+   *          TODO
    * 
    * 
    * @see org.w3c.dom.Element
@@ -1072,10 +1114,12 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
   /**
    * 
    * @param newAttr
+   *          TODO
    * 
    * 
    * 
    * @throws DOMException
+   *           TODO
    * @see org.w3c.dom.Element
    */
   @Override
@@ -1086,10 +1130,12 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
   /**
    * 
    * @param oldAttr
+   *          TODO
    * 
    * 
    * 
    * @throws DOMException
+   *           TODO
    * @see org.w3c.dom.Element
    */
   @Override
@@ -1116,7 +1162,9 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
   /**
    * 
    * @param namespaceURI
+   *          TODO
    * @param localName
+   *          TODO
    * 
    * 
    * @see org.w3c.dom.Element
@@ -1134,10 +1182,14 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
   /**
    * 
    * @param namespaceURI
+   *          TODO
    * @param qualifiedName
+   *          TODO
    * @param value
+   *          TODO
    * 
    * @throws DOMException
+   *           TODO
    * @see org.w3c.dom.Element
    */
   @Override
@@ -1148,9 +1200,12 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
   /**
    * 
    * @param namespaceURI
+   *          TODO
    * @param localName
+   *          TODO
    * 
    * @throws DOMException
+   *           TODO
    * @see org.w3c.dom.Element
    */
   @Override
@@ -1161,7 +1216,9 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
   /**
    * 
    * @param namespaceURI
+   *          TODO
    * @param localName
+   *          TODO
    * 
    * 
    * @see org.w3c.dom.Element
@@ -1179,10 +1236,12 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
   /**
    * 
    * @param newAttr
+   *          TODO
    * 
    * 
    * 
    * @throws DOMException
+   *           TODO
    * @see org.w3c.dom.Element
    */
   @Override
@@ -1227,6 +1286,7 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
   /**
    * 
    * @param value
+   *          TODO
    * @see org.w3c.dom.Attr
    */
   @Override
@@ -1259,6 +1319,7 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
    * 
    * 
    * @throws DOMException
+   *           TODO
    */
   @Override
   public Node adoptNode(Node source) throws DOMException {
@@ -1268,8 +1329,8 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
 
   /**
    * <p>
-   * Based on the <a
-   * href='http://www.w3.org/TR/2004/REC-DOM-Level-3-Core-20040407'>Document
+   * Based on the
+   * <a href='http://www.w3.org/TR/2004/REC-DOM-Level-3-Core-20040407'>Document
    * Object Model (DOM) Level 3 Core Specification of 07 April 2004.</a>.
    * <p>
    * An attribute specifying, as part of the XML declaration, the encoding of
@@ -1287,8 +1348,8 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
 
   /**
    * <p>
-   * Based on the <a
-   * href='http://www.w3.org/TR/2004/REC-DOM-Level-3-Core-20040407'>Document
+   * Based on the
+   * <a href='http://www.w3.org/TR/2004/REC-DOM-Level-3-Core-20040407'>Document
    * Object Model (DOM) Level 3 Core Specification of 07 April 2004.</a>.
    * <p>
    * An attribute specifying whether errors checking is enforced or not. When
@@ -1309,8 +1370,8 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
 
   /**
    * <p>
-   * Based on the <a
-   * href='http://www.w3.org/TR/2004/REC-DOM-Level-3-Core-20040407'>Document
+   * Based on the
+   * <a href='http://www.w3.org/TR/2004/REC-DOM-Level-3-Core-20040407'>Document
    * Object Model (DOM) Level 3 Core Specification of 07 April 2004.</a>.
    * <p>
    * An attribute specifying whether errors checking is enforced or not. When
@@ -1355,7 +1416,7 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
     @Override
     public boolean hasFeature(String feature, String version) {
       if (("CORE".equals(feature.toUpperCase()) || "XML".equals(feature.toUpperCase()))
-              && ("1.0".equals(version) || "2.0".equals(version)))
+          && ("1.0".equals(version) || "2.0".equals(version)))
         return true;
       return false;
     }
@@ -1481,10 +1542,6 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
    * 
    * @param arg
    *          The node to compare equality with.
-   * @param deep
-   *          If <code>true</code>, recursively compare the subtrees; if
-   *          <code>false</code>, compare only the nodes themselves (and its
-   *          attributes, if it is an <code>Element</code>).
    * @return If the nodes, and possibly subtrees are equal, <code>true</code>
    *         otherwise <code>false</code>.
    * @since DOM Level 3
@@ -1539,8 +1596,9 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
    * starting from this node. Use lookupNamespaceURI(null) to lookup the default
    * namespace
    * 
-   * @param namespaceURI
-   * @return th URI for the namespace
+   * @param specifiedPrefix
+   *          TODO
+   * @return the URI for the namespace
    * @since DOM Level 3
    */
   @Override
@@ -1665,6 +1723,7 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
    * starting from this node.
    * 
    * @param namespaceURI
+   *          TODO
    * @return the prefix for the namespace
    */
   @Override
@@ -1678,16 +1737,16 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
     final short type = this.getNodeType();
 
     switch (type) {
-    /*
-     * case Node.ELEMENT_NODE: {
-     * 
-     * String namespace = this.getNamespaceURI(); // to flip out children return
-     * lookupNamespacePrefix(namespaceURI, (ElementImpl)this); }
-     * 
-     * case Node.DOCUMENT_NODE:{
-     * return((NodeImpl)((Document)this).getDocumentElement
-     * ()).lookupPrefix(namespaceURI); }
-     */
+      /*
+       * case Node.ELEMENT_NODE: {
+       * 
+       * String namespace = this.getNamespaceURI(); // to flip out children
+       * return lookupNamespacePrefix(namespaceURI, (ElementImpl)this); }
+       * 
+       * case Node.DOCUMENT_NODE:{
+       * return((NodeImpl)((Document)this).getDocumentElement
+       * ()).lookupPrefix(namespaceURI); }
+       */
       case Node.ENTITY_NODE:
       case Node.NOTATION_NODE:
       case Node.DOCUMENT_FRAGMENT_NODE:
@@ -1742,14 +1801,14 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
    * textual content. <br>
    * The string returned is made of the text content of this node depending on
    * its type, as defined below:
-   * <table border='1'>
+   * <table border='1' summary=''>
    * <tr>
    * <th>Node type</th>
    * <th>Content</th>
    * </tr>
    * <tr>
-   * <td valign='top' rowspan='1' colspan='1'>
-   * ELEMENT_NODE, ENTITY_NODE, ENTITY_REFERENCE_NODE, DOCUMENT_FRAGMENT_NODE</td>
+   * <td valign='top' rowspan='1' colspan='1'>ELEMENT_NODE, ENTITY_NODE,
+   * ENTITY_REFERENCE_NODE, DOCUMENT_FRAGMENT_NODE</td>
    * <td valign='top' rowspan='1' colspan='1'>concatenation of the
    * <code>textContent</code> attribute value of every child node, excluding
    * COMMENT_NODE and PROCESSING_INSTRUCTION_NODE nodes</td>
@@ -1757,20 +1816,18 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
    * <tr>
    * <td valign='top' rowspan='1' colspan='1'>ATTRIBUTE_NODE, TEXT_NODE,
    * CDATA_SECTION_NODE, COMMENT_NODE, PROCESSING_INSTRUCTION_NODE</td>
-   * <td valign='top' rowspan='1' colspan='1'>
-   * <code>nodeValue</code></td>
+   * <td valign='top' rowspan='1' colspan='1'><code>nodeValue</code></td>
    * </tr>
    * <tr>
    * <td valign='top' rowspan='1' colspan='1'>DOCUMENT_NODE, DOCUMENT_TYPE_NODE,
    * NOTATION_NODE</td>
-   * <td valign='top' rowspan='1' colspan='1'>
-   * null</td>
+   * <td valign='top' rowspan='1' colspan='1'>null</td>
    * </tr>
    * </table>
    * 
-   * @exception DOMException
+   * @throws DOMException
    *              NO_MODIFICATION_ALLOWED_ERR: Raised when the node is readonly.
-   * @exception DOMException
+   * @throws DOMException
    *              DOMSTRING_SIZE_ERR: Raised when it would return more
    *              characters than fit in a <code>DOMString</code> variable on
    *              the implementation platform.
@@ -1793,14 +1850,14 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
    * textual content. <br>
    * The string returned is made of the text content of this node depending on
    * its type, as defined below:
-   * <table border='1'>
+   * <table border='1' summary=''>
    * <tr>
    * <th>Node type</th>
    * <th>Content</th>
    * </tr>
    * <tr>
-   * <td valign='top' rowspan='1' colspan='1'>
-   * ELEMENT_NODE, ENTITY_NODE, ENTITY_REFERENCE_NODE, DOCUMENT_FRAGMENT_NODE</td>
+   * <td valign='top' rowspan='1' colspan='1'>ELEMENT_NODE, ENTITY_NODE,
+   * ENTITY_REFERENCE_NODE, DOCUMENT_FRAGMENT_NODE</td>
    * <td valign='top' rowspan='1' colspan='1'>concatenation of the
    * <code>textContent</code> attribute value of every child node, excluding
    * COMMENT_NODE and PROCESSING_INSTRUCTION_NODE nodes</td>
@@ -1808,20 +1865,18 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
    * <tr>
    * <td valign='top' rowspan='1' colspan='1'>ATTRIBUTE_NODE, TEXT_NODE,
    * CDATA_SECTION_NODE, COMMENT_NODE, PROCESSING_INSTRUCTION_NODE</td>
-   * <td valign='top' rowspan='1' colspan='1'>
-   * <code>nodeValue</code></td>
+   * <td valign='top' rowspan='1' colspan='1'><code>nodeValue</code></td>
    * </tr>
    * <tr>
    * <td valign='top' rowspan='1' colspan='1'>DOCUMENT_NODE, DOCUMENT_TYPE_NODE,
    * NOTATION_NODE</td>
-   * <td valign='top' rowspan='1' colspan='1'>
-   * null</td>
+   * <td valign='top' rowspan='1' colspan='1'>null</td>
    * </tr>
    * </table>
    * 
-   * @exception DOMException
+   * @throws DOMException
    *              NO_MODIFICATION_ALLOWED_ERR: Raised when the node is readonly.
-   * @exception DOMException
+   * @throws DOMException
    *              DOMSTRING_SIZE_ERR: Raised when it would return more
    *              characters than fit in a <code>DOMString</code> variable on
    *              the implementation platform.
@@ -1914,7 +1969,8 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
   }
 
   /**
-   * DOM Level 3 The location of the document or <code>null</code> if undefined. <br>
+   * DOM Level 3 The location of the document or <code>null</code> if undefined.
+   * <br>
    * Beware that when the <code>Document</code> supports the feature "HTML" ,
    * the href attribute of the HTML BASE element takes precedence over this
    * attribute.
@@ -1934,7 +1990,7 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
    * This is <code>null</code> otherwise. <br>
    * This attribute represents the property [character encoding scheme] defined
    * in .
-   * 
+   * @return TODO
    * @since DOM Level 3
    */
   public String getActualEncoding() {
@@ -1946,7 +2002,7 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
    * This is <code>null</code> otherwise. <br>
    * This attribute represents the property [character encoding scheme] defined
    * in .
-   * 
+   * @param value TODO
    * @since DOM Level 3
    */
   public void setActualEncoding(String value) {
@@ -2014,6 +2070,7 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
    * NON-DOM: set the type of this attribute to be ID type.
    * 
    * @param id
+   *          TODO
    */
   public void setIdAttribute(boolean id) {
     // PENDING

@@ -19,6 +19,8 @@ package de.lyca.xpath.axes;
 
 import java.util.List;
 
+import javax.xml.transform.TransformerException;
+
 import de.lyca.xml.dtm.Axis;
 import de.lyca.xml.utils.PrefixResolver;
 import de.lyca.xml.utils.QName;
@@ -26,8 +28,6 @@ import de.lyca.xpath.compiler.Compiler;
 
 /**
  * This class iterates over set of nodes that needs to be sorted.
- * 
- * @xsl.usage internal
  */
 public class WalkingIteratorSorted extends WalkingIterator {
   static final long serialVersionUID = -4512512007542368213L;
@@ -65,10 +65,10 @@ public class WalkingIteratorSorted extends WalkingIterator {
    *          True if walkers should be loaded, or false if this is a derived
    *          iterator and it doesn't wish to load child walkers.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
   WalkingIteratorSorted(Compiler compiler, int opPos, int analysis, boolean shouldLoadWalkers)
-          throws javax.xml.transform.TransformerException {
+          throws TransformerException {
     super(compiler, opPos, analysis, shouldLoadWalkers);
   }
 

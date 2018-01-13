@@ -28,6 +28,7 @@ import javax.xml.transform.sax.SAXSource;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
@@ -125,14 +126,14 @@ public class StylesheetPIHandler extends DefaultHandler {
    *          The processing instruction target.
    * @param data
    *          The processing instruction data, or null if none is supplied.
-   * @throws org.xml.sax.SAXException
+   * @throws SAXException
    *           Any SAX exception, possibly wrapping another exception.
    * @see org.xml.sax.ContentHandler#processingInstruction
    * @see <a href="http://www.w3.org/TR/xml-stylesheet/">Associating Style
    *      Sheets with XML documents, Version 1.0</a>
    */
   @Override
-  public void processingInstruction(String target, String data) throws org.xml.sax.SAXException {
+  public void processingInstruction(String target, String data) throws SAXException {
 
     if (target.equals("xml-stylesheet")) {
       String href = null; // CDATA #REQUIRED
@@ -200,7 +201,7 @@ public class StylesheetPIHandler extends DefaultHandler {
               source = new SAXSource(new InputSource(href));
             }
           } catch (final TransformerException te) {
-            throw new org.xml.sax.SAXException(te);
+            throw new SAXException(te);
           }
         } else if (name.equals("title")) {
           token = tokenizer.nextToken();
@@ -283,7 +284,7 @@ public class StylesheetPIHandler extends DefaultHandler {
    */
   @Override
   public void startElement(String namespaceURI, String localName, String qName, Attributes atts)
-          throws org.xml.sax.SAXException {
+          throws SAXException {
     throw new StopParseException();
   }
 

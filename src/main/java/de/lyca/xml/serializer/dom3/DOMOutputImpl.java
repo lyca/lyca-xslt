@@ -47,7 +47,6 @@ import org.w3c.dom.ls.LSOutput;
  * @author Arun Yadav, Sun Microsytems
  * @author Gopal Sharma, Sun Microsystems
  * @version $Id :
- * @xsl.usage internal
  */
 
 final class DOMOutputImpl implements LSOutput {

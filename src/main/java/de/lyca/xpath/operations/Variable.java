@@ -53,18 +53,15 @@ public class Variable extends Expression implements PathComponent {
   protected QName m_qname;
 
   /**
-   * The index of the variable, which is either an absolute index to a global,
-   * or, if higher than the globals area, must be adjusted by adding the offset
-   * to the current stack frame.
+   * The index of the variable, which is either an absolute index to a global, or, if higher than the globals area, must
+   * be adjusted by adding the offset to the current stack frame.
    */
   protected int m_index;
 
   /**
-   * Set the index for the variable into the stack. For advanced use only. You
-   * must know what you are doing to use this.
+   * Set the index for the variable into the stack. For advanced use only. You must know what you are doing to use this.
    * 
-   * @param index
-   *          a global or local index.
+   * @param index a global or local index.
    */
   public void setIndex(int index) {
     m_index = index;
@@ -82,8 +79,7 @@ public class Variable extends Expression implements PathComponent {
   /**
    * Set whether or not this is a global reference. For advanced use only.
    * 
-   * @param isGlobal
-   *          true if this should be a global variable reference.
+   * @param isGlobal true if this should be a global variable reference.
    */
   public void setIsGlobal(boolean isGlobal) {
     m_isGlobal = isGlobal;
@@ -101,16 +97,12 @@ public class Variable extends Expression implements PathComponent {
   protected boolean m_isGlobal = false;
 
   /**
-   * This function is used to fixup variables from QNames to stack frame indexes
-   * at stylesheet build time.
+   * This function is used to fixup variables from QNames to stack frame indexes at stylesheet build time.
    * 
-   * @param vars
-   *          List of QNames that correspond to variables. This list should be
-   *          searched backwards for the first qualified name that corresponds
-   *          to the variable reference qname. The position of the QName in the
-   *          list from the start of the list will be its position in the stack
-   *          frame (but variables above the globalsTop value will need to be
-   *          offset to the current stack frame).
+   * @param vars List of QNames that correspond to variables. This list should be searched backwards for the first
+   *        qualified name that corresponds to the variable reference qname. The position of the QName in the list from
+   *        the start of the list will be its position in the stack frame (but variables above the globalsTop value will
+   *        need to be offset to the current stack frame).
    */
   @Override
   public void fixupVariables(List<QName> vars, int globalsSize) {
@@ -133,7 +125,7 @@ public class Variable extends Expression implements PathComponent {
     }
 
     final java.lang.String msg = XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_COULD_NOT_FIND_VAR,
-            new Object[] { m_qname.toString() });
+        new Object[] { m_qname.toString() });
 
     final TransformerException te = new TransformerException(msg, this);
 
@@ -144,8 +136,7 @@ public class Variable extends Expression implements PathComponent {
   /**
    * Set the qualified name of the variable.
    * 
-   * @param qname
-   *          Must be a non-null reference to a qualified name.
+   * @param qname Must be a non-null reference to a qualified name.
    */
   public void setQName(QName qname) {
     m_qname = qname;
@@ -161,38 +152,33 @@ public class Variable extends Expression implements PathComponent {
   }
 
   /**
-   * Execute an expression in the XPath runtime context, and return the result
-   * of the expression.
+   * Execute an expression in the XPath runtime context, and return the result of the expression.
    * 
    * 
-   * @param xctxt
-   *          The XPath runtime context.
+   * @param xctxt The XPath runtime context.
    * 
    * @return The result of the expression in the form of a <code>XObject</code>.
    * 
-   * @throws javax.xml.transform.TransformerException
-   *           if a runtime exception occurs.
+   * @throws TransformerException if a runtime exception occurs.
    */
   @Override
-  public XObject execute(XPathContext xctxt) throws javax.xml.transform.TransformerException {
+  public XObject execute(XPathContext xctxt) throws TransformerException {
     return execute(xctxt, false);
   }
 
   /**
-   * Dereference the variable, and return the reference value. Note that lazy
-   * evaluation will occur. If a variable within scope is not found, a warning
-   * will be sent to the error listener, and an empty nodeset will be returned.
+   * Dereference the variable, and return the reference value. Note that lazy evaluation will occur. If a variable
+   * within scope is not found, a warning will be sent to the error listener, and an empty nodeset will be returned.
    * 
    * 
-   * @param xctxt
-   *          The runtime execution context.
+   * @param xctxt The runtime execution context.
    * 
    * @return The evaluated variable, or an empty nodeset if not found.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
   @Override
-  public XObject execute(XPathContext xctxt, boolean destructiveOK) throws javax.xml.transform.TransformerException {
+  public XObject execute(XPathContext xctxt, boolean destructiveOK) throws TransformerException {
     XObject result;
     // Is the variable fetched always the same?
     // XObject result = xctxt.getVariable(m_qname);
@@ -208,7 +194,11 @@ public class Variable extends Expression implements PathComponent {
 
     if (null == result) {
       // This should now never happen...
-      warn(xctxt, XPATHErrorResources.WG_ILLEGAL_VARIABLE_REFERENCE, new Object[] { m_qname.getLocalPart() }); // "VariableReference given for variable out "+
+      warn(xctxt, XPATHErrorResources.WG_ILLEGAL_VARIABLE_REFERENCE, new Object[] { m_qname.getLocalPart() }); // "VariableReference
+                                                                                                               // given
+                                                                                                               // for
+                                                                                                               // variable
+                                                                                                               // out "+
       // (new RuntimeException()).printStackTrace();
       // error(xctxt, XPATHErrorResources.ER_COULDNOT_GET_VAR_NAMED,
       // new Object[]{ m_qname.getLocalPart() });
@@ -243,9 +233,8 @@ public class Variable extends Expression implements PathComponent {
   }
 
   /**
-   * Tell if this expression returns a stable number that will not change during
-   * iterations within the expression. This is used to determine if a proximity
-   * position predicate can indicate that no more searching has to occur.
+   * Tell if this expression returns a stable number that will not change during iterations within the expression. This
+   * is used to determine if a proximity position predicate can indicate that no more searching has to occur.
    * 
    * 
    * @return true if the expression represents a stable number.
@@ -266,8 +255,7 @@ public class Variable extends Expression implements PathComponent {
   }
 
   /**
-   * @see de.lyca.xpath.XPathVisitable#callVisitors(ExpressionOwner,
-   *      XPathVisitor)
+   * @see de.lyca.xpath.XPathVisitable#callVisitors(ExpressionOwner, XPathVisitor)
    */
   @Override
   public void callVisitors(ExpressionOwner owner, XPathVisitor visitor) {
@@ -291,8 +279,9 @@ public class Variable extends Expression implements PathComponent {
   static final java.lang.String PSUEDOVARNAMESPACE = "http://xml.apache.org/xalan/psuedovar";
 
   /**
-   * Tell if this is a psuedo variable reference, declared by Xalan instead of
-   * by the user.
+   * Tell if this is a psuedo variable reference, declared by Xalan instead of by the user.
+   * 
+   * @return TODO
    */
   public boolean isPsuedoVarRef() {
     final java.lang.String ns = m_qname.getNamespaceURI();

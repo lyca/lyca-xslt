@@ -24,8 +24,6 @@ import org.xml.sax.helpers.AttributesImpl;
 
 /**
  * Mutable version of AttributesImpl.
- * 
- * @xsl.usage advanced
  */
 public class MutableAttrListImpl extends AttributesImpl implements Serializable {
   static final long serialVersionUID = 6289452013442934470L;

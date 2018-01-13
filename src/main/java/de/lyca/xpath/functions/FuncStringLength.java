@@ -17,14 +17,14 @@
  */
 package de.lyca.xpath.functions;
 
+import javax.xml.transform.TransformerException;
+
 import de.lyca.xpath.XPathContext;
 import de.lyca.xpath.objects.XNumber;
 import de.lyca.xpath.objects.XObject;
 
 /**
  * Execute the StringLength() function.
- * 
- * @xsl.usage advanced
  */
 public class FuncStringLength extends FunctionDef1Arg {
   static final long serialVersionUID = -159616417996519839L;
@@ -36,10 +36,10 @@ public class FuncStringLength extends FunctionDef1Arg {
    *          The current execution context.
    * @return A valid XObject.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
   @Override
-  public XObject execute(XPathContext xctxt) throws javax.xml.transform.TransformerException {
+  public XObject execute(XPathContext xctxt) throws TransformerException {
     return new XNumber(getArg0AsString(xctxt).length());
   }
 }

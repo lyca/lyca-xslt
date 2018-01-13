@@ -30,7 +30,6 @@ import de.lyca.xml.utils.IntVector;
  * when necessary retrieve) the strings.
  * </p>
  * 
- * <p>
  * Design Priorities:
  * <ul>
  * <li>String-to-index lookup speed is critical.</li>
@@ -40,7 +39,6 @@ import de.lyca.xml.utils.IntVector;
  * <li>Storage efficiency is an issue but not a huge one. It is expected that
  * string pools won't exceed about 2000 entries.</li>
  * </ul>
- * </p>
  * 
  * <p>
  * Implementation detail: A standard Hashtable is relatively inefficient when
@@ -60,7 +58,7 @@ import de.lyca.xml.utils.IntVector;
  * <p>
  * Status: Passed basic test in main().
  * </p>
- * */
+ */
 public class DTMStringPool {
   List<String> m_intToString;
   static final int HASHPRIME = 101;
@@ -96,17 +94,23 @@ public class DTMStringPool {
   }
 
   /**
+   * @param i
+   *          TODO
    * @return string whose value is uniquely identified by this integer index.
-   * @throws java.lang.ArrayIndexOutOfBoundsException
+   * @throws ArrayIndexOutOfBoundsException
    *           if index doesn't map to a string.
-   * */
+   */
   public String indexToString(int i) throws ArrayIndexOutOfBoundsException {
     if (i == NULL)
       return null;
     return m_intToString.get(i);
   }
 
-  /** @return integer index uniquely identifying the value of this string. */
+  /**
+   * @param s
+   *          TODO
+   * @return integer index uniquely identifying the value of this string.
+   */
   public int stringToIndex(String s) {
     if (s == null)
       return NULL;
@@ -146,13 +150,16 @@ public class DTMStringPool {
    * Command-line unit test driver. This test relies on the fact that this
    * version of the pool assigns indices consecutively, starting from zero, as
    * new unique strings are encountered.
+   * 
+   * @param args
+   *          TODO
    */
   public static void main(String[] args) {
     final String[] word = { "Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten",
-            "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen",
-            "Twenty", "Twenty-One", "Twenty-Two", "Twenty-Three", "Twenty-Four", "Twenty-Five", "Twenty-Six",
-            "Twenty-Seven", "Twenty-Eight", "Twenty-Nine", "Thirty", "Thirty-One", "Thirty-Two", "Thirty-Three",
-            "Thirty-Four", "Thirty-Five", "Thirty-Six", "Thirty-Seven", "Thirty-Eight", "Thirty-Nine" };
+        "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen", "Twenty",
+        "Twenty-One", "Twenty-Two", "Twenty-Three", "Twenty-Four", "Twenty-Five", "Twenty-Six", "Twenty-Seven",
+        "Twenty-Eight", "Twenty-Nine", "Thirty", "Thirty-One", "Thirty-Two", "Thirty-Three", "Thirty-Four",
+        "Thirty-Five", "Thirty-Six", "Thirty-Seven", "Thirty-Eight", "Thirty-Nine" };
 
     final DTMStringPool pool = new DTMStringPool();
 

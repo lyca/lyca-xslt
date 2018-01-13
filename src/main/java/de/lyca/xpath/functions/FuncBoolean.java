@@ -17,14 +17,14 @@
  */
 package de.lyca.xpath.functions;
 
+import javax.xml.transform.TransformerException;
+
 import de.lyca.xpath.XPathContext;
 import de.lyca.xpath.objects.XBoolean;
 import de.lyca.xpath.objects.XObject;
 
 /**
  * Execute the Boolean() function.
- * 
- * @xsl.usage advanced
  */
 public class FuncBoolean extends FunctionOneArg {
   static final long serialVersionUID = 4328660760070034592L;
@@ -36,10 +36,10 @@ public class FuncBoolean extends FunctionOneArg {
    *          The current execution context.
    * @return A valid XObject.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException
    */
   @Override
-  public XObject execute(XPathContext xctxt) throws javax.xml.transform.TransformerException {
+  public XObject execute(XPathContext xctxt) throws TransformerException {
     return m_arg0.execute(xctxt).bool() ? XBoolean.S_TRUE : XBoolean.S_FALSE;
   }
 

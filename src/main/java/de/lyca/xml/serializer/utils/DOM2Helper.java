@@ -36,8 +36,6 @@ import org.w3c.dom.Node;
  * 
  * This class is not a public API, it is only public because it is used in
  * de.lyca.xml.serializer.
- * 
- * @xsl.usage internal
  */
 public final class DOM2Helper {
 

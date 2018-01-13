@@ -24,7 +24,7 @@ import de.lyca.xalan.xsltc.compiler.SyntaxTreeNode;
  * @author Jacek Ambroziak
  * @author Santiago Pericas-Geertsen
  * @author G. Todd Miller
- * @author Erwin Bolwidt <ejb@klomp.org>
+ * @author Erwin Bolwidt {@literal <ejb@klomp.org>}
  * @author Morten Jorgensen
  */
 public final class ErrorMsg {

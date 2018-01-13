@@ -33,6 +33,9 @@ import javax.xml.transform.SourceLocator;
 public interface ExpressionNode extends SourceLocator {
   /**
    * This pair of methods are used to inform the node of its parent.
+   * 
+   * @param n
+   *          TODO
    */
   public void exprSetParent(ExpressionNode n);
 
@@ -41,15 +44,28 @@ public interface ExpressionNode extends SourceLocator {
   /**
    * This method tells the node to add its argument to the node's list of
    * children.
+   * 
+   * @param n
+   *          TODO
+   * @param i
+   *          TODO
    */
   public void exprAddChild(ExpressionNode n, int i);
 
   /**
    * This method returns a child node. The children are numbered from zero, left
    * to right.
+   * 
+   * @param i
+   *          TODO
+   * @return TODO
    */
   public ExpressionNode exprGetChild(int i);
 
-  /** Return the number of children the node has. */
+  /**
+   * Return the number of children the node has.
+   * 
+   * @return TODO
+   */
   public int exprGetNumChildren();
 }

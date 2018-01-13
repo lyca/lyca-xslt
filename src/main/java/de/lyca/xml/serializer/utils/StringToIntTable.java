@@ -26,8 +26,6 @@ package de.lyca.xml.serializer.utils;
  * 
  * This class is not a public API, it is only public so it can be used in
  * de.lyca.xml.serializer.
- * 
- * @xsl.usage internal
  */
 public final class StringToIntTable {
 

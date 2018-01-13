@@ -23,8 +23,6 @@ import de.lyca.xml.dtm.DTM;
 
 /**
  * A very simple table that stores a list of Nodes.
- * 
- * @xsl.usage internal
  */
 public class NodeVector implements Serializable, Cloneable {
   static final long serialVersionUID = -713473092200731870L;
@@ -81,7 +79,7 @@ public class NodeVector implements Serializable, Cloneable {
    * 
    * @return A clone of this
    * 
-   * @throws CloneNotSupportedException
+   * @throws CloneNotSupportedException TODO
    */
   @Override
   public Object clone() throws CloneNotSupportedException {
@@ -595,7 +593,7 @@ public class NodeVector implements Serializable, Cloneable {
    * @param hi0
    *          The high index.
    * 
-   * @throws Exception
+   * @throws Exception TODO
    */
   public void sort(int a[], int lo0, int hi0) throws Exception {
 
@@ -681,7 +679,7 @@ public class NodeVector implements Serializable, Cloneable {
   /**
    * Sort an array using a quicksort algorithm.
    * 
-   * @throws Exception
+   * @throws Exception TODO
    */
   public void sort() throws Exception {
     sort(m_map, 0, m_firstFree - 1);

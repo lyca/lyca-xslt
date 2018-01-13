@@ -36,7 +36,7 @@ import de.lyca.xml.utils.XML11Char;
  * @author Jacek Ambroziak
  * @author Santiago Pericas-Geertsen
  * @author Morten Jorgensen
- * @author John Howard <JohnH@schemasoft.com>
+ * @author John Howard {@literal <JohnH@schemasoft.com>}
  */
 final class WithParam extends Instruction {
 

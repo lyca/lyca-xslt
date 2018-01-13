@@ -20,8 +20,6 @@ package de.lyca.xpath;
 /**
  * Derived from XPathException in order that XPath processor exceptions may be
  * specifically caught.
- * 
- * @xsl.usage general
  */
 public class XPathProcessorException extends XPathException {
   static final long serialVersionUID = 1215509418326642603L;

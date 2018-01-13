@@ -31,8 +31,6 @@ import java.util.ListResourceBundle;
  * 
  * This class is not a public API, it is only public because it is used in the
  * serializer.
- * 
- * @xsl.usage internal
  */
 public class SerializerMessages extends ListResourceBundle {
 

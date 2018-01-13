@@ -271,11 +271,11 @@ public class FunctionTable {
    * 
    * @return a a new Function instance.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException
    *           if ClassNotFoundException, IllegalAccessException, or
    *           InstantiationException is thrown.
    */
-  Function getFunction(int which) throws javax.xml.transform.TransformerException {
+  Function getFunction(int which) throws TransformerException {
     try {
       if (which < NUM_BUILT_IN_FUNCS)
         return (Function) m_functions[which].newInstance();

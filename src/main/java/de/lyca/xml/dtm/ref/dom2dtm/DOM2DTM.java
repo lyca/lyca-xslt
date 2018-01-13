@@ -31,6 +31,12 @@ import org.w3c.dom.Entity;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.xml.sax.ContentHandler;
+import org.xml.sax.DTDHandler;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.SAXException;
+import org.xml.sax.ext.DeclHandler;
+import org.xml.sax.ext.LexicalHandler;
 
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xml.dtm.DTMManager;
@@ -591,9 +597,9 @@ public class DOM2DTM extends DTMDefaultBaseIterators {
   /**
    * Get a Node from an identity index.
    * 
-   * NEEDSDOC @param nodeIdentity
+   * @param nodeIdentity TODO
    * 
-   * NEEDSDOC ($objectName$) @return
+   * @return Node TODO
    */
   protected Node lookupNode(int nodeIdentity) {
     return m_nodes.get(nodeIdentity);
@@ -1425,7 +1431,7 @@ public class DOM2DTM extends DTMDefaultBaseIterators {
    *         incremental build purposes...
    * */
   @Override
-  public org.xml.sax.ContentHandler getContentHandler() {
+  public ContentHandler getContentHandler() {
     return null;
   }
 
@@ -1440,7 +1446,7 @@ public class DOM2DTM extends DTMDefaultBaseIterators {
    *         SAX stream via it for incremental build purposes...
    */
   @Override
-  public org.xml.sax.ext.LexicalHandler getLexicalHandler() {
+  public LexicalHandler getLexicalHandler() {
 
     return null;
   }
@@ -1451,7 +1457,7 @@ public class DOM2DTM extends DTMDefaultBaseIterators {
    * @return null if this model doesn't respond to SAX entity ref events.
    */
   @Override
-  public org.xml.sax.EntityResolver getEntityResolver() {
+  public EntityResolver getEntityResolver() {
 
     return null;
   }
@@ -1462,7 +1468,7 @@ public class DOM2DTM extends DTMDefaultBaseIterators {
    * @return null if this model doesn't respond to SAX dtd events.
    */
   @Override
-  public org.xml.sax.DTDHandler getDTDHandler() {
+  public DTDHandler getDTDHandler() {
 
     return null;
   }
@@ -1473,7 +1479,7 @@ public class DOM2DTM extends DTMDefaultBaseIterators {
    * @return null if this model doesn't respond to SAX error events.
    */
   @Override
-  public org.xml.sax.ErrorHandler getErrorHandler() {
+  public ErrorHandler getErrorHandler() {
 
     return null;
   }
@@ -1484,7 +1490,7 @@ public class DOM2DTM extends DTMDefaultBaseIterators {
    * @return null if this model doesn't respond to SAX Decl events.
    */
   @Override
-  public org.xml.sax.ext.DeclHandler getDeclHandler() {
+  public DeclHandler getDeclHandler() {
 
     return null;
   }
@@ -1514,11 +1520,11 @@ public class DOM2DTM extends DTMDefaultBaseIterators {
    * @param ch
    *          A non-null reference to a ContentHandler.
    * 
-   * @throws org.xml.sax.SAXException
+   * @throws SAXException TODO
    */
   @Override
-  public void dispatchCharactersEvents(int nodeHandle, org.xml.sax.ContentHandler ch, boolean normalize)
-          throws org.xml.sax.SAXException {
+  public void dispatchCharactersEvents(int nodeHandle, ContentHandler ch, boolean normalize)
+          throws SAXException {
     if (normalize) {
       XMLString str = getStringValue(nodeHandle);
       str = str.fixWhiteSpace(true, true, false);
@@ -1556,9 +1562,15 @@ public class DOM2DTM extends DTMDefaultBaseIterators {
    * @param node
    *          Node whose subtree is to be walked, gathering the contents of all
    *          Text or CDATASection nodes.
+   * @param ch
+   *          TODO
+   * @param depth
+   *          TODO
+   * @throws SAXException
+   *           TODO
    */
-  protected static void dispatchNodeData(Node node, org.xml.sax.ContentHandler ch, int depth)
-          throws org.xml.sax.SAXException {
+  protected static void dispatchNodeData(Node node, ContentHandler ch, int depth)
+          throws SAXException {
 
     switch (node.getNodeType()) {
       case Node.DOCUMENT_FRAGMENT_NODE:
@@ -1606,10 +1618,10 @@ public class DOM2DTM extends DTMDefaultBaseIterators {
    * @param ch
    *          A non-null reference to a ContentHandler.
    * 
-   * @throws org.xml.sax.SAXException
+   * @throws SAXException TODO
    */
   @Override
-  public void dispatchToEvents(int nodeHandle, org.xml.sax.ContentHandler ch) throws org.xml.sax.SAXException {
+  public void dispatchToEvents(int nodeHandle, ContentHandler ch) throws SAXException {
     TreeWalker treeWalker = m_walker;
     final ContentHandler prevCH = treeWalker.getContentHandler();
 
@@ -1627,7 +1639,7 @@ public class DOM2DTM extends DTMDefaultBaseIterators {
   }
 
   public interface CharacterNodeHandler {
-    public void characters(Node node) throws org.xml.sax.SAXException;
+    public void characters(Node node) throws SAXException;
   }
 
   /**

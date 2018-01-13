@@ -22,8 +22,6 @@ import java.util.ListResourceBundle;
 /**
  * This is an interface for error messages. This class is misnamed, and should
  * be called XalanResourceBundle, or some such.
- * 
- * @xsl.usage internal
  */
 abstract public class XResourceBundleBase extends ListResourceBundle {
 

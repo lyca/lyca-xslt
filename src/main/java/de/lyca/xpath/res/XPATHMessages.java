@@ -23,8 +23,6 @@ import de.lyca.xml.res.XMLMessages;
 
 /**
  * A utility class for issuing XPath error messages.
- * 
- * @xsl.usage internal
  */
 public class XPATHMessages extends XMLMessages {
   /** The language specific resource object for XPath messages. */

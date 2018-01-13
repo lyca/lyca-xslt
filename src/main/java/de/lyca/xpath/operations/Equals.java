@@ -17,6 +17,8 @@
  */
 package de.lyca.xpath.operations;
 
+import javax.xml.transform.TransformerException;
+
 import de.lyca.xpath.XPathContext;
 import de.lyca.xpath.objects.XBoolean;
 import de.lyca.xpath.objects.XObject;
@@ -39,10 +41,10 @@ public class Equals extends Operation {
    * @return non-null reference to the XObject that represents the result of the
    *         operation.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
   @Override
-  public XObject operate(XObject left, XObject right) throws javax.xml.transform.TransformerException {
+  public XObject operate(XObject left, XObject right) throws TransformerException {
     return left.equals(right) ? XBoolean.S_TRUE : XBoolean.S_FALSE;
   }
 
@@ -56,10 +58,10 @@ public class Equals extends Operation {
    * 
    * @return The XObject result of the operation.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
   @Override
-  public boolean bool(XPathContext xctxt) throws javax.xml.transform.TransformerException {
+  public boolean bool(XPathContext xctxt) throws TransformerException {
     final XObject left = m_left.execute(xctxt, true);
     final XObject right = m_right.execute(xctxt, true);
 

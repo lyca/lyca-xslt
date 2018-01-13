@@ -26,8 +26,6 @@ import org.w3c.dom.Node;
  * in case of an error. This class extends TransformerException, and may hold
  * other exceptions. In the case of nested exceptions, printStackTrace will dump
  * all the traces of the nested exceptions, not just the trace of this object.
- * 
- * @xsl.usage general
  */
 public class XPathException extends TransformerException {
   static final long serialVersionUID = 4263549717619045963L;

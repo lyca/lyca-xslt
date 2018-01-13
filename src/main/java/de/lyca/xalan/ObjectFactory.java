@@ -75,15 +75,15 @@ public final class ObjectFactory {
    * <li>use fallback classname
    * </ol>
    * 
-   * @return instance of factory, never null
-   * 
    * @param factoryId
    *          Name of the factory to find, same as a property name
    * @param fallbackClassName
    *          Implementation class name, if nothing else is found. Use null to
    *          mean no fallback.
    * 
-   * @exception ObjectFactory.ConfigurationError
+   * @return instance of factory, never null
+   * @throws ConfigurationError
+   *           TODO
    */
   public static Object createObject(String factoryId, String fallbackClassName) throws ConfigurationError {
     return createObject(factoryId, null, fallbackClassName);
@@ -99,8 +99,6 @@ public final class ObjectFactory {
    * <li>use fallback classname
    * </ol>
    * 
-   * @return instance of factory, never null
-   * 
    * @param factoryId
    *          Name of the factory to find, same as a property name
    * @param propertiesFilename
@@ -110,11 +108,13 @@ public final class ObjectFactory {
    * @param fallbackClassName
    *          Implementation class name, if nothing else is found. Use null to
    *          mean no fallback.
+   * @return instance of factory, never null
    * 
-   * @exception ObjectFactory.ConfigurationError
+   * @throws ConfigurationError
+   *           TODO
    */
   static Object createObject(String factoryId, String propertiesFilename, String fallbackClassName)
-          throws ConfigurationError {
+      throws ConfigurationError {
     final Class<?> factoryClass = lookUpFactoryClass(factoryId, propertiesFilename, fallbackClassName);
 
     if (factoryClass == null)
@@ -139,8 +139,6 @@ public final class ObjectFactory {
    * <li>use fallback classname
    * </ol>
    * 
-   * @return Class object that provides factory service, never null
-   * 
    * @param factoryId
    *          Name of the factory to find, same as a property name
    * @param propertiesFilename
@@ -150,11 +148,12 @@ public final class ObjectFactory {
    * @param fallbackClassName
    *          Implementation class name, if nothing else is found. Use null to
    *          mean no fallback.
-   * 
-   * @exception ObjectFactory.ConfigurationError
+   * @return Class object that provides factory service, never null
+   * @throws ConfigurationError
+   *           TODO
    */
   public static Class<?> lookUpFactoryClass(String factoryId, String propertiesFilename, String fallbackClassName)
-          throws ConfigurationError {
+      throws ConfigurationError {
     String factoryClassName = lookUpFactoryClassName(factoryId, propertiesFilename, fallbackClassName);
     final ClassLoader cl = findClassLoader();
 
@@ -184,8 +183,6 @@ public final class ObjectFactory {
    * <li>use fallback classname
    * </ol>
    * 
-   * @return name of class that provides factory service, never null
-   * 
    * @param factoryId
    *          Name of the factory to find, same as a property name
    * @param propertiesFilename
@@ -195,8 +192,9 @@ public final class ObjectFactory {
    * @param fallbackClassName
    *          Implementation class name, if nothing else is found. Use null to
    *          mean no fallback.
-   * 
-   * @exception ObjectFactory.ConfigurationError
+   * @return name of class that provides factory service, never null
+   * @throws ConfigurationError
+   *           TODO
    */
   static String lookUpFactoryClassName(String factoryId, String propertiesFilename, String fallbackClassName) {
     // Use the system property first
@@ -236,7 +234,7 @@ public final class ObjectFactory {
           // file existed last time
           if (fLastModified >= 0) {
             if (propertiesFileExists
-                    && fLastModified < (fLastModified = SecuritySupport.getLastModified(propertiesFile))) {
+                && fLastModified < (fLastModified = SecuritySupport.getLastModified(propertiesFile))) {
               loadProperties = true;
             } else {
               // file has stopped existing...
@@ -316,7 +314,12 @@ public final class ObjectFactory {
   // Private static methods
   //
 
-  /** Prints a message to standard error if debugging is enabled. */
+  /**
+   * Prints a message to standard error if debugging is enabled.
+   * 
+   * @param msg
+   *          TODO
+   */
   private static void debugPrintln(String msg) {
     if (DEBUG) {
       System.err.println("JAXP: " + msg);
@@ -326,6 +329,10 @@ public final class ObjectFactory {
   /**
    * Figure out which ClassLoader to use. For JDK 1.2 and later use the context
    * ClassLoader.
+   * 
+   * @return TODO
+   * @throws ConfigurationError
+   *           TODO
    */
   public static ClassLoader findClassLoader() throws ConfigurationError {
     // Figure out which ClassLoader to use for loading the provider
@@ -381,6 +388,16 @@ public final class ObjectFactory {
 
   /**
    * Create an instance of a class using the specified ClassLoader
+   * 
+   * @param className
+   *          TODO
+   * @param cl
+   *          TODO
+   * @param doFallback
+   *          TODO
+   * @return TODO
+   * @throws ConfigurationError
+   *           TODO
    */
   public static Object newInstance(String className, ClassLoader cl, boolean doFallback) throws ConfigurationError {
     // assert(className != null);
@@ -398,9 +415,21 @@ public final class ObjectFactory {
 
   /**
    * Find a Class using the specified ClassLoader
+   * 
+   * @param className
+   *          TODO
+   * @param cl
+   *          TODO
+   * @param doFallback
+   *          TODO
+   * @return TODO
+   * @throws ClassNotFoundException
+   *           TODO
+   * @throws ConfigurationError
+   *           TODO
    */
   public static Class<?> findProviderClass(String className, ClassLoader cl, boolean doFallback)
-          throws ClassNotFoundException, ConfigurationError {
+      throws ClassNotFoundException, ConfigurationError {
     // throw security exception if the calling thread is not allowed to access
     // the
     // class. Restrict the access to the package classes as specified in
@@ -569,7 +598,11 @@ public final class ObjectFactory {
     // Public methods
     //
 
-    /** Returns the exception associated to this error. */
+    /**
+     * Returns the exception associated to this error.
+     * 
+     * @return TODO
+     */
     public Exception getException() {
       return exception;
     } // getException():Exception

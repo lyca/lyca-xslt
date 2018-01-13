@@ -23,8 +23,6 @@ package de.lyca.xml.utils.res;
 
 /**
  * The Georgian resource bundle.
- * 
- * @xsl.usage internal
  */
 public class XResources_ka extends XResourceBundle {
 

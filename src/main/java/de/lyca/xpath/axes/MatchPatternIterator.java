@@ -17,6 +17,8 @@
  */
 package de.lyca.xpath.axes;
 
+import javax.xml.transform.TransformerException;
+
 import de.lyca.xml.dtm.Axis;
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xml.dtm.DTMAxisTraverser;
@@ -67,9 +69,9 @@ public class MatchPatternIterator extends LocPathIterator {
    *          Analysis bits that give general information about the
    *          LocationPath.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
-  MatchPatternIterator(Compiler compiler, int opPos, int analysis) throws javax.xml.transform.TransformerException {
+  MatchPatternIterator(Compiler compiler, int opPos, int analysis) throws TransformerException {
 
     super(compiler, opPos, analysis, false);
 
@@ -244,6 +246,7 @@ public class MatchPatternIterator extends LocPathIterator {
    * 
    * @param n
    *          The node to check to see if it passes the filter or not.
+   * @param xctxt TODO
    * @return a constant to determine whether the node is accepted, rejected, or
    *         skipped, as defined above .
    */
@@ -271,7 +274,7 @@ public class MatchPatternIterator extends LocPathIterator {
 
       // System.out.println("\n::acceptNode - score: "+score.num()+"::");
       return score == NodeTest.SCORE_NONE ? DTMIterator.FILTER_SKIP : DTMIterator.FILTER_ACCEPT;
-    } catch (final javax.xml.transform.TransformerException se) {
+    } catch (final TransformerException se) {
 
       // TODO: Fix this.
       throw new RuntimeException(se.getMessage());

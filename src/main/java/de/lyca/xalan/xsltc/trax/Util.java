@@ -60,6 +60,14 @@ public final class Util {
 
   /**
    * Creates a SAX2 InputSource object from a TrAX Source object
+   * 
+   * @param xsltc
+   *          TODO
+   * @param source
+   *          TODO
+   * @return TODO
+   * @throws TransformerConfigurationException
+   *           TODO
    */
   public static InputSource getInputSource(XSLTC xsltc, Source source) throws TransformerConfigurationException {
     InputSource input = null;
@@ -96,7 +104,7 @@ public final class Util {
                 if (xsltc.isSecureProcessing()) {
                   try {
                     parserFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-                  } catch (final org.xml.sax.SAXException se) {
+                  } catch (final SAXException se) {
                   }
                 }
 

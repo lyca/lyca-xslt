@@ -63,6 +63,8 @@ public class DTMAxisIterNodeList extends DTMNodeListBase {
   /**
    * Public constructor: Wrap a DTMNodeList around an existing and preconfigured
    * DTMAxisIterator
+   * @param dtm TODO
+   * @param dtmAxisIterator TODO
    */
   public DTMAxisIterNodeList(DTM dtm, DTMAxisIterator dtmAxisIterator) {
     if (dtmAxisIterator == null) {
@@ -77,7 +79,7 @@ public class DTMAxisIterNodeList extends DTMNodeListBase {
   /**
    * Access the wrapped DTMIterator. I'm not sure whether anyone will need this
    * or not, but let's write it and think about it.
-   * 
+   * @return TODO 
    */
   public DTMAxisIterator getDTMAxisIterator() {
     return m_iter;

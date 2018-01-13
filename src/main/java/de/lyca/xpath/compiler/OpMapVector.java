@@ -22,8 +22,6 @@ package de.lyca.xpath.compiler;
  * Like IntVector, but used only for the OpMap array. Length of array is kept in
  * the m_lengthPos position of the array. Only the required methods are in
  * included here.
- * 
- * @xsl.usage internal
  */
 public class OpMapVector {
 
@@ -44,6 +42,10 @@ public class OpMapVector {
    * 
    * @param blocksize
    *          Size of block to allocate
+   * @param increaseSize
+   *          TODO
+   * @param lengthPos
+   *          TODO
    */
   public OpMapVector(int blocksize, int increaseSize, int lengthPos) {
 

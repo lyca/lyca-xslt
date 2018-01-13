@@ -36,7 +36,7 @@ import de.lyca.xalan.xsltc.compiler.util.TypeCheckError;
  * @author Jacek Ambroziak
  * @author Santiago Pericas-Geertsen
  * @author Morten Jorgensen
- * @author Erwin Bolwidt <ejb@klomp.org>
+ * @author Erwin Bolwidt {@literal <ejb@klomp.org>}
  */
 abstract class Expression extends SyntaxTreeNode {
   /**
@@ -64,6 +64,8 @@ abstract class Expression extends SyntaxTreeNode {
    * Returns an object representing the compile-time evaluation of an
    * expression. We are only using this for function-available and
    * element-available at this time.
+   * 
+   * @return TODO
    */
   public Object evaluateAtCompileTime() {
     return null;
@@ -89,22 +91,29 @@ abstract class Expression extends SyntaxTreeNode {
   /**
    * Translate this node into a fresh instruction list. The original instruction
    * list is saved and restored.
-   * @param ctx TODO
+   * 
+   * @param ctx
+   *          TODO
+   * @return TODO
    */
   public JExpression toJExpression(CompilerContext ctx) {
     return null;
     // FIXME
-//    final InstructionList result, save = methodGen.getInstructionList();
-//    methodGen.setInstructionList(result = new InstructionList());
-//    translate(classGen, methodGen);
-//    methodGen.setInstructionList(save);
-//    return result;
+    // final InstructionList result, save = methodGen.getInstructionList();
+    // methodGen.setInstructionList(result = new InstructionList());
+    // translate(classGen, methodGen);
+    // methodGen.setInstructionList(save);
+    // return result;
   }
 
   /**
    * If this expression is of type node-set and it is not a variable reference,
    * then call setStartNode() passing the context node.
-   * @param ctx TODO
+   * 
+   * @param ctx
+   *          TODO
+   * @param iter
+   *          TODO
    * @return TODO
    */
   public JExpression startIterator(CompilerContext ctx, JExpression iter) {
@@ -129,6 +138,14 @@ abstract class Expression extends SyntaxTreeNode {
    * primop is overloaded then the "closest match" is returned. The first entry
    * in the list of primops that has the right arity is considered to be the
    * default one.
+   * 
+   * @param stable
+   *          TODO
+   * @param op
+   *          TODO
+   * @param ctype
+   *          TODO
+   * @return TODO
    */
   public MethodType lookupPrimop(SymbolTable stable, String op, MethodType ctype) {
     MethodType result = null;

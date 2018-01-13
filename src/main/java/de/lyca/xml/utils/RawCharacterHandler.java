@@ -17,11 +17,11 @@
  */
 package de.lyca.xml.utils;
 
+import javax.xml.transform.TransformerException;
+
 /**
  * An interface that a Serializer/ContentHandler/ContentHandler must implement
  * in order for disable-output-escaping to work.
- * 
- * @xsl.usage advanced
  */
 public interface RawCharacterHandler {
 
@@ -35,7 +35,7 @@ public interface RawCharacterHandler {
    * @param length
    *          Number of characters in the array
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
-  public void charactersRaw(char ch[], int start, int length) throws javax.xml.transform.TransformerException;
+  public void charactersRaw(char ch[], int start, int length) throws TransformerException;
 }

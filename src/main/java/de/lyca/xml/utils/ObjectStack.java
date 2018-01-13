@@ -25,8 +25,6 @@ import java.util.EmptyStackException;
  * %OPT% This is currently based on ObjectVector, which permits fast acess but
  * pays a heavy recopying penalty if/when its size is increased. If we expect
  * deep stacks, we should consider a version based on ChunkedObjectVector.
- * 
- * @xsl.usage internal
  */
 public class ObjectStack extends ObjectVector {
 

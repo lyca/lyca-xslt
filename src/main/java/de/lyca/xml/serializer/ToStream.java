@@ -45,11 +45,9 @@ import de.lyca.xalan.SecuritySupport;
 import de.lyca.xml.serializer.utils.MsgKey;
 import de.lyca.xml.serializer.utils.Utils;
 import de.lyca.xml.serializer.utils.WrappedRuntimeException;
+
 /**
- * This abstract class is a base class for other stream serializers (xml, html,
- * text ...) that write output to a stream.
- * 
- * @xsl.usage internal
+ * This abstract class is a base class for other stream serializers (xml, html, text ...) that write output to a stream.
  */
 abstract public class ToStream extends SerializerBase {
 
@@ -60,22 +58,19 @@ abstract public class ToStream extends SerializerBase {
   protected BoolStack m_disableOutputEscapingStates = new BoolStack();
 
   /**
-   * The encoding information associated with this serializer. Although
-   * initially there is no encoding, there is a dummy EncodingInfo object that
-   * will say that every character is in the encoding. This is useful for a
-   * serializer that is in temporary output state and has no associated
-   * encoding. A serializer in final output state will have an encoding, and
-   * will worry about whether single chars or surrogate pairs of high/low chars
-   * form characters in the output encoding.
+   * The encoding information associated with this serializer. Although initially there is no encoding, there is a dummy
+   * EncodingInfo object that will say that every character is in the encoding. This is useful for a serializer that is
+   * in temporary output state and has no associated encoding. A serializer in final output state will have an encoding,
+   * and will worry about whether single chars or surrogate pairs of high/low chars form characters in the output
+   * encoding.
    */
   EncodingInfo m_encodingInfo = new EncodingInfo(null, null, '\u0000');
 
   /**
    * Stack to keep track of whether or not we need to preserve whitespace.
    * 
-   * Used to push/pop values used for the field m_ispreserve, but m_ispreserve
-   * is only relevant if m_doIndent is true. If m_doIndent is false this field
-   * has no impact.
+   * Used to push/pop values used for the field m_ispreserve, but m_ispreserve is only relevant if m_doIndent is true.
+   * If m_doIndent is false this field has no impact.
    * 
    */
   protected BoolStack m_preserves = new BoolStack();
@@ -83,18 +78,16 @@ abstract public class ToStream extends SerializerBase {
   /**
    * State flag to tell if preservation of whitespace is important.
    * 
-   * Used only in shouldIndent() but only if m_doIndent is true. If m_doIndent
-   * is false this flag has no impact.
+   * Used only in shouldIndent() but only if m_doIndent is true. If m_doIndent is false this flag has no impact.
    * 
    */
   protected boolean m_ispreserve = false;
 
   /**
-   * State flag that tells if the previous node processed was text, so we can
-   * tell if we should preserve whitespace.
+   * State flag that tells if the previous node processed was text, so we can tell if we should preserve whitespace.
    * 
-   * Used in endDocument() and shouldIndent() but only if m_doIndent is true. If
-   * m_doIndent is false this flag has no impact.
+   * Used in endDocument() and shouldIndent() but only if m_doIndent is true. If m_doIndent is false this flag has no
+   * impact.
    */
   protected boolean m_isprevtext = false;
 
@@ -104,9 +97,8 @@ abstract public class ToStream extends SerializerBase {
   }
 
   /**
-   * The system line separator for writing out line breaks. The default value is
-   * from the system property, but this value can be set through the xsl:output
-   * extension attribute xalan:line-separator.
+   * The system line separator for writing out line breaks. The default value is from the system property, but this
+   * value can be set through the xsl:output extension attribute xalan:line-separator.
    */
   protected char[] m_lineSep = s_systemLineSep;
 
@@ -116,33 +108,29 @@ abstract public class ToStream extends SerializerBase {
   protected boolean m_lineSepUse = true;
 
   /**
-   * The length of the line seperator, since the write is done one character at
-   * a time.
+   * The length of the line seperator, since the write is done one character at a time.
    */
   protected int m_lineSepLen = m_lineSep.length;
 
   /**
-   * Map that tells which characters should have special treatment, and it
-   * provides character to entity name lookup.
+   * Map that tells which characters should have special treatment, and it provides character to entity name lookup.
    */
   protected CharInfo m_charInfo;
 
   /**
-   * True if we control the buffer, and we should flush the output on
-   * endDocument.
+   * True if we control the buffer, and we should flush the output on endDocument.
    */
   boolean m_shouldFlush = true;
 
   /**
-   * Add space before '/>' for XHTML.
+   * Add space before {{@literal '/>'} for XHTML.
    */
   protected boolean m_spaceBeforeClose = false;
 
   /**
    * Flag to signal that a newline should be added.
    * 
-   * Used only in indent() which is called only if m_doIndent is true. If
-   * m_doIndent is false this flag has no impact.
+   * Used only in indent() which is called only if m_doIndent is true. If m_doIndent is false this flag has no impact.
    */
   boolean m_startNewLine;
 
@@ -162,8 +150,7 @@ abstract public class ToStream extends SerializerBase {
   protected boolean m_cdataStartCalled = false;
 
   /**
-   * If this flag is true DTD entity references are not left as-is, which is
-   * exiting older behavior.
+   * If this flag is true DTD entity references are not left as-is, which is exiting older behavior.
    */
   private boolean m_expandDTDEntities = true;
 
@@ -174,11 +161,11 @@ abstract public class ToStream extends SerializerBase {
   }
 
   /**
-   * This helper method to writes out "]]>" when closing a CDATA section.
+   * This helper method to writes out {@literal "]]>"} when closing a CDATA section.
    * 
-   * @throws org.xml.sax.SAXException
+   * @throws SAXException TODO
    */
-  protected void closeCDATA() throws org.xml.sax.SAXException {
+  protected void closeCDATA() throws SAXException {
     try {
       m_writer.write(CDATA_DELIMITER_CLOSE);
       // write out a CDATA section closing "]]>"
@@ -189,13 +176,10 @@ abstract public class ToStream extends SerializerBase {
   }
 
   /**
-   * Serializes the DOM node. Throws an exception only if an I/O exception
-   * occured while serializing.
+   * Serializes the DOM node. Throws an exception only if an I/O exception occured while serializing.
    * 
-   * @param node
-   *          Node to serialize.
-   * @throws IOException
-   *           An I/O exception occured while serializing
+   * @param node Node to serialize.
+   * @throws IOException An I/O exception occured while serializing
    */
   @Override
   public void serialize(Node node) throws IOException {
@@ -204,7 +188,7 @@ abstract public class ToStream extends SerializerBase {
       final TreeWalker walker = new TreeWalker(this);
 
       walker.traverse(node);
-    } catch (final org.xml.sax.SAXException se) {
+    } catch (final SAXException se) {
       throw new WrappedRuntimeException(se);
     }
   }
@@ -217,9 +201,9 @@ abstract public class ToStream extends SerializerBase {
   /**
    * Flush the formatter's result stream.
    * 
-   * @throws org.xml.sax.SAXException
+   * @throws SAXException TODO
    */
-  protected final void flushWriter() throws org.xml.sax.SAXException {
+  protected final void flushWriter() throws SAXException {
     final java.io.Writer writer = m_writer;
     if (null != writer) {
       try {
@@ -241,7 +225,7 @@ abstract public class ToStream extends SerializerBase {
           writer.flush();
         }
       } catch (final IOException ioe) {
-        throw new org.xml.sax.SAXException(ioe);
+        throw new SAXException(ioe);
       }
     }
   }
@@ -264,18 +248,14 @@ abstract public class ToStream extends SerializerBase {
    * Report an element type declaration.
    * 
    * <p>
-   * The content model will consist of the string "EMPTY", the string "ANY", or
-   * a parenthesised group, optionally followed by an occurrence indicator. The
-   * model will be normalized so that all whitespace is removed,and will include
-   * the enclosing parentheses.
+   * The content model will consist of the string "EMPTY", the string "ANY", or a parenthesised group, optionally
+   * followed by an occurrence indicator. The model will be normalized so that all whitespace is removed,and will
+   * include the enclosing parentheses.
    * </p>
    * 
-   * @param name
-   *          The element type name.
-   * @param model
-   *          The content model as a normalized string.
-   * @exception SAXException
-   *              The application may raise an exception.
+   * @param name The element type name.
+   * @param model The content model as a normalized string.
+   * @throws SAXException The application may raise an exception.
    */
   @Override
   public void elementDecl(String name, String model) throws SAXException {
@@ -305,13 +285,9 @@ abstract public class ToStream extends SerializerBase {
    * Only the effective (first) declaration for each entity will be reported.
    * </p>
    * 
-   * @param name
-   *          The name of the entity. If it is a parameter entity, the name will
-   *          begin with '%'.
-   * @param value
-   *          The replacement text of the entity.
-   * @exception SAXException
-   *              The application may raise an exception.
+   * @param name The name of the entity. If it is a parameter entity, the name will begin with '%'.
+   * @param value The replacement text of the entity.
+   * @throws SAXException The application may raise an exception.
    * @see #externalEntityDecl
    * @see org.xml.sax.DTDHandler#unparsedEntityDecl
    */
@@ -332,10 +308,10 @@ abstract public class ToStream extends SerializerBase {
   /**
    * Output the doc type declaration.
    * 
-   * @param name
-   *          non-null reference to document type name. NEEDSDOC @param value
+   * @param name non-null reference to document type name.
+   * @param value TODO
    * 
-   * @throws org.xml.sax.SAXException
+   * @throws IOException TODO
    */
   void outputEntityDecl(String name, String value) throws IOException {
     final java.io.Writer writer = m_writer;
@@ -350,7 +326,7 @@ abstract public class ToStream extends SerializerBase {
   /**
    * Output a system-dependent line break.
    * 
-   * @throws org.xml.sax.SAXException
+   * @throws IOException TODO
    */
   protected final void outputLineSep() throws IOException {
 
@@ -392,8 +368,7 @@ abstract public class ToStream extends SerializerBase {
             final String oldExplicitEncoding = getOutputPropertyNonDefault(OutputKeys.ENCODING);
             final String oldDefaultEncoding = getOutputPropertyDefault(OutputKeys.ENCODING);
             if (defaultVal && (oldDefaultEncoding == null || !oldDefaultEncoding.equalsIgnoreCase(newEncoding))
-                    || !defaultVal
-                    && (oldExplicitEncoding == null || !oldExplicitEncoding.equalsIgnoreCase(newEncoding))) {
+                || !defaultVal && (oldExplicitEncoding == null || !oldExplicitEncoding.equalsIgnoreCase(newEncoding))) {
               // We are trying to change the default or the non-default setting
               // of the encoding to a different value
               // from what it was
@@ -404,10 +379,10 @@ abstract public class ToStream extends SerializerBase {
                 // encoding, but it came back with an internall null name
                 // so the encoding is not supported by the JDK, issue a message.
                 final String msg = Utils.messages.createMessage(MsgKey.ER_ENCODING_NOT_SUPPORTED,
-                        new Object[] { newEncoding });
+                    new Object[] { newEncoding });
 
                 final String msg2 = "Warning: encoding \"" + newEncoding + "\" not supported, using "
-                        + Encodings.DEFAULT_MIME_ENCODING;
+                    + Encodings.DEFAULT_MIME_ENCODING;
                 try {
                   // Prepare to issue the warning message
                   final Transformer tran = super.getTransformer();
@@ -525,13 +500,11 @@ abstract public class ToStream extends SerializerBase {
   }
 
   /**
-   * Specifies an output format for this serializer. It the serializer has
-   * already been associated with an output format, it will switch to the new
-   * format. This method should not be called while the serializer is in the
-   * process of serializing a document.
+   * Specifies an output format for this serializer. It the serializer has already been associated with an output
+   * format, it will switch to the new format. This method should not be called while the serializer is in the process
+   * of serializing a document.
    * 
-   * @param format
-   *          The output format to use
+   * @param format The output format to use
    */
   @Override
   public void setOutputFormat(Properties format) {
@@ -589,12 +562,10 @@ abstract public class ToStream extends SerializerBase {
   }
 
   /**
-   * Specifies a writer to which the document should be serialized. This method
-   * should not be called while the serializer is in the process of serializing
-   * a document.
+   * Specifies a writer to which the document should be serialized. This method should not be called while the
+   * serializer is in the process of serializing a document.
    * 
-   * @param writer
-   *          The output writer stream
+   * @param writer The output writer stream
    */
   @Override
   public void setWriter(Writer writer) {
@@ -626,15 +597,12 @@ abstract public class ToStream extends SerializerBase {
   }
 
   /**
-   * Set if the operating systems end-of-line line separator should be used when
-   * serializing. If set false NL character (decimal 10) is left alone,
-   * otherwise the new-line will be replaced on output with the systems line
-   * separator. For example on UNIX this is NL, while on Windows it is two
-   * characters, CR NL, where CR is the carriage-return (decimal 13).
+   * Set if the operating systems end-of-line line separator should be used when serializing. If set false NL character
+   * (decimal 10) is left alone, otherwise the new-line will be replaced on output with the systems line separator. For
+   * example on UNIX this is NL, while on Windows it is two characters, CR NL, where CR is the carriage-return (decimal
+   * 13).
    * 
-   * @param use_sytem_line_break
-   *          True if an input NL is replaced with the operating systems
-   *          end-of-line separator.
+   * @param use_sytem_line_break True if an input NL is replaced with the operating systems end-of-line separator.
    * @return The previously set value of the serializer.
    */
   public boolean setLineSepUse(boolean use_sytem_line_break) {
@@ -644,15 +612,13 @@ abstract public class ToStream extends SerializerBase {
   }
 
   /**
-   * Specifies an output stream to which the document should be serialized. This
-   * method should not be called while the serializer is in the process of
-   * serializing a document.
+   * Specifies an output stream to which the document should be serialized. This method should not be called while the
+   * serializer is in the process of serializing a document.
    * <p>
-   * The encoding specified in the output properties is used, or if no encoding
-   * was specified, the default for the selected output method.
+   * The encoding specified in the output properties is used, or if no encoding was specified, the default for the
+   * selected output method.
    * 
-   * @param output
-   *          The output stream
+   * @param output The output stream
    */
   @Override
   public void setOutputStream(OutputStream output) {
@@ -677,8 +643,8 @@ abstract public class ToStream extends SerializerBase {
       }
 
       if (osw == null) {
-        System.out.println("Warning: encoding \"" + encoding + "\" not supported" + ", using "
-                + Encodings.DEFAULT_MIME_ENCODING);
+        System.out.println(
+            "Warning: encoding \"" + encoding + "\" not supported" + ", using " + Encodings.DEFAULT_MIME_ENCODING);
 
         encoding = Encodings.DEFAULT_MIME_ENCODING;
         setEncoding(encoding);
@@ -710,14 +676,11 @@ abstract public class ToStream extends SerializerBase {
   }
 
   /**
-   * Might print a newline character and the indentation amount of the given
-   * depth.
+   * Might print a newline character and the indentation amount of the given depth.
    * 
-   * @param depth
-   *          the indentation depth (element nesting depth)
+   * @param depth the indentation depth (element nesting depth)
    * 
-   * @throws org.xml.sax.SAXException
-   *           if an error occurs during writing.
+   * @throws IOException if an error occurs during writing.
    */
   protected void indent(int depth) throws IOException {
 
@@ -725,8 +688,8 @@ abstract public class ToStream extends SerializerBase {
       outputLineSep();
     }
     /*
-     * For m_indentAmount > 0 this extra test might be slower but Xalan's
-     * default value is 0, so this extra test will run faster in that situation.
+     * For m_indentAmount > 0 this extra test might be slower but Xalan's default value is 0, so this extra test will
+     * run faster in that situation.
      */
     if (m_indentAmount > 0) {
       printSpace(depth * m_indentAmount);
@@ -746,11 +709,9 @@ abstract public class ToStream extends SerializerBase {
   /**
    * Prints <var>n</var> spaces.
    * 
-   * @param n
-   *          Number of spaces to print.
+   * @param n Number of spaces to print.
    * 
-   * @throws org.xml.sax.SAXException
-   *           if an error occurs when writing.
+   * @throws IOException if an error occurs when writing.
    */
   private void printSpace(int n) throws IOException {
     final java.io.Writer writer = m_writer;
@@ -764,31 +725,22 @@ abstract public class ToStream extends SerializerBase {
    * Report an attribute type declaration.
    * 
    * <p>
-   * Only the effective (first) declaration for an attribute will be reported.
-   * The type will be one of the strings "CDATA", "ID", "IDREF", "IDREFS",
-   * "NMTOKEN", "NMTOKENS", "ENTITY", "ENTITIES", or "NOTATION", or a
-   * parenthesized token group with the separator "|" and all whitespace
-   * removed.
+   * Only the effective (first) declaration for an attribute will be reported. The type will be one of the strings
+   * "CDATA", "ID", "IDREF", "IDREFS", "NMTOKEN", "NMTOKENS", "ENTITY", "ENTITIES", or "NOTATION", or a parenthesized
+   * token group with the separator "|" and all whitespace removed.
    * </p>
    * 
-   * @param eName
-   *          The name of the associated element.
-   * @param aName
-   *          The name of the attribute.
-   * @param type
-   *          A string representing the attribute type.
-   * @param valueDefault
-   *          A string representing the attribute default ("#IMPLIED",
-   *          "#REQUIRED", or "#FIXED") or null if none of these applies.
-   * @param value
-   *          A string representing the attribute's default value, or null if
-   *          there is none.
-   * @exception SAXException
-   *              The application may raise an exception.
+   * @param eName The name of the associated element.
+   * @param aName The name of the attribute.
+   * @param type A string representing the attribute type.
+   * @param valueDefault A string representing the attribute default ("#IMPLIED", "#REQUIRED", or "#FIXED") or null if
+   *        none of these applies.
+   * @param value A string representing the attribute's default value, or null if there is none.
+   * @throws SAXException The application may raise an exception.
    */
   @Override
   public void attributeDecl(String eName, String aName, String type, String valueDefault, String value)
-          throws SAXException {
+      throws SAXException {
     // Do not inline external DTD
     if (m_inExternalDTD)
       return;
@@ -834,16 +786,10 @@ abstract public class ToStream extends SerializerBase {
    * Only the effective (first) declaration for each entity will be reported.
    * </p>
    * 
-   * @param name
-   *          The name of the entity. If it is a parameter entity, the name will
-   *          begin with '%'.
-   * @param publicId
-   *          The declared public identifier of the entity, or null if none was
-   *          declared.
-   * @param systemId
-   *          The declared system identifier of the entity.
-   * @exception SAXException
-   *              The application may raise an exception.
+   * @param name The name of the entity. If it is a parameter entity, the name will begin with '%'.
+   * @param publicId The declared public identifier of the entity, or null if none was declared.
+   * @param systemId The declared system identifier of the entity.
+   * @throws SAXException The application may raise an exception.
    * @see #internalEntityDecl
    * @see org.xml.sax.DTDHandler#unparsedEntityDecl
    */
@@ -880,7 +826,7 @@ abstract public class ToStream extends SerializerBase {
       // This is the old/fast code here, but is this
       // correct for all encodings?
       if (ch >= CharInfo.S_SPACE || CharInfo.S_LINEFEED == ch || CharInfo.S_CARRIAGERETURN == ch
-              || CharInfo.S_HORIZONAL_TAB == ch) {
+          || CharInfo.S_HORIZONAL_TAB == ch) {
         ret = true;
       } else {
         ret = false;
@@ -892,43 +838,33 @@ abstract public class ToStream extends SerializerBase {
   }
 
   /**
-   * Once a surrogate has been detected, write out the pair of characters if it
-   * is in the encoding, or if there is no encoding, otherwise write out an
-   * entity reference of the value of the unicode code point of the character
+   * Once a surrogate has been detected, write out the pair of characters if it is in the encoding, or if there is no
+   * encoding, otherwise write out an entity reference of the value of the unicode code point of the character
    * represented by the high/low surrogate pair.
    * <p>
-   * An exception is thrown if there is no low surrogate in the pair, because
-   * the array ends unexpectely, or if the low char is there but its value is
-   * such that it is not a low surrogate.
+   * An exception is thrown if there is no low surrogate in the pair, because the array ends unexpectely, or if the low
+   * char is there but its value is such that it is not a low surrogate.
    * 
-   * @param c
-   *          the first (high) part of the surrogate, which must be confirmed
-   *          before calling this method.
-   * @param ch
-   *          Character array.
-   * @param i
-   *          position Where the surrogate was detected.
-   * @param end
-   *          The end index of the significant characters.
-   * @return 0 if the pair of characters was written out as-is, the unicode code
-   *         point of the character represented by the surrogate pair if an
-   *         entity reference with that value was written out.
+   * @param c the first (high) part of the surrogate, which must be confirmed before calling this method.
+   * @param ch Character array.
+   * @param i position Where the surrogate was detected.
+   * @param end The end index of the significant characters.
+   * @return 0 if the pair of characters was written out as-is, the unicode code point of the character represented by
+   *         the surrogate pair if an entity reference with that value was written out.
    * 
-   * @throws IOException
-   * @throws org.xml.sax.SAXException
-   *           if invalid UTF-16 surrogate detected.
+   * @throws IOException if invalid UTF-16 surrogate detected.
    */
   protected int writeUTF16Surrogate(char c, char ch[], int i, int end) throws IOException {
     int codePoint = 0;
     if (i + 1 >= end)
-      throw new IOException(Utils.messages.createMessage(MsgKey.ER_INVALID_UTF16_SURROGATE,
-              new Object[] { Integer.toHexString(c) }));
+      throw new IOException(
+          Utils.messages.createMessage(MsgKey.ER_INVALID_UTF16_SURROGATE, new Object[] { Integer.toHexString(c) }));
 
     final char high = c;
     final char low = ch[i + 1];
     if (!Encodings.isLowUTF16Surrogate(low))
       throw new IOException(Utils.messages.createMessage(MsgKey.ER_INVALID_UTF16_SURROGATE,
-              new Object[] { Integer.toHexString(c) + " " + Integer.toHexString(low) }));
+          new Object[] { Integer.toHexString(c) + " " + Integer.toHexString(low) }));
 
     final java.io.Writer writer = m_writer;
 
@@ -964,29 +900,22 @@ abstract public class ToStream extends SerializerBase {
   }
 
   /**
-   * Handle one of the default entities, return false if it is not a default
-   * entity.
+   * Handle one of the default entities, return false if it is not a default entity.
    * 
-   * @param ch
-   *          character to be escaped.
-   * @param i
-   *          index into character array.
-   * @param chars
-   *          non-null reference to character array.
-   * @param len
-   *          length of chars.
-   * @param fromTextNode
-   *          true if the characters being processed are from a text node, false
-   *          if they are from an attribute value
-   * @param escLF
-   *          true if the linefeed should be escaped.
+   * @param ch character to be escaped.
+   * @param i index into character array.
+   * @param chars non-null reference to character array.
+   * @param len length of chars.
+   * @param fromTextNode true if the characters being processed are from a text node, false if they are from an
+   *        attribute value
+   * @param escLF true if the linefeed should be escaped.
    * 
    * @return i+1 if the character was written, else i.
    * 
    * @throws java.io.IOException
    */
   int accumDefaultEntity(java.io.Writer writer, char ch, int i, char[] chars, int len, boolean fromTextNode,
-          boolean escLF) throws IOException {
+      boolean escLF) throws IOException {
 
     if (!escLF && CharInfo.S_LINEFEED == ch) {
       writer.write(m_lineSep, 0, m_lineSepLen);
@@ -1012,23 +941,18 @@ abstract public class ToStream extends SerializerBase {
   /**
    * Normalize the characters, but don't escape.
    * 
-   * @param ch
-   *          The characters from the XML document.
-   * @param start
-   *          The start position in the array.
-   * @param length
-   *          The number of characters to read from the array.
-   * @param isCData
-   *          true if a CDATA block should be built around the characters.
-   * @param useSystemLineSeparator
-   *          true if the operating systems end-of-line separator should be
-   *          output rather than a new-line character.
+   * @param ch The characters from the XML document.
+   * @param start The start position in the array.
+   * @param length The number of characters to read from the array.
+   * @param isCData true if a CDATA block should be built around the characters.
+   * @param useSystemLineSeparator true if the operating systems end-of-line separator should be output rather than a
+   *        new-line character.
    * 
-   * @throws IOException
-   * @throws org.xml.sax.SAXException
+   * @throws IOException TODO
+   * @throws SAXException TODO
    */
   void writeNormalizedChars(char ch[], int start, int length, boolean isCData, boolean useSystemLineSeparator)
-          throws IOException, org.xml.sax.SAXException {
+      throws IOException, SAXException {
     final java.io.Writer writer = m_writer;
     final int end = start + length;
 
@@ -1103,24 +1027,21 @@ abstract public class ToStream extends SerializerBase {
    * 
    * @see #startNonEscaping
    * 
-   * @throws org.xml.sax.SAXException
+   * @throws SAXException TODO
    */
-  public void endNonEscaping() throws org.xml.sax.SAXException {
+  public void endNonEscaping() throws SAXException {
     m_disableOutputEscapingStates.pop();
   }
 
   /**
-   * Starts an un-escaping section. All characters printed within an un-
-   * escaping section are printed as is, without escaping special characters
-   * into entity references. Only XML and HTML serializers need to support this
-   * method.
+   * Starts an un-escaping section. All characters printed within an un- escaping section are printed as is, without
+   * escaping special characters into entity references. Only XML and HTML serializers need to support this method.
    * <p>
-   * The contents of the un-escaping section will be delivered through the
-   * regular <tt>characters</tt> event.
+   * The contents of the un-escaping section will be delivered through the regular <tt>characters</tt> event.
    * 
-   * @throws org.xml.sax.SAXException
+   * @throws SAXException TODO
    */
-  public void startNonEscaping() throws org.xml.sax.SAXException {
+  public void startNonEscaping() throws SAXException {
     m_disableOutputEscapingStates.push(true);
   }
 
@@ -1128,38 +1049,28 @@ abstract public class ToStream extends SerializerBase {
    * Receive notification of cdata.
    * 
    * <p>
-   * The Parser will call this method to report each chunk of character data.
-   * SAX parsers may return all contiguous character data in a single chunk, or
-   * they may split it into several chunks; however, all of the characters in
-   * any single event must come from the same external entity, so that the
-   * Locator provides useful information.
+   * The Parser will call this method to report each chunk of character data. SAX parsers may return all contiguous
+   * character data in a single chunk, or they may split it into several chunks; however, all of the characters in any
+   * single event must come from the same external entity, so that the Locator provides useful information.
    * </p>
    * 
    * <p>
-   * The application must not attempt to read from the array outside of the
-   * specified range.
+   * The application must not attempt to read from the array outside of the specified range.
    * </p>
    * 
    * <p>
-   * Note that some parsers will report whitespace using the
-   * ignorableWhitespace() method rather than this one (validating parsers must
-   * do so).
+   * Note that some parsers will report whitespace using the ignorableWhitespace() method rather than this one
+   * (validating parsers must do so).
    * </p>
    * 
-   * @param ch
-   *          The characters from the XML document.
-   * @param start
-   *          The start position in the array.
-   * @param length
-   *          The number of characters to read from the array.
-   * @throws org.xml.sax.SAXException
-   *           Any SAX exception, possibly wrapping another exception.
+   * @param ch The characters from the XML document.
+   * @param start The start position in the array.
+   * @param length The number of characters to read from the array.
+   * @throws SAXException Any SAX exception, possibly wrapping another exception.
    * @see #ignorableWhitespace
    * @see org.xml.sax.Locator
-   * 
-   * @throws org.xml.sax.SAXException
    */
-  protected void cdata(char ch[], int start, final int length) throws org.xml.sax.SAXException {
+  protected void cdata(char ch[], int start, final int length) throws SAXException {
 
     try {
       final int old_start = start;
@@ -1176,8 +1087,8 @@ abstract public class ToStream extends SerializerBase {
       final boolean writeCDataBrackets = length >= 1 && escapingNotNeeded(ch[start]);
 
       /*
-       * Write out the CDATA opening delimiter only if we are supposed to, and
-       * if we are not already in the middle of a CDATA section
+       * Write out the CDATA opening delimiter only if we are supposed to, and if we are not already in the middle of a
+       * CDATA section
        */
       if (writeCDataBrackets && !m_cdataTagOpen) {
         m_writer.write(CDATA_DELIMITER_OPEN);
@@ -1192,15 +1103,13 @@ abstract public class ToStream extends SerializerBase {
       }
 
       /*
-       * used to always write out CDATA closing delimiter here, but now we
-       * delay, so that we can merge CDATA sections on output. need to write
-       * closing delimiter later
+       * used to always write out CDATA closing delimiter here, but now we delay, so that we can merge CDATA sections on
+       * output. need to write closing delimiter later
        */
       if (writeCDataBrackets) {
         /*
-         * if the CDATA section ends with ] don't leave it open as there is a
-         * chance that an adjacent CDATA sections starts with ]>. We don't want
-         * to merge ]] with > , or ] with ]>
+         * if the CDATA section ends with ] don't leave it open as there is a chance that an adjacent CDATA sections
+         * starts with ]>. We don't want to merge ]] with > , or ] with ]>
          */
         if (ch[start + length - 1] == ']') {
           closeCDATA();
@@ -1212,7 +1121,7 @@ abstract public class ToStream extends SerializerBase {
         super.fireCDATAEvent(ch, old_start, length);
       }
     } catch (final IOException ioe) {
-      throw new org.xml.sax.SAXException(Utils.messages.createMessage(MsgKey.ER_OIERROR, null), ioe);
+      throw new SAXException(Utils.messages.createMessage(MsgKey.ER_OIERROR, null), ioe);
       // "IO error", ioe);
     }
   }
@@ -1227,19 +1136,15 @@ abstract public class ToStream extends SerializerBase {
   }
 
   /**
-   * If available, when the disable-output-escaping attribute is used, output
-   * raw text without escaping.
+   * If available, when the disable-output-escaping attribute is used, output raw text without escaping.
    * 
-   * @param ch
-   *          The characters from the XML document.
-   * @param start
-   *          The start position in the array.
-   * @param length
-   *          The number of characters to read from the array.
+   * @param ch The characters from the XML document.
+   * @param start The start position in the array.
+   * @param length The number of characters to read from the array.
    * 
-   * @throws org.xml.sax.SAXException
+   * @throws SAXException TODO
    */
-  protected void charactersRaw(char ch[], int start, int length) throws org.xml.sax.SAXException {
+  protected void charactersRaw(char ch[], int start, int length) throws SAXException {
 
     if (m_inEntityRef)
       return;
@@ -1262,39 +1167,31 @@ abstract public class ToStream extends SerializerBase {
    * Receive notification of character data.
    * 
    * <p>
-   * The Parser will call this method to report each chunk of character data.
-   * SAX parsers may return all contiguous character data in a single chunk, or
-   * they may split it into several chunks; however, all of the characters in
-   * any single event must come from the same external entity, so that the
-   * Locator provides useful information.
+   * The Parser will call this method to report each chunk of character data. SAX parsers may return all contiguous
+   * character data in a single chunk, or they may split it into several chunks; however, all of the characters in any
+   * single event must come from the same external entity, so that the Locator provides useful information.
    * </p>
    * 
    * <p>
-   * The application must not attempt to read from the array outside of the
-   * specified range.
+   * The application must not attempt to read from the array outside of the specified range.
    * </p>
    * 
    * <p>
-   * Note that some parsers will report whitespace using the
-   * ignorableWhitespace() method rather than this one (validating parsers must
-   * do so).
+   * Note that some parsers will report whitespace using the ignorableWhitespace() method rather than this one
+   * (validating parsers must do so).
    * </p>
    * 
-   * @param chars
-   *          The characters from the XML document.
-   * @param start
-   *          The start position in the array.
-   * @param length
-   *          The number of characters to read from the array.
-   * @throws org.xml.sax.SAXException
-   *           Any SAX exception, possibly wrapping another exception.
+   * @param chars The characters from the XML document.
+   * @param start The start position in the array.
+   * @param length The number of characters to read from the array.
+   * @throws SAXException Any SAX exception, possibly wrapping another exception.
    * @see #ignorableWhitespace
    * @see org.xml.sax.Locator
    * 
-   * @throws org.xml.sax.SAXException
+   * @throws SAXException TODO
    */
   @Override
-  public void characters(final char chars[], final int start, final int length) throws org.xml.sax.SAXException {
+  public void characters(final char chars[], final int start, final int length) throws SAXException {
     // It does not make sense to continue with rest of the method if the number
     // of
     // characters to read from array is 0.
@@ -1315,8 +1212,7 @@ abstract public class ToStream extends SerializerBase {
 
     if (m_cdataStartCalled || m_elemContext.m_isCdataSection) {
       /*
-       * either due to startCDATA() being called or due to
-       * cdata-section-elements atribute, we need this as cdata
+       * either due to startCDATA() being called or due to cdata-section-elements atribute, we need this as cdata
        */
       cdata(chars, start, length);
 
@@ -1379,7 +1275,7 @@ abstract public class ToStream extends SerializerBase {
         } else {
           // The character is clean, but is it a whitespace ?
           switch (ch1) {
-          // TODO: Any other whitespace to consider?
+            // TODO: Any other whitespace to consider?
             case CharInfo.S_SPACE:
               // Just accumulate the clean whitespace
               i++;
@@ -1409,8 +1305,8 @@ abstract public class ToStream extends SerializerBase {
       }
 
       /*
-       * If there is some non-whitespace, mark that we may need to preserve
-       * this. This is only important if we have indentation on.
+       * If there is some non-whitespace, mark that we may need to preserve this. This is only important if we have
+       * indentation on.
        */
       if (i < end || !isAllWhitespace) {
         m_ispreserve = true;
@@ -1557,11 +1453,9 @@ abstract public class ToStream extends SerializerBase {
   }
 
   /**
-   * This method checks if a given character is between C0 or C1 range of
-   * Control characters. This method is added to support Control Characters for
-   * XML 1.1 If a given character is TAB (0x09), LF (0x0A) or CR (0x0D), this
-   * method return false. Since they are whitespace characters, no special
-   * processing is needed.
+   * This method checks if a given character is between C0 or C1 range of Control characters. This method is added to
+   * support Control Characters for XML 1.1 If a given character is TAB (0x09), LF (0x0A) or CR (0x0D), this method
+   * return false. Since they are whitespace characters, no special processing is needed.
    * 
    * @param ch
    * @return boolean
@@ -1574,9 +1468,8 @@ abstract public class ToStream extends SerializerBase {
   }
 
   /**
-   * This method checks if a given character either NEL (0x85) or LSEP (0x2028)
-   * These are new end of line charcters added in XML 1.1. These characters must
-   * be written as Numeric Character References (NCR) in XML 1.1 output
+   * This method checks if a given character either NEL (0x85) or LSEP (0x2028) These are new end of line charcters
+   * added in XML 1.1. These characters must be written as Numeric Character References (NCR) in XML 1.1 output
    * document.
    * 
    * @param ch
@@ -1589,13 +1482,12 @@ abstract public class ToStream extends SerializerBase {
   /**
    * Receive notification of character data.
    * 
-   * @param s
-   *          The string of characters to process.
+   * @param s The string of characters to process.
    * 
-   * @throws org.xml.sax.SAXException
+   * @throws SAXException TODO
    */
   @Override
-  public void characters(String s) throws org.xml.sax.SAXException {
+  public void characters(String s) throws SAXException {
     if (m_inEntityRef && !m_expandDTDEntities)
       return;
     final int length = s.length();
@@ -1609,27 +1501,20 @@ abstract public class ToStream extends SerializerBase {
   /**
    * Escape and writer.write a character.
    * 
-   * @param ch
-   *          character to be escaped.
-   * @param i
-   *          index into character array.
-   * @param chars
-   *          non-null reference to character array.
-   * @param len
-   *          length of chars.
-   * @param fromTextNode
-   *          true if the characters being processed are from a text node, false
-   *          if the characters being processed are from an attribute value.
-   * @param escLF
-   *          true if the linefeed should be escaped.
+   * @param ch character to be escaped.
+   * @param i index into character array.
+   * @param chars non-null reference to character array.
+   * @param len length of chars.
+   * @param fromTextNode true if the characters being processed are from a text node, false if the characters being
+   *        processed are from an attribute value.
+   * @param escLF true if the linefeed should be escaped.
    * 
-   * @return i+1 if a character was written, i+2 if two characters were written
-   *         out, else return i.
+   * @return i+1 if a character was written, i+2 if two characters were written out, else return i.
    * 
-   * @throws org.xml.sax.SAXException
+   * @throws IOException TODO
    */
   private int accumDefaultEscape(Writer writer, char ch, int i, char[] chars, int len, boolean fromTextNode,
-          boolean escLF) throws IOException {
+      boolean escLF) throws IOException {
 
     int pos = accumDefaultEntity(writer, ch, i, chars, len, fromTextNode, escLF);
 
@@ -1643,14 +1528,14 @@ abstract public class ToStream extends SerializerBase {
 
         if (i + 1 >= len)
           throw new IOException(Utils.messages.createMessage(MsgKey.ER_INVALID_UTF16_SURROGATE,
-                  new Object[] { Integer.toHexString(ch) }));
+              new Object[] { Integer.toHexString(ch) }));
         // "Invalid UTF-16 surrogate detected: "
         else {
           next = chars[++i];
 
           if (!Encodings.isLowUTF16Surrogate(next))
             throw new IOException(Utils.messages.createMessage(MsgKey.ER_INVALID_UTF16_SURROGATE,
-                    new Object[] { Integer.toHexString(ch) + " " + Integer.toHexString(next) }));
+                new Object[] { Integer.toHexString(ch) + " " + Integer.toHexString(next) }));
           // "Invalid UTF-16 surrogate detected: "
 
           // +Integer.toHexString(ch)+" "+Integer.toHexString(next));
@@ -1664,18 +1549,16 @@ abstract public class ToStream extends SerializerBase {
                   // entity
       } else {
         /*
-         * This if check is added to support control characters in XML 1.1. If a
-         * character is a Control Character within C0 and C1 range, it is
-         * desirable to write it out as Numeric Character Reference(NCR)
-         * regardless of XML Version being used for output document.
+         * This if check is added to support control characters in XML 1.1. If a character is a Control Character within
+         * C0 and C1 range, it is desirable to write it out as Numeric Character Reference(NCR) regardless of XML
+         * Version being used for output document.
          */
         if (isCharacterInC0orC1Range(ch) || isNELorLSEPCharacter(ch)) {
           writer.write("&#");
           writer.write(Integer.toString(ch));
           writer.write(';');
-        } else if ((!escapingNotNeeded(ch) || fromTextNode && m_charInfo.shouldMapTextChar(ch) || !fromTextNode
-                && m_charInfo.shouldMapAttrChar(ch))
-                && m_elemContext.m_currentElemDepth > 0) {
+        } else if ((!escapingNotNeeded(ch) || fromTextNode && m_charInfo.shouldMapTextChar(ch)
+            || !fromTextNode && m_charInfo.shouldMapAttrChar(ch)) && m_elemContext.m_currentElemDepth > 0) {
           writer.write("&#");
           writer.write(Integer.toString(ch));
           writer.write(';');
@@ -1690,32 +1573,23 @@ abstract public class ToStream extends SerializerBase {
   }
 
   /**
-   * Receive notification of the beginning of an element, although this is a SAX
-   * method additional namespace or attribute information can occur before or
-   * after this call, that is associated with this element.
+   * Receive notification of the beginning of an element, although this is a SAX method additional namespace or
+   * attribute information can occur before or after this call, that is associated with this element.
    * 
    * 
-   * @param namespaceURI
-   *          The Namespace URI, or the empty string if the element has no
-   *          Namespace URI or if Namespace processing is not being performed.
-   * @param localName
-   *          The local name (without prefix), or the empty string if Namespace
-   *          processing is not being performed.
-   * @param name
-   *          The element type name.
-   * @param atts
-   *          The attributes attached to the element, if any.
-   * @throws org.xml.sax.SAXException
-   *           Any SAX exception, possibly wrapping another exception.
+   * @param namespaceURI The Namespace URI, or the empty string if the element has no Namespace URI or if Namespace
+   *        processing is not being performed.
+   * @param localName The local name (without prefix), or the empty string if Namespace processing is not being
+   *        performed.
+   * @param name The element type name.
+   * @param atts The attributes attached to the element, if any.
+   * @throws SAXException Any SAX exception, possibly wrapping another exception.
    * @see org.xml.sax.ContentHandler#startElement
    * @see org.xml.sax.ContentHandler#endElement
    * @see org.xml.sax.AttributeList
-   * 
-   * @throws org.xml.sax.SAXException
    */
   @Override
-  public void startElement(String namespaceURI, String localName, String name, Attributes atts)
-          throws org.xml.sax.SAXException {
+  public void startElement(String namespaceURI, String localName, String name, Attributes atts) throws SAXException {
     if (m_inEntityRef)
       return;
 
@@ -1735,8 +1609,7 @@ abstract public class ToStream extends SerializerBase {
       }
 
       /*
-       * before we over-write the current elementLocalName etc. lets close out
-       * the old one (if we still need to)
+       * before we over-write the current elementLocalName etc. lets close out the old one (if we still need to)
        */
       if (m_elemContext.m_startTagOpen) {
         closeStartTag();
@@ -1777,29 +1650,23 @@ abstract public class ToStream extends SerializerBase {
   }
 
   /**
-   * Receive notification of the beginning of an element, additional namespace
-   * or attribute information can occur before or after this call, that is
-   * associated with this element.
+   * Receive notification of the beginning of an element, additional namespace or attribute information can occur before
+   * or after this call, that is associated with this element.
    * 
    * 
-   * @param elementNamespaceURI
-   *          The Namespace URI, or the empty string if the element has no
-   *          Namespace URI or if Namespace processing is not being performed.
-   * @param elementLocalName
-   *          The local name (without prefix), or the empty string if Namespace
-   *          processing is not being performed.
-   * @param elementName
-   *          The element type name.
-   * @throws org.xml.sax.SAXException
-   *           Any SAX exception, possibly wrapping another exception.
+   * @param elementNamespaceURI The Namespace URI, or the empty string if the element has no Namespace URI or if
+   *        Namespace processing is not being performed.
+   * @param elementLocalName The local name (without prefix), or the empty string if Namespace processing is not being
+   *        performed.
+   * @param elementName The element type name.
+   * @throws SAXException Any SAX exception, possibly wrapping another exception.
    * @see org.xml.sax.ContentHandler#startElement
    * @see org.xml.sax.ContentHandler#endElement
    * @see org.xml.sax.AttributeList
-   * 
-   * @throws org.xml.sax.SAXException
    */
   @Override
-  public void startElement(String elementNamespaceURI, String elementLocalName, String elementName) throws SAXException {
+  public void startElement(String elementNamespaceURI, String elementLocalName, String elementName)
+      throws SAXException {
     startElement(elementNamespaceURI, elementLocalName, elementName, null);
   }
 
@@ -1811,9 +1678,7 @@ abstract public class ToStream extends SerializerBase {
   /**
    * Output the doc type declaration.
    * 
-   * @param name
-   *          non-null reference to document type name. NEEDSDOC @param
-   *          closeDecl
+   * @param name non-null reference to document type name. NEEDSDOC @param closeDecl
    * 
    * @throws java.io.IOException
    */
@@ -1857,22 +1722,19 @@ abstract public class ToStream extends SerializerBase {
   }
 
   /**
-   * Process the attributes, which means to write out the currently collected
-   * attributes to the writer. The attributes are not cleared by this method
+   * Process the attributes, which means to write out the currently collected attributes to the writer. The attributes
+   * are not cleared by this method
    * 
-   * @param writer
-   *          the writer to write processed attributes to.
-   * @param nAttrs
-   *          the number of attributes in m_attributes to be processed
+   * @param writer the writer to write processed attributes to.
+   * @param nAttrs the number of attributes in m_attributes to be processed
    * 
-   * @throws java.io.IOException
-   * @throws org.xml.sax.SAXException
+   * @throws IOException TODO
+   * @throws SAXException TODO
    */
   public void processAttributes(java.io.Writer writer, int nAttrs) throws IOException, SAXException {
     /*
-     * real SAX attributes are not passed in, so process the attributes that
-     * were collected after the startElement call. _attribVector is a "cheap"
-     * list for Stream serializer output accumulated over a series of calls to
+     * real SAX attributes are not passed in, so process the attributes that were collected after the startElement call.
+     * _attribVector is a "cheap" list for Stream serializer output accumulated over a series of calls to
      * attribute(name,value)
      */
 
@@ -1890,14 +1752,11 @@ abstract public class ToStream extends SerializerBase {
   }
 
   /**
-   * Returns the specified <var>string</var> after substituting
-   * <VAR>specials</VAR>, and UTF-16 surrogates for chracter references
-   * <CODE>&amp;#xnn</CODE>.
+   * Returns the specified <var>string</var> after substituting <VAR>specials</VAR>, and UTF-16 surrogates for chracter
+   * references <CODE>&amp;#xnn</CODE>.
    * 
-   * @param string
-   *          String to convert to XML format.
-   * @param encoding
-   *          CURRENTLY NOT IMPLEMENTED.
+   * @param string String to convert to XML format.
+   * @param encoding CURRENTLY NOT IMPLEMENTED.
    * 
    * @throws java.io.IOException
    */
@@ -1987,21 +1846,15 @@ abstract public class ToStream extends SerializerBase {
    * Receive notification of the end of an element.
    * 
    * 
-   * @param namespaceURI
-   *          The Namespace URI, or the empty string if the element has no
-   *          Namespace URI or if Namespace processing is not being performed.
-   * @param localName
-   *          The local name (without prefix), or the empty string if Namespace
-   *          processing is not being performed.
-   * @param name
-   *          The element type name
-   * @throws org.xml.sax.SAXException
-   *           Any SAX exception, possibly wrapping another exception.
-   * 
-   * @throws org.xml.sax.SAXException
+   * @param namespaceURI The Namespace URI, or the empty string if the element has no Namespace URI or if Namespace
+   *        processing is not being performed.
+   * @param localName The local name (without prefix), or the empty string if Namespace processing is not being
+   *        performed.
+   * @param name The element type name
+   * @throws SAXException Any SAX exception, possibly wrapping another exception.
    */
   @Override
-  public void endElement(String namespaceURI, String localName, String name) throws org.xml.sax.SAXException {
+  public void endElement(String namespaceURI, String localName, String name) throws SAXException {
     if (m_inEntityRef)
       return;
 
@@ -2026,8 +1879,8 @@ abstract public class ToStream extends SerializerBase {
         } else {
           writer.write("/>");
           /*
-           * don't need to pop cdataSectionState because this element ended so
-           * quickly that we didn't get to push the state.
+           * don't need to pop cdataSectionState because this element ended so quickly that we didn't get to push the
+           * state.
            */
         }
 
@@ -2064,72 +1917,54 @@ abstract public class ToStream extends SerializerBase {
   /**
    * Receive notification of the end of an element.
    * 
-   * @param name
-   *          The element type name
-   * @throws org.xml.sax.SAXException
-   *           Any SAX exception, possibly wrapping another exception.
+   * @param name The element type name
+   * @throws SAXException Any SAX exception, possibly wrapping another exception.
    */
   @Override
-  public void endElement(String name) throws org.xml.sax.SAXException {
+  public void endElement(String name) throws SAXException {
     endElement(null, null, name);
   }
 
   /**
-   * Begin the scope of a prefix-URI Namespace mapping just before another
-   * element is about to start. This call will close any open tags so that the
-   * prefix mapping will not apply to the current element, but the up comming
-   * child.
+   * Begin the scope of a prefix-URI Namespace mapping just before another element is about to start. This call will
+   * close any open tags so that the prefix mapping will not apply to the current element, but the up comming child.
    * 
    * @see org.xml.sax.ContentHandler#startPrefixMapping
    * 
-   * @param prefix
-   *          The Namespace prefix being declared.
-   * @param uri
-   *          The Namespace URI the prefix is mapped to.
+   * @param prefix The Namespace prefix being declared.
+   * @param uri The Namespace URI the prefix is mapped to.
    * 
-   * @throws org.xml.sax.SAXException
-   *           The client may throw an exception during processing.
+   * @throws SAXException The client may throw an exception during processing.
    * 
    */
   @Override
-  public void startPrefixMapping(String prefix, String uri) throws org.xml.sax.SAXException {
+  public void startPrefixMapping(String prefix, String uri) throws SAXException {
     // the "true" causes the flush of any open tags
     startPrefixMapping(prefix, uri, true);
   }
 
   /**
-   * Handle a prefix/uri mapping, which is associated with a startElement() that
-   * is soon to follow. Need to close any open start tag to make sure than any
-   * name space attributes due to this event are associated wih the up comming
+   * Handle a prefix/uri mapping, which is associated with a startElement() that is soon to follow. Need to close any
+   * open start tag to make sure than any name space attributes due to this event are associated wih the up comming
    * element, not the current one.
    * 
    * @see ExtendedContentHandler#startPrefixMapping
    * 
-   * @param prefix
-   *          The Namespace prefix being declared.
-   * @param uri
-   *          The Namespace URI the prefix is mapped to.
-   * @param shouldFlush
-   *          true if any open tags need to be closed first, this will impact
-   *          which element the mapping applies to (open parent, or its up
-   *          comming child)
-   * @return returns true if the call made a change to the current namespace
-   *         information, false if it did not change anything, e.g. if the
-   *         prefix/namespace mapping was already in scope from before.
+   * @param prefix The Namespace prefix being declared.
+   * @param uri The Namespace URI the prefix is mapped to.
+   * @param shouldFlush true if any open tags need to be closed first, this will impact which element the mapping
+   *        applies to (open parent, or its up comming child)
+   * @return returns true if the call made a change to the current namespace information, false if it did not change
+   *         anything, e.g. if the prefix/namespace mapping was already in scope from before.
    * 
-   * @throws org.xml.sax.SAXException
-   *           The client may throw an exception during processing.
-   * 
-   * 
+   * @throws SAXException The client may throw an exception during processing.
    */
   @Override
-  public boolean startPrefixMapping(String prefix, String uri, boolean shouldFlush) throws org.xml.sax.SAXException {
+  public boolean startPrefixMapping(String prefix, String uri, boolean shouldFlush) throws SAXException {
 
     /*
-     * Remember the mapping, and at what depth it was declared This is one
-     * greater than the current depth because these mappings will apply to the
-     * next depth. This is in consideration that startElement() will soon be
-     * called
+     * Remember the mapping, and at what depth it was declared This is one greater than the current depth because these
+     * mappings will apply to the next depth. This is in consideration that startElement() will soon be called
      */
 
     boolean pushed;
@@ -2146,9 +1981,8 @@ abstract public class ToStream extends SerializerBase {
 
     if (pushed) {
       /*
-       * Brian M.: don't know if we really needto do this. The callers of this
-       * object should have injected both startPrefixMapping and the attributes.
-       * We are just covering our butt here.
+       * Brian M.: don't know if we really needto do this. The callers of this object should have injected both
+       * startPrefixMapping and the attributes. We are just covering our butt here.
        */
       String name;
       if ("".equals(prefix)) {
@@ -2161,9 +1995,8 @@ abstract public class ToStream extends SerializerBase {
           name = "xmlns:" + prefix;
 
           /*
-           * for something like xmlns:abc="w3.pretend.org" the uri is the value,
-           * that is why we pass it in the value, or 5th slot of
-           * addAttributeAlways()
+           * for something like xmlns:abc="w3.pretend.org" the uri is the value, that is why we pass it in the value, or
+           * 5th slot of addAttributeAlways()
            */
           addAttributeAlways(XMLNS_URI, prefix, name, "CDATA", uri, false);
         }
@@ -2173,21 +2006,16 @@ abstract public class ToStream extends SerializerBase {
   }
 
   /**
-   * Receive notification of an XML comment anywhere in the document. This
-   * callback will be used for comments inside or outside the document element,
-   * including comments in the external DTD subset (if read).
+   * Receive notification of an XML comment anywhere in the document. This callback will be used for comments inside or
+   * outside the document element, including comments in the external DTD subset (if read).
    * 
-   * @param ch
-   *          An array holding the characters in the comment.
-   * @param start
-   *          The starting position in the array.
-   * @param length
-   *          The number of characters to use from the array.
-   * @throws org.xml.sax.SAXException
-   *           The application may raise an exception.
+   * @param ch An array holding the characters in the comment.
+   * @param start The starting position in the array.
+   * @param length The number of characters to use from the array.
+   * @throws SAXException The application may raise an exception.
    */
   @Override
-  public void comment(char ch[], int start, int length) throws org.xml.sax.SAXException {
+  public void comment(char ch[], int start, int length) throws SAXException {
 
     final int start_old = start;
     if (m_inEntityRef)
@@ -2241,12 +2069,10 @@ abstract public class ToStream extends SerializerBase {
     }
 
     /*
-     * Don't write out any indentation whitespace now, because there may be
-     * non-whitespace text after this.
+     * Don't write out any indentation whitespace now, because there may be non-whitespace text after this.
      * 
-     * Simply mark that at this point if we do decide to indent that we should
-     * add a newline on the end of the current line before the indentation at
-     * the start of the next line.
+     * Simply mark that at this point if we do decide to indent that we should add a newline on the end of the current
+     * line before the indentation at the start of the next line.
      */
     m_startNewLine = true;
     // time to generate comment event
@@ -2258,13 +2084,12 @@ abstract public class ToStream extends SerializerBase {
   /**
    * Report the end of a CDATA section.
    * 
-   * @throws org.xml.sax.SAXException
-   *           The application may raise an exception.
+   * @throws SAXException The application may raise an exception.
    * 
    * @see #startCDATA
    */
   @Override
-  public void endCDATA() throws org.xml.sax.SAXException {
+  public void endCDATA() throws SAXException {
     if (m_cdataTagOpen) {
       closeCDATA();
     }
@@ -2274,12 +2099,11 @@ abstract public class ToStream extends SerializerBase {
   /**
    * Report the end of DTD declarations.
    * 
-   * @throws org.xml.sax.SAXException
-   *           The application may raise an exception.
+   * @throws SAXException The application may raise an exception.
    * @see #startDTD
    */
   @Override
-  public void endDTD() throws org.xml.sax.SAXException {
+  public void endDTD() throws SAXException {
     try {
       if (m_needToOutputDocTypeDecl) {
         outputDocTypeDecl(m_elemContext.m_elementName, false);
@@ -2304,14 +2128,12 @@ abstract public class ToStream extends SerializerBase {
    * 
    * @see org.xml.sax.ContentHandler#endPrefixMapping
    * 
-   * @param prefix
-   *          The prefix that was being mapping.
-   * @throws org.xml.sax.SAXException
-   *           The client may throw an exception during processing.
+   * @param prefix The prefix that was being mapping.
+   * @throws SAXException The client may throw an exception during processing.
    */
   @Override
-  public void endPrefixMapping(String prefix) throws org.xml.sax.SAXException { // do
-                                                                                // nothing
+  public void endPrefixMapping(String prefix) throws SAXException {
+    // do nothing
   }
 
   /**
@@ -2319,20 +2141,14 @@ abstract public class ToStream extends SerializerBase {
    * 
    * Not sure how to get this invoked quite yet.
    * 
-   * @param ch
-   *          The characters from the XML document.
-   * @param start
-   *          The start position in the array.
-   * @param length
-   *          The number of characters to read from the array.
-   * @throws org.xml.sax.SAXException
-   *           Any SAX exception, possibly wrapping another exception.
+   * @param ch The characters from the XML document.
+   * @param start The start position in the array.
+   * @param length The number of characters to read from the array.
+   * @throws SAXException Any SAX exception, possibly wrapping another exception.
    * @see #characters
-   * 
-   * @throws org.xml.sax.SAXException
    */
   @Override
-  public void ignorableWhitespace(char ch[], int start, int length) throws org.xml.sax.SAXException {
+  public void ignorableWhitespace(char ch[], int start, int length) throws SAXException {
 
     if (0 == length)
       return;
@@ -2344,57 +2160,47 @@ abstract public class ToStream extends SerializerBase {
    * 
    * @see org.xml.sax.ContentHandler#skippedEntity
    * 
-   * @param name
-   *          The name of the skipped entity. If it is a parameter entity, the
-   *          name will begin with '%', and if it is the external DTD subset, it
-   *          will be the string "[dtd]".
-   * @throws org.xml.sax.SAXException
-   *           Any SAX exception, possibly wrapping another exception.
+   * @param name The name of the skipped entity. If it is a parameter entity, the name will begin with '%', and if it is
+   *        the external DTD subset, it will be the string "[dtd]".
+   * @throws SAXException Any SAX exception, possibly wrapping another exception.
    */
   @Override
-  public void skippedEntity(String name) throws org.xml.sax.SAXException { // TODO:
-                                                                           // Should
-                                                                           // handle
+  public void skippedEntity(String name) throws SAXException {
+    // TODO: Should handle
   }
 
   /**
    * Report the start of a CDATA section.
    * 
-   * @throws org.xml.sax.SAXException
-   *           The application may raise an exception.
+   * @throws SAXException The application may raise an exception.
    * @see #endCDATA
    */
   @Override
-  public void startCDATA() throws org.xml.sax.SAXException {
+  public void startCDATA() throws SAXException {
     m_cdataStartCalled = true;
   }
 
   /**
    * Report the beginning of an entity.
    * 
-   * The start and end of the document entity are not reported. The start and
-   * end of the external DTD subset are reported using the pseudo-name "[dtd]".
-   * All other events must be properly nested within start/end entity events.
+   * The start and end of the document entity are not reported. The start and end of the external DTD subset are
+   * reported using the pseudo-name "[dtd]". All other events must be properly nested within start/end entity events.
    * 
-   * @param name
-   *          The name of the entity. If it is a parameter entity, the name will
-   *          begin with '%'.
-   * @throws org.xml.sax.SAXException
-   *           The application may raise an exception.
+   * @param name The name of the entity. If it is a parameter entity, the name will begin with '%'.
+   * @throws SAXException The application may raise an exception.
    * @see #endEntity
    * @see org.xml.sax.ext.DeclHandler#internalEntityDecl
    * @see org.xml.sax.ext.DeclHandler#externalEntityDecl
    */
   @Override
-  public void startEntity(String name) throws org.xml.sax.SAXException {
+  public void startEntity(String name) throws SAXException {
     if (name.equals("[dtd]")) {
       m_inExternalDTD = true;
     }
 
     if (!m_expandDTDEntities && !m_inExternalDTD) {
       /*
-       * Only leave the entity as-is if we've been told not to expand them and
-       * this is not the magic [dtd] name.
+       * Only leave the entity as-is if we've been told not to expand them and this is not the magic [dtd] name.
        */
       startNonEscaping();
       characters("&" + name + ';');
@@ -2405,10 +2211,9 @@ abstract public class ToStream extends SerializerBase {
   }
 
   /**
-   * For the enclosing elements starting tag write out out any attributes
-   * followed by ">"
+   * For the enclosing elements starting tag write out out any attributes followed by {@literal ">"}
    * 
-   * @throws org.xml.sax.SAXException
+   * @throws SAXException TODO
    */
   protected void closeStartTag() throws SAXException {
 
@@ -2430,9 +2235,8 @@ abstract public class ToStream extends SerializerBase {
       }
 
       /*
-       * whether Xalan or XSLTC, we have the prefix mappings now, so lets
-       * determine if the current element is specified in the cdata-
-       * section-elements list.
+       * whether Xalan or XSLTC, we have the prefix mappings now, so lets determine if the current element is specified
+       * in the cdata- section-elements list.
        */
       if (m_CdataElems != null) {
         m_elemContext.m_isCdataSection = isCdataSection();
@@ -2449,24 +2253,17 @@ abstract public class ToStream extends SerializerBase {
   /**
    * Report the start of DTD declarations, if any.
    * 
-   * Any declarations are assumed to be in the internal subset unless otherwise
-   * indicated.
+   * Any declarations are assumed to be in the internal subset unless otherwise indicated.
    * 
-   * @param name
-   *          The document type name.
-   * @param publicId
-   *          The declared public identifier for the external DTD subset, or
-   *          null if none was declared.
-   * @param systemId
-   *          The declared system identifier for the external DTD subset, or
-   *          null if none was declared.
-   * @throws org.xml.sax.SAXException
-   *           The application may raise an exception.
+   * @param name The document type name.
+   * @param publicId The declared public identifier for the external DTD subset, or null if none was declared.
+   * @param systemId The declared system identifier for the external DTD subset, or null if none was declared.
+   * @throws SAXException The application may raise an exception.
    * @see #endDTD
    * @see #startEntity
    */
   @Override
-  public void startDTD(String name, String publicId, String systemId) throws org.xml.sax.SAXException {
+  public void startDTD(String name, String publicId, String systemId) throws SAXException {
     setDoctypeSystem(systemId);
     setDoctypePublic(publicId);
 
@@ -2487,8 +2284,7 @@ abstract public class ToStream extends SerializerBase {
   /**
    * Sets the m_indentAmount.
    * 
-   * @param m_indentAmount
-   *          The m_indentAmount to set
+   * @param m_indentAmount The m_indentAmount to set
    */
   @Override
   public void setIndentAmount(int m_indentAmount) {
@@ -2496,8 +2292,7 @@ abstract public class ToStream extends SerializerBase {
   }
 
   /**
-   * Tell if, based on space preservation constraints and the doIndent property,
-   * if an indent should occur.
+   * Tell if, based on space preservation constraints and the doIndent property, if an indent should occur.
    * 
    * @return True if an indent should occur.
    */
@@ -2506,12 +2301,10 @@ abstract public class ToStream extends SerializerBase {
   }
 
   /**
-   * Remembers the cdata sections specified in the cdata-section-elements. The
-   * "official way to set URI and localName pairs. This method should be used by
-   * both Xalan and XSLTC.
+   * Remembers the cdata sections specified in the cdata-section-elements. The "official way to set URI and localName
+   * pairs. This method should be used by both Xalan and XSLTC.
    * 
-   * @param URI_and_localNames
-   *          a vector of pairs of Strings (URI/local)
+   * @param URI_and_localNames a vector of pairs of Strings (URI/local)
    */
   @Override
   public void setCdataSectionElements(List<String> URI_and_localNames) {
@@ -2542,19 +2335,15 @@ abstract public class ToStream extends SerializerBase {
   }
 
   /**
-   * Makes sure that the namespace URI for the given qualified attribute name is
-   * declared.
+   * Makes sure that the namespace URI for the given qualified attribute name is declared.
    * 
-   * @param ns
-   *          the namespace URI
-   * @param rawName
-   *          the qualified name
-   * @return returns null if no action is taken, otherwise it returns the prefix
-   *         used in declaring the namespace.
+   * @param ns the namespace URI
+   * @param rawName the qualified name
+   * @return returns null if no action is taken, otherwise it returns the prefix used in declaring the namespace.
    * @throws SAXException
    */
   protected String ensureAttributesNamespaceIsDeclared(String ns, String localName, String rawName)
-          throws SAXException {
+      throws SAXException {
 
     if (ns != null && ns.length() > 0) {
 
@@ -2575,7 +2364,7 @@ abstract public class ToStream extends SerializerBase {
           // so lets make the mapping.
           this.startPrefixMapping(prefixFromRawName, ns, false);
           this.addAttribute("http://www.w3.org/2000/xmlns/", prefixFromRawName, "xmlns:" + prefixFromRawName, "CDATA",
-                  ns, false);
+              ns, false);
           return prefixFromRawName;
         }
       } else {
@@ -2615,8 +2404,8 @@ abstract public class ToStream extends SerializerBase {
 
           this.addAttributeAlways("http://www.w3.org/2000/xmlns/", no_prefix ? "xmlns" : prefix, // local
                                                                                                  // name
-                  no_prefix ? "xmlns" : "xmlns:" + prefix, // qname
-                  "CDATA", ns, false);
+              no_prefix ? "xmlns" : "xmlns:" + prefix, // qname
+              "CDATA", ns, false);
         }
 
       }
@@ -2624,8 +2413,8 @@ abstract public class ToStream extends SerializerBase {
   }
 
   /**
-   * This method flushes any pending events, which can be startDocument()
-   * closing the opening tag of an element, or closing an open CDATA section.
+   * This method flushes any pending events, which can be startDocument() closing the opening tag of an element, or
+   * closing an open CDATA section.
    */
   @Override
   public void flushPending() throws SAXException {
@@ -2659,32 +2448,24 @@ abstract public class ToStream extends SerializerBase {
   }
 
   /**
-   * Adds the given attribute to the set of attributes, even if there is no
-   * currently open element. This is useful if a SAX startPrefixMapping() should
-   * need to add an attribute before the element name is seen.
+   * Adds the given attribute to the set of attributes, even if there is no currently open element. This is useful if a
+   * SAX startPrefixMapping() should need to add an attribute before the element name is seen.
    * 
-   * This method is a copy of its super classes method, except that some tracing
-   * of events is done. This is so the tracing is only done for stream
-   * serializers, not for SAX ones.
+   * This method is a copy of its super classes method, except that some tracing of events is done. This is so the
+   * tracing is only done for stream serializers, not for SAX ones.
    * 
-   * @param uri
-   *          the URI of the attribute
-   * @param localName
-   *          the local name of the attribute
-   * @param rawName
-   *          the qualified name of the attribute
-   * @param type
-   *          the type of the attribute (probably CDATA)
-   * @param value
-   *          the value of the attribute
-   * @param xslAttribute
-   *          true if this attribute is coming from an xsl:attribute element.
-   * @return true if the attribute value was added, false if the attribute
-   *         already existed and the value was replaced with the new value.
+   * @param uri the URI of the attribute
+   * @param localName the local name of the attribute
+   * @param rawName the qualified name of the attribute
+   * @param type the type of the attribute (probably CDATA)
+   * @param value the value of the attribute
+   * @param xslAttribute true if this attribute is coming from an xsl:attribute element.
+   * @return true if the attribute value was added, false if the attribute already existed and the value was replaced
+   *         with the new value.
    */
   @Override
   public boolean addAttributeAlways(String uri, String localName, String rawName, String type, String value,
-          boolean xslAttribute) {
+      boolean xslAttribute) {
     boolean was_added;
     int index;
     if (uri == null || localName == null || uri.length() == 0) {
@@ -2703,8 +2484,8 @@ abstract public class ToStream extends SerializerBase {
       }
 
       /*
-       * We've seen the attribute before. We may have a null uri or localName,
-       * but all we really want to re-set is the value anyway.
+       * We've seen the attribute before. We may have a null uri or localName, but all we really want to re-set is the
+       * value anyway.
        */
       m_attributes.setValue(index, value);
       was_added = false;
@@ -2716,13 +2497,11 @@ abstract public class ToStream extends SerializerBase {
       // the attribute doesn't exist yet, create it
       if (xslAttribute) {
         /*
-         * This attribute is from an xsl:attribute element so we take some care
-         * in adding it, e.g. <elem1 foo:attr1="1" xmlns:foo="uri1">
-         * <xsl:attribute name="foo:attr2">2</xsl:attribute> </elem1>
+         * This attribute is from an xsl:attribute element so we take some care in adding it, e.g. <elem1 foo:attr1="1"
+         * xmlns:foo="uri1"> <xsl:attribute name="foo:attr2">2</xsl:attribute> </elem1>
          * 
-         * We are adding attr1 and attr2 both as attributes of elem1, and this
-         * code is adding attr2 (the xsl:attribute ). We could have a collision
-         * with the prefix like in the example above.
+         * We are adding attr1 and attr2 both as attributes of elem1, and this code is adding attr2 (the xsl:attribute
+         * ). We could have a collision with the prefix like in the example above.
          */
 
         // In the example above, is there a prefix like foo ?
@@ -2732,31 +2511,26 @@ abstract public class ToStream extends SerializerBase {
           final NamespaceMappings.MappingRecord existing_mapping = m_prefixMap.getMappingFromPrefix(prefix);
 
           /*
-           * Before adding this attribute (foo:attr2), is the prefix for it
-           * (foo) already mapped at the current depth?
+           * Before adding this attribute (foo:attr2), is the prefix for it (foo) already mapped at the current depth?
            */
           if (existing_mapping != null && existing_mapping.m_declarationDepth == m_elemContext.m_currentElemDepth
-                  && !existing_mapping.m_uri.equals(uri)) {
+              && !existing_mapping.m_uri.equals(uri)) {
             /*
-             * There is an existing mapping of this prefix, it differs from the
-             * one we need, and unfortunately it is at the current depth so we
-             * can not over-ride it.
+             * There is an existing mapping of this prefix, it differs from the one we need, and unfortunately it is at
+             * the current depth so we can not over-ride it.
              */
 
             /*
-             * Are we lucky enough that an existing other prefix maps to this
-             * URI ?
+             * Are we lucky enough that an existing other prefix maps to this URI ?
              */
             prefix = m_prefixMap.lookupPrefix(uri);
             if (prefix == null) {
               /*
-               * Unfortunately there is no existing prefix that happens to map
-               * to ours, so to avoid a prefix collision we must generated a new
-               * prefix to use. This is OK because the prefix URI mapping
-               * defined in the xsl:attribute is short in scope, just the
-               * xsl:attribute element itself, and at this point in
-               * serialization the body of the xsl:attribute, if any, is just a
-               * String. Right? . . . I sure hope so - Brian M.
+               * Unfortunately there is no existing prefix that happens to map to ours, so to avoid a prefix collision
+               * we must generated a new prefix to use. This is OK because the prefix URI mapping defined in the
+               * xsl:attribute is short in scope, just the xsl:attribute element itself, and at this point in
+               * serialization the body of the xsl:attribute, if any, is just a String. Right? . . . I sure hope so -
+               * Brian M.
                */
               prefix = m_prefixMap.generateNextPrefix();
             }
@@ -2767,10 +2541,9 @@ abstract public class ToStream extends SerializerBase {
 
         try {
           /*
-           * This is our last chance to make sure the namespace for this
-           * attribute is declared, especially if we just generated an alternate
-           * prefix to avoid a collision (the new prefix/rawName will go out of
-           * scope soon and be lost ... last chance here.
+           * This is our last chance to make sure the namespace for this attribute is declared, especially if we just
+           * generated an alternate prefix to avoid a collision (the new prefix/rawName will go out of scope soon and be
+           * lost ... last chance here.
            */
           final String prefixUsed = ensureAttributesNamespaceIsDeclared(uri, localName, rawName);
         } catch (final SAXException e) {
@@ -2788,9 +2561,8 @@ abstract public class ToStream extends SerializerBase {
   }
 
   /**
-   * To fire off the pseudo characters of attributes, as they currently exist.
-   * This method should be called everytime an attribute is added, or when an
-   * attribute value is changed, or an element is created.
+   * To fire off the pseudo characters of attributes, as they currently exist. This method should be called everytime an
+   * attribute is added, or when an attribute value is changed, or an element is created.
    */
 
   protected void firePseudoAttributes() {
@@ -2827,9 +2599,8 @@ abstract public class ToStream extends SerializerBase {
   }
 
   /**
-   * This inner class is used only to collect attribute values written by the
-   * method writeAttrString() into a string buffer. In this manner trace events,
-   * and the real writing of attributes will use the same code.
+   * This inner class is used only to collect attribute values written by the method writeAttrString() into a string
+   * buffer. In this manner trace events, and the real writing of attributes will use the same code.
    */
   private static class WritertoStringBuilder extends Writer {
     final private StringBuilder m_stringbuf;
@@ -2884,8 +2655,8 @@ abstract public class ToStream extends SerializerBase {
   }
 
   /**
-   * Try's to reset the super class and reset this class for re-use, so that you
-   * don't need to create a new serializer (mostly for performance reasons).
+   * Try's to reset the super class and reset this class for re-use, so that you don't need to create a new serializer
+   * (mostly for performance reasons).
    * 
    * @return true if the class was successfuly reset.
    */
@@ -2906,10 +2677,8 @@ abstract public class ToStream extends SerializerBase {
   private void resetToStream() {
     m_cdataStartCalled = false;
     /*
-     * The stream is being reset. It is one of ToXMLStream, ToHTMLStream ... and
-     * this type can't be changed so neither should m_charInfo which is
-     * associated with the type of Stream. Just leave m_charInfo as-is for the
-     * next re-use.
+     * The stream is being reset. It is one of ToXMLStream, ToHTMLStream ... and this type can't be changed so neither
+     * should m_charInfo which is associated with the type of Stream. Just leave m_charInfo as-is for the next re-use.
      */
     // this.m_charInfo = null; // don't set to null
     m_disableOutputEscapingStates.clear();
@@ -2935,11 +2704,9 @@ abstract public class ToStream extends SerializerBase {
   }
 
   /**
-   * Sets the character encoding coming from the xsl:output encoding stylesheet
-   * attribute.
+   * Sets the character encoding coming from the xsl:output encoding stylesheet attribute.
    * 
-   * @param encoding
-   *          the character encoding
+   * @param encoding the character encoding
    */
   @Override
   public void setEncoding(String encoding) {
@@ -2949,11 +2716,8 @@ abstract public class ToStream extends SerializerBase {
   /**
    * Simple stack for boolean values.
    * 
-   * This class is a copy of the one in de.lyca.xml.utils. It exists to cut the
-   * serializers dependancy on that package. A minor changes from that package
-   * are: doesn't implement Clonable
-   * 
-   * @xsl.usage internal
+   * This class is a copy of the one in de.lyca.xml.utils. It exists to cut the serializers dependancy on that package.
+   * A minor changes from that package are: doesn't implement Clonable
    */
   static final class BoolStack {
 
@@ -2967,8 +2731,7 @@ abstract public class ToStream extends SerializerBase {
     private int m_index;
 
     /**
-     * Default constructor. Note that the default block size is very small, for
-     * small lists.
+     * Default constructor. Note that the default block size is very small, for small lists.
      */
     public BoolStack() {
       this(32);
@@ -2977,8 +2740,7 @@ abstract public class ToStream extends SerializerBase {
     /**
      * Construct a IntVector, using the given block size.
      * 
-     * @param size
-     *          array size to allocate
+     * @param size array size to allocate
      */
     public BoolStack(int size) {
 
@@ -3008,8 +2770,7 @@ abstract public class ToStream extends SerializerBase {
      * Pushes an item onto the top of this stack.
      * 
      * 
-     * @param val
-     *          the boolean to be pushed onto this stack.
+     * @param val the boolean to be pushed onto this stack.
      * @return the <code>item</code> argument.
      */
     public final boolean push(boolean val) {
@@ -3022,20 +2783,17 @@ abstract public class ToStream extends SerializerBase {
     }
 
     /**
-     * Removes the object at the top of this stack and returns that object as
-     * the value of this function.
+     * Removes the object at the top of this stack and returns that object as the value of this function.
      * 
      * @return The object at the top of this stack.
-     * @throws EmptyStackException
-     *           if this stack is empty.
+     * @throws EmptyStackException if this stack is empty.
      */
     public final boolean pop() {
       return m_values[m_index--];
     }
 
     /**
-     * Removes the object at the top of this stack and returns the next object
-     * at the top as the value of this function.
+     * Removes the object at the top of this stack and returns the next object at the top as the value of this function.
      * 
      * 
      * @return Next object to the top or false if none there
@@ -3051,28 +2809,25 @@ abstract public class ToStream extends SerializerBase {
      * Set the item at the top of this stack
      * 
      * 
-     * @param b
-     *          Object to set at the top of this stack
+     * @param b Object to set at the top of this stack
      */
     public final void setTop(boolean b) {
       m_values[m_index] = b;
     }
 
     /**
-     * Looks at the object at the top of this stack without removing it from the
-     * stack.
+     * Looks at the object at the top of this stack without removing it from the stack.
      * 
      * @return the object at the top of this stack.
-     * @throws EmptyStackException
-     *           if this stack is empty.
+     * @throws EmptyStackException if this stack is empty.
      */
     public final boolean peek() {
       return m_values[m_index];
     }
 
     /**
-     * Looks at the object at the top of this stack without removing it from the
-     * stack. If the stack is empty, it returns false.
+     * Looks at the object at the top of this stack without removing it from the stack. If the stack is empty, it
+     * returns false.
      * 
      * @return the object at the top of this stack.
      */
@@ -3081,8 +2836,8 @@ abstract public class ToStream extends SerializerBase {
     }
 
     /**
-     * Looks at the object at the top of this stack without removing it from the
-     * stack. If the stack is empty, it returns true.
+     * Looks at the object at the top of this stack without removing it from the stack. If the stack is empty, it
+     * returns true.
      * 
      * @return the object at the top of this stack.
      */
@@ -3093,8 +2848,7 @@ abstract public class ToStream extends SerializerBase {
     /**
      * Tests if this stack is empty.
      * 
-     * @return <code>true</code> if this stack is empty; <code>false</code>
-     *         otherwise.
+     * @return <code>true</code> if this stack is empty; <code>false</code> otherwise.
      */
     public boolean isEmpty() {
       return m_index == -1;
@@ -3118,11 +2872,10 @@ abstract public class ToStream extends SerializerBase {
 
   // Implement DTDHandler
   /**
-   * If this method is called, the serializer is used as a DTDHandler, which
-   * changes behavior how the serializer handles document entities.
+   * If this method is called, the serializer is used as a DTDHandler, which changes behavior how the serializer handles
+   * document entities.
    * 
-   * @see org.xml.sax.DTDHandler#notationDecl(java.lang.String,
-   *      java.lang.String, java.lang.String)
+   * @see org.xml.sax.DTDHandler#notationDecl(java.lang.String, java.lang.String, java.lang.String)
    */
   @Override
   public void notationDecl(String name, String pubID, String sysID) throws SAXException {
@@ -3149,11 +2902,11 @@ abstract public class ToStream extends SerializerBase {
   }
 
   /**
-   * If this method is called, the serializer is used as a DTDHandler, which
-   * changes behavior how the serializer handles document entities.
+   * If this method is called, the serializer is used as a DTDHandler, which changes behavior how the serializer handles
+   * document entities.
    * 
-   * @see org.xml.sax.DTDHandler#unparsedEntityDecl(java.lang.String,
-   *      java.lang.String, java.lang.String, java.lang.String)
+   * @see org.xml.sax.DTDHandler#unparsedEntityDecl(java.lang.String, java.lang.String, java.lang.String,
+   *      java.lang.String)
    */
   @Override
   public void unparsedEntityDecl(String name, String pubID, String sysID, String notationName) throws SAXException {
@@ -3201,8 +2954,7 @@ abstract public class ToStream extends SerializerBase {
   }
 
   /**
-   * If set to false the serializer does not expand DTD entities, but leaves
-   * them as is, the default value is true;
+   * If set to false the serializer does not expand DTD entities, but leaves them as is, the default value is true;
    */
   @Override
   public void setDTDEntityExpansion(boolean expand) {
@@ -3212,8 +2964,7 @@ abstract public class ToStream extends SerializerBase {
   /**
    * Sets the end of line characters to be used during serialization
    * 
-   * @param eolChars
-   *          A character array corresponding to the characters to be used.
+   * @param eolChars A character array corresponding to the characters to be used.
    */
   public void setNewLine(char[] eolChars) {
     m_lineSep = eolChars;
@@ -3221,17 +2972,13 @@ abstract public class ToStream extends SerializerBase {
   }
 
   /**
-   * Remembers the cdata sections specified in the cdata-section-elements by
-   * appending the given cdata section elements to the list. This method can be
-   * called multiple times, but once an element is put in the list of cdata
-   * section elements it can not be removed. This method should be used by both
-   * Xalan and XSLTC.
+   * Remembers the cdata sections specified in the cdata-section-elements by appending the given cdata section elements
+   * to the list. This method can be called multiple times, but once an element is put in the list of cdata section
+   * elements it can not be removed. This method should be used by both Xalan and XSLTC.
    * 
-   * @param URI_and_localNames
-   *          a whitespace separated list of element names, each element is a
-   *          URI in curly braces (optional) and a local name. An example of
-   *          such a parameter is:
-   *          "{http://company.com}price {myURI2}book chapter"
+   * @param URI_and_localNames a whitespace separated list of element names, each element is a URI in curly braces
+   *        (optional) and a local name. An example of such a parameter is: "{http://company.com}price {myURI2}book
+   *        chapter"
    */
   public void addCdataSectionElements(String URI_and_localNames) {
     if (URI_and_localNames != null) {

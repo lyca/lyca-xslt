@@ -27,8 +27,6 @@ import de.lyca.xpath.res.XPATHMessages;
 
 /**
  * Base class for functions that accept one argument.
- * 
- * @xsl.usage advanced
  */
 public class FunctionOneArg extends Function implements ExpressionOwner {
   static final long serialVersionUID = -5180174180765609758L;

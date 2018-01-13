@@ -31,8 +31,6 @@ import org.w3c.dom.Node;
  * 
  * @author Gopal Sharma, SUN Microsystems Inc.
  * @version $Id:
- * 
- * @xsl.usage internal
  */
 final class DOMLocatorImpl implements DOMLocator {
 

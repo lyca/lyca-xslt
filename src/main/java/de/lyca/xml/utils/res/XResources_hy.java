@@ -23,8 +23,6 @@ package de.lyca.xml.utils.res;
 
 /**
  * The Armenian resource bundle.
- * 
- * @xsl.usage internal
  */
 public class XResources_hy extends XResourceBundle {
 

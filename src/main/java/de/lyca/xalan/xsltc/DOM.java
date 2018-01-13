@@ -88,7 +88,10 @@ public interface DOM {
   String GET_UNPARSED_ENTITY_URI = "getUnparsedEntityURI";
 //  String GET_ELEMENTS_WITH_IDS = "getElementsWithIDs";
 
-  /** returns singleton iterator containg the document root */
+  /**
+   * returns singleton iterator containg the document root 
+   * @return TODO
+   */
   DTMAxisIterator getIterator();
 
   String getStringValue();

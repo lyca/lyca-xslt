@@ -17,6 +17,8 @@
  */
 package de.lyca.xpath.functions;
 
+import javax.xml.transform.TransformerException;
+
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xpath.XPathContext;
 import de.lyca.xpath.objects.XBoolean;
@@ -24,8 +26,6 @@ import de.lyca.xpath.objects.XObject;
 
 /**
  * Execute the Lang() function.
- * 
- * @xsl.usage advanced
  */
 public class FuncLang extends FunctionOneArg {
   static final long serialVersionUID = -7868705139354872185L;
@@ -37,10 +37,10 @@ public class FuncLang extends FunctionOneArg {
    *          The current execution context.
    * @return A valid XObject.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
   @Override
-  public XObject execute(XPathContext xctxt) throws javax.xml.transform.TransformerException {
+  public XObject execute(XPathContext xctxt) throws TransformerException {
 
     final String lang = m_arg0.execute(xctxt).str();
     int parent = xctxt.getCurrentNode();

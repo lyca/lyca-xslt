@@ -30,8 +30,6 @@ package de.lyca.xalan;
  * See also: de/lyca/xalan/res/XSLTInfo.properties for information about the
  * version of the XSLT spec we support.
  * </P>
- * 
- * @xsl.usage general
  */
 public class Version {
 
@@ -46,8 +44,7 @@ public class Version {
    */
   public static String getVersion() {
     return getProduct() + " " + getImplementationLanguage() + " " + getMajorVersionNum() + "." + getReleaseVersionNum()
-            + "."
-            + (getDevelopmentVersionNum() > 0 ? "D" + getDevelopmentVersionNum() : "" + getMaintenanceVersionNum());
+        + "." + (getDevelopmentVersionNum() > 0 ? "D" + getDevelopmentVersionNum() : "" + getMaintenanceVersionNum());
   }
 
   /**
@@ -62,6 +59,8 @@ public class Version {
 
   /**
    * Name of product: Xalan.
+   * 
+   * @return TODO
    */
   public static String getProduct() {
     return "Xalan";
@@ -69,6 +68,8 @@ public class Version {
 
   /**
    * Implementation Language: Java.
+   * 
+   * @return TODO
    */
   public static String getImplementationLanguage() {
     return "Java";
@@ -81,6 +82,8 @@ public class Version {
    * 
    * Clients should carefully consider the implications of new versions as
    * external interfaces and behaviour may have changed.
+   * 
+   * @return TODO
    */
   public static int getMajorVersionNum() {
     return 2;
@@ -92,6 +95,8 @@ public class Version {
    * functionality is to be added, eg, implementation of a new W3C
    * specification. - API or behaviour change. - its designated as a reference
    * release.
+   * 
+   * @return TODO
    */
   public static int getReleaseVersionNum() {
     return 7;
@@ -103,6 +108,8 @@ public class Version {
    * It maintains compatibility with the release and contains no API changes.
    * When missing, it designates the final and complete development drop for a
    * release.
+   * 
+   * @return TODO
    */
   public static int getMaintenanceVersionNum() {
     return 1;
@@ -120,6 +127,8 @@ public class Version {
    * 
    * Each 'D' drops can contain functional enhancements as well as defect fixes.
    * 'D' drops may not be as stable as the final releases.
+   * 
+   * @return TODO
    */
   public static int getDevelopmentVersionNum() {
     try {

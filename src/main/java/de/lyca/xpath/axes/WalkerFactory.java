@@ -17,6 +17,8 @@
  */
 package de.lyca.xpath.axes;
 
+import javax.xml.transform.TransformerException;
+
 import de.lyca.xml.dtm.Axis;
 import de.lyca.xml.dtm.DTMFilter;
 import de.lyca.xml.dtm.DTMIterator;
@@ -54,11 +56,10 @@ public class WalkerFactory {
    * 
    * @return non-null AxesWalker derivative.
    * 
-   * @throws javax.xml.transform.TransformerException
-   * @xsl.usage advanced
-   */
+   * @throws TransformerException TODO
+     */
   static AxesWalker loadOneWalker(WalkingIterator lpi, Compiler compiler, int stepOpCodePos)
-          throws javax.xml.transform.TransformerException {
+      throws TransformerException {
 
     AxesWalker firstWalker = null;
     final int stepType = compiler.getOp(stepOpCodePos);
@@ -91,11 +92,10 @@ public class WalkerFactory {
    * 
    * @return non-null AxesWalker derivative.
    * 
-   * @throws javax.xml.transform.TransformerException
-   * @xsl.usage advanced
-   */
+   * @throws TransformerException TODO
+     */
   static AxesWalker loadWalkers(WalkingIterator lpi, Compiler compiler, int stepOpCodePos, int stepIndex)
-          throws javax.xml.transform.TransformerException {
+      throws TransformerException {
 
     int stepType;
     AxesWalker firstWalker = null;
@@ -146,13 +146,14 @@ public class WalkerFactory {
    *          operations into an opcode map.
    * @param opPos
    *          The position of the operation code for this itterator.
+   * @param isTopLevel TODO
    * 
    * @return non-null reference to a LocPathIterator or derivative.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
   public static DTMIterator newDTMIterator(Compiler compiler, int opPos, boolean isTopLevel)
-          throws javax.xml.transform.TransformerException {
+      throws TransformerException {
 
     final int firstStepPos = OpMap.getFirstChildPos(opPos);
     final int analysis = analyze(compiler, firstStepPos, 0);
@@ -280,10 +281,10 @@ public class WalkerFactory {
    * @return 32 bits as an integer that give information about the location path
    *         as a whole.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
   public static Axis getAxisFromStep(Compiler compiler, int stepOpCodePos)
-          throws javax.xml.transform.TransformerException {
+          throws TransformerException {
 
     final int stepType = compiler.getOp(stepOpCodePos);
 
@@ -447,9 +448,14 @@ public class WalkerFactory {
 
   /**
    * Tell if the predicates need to have proximity knowledge.
+   * @param compiler TODO
+   * @param opPos TODO
+   * @param stepType TODO
+   * @return TODO
+   * @throws TransformerException TODO
    */
   public static boolean mightBeProximate(Compiler compiler, int opPos, int stepType)
-          throws javax.xml.transform.TransformerException {
+          throws TransformerException {
 
     final boolean mightBeProximate = false;
     int argLen;
@@ -528,10 +534,10 @@ public class WalkerFactory {
    * @return 32 bits as an integer that give information about the location path
    *         as a whole.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
   private static boolean isOptimizableForDescendantIterator(Compiler compiler, int stepOpCodePos, int stepIndex)
-          throws javax.xml.transform.TransformerException {
+      throws TransformerException {
 
     int stepType;
     int stepCount = 0;
@@ -634,10 +640,10 @@ public class WalkerFactory {
    * @return 32 bits as an integer that give information about the location path
    *         as a whole.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
   private static int analyze(Compiler compiler, int stepOpCodePos, int stepIndex)
-          throws javax.xml.transform.TransformerException {
+          throws TransformerException {
 
     int stepType;
     int stepCount = 0;
@@ -747,7 +753,7 @@ public class WalkerFactory {
   }
 
   /**
-   * Tell if the given axis goes downword. Bogus name, if you can think of a
+   * Tell if the given axis goes downward. Bogus name, if you can think of a
    * better one, please do tell. This really has to do with inverting attribute
    * axis.
    * 
@@ -789,10 +795,10 @@ public class WalkerFactory {
    * 
    * @return A StepPattern object, which may contain relative StepPatterns.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
   static StepPattern loadSteps(MatchPatternIterator mpi, Compiler compiler, int stepOpCodePos, int stepIndex)
-          throws javax.xml.transform.TransformerException {
+          throws TransformerException {
     if (DEBUG_PATTERN_CREATION) {
       System.out.println("================");
       System.out.println("loadSteps for: " + compiler.getPatternString());
@@ -932,10 +938,10 @@ public class WalkerFactory {
    * 
    * @return the head of the list.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
   private static StepPattern createDefaultStepPattern(Compiler compiler, int opPos, MatchPatternIterator mpi,
-          int analysis, StepPattern tail, StepPattern head) throws javax.xml.transform.TransformerException {
+      int analysis, StepPattern tail, StepPattern head) throws TransformerException {
 
     final int stepType = compiler.getOp(opPos);
     boolean simpleInit = false;
@@ -1073,10 +1079,10 @@ public class WalkerFactory {
    * 
    * @return true if step has a predicate.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
   static boolean analyzePredicate(Compiler compiler, int opPos, int stepType)
-          throws javax.xml.transform.TransformerException {
+          throws TransformerException {
 
     int argLen;
 
@@ -1436,8 +1442,6 @@ public class WalkerFactory {
    *          The general analysis of the pattern.
    * 
    * @return true if the walk can be done in natural order.
-   * 
-   * @throws javax.xml.transform.TransformerException
    */
   static public boolean isNaturalDocOrder(int analysis) {
     if (canCrissCross(analysis) || isSet(analysis, BIT_NAMESPACE) || walksFilteredList(analysis))
@@ -1465,10 +1469,10 @@ public class WalkerFactory {
    * 
    * @return true if the walk can be done in natural order.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
   private static boolean isNaturalDocOrder(Compiler compiler, int stepOpCodePos, int stepIndex, int analysis)
-          throws javax.xml.transform.TransformerException {
+          throws TransformerException {
     if (canCrissCross(analysis))
       return false;
 

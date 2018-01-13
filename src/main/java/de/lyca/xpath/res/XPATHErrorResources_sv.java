@@ -23,8 +23,6 @@ package de.lyca.xpath.res;
  * Static string constant for the Key and update the contents array with Key,
  * Value pair Also you need to update the count of messages(MAX_CODE)or the
  * count of warnings(MAX_WARNING) [ Information purpose only]
- * 
- * @xsl.usage advanced
  */
 public class XPATHErrorResources_sv extends XPATHErrorResources {
 

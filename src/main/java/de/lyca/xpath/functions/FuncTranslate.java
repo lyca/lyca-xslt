@@ -17,14 +17,14 @@
  */
 package de.lyca.xpath.functions;
 
+import javax.xml.transform.TransformerException;
+
 import de.lyca.xpath.XPathContext;
 import de.lyca.xpath.objects.XObject;
 import de.lyca.xpath.objects.XString;
 
 /**
  * Execute the Translate() function.
- * 
- * @xsl.usage advanced
  */
 public class FuncTranslate extends Function3Args {
   static final long serialVersionUID = -1672834340026116482L;
@@ -36,10 +36,10 @@ public class FuncTranslate extends Function3Args {
    *          The current execution context.
    * @return A valid XObject.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
   @Override
-  public XObject execute(XPathContext xctxt) throws javax.xml.transform.TransformerException {
+  public XObject execute(XPathContext xctxt) throws TransformerException {
 
     final String theFirstString = m_arg0.execute(xctxt).str();
     final String theSecondString = m_arg1.execute(xctxt).str();

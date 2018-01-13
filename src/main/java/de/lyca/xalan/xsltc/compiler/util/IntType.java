@@ -65,11 +65,13 @@ public final class IntType extends NumberType {
   }
 
   /**
-   * Compiles an integer expression into an expression of internal type
-   * <code>type</code>.
+   * Compiles an integer expression into an expression of internal type <code>type</code>.
    * 
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo(CompilerContext,
-   *      JExpression, Type)
+   * @param ctx TODO
+   * @param expr TODO
+   * @param type TODO
+   * @return TODO
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo(CompilerContext, JExpression, Type)
    */
   @Override
   public JExpression compileTo(CompilerContext ctx, JExpression expr, Type type) {
@@ -91,50 +93,64 @@ public final class IntType extends NumberType {
   /**
    * Expects an integer expression and returns a real expression.
    * 
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo(CompilerContext,
-   *      JExpression, Type)
+   * @param ctx TODO
+   * @param expr TODO
+   * @param type TODO
+   * @return TODO
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo(CompilerContext, JExpression, Type)
    */
   public JExpression compileTo(CompilerContext ctx, JExpression expr, RealType type) {
     return cast(type.toJCType(), expr);
   }
 
   /**
-   * Expects an integer expression and returns its string expression by calling
-   * <code>Integer.toString(int i)</code>.
+   * Expects an integer expression and returns its string expression by calling <code>Integer.toString(int i)</code>.
    * 
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo(CompilerContext,
-   *      JExpression, Type)
+   * @param ctx TODO
+   * @param expr TODO
+   * @param type TODO
+   * @return TODO
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo(CompilerContext, JExpression, Type)
    */
   public JExpression compileTo(CompilerContext ctx, JExpression expr, StringType type) {
     return ctx.ref(Integer.class).staticInvoke("toString").arg(expr);
   }
 
   /**
-   * Expects an integer expression and returns a 0 if its value is 0 and a 1
-   * otherwise.
+   * Expects an integer expression and returns a 0 if its value is 0 and a 1 otherwise.
    * 
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo(CompilerContext,
-   *      JExpression, Type)
+   * @param ctx TODO
+   * @param expr TODO
+   * @param type TODO
+   * @return TODO
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo(CompilerContext, JExpression, Type)
    */
   public JExpression compileTo(CompilerContext ctx, JExpression expr, BooleanType type) {
     return ne(expr, lit(0)).cand(ne(expr, minus(lit(0))));
   }
 
   /**
-   * Expects an integer expression and returns a boxed integer expression. Boxed
-   * integers are represented by an instance of <code>java.lang.Integer</code>.
+   * Expects an integer expression and returns a boxed integer expression. Boxed integers are represented by an instance
+   * of <code>java.lang.Integer</code>.
    * 
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo(CompilerContext,
-   *      JExpression, Type)
+   * @param ctx TODO
+   * @param expr TODO
+   * @param type TODO
+   * @return TODO
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo(CompilerContext, JExpression, Type)
    */
   public JExpression compileTo(CompilerContext ctx, JExpression expr, ReferenceType type) {
     return ctx.ref(Integer.class).staticInvoke("valueOf").arg(expr);
   }
 
   /**
-   * Compiles an integer expression into the Java expression denoted by
-   * <code>clazz</code>. Expects an integer expression and returns a number
-   * expression of the appropriate type after coercion.
+   * Compiles an integer expression into the Java expression denoted by <code>clazz</code>. Expects an integer
+   * expression and returns a number expression of the appropriate type after coercion.
+   * 
+   * @param ctx TODO
+   * @param expr TODO
+   * @param clazz TODO
+   * @return TODO
    */
   @Override
   public JExpression compileTo(CompilerContext ctx, JExpression expr, Class<?> clazz) {

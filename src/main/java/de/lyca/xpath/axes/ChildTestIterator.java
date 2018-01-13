@@ -17,6 +17,8 @@
  */
 package de.lyca.xpath.axes;
 
+import javax.xml.transform.TransformerException;
+
 import de.lyca.xml.dtm.Axis;
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xml.dtm.DTMAxisTraverser;
@@ -28,7 +30,6 @@ import de.lyca.xpath.compiler.Compiler;
  * node test, and possibly a predicate.
  * 
  * @see de.lyca.xpath.axes.BasicTestIterator
- * @xsl.usage advanced
  */
 public class ChildTestIterator extends BasicTestIterator {
   static final long serialVersionUID = -7936835957960705722L;
@@ -47,9 +48,9 @@ public class ChildTestIterator extends BasicTestIterator {
    *          The position within the op map, which contains the location path
    *          expression for this itterator.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
-  ChildTestIterator(Compiler compiler, int opPos, int analysis) throws javax.xml.transform.TransformerException {
+  ChildTestIterator(Compiler compiler, int opPos, int analysis) throws TransformerException {
     super(compiler, opPos, analysis);
   }
 
@@ -58,13 +59,9 @@ public class ChildTestIterator extends BasicTestIterator {
    * 
    * @param traverser
    *          Traverser that tells how the KeyIterator is to be handled.
-   * 
-   * @throws javax.xml.transform.TransformerException
    */
   public ChildTestIterator(DTMAxisTraverser traverser) {
-
     super(null);
-
     m_traverser = traverser;
   }
 
@@ -76,8 +73,8 @@ public class ChildTestIterator extends BasicTestIterator {
   @Override
   protected int getNextNode() {
     if (true /* 0 == m_extendedTypeID */) {
-      m_lastFetched = DTM.NULL == m_lastFetched ? m_traverser.first(m_context) : m_traverser.next(m_context,
-              m_lastFetched);
+      m_lastFetched = DTM.NULL == m_lastFetched ? m_traverser.first(m_context)
+          : m_traverser.next(m_context, m_lastFetched);
     }
     // else
     // {
@@ -96,6 +93,7 @@ public class ChildTestIterator extends BasicTestIterator {
    * @return A cloned NodeIterator set of the start of the query.
    * 
    * @throws CloneNotSupportedException
+   *           TODO
    */
   @Override
   public DTMIterator cloneWithReset() throws CloneNotSupportedException {

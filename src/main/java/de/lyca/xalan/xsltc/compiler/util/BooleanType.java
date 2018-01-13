@@ -55,12 +55,10 @@ public final class BooleanType extends Type {
   }
 
   /**
-   * Compiles a real expression into an expression of internal type
-   * <code>type</code>. The compilation to int is undefined since booleans are
-   * always converted to reals in arithmetic expressions.
+   * Compiles a real expression into an expression of internal type <code>type</code>. The compilation to int is
+   * undefined since booleans are always converted to reals in arithmetic expressions.
    * 
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo(CompilerContext,
-   *      JExpression, Type)
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo(CompilerContext, JExpression, Type)
    */
   @Override
   public JExpression compileTo(CompilerContext ctx, JExpression expr, Type type) {
@@ -78,12 +76,14 @@ public final class BooleanType extends Type {
   }
 
   /**
-   * Takes a boolean expression and returns a string ecpression. If the value of
-   * the boolean expression is zero, then the string 'false' is returned.
-   * Otherwise, the string 'true'.
+   * Takes a boolean expression and returns a string ecpression. If the value of the boolean expression is zero, then
+   * the string 'false' is returned. Otherwise, the string 'true'.
    * 
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo(CompilerContext,
-   *      JExpression, Type)
+   * @param ctx TODO
+   * @param expr TODO
+   * @param type TODO
+   * @return TODO
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo(CompilerContext, JExpression, Type)
    */
   public JExpression compileTo(CompilerContext ctx, JExpression expr, StringType type) {
     JVar var = ctx.currentBlock().decl(ctx.owner().BOOLEAN, ctx.nextVar(), expr);
@@ -91,11 +91,14 @@ public final class BooleanType extends Type {
   }
 
   /**
-   * Takes a boolean expression and returns a real expression. The value "true"
-   * is converted to 1.0 and the value "false" to 0.0.
+   * Takes a boolean expression and returns a real expression. The value "true" is converted to 1.0 and the value
+   * "false" to 0.0.
    * 
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo(CompilerContext,
-   *      JExpression, Type)
+   * @param ctx TODO
+   * @param expr TODO
+   * @param type TODO
+   * @return TODO
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo(CompilerContext, JExpression, Type)
    */
   public JExpression compileTo(CompilerContext ctx, JExpression expr, RealType type) {
     JVar var = ctx.currentBlock().decl(ctx.owner().BOOLEAN, ctx.nextVar(), expr);
@@ -103,11 +106,14 @@ public final class BooleanType extends Type {
   }
 
   /**
-   * Takes a boolean expression and returns a boxed boolean expression. Boxed
-   * booleans are represented by an instance of <code>java.lang.Boolean</code>.
+   * Takes a boolean expression and returns a boxed boolean expression. Boxed booleans are represented by an instance of
+   * <code>java.lang.Boolean</code>.
    * 
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo(CompilerContext,
-   *      JExpression, Type)
+   * @param ctx TODO
+   * @param expr TODO
+   * @param type TODO
+   * @return TODO
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo(CompilerContext, JExpression, Type)
    */
   public JExpression compileTo(CompilerContext ctx, JExpression expr, ReferenceType type) {
     return ctx.ref(Boolean.class).staticInvoke("valueOf").arg(expr);
@@ -115,6 +121,11 @@ public final class BooleanType extends Type {
 
   /**
    * Compiles an internal boolean into an external (Java) boolean.
+   * 
+   * @param ctx TODO
+   * @param expr TODO
+   * @param clazz TODO
+   * @return TODO
    */
   public JExpression compileTo(CompilerContext ctx, JExpression expr, Class<?> clazz) {
     if (clazz == java.lang.Boolean.TYPE) {
@@ -132,6 +143,11 @@ public final class BooleanType extends Type {
 
   /**
    * Compiles an external (Java) boolean into internal boolean.
+   * 
+   * @param ctx TODO
+   * @param expr TODO
+   * @param clazz TODO
+   * @return TODO
    */
   @Override
   public JExpression compileFrom(CompilerContext ctx, JExpression expr, Class<?> clazz) {

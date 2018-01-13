@@ -19,6 +19,8 @@ package de.lyca.xpath.axes;
 
 import java.util.List;
 
+import javax.xml.transform.TransformerException;
+
 import de.lyca.xml.dtm.Axis;
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xml.dtm.DTMIterator;
@@ -61,10 +63,10 @@ public class FilterExprWalker extends AxesWalker {
    * @param stepType
    *          The type of step.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
   @Override
-  public void init(Compiler compiler, int opPos, int stepType) throws javax.xml.transform.TransformerException {
+  public void init(Compiler compiler, int opPos, int stepType) throws TransformerException {
 
     super.init(compiler, opPos, stepType);
 
@@ -138,7 +140,7 @@ public class FilterExprWalker extends AxesWalker {
    * 
    * @return A new FilterExprWalker that can be used without mutating this one.
    * 
-   * @throws CloneNotSupportedException
+   * @throws CloneNotSupportedException TODO
    */
   @Override
   public Object clone() throws CloneNotSupportedException {
@@ -173,7 +175,7 @@ public class FilterExprWalker extends AxesWalker {
       }
 
       return DTMIterator.FILTER_ACCEPT;
-    } catch (final javax.xml.transform.TransformerException se) {
+    } catch (final TransformerException se) {
       throw new RuntimeException(se.getMessage());
     }
   }
@@ -236,6 +238,7 @@ public class FilterExprWalker extends AxesWalker {
    *          list from the start of the list will be its position in the stack
    *          frame (but variables above the globalsTop value will need to be
    *          offset to the current stack frame).
+   * @param globalsSize TODO
    */
   @Override
   public void fixupVariables(List<QName> vars, int globalsSize) {
@@ -245,6 +248,7 @@ public class FilterExprWalker extends AxesWalker {
 
   /**
    * Get the inner contained expression of this filter.
+   * @return TODO
    */
   public Expression getInnerExpression() {
     return m_expr;
@@ -252,6 +256,7 @@ public class FilterExprWalker extends AxesWalker {
 
   /**
    * Set the inner contained expression of this filter.
+   * @param expr TODO
    */
   public void setInnerExpression(Expression expr) {
     expr.exprSetParent(this);

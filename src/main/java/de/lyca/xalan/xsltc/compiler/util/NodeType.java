@@ -70,12 +70,14 @@ public final class NodeType extends Type {
   }
 
   /**
-   * Compiles a node expression into an expression of internal type
-   * <code>type</code>. The compilation to int is undefined since nodes are
-   * always converted to reals in arithmetic expressions.
+   * Compiles a node expression into an expression of internal type <code>type</code>. The compilation to int is
+   * undefined since nodes are always converted to reals in arithmetic expressions.
    * 
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo(CompilerContext,
-   *      JExpression, Type)
+   * @param ctx TODO
+   * @param expr TODO
+   * @param type TODO
+   * @return TODO
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo(CompilerContext, JExpression, Type)
    */
   @Override
   public JExpression compileTo(CompilerContext ctx, JExpression expr, Type type) {
@@ -101,52 +103,65 @@ public final class NodeType extends Type {
   /**
    * Expects a node expression and returns its string value.
    * 
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo(CompilerContext,
-   *      JExpression, Type)
+   * @param ctx TODO
+   * @param expr TODO
+   * @param type TODO
+   * @return TODO
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo(CompilerContext, JExpression, Type)
    */
   public JExpression compileTo(CompilerContext ctx, JExpression expr, StringType type) {
     switch (_type) {
-    case NodeTest.ROOT:
-    case NodeTest.ELEMENT:
-      return ctx.currentDom().invoke(GET_ELEMENT_VALUE).arg(expr);
-    case NodeTest.ANODE:
-    case NodeTest.COMMENT:
-    case NodeTest.ATTRIBUTE:
-    case NodeTest.PI:
-      return ctx.currentDom().invoke(GET_STRING_VALUE_X).arg(expr);
-    default:
-      final ErrorMsg err = new ErrorMsg(Messages.get().dataConversionErr(this, type), -1);
-      ctx.xsltc().getParser().reportError(FATAL, err);
-      return expr;
+      case NodeTest.ROOT:
+      case NodeTest.ELEMENT:
+        return ctx.currentDom().invoke(GET_ELEMENT_VALUE).arg(expr);
+      case NodeTest.ANODE:
+      case NodeTest.COMMENT:
+      case NodeTest.ATTRIBUTE:
+      case NodeTest.PI:
+        return ctx.currentDom().invoke(GET_STRING_VALUE_X).arg(expr);
+      default:
+        final ErrorMsg err = new ErrorMsg(Messages.get().dataConversionErr(this, type), -1);
+        ctx.xsltc().getParser().reportError(FATAL, err);
+        return expr;
     }
   }
 
   /**
-   * Translates a node into a synthesized boolean. If the expression is "@attr",
-   * then "true" is pushed iff "attr" is an attribute of the current node. If
-   * the expression is ".", the result is always "true".
+   * Translates a node into a synthesized boolean. If the expression is "@attr", then "true" is pushed iff "attr" is an
+   * attribute of the current node. If the expression is ".", the result is always "true".
    * 
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
+   * @param ctx TODO
+   * @param expr TODO
+   * @param type TODO
+   * @return TODO
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo
    */
   public JExpression compileTo(CompilerContext ctx, JExpression expr, BooleanType type) {
     return expr.ne(lit(0));
   }
 
   /**
-   * Expects a node on the stack and pushes a real. First the node is converted
-   * to string, and from string to real.
+   * Expects a node on the stack and pushes a real. First the node is converted to string, and from string to real.
    * 
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
+   * @param ctx TODO
+   * @param expr TODO
+   * @param type TODO
+   * @return TODO
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo
    */
   public JExpression compileTo(CompilerContext ctx, JExpression expr, RealType type) {
     return Type.String.compileTo(ctx, compileTo(ctx, expr, Type.String), Type.Real);
   }
 
   /**
-   * Expects a node on the stack and pushes a singleton node-set. Singleton
-   * iterators are already started after construction.
+   * Expects a node on the stack and pushes a singleton node-set. Singleton iterators are already started after
+   * construction.
    * 
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
+   * @param ctx TODO
+   * @param expr TODO
+   * @param type TODO
+   * @return TODO
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo
    */
   public JExpression compileTo(CompilerContext ctx, JExpression expr, NodeSetType type) {
     // Create a new instance of SingletonIterator
@@ -156,26 +171,39 @@ public final class NodeType extends Type {
   /**
    * Subsume Node into ObjectType.
    * 
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
+   * @param ctx TODO
+   * @param expr TODO
+   * @param type TODO
+   * @return TODO
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo
    */
   public JExpression compileTo(CompilerContext ctx, JExpression expr, ObjectType type) {
     return expr;
   }
 
   /**
-   * Expects a node on the stack and pushes a boxed node. Boxed nodes are
-   * represented by an instance of <code>de.lyca.xalan.xsltc.dom.Node</code>.
+   * Expects a node on the stack and pushes a boxed node. Boxed nodes are represented by an instance of
+   * <code>de.lyca.xalan.xsltc.dom.Node</code>.
    * 
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
+   * @param ctx TODO
+   * @param expr TODO
+   * @param type TODO
+   * @return TODO
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo
    */
   public JExpression compileTo(CompilerContext ctx, JExpression expr, ReferenceType type) {
     return _new(ctx.ref(de.lyca.xalan.xsltc.runtime.Node.class)).arg(expr).arg(lit(_type));
   }
 
   /**
-   * Translates a node into the Java type denoted by <code>clazz</code>. Expects
-   * a node on the stack and pushes an object of the appropriate type after
-   * coercion.
+   * Translates a node into the Java type denoted by <code>clazz</code>. Expects a node on the stack and pushes an
+   * object of the appropriate type after coercion.
+   * 
+   * @param ctx TODO
+   * @param expr TODO
+   * @param clazz TODO
+   * @return TODO
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo
    */
   @Override
   public JExpression compileTo(CompilerContext ctx, JExpression expr, Class<?> clazz) {
@@ -211,6 +239,8 @@ public final class NodeType extends Type {
 
   /**
    * Returns the class name of an internal type's external representation.
+   * 
+   * @return the external class name
    */
   @Override
   public String getClassName() {

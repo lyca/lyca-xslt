@@ -103,6 +103,8 @@ public final class Util {
 
   /**
    * Search for both slashes in order to support URLs and files.
+   * @param name TODO
+   * @return TODO
    */
   public static String baseName(String name) {
     int index = name.lastIndexOf('\\');
@@ -123,6 +125,8 @@ public final class Util {
 
   /**
    * Search for both slashes in order to support URLs and files.
+   * @param name TODO
+   * @return TODO
    */
   public static String pathName(String name) {
     int index = name.lastIndexOf('/');
@@ -134,6 +138,8 @@ public final class Util {
 
   /**
    * Replace all illegal Java chars by '_'.
+   * @param name TODO
+   * @return TODO
    */
   public static String toJavaName(String name) {
     if (name.length() > 0) {
@@ -158,6 +164,10 @@ public final class Util {
 
   /**
    * Replace a certain character in a string with a new substring.
+   * @param base TODO
+   * @param ch TODO
+   * @param str TODO
+   * @return TODO
    */
   public static String replace(String base, char ch, String str) {
     return base.indexOf(ch) < 0 ? base : replace(base, String.valueOf(ch), new String[] { str });
@@ -182,6 +192,8 @@ public final class Util {
 
   /**
    * Replace occurances of '.', '-', '/' and ':'
+   * @param input TODO
+   * @return TODO
    */
   public static String escape(String input) {
     return KEYWORDS.containsKey(input) ? KEYWORDS.get(input) : '$' + replace(input, ".-/:", new String[] { "$dot$",
@@ -200,6 +212,8 @@ public final class Util {
 
   /**
    * Checks if the string is a literal (i.e. not an AVT) or not.
+   * @param str TODO
+   * @return TODO
    */
   public static boolean isLiteral(String str) {
     final int length = str.length();
@@ -212,6 +226,8 @@ public final class Util {
 
   /**
    * Checks if the string is valid list of qnames
+   * @param str TODO
+   * @return TODO
    */
   public static boolean isValidQNames(String str) {
     if (str != null && !str.isEmpty()) {

@@ -19,8 +19,6 @@ package de.lyca.xml.serializer;
 
 /**
  * Constants used in serialization, such as the string "xmlns"
- * 
- * @xsl.usage internal
  */
 class SerializerConstants {
 

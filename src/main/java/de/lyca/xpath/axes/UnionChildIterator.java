@@ -19,6 +19,8 @@ package de.lyca.xpath.axes;
 
 import java.util.List;
 
+import javax.xml.transform.TransformerException;
+
 import de.lyca.xml.dtm.DTMIterator;
 import de.lyca.xml.utils.QName;
 import de.lyca.xpath.XPathContext;
@@ -126,7 +128,7 @@ public class UnionChildIterator extends ChildTestIterator {
 
         }
       }
-    } catch (final javax.xml.transform.TransformerException se) {
+    } catch (final TransformerException se) {
 
       // TODO: Fix this.
       throw new RuntimeException(se.getMessage());

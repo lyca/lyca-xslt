@@ -25,10 +25,8 @@ import org.w3c.dom.Node;
 import de.lyca.xml.utils.PrefixResolver;
 
 /**
- * <meta name="usage" content="general"/> This class implements a Default
- * PrefixResolver which can be used to perform prefix-to-namespace lookup for
- * the XPath object. This class delegates the resolution to the passed
- * NamespaceContext
+ * This class implements a Default PrefixResolver which can be used to perform prefix-to-namespace lookup for the XPath
+ * object. This class delegates the resolution to the passed NamespaceContext
  */
 public class JAXPPrefixResolver implements PrefixResolver {
 
@@ -62,22 +60,18 @@ public class JAXPPrefixResolver implements PrefixResolver {
   }
 
   /**
-   * The URI for the XML namespace. (Duplicate of that found in
-   * de.lyca.xpath.XPathContext).
+   * The URI for the XML namespace. (Duplicate of that found in de.lyca.xpath.XPathContext).
    */
 
   public static final String S_XMLNAMESPACEURI = "http://www.w3.org/XML/1998/namespace";
 
   /**
-   * Given a prefix and a Context Node, get the corresponding namespace.
-   * Warning: This will not work correctly if namespaceContext is an attribute
-   * node.
+   * Given a prefix and a Context Node, get the corresponding namespace. Warning: This will not work correctly if
+   * namespaceContext is an attribute node.
    * 
-   * @param prefix
-   *          Prefix to resolve.
-   * @param namespaceContext
-   *          Node from which to start searching for a xmlns attribute that
-   *          binds a prefix to a namespace.
+   * @param prefix Prefix to resolve.
+   * @param namespaceContext Node from which to start searching for a xmlns attribute that binds a prefix to a
+   *        namespace.
    * @return Namespace that prefix resolves to, or null if prefix is not bound.
    */
   @Override
@@ -91,7 +85,7 @@ public class JAXPPrefixResolver implements PrefixResolver {
       int type;
 
       while (null != parent && null == namespace
-              && ((type = parent.getNodeType()) == Node.ELEMENT_NODE || type == Node.ENTITY_REFERENCE_NODE)) {
+          && ((type = parent.getNodeType()) == Node.ELEMENT_NODE || type == Node.ENTITY_REFERENCE_NODE)) {
 
         if (type == Node.ELEMENT_NODE) {
           final NamedNodeMap nnm = parent.getAttributes();

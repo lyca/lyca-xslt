@@ -77,7 +77,7 @@ public class ApplyXSLTListener extends DefaultErrorHandler implements ErrorHandl
       * Receive notification of a non-recoverable error.
       *
       * @param spe The error information encapsulated in a SAX parse exception.
-      * @exception SAXException Always thrown
+      * @throws SAXException Always thrown
       */
     public void fatalError(SAXParseException spe)
     throws SAXException

@@ -24,8 +24,6 @@ import de.lyca.xml.serializer.utils.StringToIntTable;
  * <p>
  * This class is not a public API. It is public because it is used outside of
  * this package.
- * 
- * @xsl.usage internal
  */
 public class HtmlElemDesc {
   

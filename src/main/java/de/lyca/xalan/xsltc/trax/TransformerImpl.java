@@ -239,6 +239,8 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
 
   /**
    * Return the state of the secure processing feature.
+   * 
+   * @return TODO
    */
   public boolean isSecureProcessing() {
     return _isSecureProcessing;
@@ -246,6 +248,9 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
 
   /**
    * Set the state of the secure processing feature.
+   * 
+   * @param flag
+   *          TODO
    */
   public void setSecureProcessing(boolean flag) {
     _isSecureProcessing = flag;
@@ -254,6 +259,8 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
   /**
    * Returns the translet wrapped inside this Transformer or null if this is the
    * identity transform.
+   * 
+   * @return TODO
    */
   protected AbstractTranslet getTranslet() {
     return _translet;
@@ -271,6 +278,7 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
    * @param result
    *          Will contain the output from the transformation
    * @throws TransformerException
+   *           TODO
    */
   @Override
   public void transform(Source source, Result result) throws TransformerException {
@@ -308,6 +316,12 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
   /**
    * Create an output handler for the transformation output based on the type
    * and contents of the TrAX Result object passed to the transform() method.
+   * 
+   * @param result
+   *          TODO
+   * @return TODO
+   * @throws TransformerException
+   *           TODO
    */
   public SerializationHandler getOutputHandler(Result result) throws TransformerException {
     // Get output method using getLayeredOutputProperty() to ignore defaults
@@ -422,6 +436,9 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
 
   /**
    * Set the internal DOM that will be used for the next transformation
+   * 
+   * @param dom
+   *          TODO
    */
   protected void setDOM(DOM dom) {
     _dom = dom;
@@ -429,6 +446,10 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
 
   /**
    * Builds an internal DOM from a TrAX Source object
+   * 
+   * @param source
+   *          TODO
+   * @return TODO
    */
   private DOM getDOM(Source source) throws TransformerException {
     try {
@@ -468,6 +489,8 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
   /**
    * Returns the {@link de.lyca.xalan.xsltc.trax.TransformerFactoryImpl} object
    * that create this <code>Transformer</code>.
+   * 
+   * @return TODO
    */
   protected TransformerFactoryImpl getTransformerFactory() {
     return _tfactory;
@@ -477,6 +500,8 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
    * Returns the
    * {@link de.lyca.xalan.xsltc.runtime.output.TransletOutputHandlerFactory}
    * object that create the <code>TransletOutputHandler</code>.
+   * 
+   * @return TODO
    */
   protected TransletOutputHandlerFactory getTransletOutputHandlerFactory() {
     return _tohFactory;
@@ -565,6 +590,10 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
 
   /**
    * Internal transformation method - uses the internal APIs of XSLTC
+   * @param source TODO
+   * @param handler TODO
+   * @param encoding TODO
+   * @throws TransformerException TODO
    */
   private void transform(Source source, SerializationHandler handler, String encoding) throws TransformerException {
     try {
@@ -644,7 +673,7 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
    * 
    * @param listener
    *          The error event listener to use
-   * @throws IllegalArgumentException
+   * @throws IllegalArgumentException TODO
    */
   @Override
   public void setErrorListener(ErrorListener listener) throws IllegalArgumentException {
@@ -676,7 +705,7 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
    * of the output properties for the transformation. This is a set of layered
    * properties. The first layer contains properties set by calls to
    * setOutputProperty() and setOutputProperties() on this class, and the output
-   * settings defined in the stylesheet's <xsl:output> element makes up the
+   * settings defined in the stylesheet's {@literal <xsl:output>} element makes up the
    * second level, while the default XSLT output settings are returned on the
    * third level.
    * 
@@ -866,6 +895,7 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
   /**
    * This method is used to pass any properties to the output handler when
    * running the identity transform.
+   * @param handler TODO
    */
   public void transferOutputProperties(SerializationHandler handler) {
     // Return right now if no properties are set

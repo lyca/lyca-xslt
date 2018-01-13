@@ -26,8 +26,6 @@ package de.lyca.xml.serializer.utils;
  * 
  * This class is not a public API, it is only public because it is used by
  * de.lyca.xml.serializer.
- * 
- * @xsl.usage internal
  */
 public final class WrappedRuntimeException extends RuntimeException {
   static final long serialVersionUID = 7140414456714658073L;

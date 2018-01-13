@@ -19,6 +19,8 @@ package de.lyca.xpath.functions;
 
 import java.util.List;
 
+import javax.xml.transform.TransformerException;
+
 import de.lyca.xml.dtm.DTMIterator;
 import de.lyca.xml.utils.QName;
 import de.lyca.xpath.XPathContext;
@@ -29,8 +31,6 @@ import de.lyca.xpath.objects.XObject;
 
 /**
  * Execute the Last() function.
- * 
- * @xsl.usage advanced
  */
 public class FuncLast extends Function {
   static final long serialVersionUID = 9205812403085432943L;
@@ -54,9 +54,9 @@ public class FuncLast extends Function {
    * 
    * @return The number of nodes in the list.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
-  public int getCountOfContextNodeList(XPathContext xctxt) throws javax.xml.transform.TransformerException {
+  public int getCountOfContextNodeList(XPathContext xctxt) throws TransformerException {
 
     // assert(null != m_contextNodeList, "m_contextNodeList must be non-null");
     // If we're in a predicate, then this will return non-null.
@@ -84,10 +84,10 @@ public class FuncLast extends Function {
    *          The current execution context.
    * @return A valid XObject.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
   @Override
-  public XObject execute(XPathContext xctxt) throws javax.xml.transform.TransformerException {
+  public XObject execute(XPathContext xctxt) throws TransformerException {
     final XNumber xnum = new XNumber(getCountOfContextNodeList(xctxt));
     // System.out.println("last: "+xnum.num());
     return xnum;

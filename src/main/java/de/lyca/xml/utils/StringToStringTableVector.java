@@ -20,8 +20,6 @@ package de.lyca.xml.utils;
 /**
  * A very simple table that stores a list of StringToStringTables, optimized for
  * small lists.
- * 
- * @xsl.usage internal
  */
 public class StringToStringTableVector {
 

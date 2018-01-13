@@ -48,7 +48,7 @@ public class FilterExprIterator extends BasicTestIterator {
 
   /**
    * Create a FilterExprIterator object.
-   * 
+   * @param expr TODO
    */
   public FilterExprIterator(Expression expr) {
     super(null);
@@ -116,6 +116,7 @@ public class FilterExprIterator extends BasicTestIterator {
 
   /**
    * Get the inner contained expression of this filter.
+   * @return TODO
    */
   public Expression getInnerExpression() {
     return m_expr;
@@ -123,6 +124,7 @@ public class FilterExprIterator extends BasicTestIterator {
 
   /**
    * Set the inner contained expression of this filter.
+   * @param expr TODO
    */
   public void setInnerExpression(Expression expr) {
     expr.exprSetParent(this);

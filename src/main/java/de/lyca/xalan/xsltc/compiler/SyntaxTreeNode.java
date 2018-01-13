@@ -57,8 +57,8 @@ import de.lyca.xml.serializer.SerializationHandler;
  * @author Santiago Pericas-Geertsen
  * @author G. Todd Miller
  * @author Morten Jorensen
- * @author Erwin Bolwidt <ejb@klomp.org>
- * @author John Howard <JohnH@schemasoft.com>
+ * @author Erwin Bolwidt {@literal <ejb@klomp.org>}
+ * @author John Howard {@literal <JohnH@schemasoft.com>}
  */
 public abstract class SyntaxTreeNode {
 
@@ -166,7 +166,7 @@ public abstract class SyntaxTreeNode {
    *          The element's namespace URI
    * @param prefix
    *          The element's namespace prefix
-   * @param local
+   * @param localname
    *          The element's local name
    */
   protected void setQName(String uri, String prefix, String localname) {
@@ -174,10 +174,9 @@ public abstract class SyntaxTreeNode {
   }
 
   /**
-   * Set the QName for the SyntaxTreeNode
+   * Get the QName for the SyntaxTreeNode
    * 
-   * @param qname
-   *          The QName for the syntax tree node
+   * @return the the syntax tree nodes QName
    */
   protected QName getQName() {
     return _qname;
@@ -199,7 +198,7 @@ public abstract class SyntaxTreeNode {
    * 
    * @param qname
    *          The QName of the attribute to return.
-   * @return The value of the attribute of name 'qname'.
+   * @return The value of the attribute of name 'qname' or the empty string.
    */
   protected String getAttribute(String qname) {
     if (_attributes == null)
@@ -396,8 +395,8 @@ public abstract class SyntaxTreeNode {
   }
 
   /**
-   * Get the Stylesheet node that represents the <xsl:stylesheet/> element that
-   * this node occured under.
+   * Get the Stylesheet node that represents the {@literal <xsl:stylesheet/>}
+   * element that this node occured under.
    * 
    * @return The Stylesheet ancestor node of this node.
    */
@@ -415,9 +414,9 @@ public abstract class SyntaxTreeNode {
   }
 
   /**
-   * Get the Template node that represents the <xsl:template/> element that this
-   * node occured under. Note that this method will return 'null' for nodes that
-   * represent top-level elements.
+   * Get the Template node that represents the {@literal <xsl:template/>}
+   * element that this node occured under. Note that this method will return
+   * 'null' for nodes that represent top-level elements.
    * 
    * @return The Template ancestor node of this node or 'null'.
    */
@@ -500,6 +499,12 @@ public abstract class SyntaxTreeNode {
   /**
    * Add a node to the current scope and return name of a variable or parameter
    * if the node represents a variable or a parameter.
+   * 
+   * @param parser
+   *          TODO
+   * @param node
+   *          TODO
+   * @return TODO
    */
   protected QName updateScope(Parser parser, SyntaxTreeNode node) {
     if (node instanceof Variable) {
@@ -520,6 +525,9 @@ public abstract class SyntaxTreeNode {
    * 
    * @param stable
    *          The compiler/parser's symbol table
+   * @return TODO
+   * @throws TypeCheckError
+   *           TODO
    */
   public abstract Type typeCheck(SymbolTable stable) throws TypeCheckError;
 
@@ -528,6 +536,9 @@ public abstract class SyntaxTreeNode {
    * 
    * @param stable
    *          The compiler/parser's symbol table
+   * @return TODO
+   * @throws TypeCheckError
+   *           TODO
    */
   protected Type typeCheckContents(SymbolTable stable) throws TypeCheckError {
     for (final SyntaxTreeNode item : _contents) {
@@ -541,10 +552,6 @@ public abstract class SyntaxTreeNode {
    * 
    * @param ctx
    *          TODO
-   * @param classGen
-   *          BCEL Java class generator
-   * @param methodGen
-   *          BCEL Java method generator
    */
   // public abstract void translate(JDefinedClass definedClass, JMethod method);
   public abstract void translate(CompilerContext ctx);
@@ -554,10 +561,6 @@ public abstract class SyntaxTreeNode {
    * 
    * @param ctx
    *          TODO
-   * @param classGen
-   *          BCEL Java class generator
-   * @param methodGen
-   *          BCEL Java method generator
    */
   protected void translateContents(CompilerContext ctx) {
     // Call translate() on all child nodes
@@ -653,10 +656,9 @@ public abstract class SyntaxTreeNode {
   /**
    * Utility method used by parameters and variables to store result trees
    * 
-   * @param classGen
-   *          BCEL Java class generator
-   * @param methodGen
-   *          BCEL Java method generator
+   * @param ctx
+   *          TODO
+   * @return TODO
    */
   protected JExpression compileResultTree(CompilerContext ctx) {
     JExpression dom = ctx.currentDom();

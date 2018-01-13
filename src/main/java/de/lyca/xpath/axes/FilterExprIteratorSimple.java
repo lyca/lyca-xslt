@@ -19,10 +19,13 @@ package de.lyca.xpath.axes;
 
 import java.util.List;
 
+import javax.xml.transform.TransformerException;
+
 import de.lyca.xml.dtm.Axis;
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xml.utils.PrefixResolver;
 import de.lyca.xml.utils.QName;
+import de.lyca.xml.utils.WrappedRuntimeException;
 import de.lyca.xpath.Expression;
 import de.lyca.xpath.ExpressionOwner;
 import de.lyca.xpath.VariableStack;
@@ -56,7 +59,7 @@ public class FilterExprIteratorSimple extends LocPathIterator {
 
   /**
    * Create a FilterExprIteratorSimple object.
-   * 
+   * @param expr TODO 
    */
   public FilterExprIteratorSimple(Expression expr) {
     super(null);
@@ -78,9 +81,17 @@ public class FilterExprIteratorSimple extends LocPathIterator {
   /**
    * Execute the expression. Meant for reuse by other FilterExpr iterators that
    * are not derived from this object.
+   * @param context TODO
+   * @param xctxt TODO
+   * @param prefixResolver TODO
+   * @param isTopLevel TODO
+   * @param stackFrame TODO
+   * @param expr TODO
+   * @return TODO
+   * @throws WrappedRuntimeException TODO
    */
   public static XNodeSet executeFilterExpr(int context, XPathContext xctxt, PrefixResolver prefixResolver,
-          boolean isTopLevel, int stackFrame, Expression expr) throws de.lyca.xml.utils.WrappedRuntimeException {
+          boolean isTopLevel, int stackFrame, Expression expr) throws WrappedRuntimeException {
     final PrefixResolver savedResolver = xctxt.getNamespaceContext();
     XNodeSet result = null;
 
@@ -107,13 +118,13 @@ public class FilterExprIteratorSimple extends LocPathIterator {
         // These two statements need to be combined into one operation.
         vars.setStackFrame(savedStart);
       } else {
-        result = (de.lyca.xpath.objects.XNodeSet) expr.execute(xctxt);
+        result = (XNodeSet) expr.execute(xctxt);
       }
 
-    } catch (final javax.xml.transform.TransformerException se) {
+    } catch (final TransformerException se) {
 
       // TODO: Fix...
-      throw new de.lyca.xml.utils.WrappedRuntimeException(se);
+      throw new WrappedRuntimeException(se);
     } finally {
       xctxt.popCurrentNode();
       xctxt.setNamespaceContext(savedResolver);
@@ -177,6 +188,7 @@ public class FilterExprIteratorSimple extends LocPathIterator {
    *          list from the start of the list will be its position in the stack
    *          frame (but variables above the globalsTop value will need to be
    *          offset to the current stack frame).
+   * @param globalsSize TODO
    */
   @Override
   public void fixupVariables(List<QName> vars, int globalsSize) {
@@ -186,6 +198,7 @@ public class FilterExprIteratorSimple extends LocPathIterator {
 
   /**
    * Get the inner contained expression of this filter.
+   * @return TODO
    */
   public Expression getInnerExpression() {
     return m_expr;
@@ -193,6 +206,7 @@ public class FilterExprIteratorSimple extends LocPathIterator {
 
   /**
    * Set the inner contained expression of this filter.
+   * @param expr TODO
    */
   public void setInnerExpression(Expression expr) {
     expr.exprSetParent(this);

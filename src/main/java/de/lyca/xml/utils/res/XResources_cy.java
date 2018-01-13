@@ -19,8 +19,6 @@ package de.lyca.xml.utils.res;
 
 /**
  * The Cyrillic resource bundle.
- * 
- * @xsl.usage internal
  */
 public class XResources_cy extends XResourceBundle {
 

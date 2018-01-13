@@ -17,6 +17,10 @@
  */
 package de.lyca.xpath.objects;
 
+import org.xml.sax.ContentHandler;
+import org.xml.sax.SAXException;
+import org.xml.sax.ext.LexicalHandler;
+
 import de.lyca.xml.utils.FastStringBuffer;
 import de.lyca.xpath.res.XPATHErrorResources;
 import de.lyca.xpath.res.XPATHMessages;
@@ -76,9 +80,9 @@ public class XStringForChars extends XString {
   }
 
   /**
+   * TODO
    * Cast result object to a string.
-   * 
-   * @return The string this wraps or the empty string if null
+   * The string this wraps or the empty string if null
    */
   @Override
   public void appendToFsb(de.lyca.xml.utils.FastStringBuffer fsb) {
@@ -128,10 +132,10 @@ public class XStringForChars extends XString {
    * @param ch
    *          A non-null reference to a ContentHandler.
    * 
-   * @throws org.xml.sax.SAXException
+   * @throws SAXException TODO
    */
   @Override
-  public void dispatchCharactersEvents(org.xml.sax.ContentHandler ch) throws org.xml.sax.SAXException {
+  public void dispatchCharactersEvents(ContentHandler ch) throws SAXException {
     ch.characters((char[]) m_obj, m_start, m_length);
   }
 
@@ -142,10 +146,10 @@ public class XStringForChars extends XString {
    * @param lh
    *          A non-null reference to a LexicalHandler.
    * 
-   * @throws org.xml.sax.SAXException
+   * @throws SAXException TODO
    */
   @Override
-  public void dispatchAsComment(org.xml.sax.ext.LexicalHandler lh) throws org.xml.sax.SAXException {
+  public void dispatchAsComment(LexicalHandler lh) throws SAXException {
     lh.comment((char[]) m_obj, m_start, m_length);
   }
 
@@ -170,7 +174,7 @@ public class XStringForChars extends XString {
    *          the index of the character.
    * @return the character at the specified index of this string. The first
    *         character is at index <code>0</code>.
-   * @exception IndexOutOfBoundsException
+   * @throws IndexOutOfBoundsException
    *              if the <code>index</code> argument is negative or not less
    *              than the length of this string.
    */
@@ -190,7 +194,7 @@ public class XStringForChars extends XString {
    *          the destination array.
    * @param dstBegin
    *          the start offset in the destination array.
-   * @exception IndexOutOfBoundsException
+   * @throws IndexOutOfBoundsException
    *              If any of the following is true:
    *              <ul>
    *              <li><code>srcBegin</code> is negative.
@@ -201,7 +205,7 @@ public class XStringForChars extends XString {
    *              <li><code>dstBegin+(srcEnd-srcBegin)</code> is larger than
    *              <code>dst.length</code>
    *              </ul>
-   * @exception NullPointerException
+   * @throws NullPointerException
    *              if <code>dst</code> is <code>null</code>
    */
   @Override

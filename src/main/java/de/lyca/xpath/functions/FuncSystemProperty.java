@@ -21,6 +21,8 @@ import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.util.Properties;
 
+import javax.xml.transform.TransformerException;
+
 import de.lyca.xalan.ObjectFactory;
 import de.lyca.xalan.SecuritySupport;
 import de.lyca.xpath.XPathContext;
@@ -30,8 +32,6 @@ import de.lyca.xpath.res.XPATHErrorResources;
 
 /**
  * Execute the SystemProperty() function.
- * 
- * @xsl.usage advanced
  */
 public class FuncSystemProperty extends FunctionOneArg {
   static final long serialVersionUID = 3694874980992204867L;
@@ -49,10 +49,10 @@ public class FuncSystemProperty extends FunctionOneArg {
    *          The current execution context.
    * @return A valid XObject.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
   @Override
-  public XObject execute(XPathContext xctxt) throws javax.xml.transform.TransformerException {
+  public XObject execute(XPathContext xctxt) throws TransformerException {
 
     final String fullName = m_arg0.execute(xctxt).str();
     final int indexOfNSSep = fullName.indexOf(':');

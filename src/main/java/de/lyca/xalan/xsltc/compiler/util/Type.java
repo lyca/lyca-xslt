@@ -52,8 +52,11 @@ public abstract class Type {
   public static final Type Processing_Instruction = new NodeType(NodeTest.PI);
 
   /**
-   * Factory method to instantiate object types. Returns a pre-defined instance
-   * for "java.lang.Object" and "java.lang.String".
+   * Factory method to instantiate object types. Returns a pre-defined instance for "java.lang.Object" and
+   * "java.lang.String".
+   * 
+   * @param javaClassName TODO
+   * @return TODO
    */
   public static Type newObjectType(String javaClassName) {
     if (javaClassName == "java.lang.Object")
@@ -65,8 +68,11 @@ public abstract class Type {
   }
 
   /**
-   * Factory method to instantiate object types. Returns a pre-defined instance
-   * for java.lang.Object.class and java.lang.String.class.
+   * Factory method to instantiate object types. Returns a pre-defined instance for java.lang.Object.class and
+   * java.lang.String.class.
+   * 
+   * @param clazz TODO
+   * @return TODO
    */
   public static Type newObjectType(Class<?> clazz) {
     if (clazz == java.lang.Object.class)
@@ -79,33 +85,42 @@ public abstract class Type {
 
   /**
    * Returns a string representation of this type.
+   * 
+   * @return TODO
    */
   @Override
   public abstract String toString();
 
   /**
    * Returns true if this and other are identical types.
+   * 
+   * @param other TODO
+   * @return TODO
    */
   public abstract boolean identicalTo(Type other);
 
   /**
    * Returns true if this type is a numeric type. Redefined in NumberType.
+   * 
+   * @return TODO
    */
   public boolean isNumber() {
     return false;
   }
 
   /**
-   * Returns true if this type has no object representaion. Redefined in
-   * ResultTreeType.
+   * Returns true if this type has no object representaion. Redefined in ResultTreeType.
+   * 
+   * @return TODO
    */
   public boolean implementedAsMethod() {
     return false;
   }
 
   /**
-   * Returns true if this type is a simple type. Redefined in NumberType,
-   * BooleanType and StringType.
+   * Returns true if this type is a simple type. Redefined in NumberType, BooleanType and StringType.
+   * 
+   * @return TODO
    */
   public boolean isSimple() {
     return false;
@@ -114,18 +129,24 @@ public abstract class Type {
   public abstract JType toJCType();
 
   /**
-   * Returns the distance between two types. This measure is used to select
-   * overloaded functions/operators. This method is typically redefined by the
-   * subclasses.
+   * Returns the distance between two types. This measure is used to select overloaded functions/operators. This method
+   * is typically redefined by the subclasses.
+   * 
+   * @param type TODO
+   * @return TODO
    */
   public int distanceTo(Type type) {
     return type == this ? 0 : Integer.MAX_VALUE;
   }
 
   /**
-   * Compiles an expression of this type to an expression of type
-   * <code>type</code>. Expects an expression of the former type and returns an
-   * expression of the latter.
+   * Compiles an expression of this type to an expression of type <code>type</code>. Expects an expression of the former
+   * type and returns an expression of the latter.
+   * 
+   * @param ctx TODO
+   * @param expr TODO
+   * @param type TODO
+   * @return TODO
    */
   public JExpression compileTo(CompilerContext ctx, JExpression expr, Type type) {
     final ErrorMsg err = new ErrorMsg(Messages.get().dataConversionErr(this, type), -1);
@@ -134,9 +155,13 @@ public abstract class Type {
   }
 
   /**
-   * Translates an object of this type to the external (Java) type denoted by
-   * <code>clazz</code>. This method is used to translate parameters when
-   * external functions are called.
+   * Translates an object of this type to the external (Java) type denoted by <code>clazz</code>. This method is used to
+   * translate parameters when external functions are called.
+   * 
+   * @param ctx TODO
+   * @param expr TODO
+   * @param clazz TODO
+   * @return TODO
    */
   public JExpression compileTo(CompilerContext ctx, JExpression expr, Class<?> clazz) {
     final ErrorMsg err = new ErrorMsg(Messages.get().dataConversionErr(this, clazz), -1);
@@ -145,9 +170,14 @@ public abstract class Type {
   }
 
   /**
-   * Translates an external (Java) type denoted by <code>clazz</code> to an
-   * object of this type. This method is used to translate return values when
-   * external functions are called.
+   * Translates an external (Java) type denoted by <code>clazz</code> to an object of this type. This method is used to
+   * translate return values when external functions are called.
+   * 
+   * @param ctx TODO
+   * @param expr TODO
+   * @param clazz TODO
+   * @return TODO
+   * 
    */
   public JExpression compileFrom(CompilerContext ctx, JExpression expr, Class<?> clazz) {
     final ErrorMsg err = new ErrorMsg(Messages.get().dataConversionErr(clazz, this), -1);
@@ -157,6 +187,8 @@ public abstract class Type {
 
   /**
    * Returns the class name of an internal type's external representation.
+   * 
+   * @return TODO
    */
   public String getClassName() {
     return "";

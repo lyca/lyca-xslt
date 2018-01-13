@@ -38,7 +38,7 @@ import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
  * 
  * @author Jacek Ambroziak
  * @author Santiago Pericas-Geertsen
- * @author Erwin Bolwidt <ejb@klomp.org>
+ * @author Erwin Bolwidt {@literal <ejb@klomp.org>}
  * @author Morten Jorgensen <morten.jorgensen@sun.com>
  */
 final class TestSeq {

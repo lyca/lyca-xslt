@@ -58,8 +58,6 @@ import de.lyca.xpath.res.XPATHMessages;
  * 
  * @see de.lyca.xpath.objects.XObject
  * @see org.w3c.dom.xpath.XPathResult
- * 
- * @xsl.usage internal
  */
 class XPathResultImpl implements XPathResult, EventListener {
 
@@ -188,7 +186,7 @@ class XPathResultImpl implements XPathResult, EventListener {
   /**
    * The value of this number result.
    * 
-   * @exception XPathException
+   * @throws XPathException
    *              TYPE_ERR: raised if <code>resultType</code> is not
    *              <code>NUMBER_TYPE</code>.
    * @see org.w3c.dom.xpath.XPathResult#getNumberValue()
@@ -214,7 +212,7 @@ class XPathResultImpl implements XPathResult, EventListener {
   /**
    * The value of this string result.
    * 
-   * @exception XPathException
+   * @throws XPathException
    *              TYPE_ERR: raised if <code>resultType</code> is not
    *              <code>STRING_TYPE</code>.
    * 
@@ -260,7 +258,7 @@ class XPathResultImpl implements XPathResult, EventListener {
   /**
    * The value of this single node result, which may be <code>null</code>.
    * 
-   * @exception XPathException
+   * @throws XPathException
    *              TYPE_ERR: raised if <code>resultType</code> is not
    *              <code>ANY_UNORDERED_NODE_TYPE</code> or
    *              <code>FIRST_ORDERED_NODE_TYPE</code>.
@@ -311,7 +309,7 @@ class XPathResultImpl implements XPathResult, EventListener {
    * The number of nodes in the result snapshot. Valid values for snapshotItem
    * indices are <code>0</code> to <code>snapshotLength-1</code> inclusive.
    * 
-   * @exception XPathException
+   * @throws XPathException
    *              TYPE_ERR: raised if <code>resultType</code> is not
    *              <code>UNORDERED_NODE_SNAPSHOT_TYPE</code> or
    *              <code>ORDERED_NODE_SNAPSHOT_TYPE</code>.
@@ -337,11 +335,11 @@ class XPathResultImpl implements XPathResult, EventListener {
    * there are no more nodes.
    * 
    * @return Returns the next node.
-   * @exception XPathException
+   * @throws XPathException
    *              TYPE_ERR: raised if <code>resultType</code> is not
    *              <code>UNORDERED_NODE_ITERATOR_TYPE</code> or
    *              <code>ORDERED_NODE_ITERATOR_TYPE</code>.
-   * @exception DOMException
+   * @throws DOMException
    *              INVALID_STATE_ERR: The document has been mutated since the
    *              result was returned.
    * @see org.w3c.dom.xpath.XPathResult#iterateNext()
@@ -394,7 +392,7 @@ class XPathResultImpl implements XPathResult, EventListener {
    * @return The node at the <code>index</code>th position in the
    *         <code>NodeList</code>, or <code>null</code> if that is not a valid
    *         index.
-   * @exception XPathException
+   * @throws XPathException
    *              TYPE_ERR: raised if <code>resultType</code> is not
    *              <code>UNORDERED_NODE_SNAPSHOT_TYPE</code> or
    *              <code>ORDERED_NODE_SNAPSHOT_TYPE</code>.

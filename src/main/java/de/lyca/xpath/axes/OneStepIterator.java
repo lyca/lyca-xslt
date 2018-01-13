@@ -17,6 +17,8 @@
  */
 package de.lyca.xpath.axes;
 
+import javax.xml.transform.TransformerException;
+
 import de.lyca.xml.dtm.Axis;
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xml.dtm.DTMAxisIterator;
@@ -31,8 +33,7 @@ import de.lyca.xpath.compiler.OpMap;
  * This class implements a general iterator for those LocationSteps with only
  * one step, and perhaps a predicate.
  * 
- * @see de.lyca.xpath.axes#LocPathIterator
- * @xsl.usage advanced
+ * @see de.lyca.xpath.axes.LocPathIterator
  */
 public class OneStepIterator extends ChildTestIterator {
   static final long serialVersionUID = 4623710779664998283L;
@@ -50,10 +51,11 @@ public class OneStepIterator extends ChildTestIterator {
    * @param opPos
    *          The position within the op map, which contains the location path
    *          expression for this itterator.
+   * @param analysis TODO
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
-  OneStepIterator(Compiler compiler, int opPos, int analysis) throws javax.xml.transform.TransformerException {
+  OneStepIterator(Compiler compiler, int opPos, int analysis) throws TransformerException {
     super(compiler, opPos, analysis);
     final int firstStepPos = OpMap.getFirstChildPos(opPos);
 
@@ -69,9 +71,9 @@ public class OneStepIterator extends ChildTestIterator {
    * @param axis
    *          One of Axis.Child, etc., or -1 if the axis is unknown.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
-  public OneStepIterator(DTMAxisIterator iterator, Axis axis) throws javax.xml.transform.TransformerException {
+  public OneStepIterator(DTMAxisIterator iterator, Axis axis) throws TransformerException {
     super(null);
 
     m_iterator = iterator;
@@ -85,6 +87,7 @@ public class OneStepIterator extends ChildTestIterator {
    * 
    * @param context
    *          The XPath runtime context for this transformation.
+   * @param environment TODO
    */
   @Override
   public void setRoot(int context, Object environment) {
@@ -114,7 +117,7 @@ public class OneStepIterator extends ChildTestIterator {
   }
 
   /**
-   * Get the next node via getFirstAttribute && getNextAttribute.
+   * Get the next node via getFirstAttribute {@literal &&} getNextAttribute.
    */
   @Override
   protected int getNextNode() {
@@ -126,7 +129,7 @@ public class OneStepIterator extends ChildTestIterator {
    * 
    * @return A new iterator that can be used without mutating this one.
    * 
-   * @throws CloneNotSupportedException
+   * @throws CloneNotSupportedException TODO
    */
   @Override
   public Object clone() throws CloneNotSupportedException {
@@ -145,7 +148,7 @@ public class OneStepIterator extends ChildTestIterator {
    * 
    * @return A cloned NodeIterator set of the start of the query.
    * 
-   * @throws CloneNotSupportedException
+   * @throws CloneNotSupportedException TODO
    */
   @Override
   public DTMIterator cloneWithReset() throws CloneNotSupportedException {

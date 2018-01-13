@@ -19,6 +19,8 @@ package de.lyca.xpath.objects;
 
 import java.util.List;
 
+import javax.xml.transform.TransformerException;
+
 import de.lyca.xml.dtm.DTMIterator;
 import de.lyca.xml.utils.QName;
 import de.lyca.xml.utils.XMLString;
@@ -62,10 +64,10 @@ public class XRTreeFragSelectWrapper extends XRTreeFrag implements Cloneable {
    * 
    * @return the result of executing the select expression
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
   @Override
-  public XObject execute(XPathContext xctxt) throws javax.xml.transform.TransformerException {
+  public XObject execute(XPathContext xctxt) throws TransformerException {
     XObject m_selected;
     m_selected = ((Expression) m_obj).execute(xctxt);
     m_selected.allowDetachToRelease(m_allowRelease);
@@ -96,7 +98,7 @@ public class XRTreeFragSelectWrapper extends XRTreeFrag implements Cloneable {
    * @return The result tree fragment as a number or NaN
    */
   @Override
-  public double num() throws javax.xml.transform.TransformerException {
+  public double num() throws TransformerException {
 
     throw new RuntimeException(XPATHMessages.createXPATHMessage(
             XPATHErrorResources.ER_NUM_NOT_SUPPORTED_XRTREEFRAGSELECTWRAPPER, null)); // "num() not supported by XRTreeFragSelectWrapper!");

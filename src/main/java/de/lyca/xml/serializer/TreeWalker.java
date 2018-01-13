@@ -39,13 +39,9 @@ import de.lyca.xml.serializer.utils.AttList;
 import de.lyca.xml.serializer.utils.DOM2Helper;
 
 /**
- * This class does a pre-order walk of the DOM tree, calling a ContentHandler
- * interface as it goes.
+ * This class does a pre-order walk of the DOM tree, calling a ContentHandler interface as it goes.
  * 
- * This class is a copy of the one in de.lyca.xml.utils. It exists to cut the
- * serializers dependancy on that package.
- * 
- * @xsl.usage internal
+ * This class is a copy of the one in de.lyca.xml.utils. It exists to cut the serializers dependancy on that package.
  */
 
 public final class TreeWalker {
@@ -53,8 +49,7 @@ public final class TreeWalker {
   /** Local reference to a ContentHandler */
   final private ContentHandler m_contentHandler;
   /**
-   * If m_contentHandler is a SerializationHandler, then this is a reference to
-   * the same object.
+   * If m_contentHandler is a SerializationHandler, then this is a reference to the same object.
    */
   final private SerializationHandler m_Serializer;
 
@@ -83,9 +78,7 @@ public final class TreeWalker {
   /**
    * Constructor.
    * 
-   * @param contentHandler
-   *          The implemention of the contentHandler operation (toXMLString,
-   *          digest, ...)
+   * @param contentHandler The implemention of the contentHandler operation (toXMLString, digest, ...)
    */
   public TreeWalker(ContentHandler contentHandler, String systemId) {
     // Set the content handler
@@ -125,15 +118,13 @@ public final class TreeWalker {
   /**
    * Perform a pre-order traversal non-recursive style.
    * 
-   * Note that TreeWalker assumes that the subtree is intended to represent a
-   * complete (though not necessarily well-formed) document and, during a
-   * traversal, startDocument and endDocument will always be issued to the SAX
+   * Note that TreeWalker assumes that the subtree is intended to represent a complete (though not necessarily
+   * well-formed) document and, during a traversal, startDocument and endDocument will always be issued to the SAX
    * listener.
    * 
-   * @param pos
-   *          Node in the tree where to start traversal
+   * @param pos Node in the tree where to start traversal
    * 
-   * @throws TransformerException
+   * @throws SAXException TODO
    */
   public void traverse(Node pos) throws SAXException {
 
@@ -178,17 +169,14 @@ public final class TreeWalker {
   /**
    * Perform a pre-order traversal non-recursive style.
    * 
-   * Note that TreeWalker assumes that the subtree is intended to represent a
-   * complete (though not necessarily well-formed) document and, during a
-   * traversal, startDocument and endDocument will always be issued to the SAX
+   * Note that TreeWalker assumes that the subtree is intended to represent a complete (though not necessarily
+   * well-formed) document and, during a traversal, startDocument and endDocument will always be issued to the SAX
    * listener.
    * 
-   * @param pos
-   *          Node in the tree where to start traversal
-   * @param top
-   *          Node in the tree where to end traversal
+   * @param pos Node in the tree where to start traversal
+   * @param top Node in the tree where to end traversal
    * 
-   * @throws TransformerException
+   * @throws SAXException TODO
    */
   public void traverse(Node pos, Node top) throws SAXException {
 
@@ -242,11 +230,9 @@ public final class TreeWalker {
   /**
    * Start processing given node
    * 
+   * @param node Node to process
    * 
-   * @param node
-   *          Node to process
-   * 
-   * @throws org.xml.sax.SAXException
+   * @throws SAXException TODO
    */
   protected void startNode(Node node) throws SAXException {
 
@@ -290,20 +276,19 @@ public final class TreeWalker {
 
         break;
       case Node.ELEMENT_NODE:
-        final Element elem_node = (Element) node;
-        {
-          // Make sure the namespace node
-          // for the element itself is declared
-          // to the ContentHandler
-          final String uri = elem_node.getNamespaceURI();
-          if (uri != null) {
-            String prefix = elem_node.getPrefix();
-            if (prefix == null) {
-              prefix = "";
-            }
-            m_contentHandler.startPrefixMapping(prefix, uri);
+        final Element elem_node = (Element) node; {
+        // Make sure the namespace node
+        // for the element itself is declared
+        // to the ContentHandler
+        final String uri = elem_node.getNamespaceURI();
+        if (uri != null) {
+          String prefix = elem_node.getPrefix();
+          if (prefix == null) {
+            prefix = "";
           }
+          m_contentHandler.startPrefixMapping(prefix, uri);
         }
+      }
         final NamedNodeMap atts = elem_node.getAttributes();
         final int nAttrs = atts.getLength();
         // System.out.println("TreeWalker#startNode: "+node.getNodeName());
@@ -404,11 +389,9 @@ public final class TreeWalker {
   /**
    * End processing of given node
    * 
+   * @param node Node we just finished processing
    * 
-   * @param node
-   *          Node we just finished processing
-   * 
-   * @throws org.xml.sax.SAXException
+   * @throws SAXException TODO
    */
   protected void endNode(Node node) throws SAXException {
 
@@ -483,4 +466,3 @@ public final class TreeWalker {
     }
   }
 } // TreeWalker
-

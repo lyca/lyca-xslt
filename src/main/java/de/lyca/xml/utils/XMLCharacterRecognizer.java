@@ -20,8 +20,6 @@ package de.lyca.xml.utils;
 /**
  * Class used to verify whether the specified <var>ch</var> conforms to the XML
  * 1.0 definition of whitespace.
- * 
- * @xsl.usage internal
  */
 public class XMLCharacterRecognizer {
 

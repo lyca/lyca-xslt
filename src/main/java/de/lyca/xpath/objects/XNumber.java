@@ -17,6 +17,8 @@
  */
 package de.lyca.xpath.objects;
 
+import javax.xml.transform.TransformerException;
+
 import de.lyca.xpath.ExpressionOwner;
 import de.lyca.xpath.XPathContext;
 import de.lyca.xpath.XPathVisitor;
@@ -24,8 +26,6 @@ import de.lyca.xpath.XPathVisitor;
 /**
  * This class represents an XPath number, and is capable of converting the
  * number to other types, such as a string.
- * 
- * @xsl.usage general
  */
 public class XNumber extends XObject {
   static final long serialVersionUID = -2720400709619020193L;
@@ -99,10 +99,10 @@ public class XNumber extends XObject {
    * 
    * @return 0.0
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
   @Override
-  public double num(XPathContext xctxt) throws javax.xml.transform.TransformerException {
+  public double num(XPathContext xctxt) throws TransformerException {
 
     return m_val;
   }
@@ -379,8 +379,6 @@ public class XNumber extends XObject {
    *          Object to compare this to
    * 
    * @return true if the two objects are equal
-   * 
-   * @throws javax.xml.transform.TransformerException
    */
   @Override
   public boolean equals(XObject obj2) {
@@ -396,7 +394,7 @@ public class XNumber extends XObject {
         return obj2.bool() == bool();
       else
         return m_val == obj2.num();
-    } catch (final javax.xml.transform.TransformerException te) {
+    } catch (final TransformerException te) {
       throw new de.lyca.xml.utils.WrappedRuntimeException(te);
     }
   }

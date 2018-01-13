@@ -35,8 +35,6 @@ import org.xml.sax.ext.DeclHandler;
  * 
  * This class is public only because it is used in another package, it is not a
  * public API.
- * 
- * @xsl.usage internal
  */
 public interface SerializationHandler extends ExtendedContentHandler, ExtendedLexicalHandler, XSLOutputAttributes,
         DeclHandler, DTDHandler, ErrorHandler, DOMSerializer, Serializer {

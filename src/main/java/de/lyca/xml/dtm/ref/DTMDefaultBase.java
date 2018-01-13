@@ -28,6 +28,10 @@ import java.util.List;
 
 import javax.xml.transform.Source;
 
+import org.w3c.dom.Node;
+import org.xml.sax.ContentHandler;
+import org.xml.sax.SAXException;
+
 import de.lyca.xml.dtm.Axis;
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xml.dtm.DTMAxisTraverser;
@@ -98,7 +102,7 @@ public abstract class DTMDefaultBase implements DTM {
   /** The number of blocks for the node arrays */
   public static final int DEFAULT_NUMBLOCKS = 32;
 
-  /** The number of blocks used for small documents & RTFs */
+  /** The number of blocks used for small documents and RTFs */
   public static final int DEFAULT_NUMBLOCKS_SMALL = 4;
 
   /** The block size of the node arrays */
@@ -611,6 +615,7 @@ public abstract class DTMDefaultBase implements DTM {
 
   /**
    * Diagnostics function to dump the DTM.
+   * @param os TODO
    */
   public void dumpDTM(OutputStream os) {
     try {
@@ -759,6 +764,9 @@ public abstract class DTMDefaultBase implements DTM {
    * 
    * %REVIEW% This might want to be moved up to DTMDefaultBase, or possibly DTM
    * itself, since it's a useful diagnostic and uses only DTM's public APIs.
+   * 
+   * @param nodeHandle TODO
+   * @return TODO
    */
   public String dumpNode(int nodeHandle) {
     if (nodeHandle == DTM.NULL)
@@ -956,8 +964,9 @@ public abstract class DTMDefaultBase implements DTM {
    * resolved, waits for more nodes to be added to the document and tries again.
    * 
    * @param nodeHandle
-   *          int Handle of the node.
-   * @return int DTM node-number of first child, or DTM.NULL to indicate none
+   *          Handle of the node.
+   * @param nodeType TODO
+   * @return DTM node-number of first child, or DTM.NULL to indicate none
    *         exists.
    */
   public int getTypedFirstChild(int nodeHandle, int nodeType) {
@@ -1112,6 +1121,7 @@ public abstract class DTMDefaultBase implements DTM {
    * 
    * @param nodeHandle
    *          int Handle of the node.
+   * @param nodeType TODO
    * @return int Node-number of next sibling, or DTM.NULL to indicate none
    *         exists.
    */
@@ -1219,6 +1229,9 @@ public abstract class DTMDefaultBase implements DTM {
    * 
    * %REVIEW% Directly managed arrays rather than vectors? %REVIEW% Handles or
    * IDs? Given usage, I think handles.
+   * 
+   * @param elementNodeIndex TODO
+   * @param namespaceNodeIndex TODO
    * */
   protected void declareNamespaceInContext(int elementNodeIndex, int namespaceNodeIndex) {
     SuballocatedIntVector nsList = null;
@@ -1286,6 +1299,9 @@ public abstract class DTMDefaultBase implements DTM {
    * 
    * %REVIEW% Directly managed arrays rather than vectors? %REVIEW% Handles or
    * IDs? Given usage, I think handles.
+   * 
+   * @param elementNodeIndex TODO
+   * @return TODO
    * */
   protected SuballocatedIntVector findNamespaceContext(int elementNodeIndex) {
     if (null != m_namespaceDeclSetElements) {
@@ -1351,7 +1367,8 @@ public abstract class DTMDefaultBase implements DTM {
    * 
    * %REVIEW% Inlne this into findNamespaceContext? Create
    * SortedSuballocatedIntVector type?
-   * 
+   * @param vector TODO
+   * @param lookfor TODO
    * @return If positive or zero, the index of the found item. If negative,
    *         index of the point at which it would have appeared, encoded as
    *         -1-index and hence reconvertable by subtracting it from -1.
@@ -1805,7 +1822,6 @@ public abstract class DTMDefaultBase implements DTM {
    * @param nodeHandle
    *          The node id.
    * @return the number of ancestors, plus one
-   * @xsl.usage internal
    */
   @Override
   public short getLevel(int nodeHandle) {
@@ -1820,7 +1836,6 @@ public abstract class DTMDefaultBase implements DTM {
    * @param nodeHandle
    *          The node handle.
    * @return the node identity
-   * @xsl.usage internal
    */
   public int getNodeIdent(int nodeHandle) {
     /*
@@ -1837,7 +1852,6 @@ public abstract class DTMDefaultBase implements DTM {
    * @param nodeId
    *          The node identity.
    * @return the node handle
-   * @xsl.usage internal
    */
   public int getNodeHandle(int nodeId) {
     /*
@@ -1914,7 +1928,6 @@ public abstract class DTMDefaultBase implements DTM {
    * @param nodeHandle
    *          The node id, which can be any valid node handle.
    * @return the document encoding String object.
-   * @xsl.usage internal
    */
   @Override
   public String getDocumentEncoding(int nodeHandle) {
@@ -2159,11 +2172,11 @@ public abstract class DTMDefaultBase implements DTM {
    *          href="http://www.w3.org/TR/xpath#function-normalize-space"
    *          >normalize-space</a> function.
    * 
-   * @throws org.xml.sax.SAXException
+   * @throws SAXException TODO
    */
   @Override
-  public abstract void dispatchCharactersEvents(int nodeHandle, org.xml.sax.ContentHandler ch, boolean normalize)
-          throws org.xml.sax.SAXException;
+  public abstract void dispatchCharactersEvents(int nodeHandle, ContentHandler ch, boolean normalize)
+          throws SAXException;
 
   /**
    * Directly create SAX parser events from a subtree.
@@ -2173,10 +2186,10 @@ public abstract class DTMDefaultBase implements DTM {
    * @param ch
    *          A non-null reference to a ContentHandler.
    * 
-   * @throws org.xml.sax.SAXException
+   * @throws SAXException TODO
    */
   @Override
-  public abstract void dispatchToEvents(int nodeHandle, org.xml.sax.ContentHandler ch) throws org.xml.sax.SAXException;
+  public abstract void dispatchToEvents(int nodeHandle, ContentHandler ch) throws SAXException;
 
   /**
    * Return an DOM node for the given node.
@@ -2187,7 +2200,7 @@ public abstract class DTMDefaultBase implements DTM {
    * @return A node representation of the DTM node.
    */
   @Override
-  public org.w3c.dom.Node getNode(int nodeHandle) {
+  public Node getNode(int nodeHandle) {
     return new DTMNodeProxy(this, nodeHandle);
   }
 

@@ -62,8 +62,7 @@ public class SuballocatedIntVector {
    * "Shortcut" handle to most recently added row of m_map. Very helpful during
    * construction.
    * 
-   * @xsl.usage internal
-   */
+     */
   protected int m_buildCache[];
   protected int m_buildCacheStartIndex;
 
@@ -124,7 +123,7 @@ public class SuballocatedIntVector {
    * Set the length of the list. This will only work to truncate the list, and
    * even then it has not been heavily tested and may not be trustworthy.
    * 
-   * @return length of the list
+   * @param sz new length of the list
    */
   public void setSize(int sz) {
     if (m_firstFree > sz) {

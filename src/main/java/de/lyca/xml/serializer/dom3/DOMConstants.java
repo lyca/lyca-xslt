@@ -19,8 +19,6 @@ package de.lyca.xml.serializer.dom3;
 
 /**
  * DOM Constants used by the DOM Level 3 LSSerializer implementation.
- * 
- * @xsl.usage internal
  */
 final class DOMConstants {
   //

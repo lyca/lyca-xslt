@@ -21,8 +21,6 @@ package de.lyca.xml.utils;
  * The class that implements this interface can resolve prefixes to namespaces.
  * Examples would include resolving the meaning of a prefix at a particular
  * point in a document, or mapping the prefixes used in an XPath expression.
- * 
- * @xsl.usage advanced
  */
 public interface PrefixResolver {
 

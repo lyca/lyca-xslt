@@ -23,7 +23,13 @@ import javax.xml.transform.SourceLocator;
 
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.ContentHandler;
+import org.xml.sax.DTDHandler;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
+import org.xml.sax.ext.DeclHandler;
+import org.xml.sax.ext.LexicalHandler;
 
 import de.lyca.xalan.xsltc.DOM;
 import de.lyca.xalan.xsltc.StripFilter;
@@ -945,16 +951,15 @@ public class SimpleResultTreeImpl extends EmptySerializer implements DOM, DTM {
   }
 
   @Override
-  public void dispatchCharactersEvents(int nodeHandle, org.xml.sax.ContentHandler ch, boolean normalize)
-          throws org.xml.sax.SAXException {
+  public void dispatchCharactersEvents(int nodeHandle, ContentHandler ch, boolean normalize) throws SAXException {
   }
 
   @Override
-  public void dispatchToEvents(int nodeHandle, org.xml.sax.ContentHandler ch) throws org.xml.sax.SAXException {
+  public void dispatchToEvents(int nodeHandle, ContentHandler ch) throws SAXException {
   }
 
   @Override
-  public org.w3c.dom.Node getNode(int nodeHandle) {
+  public Node getNode(int nodeHandle) {
     return makeNode(nodeHandle);
   }
 
@@ -964,32 +969,32 @@ public class SimpleResultTreeImpl extends EmptySerializer implements DOM, DTM {
   }
 
   @Override
-  public org.xml.sax.ContentHandler getContentHandler() {
+  public ContentHandler getContentHandler() {
     return null;
   }
 
   @Override
-  public org.xml.sax.ext.LexicalHandler getLexicalHandler() {
+  public LexicalHandler getLexicalHandler() {
     return null;
   }
 
   @Override
-  public org.xml.sax.EntityResolver getEntityResolver() {
+  public EntityResolver getEntityResolver() {
     return null;
   }
 
   @Override
-  public org.xml.sax.DTDHandler getDTDHandler() {
+  public DTDHandler getDTDHandler() {
     return null;
   }
 
   @Override
-  public org.xml.sax.ErrorHandler getErrorHandler() {
+  public ErrorHandler getErrorHandler() {
     return null;
   }
 
   @Override
-  public org.xml.sax.ext.DeclHandler getDeclHandler() {
+  public DeclHandler getDeclHandler() {
     return null;
   }
 

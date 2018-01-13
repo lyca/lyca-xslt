@@ -82,17 +82,14 @@ public final class ResultTreeType extends Type {
   }
 
   /**
-   * Translates a result tree to object of internal type <code>type</code>. The
-   * translation to int is undefined since result trees are always converted to
-   * reals in arithmetic expressions.
+   * Translates a result tree to object of internal type <code>type</code>. The translation to int is undefined since
+   * result trees are always converted to reals in arithmetic expressions.
    * 
-   * @param classGen
-   *          A BCEL class generator
-   * @param methodGen
-   *          A BCEL method generator
-   * @param type
-   *          An instance of the type to translate the result tree to
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
+   * @param ctx TODO
+   * @param expr TODO
+   * @param type An instance of the type to translate the result tree to
+   * @return TODO
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo
    */
   @Override
   public JExpression compileTo(CompilerContext ctx, JExpression expr, Type type) {
@@ -116,16 +113,14 @@ public final class ResultTreeType extends Type {
   }
 
   /**
-   * Expects an result tree on the stack and pushes a boolean. Translates a
-   * result tree to a boolean by first converting it to string.
+   * Expects an result tree on the stack and pushes a boolean. Translates a result tree to a boolean by first converting
+   * it to string.
    * 
-   * @param classGen
-   *          A BCEL class generator
-   * @param methodGen
-   *          A BCEL method generator
-   * @param type
-   *          An instance of BooleanType (any)
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
+   * @param ctx TODO
+   * @param expr TODO
+   * @param type An instance of BooleanType (any)
+   * @return TODO
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo
    */
   public JExpression compileTo(CompilerContext ctx, JExpression expr, BooleanType type) {
     return TRUE;
@@ -134,13 +129,9 @@ public final class ResultTreeType extends Type {
   /**
    * Expects an result tree on the stack and pushes a string.
    * 
-   * @param classGen
-   *          A BCEL class generator
-   * @param methodGen
-   *          A BCEL method generator
-   * @param type
-   *          An instance of StringType (any)
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
+   * @param definedClass TODO
+   * @param method TODO
+   * @param type An instance of StringType (any)
    */
   public void translateTo(JDefinedClass definedClass, JMethod method, StringType type) {
     // FIXME
@@ -233,32 +224,27 @@ public final class ResultTreeType extends Type {
   }
 
   /**
-   * Expects an result tree on the stack and pushes a real. Translates a result
-   * tree into a real by first converting it to string.
+   * Expects an result tree on the stack and pushes a real. Translates a result tree into a real by first converting it
+   * to string.
    * 
-   * @param classGen
-   *          A BCEL class generator
-   * @param methodGen
-   *          A BCEL method generator
-   * @param type
-   *          An instance of RealType (any)
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
+   * @param ctx TODO
+   * @param expr TODO
+   * @param type An instance of RealType (any)
+   * @return TODO
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo
    */
   public JExpression compileTo(CompilerContext ctx, JExpression expr, RealType type) {
     return Type.String.compileTo(ctx, compileTo(ctx, expr, Type.String), Type.Real);
   }
 
   /**
-   * Expects a result tree on the stack and pushes a boxed result tree. Result
-   * trees are already boxed so the translation is just a NOP.
+   * Expects a result tree on the stack and pushes a boxed result tree. Result trees are already boxed so the
+   * translation is just a NOP.
    * 
-   * @param classGen
-   *          A BCEL class generator
-   * @param methodGen
-   *          A BCEL method generator
-   * @param type
-   *          An instance of ReferenceType (any)
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
+   * @param definedClass TODO
+   * @param method TODO
+   * @param type An instance of ReferenceType (any)
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo
    */
   public void translateTo(JDefinedClass definedClass, JMethod method, ReferenceType type) {
     // FIXME
@@ -402,26 +388,21 @@ public final class ResultTreeType extends Type {
   }
 
   /**
-   * Expects a result tree on the stack and pushes a node-set (iterator). Note
-   * that the produced iterator is an iterator for the DOM that contains the
-   * result tree, and not the DOM that is currently in use. This conversion here
-   * will therefore not directly work with elements such as
-   * <xsl:apply-templates> and <xsl:for-each> without the DOM parameter/variable
-   * being updates as well.
+   * Expects a result tree on the stack and pushes a node-set (iterator). Note that the produced iterator is an iterator
+   * for the DOM that contains the result tree, and not the DOM that is currently in use. This conversion here will
+   * therefore not directly work with elements such as {@literal <xsl:apply-templates>} and {@literal <xsl:for-each>}
+   * without the DOM parameter/variable being updates as well.
    * 
-   * @param classGen
-   *          A BCEL class generator
-   * @param methodGen
-   *          A BCEL method generator
-   * @param type
-   *          An instance of NodeSetType (any)
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
+   * @param ctx TODO
+   * @param expr TODO
+   * @param type An instance of NodeSetType (any)
+   * @return TODO
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo
    */
   public JExpression compileTo(CompilerContext ctx, JExpression expr, NodeSetType type) {
-    // DOM adapters containing a result tree are not initialised with
-    // translet-type to DOM-type mapping. This must be done now for
-    // XPath expressions and patterns to work for the iterator we create.
-    // Pass the type mappings to the DOM adapter
+    // DOM adapters containing a result tree are not initialised with translet-type to DOM-type mapping. This must be
+    // done now for XPath expressions and patterns to work for the iterator we create. Pass the type mappings to the DOM
+    // adapter
     ctx.currentBlock().invoke(expr, SETUP_MAPPING).arg(direct(NAMES_INDEX)).arg(direct(URIS_INDEX))
         .arg(direct(TYPES_INDEX)).arg(direct(NAMESPACE_INDEX));
 
@@ -432,7 +413,10 @@ public final class ResultTreeType extends Type {
   /**
    * Subsume result tree into ObjectType.
    * 
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
+   * @param definedClass TODO
+   * @param method TODO
+   * @param type TODO
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo
    */
   public void translateTo(JDefinedClass definedClass, JMethod method, ObjectType type) {
     // FIXME
@@ -440,18 +424,15 @@ public final class ResultTreeType extends Type {
   }
 
   /**
-   * Translates a result tree to a Java type denoted by <code>clazz</code>.
-   * Expects a result tree on the stack and pushes an object of the appropriate
-   * type after coercion. Result trees are translated to W3C Node or W3C
-   * NodeList and the translation is done via node-set type.
+   * Translates a result tree to a Java type denoted by <code>clazz</code>. Expects a result tree on the stack and
+   * pushes an object of the appropriate type after coercion. Result trees are translated to W3C Node or W3C NodeList
+   * and the translation is done via node-set type.
    * 
-   * @param classGen
-   *          A BCEL class generator
-   * @param methodGen
-   *          A BCEL method generator
-   * @param clazz
-   *          An reference to the Class to translate to
-   * @see de.lyca.xalan.xsltc.compiler.util.Type#translateTo
+   * @param ctx TODO
+   * @param expr TODO
+   * @param clazz An reference to the Class to translate to
+   * @return TODO
+   * @see de.lyca.xalan.xsltc.compiler.util.Type#compileTo
    */
   @Override
   public JExpression compileTo(CompilerContext ctx, JExpression expr, Class<?> clazz) {
@@ -473,6 +454,8 @@ public final class ResultTreeType extends Type {
 
   /**
    * Returns the class name of an internal type's external representation.
+   * 
+   * @return the external class name
    */
   @Override
   public String getClassName() {

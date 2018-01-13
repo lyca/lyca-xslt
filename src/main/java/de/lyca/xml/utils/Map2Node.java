@@ -33,7 +33,6 @@ import org.w3c.dom.Node;
  * @see de.lyca.xalan.lib.Extensions
  * @author shane_curcuru@us.ibm.com
  * @version $Id$
- * @xsl.usage general
  */
 public abstract class Map2Node {
 
@@ -42,7 +41,7 @@ public abstract class Map2Node {
    * 
    * <p>
    * The hash may have either Maps as values (in which case we recurse) or other
-   * values, in which case we print them as &lt;item> elements, with a 'key'
+   * values, in which case we print them as &lt;item&gt; elements, with a 'key'
    * attribute with the value of the key, and the element contents as the value.
    * </p>
    * 

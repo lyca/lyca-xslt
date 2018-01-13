@@ -247,8 +247,9 @@ public class OpMap {
    * @param opPos
    *          position of FROM_stepType op.
    * @return position of predicate in FROM_stepType structure.
+   * @throws TransformerException transformerException
    */
-  public int getFirstPredicateOpPos(int opPos) throws javax.xml.transform.TransformerException {
+  public int getFirstPredicateOpPos(int opPos) throws TransformerException {
 
     final int stepType = m_opMap.elementAt(opPos);
 
@@ -278,11 +279,11 @@ public class OpMap {
    * @throws TransformerException
    *           if the current ErrorListoner determines to throw an exception.
    */
-  public void error(String msg, Object[] args) throws javax.xml.transform.TransformerException {
+  public void error(String msg, Object[] args) throws TransformerException {
 
     final java.lang.String fmsg = XPATHMessages.createXPATHMessage(msg, args);
 
-    throw new javax.xml.transform.TransformerException(fmsg);
+    throw new TransformerException(fmsg);
   }
 
   /**

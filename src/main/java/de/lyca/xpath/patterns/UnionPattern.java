@@ -19,6 +19,8 @@ package de.lyca.xpath.patterns;
 
 import java.util.List;
 
+import javax.xml.transform.TransformerException;
+
 import de.lyca.xml.utils.QName;
 import de.lyca.xpath.Expression;
 import de.lyca.xpath.ExpressionOwner;
@@ -29,8 +31,6 @@ import de.lyca.xpath.objects.XObject;
 /**
  * This class represents a union pattern, which can have multiple individual
  * StepPattern patterns.
- * 
- * @xsl.usage advanced
  */
 public class UnionPattern extends Expression {
   static final long serialVersionUID = -6670449967116905820L;
@@ -73,7 +73,6 @@ public class UnionPattern extends Expression {
   /**
    * Set the contained step patterns to be tested.
    * 
-   * 
    * @param patterns
    *          the contained step patterns to be tested.
    */
@@ -89,7 +88,6 @@ public class UnionPattern extends Expression {
 
   /**
    * Get the contained step patterns to be tested.
-   * 
    * 
    * @return an array of the contained step patterns to be tested.
    */
@@ -109,10 +107,11 @@ public class UnionPattern extends Expression {
    *         {@link de.lyca.xpath.patterns.NodeTest#SCORE_QNAME}, or
    *         {@link de.lyca.xpath.patterns.NodeTest#SCORE_OTHER}.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException
+   *           TODO
    */
   @Override
-  public XObject execute(XPathContext xctxt) throws javax.xml.transform.TransformerException {
+  public XObject execute(XPathContext xctxt) throws TransformerException {
 
     XObject bestScore = null;
     final int n = m_patterns.length;

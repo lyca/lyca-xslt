@@ -24,8 +24,6 @@ import javax.xml.transform.TransformerException;
  * This class extends TransformerException because the error message includes
  * information about where the XPath problem is in the stylesheet as well as the
  * XPath expression itself.
- * 
- * @xsl.usage internal
  */
 final public class XPathStylesheetDOM3Exception extends TransformerException {
   public XPathStylesheetDOM3Exception(String msg, SourceLocator arg1) {

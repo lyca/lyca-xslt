@@ -23,9 +23,7 @@ import org.w3c.dom.traversal.NodeIterator;
 /**
  * Classes who implement this interface can be a <a
  * href="http://www.w3.org/TR/xslt#dt-current-node-list">current node list</a>,
- * also refered to here as a <term>context node list</term>.
- * 
- * @xsl.usage advanced
+ * also refered to here as a {@literal <term>context node list</term>}.
  */
 public interface ContextNodeList {
 
@@ -105,7 +103,7 @@ public interface ContextNodeList {
    * 
    * @return A clone of this iteration that has been reset.
    * 
-   * @throws CloneNotSupportedException
+   * @throws CloneNotSupportedException TODO
    */
   public NodeIterator cloneWithReset() throws CloneNotSupportedException;
 
@@ -116,7 +114,7 @@ public interface ContextNodeList {
    * 
    * @return A clone of this object.
    * 
-   * @throws CloneNotSupportedException
+   * @throws CloneNotSupportedException TODO
    */
   public Object clone() throws CloneNotSupportedException;
 

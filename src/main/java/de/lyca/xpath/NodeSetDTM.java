@@ -55,8 +55,6 @@ import de.lyca.xpath.res.XPATHMessages;
  * disadvantage is that some of them may return less-than-enlightening results
  * when you do so.
  * </p>
- * 
- * @xsl.usage advanced
  */
 public class NodeSetDTM extends NodeVector implements /* NodeList, NodeIterator, */DTMIterator, Cloneable {
   static final long serialVersionUID = 7686480133331317070L;
@@ -282,7 +280,7 @@ public class NodeSetDTM extends NodeVector implements /* NodeList, NodeIterator,
    * 
    * @return integer used as a bit-array, containing flags defined in the DOM's
    *         DTMFilter class. The value will be
-   *         <code>SHOW_ALL & ~SHOW_ENTITY_REFERENCE</code>, meaning that only
+   *         <code>SHOW_ALL {@literal &} ~SHOW_ENTITY_REFERENCE</code>, meaning that only
    *         entity references are suppressed.
    */
   @Override

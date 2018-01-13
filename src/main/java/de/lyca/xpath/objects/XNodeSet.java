@@ -20,12 +20,19 @@ package de.lyca.xpath.objects;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.transform.TransformerException;
+
 import org.w3c.dom.NodeList;
 import org.w3c.dom.traversal.NodeIterator;
+import org.xml.sax.ContentHandler;
+import org.xml.sax.SAXException;
 
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xml.dtm.DTMIterator;
 import de.lyca.xml.dtm.DTMManager;
+import de.lyca.xml.dtm.ref.DTMNodeList;
+import de.lyca.xml.utils.FastStringBuffer;
+import de.lyca.xml.utils.WrappedRuntimeException;
 import de.lyca.xml.utils.XMLString;
 import de.lyca.xpath.NodeSetDTM;
 import de.lyca.xpath.axes.NodeSequence;
@@ -33,8 +40,6 @@ import de.lyca.xpath.axes.NodeSequence;
 /**
  * This class represents an XPath nodeset object, and is capable of converting
  * the nodeset to other types, such as a string.
- * 
- * @xsl.usage general
  */
 public class XNodeSet extends NodeSequence {
   static final long serialVersionUID = 1916026368035639667L;
@@ -91,6 +96,7 @@ public class XNodeSet extends NodeSequence {
   /**
    * Construct an empty XNodeSet object. This is used to create a mutable
    * nodeset to which random nodes may be added.
+   * @param dtmMgr TODO
    */
   public XNodeSet(DTMManager dtmMgr) {
     this(DTM.NULL, dtmMgr);
@@ -101,6 +107,7 @@ public class XNodeSet extends NodeSequence {
    * 
    * @param n
    *          Node to add to the new XNodeSet object
+   * @param dtmMgr TODO
    */
   public XNodeSet(int n, DTMManager dtmMgr) {
 
@@ -222,10 +229,10 @@ public class XNodeSet extends NodeSequence {
    * @param ch
    *          A non-null reference to a ContentHandler.
    * 
-   * @throws org.xml.sax.SAXException
+   * @throws SAXException TODO
    */
   @Override
-  public void dispatchCharactersEvents(org.xml.sax.ContentHandler ch) throws org.xml.sax.SAXException {
+  public void dispatchCharactersEvents(ContentHandler ch) throws SAXException {
     final int node = item(0);
 
     if (node != DTM.NULL) {
@@ -247,11 +254,10 @@ public class XNodeSet extends NodeSequence {
 
   /**
    * Cast result object to a string.
-   * 
-   * @return The string this wraps or the empty string if null
+   * TODO
    */
   @Override
-  public void appendToFsb(de.lyca.xml.utils.FastStringBuffer fsb) {
+  public void appendToFsb(FastStringBuffer fsb) {
     final XString xstring = (XString) xstr();
     xstring.appendToFsb(fsb);
   }
@@ -315,10 +321,10 @@ public class XNodeSet extends NodeSequence {
    * 
    * @return a NodeIterator.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
   @Override
-  public NodeIterator nodeset() throws javax.xml.transform.TransformerException {
+  public NodeIterator nodeset() throws TransformerException {
     return new de.lyca.xml.dtm.ref.DTMNodeIterator(iter());
   }
 
@@ -327,11 +333,11 @@ public class XNodeSet extends NodeSequence {
    * 
    * @return a NodeList.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
   @Override
-  public NodeList nodelist() throws javax.xml.transform.TransformerException {
-    final de.lyca.xml.dtm.ref.DTMNodeList nodelist = new de.lyca.xml.dtm.ref.DTMNodeList(this);
+  public NodeList nodelist() throws TransformerException {
+    final DTMNodeList nodelist = new DTMNodeList(this);
     // Creating a DTMNodeList has the side-effect that it will create a clone
     // XNodeSet with cache and run m_iter to the end. You cannot get any node
     // from m_iter after this call. As a fix, we call SetVector() on the clone's
@@ -354,6 +360,7 @@ public class XNodeSet extends NodeSequence {
 
   /**
    * Return the iterator without cloning, etc.
+   * @return TODO
    */
   public DTMIterator iterRaw() {
     return this;
@@ -444,9 +451,9 @@ public class XNodeSet extends NodeSequence {
    * 
    * @return See the comments below for each object type comparison
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
-  public boolean compare(XObject obj2, Comparator comparator) throws javax.xml.transform.TransformerException {
+  public boolean compare(XObject obj2, Comparator comparator) throws TransformerException {
 
     boolean result = false;
     final int type = obj2.getType();
@@ -591,10 +598,10 @@ public class XNodeSet extends NodeSequence {
    * 
    * @return see this.compare(...)
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
   @Override
-  public boolean lessThan(XObject obj2) throws javax.xml.transform.TransformerException {
+  public boolean lessThan(XObject obj2) throws TransformerException {
     return compare(obj2, S_LT);
   }
 
@@ -606,10 +613,10 @@ public class XNodeSet extends NodeSequence {
    * 
    * @return see this.compare(...)
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
   @Override
-  public boolean lessThanOrEqual(XObject obj2) throws javax.xml.transform.TransformerException {
+  public boolean lessThanOrEqual(XObject obj2) throws TransformerException {
     return compare(obj2, S_LTE);
   }
 
@@ -621,10 +628,10 @@ public class XNodeSet extends NodeSequence {
    * 
    * @return see this.compare(...)
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
   @Override
-  public boolean greaterThan(XObject obj2) throws javax.xml.transform.TransformerException {
+  public boolean greaterThan(XObject obj2) throws TransformerException {
     return compare(obj2, S_GT);
   }
 
@@ -636,10 +643,10 @@ public class XNodeSet extends NodeSequence {
    * 
    * @return see this.compare(...)
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
   @Override
-  public boolean greaterThanOrEqual(XObject obj2) throws javax.xml.transform.TransformerException {
+  public boolean greaterThanOrEqual(XObject obj2) throws TransformerException {
     return compare(obj2, S_GTE);
   }
 
@@ -650,15 +657,13 @@ public class XNodeSet extends NodeSequence {
    *          object to compare this nodeset to
    * 
    * @return see this.compare(...)
-   * 
-   * @throws javax.xml.transform.TransformerException
    */
   @Override
   public boolean equals(XObject obj2) {
     try {
       return compare(obj2, S_EQ);
-    } catch (final javax.xml.transform.TransformerException te) {
-      throw new de.lyca.xml.utils.WrappedRuntimeException(te);
+    } catch (final TransformerException te) {
+      throw new WrappedRuntimeException(te);
     }
   }
 
@@ -670,10 +675,10 @@ public class XNodeSet extends NodeSequence {
    * 
    * @return see this.compare(...)
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
   @Override
-  public boolean notEquals(XObject obj2) throws javax.xml.transform.TransformerException {
+  public boolean notEquals(XObject obj2) throws TransformerException {
     return compare(obj2, S_NEQ);
   }
 }

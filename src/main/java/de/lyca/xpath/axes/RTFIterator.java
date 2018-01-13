@@ -18,8 +18,6 @@
 /**
  * This class implements an RTF Iterator. Currently exists for sole
  * purpose of enabling EXSLT object-type function to return "RTF".
- * 
- * @xsl.usage advanced
  */
 package de.lyca.xpath.axes;
 
@@ -31,6 +29,8 @@ public class RTFIterator extends NodeSetDTM {
 
   /**
    * Constructor for RTFIterator
+   * @param root TODO
+   * @param manager TODO
    */
   public RTFIterator(int root, DTMManager manager) {
     super(root, manager);

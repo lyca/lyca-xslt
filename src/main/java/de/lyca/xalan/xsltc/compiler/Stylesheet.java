@@ -254,6 +254,7 @@ public final class Stylesheet extends SyntaxTreeNode {
 
   /**
    * Return the output method
+   * @return TODO
    */
   public OutputMethod getOutputMethod() {
     return _outputMethod;
@@ -390,6 +391,7 @@ public final class Stylesheet extends SyntaxTreeNode {
    * Get the minimum of the precedence of this stylesheet, any stylesheet
    * imported by this stylesheet and any include/import descendant of this
    * stylesheet.
+   * @return TODO
    */
   public int getMinimumDescendantPrecedence() {
     if (_minimumDescendantPrecedence == -1) {
@@ -478,6 +480,7 @@ public final class Stylesheet extends SyntaxTreeNode {
 
   /**
    * Returns true if this stylesheet has global vars or params.
+   * @return TODO
    */
   public boolean hasGlobals() {
     return _globals.size() > 0;
@@ -490,6 +493,7 @@ public final class Stylesheet extends SyntaxTreeNode {
   /**
    * Returns true if at least one template in the stylesheet has params defined.
    * Uses the variable <code>_hasLocalParams</code> to cache the result.
+   * @return TODO
    */
   public boolean hasLocalParams() {
     if (_hasLocalParams == null) {
@@ -600,7 +604,8 @@ public final class Stylesheet extends SyntaxTreeNode {
   }
 
   /**
-   * Parse all direct children of the <xsl:stylesheet/> element.
+   * Parse all direct children of the {@literal <xsl:stylesheet/>} element.
+   * @param parser TODO
    */
   public final void parseOwnChildren(Parser parser) {
     final SymbolTable stable = parser.getSymbolTable();

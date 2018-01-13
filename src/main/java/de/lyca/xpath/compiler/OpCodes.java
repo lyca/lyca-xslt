@@ -36,8 +36,7 @@ public class OpCodes {
   /**
    * [ENDOP] Some operators may like to have a terminator.
    * 
-   * @xsl.usage advanced
-   */
+     */
   public static final int ENDOP = -1;
 
   /**
@@ -49,8 +48,7 @@ public class OpCodes {
    * [ELEMWILDCARD] Means ELEMWILDCARD ("*"), used instead of string index in
    * some places.
    * 
-   * @xsl.usage advanced
-   */
+     */
   public static final int ELEMWILDCARD = -3;
 
   /**
@@ -58,8 +56,7 @@ public class OpCodes {
    * 
    * returns: XNodeSet XNumber XString XBoolean XRTree XObject
    * 
-   * @xsl.usage advanced
-   */
+     */
   public static final int OP_XPATH = 1;
 
   /**
@@ -67,8 +64,7 @@ public class OpCodes {
    * 
    * returns: XBoolean
    * 
-   * @xsl.usage advanced
-   */
+     */
   public static final int OP_OR = 2;
 
   /**
@@ -76,8 +72,7 @@ public class OpCodes {
    * 
    * returns: XBoolean
    * 
-   * @xsl.usage advanced
-   */
+     */
   public static final int OP_AND = 3;
 
   /**
@@ -85,8 +80,7 @@ public class OpCodes {
    * 
    * returns: XBoolean
    * 
-   * @xsl.usage advanced
-   */
+     */
   public static final int OP_NOTEQUALS = 4;
 
   /**
@@ -94,8 +88,7 @@ public class OpCodes {
    * 
    * returns: XBoolean
    * 
-   * @xsl.usage advanced
-   */
+     */
   public static final int OP_EQUALS = 5;
 
   /**
@@ -104,8 +97,7 @@ public class OpCodes {
    * 
    * returns: XBoolean
    * 
-   * @xsl.usage advanced
-   */
+     */
   public static final int OP_LTE = 6;
 
   /**
@@ -113,8 +105,7 @@ public class OpCodes {
    * 
    * returns: XBoolean
    * 
-   * @xsl.usage advanced
-   */
+     */
   public static final int OP_LT = 7;
 
   /**
@@ -123,8 +114,7 @@ public class OpCodes {
    * 
    * returns: XBoolean
    * 
-   * @xsl.usage advanced
-   */
+     */
   public static final int OP_GTE = 8;
 
   /**
@@ -132,8 +122,7 @@ public class OpCodes {
    * 
    * returns: XBoolean
    * 
-   * @xsl.usage advanced
-   */
+     */
   public static final int OP_GT = 9;
 
   /**
@@ -141,8 +130,7 @@ public class OpCodes {
    * 
    * returns: XNumber
    * 
-   * @xsl.usage advanced
-   */
+     */
   public static final int OP_PLUS = 10;
 
   /**
@@ -150,8 +138,7 @@ public class OpCodes {
    * 
    * returns: XNumber
    * 
-   * @xsl.usage advanced
-   */
+     */
   public static final int OP_MINUS = 11;
 
   /**
@@ -159,8 +146,7 @@ public class OpCodes {
    * 
    * returns: XNumber
    * 
-   * @xsl.usage advanced
-   */
+     */
   public static final int OP_MULT = 12;
 
   /**
@@ -168,8 +154,7 @@ public class OpCodes {
    * 
    * returns: XNumber
    * 
-   * @xsl.usage advanced
-   */
+     */
   public static final int OP_DIV = 13;
 
   /**
@@ -177,8 +162,7 @@ public class OpCodes {
    * 
    * returns: XNumber
    * 
-   * @xsl.usage advanced
-   */
+     */
   public static final int OP_MOD = 14;
 
   /**
@@ -186,8 +170,7 @@ public class OpCodes {
    * 
    * returns: XNumber
    * 
-   * @xsl.usage advanced
-   */
+     */
   public static final int OP_QUO = 15;
 
   /**
@@ -195,8 +178,7 @@ public class OpCodes {
    * 
    * returns: XNumber
    * 
-   * @xsl.usage advanced
-   */
+     */
   public static final int OP_NEG = 16;
 
   /**
@@ -204,8 +186,7 @@ public class OpCodes {
    * 
    * returns: XString
    * 
-   * @xsl.usage advanced
-   */
+     */
   public static final int OP_STRING = 17;
 
   /**
@@ -213,8 +194,7 @@ public class OpCodes {
    * 
    * returns: XBoolean
    * 
-   * @xsl.usage advanced
-   */
+     */
   public static final int OP_BOOL = 18;
 
   /**
@@ -222,8 +202,7 @@ public class OpCodes {
    * 
    * returns: XBoolean
    * 
-   * @xsl.usage advanced
-   */
+     */
   public static final int OP_NUMBER = 19;
 
   /**
@@ -231,8 +210,7 @@ public class OpCodes {
    * 
    * returns: XNodeSet
    * 
-   * @xsl.usage advanced
-   */
+     */
   public static final int OP_UNION = 20;
 
   /**
@@ -240,8 +218,7 @@ public class OpCodes {
    * 
    * returns: XString
    * 
-   * @xsl.usage advanced
-   */
+     */
   public static final int OP_LITERAL = 21;
 
   /**
@@ -256,8 +233,7 @@ public class OpCodes {
    * 
    * returns: XString
    * 
-   * @xsl.usage advanced
-   */
+     */
   public static final int OP_VARIABLE = 22;
 
   /**
@@ -265,8 +241,7 @@ public class OpCodes {
    * 
    * returns: XNodeSet XNumber XString XBoolean XRTree XObject
    * 
-   * @xsl.usage advanced
-   */
+     */
   public static final int OP_GROUP = 23;
 
   /**
@@ -275,8 +250,7 @@ public class OpCodes {
    * 
    * returns: XNodeSet XNumber XString XBoolean XRTree XObject
    * 
-   * @xsl.usage advanced
-   */
+     */
   public static final int OP_EXTFUNCTION = 24;
 
   /**
@@ -284,8 +258,7 @@ public class OpCodes {
    * 
    * returns: XNodeSet XNumber XString XBoolean XRTree XObject
    * 
-   * @xsl.usage advanced
-   */
+     */
   public static final int OP_FUNCTION = 25;
 
   /** The last opcode for stuff that can be a nodeset. */
@@ -296,8 +269,7 @@ public class OpCodes {
    * 
    * returns: XNodeSet XNumber XString XBoolean XRTree XObject
    * 
-   * @xsl.usage advanced
-   */
+     */
   public static final int OP_ARGUMENT = 26;
 
   /**
@@ -305,8 +277,7 @@ public class OpCodes {
    * 
    * returns: XString
    * 
-   * @xsl.usage advanced
-   */
+     */
   public static final int OP_NUMBERLIT = 27;
 
   /**
@@ -317,8 +288,7 @@ public class OpCodes {
    * 
    * returns: XNodeSet
    * 
-   * @xsl.usage advanced
-   */
+     */
   public static final int OP_LOCATIONPATH = 28;
 
   // public static final int LOCATIONPATHEX_MASK = 0x0000FFFF;
@@ -330,8 +300,7 @@ public class OpCodes {
    * 
    * returns: XBoolean or XNumber
    * 
-   * @xsl.usage advanced
-   */
+     */
   public static final int OP_PREDICATE = 29;
 
   /**
@@ -339,16 +308,14 @@ public class OpCodes {
    * 
    * returns: XNodeSet
    * 
-   * @xsl.usage advanced
-   */
+     */
   public static final int OP_MATCHPATTERN = 30;
 
   /**
    * [OP_LOCATIONPATHPATTERN] [length] {FROM_stepType} | {function}{predicate}
    * [ENDOP] returns: XNodeSet
    * 
-   * @xsl.usage advanced
-   */
+     */
   public static final int OP_LOCATIONPATHPATTERN = 31;
 
   /**
@@ -357,8 +324,7 @@ public class OpCodes {
    * 
    * returns: XBoolean
    * 
-   * @xsl.usage advanced
-   */
+     */
   public static final int NODETYPE_COMMENT = 1030;
 
   /**
@@ -367,8 +333,7 @@ public class OpCodes {
    * 
    * returns: XBoolean
    * 
-   * @xsl.usage advanced
-   */
+     */
   public static final int NODETYPE_TEXT = 1031;
 
   /**
@@ -376,8 +341,7 @@ public class OpCodes {
    * 
    * returns: XBoolean
    * 
-   * @xsl.usage advanced
-   */
+     */
   public static final int NODETYPE_PI = 1032;
 
   /**
@@ -386,8 +350,7 @@ public class OpCodes {
    * 
    * returns: XBoolean
    * 
-   * @xsl.usage advanced
-   */
+     */
   public static final int NODETYPE_NODE = 1033;
 
   /**
@@ -395,8 +358,7 @@ public class OpCodes {
    * 
    * returns: XBoolean
    * 
-   * @xsl.usage advanced
-   */
+     */
   public static final int NODENAME = 34;
 
   /**
@@ -404,8 +366,7 @@ public class OpCodes {
    * 
    * returns: XBoolean
    * 
-   * @xsl.usage advanced
-   */
+     */
   public static final int NODETYPE_ROOT = 35;
 
   /**
@@ -413,8 +374,7 @@ public class OpCodes {
    * 
    * returns: XBoolean
    * 
-   * @xsl.usage advanced
-   */
+     */
   public static final int NODETYPE_ANYELEMENT = 36;
 
   /**
@@ -422,8 +382,7 @@ public class OpCodes {
    * 
    * returns: XBoolean
    * 
-   * @xsl.usage advanced
-   */
+     */
   public static final int NODETYPE_FUNCTEST = 1034;
 
   /**
@@ -432,8 +391,7 @@ public class OpCodes {
    * 
    * returns: XBoolean
    * 
-   * @xsl.usage advanced
-   */
+     */
   public static final int AXES_START_TYPES = 37;
 
   /** ancestor axes opcode. */
@@ -481,22 +439,19 @@ public class OpCodes {
   /**
    * For match patterns.
    * 
-   * @xsl.usage advanced
-   */
+     */
   public static final int MATCH_ATTRIBUTE = 51;
 
   /**
    * For match patterns.
    * 
-   * @xsl.usage advanced
-   */
+     */
   public static final int MATCH_ANY_ANCESTOR = 52;
 
   /**
    * For match patterns.
    * 
-   * @xsl.usage advanced
-   */
+     */
   public static final int MATCH_IMMEDIATE_ANCESTOR = 53;
 
   /** The end of the axes types. */

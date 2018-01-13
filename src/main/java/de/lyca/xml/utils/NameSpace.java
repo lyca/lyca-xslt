@@ -22,8 +22,6 @@ import java.io.Serializable;
 /**
  * A representation of a namespace. One of these will be pushed on the namespace
  * stack for each element.
- * 
- * @xsl.usage advanced
  */
 public class NameSpace implements Serializable {
   static final long serialVersionUID = 1471232939184881839L;

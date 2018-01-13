@@ -30,8 +30,6 @@ import org.xml.sax.helpers.AttributesImpl;
  * serializer.
  * 
  * @see org.xml.sax.Attributes
- * 
- * @xsl.usage internal
  */
 public final class AttributesImplSerializer extends AttributesImpl {
   /**

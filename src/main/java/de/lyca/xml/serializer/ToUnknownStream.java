@@ -34,20 +34,16 @@ import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 
 /**
- * This class wraps another SerializationHandler. The wrapped object will either
- * handler XML or HTML, which is not known until a little later when the first
- * XML tag is seen. If the first tag is <html> then the wrapped object is an
- * HTML handler, otherwise it is an XML handler.
+ * This class wraps another SerializationHandler. The wrapped object will either handler XML or HTML, which is not known
+ * until a little later when the first XML tag is seen. If the first tag is {@literal <html>} then the wrapped object is
+ * an HTML handler, otherwise it is an XML handler.
  * 
- * This class effectively caches the first few calls to it then passes them on
- * to the wrapped handler (once it exists). After that subsequent calls a simply
- * passed directly to the wrapped handler.
+ * This class effectively caches the first few calls to it then passes them on to the wrapped handler (once it exists).
+ * After that subsequent calls a simply passed directly to the wrapped handler.
  * 
  * The user of this class doesn't know if the output is ultimatley XML or HTML.
  * 
  * This class is not a public API, it is public because it is used within Xalan.
- * 
- * @xsl.usage internal
  */
 public final class ToUnknownStream extends SerializerBase {
 
@@ -66,8 +62,7 @@ public final class ToUnknownStream extends SerializerBase {
    */
   private String m_firstElementPrefix;
   /**
-   * the element name (including any prefix) of the very first tag in the
-   * document
+   * the element name (including any prefix) of the very first tag in the document
    */
   private String m_firstElementName;
 
@@ -87,45 +82,38 @@ public final class ToUnknownStream extends SerializerBase {
   private boolean m_firstTagNotEmitted = true;
 
   /**
-   * A collection of namespace URI's (only for first element). _namespacePrefix
-   * has the matching prefix for these URI's
+   * A collection of namespace URI's (only for first element). _namespacePrefix has the matching prefix for these URI's
    */
   private List m_namespaceURI = null;
   /**
-   * A collection of namespace Prefix (only for first element) _namespaceURI has
-   * the matching URIs for these prefix'
+   * A collection of namespace Prefix (only for first element) _namespaceURI has the matching URIs for these prefix'
    */
   private List m_namespacePrefix = null;
 
   /**
-   * true if startDocument() was called before the underlying handler was
-   * initialized
+   * true if startDocument() was called before the underlying handler was initialized
    */
   private boolean m_needToCallStartDocument = false;
   /**
-   * true if setVersion() was called before the underlying handler was
-   * initialized
+   * true if setVersion() was called before the underlying handler was initialized
    */
   private boolean m_setVersion_called = false;
   /**
-   * true if setDoctypeSystem() was called before the underlying handler was
-   * initialized
+   * true if setDoctypeSystem() was called before the underlying handler was initialized
    */
   private boolean m_setDoctypeSystem_called = false;
   /**
-   * true if setDoctypePublic() was called before the underlying handler was
-   * initialized
+   * true if setDoctypePublic() was called before the underlying handler was initialized
    */
   private boolean m_setDoctypePublic_called = false;
   /**
-   * true if setMediaType() was called before the underlying handler was
-   * initialized
+   * true if setMediaType() was called before the underlying handler was initialized
    */
   private boolean m_setMediaType_called = false;
 
   /**
-   * Default constructor. Initially this object wraps an XML Stream object, so
-   * _handler is never null. That may change later to an HTML Stream object.
+   * Default constructor. Initially this object wraps an XML Stream object, so _handler is never null. That may change
+   * later to an HTML Stream object.
    */
   public ToUnknownStream() {
     m_handler = new ToXMLStream();
@@ -138,9 +126,8 @@ public final class ToUnknownStream extends SerializerBase {
   @Override
   public ContentHandler asContentHandler() throws IOException {
     /*
-     * don't return the real handler ( m_handler ) because that would expose the
-     * real handler to the outside. Keep m_handler private so it can be
-     * internally swapped to an HTML handler.
+     * don't return the real handler ( m_handler ) because that would expose the real handler to the outside. Keep
+     * m_handler private so it can be internally swapped to an HTML handler.
      */
     return this;
   }
@@ -194,8 +181,7 @@ public final class ToUnknownStream extends SerializerBase {
   /**
    * Converts the DOM node to output
    * 
-   * @param node
-   *          the DOM node to transform to output
+   * @param node the DOM node to transform to output
    * @see DOMSerializer#serialize(Node)
    * 
    */
@@ -218,8 +204,7 @@ public final class ToUnknownStream extends SerializerBase {
   /**
    * Set the properties of the handler
    * 
-   * @param format
-   *          the output properties to set
+   * @param format the output properties to set
    * @see Serializer#setOutputFormat(Properties)
    */
   @Override
@@ -230,8 +215,7 @@ public final class ToUnknownStream extends SerializerBase {
   /**
    * Sets the output stream to write to
    * 
-   * @param output
-   *          the OutputStream to write to
+   * @param output the OutputStream to write to
    * @see Serializer#setOutputStream(OutputStream)
    */
   @Override
@@ -242,8 +226,7 @@ public final class ToUnknownStream extends SerializerBase {
   /**
    * Sets the writer to write to
    * 
-   * @param writer
-   *          the writer to write to
+   * @param writer the writer to write to
    * @see Serializer#setWriter(Writer)
    */
   @Override
@@ -254,24 +237,17 @@ public final class ToUnknownStream extends SerializerBase {
   /**
    * Adds an attribute to the currenly open tag
    * 
-   * @param uri
-   *          the URI of a namespace
-   * @param localName
-   *          the attribute name, without prefix
-   * @param rawName
-   *          the attribute name, with prefix (if any)
-   * @param type
-   *          the type of the attribute, typically "CDATA"
-   * @param value
-   *          the value of the parameter
-   * @param XSLAttribute
-   *          true if this attribute is coming from an xsl:attribute element
-   * @see ExtendedContentHandler#addAttribute(String, String, String, String,
-   *      String)
+   * @param uri the URI of a namespace
+   * @param localName the attribute name, without prefix
+   * @param rawName the attribute name, with prefix (if any)
+   * @param type the type of the attribute, typically "CDATA"
+   * @param value the value of the parameter
+   * @param XSLAttribute true if this attribute is coming from an xsl:attribute element
+   * @see ExtendedContentHandler#addAttribute(String, String, String, String, String)
    */
   @Override
-  public void addAttribute(String uri, String localName, String rawName, String type, String value, boolean XSLAttribute)
-          throws SAXException {
+  public void addAttribute(String uri, String localName, String rawName, String type, String value,
+      boolean XSLAttribute) throws SAXException {
     if (m_firstTagNotEmitted) {
       flush();
     }
@@ -281,10 +257,8 @@ public final class ToUnknownStream extends SerializerBase {
   /**
    * Adds an attribute to the currenly open tag
    * 
-   * @param rawName
-   *          the attribute name, with prefix (if any)
-   * @param value
-   *          the value of the parameter
+   * @param rawName the attribute name, with prefix (if any)
+   * @param value the value of the parameter
    * @see ExtendedContentHandler#addAttribute(String, String)
    */
   @Override
@@ -309,8 +283,7 @@ public final class ToUnknownStream extends SerializerBase {
   }
 
   /**
-   * Converts the String to a character array and calls the SAX method
-   * characters(char[],int,int);
+   * Converts the String to a character array and calls the SAX method characters(char[],int,int);
    * 
    * @see ExtendedContentHandler#characters(String)
    */
@@ -339,10 +312,8 @@ public final class ToUnknownStream extends SerializerBase {
 
   /**
    * @see org.xml.sax.ContentHandler#startPrefixMapping(String, String)
-   * @param prefix
-   *          The prefix that maps to the URI
-   * @param uri
-   *          The URI for the namespace
+   * @param prefix The prefix that maps to the URI
+   * @param uri The URI for the namespace
    */
   @Override
   public void startPrefixMapping(String prefix, String uri) throws SAXException {
@@ -350,15 +321,12 @@ public final class ToUnknownStream extends SerializerBase {
   }
 
   /**
-   * This method is used when a prefix/uri namespace mapping is indicated after
-   * the element was started with a startElement() and before and endElement().
-   * startPrefixMapping(prefix,uri) would be used before the startElement()
+   * This method is used when a prefix/uri namespace mapping is indicated after the element was started with a
+   * startElement() and before and endElement(). startPrefixMapping(prefix,uri) would be used before the startElement()
    * call.
    * 
-   * @param uri
-   *          the URI of the namespace
-   * @param prefix
-   *          the prefix associated with the given URI.
+   * @param uri the URI of the namespace
+   * @param prefix the prefix associated with the given URI.
    * 
    * @see ExtendedContentHandler#namespaceAfterStartElement(String, String)
    */
@@ -384,9 +352,8 @@ public final class ToUnknownStream extends SerializerBase {
     if (m_firstTagNotEmitted) {
       if (m_firstElementName != null && shouldFlush) {
         /*
-         * we've already seen a startElement, and this is a prefix mapping for
-         * the up coming element, so flush the old element then send this event
-         * on its way.
+         * we've already seen a startElement, and this is a prefix mapping for the up coming element, so flush the old
+         * element then send this event on its way.
          */
         flush();
         pushed = m_handler.startPrefixMapping(prefix, uri, shouldFlush);
@@ -412,8 +379,7 @@ public final class ToUnknownStream extends SerializerBase {
   }
 
   /**
-   * This method cannot be cached because default is different in HTML and XML
-   * (we need more than a boolean).
+   * This method cannot be cached because default is different in HTML and XML (we need more than a boolean).
    */
 
   @Override
@@ -445,22 +411,21 @@ public final class ToUnknownStream extends SerializerBase {
 
   @Override
   public void startElement(String namespaceURI, String localName, String elementName, Attributes atts)
-          throws SAXException {
+      throws SAXException {
     /* we are notified of the start of an element */
     if (m_firstTagNotEmitted) {
       /* we have not yet sent the first element on its way */
       if (m_firstElementName != null) {
         /*
-         * this is not the first element, but a later one. But we have the old
-         * element pending, so flush it out, then send this one on its way.
+         * this is not the first element, but a later one. But we have the old element pending, so flush it out, then
+         * send this one on its way.
          */
         flush();
         m_handler.startElement(namespaceURI, localName, elementName, atts);
       } else {
         /*
-         * this is the very first element that we have seen, so save it for
-         * flushing later. We may yet get to know its URI due to added
-         * attributes.
+         * this is the very first element that we have seen, so save it for flushing later. We may yet get to know its
+         * URI due to added attributes.
          */
 
         m_wrapped_handler_not_initialized = true;
@@ -480,12 +445,10 @@ public final class ToUnknownStream extends SerializerBase {
         }
 
         /*
-         * we don't want to call our own addAttributes, which merely delegates
-         * to the wrapped handler, but we want to add these attributes to
-         * m_attributes. So me must call super. addAttributes() In this case
-         * m_attributes is only used for the first element, after that this
-         * class totally delegates to the wrapped handler which is either XML or
-         * HTML.
+         * we don't want to call our own addAttributes, which merely delegates to the wrapped handler, but we want to
+         * add these attributes to m_attributes. So me must call super. addAttributes() In this case m_attributes is
+         * only used for the first element, after that this class totally delegates to the wrapped handler which is
+         * either XML or HTML.
          */
         if (atts != null) {
           super.addAttributes(atts);
@@ -624,12 +587,10 @@ public final class ToUnknownStream extends SerializerBase {
   }
 
   /**
-   * Set the doctype in the underlying XML handler. Remember that this method
-   * was called, just in case we need to transfer this doctype to an HTML
-   * handler
+   * Set the doctype in the underlying XML handler. Remember that this method was called, just in case we need to
+   * transfer this doctype to an HTML handler
    * 
-   * @param doctype
-   *          the public doctype to set
+   * @param doctype the public doctype to set
    * @see XSLOutputAttributes#setDoctypePublic(String)
    */
   @Override
@@ -639,12 +600,10 @@ public final class ToUnknownStream extends SerializerBase {
   }
 
   /**
-   * Set the doctype in the underlying XML handler. Remember that this method
-   * was called, just in case we need to transfer this doctype to an HTML
-   * handler
+   * Set the doctype in the underlying XML handler. Remember that this method was called, just in case we need to
+   * transfer this doctype to an HTML handler
    * 
-   * @param doctype
-   *          the system doctype to set
+   * @param doctype the system doctype to set
    * @see XSLOutputAttributes#setDoctypeSystem(String)
    */
   @Override
@@ -717,8 +676,7 @@ public final class ToUnknownStream extends SerializerBase {
   /**
    * Pass the call on to the underlying handler
    * 
-   * @see org.xml.sax.ext.DeclHandler#attributeDecl(String, String, String,
-   *      String, String)
+   * @see org.xml.sax.ext.DeclHandler#attributeDecl(String, String, String, String, String)
    */
   @Override
   public void attributeDecl(String arg0, String arg1, String arg2, String arg3, String arg4) throws SAXException {
@@ -952,10 +910,8 @@ public final class ToUnknownStream extends SerializerBase {
   }
 
   /**
-   * Initialize the wrapped output stream (XML or HTML). If the stream handler
-   * should be HTML, then replace the XML handler with an HTML handler. After
-   * than send the starting method calls that were cached to the wrapped
-   * handler.
+   * Initialize the wrapped output stream (XML or HTML). If the stream handler should be HTML, then replace the XML
+   * handler with an HTML handler. After than send the starting method calls that were cached to the wrapped handler.
    * 
    */
   private void initStreamOutput() throws SAXException {
@@ -970,9 +926,8 @@ public final class ToUnknownStream extends SerializerBase {
       final SerializationHandler oldHandler = m_handler;
 
       /*
-       * We have to make sure we get an output properties with the proper
-       * defaults for the HTML method. The easiest way to do this is to have the
-       * OutputProperties class do it.
+       * We have to make sure we get an output properties with the proper defaults for the HTML method. The easiest way
+       * to do this is to have the OutputProperties class do it.
        */
 
       final Properties htmlProperties = OutputPropertiesFactory.getDefaultMethodProperties(Method.HTML);
@@ -1020,8 +975,7 @@ public final class ToUnknownStream extends SerializerBase {
     }
 
     /*
-     * Now that we have a real wrapped handler (XML or HTML) lets pass any
-     * cached calls to it
+     * Now that we have a real wrapped handler (XML or HTML) lets pass any cached calls to it
      */
     // Call startDocument() if necessary
     if (m_needToCallStartDocument) {
@@ -1062,8 +1016,7 @@ public final class ToUnknownStream extends SerializerBase {
   /**
    * Utility function for calls to local-name().
    * 
-   * Don't want to override static function on SerializerBase So added Unknown
-   * suffix to method name.
+   * Don't want to override static function on SerializerBase So added Unknown suffix to method name.
    */
   private String getLocalNameUnknown(String value) {
     int idx = value.lastIndexOf(':');
@@ -1080,8 +1033,7 @@ public final class ToUnknownStream extends SerializerBase {
   /**
    * Utility function to return prefix
    * 
-   * Don't want to override static function on SerializerBase So added Unknown
-   * suffix to method name.
+   * Don't want to override static function on SerializerBase So added Unknown suffix to method name.
    */
   private String getPrefixPartUnknown(String qname) {
     final int index = qname.indexOf(':');
@@ -1089,9 +1041,8 @@ public final class ToUnknownStream extends SerializerBase {
   }
 
   /**
-   * Determine if the firts element in the document is <html> or <HTML> This
-   * uses the cached first element name, first element prefix and the cached
-   * namespaces from previous method calls
+   * Determine if the firts element in the document is <html> or <HTML> This uses the cached first element name, first
+   * element prefix and the cached namespaces from previous method calls
    * 
    * @return true if the first element is an opening <html> tag
    */
@@ -1109,9 +1060,8 @@ public final class ToUnknownStream extends SerializerBase {
     // Try to rule out if this is an not to be an HTML document based on prefix
     if (isHTML && m_namespacePrefix != null) {
       /*
-       * the first element has a name of "html", but lets check the prefix. If
-       * the prefix points to a namespace with a URL that is not "" then the
-       * doecument doesn't start with an <html> tag, and isn't html
+       * the first element has a name of "html", but lets check the prefix. If the prefix points to a namespace with a
+       * URL that is not "" then the doecument doesn't start with an <html> tag, and isn't html
        */
       final int max = m_namespacePrefix.size();
       for (int i = 0; i < max; i++) {
@@ -1138,9 +1088,8 @@ public final class ToUnknownStream extends SerializerBase {
   }
 
   /**
-   * @param uri_and_localNames
-   *          Vector a list of pairs of URI/localName specified in the
-   *          cdata-section-elements attribute.
+   * @param uri_and_localNames Vector a list of pairs of URI/localName specified in the cdata-section-elements
+   *        attribute.
    * @see SerializationHandler#setCdataSectionElements(java.util.List)
    */
   @Override
@@ -1157,8 +1106,7 @@ public final class ToUnknownStream extends SerializerBase {
   }
 
   /**
-   * Get the current namespace mappings. Simply returns the mappings of the
-   * wrapped handler.
+   * Get the current namespace mappings. Simply returns the mappings of the wrapped handler.
    * 
    * @see ExtendedContentHandler#getNamespaceMappings()
    */
@@ -1250,11 +1198,9 @@ public final class ToUnknownStream extends SerializerBase {
   }
 
   /**
-   * This method is used to set the source locator, which might be used to
-   * generated an error message.
+   * This method is used to set the source locator, which might be used to generated an error message.
    * 
-   * @param locator
-   *          the source locator
+   * @param locator the source locator
    * 
    * @see ExtendedContentHandler#setSourceLocator(javax.xml.transform.SourceLocator)
    */

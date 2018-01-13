@@ -28,8 +28,6 @@ import java.io.Writer;
  * output stream is buffered.
  * 
  * This class is only used internally within Xalan.
- * 
- * @xsl.usage internal
  */
 class WriterToASCI extends Writer implements WriterChain {
 
@@ -57,7 +55,7 @@ class WriterToASCI extends Writer implements WriterChain {
    * @param length
    *          Number of characters to write
    * 
-   * @exception IOException
+   * @throws IOException
    *              If an I/O error occurs
    * 
    * @throws java.io.IOException
@@ -83,7 +81,7 @@ class WriterToASCI extends Writer implements WriterChain {
    * 
    * @param c
    *          int specifying a character to be written.
-   * @exception IOException
+   * @throws IOException
    *              If an I/O error occurs
    */
   @Override
@@ -97,7 +95,7 @@ class WriterToASCI extends Writer implements WriterChain {
    * @param s
    *          String to be written
    * 
-   * @exception IOException
+   * @throws IOException
    *              If an I/O error occurs
    */
   @Override
@@ -115,7 +113,7 @@ class WriterToASCI extends Writer implements WriterChain {
    * flush it. Thus one flush() invocation will flush all the buffers in a chain
    * of Writers and OutputStreams.
    * 
-   * @exception IOException
+   * @throws IOException
    *              If an I/O error occurs
    */
   @Override
@@ -128,7 +126,7 @@ class WriterToASCI extends Writer implements WriterChain {
    * write() or flush() invocations will cause an IOException to be thrown.
    * Closing a previously-closed stream, however, has no effect.
    * 
-   * @exception IOException
+   * @throws IOException
    *              If an I/O error occurs
    */
   @Override

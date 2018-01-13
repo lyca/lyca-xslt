@@ -37,8 +37,6 @@ import de.lyca.xml.res.XMLMessages;
  * The expanded name consisting of the local part of the name and the possibly
  * null URI reference is used as the name of the object. The default namespace
  * is not used for unprefixed names."
- * 
- * @xsl.usage general
  */
 public class QName implements java.io.Serializable {
   static final long serialVersionUID = 467434581652829920L;

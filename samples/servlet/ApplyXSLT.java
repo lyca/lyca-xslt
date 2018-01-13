@@ -96,7 +96,7 @@ public class ApplyXSLT extends HttpServlet
   /**
    * Initialize operational parameters from the configuration.
    * @param config Configuration
-   * @exception ServletException Never thrown
+   * @throws ServletException Never thrown
    */
   public void init(ServletConfig config)
     throws ServletException
@@ -196,8 +196,8 @@ public class ApplyXSLT extends HttpServlet
    * @param request The request
    * @param response The response
    * @see #process
-   * @exception ServletException Never thrown
-   * @exception IOException Never thrown
+   * @throws ServletException Never thrown
+   * @throws IOException Never thrown
    */
   public void doGet (HttpServletRequest request,
                      HttpServletResponse response)
@@ -229,8 +229,8 @@ public class ApplyXSLT extends HttpServlet
    * @see #getContentType
    * @see #displayException
    * @see #setStylesheetParams
-   * @exception ServletException Never thrown
-   * @exception IOException Never thrown
+   * @throws ServletException Never thrown
+   * @throws IOException Never thrown
    */
   
   public void process(TransformerFactory tFactory, 
@@ -369,7 +369,7 @@ public class ApplyXSLT extends HttpServlet
    * @param request May contain or point to the XML XSLTInputSource
    * @param listener To record detailed parsing messages for possible return to requestor
    * @return XML XSLTInputSource DOM, or null if the XSLTInputSource could not be parsed
-   * @exception ApplyXSLTException Thrown if exception occurs while handling request
+   * @throws ApplyXSLTException Thrown if exception occurs while handling request
    */
   protected StreamSource getDocument(HttpServletRequest request,
                                      ApplyXSLTListener listener)
@@ -435,7 +435,7 @@ public class ApplyXSLT extends HttpServlet
    * @see #STYLESHEET_ATTRIBUTE
    * @see #getXSLURLfromDoc
    * @see #toAcceptLanguageConnection
-   * @exception ApplyXSLTException Thrown if exception occurs while handling request
+   * @throws ApplyXSLTException Thrown if exception occurs while handling request
    */
   protected StreamSource getStylesheet(TransformerFactory tFactory,
 				   		  			   HttpServletRequest request,
@@ -776,7 +776,7 @@ class OrderedProps
   /**
    * Constructor.
    * @param inputStream Stream containing the properties file.
-   * @exception IOException Thrown if unable to read from stream
+   * @throws IOException Thrown if unable to read from stream
    */
   OrderedProps(InputStream inputStream)
     throws IOException

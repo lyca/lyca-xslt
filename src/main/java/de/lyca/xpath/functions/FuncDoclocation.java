@@ -17,6 +17,8 @@
  */
 package de.lyca.xpath.functions;
 
+import javax.xml.transform.TransformerException;
+
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xpath.XPathContext;
 import de.lyca.xpath.objects.XObject;
@@ -25,8 +27,6 @@ import de.lyca.xpath.objects.XString;
 /**
  * Execute the proprietary document-location() function, which returns a node
  * set of documents.
- * 
- * @xsl.usage advanced
  */
 public class FuncDoclocation extends FunctionDef1Arg {
   static final long serialVersionUID = 7469213946343568769L;
@@ -38,10 +38,10 @@ public class FuncDoclocation extends FunctionDef1Arg {
    *          The current execution context.
    * @return A valid XObject.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
   @Override
-  public XObject execute(XPathContext xctxt) throws javax.xml.transform.TransformerException {
+  public XObject execute(XPathContext xctxt) throws TransformerException {
 
     int whereNode = getArg0AsNode(xctxt);
     String fileLocation = null;

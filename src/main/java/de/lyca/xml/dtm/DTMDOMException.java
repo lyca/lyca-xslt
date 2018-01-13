@@ -22,10 +22,7 @@ import org.w3c.dom.DOMException;
 /**
  * Simple implementation of DOMException.
  * 
- * %REVIEW% Several classes were implementing this internally; it makes more
- * sense to have one shared version.
- * 
- * @xsl.usage internal
+ * %REVIEW% Several classes were implementing this internally; it makes more sense to have one shared version.
  */
 public class DTMDOMException extends DOMException {
   static final long serialVersionUID = 1895654266613192414L;
@@ -33,8 +30,8 @@ public class DTMDOMException extends DOMException {
   /**
    * Constructs a DOM/DTM exception.
    * 
-   * @param code
-   * @param message
+   * @param code TODO
+   * @param message TODO
    */
   public DTMDOMException(short code, String message) {
     super(code, message);
@@ -43,8 +40,7 @@ public class DTMDOMException extends DOMException {
   /**
    * Constructor DTMDOMException
    * 
-   * 
-   * @param code
+   * @param code TODO
    */
   public DTMDOMException(short code) {
     super(code, "");

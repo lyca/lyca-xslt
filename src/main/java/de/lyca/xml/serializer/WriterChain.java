@@ -44,8 +44,6 @@ import java.io.Writer;
  * obtain the Writer or OutputStream that this object sends its output to.
  * 
  * This interface is only for internal use withing the serializer.
- * 
- * @xsl.usage internal
  */
 interface WriterChain {
   /** This method forces us to over-ride the method defined in java.io.Writer */

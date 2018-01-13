@@ -43,8 +43,6 @@ package de.lyca.xml.serializer;
  * information about the parent element with a simple pop() when the child
  * element is done. Previously there was some redundant and error-prone
  * calculations going on to retore information.
- * 
- * @xsl.usage internal
  */
 final class ElemContext {
   // Fields that form the context of the element

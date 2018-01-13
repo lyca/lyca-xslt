@@ -17,7 +17,15 @@
  */
 package de.lyca.xpath.axes;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
+
 import javax.xml.transform.TransformerException;
+
+import org.w3c.dom.traversal.NodeIterator;
+import org.xml.sax.ContentHandler;
+import org.xml.sax.SAXException;
 
 import de.lyca.xml.dtm.Axis;
 import de.lyca.xml.dtm.DTM;
@@ -36,8 +44,8 @@ import de.lyca.xpath.res.XPATHMessages;
 
 /**
  * This class extends NodeSetDTM, which implements NodeIterator, and fetches
- * nodes one at a time in document order based on a XPath <a
- * href="http://www.w3.org/TR/xpath#NT-LocationPath>LocationPath</a>.
+ * nodes one at a time in document order based on a XPath
+ * <a href="http://www.w3.org/TR/xpath#NT-LocationPath">LocationPath</a>.
  * 
  * <p>
  * If setShouldCacheNodes(true) is called, as each node is iterated via
@@ -46,11 +54,9 @@ import de.lyca.xpath.res.XPATHMessages;
  * by a UnionPathIterator, in which case the UnionPathIterator will cache the
  * nodes.
  * </p>
- * 
- * @xsl.usage advanced
  */
-public abstract class LocPathIterator extends PredicatedNodeTest implements Cloneable, DTMIterator,
-        java.io.Serializable, PathComponent {
+public abstract class LocPathIterator extends PredicatedNodeTest
+    implements Cloneable, DTMIterator, Serializable, PathComponent {
   static final long serialVersionUID = -4602476357268405754L;
 
   /**
@@ -82,10 +88,12 @@ public abstract class LocPathIterator extends PredicatedNodeTest implements Clon
    * @param opPos
    *          The position of this iterator in the opcode list from the
    *          compiler.
-   * 
-   * @throws javax.xml.transform.TransformerException
+   * @param analysis
+   *          TODO
+   * @throws TransformerException
+   *           TODO
    */
-  protected LocPathIterator(Compiler compiler, int opPos, int analysis) throws javax.xml.transform.TransformerException {
+  protected LocPathIterator(Compiler compiler, int opPos, int analysis) throws TransformerException {
     this(compiler, opPos, analysis, true);
   }
 
@@ -99,14 +107,16 @@ public abstract class LocPathIterator extends PredicatedNodeTest implements Clon
    * @param opPos
    *          The position of this iterator in the opcode list from the
    *          compiler.
+   * @param analysis
+   *          TODO
    * @param shouldLoadWalkers
    *          True if walkers should be loaded, or false if this is a derived
    *          iterator and it doesn't wish to load child walkers.
-   * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException
+   *           TODO
    */
   protected LocPathIterator(Compiler compiler, int opPos, int analysis, boolean shouldLoadWalkers)
-          throws javax.xml.transform.TransformerException {
+      throws TransformerException {
     setLocPathIterator(this);
   }
 
@@ -128,16 +138,17 @@ public abstract class LocPathIterator extends PredicatedNodeTest implements Clon
    * @param stream
    *          Input stream to read from
    * 
-   * @throws java.io.IOException
-   * @throws javax.xml.transform.TransformerException
+   * @throws IOException
+   *           TODO
+   * @throws TransformerException
+   *           TODO
    */
-  private void readObject(java.io.ObjectInputStream stream) throws java.io.IOException,
-          javax.xml.transform.TransformerException {
+  private void readObject(ObjectInputStream stream) throws IOException, TransformerException {
     try {
       stream.defaultReadObject();
       m_clones = new IteratorPool(this);
     } catch (final ClassNotFoundException cnfe) {
-      throw new javax.xml.transform.TransformerException(cnfe);
+      throw new TransformerException(cnfe);
     }
   }
 
@@ -198,10 +209,11 @@ public abstract class LocPathIterator extends PredicatedNodeTest implements Clon
    * 
    * @return An XNodeSet reference that holds this iterator.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException
+   *           TODO
    */
   @Override
-  public XObject execute(XPathContext xctxt) throws javax.xml.transform.TransformerException {
+  public XObject execute(XPathContext xctxt) throws TransformerException {
 
     final XNodeSet iter = new XNodeSet(m_clones.getInstance());
 
@@ -214,21 +226,18 @@ public abstract class LocPathIterator extends PredicatedNodeTest implements Clon
    * Execute an expression in the XPath runtime context, and return the result
    * of the expression.
    * 
-   * 
    * @param xctxt
    *          The XPath runtime context.
    * @param handler
    *          The target content handler.
-   * 
-   * @return The result of the expression in the form of a <code>XObject</code>.
-   * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException
    *           if a runtime exception occurs.
-   * @throws org.xml.sax.SAXException
+   * @throws SAXException
+   *           TODO
    */
   @Override
-  public void executeCharsToContentHandler(XPathContext xctxt, org.xml.sax.ContentHandler handler)
-          throws javax.xml.transform.TransformerException, org.xml.sax.SAXException {
+  public void executeCharsToContentHandler(XPathContext xctxt, ContentHandler handler)
+      throws TransformerException, SAXException {
     final LocPathIterator clone = (LocPathIterator) m_clones.getInstance();
 
     final int current = xctxt.getCurrentNode();
@@ -251,15 +260,15 @@ public abstract class LocPathIterator extends PredicatedNodeTest implements Clon
    *          The execution context.
    * @param contextNode
    *          The node that "." expresses.
+   * @return TODO
    * @throws TransformerException
    *           thrown if the active ProblemListener decides the error condition
    *           is severe enough to halt processing.
-   * 
-   * @throws javax.xml.transform.TransformerException
-   * @xsl.usage experimental
+   * @throws TransformerException
+   *           TODO
    */
   @Override
-  public DTMIterator asIterator(XPathContext xctxt, int contextNode) throws javax.xml.transform.TransformerException {
+  public DTMIterator asIterator(XPathContext xctxt, int contextNode) throws TransformerException {
     final XNodeSet iter = new XNodeSet(m_clones.getInstance());
 
     iter.setRoot(contextNode, xctxt);
@@ -286,9 +295,11 @@ public abstract class LocPathIterator extends PredicatedNodeTest implements Clon
    * @param xctxt
    *          The XPath runtime context.
    * @return the first node out of the nodeset, or DTM.NULL.
+   * @throws TransformerException
+   *           TODO
    */
   @Override
-  public int asNode(XPathContext xctxt) throws javax.xml.transform.TransformerException {
+  public int asNode(XPathContext xctxt) throws TransformerException {
     final DTMIterator iter = m_clones.getInstance();
 
     final int current = xctxt.getCurrentNode();
@@ -309,10 +320,11 @@ public abstract class LocPathIterator extends PredicatedNodeTest implements Clon
    * 
    * @return The result of the operation as a boolean.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException
+   *           TODO
    */
   @Override
-  public boolean bool(XPathContext xctxt) throws javax.xml.transform.TransformerException {
+  public boolean bool(XPathContext xctxt) throws TransformerException {
     return asNode(xctxt) != DTM.NULL;
   }
 
@@ -321,7 +333,6 @@ public abstract class LocPathIterator extends PredicatedNodeTest implements Clon
    * 
    * @param b
    *          true if this location path is at the top level of the expression.
-   * @xsl.usage advanced
    */
   public void setIsTopLevel(boolean b) {
     m_isTopLevel = b;
@@ -331,7 +342,6 @@ public abstract class LocPathIterator extends PredicatedNodeTest implements Clon
    * Get if this is an iterator at the upper level of the XPath.
    * 
    * @return true if this location path is at the top level of the expression.
-   * @xsl.usage advanced
    */
   public boolean getIsTopLevel() {
     return m_isTopLevel;
@@ -574,7 +584,9 @@ public abstract class LocPathIterator extends PredicatedNodeTest implements Clon
    */
   @Override
   public int previousNode() {
-    throw new RuntimeException(XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_NODESETDTM_CANNOT_ITERATE, null)); // "This NodeSetDTM can not iterate to a previous node!");
+    throw new RuntimeException(
+        // "This NodeSetDTM can not iterate to a previous node!");
+        XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_NODESETDTM_CANNOT_ITERATE, null));
   }
 
   /**
@@ -588,9 +600,9 @@ public abstract class LocPathIterator extends PredicatedNodeTest implements Clon
    * fullfill the DOM NodeIterator interface.
    * </p>
    * 
-   * @return For now, always NodeFilter.SHOW_ALL &
-   *         ~NodeFilter.SHOW_ENTITY_REFERENCE.
-   * @see org.w3c.dom.traversal.NodeIterator
+   * @return For now, always
+   *         {@literal NodeFilter.SHOW_ALL & ~NodeFilter.SHOW_ENTITY_REFERENCE.}
+   * @see NodeIterator
    */
   @Override
   public int getWhatToShow() {
@@ -604,7 +616,7 @@ public abstract class LocPathIterator extends PredicatedNodeTest implements Clon
    * to fullfill the DOM NodeIterator interface.
    * 
    * @return Always null.
-   * @see org.w3c.dom.traversal.NodeIterator
+   * @see NodeIterator
    */
   public DTMFilter getFilter() {
     return null;
@@ -623,7 +635,8 @@ public abstract class LocPathIterator extends PredicatedNodeTest implements Clon
 
   /**
    * The value of this flag determines whether the children of entity reference
-   * nodes are visible to the iterator. If false, they will be skipped over. <br>
+   * nodes are visible to the iterator. If false, they will be skipped over.
+   * <br>
    * To produce a view of the document that has entity references expanded and
    * does not expose the entity reference node itself, use the whatToShow flags
    * to hide the entity reference node and set expandEntityReferences to true
@@ -691,6 +704,7 @@ public abstract class LocPathIterator extends PredicatedNodeTest implements Clon
    * @return A cloned NodeIterator set of the start of the query.
    * 
    * @throws CloneNotSupportedException
+   *           TODO
    */
   @Override
   public DTMIterator cloneWithReset() throws CloneNotSupportedException {

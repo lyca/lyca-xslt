@@ -54,8 +54,6 @@ import org.w3c.dom.Node;
  * @see SerializerFactory
  * @see Serializer
  * 
- * @xsl.usage general
- * 
  */
 public interface DOMSerializer {
   /**

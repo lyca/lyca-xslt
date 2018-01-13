@@ -1460,7 +1460,7 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
    * @param className
    *          the name of the class that implements the resource bundle.
    * @return the ResourceBundle
-   * @throws MissingResourceException
+   * @throws MissingResourceException TODO
    */
   public static final XSLTErrorResources loadResourceBundle(String className) throws MissingResourceException {
 

@@ -60,6 +60,7 @@ public class DTMNodeList extends DTMNodeListBase {
    * Public constructor: Wrap a DTMNodeList around an existing and preconfigured
    * DTMIterator
    * 
+   * @param dtmIterator TODO
    * WARNING: THIS HAS THE SIDE EFFECT OF ISSUING setShouldCacheNodes(true)
    * AGAINST THE DTMIterator.
    * 
@@ -81,7 +82,7 @@ public class DTMNodeList extends DTMNodeListBase {
   /**
    * Access the wrapped DTMIterator. I'm not sure whether anyone will need this
    * or not, but let's write it and think about it.
-   * 
+   * @return TODO
    */
   public DTMIterator getDTMIterator() {
     return m_iter;

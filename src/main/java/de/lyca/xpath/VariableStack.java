@@ -19,6 +19,7 @@ package de.lyca.xpath;
 
 import javax.xml.transform.TransformerException;
 
+import de.lyca.xml.utils.QName;
 import de.lyca.xpath.objects.XObject;
 import de.lyca.xpath.res.XPATHErrorResources;
 import de.lyca.xpath.res.XPATHMessages;
@@ -31,8 +32,6 @@ import de.lyca.xpath.res.XPATHMessages;
  * This has been changed from the previous incarnations of this class to be
  * fairly low level.
  * </p>
- * 
- * @xsl.usage internal
  */
 public class VariableStack implements Cloneable {
   /**
@@ -488,11 +487,11 @@ public class VariableStack implements Cloneable {
    * 
    * @return The evaluated value of the variable.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException
    */
-  public XObject getVariableOrParam(XPathContext xctxt, de.lyca.xml.utils.QName qname)
-          throws javax.xml.transform.TransformerException {
-    throw new javax.xml.transform.TransformerException(XPATHMessages.createXPATHMessage(
+  public XObject getVariableOrParam(XPathContext xctxt, QName qname)
+          throws TransformerException {
+    throw new TransformerException(XPATHMessages.createXPATHMessage(
             XPATHErrorResources.ER_VAR_NOT_RESOLVABLE, new Object[] { qname.toString() })); // "Variable not resolvable: "
                                                                                             // +
                                                                                             // qname);

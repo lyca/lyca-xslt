@@ -25,22 +25,31 @@ public interface Closure {
   /**
    * Returns true if this closure is compiled in an inner class (i.e. if this is
    * a real closure).
+   * 
+   * @return TODO
    */
   boolean inInnerClass();
 
   /**
    * Returns a reference to its parent closure or null if outermost.
+   * 
+   * @return TODO
    */
   Closure getParentClosure();
 
   /**
    * Returns the name of the auxiliary class or null if this predicate is
    * compiled inside the Translet.
+   * 
+   * @return TODO
    */
   String getInnerClassName();
 
   /**
    * Add new variable to the closure.
+   * 
+   * @param variableRef
+   *          TODO
    */
   void addVariable(VariableRefBase variableRef);
 }

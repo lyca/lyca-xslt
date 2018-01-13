@@ -17,6 +17,8 @@
  */
 package de.lyca.xpath.functions;
 
+import javax.xml.transform.TransformerException;
+
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xpath.XPathContext;
 import de.lyca.xpath.objects.XObject;
@@ -24,8 +26,6 @@ import de.lyca.xpath.objects.XString;
 
 /**
  * Execute the LocalPart() function.
- * 
- * @xsl.usage advanced
  */
 public class FuncLocalPart extends FunctionDef1Arg {
   static final long serialVersionUID = 7591798770325814746L;
@@ -37,10 +37,10 @@ public class FuncLocalPart extends FunctionDef1Arg {
    *          The current execution context.
    * @return A valid XObject.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
   @Override
-  public XObject execute(XPathContext xctxt) throws javax.xml.transform.TransformerException {
+  public XObject execute(XPathContext xctxt) throws TransformerException {
 
     final int context = getArg0AsNode(xctxt);
     if (DTM.NULL == context)

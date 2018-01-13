@@ -29,8 +29,6 @@ import java.io.Writer;
  * close() flush() or flushBuffer() method.
  * 
  * This class is only used internally within Xalan.
- * 
- * @xsl.usage internal
  */
 final class WriterToUTF8Buffered extends Writer implements WriterChain {
 
@@ -102,7 +100,7 @@ final class WriterToUTF8Buffered extends Writer implements WriterChain {
    *          the underlying output stream.
    * @param size
    *          the buffer size.
-   * @exception IllegalArgumentException
+   * @throws IllegalArgumentException
    *              if size <= 0.
    */
   // public WriterToUTF8Buffered(final OutputStream out, final int size)
@@ -132,7 +130,7 @@ final class WriterToUTF8Buffered extends Writer implements WriterChain {
    * 
    * @param c
    *          int specifying a character to be written.
-   * @exception IOException
+   * @throws IOException
    *              If an I/O error occurs
    */
   @Override
@@ -174,7 +172,7 @@ final class WriterToUTF8Buffered extends Writer implements WriterChain {
    * @param length
    *          Number of characters to write
    * 
-   * @exception IOException
+   * @throws IOException
    *              If an I/O error occurs
    * 
    * @throws java.io.IOException
@@ -303,7 +301,7 @@ final class WriterToUTF8Buffered extends Writer implements WriterChain {
    * @param s
    *          String to be written
    * 
-   * @exception IOException
+   * @throws IOException
    *              If an I/O error occurs
    */
   @Override
@@ -440,7 +438,7 @@ final class WriterToUTF8Buffered extends Writer implements WriterChain {
    * flush it. Thus one flush() invocation will flush all the buffers in a chain
    * of Writers and OutputStreams.
    * 
-   * @exception IOException
+   * @throws IOException
    *              If an I/O error occurs
    * 
    * @throws java.io.IOException
@@ -456,7 +454,7 @@ final class WriterToUTF8Buffered extends Writer implements WriterChain {
    * write() or flush() invocations will cause an IOException to be thrown.
    * Closing a previously-closed stream, however, has no effect.
    * 
-   * @exception IOException
+   * @throws IOException
    *              If an I/O error occurs
    * 
    * @throws java.io.IOException

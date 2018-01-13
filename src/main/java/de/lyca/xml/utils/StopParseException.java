@@ -17,15 +17,16 @@
  */
 package de.lyca.xml.utils;
 
+import org.xml.sax.SAXException;
+
 /**
  * This is a special exception that is used to stop parsing when search for an
  * element. For instance, when searching for xml:stylesheet PIs, it is used to
  * stop the parse once the document element is found.
  * 
  * @see StylesheetPIHandler
- * @xsl.usage internal
  */
-public class StopParseException extends org.xml.sax.SAXException {
+public class StopParseException extends SAXException {
   static final long serialVersionUID = 210102479218258961L;
 
   /**

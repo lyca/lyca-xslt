@@ -43,8 +43,6 @@ import de.lyca.xml.serializer.utils.WrappedRuntimeException;
  * newline character. It also provides character to entity reference lookup.
  * 
  * DEVELOPERS: See Known Issue in the constructor.
- * 
- * @xsl.usage internal
  */
 final class CharInfo {
   /**
@@ -84,8 +82,6 @@ final class CharInfo {
    * This flag is an optimization for HTML entities. It false if entities other
    * than quot (34), amp (38), lt (60) and gt (62) are defined in the range 0 to
    * 127.
-   * 
-   * @xsl.usage internal
    */
   boolean onlyQuotAmpLtGt;
 
@@ -382,7 +378,6 @@ final class CharInfo {
    *          '>' to "&lt;".
    * 
    * @return The String that the character is mapped to, or null if not found.
-   * @xsl.usage internal
    */
   String getOutputStringForChar(char value) {
     // CharKey m_charKey = new CharKey(); //Alternative to synchronized
@@ -398,7 +393,6 @@ final class CharInfo {
    *          the value of a character that is in an attribute value
    * @return true if the character should have any special treatment, such as
    *         when writing out entity references.
-   * @xsl.usage internal
    */
   final boolean shouldMapAttrChar(int value) {
     // for performance try the values in the boolean array first,
@@ -420,7 +414,6 @@ final class CharInfo {
      * @param value the value of a character that is in a text node
      * @return true if the character has a mapping to a String, 
      * such as when writing out entity references.
-     * @xsl.usage internal
      */
   final boolean shouldMapTextChar(int value) {
     // for performance try the values in the boolean array first,
@@ -465,8 +458,6 @@ final class CharInfo {
    * @param method
    *          the output method type, which should be one of "xml", "html",
    *          "text"...
-   * 
-   * @xsl.usage internal
    */
   static CharInfo getCharInfo(String entitiesFileName, String method) {
     CharInfo charInfo = m_getCharInfoCache.get(entitiesFileName);
@@ -710,8 +701,6 @@ final class CharInfo {
   /**
    * Simple class for fast lookup of char values, when used with hashtables. You
    * can set the char, then use it as a key.
-   * 
-   * @xsl.usage internal
    */
   private static class CharKey extends Object {
 

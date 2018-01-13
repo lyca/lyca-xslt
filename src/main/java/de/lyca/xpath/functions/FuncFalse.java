@@ -19,6 +19,8 @@ package de.lyca.xpath.functions;
 
 import java.util.List;
 
+import javax.xml.transform.TransformerException;
+
 import de.lyca.xml.utils.QName;
 import de.lyca.xpath.XPathContext;
 import de.lyca.xpath.objects.XBoolean;
@@ -26,8 +28,6 @@ import de.lyca.xpath.objects.XObject;
 
 /**
  * Execute the False() function.
- * 
- * @xsl.usage advanced
  */
 public class FuncFalse extends Function {
   static final long serialVersionUID = 6150918062759769887L;
@@ -39,10 +39,10 @@ public class FuncFalse extends Function {
    *          The current execution context.
    * @return A valid XObject.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
   @Override
-  public XObject execute(XPathContext xctxt) throws javax.xml.transform.TransformerException {
+  public XObject execute(XPathContext xctxt) throws TransformerException {
     return XBoolean.S_FALSE;
   }
 

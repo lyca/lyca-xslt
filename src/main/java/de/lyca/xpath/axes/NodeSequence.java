@@ -56,16 +56,17 @@ public class NodeSequence extends XObject implements DTMIterator, Cloneable, Pat
   /**
    * If this iterator needs to cache nodes that are fetched, they are stored in
    * the Vector in the generic object.
+   * @return TODO
    */
   protected NodeVector getVector() {
-    final NodeVector nv = m_cache != null ? m_cache.getVector() : null;
-    return nv;
+    return m_cache == null ? null : m_cache.getVector();
   }
 
   /**
    * Get the cache (if any) of nodes obtained from the iterator so far. Note
    * that the cache keeps growing until the iterator is walked to exhaustion, at
    * which point the cache is "complete".
+   * @return TODO
    */
   private IteratorCache getCache() {
     return m_cache;
@@ -73,6 +74,7 @@ public class NodeSequence extends XObject implements DTMIterator, Cloneable, Pat
 
   /**
    * Set the vector where nodes will be cached.
+   * @param v TODO
    */
   protected void SetVector(NodeVector v) {
     setObject(v);
@@ -81,6 +83,7 @@ public class NodeSequence extends XObject implements DTMIterator, Cloneable, Pat
   /**
    * If the iterator needs to cache nodes as they are fetched, then this method
    * returns true.
+   * @return TODO
    */
   public boolean hasCache() {
     final NodeVector nv = getVector();
@@ -148,7 +151,7 @@ public class NodeSequence extends XObject implements DTMIterator, Cloneable, Pat
   /**
    * Create a new NodeSequence from a (already cloned) iterator.
    * 
-   * @param nodeVector
+   * @param nodeVector TODO
    */
   public NodeSequence(Object nodeVector) {
     super(nodeVector);
@@ -569,7 +572,7 @@ public class NodeSequence extends XObject implements DTMIterator, Cloneable, Pat
    * 
    * @return A clone of this object.
    * 
-   * @throws CloneNotSupportedException
+   * @throws CloneNotSupportedException TODO
    */
   @Override
   public Object clone() throws CloneNotSupportedException {
@@ -844,6 +847,7 @@ public class NodeSequence extends XObject implements DTMIterator, Cloneable, Pat
   /**
    * Get the cached list of nodes appended with values obtained from the
    * iterator as a NodeSequence is walked when its nextNode() method is called.
+   * @return TODO
    */
   protected IteratorCache getIteratorCache() {
     return m_cache;

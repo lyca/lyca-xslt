@@ -81,6 +81,11 @@ public class TemplatesHandlerImpl implements ContentHandler, TemplatesHandler, S
 
   /**
    * Default constructor
+   * 
+   * @param indentNumber
+   *          TODO
+   * @param tfactory
+   *          TODO
    */
   protected TemplatesHandlerImpl(int indentNumber, TransformerFactoryImpl tfactory) {
     _indentNumber = indentNumber;
@@ -120,6 +125,9 @@ public class TemplatesHandlerImpl implements ContentHandler, TemplatesHandler, S
 
   /**
    * Store URIResolver needed for Transformers.
+   * 
+   * @param resolver
+   *          TODO
    */
   public void setURIResolver(URIResolver resolver) {
     _uriResolver = resolver;
@@ -179,6 +187,7 @@ public class TemplatesHandlerImpl implements ContentHandler, TemplatesHandler, S
 
   /**
    * Just forward SAX2 event to parser object.
+   * @throws SAXException TODO
    */
   @Override
   public void endDocument() throws SAXException {

@@ -17,6 +17,8 @@
  */
 package de.lyca.xpath.functions;
 
+import javax.xml.transform.TransformerException;
+
 import de.lyca.xpath.ExtensionsProvider;
 import de.lyca.xpath.XPathContext;
 import de.lyca.xpath.compiler.FunctionTable;
@@ -25,8 +27,6 @@ import de.lyca.xpath.objects.XObject;
 
 /**
  * Execute the ExtFunctionAvailable() function.
- * 
- * @xsl.usage advanced
  */
 public class FuncExtFunctionAvailable extends FunctionOneArg {
   static final long serialVersionUID = 5118814314918592241L;
@@ -40,10 +40,10 @@ public class FuncExtFunctionAvailable extends FunctionOneArg {
    *          The current execution context.
    * @return A valid XObject.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
   @Override
-  public XObject execute(XPathContext xctxt) throws javax.xml.transform.TransformerException {
+  public XObject execute(XPathContext xctxt) throws TransformerException {
 
     String prefix;
     String namespace;

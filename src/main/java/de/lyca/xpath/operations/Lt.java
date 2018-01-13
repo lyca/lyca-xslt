@@ -17,11 +17,13 @@
  */
 package de.lyca.xpath.operations;
 
+import javax.xml.transform.TransformerException;
+
 import de.lyca.xpath.objects.XBoolean;
 import de.lyca.xpath.objects.XObject;
 
 /**
- * The '<' operation expression executer.
+ * The {@literal '<'} operation expression executer.
  */
 public class Lt extends Operation {
   static final long serialVersionUID = 3388420509289359422L;
@@ -38,10 +40,10 @@ public class Lt extends Operation {
    * @return non-null reference to the XObject that represents the result of the
    *         operation.
    * 
-   * @throws javax.xml.transform.TransformerException
+   * @throws TransformerException TODO
    */
   @Override
-  public XObject operate(XObject left, XObject right) throws javax.xml.transform.TransformerException {
+  public XObject operate(XObject left, XObject right) throws TransformerException {
     return left.lessThan(right) ? XBoolean.S_TRUE : XBoolean.S_FALSE;
   }
 }
