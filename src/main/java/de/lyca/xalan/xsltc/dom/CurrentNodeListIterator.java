@@ -19,19 +19,18 @@ package de.lyca.xalan.xsltc.dom;
 
 import de.lyca.xalan.xsltc.runtime.AbstractTranslet;
 import de.lyca.xalan.xsltc.runtime.BasisLibrary;
+import de.lyca.xalan.xsltc.runtime.Messages;
 import de.lyca.xalan.xsltc.util.IntegerArray;
 import de.lyca.xml.dtm.DTMAxisIterator;
 import de.lyca.xml.dtm.ref.DTMAxisIteratorBase;
 
 /**
- * Iterators of this kind use a CurrentNodeListFilter to filter a subset of
- * nodes from a source iterator. For each node from the source, the boolean
- * method CurrentNodeListFilter.test() is called.
+ * Iterators of this kind use a CurrentNodeListFilter to filter a subset of nodes from a source iterator. For each node
+ * from the source, the boolean method CurrentNodeListFilter.test() is called.
  * 
- * All nodes from the source are read into an array upon calling setStartNode()
- * (this is needed to determine the value of last, a parameter to
- * CurrentNodeListFilter.test()). The method getLast() returns the last element
- * after applying the filter.
+ * All nodes from the source are read into an array upon calling setStartNode() (this is needed to determine the value
+ * of last, a parameter to CurrentNodeListFilter.test()). The method getLast() returns the last element after applying
+ * the filter.
  * 
  * @author Jacek Ambroziak
  * @author Santiago Pericas-Geertsen
@@ -75,12 +74,12 @@ public final class CurrentNodeListIterator extends DTMAxisIteratorBase {
   private final AbstractTranslet _translet;
 
   public CurrentNodeListIterator(DTMAxisIterator source, CurrentNodeListFilter filter, int currentNode,
-          AbstractTranslet translet) {
+      AbstractTranslet translet) {
     this(source, !source.isReverse(), filter, currentNode, translet);
   }
 
   public CurrentNodeListIterator(DTMAxisIterator source, boolean docOrder, CurrentNodeListFilter filter,
-          int currentNode, AbstractTranslet translet) {
+      int currentNode, AbstractTranslet translet) {
     _source = source;
     _filter = filter;
     _translet = translet;
@@ -113,7 +112,7 @@ public final class CurrentNodeListIterator extends DTMAxisIteratorBase {
       clone._isRestartable = false;
       return clone.reset();
     } catch (final CloneNotSupportedException e) {
-      BasisLibrary.runTimeError(BasisLibrary.ITERATOR_CLONE_ERR, e.toString());
+      BasisLibrary.runTimeError(Messages.get().iteratorCloneErr(e.toString()));
       return null;
     }
   }

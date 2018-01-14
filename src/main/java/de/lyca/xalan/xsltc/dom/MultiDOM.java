@@ -27,6 +27,7 @@ import de.lyca.xalan.xsltc.DOM;
 import de.lyca.xalan.xsltc.StripFilter;
 import de.lyca.xalan.xsltc.TransletException;
 import de.lyca.xalan.xsltc.runtime.BasisLibrary;
+import de.lyca.xalan.xsltc.runtime.Messages;
 import de.lyca.xml.dtm.Axis;
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xml.dtm.DTMAxisIterator;
@@ -159,8 +160,7 @@ public final class MultiDOM implements DOM {
   } // end of AxisIterator
 
   /**************************************************************
-   * This is a specialised iterator for predicates comparing node or attribute
-   * values to variable or parameter values.
+   * This is a specialised iterator for predicates comparing node or attribute values to variable or parameter values.
    */
   private final class NodeValueIterator extends DTMAxisIteratorBase {
 
@@ -191,7 +191,7 @@ public final class MultiDOM implements DOM {
         clone.setRestartable(false);
         return clone.reset();
       } catch (final CloneNotSupportedException e) {
-        BasisLibrary.runTimeError(BasisLibrary.ITERATOR_CLONE_ERR, e.toString());
+        BasisLibrary.runTimeError(Messages.get().iteratorCloneErr(e.toString()));
         return null;
       }
     }
@@ -341,7 +341,7 @@ public final class MultiDOM implements DOM {
       final DOM nestedDom = adaptiveRTF.getNestedDOM();
       if (nestedDom != null) {
         final DOMAdapter newAdapter = new DOMAdapter(nestedDom, adapter.getNamesArray(), adapter.getUrisArray(),
-                adapter.getTypesArray(), adapter.getNamespaceArray());
+            adapter.getTypesArray(), adapter.getNamespaceArray());
         addDOMAdapter(newAdapter);
       }
     }

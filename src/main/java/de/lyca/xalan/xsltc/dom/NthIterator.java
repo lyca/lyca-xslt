@@ -18,6 +18,7 @@
 package de.lyca.xalan.xsltc.dom;
 
 import de.lyca.xalan.xsltc.runtime.BasisLibrary;
+import de.lyca.xalan.xsltc.runtime.Messages;
 import de.lyca.xml.dtm.DTMAxisIterator;
 import de.lyca.xml.dtm.ref.DTMAxisIteratorBase;
 
@@ -50,7 +51,7 @@ public final class NthIterator extends DTMAxisIteratorBase {
       clone._isRestartable = false;
       return clone;
     } catch (final CloneNotSupportedException e) {
-      BasisLibrary.runTimeError(BasisLibrary.ITERATOR_CLONE_ERR, e.toString());
+      BasisLibrary.runTimeError(Messages.get().iteratorCloneErr(e.toString()));
       return null;
     }
   }
@@ -63,12 +64,11 @@ public final class NthIterator extends DTMAxisIteratorBase {
     }
     return DTMAxisIterator.END;
     /*
-     * if (_ready && _position > 0) { final int pos = _source.isReverse() ?
-     * _source.getLast() - _position + 1 : _position;
+     * if (_ready && _position > 0) { final int pos = _source.isReverse() ? _source.getLast() - _position + 1 :
+     * _position;
      * 
-     * _ready = false; int node; while ((node = _source.next()) !=
-     * DTMAxisIterator.END) { if (pos == _source.getPosition()) { return node; }
-     * } } return DTMAxisIterator.END;
+     * _ready = false; int node; while ((node = _source.next()) != DTMAxisIterator.END) { if (pos ==
+     * _source.getPosition()) { return node; } } } return DTMAxisIterator.END;
      */
   }
 

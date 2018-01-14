@@ -17,10 +17,7 @@
 
 package de.lyca.xalan.xsltc.compiler.util;
 
-/**
- * @version $Id: $
- */
-public interface MyErrorMessages {
+public interface XsltcErrorMessages {
 
   String multipleStylesheetErr();
 

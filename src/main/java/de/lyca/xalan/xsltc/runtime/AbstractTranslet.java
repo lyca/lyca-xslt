@@ -394,7 +394,7 @@ public abstract class AbstractTranslet implements Translet {
     // compiler than is known by the AbstractTranslet class? If, so
     // and we've made it this far (which is doubtful), we should give up.
     if (transletVersion > CURRENT_TRANSLET_VERSION) {
-      BasisLibrary.runTimeError(BasisLibrary.UNKNOWN_TRANSLET_VERSION_ERR, this.getClass().getName());
+      BasisLibrary.runTimeError(Messages.get().unknownTransletVersionErr(this.getClass().getName()));
     }
   }
 

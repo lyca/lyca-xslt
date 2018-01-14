@@ -42,6 +42,7 @@ import de.lyca.xalan.xsltc.Translet;
 import de.lyca.xalan.xsltc.runtime.AbstractTranslet;
 import de.lyca.xalan.xsltc.runtime.BasisLibrary;
 import de.lyca.xalan.xsltc.runtime.Constants;
+import de.lyca.xalan.xsltc.runtime.Messages;
 import de.lyca.xml.utils.SystemIDResolver;
 
 /**
@@ -98,7 +99,7 @@ public final class DocumentCache implements DOMCache {
       try {
         final long stamp = System.currentTimeMillis();
         _dom = (DOMEnhancedForDTM) _dtmManager.getDTM(new SAXSource(_reader, new InputSource(uri)), false, null, true,
-                false);
+            false);
         _dom.setDocumentURI(uri);
 
         // The build time can be used for statistics for a better
@@ -197,7 +198,7 @@ public final class DocumentCache implements DOMCache {
       _parser = factory.newSAXParser();
       _reader = _parser.getXMLReader();
     } catch (final ParserConfigurationException e) {
-      BasisLibrary.runTimeError(BasisLibrary.NAMESPACES_SUPPORT_ERR);
+      BasisLibrary.runTimeError(Messages.get().namespacesSupportErr());
     }
   }
 
@@ -264,8 +265,7 @@ public final class DocumentCache implements DOMCache {
   }
 
   /**
-   * Returns a document either by finding it in the cache or downloading it and
-   * putting it in the cache.
+   * Returns a document either by finding it in the cache or downloading it and putting it in the cache.
    */
   @Override
   public DOM retrieveDocument(String baseURI, String href, Translet trs) {
@@ -333,8 +333,8 @@ public final class DocumentCache implements DOMCache {
    */
   public void getStatistics(PrintWriter out) {
     out.println("<h2>DOM cache statistics</h2><center><table border=\"2\">" + "<tr><td><b>Document URI</b></td>"
-            + "<td><center><b>Build time</b></center></td>" + "<td><center><b>Access count</b></center></td>"
-            + "<td><center><b>Last accessed</b></center></td>" + "<td><center><b>Last modified</b></center></td></tr>");
+        + "<td><center><b>Build time</b></center></td>" + "<td><center><b>Access count</b></center></td>"
+        + "<td><center><b>Last accessed</b></center></td>" + "<td><center><b>Last modified</b></center></td></tr>");
 
     for (int i = 0; i < _count; i++) {
       final CachedDocument doc = _references.get(_URIs[i]);

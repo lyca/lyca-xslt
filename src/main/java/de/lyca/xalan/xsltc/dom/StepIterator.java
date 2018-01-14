@@ -18,17 +18,16 @@
 package de.lyca.xalan.xsltc.dom;
 
 import de.lyca.xalan.xsltc.runtime.BasisLibrary;
+import de.lyca.xalan.xsltc.runtime.Messages;
 import de.lyca.xml.dtm.DTMAxisIterator;
 import de.lyca.xml.dtm.ref.DTMAxisIteratorBase;
 
 /**
- * A step iterator is used to evaluate expressions like "BOOK/TITLE". A better
- * name for this iterator would have been ParentIterator since both "BOOK" and
- * "TITLE" are steps in XPath lingo. Step iterators are constructed from two
- * other iterators which we are going to refer to as "outer" and "inner". Every
- * node from the outer iterator (the one for BOOK in our example) is used to
- * initialize the inner iterator. After this initialization, every node from the
- * inner iterator is returned (in essence, implementing a "nested loop").
+ * A step iterator is used to evaluate expressions like "BOOK/TITLE". A better name for this iterator would have been
+ * ParentIterator since both "BOOK" and "TITLE" are steps in XPath lingo. Step iterators are constructed from two other
+ * iterators which we are going to refer to as "outer" and "inner". Every node from the outer iterator (the one for BOOK
+ * in our example) is used to initialize the inner iterator. After this initialization, every node from the inner
+ * iterator is returned (in essence, implementing a "nested loop").
  * 
  * @author Jacek Ambroziak
  * @author Santiago Pericas-Geertsen
@@ -77,7 +76,7 @@ public class StepIterator extends DTMAxisIteratorBase {
       clone._isRestartable = false;
       return clone.reset();
     } catch (final CloneNotSupportedException e) {
-      BasisLibrary.runTimeError(BasisLibrary.ITERATOR_CLONE_ERR, e.toString());
+      BasisLibrary.runTimeError(Messages.get().iteratorCloneErr(e.toString()));
       return null;
     }
   }

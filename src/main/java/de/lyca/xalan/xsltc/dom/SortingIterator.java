@@ -19,6 +19,7 @@ package de.lyca.xalan.xsltc.dom;
 
 import de.lyca.xalan.xsltc.TransletException;
 import de.lyca.xalan.xsltc.runtime.BasisLibrary;
+import de.lyca.xalan.xsltc.runtime.Messages;
 import de.lyca.xml.dtm.DTMAxisIterator;
 import de.lyca.xml.dtm.ref.DTMAxisIteratorBase;
 
@@ -91,8 +92,8 @@ public final class SortingIterator extends DTMAxisIteratorBase {
   }
 
   /**
-   * Clone a <code>SortingIterator</code> by cloning its source iterator and
-   * then sharing the factory and the array of <code>NodeSortRecords</code>.
+   * Clone a <code>SortingIterator</code> by cloning its source iterator and then sharing the factory and the array of
+   * <code>NodeSortRecords</code>.
    */
   @Override
   public DTMAxisIterator cloneIterator() {
@@ -106,7 +107,7 @@ public final class SortingIterator extends DTMAxisIteratorBase {
       clone.setRestartable(false);
       return clone.reset();
     } catch (final CloneNotSupportedException e) {
-      BasisLibrary.runTimeError(BasisLibrary.ITERATOR_CLONE_ERR, e.toString());
+      BasisLibrary.runTimeError(Messages.get().iteratorCloneErr(e.toString()));
       return null;
     }
   }
@@ -128,7 +129,7 @@ public final class SortingIterator extends DTMAxisIteratorBase {
     }
   }
 
-  private int partition(int p, int r) throws TransletException{
+  private int partition(int p, int r) throws TransletException {
     final NodeSortRecord x = _data[p + r >>> 1];
     int i = p - 1;
     int j = r + 1;

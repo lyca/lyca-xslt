@@ -19,6 +19,7 @@ package de.lyca.xalan.xsltc.dom;
 
 import de.lyca.xalan.xsltc.NodeIterator;
 import de.lyca.xalan.xsltc.runtime.BasisLibrary;
+import de.lyca.xalan.xsltc.runtime.Messages;
 
 /**
  * @author Jacek Ambroziak
@@ -66,9 +67,8 @@ public abstract class NodeIteratorBase implements NodeIterator {
   }
 
   /**
-   * Initialize iterator using a node. If iterator is not restartable, then do
-   * nothing. If node is equal to END then subsequent calls to next() must
-   * return END.
+   * Initialize iterator using a node. If iterator is not restartable, then do nothing. If node is equal to END then
+   * subsequent calls to next() must return END.
    */
   @Override
   abstract public NodeIterator setStartNode(int node);
@@ -95,9 +95,8 @@ public abstract class NodeIteratorBase implements NodeIterator {
   }
 
   /**
-   * Default implementation of getLast(). Stores current position and current
-   * node, resets the iterator, counts all nodes and restores iterator to
-   * original state.
+   * Default implementation of getLast(). Stores current position and current node, resets the iterator, counts all
+   * nodes and restores iterator to original state.
    */
   @Override
   public int getLast() {
@@ -123,8 +122,8 @@ public abstract class NodeIteratorBase implements NodeIterator {
   }
 
   /**
-   * Indicates if position in this iterator is computed in reverse document
-   * order. Note that nodes are always returned in document order.
+   * Indicates if position in this iterator is computed in reverse document order. Note that nodes are always returned
+   * in document order.
    */
   @Override
   public boolean isReverse() {
@@ -132,9 +131,8 @@ public abstract class NodeIteratorBase implements NodeIterator {
   }
 
   /**
-   * Clones and resets this iterator. Note that the cloned iterator is not
-   * restartable. This is because cloning is needed for variable references, and
-   * the context node of the original variable declaration must be preserved.
+   * Clones and resets this iterator. Note that the cloned iterator is not restartable. This is because cloning is
+   * needed for variable references, and the context node of the original variable declaration must be preserved.
    */
   @Override
   public NodeIterator cloneIterator() {
@@ -143,7 +141,7 @@ public abstract class NodeIteratorBase implements NodeIterator {
       clone._isRestartable = false;
       return clone.reset();
     } catch (final CloneNotSupportedException e) {
-      BasisLibrary.runTimeError(BasisLibrary.ITERATOR_CLONE_ERR, e.toString());
+      BasisLibrary.runTimeError(Messages.get().iteratorCloneErr(e.toString()));
       return null;
     }
   }

@@ -18,15 +18,15 @@
 package de.lyca.xalan.xsltc.dom;
 
 import de.lyca.xalan.xsltc.runtime.BasisLibrary;
+import de.lyca.xalan.xsltc.runtime.Messages;
 import de.lyca.xml.dtm.DTMAxisIterator;
 import de.lyca.xml.dtm.DTMFilter;
 import de.lyca.xml.dtm.DTMIterator;
 import de.lyca.xml.dtm.ref.DTMAxisIteratorBase;
 
 /**
- * Similar to a CurrentNodeListIterator except that the filter has a simpler
- * interface (only needs the node, no position, last, etc.) It takes a source
- * iterator and a Filter object and returns nodes from the source after
+ * Similar to a CurrentNodeListIterator except that the filter has a simpler interface (only needs the node, no
+ * position, last, etc.) It takes a source iterator and a Filter object and returns nodes from the source after
  * filtering them by calling filter.test(node).
  * 
  * @author Jacek Ambroziak
@@ -76,7 +76,7 @@ public final class FilterIterator extends DTMAxisIteratorBase {
       clone._isRestartable = false;
       return clone.reset();
     } catch (final CloneNotSupportedException e) {
-      BasisLibrary.runTimeError(BasisLibrary.ITERATOR_CLONE_ERR, e.toString());
+      BasisLibrary.runTimeError(Messages.get().iteratorCloneErr(e.toString()));
       return null;
     }
   }

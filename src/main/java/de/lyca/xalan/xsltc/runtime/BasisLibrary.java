@@ -19,11 +19,11 @@ package de.lyca.xalan.xsltc.runtime;
 
 import java.text.DecimalFormat;
 import java.text.FieldPosition;
-import java.text.MessageFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.dom.DOMSource;
 
 import org.w3c.dom.Attr;
@@ -156,7 +156,7 @@ public final class BasisLibrary {
       return stringToReal(((DOM) obj).getStringValue());
     else {
       final String className = obj.getClass().getName();
-      runTimeError(INVALID_ARGUMENT_ERR, className, "number()");
+      runTimeError(Messages.get().invalidArgumentErr(className, "number()"));
       return 0.0;
     }
   }
@@ -191,7 +191,7 @@ public final class BasisLibrary {
       return !temp.isEmpty();
     } else {
       final String className = obj.getClass().getName();
-      runTimeError(INVALID_ARGUMENT_ERR, className, "boolean()");
+      runTimeError(Messages.get().invalidArgumentErr(className, "boolean()"));
     }
     return false;
   }
@@ -214,7 +214,7 @@ public final class BasisLibrary {
 
       return value.substring(istart);
     } catch (final IndexOutOfBoundsException e) {
-      runTimeError(RUN_TIME_INTERNAL_ERR, "substring()");
+      runTimeError(Messages.get().runTimeInternalErr("substring()"));
       return null;
     }
   }
@@ -249,7 +249,7 @@ public final class BasisLibrary {
       else
         return value.substring(istart, isum);
     } catch (final IndexOutOfBoundsException e) {
-      runTimeError(RUN_TIME_INTERNAL_ERR, "substring()");
+      runTimeError(Messages.get().runTimeInternalErr("substring()"));
       return null;
     }
   }
@@ -372,7 +372,7 @@ public final class BasisLibrary {
    * should generate a warning if it encounters a call to an unresolved external function.
    */
   public static void unresolved_externalF(String name) {
-    runTimeError(EXTERNAL_FUNC_ERR, name);
+    runTimeError(Messages.get().externalFuncErr(name));
   }
 
   /**
@@ -380,7 +380,7 @@ public final class BasisLibrary {
    * set to true.
    */
   public static void unallowed_extension_functionF(String name) {
-    runTimeError(UNALLOWED_EXTENSION_FUNCTION_ERR, name);
+    runTimeError(Messages.get().unallowedExtensionFunctionErr(name));
   }
 
   /**
@@ -388,7 +388,7 @@ public final class BasisLibrary {
    * set to true.
    */
   public static void unallowed_extension_elementF(String name) {
-    runTimeError(UNALLOWED_EXTENSION_ELEMENT_ERR, name);
+    runTimeError(Messages.get().unallowedExtensionElementErr(name));
   }
 
   /**
@@ -399,9 +399,9 @@ public final class BasisLibrary {
    */
   public static void unsupported_ElementF(String qname, boolean isExtension) {
     if (isExtension) {
-      runTimeError(UNSUPPORTED_EXT_ERR, qname);
+      runTimeError(Messages.get().unsupportedExtErr(qname));
     } else {
-      runTimeError(UNSUPPORTED_XSL_ERR, qname);
+      runTimeError(Messages.get().unsupportedXslErr(qname));
     }
   }
 
@@ -423,7 +423,7 @@ public final class BasisLibrary {
     if (name.equals("xsl:vendor-url"))
       return "http://xml.apache.org/xalan-j";
 
-    runTimeError(INVALID_ARGUMENT_ERR, name, "system-property()");
+    runTimeError(Messages.get().invalidArgumentErr(name, "system-property()"));
     return "";
   }
 
@@ -471,7 +471,7 @@ public final class BasisLibrary {
       return (DTMAxisIterator) obj;
     else {
       final String className = obj.getClass().getName();
-      runTimeError(DATA_CONVERSION_ERR, "node-set", className);
+      runTimeError(Messages.get().dataConversionErr("node-set", className));
       return null;
     }
   }
@@ -503,7 +503,7 @@ public final class BasisLibrary {
         return numberF(lstring, dom) <= numberF(rstring, dom);
 
       default:
-        runTimeError(RUN_TIME_INTERNAL_ERR, "compare()");
+        runTimeError(Messages.get().runTimeInternalErr("compare()"));
         return false;
     }
   }
@@ -632,7 +632,7 @@ public final class BasisLibrary {
         break;
 
       default:
-        runTimeError(RUN_TIME_INTERNAL_ERR, "compare()");
+        runTimeError(Messages.get().runTimeInternalErr("compare()"));
     }
 
     return false;
@@ -683,7 +683,7 @@ public final class BasisLibrary {
             return numberF(left, dom) <= numberF(right, dom);
 
           default:
-            runTimeError(RUN_TIME_INTERNAL_ERR, "compare()");
+            runTimeError(Messages.get().runTimeInternalErr("compare()"));
         }
       }
       // falls through
@@ -760,7 +760,7 @@ public final class BasisLibrary {
         return false;
       else {
         final String className = right.getClass().getName();
-        runTimeError(INVALID_ARGUMENT_ERR, className, "compare()");
+        runTimeError(Messages.get().invalidArgumentErr(className, "compare()"));
       }
     }
     return result;
@@ -880,7 +880,7 @@ public final class BasisLibrary {
       formatter.format(number, result, _fieldPosition);
       return result.toString();
     } catch (final IllegalArgumentException e) {
-      runTimeError(FORMAT_NUMBER_ERR, Double.toString(number), pattern);
+      runTimeError(Messages.get().formatNumberErr(Double.toString(number), pattern));
       return "";
     }
   }
@@ -897,7 +897,7 @@ public final class BasisLibrary {
       return ((DTMAxisIterator) obj).cloneIterator().reset();
     else {
       final String className = obj.getClass().getName();
-      runTimeError(DATA_CONVERSION_ERR, className, "node-set");
+      runTimeError(Messages.get().dataConversionErr(className, "node-set"));
       return null;
     }
   }
@@ -914,7 +914,7 @@ public final class BasisLibrary {
       return dom.makeNodeList(DTMDefaultBase.ROOTNODE);
     } else {
       final String className = obj.getClass().getName();
-      runTimeError(DATA_CONVERSION_ERR, className, "org.w3c.dom.NodeList");
+      runTimeError(Messages.get().dataConversionErr(className, "org.w3c.dom.NodeList"));
       return null;
     }
   }
@@ -932,7 +932,7 @@ public final class BasisLibrary {
       return dom.makeNode(iter);
     } else {
       final String className = obj.getClass().getName();
-      runTimeError(DATA_CONVERSION_ERR, className, "org.w3c.dom.Node");
+      runTimeError(Messages.get().dataConversionErr(className, "org.w3c.dom.Node"));
       return null;
     }
   }
@@ -945,7 +945,7 @@ public final class BasisLibrary {
       return ((Number) obj).longValue(); // handles Integer and Double
     else {
       final String className = obj.getClass().getName();
-      runTimeError(DATA_CONVERSION_ERR, className, Long.TYPE);
+      runTimeError(Messages.get().dataConversionErr(className, Long.TYPE));
       return 0;
     }
   }
@@ -958,7 +958,7 @@ public final class BasisLibrary {
       return ((Number) obj).doubleValue(); // handles Integer and Double
     else {
       final String className = obj.getClass().getName();
-      runTimeError(DATA_CONVERSION_ERR, className, Double.TYPE);
+      runTimeError(Messages.get().dataConversionErr(className, Double.TYPE));
       return 0;
     }
   }
@@ -971,7 +971,7 @@ public final class BasisLibrary {
       return ((Boolean) obj).booleanValue();
     else {
       final String className = obj.getClass().getName();
-      runTimeError(DATA_CONVERSION_ERR, className, Boolean.TYPE);
+      runTimeError(Messages.get().dataConversionErr(className, Boolean.TYPE));
       return false;
     }
   }
@@ -990,7 +990,7 @@ public final class BasisLibrary {
       return ((DOM) obj).getStringValue();
     else {
       final String className = obj.getClass().getName();
-      runTimeError(DATA_CONVERSION_ERR, className, String.class);
+      runTimeError(Messages.get().dataConversionErr(className, String.class));
       return null;
     }
   }
@@ -1060,14 +1060,14 @@ public final class BasisLibrary {
       final int nodeType = node.getNodeType();
       if (doc == null) {
         if (dom instanceof MultiDOM == false) {
-          runTimeError(RUN_TIME_INTERNAL_ERR, "need MultiDOM");
+          runTimeError(Messages.get().runTimeInternalErr("need MultiDOM"));
           return null;
         }
         try {
           final AbstractTranslet at = (AbstractTranslet) translet;
           doc = at.newDocument("", "__top__");
-        } catch (final javax.xml.parsers.ParserConfigurationException e) {
-          runTimeError(RUN_TIME_INTERNAL_ERR, e.getMessage());
+        } catch (final ParserConfigurationException e) {
+          runTimeError(Messages.get().runTimeInternalErr(e.getMessage()));
           return null;
         }
       }
@@ -1100,7 +1100,7 @@ public final class BasisLibrary {
         default:
           // Better play it safe for all types we aren't sure we know
           // how to deal with.
-          runTimeError(RUN_TIME_INTERNAL_ERR, "Don't know how to convert node type " + nodeType);
+          runTimeError(Messages.get().runTimeInternalErr("Don't know how to convert node type " + nodeType));
       }
     }
 
@@ -1176,7 +1176,7 @@ public final class BasisLibrary {
       return (DOM) obj;
     } catch (final IllegalArgumentException e) {
       final String className = obj.getClass().getName();
-      runTimeError(DATA_CONVERSION_ERR, "reference", className);
+      runTimeError(Messages.get().dataConversionErr("reference", className));
       return null;
     }
   }
@@ -1217,7 +1217,7 @@ public final class BasisLibrary {
         handler.characters(_characterArray, 0, length);
       }
     } catch (final SAXException e) {
-      runTimeError(RUN_TIME_COPY_ERR);
+      runTimeError(Messages.get().runTimeCopyErr());
     }
   }
 
@@ -1238,19 +1238,19 @@ public final class BasisLibrary {
         if (!XML11Char.isXML11ValidNCName(oriPrefix)) {
           // even though the orignal prefix is ignored, it should still get
           // checked for valid NCName
-          runTimeError(INVALID_QNAME_ERR, oriPrefix + ":" + localName);
+          runTimeError(Messages.get().invalidQnameErr(oriPrefix + ":" + localName));
         }
       }
 
       // prefix must be a valid NCName
       if (!XML11Char.isXML11ValidNCName(newPrefix)) {
-        runTimeError(INVALID_QNAME_ERR, newPrefix + ":" + localName);
+        runTimeError(Messages.get().invalidQnameErr(newPrefix + ":" + localName));
       }
     }
 
     // local name must be a valid NCName and must not be XMLNS
     if (!XML11Char.isXML11ValidNCName(localName) || localName.equals(Constants.XMLNS_PREFIX)) {
-      runTimeError(INVALID_QNAME_ERR, localName);
+      runTimeError(Messages.get().invalidQnameErr(localName));
     }
   }
 
@@ -1260,7 +1260,7 @@ public final class BasisLibrary {
    */
   public static void checkNCName(String name) {
     if (!XML11Char.isXML11ValidNCName(name)) {
-      runTimeError(INVALID_NCNAME_ERR, name);
+      runTimeError(Messages.get().invalidNcnameErr(name));
     }
   }
 
@@ -1270,7 +1270,7 @@ public final class BasisLibrary {
    */
   public static void checkQName(String name) {
     if (!XML11Char.isXML11ValidQName(name)) {
-      runTimeError(INVALID_QNAME_ERR, name);
+      runTimeError(Messages.get().invalidQnameErr(name));
     }
   }
 
@@ -1289,7 +1289,7 @@ public final class BasisLibrary {
 
         // Handle case when prefix is not known at compile time
         if (namespace == null || namespace.length() == 0) {
-          runTimeError(NAMESPACE_PREFIX_ERR, prefix);
+          runTimeError(Messages.get().namespacePrefixErr(prefix));
         }
 
         handler.startElement(namespace, qname.substring(index + 1), qname);
@@ -1406,7 +1406,7 @@ public final class BasisLibrary {
 
     // Handle case when prefix is not resolved
     if (prefix != null && prefix.length() != 0 && (uri == null || uri.length() == 0)) {
-      runTimeError(NAMESPACE_PREFIX_ERR, prefix);
+      runTimeError(Messages.get().namespacePrefixErr(prefix));
     }
 
     if (uri.length() == 0) {
@@ -1435,35 +1435,10 @@ public final class BasisLibrary {
     return "ns" + prefixIndex++;
   }
 
-  public static final String RUN_TIME_INTERNAL_ERR = "RUN_TIME_INTERNAL_ERR";
-  public static final String RUN_TIME_COPY_ERR = "RUN_TIME_COPY_ERR";
-  public static final String DATA_CONVERSION_ERR = "DATA_CONVERSION_ERR";
-  public static final String EXTERNAL_FUNC_ERR = "EXTERNAL_FUNC_ERR";
-  public static final String EQUALITY_EXPR_ERR = "EQUALITY_EXPR_ERR";
-  public static final String INVALID_ARGUMENT_ERR = "INVALID_ARGUMENT_ERR";
-  public static final String FORMAT_NUMBER_ERR = "FORMAT_NUMBER_ERR";
-  public static final String ITERATOR_CLONE_ERR = "ITERATOR_CLONE_ERR";
-  public static final String AXIS_SUPPORT_ERR = "AXIS_SUPPORT_ERR";
-  public static final String TYPED_AXIS_SUPPORT_ERR = "TYPED_AXIS_SUPPORT_ERR";
-  public static final String STRAY_ATTRIBUTE_ERR = "STRAY_ATTRIBUTE_ERR";
-  public static final String STRAY_NAMESPACE_ERR = "STRAY_NAMESPACE_ERR";
-  public static final String NAMESPACE_PREFIX_ERR = "NAMESPACE_PREFIX_ERR";
-  public static final String DOM_ADAPTER_INIT_ERR = "DOM_ADAPTER_INIT_ERR";
-  public static final String PARSER_DTD_SUPPORT_ERR = "PARSER_DTD_SUPPORT_ERR";
-  public static final String NAMESPACES_SUPPORT_ERR = "NAMESPACES_SUPPORT_ERR";
-  public static final String CANT_RESOLVE_RELATIVE_URI_ERR = "CANT_RESOLVE_RELATIVE_URI_ERR";
-  public static final String UNSUPPORTED_XSL_ERR = "UNSUPPORTED_XSL_ERR";
-  public static final String UNSUPPORTED_EXT_ERR = "UNSUPPORTED_EXT_ERR";
-  public static final String UNKNOWN_TRANSLET_VERSION_ERR = "UNKNOWN_TRANSLET_VERSION_ERR";
-  public static final String INVALID_QNAME_ERR = "INVALID_QNAME_ERR";
-  public static final String INVALID_NCNAME_ERR = "INVALID_NCNAME_ERR";
-  public static final String UNALLOWED_EXTENSION_FUNCTION_ERR = "UNALLOWED_EXTENSION_FUNCTION_ERR";
-  public static final String UNALLOWED_EXTENSION_ELEMENT_ERR = "UNALLOWED_EXTENSION_ELEMENT_ERR";
-
   // All error messages are localized and are stored in resource bundles.
   private static ResourceBundle m_bundle;
 
-  public final static String ERROR_MESSAGES_KEY = "error-messages";
+  final static String ERROR_MESSAGES_KEY = "error-messages";
 
   static {
     final String resource = "de.lyca.xalan.xsltc.runtime.ErrorMessages";
@@ -1473,21 +1448,8 @@ public final class BasisLibrary {
   /**
    * Print a run-time error message.
    */
-  public static void runTimeError(String code) {
-    throw new RuntimeException(m_bundle.getString(code));
-  }
-
-  public static void runTimeError(String code, Object[] args) {
-    final String message = MessageFormat.format(m_bundle.getString(code), args);
+  public static void runTimeError(String message) {
     throw new RuntimeException(message);
-  }
-
-  public static void runTimeError(String code, Object arg0) {
-    runTimeError(code, new Object[] { arg0 });
-  }
-
-  public static void runTimeError(String code, Object arg0, Object arg1) {
-    runTimeError(code, new Object[] { arg0, arg1 });
   }
 
   public static void consoleOutput(String msg) {

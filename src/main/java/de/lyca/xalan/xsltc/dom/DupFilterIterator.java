@@ -18,15 +18,15 @@
 package de.lyca.xalan.xsltc.dom;
 
 import de.lyca.xalan.xsltc.runtime.BasisLibrary;
+import de.lyca.xalan.xsltc.runtime.Messages;
 import de.lyca.xalan.xsltc.util.IntegerArray;
 import de.lyca.xml.dtm.DTMAxisIterator;
 import de.lyca.xml.dtm.ref.DTMAxisIteratorBase;
 import de.lyca.xml.dtm.ref.DTMDefaultBase;
 
 /**
- * Removes duplicates and sorts a source iterator. The nodes from the source are
- * collected in an array upon calling setStartNode(). This array is later sorted
- * and duplicates are ignored in next().
+ * Removes duplicates and sorts a source iterator. The nodes from the source are collected in an array upon calling
+ * setStartNode(). This array is later sorted and duplicates are ignored in next().
  * 
  * @author G. Todd Miller
  */
@@ -77,8 +77,7 @@ public final class DupFilterIterator extends DTMAxisIteratorBase {
   /**
    * Set the start node for this iterator
    * 
-   * @param node
-   *          The start node
+   * @param node The start node
    * @return A reference to this node iterator
    */
   @Override
@@ -133,7 +132,7 @@ public final class DupFilterIterator extends DTMAxisIteratorBase {
       clone._isRestartable = false;
       return clone.reset();
     } catch (final CloneNotSupportedException e) {
-      BasisLibrary.runTimeError(BasisLibrary.ITERATOR_CLONE_ERR, e.toString());
+      BasisLibrary.runTimeError(Messages.get().iteratorCloneErr(e.toString()));
       return null;
     }
   }

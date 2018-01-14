@@ -37,6 +37,7 @@ import de.lyca.xalan.xsltc.DOMEnhancedForDTM;
 import de.lyca.xalan.xsltc.StripFilter;
 import de.lyca.xalan.xsltc.TransletException;
 import de.lyca.xalan.xsltc.runtime.BasisLibrary;
+import de.lyca.xalan.xsltc.runtime.Messages;
 import de.lyca.xml.dtm.Axis;
 import de.lyca.xml.dtm.DTM;
 import de.lyca.xml.dtm.DTMAxisIterator;
@@ -53,14 +54,12 @@ import de.lyca.xml.utils.SystemIDResolver;
 import de.lyca.xml.utils.XMLStringFactory;
 
 /**
- * SAXImpl is the core model for SAX input source. SAXImpl objects are usually
- * created from an XSLTCDTMManager.
+ * SAXImpl is the core model for SAX input source. SAXImpl objects are usually created from an XSLTCDTMManager.
  * 
  * <p>
- * DOMSource inputs are handled using DOM2SAX + SAXImpl. SAXImpl has a few
- * specific fields (e.g. _node2Ids, _document) to keep DOM-related information.
- * They are used when the processing behavior between DOM and SAX has to be
- * different. Examples of these include id function and unparsed entity.
+ * DOMSource inputs are handled using DOM2SAX + SAXImpl. SAXImpl has a few specific fields (e.g. _node2Ids, _document)
+ * to keep DOM-related information. They are used when the processing behavior between DOM and SAX has to be different.
+ * Examples of these include id function and unparsed entity.
  * 
  * <p>
  * SAXImpl extends SAX2DTM2 instead of SAX2DTM for better performance.
@@ -168,9 +167,8 @@ public final class SAXImpl extends SAX2DTM2 implements DOMEnhancedForDTM, DOMBui
   }
 
   /**
-   * Lookup a namespace URI from a prefix starting at node. This method is used
-   * in the execution of xsl:element when the prefix is not known at compile
-   * time.
+   * Lookup a namespace URI from a prefix starting at node. This method is used in the execution of xsl:element when the
+   * prefix is not known at compile time.
    */
   @Override
   public String lookupNamespace(int node, String prefix) throws TransletException {
@@ -192,7 +190,7 @@ public final class SAXImpl extends SAX2DTM2 implements DOMEnhancedForDTM, DOMBui
       }
     }
 
-    BasisLibrary.runTimeError(BasisLibrary.NAMESPACE_PREFIX_ERR, prefix);
+    BasisLibrary.runTimeError(Messages.get().namespacePrefixErr(prefix));
     return null;
   }
 
@@ -260,8 +258,7 @@ public final class SAXImpl extends SAX2DTM2 implements DOMEnhancedForDTM, DOMBui
   }
 
   /**
-   * Create an org.w3c.dom.Node from a node in an iterator The iterator most be
-   * started before this method is called
+   * Create an org.w3c.dom.Node from a node in an iterator The iterator most be started before this method is called
    */
   @Override
   public Node makeNode(DTMAxisIterator iter) {
@@ -281,15 +278,14 @@ public final class SAXImpl extends SAX2DTM2 implements DOMEnhancedForDTM, DOMBui
     if (nodeID < 0)
       return null;
     else if (nodeID < _nodeLists.length)
-      return _nodeLists[nodeID] != null ? _nodeLists[nodeID] : (_nodeLists[nodeID] = new DTMAxisIterNodeList(this,
-              new SingletonIterator(index)));
+      return _nodeLists[nodeID] != null ? _nodeLists[nodeID]
+          : (_nodeLists[nodeID] = new DTMAxisIterNodeList(this, new SingletonIterator(index)));
     else
       return new DTMAxisIterNodeList(this, new SingletonIterator(index));
   }
 
   /**
-   * Create an org.w3c.dom.NodeList from a node iterator The iterator most be
-   * started before this method is called
+   * Create an org.w3c.dom.NodeList from a node iterator The iterator most be started before this method is called
    */
   @Override
   public NodeList makeNodeList(DTMAxisIterator iter) {
@@ -297,8 +293,8 @@ public final class SAXImpl extends SAX2DTM2 implements DOMEnhancedForDTM, DOMBui
   }
 
   /**
-   * Iterator that returns the namespace nodes as defined by the XPath data
-   * model for a given node, filtered by extended type ID.
+   * Iterator that returns the namespace nodes as defined by the XPath data model for a given node, filtered by extended
+   * type ID.
    */
   public class TypedNamespaceIterator extends NamespaceIterator {
 
@@ -308,8 +304,7 @@ public final class SAXImpl extends SAX2DTM2 implements DOMEnhancedForDTM, DOMBui
      * Constructor TypedChildrenIterator
      * 
      * 
-     * @param nodeType
-     *          The extended type ID being requested.
+     * @param nodeType The extended type ID being requested.
      */
     public TypedNamespaceIterator(int nodeType) {
       super();
@@ -337,8 +332,7 @@ public final class SAXImpl extends SAX2DTM2 implements DOMEnhancedForDTM, DOMBui
   } // end of TypedNamespaceIterator
 
   /**************************************************************
-   * This is a specialised iterator for predicates comparing node or attribute
-   * values to variable or parameter values.
+   * This is a specialised iterator for predicates comparing node or attribute values to variable or parameter values.
    */
   private final class NodeValueIterator extends InternalAxisIteratorBase {
 
@@ -371,7 +365,7 @@ public final class SAXImpl extends SAX2DTM2 implements DOMEnhancedForDTM, DOMBui
         clone._op = _op;
         return clone.reset();
       } catch (final CloneNotSupportedException e) {
-        BasisLibrary.runTimeError(BasisLibrary.ITERATOR_CLONE_ERR, e.toString());
+        BasisLibrary.runTimeError(Messages.get().iteratorCloneErr(e.toString()));
         return null;
       }
     }
@@ -437,9 +431,8 @@ public final class SAXImpl extends SAX2DTM2 implements DOMEnhancedForDTM, DOMBui
   }
 
   /**
-   * Returns singleton iterator containg the document root Works for them main
-   * document (mark == 0). It cannot be made to point to any other node through
-   * setStartNode().
+   * Returns singleton iterator containg the document root Works for them main document (mark == 0). It cannot be made
+   * to point to any other node through setStartNode().
    */
   @Override
   public DTMAxisIterator getIterator() {
@@ -578,8 +571,8 @@ public final class SAXImpl extends SAX2DTM2 implements DOMEnhancedForDTM, DOMBui
   }
 
   /**
-   * Get mapping from DOM element/attribute types to external types. This method
-   * is used when the document is not fully built.
+   * Get mapping from DOM element/attribute types to external types. This method is used when the document is not fully
+   * built.
    */
   private short[] getMapping2(String[] names, String[] uris, int[] types) {
     int i;
@@ -674,17 +667,18 @@ public final class SAXImpl extends SAX2DTM2 implements DOMEnhancedForDTM, DOMBui
    * Construct a SAXImpl object using the default block size.
    */
   public SAXImpl(XSLTCDTMManager mgr, Source source, int dtmIdentity, DTMWSFilter whiteSpaceFilter,
-          XMLStringFactory xstringfactory, boolean doIndexing, boolean buildIdIndex) {
-    this(mgr, source, dtmIdentity, whiteSpaceFilter, xstringfactory, doIndexing, DEFAULT_BLOCKSIZE, buildIdIndex, false);
+      XMLStringFactory xstringfactory, boolean doIndexing, boolean buildIdIndex) {
+    this(mgr, source, dtmIdentity, whiteSpaceFilter, xstringfactory, doIndexing, DEFAULT_BLOCKSIZE, buildIdIndex,
+        false);
   }
 
   /**
    * Construct a SAXImpl object using the given block size.
    */
   public SAXImpl(XSLTCDTMManager mgr, Source source, int dtmIdentity, DTMWSFilter whiteSpaceFilter,
-          XMLStringFactory xstringfactory, boolean doIndexing, int blocksize, boolean buildIdIndex, boolean newNameTable) {
+      XMLStringFactory xstringfactory, boolean doIndexing, int blocksize, boolean buildIdIndex, boolean newNameTable) {
     super(mgr, source, dtmIdentity, whiteSpaceFilter, xstringfactory, doIndexing, blocksize, false, buildIdIndex,
-            newNameTable);
+        newNameTable);
 
     _dtmManager = mgr;
     _size = blocksize;
@@ -711,13 +705,10 @@ public final class SAXImpl extends SAX2DTM2 implements DOMEnhancedForDTM, DOMBui
   }
 
   /**
-   * Migrate a DTM built with an old DTMManager to a new DTMManager. After the
-   * migration, the new DTMManager will treat the DTM as one that is built by
-   * itself. This is used to support DTM sharing between multiple
-   * transformations.
+   * Migrate a DTM built with an old DTMManager to a new DTMManager. After the migration, the new DTMManager will treat
+   * the DTM as one that is built by itself. This is used to support DTM sharing between multiple transformations.
    * 
-   * @param manager
-   *          the DTMManager
+   * @param manager the DTMManager
    */
   @Override
   public void migrateTo(DTMManager manager) {
@@ -730,8 +721,7 @@ public final class SAXImpl extends SAX2DTM2 implements DOMEnhancedForDTM, DOMBui
   /**
    * Return the node identity for a given id String
    * 
-   * @param idString
-   *          The id String
+   * @param idString The id String
    * @return The identity of the node whose id is the given String.
    */
   @Override
@@ -757,8 +747,7 @@ public final class SAXImpl extends SAX2DTM2 implements DOMEnhancedForDTM, DOMBui
   /*---------------------------------------------------------------------------*/
 
   /**
-   * Call this when an xml:space attribute is encountered to define the
-   * whitespace strip/preserve settings.
+   * Call this when an xml:space attribute is encountered to define the whitespace strip/preserve settings.
    */
   private void xmlSpaceDefine(String val, final int node) {
     final boolean setting = val.equals(PRESERVE_STRING);
@@ -769,8 +758,8 @@ public final class SAXImpl extends SAX2DTM2 implements DOMEnhancedForDTM, DOMBui
   }
 
   /**
-   * Call this from endElement() to revert strip/preserve setting to whatever it
-   * was before the corresponding startElement().
+   * Call this from endElement() to revert strip/preserve setting to whatever it was before the corresponding
+   * startElement().
    */
   private void xmlSpaceRevert(final int node) {
     if (node == _xmlSpaceStack[_idx - 1]) {
@@ -848,11 +837,10 @@ public final class SAXImpl extends SAX2DTM2 implements DOMEnhancedForDTM, DOMBui
   }
 
   /**
-   * Specialized interface used by DOM2SAX. This one has an extra Node parameter
-   * to build the Node {@literal ->} id map.
+   * Specialized interface used by DOM2SAX. This one has an extra Node parameter to build the Node {@literal ->} id map.
    */
   public void startElement(String uri, String localName, String qname, Attributes attributes, Node node)
-          throws SAXException {
+      throws SAXException {
     this.startElement(uri, localName, qname, attributes);
 
     if (m_buildIdIndex) {
@@ -905,8 +893,7 @@ public final class SAXImpl extends SAX2DTM2 implements DOMEnhancedForDTM, DOMBui
   }
 
   /**
-   * SAX2: Receive notification of ignorable whitespace in element content.
-   * Similar to characters(char[], int, int).
+   * SAX2: Receive notification of ignorable whitespace in element content. Similar to characters(char[], int, int).
    */
   @Override
   public void ignorableWhitespace(char[] ch, int start, int length) throws SAXException {
@@ -1050,8 +1037,7 @@ public final class SAXImpl extends SAX2DTM2 implements DOMEnhancedForDTM, DOMBui
   }
 
   /**
-   * Returns an iterator with all children of a specific type for a given node
-   * (element)
+   * Returns an iterator with all children of a specific type for a given node (element)
    */
   @Override
   public DTMAxisIterator getTypedChildren(final int type) {
@@ -1059,9 +1045,8 @@ public final class SAXImpl extends SAX2DTM2 implements DOMEnhancedForDTM, DOMBui
   }
 
   /**
-   * This is a shortcut to the iterators that implement the supported XPath axes
-   * (only namespace::) is not supported. Returns a bare-bones iterator that
-   * must be initialized with a start node (using iterator.setStartNode()).
+   * This is a shortcut to the iterators that implement the supported XPath axes (only namespace::) is not supported.
+   * Returns a bare-bones iterator that must be initialized with a start node (using iterator.setStartNode()).
    */
   @Override
   public DTMAxisIterator getAxisIterator(final Axis axis) {
@@ -1095,14 +1080,13 @@ public final class SAXImpl extends SAX2DTM2 implements DOMEnhancedForDTM, DOMBui
       case ROOT:
         return new RootIterator();
       default:
-        BasisLibrary.runTimeError(BasisLibrary.AXIS_SUPPORT_ERR, axis.getName());
+        BasisLibrary.runTimeError(Messages.get().axisSupportErr(axis.getName()));
     }
     return null;
   }
 
   /**
-   * Similar to getAxisIterator, but this one returns an iterator containing
-   * nodes of a typed axis (ex.: child::foo)
+   * Similar to getAxisIterator, but this one returns an iterator containing nodes of a typed axis (ex.: child::foo)
    */
   @Override
   public DTMAxisIterator getTypedAxisIterator(Axis axis, int type) {
@@ -1143,17 +1127,15 @@ public final class SAXImpl extends SAX2DTM2 implements DOMEnhancedForDTM, DOMBui
       case ROOT:
         return new TypedRootIterator(type);
       default:
-        BasisLibrary.runTimeError(BasisLibrary.TYPED_AXIS_SUPPORT_ERR, axis.getName());
+        BasisLibrary.runTimeError(Messages.get().typedAxisSupportErr(axis.getName()));
     }
     return null;
   }
 
   /**
-   * Do not think that this returns an iterator for the namespace axis. It
-   * returns an iterator with nodes that belong in a certain namespace, such as
-   * with {@literal <xsl:apply-templates select="blob/foo:*"/>} The 'axis' specifies the
-   * axis for the base iterator from which the nodes are taken, while 'ns'
-   * specifies the namespace URI type.
+   * Do not think that this returns an iterator for the namespace axis. It returns an iterator with nodes that belong in
+   * a certain namespace, such as with {@literal <xsl:apply-templates select="blob/foo:*"/>} The 'axis' specifies the
+   * axis for the base iterator from which the nodes are taken, while 'ns' specifies the namespace URI type.
    */
   @Override
   public DTMAxisIterator getNamespaceAxisIterator(Axis axis, int ns) {
@@ -1175,9 +1157,8 @@ public final class SAXImpl extends SAX2DTM2 implements DOMEnhancedForDTM, DOMBui
   }
 
   /**
-   * Iterator that handles node tests that test for a namespace, but have a wild
-   * card for the local name of the node, i.e., node tests of the form
-   * {@literal <axis>::<prefix>:*}
+   * Iterator that handles node tests that test for a namespace, but have a wild card for the local name of the node,
+   * i.e., node tests of the form {@literal <axis>::<prefix>:*}
    */
   public final class NamespaceWildcardIterator extends InternalAxisIteratorBase {
     /**
@@ -1186,18 +1167,15 @@ public final class SAXImpl extends SAX2DTM2 implements DOMEnhancedForDTM, DOMBui
     protected int m_nsType;
 
     /**
-     * A nested typed axis iterator that retrieves nodes of the principal node
-     * kind for that axis.
+     * A nested typed axis iterator that retrieves nodes of the principal node kind for that axis.
      */
     protected DTMAxisIterator m_baseIterator;
 
     /**
      * Constructor NamespaceWildcard
      * 
-     * @param axis
-     *          The axis that this iterator will traverse
-     * @param nsType
-     *          The namespace type index
+     * @param axis The axis that this iterator will traverse
+     * @param nsType The namespace type index
      */
     public NamespaceWildcardIterator(Axis axis, int nsType) {
       m_nsType = nsType;
@@ -1224,11 +1202,9 @@ public final class SAXImpl extends SAX2DTM2 implements DOMEnhancedForDTM, DOMBui
     }
 
     /**
-     * Set start to END should 'close' the iterator, i.e. subsequent call to
-     * next() should return END.
+     * Set start to END should 'close' the iterator, i.e. subsequent call to next() should return END.
      * 
-     * @param node
-     *          Sets the root of the iteration.
+     * @param node Sets the root of the iteration.
      * 
      * @return A DTMAxisIterator set to the start of the iteration.
      */
@@ -1277,7 +1253,7 @@ public final class SAXImpl extends SAX2DTM2 implements DOMEnhancedForDTM, DOMBui
 
         return clone;
       } catch (final CloneNotSupportedException e) {
-        BasisLibrary.runTimeError(BasisLibrary.ITERATOR_CLONE_ERR, e.toString());
+        BasisLibrary.runTimeError(Messages.get().iteratorCloneErr(e.toString()));
         return null;
       }
     }
@@ -1304,10 +1280,9 @@ public final class SAXImpl extends SAX2DTM2 implements DOMEnhancedForDTM, DOMBui
   }
 
   /**
-   * Iterator that returns children within a given namespace for a given node.
-   * The functionality chould be achieved by putting a filter on top of a basic
-   * child iterator, but a specialised iterator is used for efficiency (both
-   * speed and size of translet).
+   * Iterator that returns children within a given namespace for a given node. The functionality chould be achieved by
+   * putting a filter on top of a basic child iterator, but a specialised iterator is used for efficiency (both speed
+   * and size of translet).
    */
   public final class NamespaceChildrenIterator extends InternalAxisIteratorBase {
 
@@ -1318,19 +1293,16 @@ public final class SAXImpl extends SAX2DTM2 implements DOMEnhancedForDTM, DOMBui
      * Constructor NamespaceChildrenIterator
      * 
      * 
-     * @param type
-     *          The extended type ID being requested.
+     * @param type The extended type ID being requested.
      */
     public NamespaceChildrenIterator(final int type) {
       _nsType = type;
     }
 
     /**
-     * Set start to END should 'close' the iterator, i.e. subsequent call to
-     * next() should return END.
+     * Set start to END should 'close' the iterator, i.e. subsequent call to next() should return END.
      * 
-     * @param node
-     *          Sets the root of the iteration.
+     * @param node Sets the root of the iteration.
      * 
      * @return A DTMAxisIterator set to the start of the iteration.
      */
@@ -1359,7 +1331,8 @@ public final class SAXImpl extends SAX2DTM2 implements DOMEnhancedForDTM, DOMBui
     @Override
     public int next() {
       if (_currentNode != DTM.NULL) {
-        for (int node = NOTPROCESSED == _currentNode ? _firstch(makeNodeIdentity(_startNode)) : _nextsib(_currentNode); node != END; node = _nextsib(node)) {
+        for (int node = NOTPROCESSED == _currentNode ? _firstch(makeNodeIdentity(_startNode))
+            : _nextsib(_currentNode); node != END; node = _nextsib(node)) {
           final int nodeHandle = makeNodeHandle(node);
 
           if (getNSType(nodeHandle) == _nsType) {
@@ -1386,8 +1359,7 @@ public final class SAXImpl extends SAX2DTM2 implements DOMEnhancedForDTM, DOMBui
      * Constructor NamespaceAttributeIterator
      * 
      * 
-     * @param nsType
-     *          The extended type ID being requested.
+     * @param nsType The extended type ID being requested.
      */
     public NamespaceAttributeIterator(int nsType) {
       super();
@@ -1396,11 +1368,9 @@ public final class SAXImpl extends SAX2DTM2 implements DOMEnhancedForDTM, DOMBui
     }
 
     /**
-     * Set start to END should 'close' the iterator, i.e. subsequent call to
-     * next() should return END.
+     * Set start to END should 'close' the iterator, i.e. subsequent call to next() should return END.
      * 
-     * @param node
-     *          Sets the root of the iteration.
+     * @param node Sets the root of the iteration.
      * 
      * @return A DTMAxisIterator set to the start of the iteration.
      */
@@ -1456,8 +1426,7 @@ public final class SAXImpl extends SAX2DTM2 implements DOMEnhancedForDTM, DOMBui
   } // end of NamespaceAttributeIterator
 
   /**
-   * Returns an iterator with all descendants of a node that are of a given
-   * type.
+   * Returns an iterator with all descendants of a node that are of a given type.
    */
   public DTMAxisIterator getTypedDescendantIterator(int type) {
     return new TypedDescendantIterator(type);
@@ -1510,8 +1479,8 @@ public final class SAXImpl extends SAX2DTM2 implements DOMEnhancedForDTM, DOMBui
   /**
    * Performs a deep copy (ref. XSLs copy-of())
    * 
-   * TODO: Copy namespace declarations. Can't be done until we add namespace
-   * nodes and keep track of NS prefixes TODO: Copy comment nodes
+   * TODO: Copy namespace declarations. Can't be done until we add namespace nodes and keep track of NS prefixes TODO:
+   * Copy comment nodes
    */
   @Override
   public void copy(final int node, SerializationHandler handler) throws TransletException {
@@ -1674,16 +1643,15 @@ public final class SAXImpl extends SAX2DTM2 implements DOMEnhancedForDTM, DOMBui
   }
 
   /**
-   * Returns an instance of the DOMBuilder inner class This class will consume
-   * the input document through a SAX2 interface and populate the tree.
+   * Returns an instance of the DOMBuilder inner class This class will consume the input document through a SAX2
+   * interface and populate the tree.
    */
   public DOMBuilder getBuilder() {
     return this;
   }
 
   /**
-   * Return a SerializationHandler for output handling. This method is used by
-   * Result Tree Fragments.
+   * Return a SerializationHandler for output handling. This method is used by Result Tree Fragments.
    */
   @Override
   public SerializationHandler getOutputDomBuilder() {
@@ -1701,12 +1669,9 @@ public final class SAXImpl extends SAX2DTM2 implements DOMEnhancedForDTM, DOMBui
   /**
    * Return a instance of a DOM class to be used as an RTF
    * 
-   * @param initSize
-   *          The initial size of the DOM.
-   * @param rtfType
-   *          The type of the RTF
-   * @param addToManager
-   *          true if the RTF should be registered with the DTMManager.
+   * @param initSize The initial size of the DOM.
+   * @param rtfType The type of the RTF
+   * @param addToManager true if the RTF should be registered with the DTMManager.
    * @return The DOM object which represents the RTF.
    */
   @Override
@@ -1714,7 +1679,8 @@ public final class SAXImpl extends SAX2DTM2 implements DOMEnhancedForDTM, DOMBui
     if (rtfType == DOM.SIMPLE_RTF) {
       if (addToManager) {
         final int dtmPos = _dtmManager.getFirstFreeDTMID();
-        final SimpleResultTreeImpl rtf = new SimpleResultTreeImpl(_dtmManager, dtmPos << DTMManager.IDENT_DTM_NODE_BITS);
+        final SimpleResultTreeImpl rtf = new SimpleResultTreeImpl(_dtmManager,
+            dtmPos << DTMManager.IDENT_DTM_NODE_BITS);
         _dtmManager.addDTM(rtf, dtmPos, 0);
         return rtf;
       } else
@@ -1723,7 +1689,7 @@ public final class SAXImpl extends SAX2DTM2 implements DOMEnhancedForDTM, DOMBui
       if (addToManager) {
         final int dtmPos = _dtmManager.getFirstFreeDTMID();
         final AdaptiveResultTreeImpl rtf = new AdaptiveResultTreeImpl(_dtmManager,
-                dtmPos << DTMManager.IDENT_DTM_NODE_BITS, m_wsfilter, initSize, m_buildIdIndex);
+            dtmPos << DTMManager.IDENT_DTM_NODE_BITS, m_wsfilter, initSize, m_buildIdIndex);
         _dtmManager.addDTM(rtf, dtmPos, 0);
         return rtf;
 
@@ -1745,10 +1711,8 @@ public final class SAXImpl extends SAX2DTM2 implements DOMEnhancedForDTM, DOMBui
   }
 
   /**
-   * The getUnparsedEntityURI function returns the URI of the unparsed entity
-   * with the specified name in the same document as the context node (see [3.3
-   * Unparsed Entities]). It returns the empty string if there is no such
-   * entity.
+   * The getUnparsedEntityURI function returns the URI of the unparsed entity with the specified name in the same
+   * document as the context node (see [3.3 Unparsed Entities]). It returns the empty string if there is no such entity.
    */
   @Override
   public String getUnparsedEntityURI(String name) {

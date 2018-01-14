@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package de.lyca.xalan.xsltc.compiler.util;
+package de.lyca.xalan.xsltc.runtime;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -27,11 +27,11 @@ import java.util.ResourceBundle;
 
 public final class Messages {
 
-  private static final String BUNDLE_NAME = "de.lyca.xalan.xsltc.compiler.util.Errors";
+  private static final String BUNDLE_NAME = "de.lyca.xalan.xsltc.runtime.ErrorMessages";
 
-  private static XsltcErrorMessages messages = (XsltcErrorMessages) Proxy.newProxyInstance(//
-      XsltcErrorMessages.class.getClassLoader(), //
-      new Class[] { XsltcErrorMessages.class }, //
+  private static BasicLibraryErrorMessages messages = (BasicLibraryErrorMessages) Proxy.newProxyInstance(//
+      BasicLibraryErrorMessages.class.getClassLoader(), //
+      new Class[] { BasicLibraryErrorMessages.class }, //
       new MessageResolver());
 
   private Messages() {
@@ -46,9 +46,9 @@ public final class Messages {
   }
 
   /**
-   * @return Proxy of MyErrorMessages - Can be used to access all errors
+   * @return Proxy of BasicLibraryErrorMessages - Can be used to access all errors
    */
-  public static XsltcErrorMessages get() {
+  public static BasicLibraryErrorMessages get() {
     return messages;
   }
 

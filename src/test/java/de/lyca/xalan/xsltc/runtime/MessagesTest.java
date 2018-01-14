@@ -1,4 +1,4 @@
-package de.lyca.xalan.xsltc.compiler.util;
+package de.lyca.xalan.xsltc.runtime;
 
 import static org.junit.Assert.fail;
 
@@ -20,25 +20,25 @@ public class MessagesTest {
 
   // Just as example - Better scan your classpath for message_*.properties
   private static String[] propertyFiles = new String[] { //
-      "de/lyca/xalan/xsltc/compiler/util/Errors_ca.properties", //
-      "de/lyca/xalan/xsltc/compiler/util/Errors_cs.properties", //
-      "de/lyca/xalan/xsltc/compiler/util/Errors_de.properties", //
-      "de/lyca/xalan/xsltc/compiler/util/Errors_es.properties", //
-      "de/lyca/xalan/xsltc/compiler/util/Errors_fr.properties", //
-      "de/lyca/xalan/xsltc/compiler/util/Errors_hu.properties", //
-      "de/lyca/xalan/xsltc/compiler/util/Errors_it.properties", //
-      "de/lyca/xalan/xsltc/compiler/util/Errors_ja.properties", //
-      "de/lyca/xalan/xsltc/compiler/util/Errors_ko.properties", //
-      "de/lyca/xalan/xsltc/compiler/util/Errors_no.properties", //
-      "de/lyca/xalan/xsltc/compiler/util/Errors_pl.properties", //
-      "de/lyca/xalan/xsltc/compiler/util/Errors_pt_BR.properties", //
-      "de/lyca/xalan/xsltc/compiler/util/Errors_ru.properties", //
-      "de/lyca/xalan/xsltc/compiler/util/Errors_sk.properties", //
-      "de/lyca/xalan/xsltc/compiler/util/Errors_sl.properties", //
-      "de/lyca/xalan/xsltc/compiler/util/Errors_tr.properties", //
-      "de/lyca/xalan/xsltc/compiler/util/Errors_zh_TW.properties", //
-      "de/lyca/xalan/xsltc/compiler/util/Errors_zh.properties", //
-      "de/lyca/xalan/xsltc/compiler/util/Errors.properties" //
+      "de/lyca/xalan/xsltc/runtime/ErrorMessages_ca.properties", //
+      "de/lyca/xalan/xsltc/runtime/ErrorMessages_cs.properties", //
+      "de/lyca/xalan/xsltc/runtime/ErrorMessages_de.properties", //
+      "de/lyca/xalan/xsltc/runtime/ErrorMessages_es.properties", //
+      "de/lyca/xalan/xsltc/runtime/ErrorMessages_fr.properties", //
+      "de/lyca/xalan/xsltc/runtime/ErrorMessages_hu.properties", //
+      "de/lyca/xalan/xsltc/runtime/ErrorMessages_it.properties", //
+      "de/lyca/xalan/xsltc/runtime/ErrorMessages_ja.properties", //
+      "de/lyca/xalan/xsltc/runtime/ErrorMessages_ko.properties", //
+      "de/lyca/xalan/xsltc/runtime/ErrorMessages_no.properties", //
+      "de/lyca/xalan/xsltc/runtime/ErrorMessages_pl.properties", //
+      "de/lyca/xalan/xsltc/runtime/ErrorMessages_pt_BR.properties", //
+      "de/lyca/xalan/xsltc/runtime/ErrorMessages_ru.properties", //
+      "de/lyca/xalan/xsltc/runtime/ErrorMessages_sk.properties", //
+      "de/lyca/xalan/xsltc/runtime/ErrorMessages_sl.properties", //
+      "de/lyca/xalan/xsltc/runtime/ErrorMessages_tr.properties", //
+      "de/lyca/xalan/xsltc/runtime/ErrorMessages_zh_TW.properties", //
+      "de/lyca/xalan/xsltc/runtime/ErrorMessages_zh.properties", //
+      "de/lyca/xalan/xsltc/runtime/ErrorMessages.properties" //
   };
 
   private static List<String> methodNames = new ArrayList<String>();
@@ -47,7 +47,7 @@ public class MessagesTest {
   @BeforeClass
   public static void prepare() throws Exception {
     // Get Method-Names
-    Method[] methods = XsltcErrorMessages.class.getDeclaredMethods();
+    Method[] methods = BasicLibraryErrorMessages.class.getDeclaredMethods();
     for (Method method : methods) {
       methodNames.add(method.getName());
     }

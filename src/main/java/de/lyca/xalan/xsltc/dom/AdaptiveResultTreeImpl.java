@@ -37,6 +37,7 @@ import de.lyca.xalan.xsltc.StripFilter;
 import de.lyca.xalan.xsltc.TransletException;
 import de.lyca.xalan.xsltc.runtime.AttributeList;
 import de.lyca.xalan.xsltc.runtime.BasisLibrary;
+import de.lyca.xalan.xsltc.runtime.Messages;
 import de.lyca.xml.dtm.Axis;
 import de.lyca.xml.dtm.DTMAxisIterator;
 import de.lyca.xml.dtm.DTMAxisTraverser;
@@ -45,11 +46,9 @@ import de.lyca.xml.serializer.SerializationHandler;
 import de.lyca.xml.utils.XMLString;
 
 /**
- * AdaptiveResultTreeImpl is a adaptive DOM model for result tree fragments
- * (RTF). It is used in the case where the RTF is likely to be pure text yet it
- * can still be a DOM tree. It is designed for RTFs which have
- * &lt;xsl:call-template&gt; or &lt;xsl:apply-templates&gt; in the contents.
- * Example:
+ * AdaptiveResultTreeImpl is a adaptive DOM model for result tree fragments (RTF). It is used in the case where the RTF
+ * is likely to be pure text yet it can still be a DOM tree. It is designed for RTFs which have
+ * &lt;xsl:call-template&gt; or &lt;xsl:apply-templates&gt; in the contents. Example:
  * 
  * <pre>
  *    &lt;xsl:variable name = "x"&gt;
@@ -59,25 +58,20 @@ import de.lyca.xml.utils.XMLString;
  *    &lt;/xsl:variable&gt;
  * </pre>
  * <p>
- * In this example the result produced by {@literal <xsl:call-template>} is likely to be a
- * single Text node. But it can also be a DOM tree. This kind of RTF cannot be
- * modelled by SimpleResultTreeImpl.
+ * In this example the result produced by {@literal <xsl:call-template>} is likely to be a single Text node. But it can
+ * also be a DOM tree. This kind of RTF cannot be modelled by SimpleResultTreeImpl.
  * <p>
- * AdaptiveResultTreeImpl can be considered as a smart switcher between
- * SimpleResultTreeImpl and SAXImpl. It treats the RTF as simple Text and uses
- * the SimpleResultTreeImpl model at the beginning. However, if it receives a
- * call which indicates that this is a DOM tree (e.g. startElement), it will
- * automatically transform itself into a wrapper around a SAXImpl. In this way
- * we can have a light-weight model when the result only contains simple text,
- * while at the same time it still works when the RTF is a DOM tree.
+ * AdaptiveResultTreeImpl can be considered as a smart switcher between SimpleResultTreeImpl and SAXImpl. It treats the
+ * RTF as simple Text and uses the SimpleResultTreeImpl model at the beginning. However, if it receives a call which
+ * indicates that this is a DOM tree (e.g. startElement), it will automatically transform itself into a wrapper around a
+ * SAXImpl. In this way we can have a light-weight model when the result only contains simple text, while at the same
+ * time it still works when the RTF is a DOM tree.
  * <p>
- * All methods in this class are overridden to delegate the action to the
- * wrapped SAXImpl object if it is non-null, or delegate the action to the
- * SimpleResultTreeImpl if there is no wrapped SAXImpl.
+ * All methods in this class are overridden to delegate the action to the wrapped SAXImpl object if it is non-null, or
+ * delegate the action to the SimpleResultTreeImpl if there is no wrapped SAXImpl.
  * <p>
- * %REVISIT% Can we combine this class with SimpleResultTreeImpl? I think it is
- * possible, but it will make SimpleResultTreeImpl more expensive. I will use
- * two separate classes at this time.
+ * %REVISIT% Can we combine this class with SimpleResultTreeImpl? I think it is possible, but it will make
+ * SimpleResultTreeImpl more expensive. I will use two separate classes at this time.
  */
 public class AdaptiveResultTreeImpl extends SimpleResultTreeImpl {
 
@@ -106,7 +100,7 @@ public class AdaptiveResultTreeImpl extends SimpleResultTreeImpl {
 
   // Create a AdaptiveResultTreeImpl
   public AdaptiveResultTreeImpl(XSLTCDTMManager dtmManager, int documentID, DTMWSFilter wsfilter, int initSize,
-          boolean buildIdIndex) {
+      boolean buildIdIndex) {
     super(dtmManager, documentID);
 
     _wsfilter = wsfilter;
@@ -591,7 +585,7 @@ public class AdaptiveResultTreeImpl extends SimpleResultTreeImpl {
     if (_openElementName != null) {
       _attributes.add(name, value);
     } else {
-      BasisLibrary.runTimeError(BasisLibrary.STRAY_ATTRIBUTE_ERR, name);
+      BasisLibrary.runTimeError(Messages.get().strayAttributeErr(name));
     }
   }
 
