@@ -35,8 +35,7 @@ import de.lyca.xml.dtm.DTMWSFilter.Mode;
 import de.lyca.xml.dtm.ref.DTMDefaultBase;
 import de.lyca.xml.dtm.ref.ExpandedNameTable;
 import de.lyca.xml.dtm.ref.ExtendedType;
-import de.lyca.xml.res.XMLErrorResources;
-import de.lyca.xml.res.XMLMessages;
+import de.lyca.xml.res.Messages;
 import de.lyca.xml.serializer.SerializationHandler;
 import de.lyca.xml.utils.FastStringBuffer;
 import de.lyca.xml.utils.SuballocatedIntVector;
@@ -45,30 +44,24 @@ import de.lyca.xml.utils.XMLStringDefault;
 import de.lyca.xml.utils.XMLStringFactory;
 
 /**
- * SAX2DTM2 is an optimized version of SAX2DTM which is used in non-incremental
- * situation. It is used as the super class of the XSLTC SAXImpl. Many of the
- * interfaces in SAX2DTM and DTMDefaultBase are overridden in SAX2DTM2 in order
- * to allow fast, efficient access to the DTM model. Some nested iterators in
- * DTMDefaultBaseIterators are also overridden in SAX2DTM2 for performance
- * reasons.
+ * SAX2DTM2 is an optimized version of SAX2DTM which is used in non-incremental situation. It is used as the super class
+ * of the XSLTC SAXImpl. Many of the interfaces in SAX2DTM and DTMDefaultBase are overridden in SAX2DTM2 in order to
+ * allow fast, efficient access to the DTM model. Some nested iterators in DTMDefaultBaseIterators are also overridden
+ * in SAX2DTM2 for performance reasons.
  * <p>
- * Performance is the biggest consideration in the design of SAX2DTM2. To make
- * the code most efficient, the incremental support is dropped in SAX2DTM2,
- * which means that you should not use it in incremental situation. To reduce
- * the overhead of pulling data from the DTM model, a few core interfaces in
- * SAX2DTM2 have direct access to the internal arrays of the
- * SuballocatedIntVectors.
+ * Performance is the biggest consideration in the design of SAX2DTM2. To make the code most efficient, the incremental
+ * support is dropped in SAX2DTM2, which means that you should not use it in incremental situation. To reduce the
+ * overhead of pulling data from the DTM model, a few core interfaces in SAX2DTM2 have direct access to the internal
+ * arrays of the SuballocatedIntVectors.
  * <p>
- * The design of SAX2DTM2 may limit its extensibilty. If you have a reason to
- * extend the SAX2DTM model, please extend from SAX2DTM instead of this class.
+ * The design of SAX2DTM2 may limit its extensibilty. If you have a reason to extend the SAX2DTM model, please extend
+ * from SAX2DTM instead of this class.
  * <p>
- * TODO: This class is currently only used by XSLTC. We need to investigate the
- * possibility of also using it in Xalan-J Interpretive. Xalan's performance is
- * likely to get an instant boost if we use SAX2DTM2 instead of SAX2DTM in
+ * TODO: This class is currently only used by XSLTC. We need to investigate the possibility of also using it in Xalan-J
+ * Interpretive. Xalan's performance is likely to get an instant boost if we use SAX2DTM2 instead of SAX2DTM in
  * non-incremental case.
  * <p>
- * %MK% The code in this class is critical to the XSLTC_DTM performance. Be very
- * careful when making changes here!
+ * %MK% The code in this class is critical to the XSLTC_DTM performance. Be very careful when making changes here!
  */
 public class SAX2DTM2 extends SAX2DTM {
 
@@ -82,15 +75,12 @@ public class SAX2DTM2 extends SAX2DTM {
   public final class ChildrenIterator extends InternalAxisIteratorBase {
 
     /**
-     * Setting start to END should 'close' the iterator, i.e. subsequent call to
-     * next() should return END.
+     * Setting start to END should 'close' the iterator, i.e. subsequent call to next() should return END.
      * <p>
-     * If the iterator is not restartable, this has no effect. %REVIEW% Should
-     * it return/throw something in that case, or set current node to END, to
-     * indicate request-not-honored?
+     * If the iterator is not restartable, this has no effect. %REVIEW% Should it return/throw something in that case,
+     * or set current node to END, to indicate request-not-honored?
      * 
-     * @param node
-     *          Sets the root of the iteration.
+     * @param node Sets the root of the iteration.
      * 
      * @return A DTMAxisIterator set to the start of the iteration.
      */
@@ -113,8 +103,7 @@ public class SAX2DTM2 extends SAX2DTM {
     /**
      * Get the next node in the iteration.
      * 
-     * @return The next node handle in the iteration, or END if no more are
-     *         available.
+     * @return The next node handle in the iteration, or END if no more are available.
      */
     @Override
     public int next() {
@@ -129,8 +118,8 @@ public class SAX2DTM2 extends SAX2DTM {
   } // end of ChildrenIterator
 
   /**
-   * Iterator that returns the parent of a given node. Note that this delivers
-   * only a single node; if you want all the ancestors, see AncestorIterator.
+   * Iterator that returns the parent of a given node. Note that this delivers only a single node; if you want all the
+   * ancestors, see AncestorIterator.
    */
   public final class ParentIterator extends InternalAxisIteratorBase {
 
@@ -138,11 +127,9 @@ public class SAX2DTM2 extends SAX2DTM {
     private int _nodeType = DTM.NULL;
 
     /**
-     * Set start to END should 'close' the iterator, i.e. subsequent call to
-     * next() should return END.
+     * Set start to END should 'close' the iterator, i.e. subsequent call to next() should return END.
      * 
-     * @param node
-     *          Sets the root of the iteration.
+     * @param node Sets the root of the iteration.
      * 
      * @return A DTMAxisIterator set to the start of the iteration.
      */
@@ -168,13 +155,11 @@ public class SAX2DTM2 extends SAX2DTM {
     }
 
     /**
-     * Set the node type of the parent that we're looking for. Note that this
-     * does _not_ mean "find the nearest ancestor of this type", but "yield the
-     * parent if it is of this type".
+     * Set the node type of the parent that we're looking for. Note that this does _not_ mean "find the nearest ancestor
+     * of this type", but "yield the parent if it is of this type".
      * 
      * 
-     * @param type
-     *          extended type ID.
+     * @param type extended type ID.
      * 
      * @return ParentIterator configured with the type filter set.
      */
@@ -186,8 +171,8 @@ public class SAX2DTM2 extends SAX2DTM {
     }
 
     /**
-     * Get the next node in the iteration. In this case, we return only the
-     * immediate parent, _if_ it matches the requested nodeType.
+     * Get the next node in the iteration. In this case, we return only the immediate parent, _if_ it matches the
+     * requested nodeType.
      * 
      * @return The next node handle in the iteration, or END.
      */
@@ -218,10 +203,9 @@ public class SAX2DTM2 extends SAX2DTM {
   } // end of ParentIterator
 
   /**
-   * Iterator that returns children of a given type for a given node. The
-   * functionality chould be achieved by putting a filter on top of a basic
-   * child iterator, but a specialised iterator is used for efficiency (both
-   * speed and size of translet).
+   * Iterator that returns children of a given type for a given node. The functionality chould be achieved by putting a
+   * filter on top of a basic child iterator, but a specialised iterator is used for efficiency (both speed and size of
+   * translet).
    */
   public final class TypedChildrenIterator extends InternalAxisIteratorBase {
 
@@ -232,19 +216,16 @@ public class SAX2DTM2 extends SAX2DTM {
      * Constructor TypedChildrenIterator
      * 
      * 
-     * @param nodeType
-     *          The extended type ID being requested.
+     * @param nodeType The extended type ID being requested.
      */
     public TypedChildrenIterator(int nodeType) {
       _nodeType = nodeType;
     }
 
     /**
-     * Set start to END should 'close' the iterator, i.e. subsequent call to
-     * next() should return END.
+     * Set start to END should 'close' the iterator, i.e. subsequent call to next() should return END.
      * 
-     * @param node
-     *          Sets the root of the iteration.
+     * @param node Sets the root of the iteration.
      * 
      * @return A DTMAxisIterator set to the start of the iteration.
      */
@@ -348,8 +329,8 @@ public class SAX2DTM2 extends SAX2DTM {
   } // end of TypedChildrenIterator
 
   /**
-   * Iterator that returns the namespace nodes as defined by the XPath data
-   * model for a given node, filtered by extended type ID.
+   * Iterator that returns the namespace nodes as defined by the XPath data model for a given node, filtered by extended
+   * type ID.
    */
   public class TypedRootIterator extends RootIterator {
 
@@ -359,8 +340,7 @@ public class SAX2DTM2 extends SAX2DTM {
     /**
      * Constructor TypedRootIterator
      * 
-     * @param nodeType
-     *          The extended type ID being requested.
+     * @param nodeType The extended type ID being requested.
      */
     public TypedRootIterator(int nodeType) {
       super();
@@ -405,11 +385,9 @@ public class SAX2DTM2 extends SAX2DTM {
   public class FollowingSiblingIterator extends InternalAxisIteratorBase {
 
     /**
-     * Set start to END should 'close' the iterator, i.e. subsequent call to
-     * next() should return END.
+     * Set start to END should 'close' the iterator, i.e. subsequent call to next() should return END.
      * 
-     * @param node
-     *          Sets the root of the iteration.
+     * @param node Sets the root of the iteration.
      * 
      * @return A DTMAxisIterator set to the start of the iteration.
      */
@@ -453,8 +431,7 @@ public class SAX2DTM2 extends SAX2DTM {
      * Constructor TypedFollowingSiblingIterator
      * 
      * 
-     * @param type
-     *          The extended type ID being requested.
+     * @param type The extended type ID being requested.
      */
     public TypedFollowingSiblingIterator(int type) {
       _nodeType = type;
@@ -496,11 +473,9 @@ public class SAX2DTM2 extends SAX2DTM {
     // assumes caller will pass element nodes
 
     /**
-     * Set start to END should 'close' the iterator, i.e. subsequent call to
-     * next() should return END.
+     * Set start to END should 'close' the iterator, i.e. subsequent call to next() should return END.
      * 
-     * @param node
-     *          Sets the root of the iteration.
+     * @param node Sets the root of the iteration.
      * 
      * @return A DTMAxisIterator set to the start of the iteration.
      */
@@ -551,8 +526,7 @@ public class SAX2DTM2 extends SAX2DTM {
      * Constructor TypedAttributeIterator
      * 
      * 
-     * @param nodeType
-     *          The extended type ID that is requested.
+     * @param nodeType The extended type ID that is requested.
      */
     public TypedAttributeIterator(int nodeType) {
       _nodeType = nodeType;
@@ -561,11 +535,9 @@ public class SAX2DTM2 extends SAX2DTM {
     // assumes caller will pass element nodes
 
     /**
-     * Set start to END should 'close' the iterator, i.e. subsequent call to
-     * next() should return END.
+     * Set start to END should 'close' the iterator, i.e. subsequent call to next() should return END.
      * 
-     * @param node
-     *          Sets the root of the iteration.
+     * @param node Sets the root of the iteration.
      * 
      * @return A DTMAxisIterator set to the start of the iteration.
      */
@@ -621,11 +593,9 @@ public class SAX2DTM2 extends SAX2DTM {
     }
 
     /**
-     * Set start to END should 'close' the iterator, i.e. subsequent call to
-     * next() should return END.
+     * Set start to END should 'close' the iterator, i.e. subsequent call to next() should return END.
      * 
-     * @param node
-     *          Sets the root of the iteration.
+     * @param node Sets the root of the iteration.
      * 
      * @return A DTMAxisIterator set to the start of the iteration.
      */
@@ -694,8 +664,7 @@ public class SAX2DTM2 extends SAX2DTM {
      * Constructor TypedPrecedingSiblingIterator
      * 
      * 
-     * @param type
-     *          The extended type ID being requested.
+     * @param type The extended type ID being requested.
      */
     public TypedPrecedingSiblingIterator(int type) {
       _nodeType = type;
@@ -770,9 +739,8 @@ public class SAX2DTM2 extends SAX2DTM {
   } // end of TypedPrecedingSiblingIterator
 
   /**
-   * Iterator that returns preceding nodes of a given node. This includes the
-   * node set {root+1, start-1}, but excludes all ancestors, attributes, and
-   * namespace nodes.
+   * Iterator that returns preceding nodes of a given node. This includes the node set {root+1, start-1}, but excludes
+   * all ancestors, attributes, and namespace nodes.
    */
   public class PrecedingIterator extends InternalAxisIteratorBase {
 
@@ -780,8 +748,7 @@ public class SAX2DTM2 extends SAX2DTM {
     private final int _maxAncestors = 8;
 
     /**
-     * The stack of start node + ancestors up to the root of the tree, which we
-     * must avoid.
+     * The stack of start node + ancestors up to the root of the tree, which we must avoid.
      */
     protected int[] _stack = new int[_maxAncestors];
 
@@ -821,16 +788,15 @@ public class SAX2DTM2 extends SAX2DTM {
         // return clone.reset();
         return clone;
       } catch (final CloneNotSupportedException e) {
-        throw new DTMException(XMLMessages.createXMLMessage(XMLErrorResources.ER_ITERATOR_CLONE_NOT_SUPPORTED, null)); // "Iterator clone not supported.");
+        // "Iterator clone not supported.");
+        throw new DTMException(Messages.get().iteratorCloneNotSupported());
       }
     }
 
     /**
-     * Set start to END should 'close' the iterator, i.e. subsequent call to
-     * next() should return END.
+     * Set start to END should 'close' the iterator, i.e. subsequent call to next() should return END.
      * 
-     * @param node
-     *          Sets the root of the iteration.
+     * @param node Sets the root of the iteration.
      * 
      * @return A DTMAxisIterator set to the start of the iteration.
      */
@@ -904,8 +870,7 @@ public class SAX2DTM2 extends SAX2DTM {
     /**
      * Resets the iterator to the last start node.
      * 
-     * @return A DTMAxisIterator, which may or may not be the same as this
-     *         iterator.
+     * @return A DTMAxisIterator, which may or may not be the same as this iterator.
      */
     @Override
     public DTMAxisIterator reset() {
@@ -930,8 +895,8 @@ public class SAX2DTM2 extends SAX2DTM {
   } // end of PrecedingIterator
 
   /**
-   * Iterator that returns preceding nodes of agiven type for a given node. This
-   * includes the node set {root+1, start-1}, but excludes all ancestors.
+   * Iterator that returns preceding nodes of agiven type for a given node. This includes the node set {root+1,
+   * start-1}, but excludes all ancestors.
    */
   public final class TypedPrecedingIterator extends PrecedingIterator {
 
@@ -942,8 +907,7 @@ public class SAX2DTM2 extends SAX2DTM {
      * Constructor TypedPrecedingIterator
      * 
      * 
-     * @param type
-     *          The extended type ID being requested.
+     * @param type The extended type ID being requested.
      */
     public TypedPrecedingIterator(int type) {
       _nodeType = type;
@@ -1021,11 +985,9 @@ public class SAX2DTM2 extends SAX2DTM {
     }
 
     /**
-     * Set start to END should 'close' the iterator, i.e. subsequent call to
-     * next() should return END.
+     * Set start to END should 'close' the iterator, i.e. subsequent call to next() should return END.
      * 
-     * @param node
-     *          Sets the root of the iteration.
+     * @param node Sets the root of the iteration.
      * 
      * @return A DTMAxisIterator set to the start of the iteration.
      */
@@ -1117,8 +1079,7 @@ public class SAX2DTM2 extends SAX2DTM {
      * Constructor TypedFollowingIterator
      * 
      * 
-     * @param type
-     *          The extended type ID being requested.
+     * @param type The extended type ID being requested.
      */
     public TypedFollowingIterator(int type) {
       _nodeType = type;
@@ -1170,8 +1131,8 @@ public class SAX2DTM2 extends SAX2DTM {
   } // end of TypedFollowingIterator
 
   /**
-   * Iterator that returns the ancestors of a given node in document order.
-   * (NOTE! This was changed from the XSLTC code!)
+   * Iterator that returns the ancestors of a given node in document order. (NOTE! This was changed from the XSLTC
+   * code!)
    */
   public class AncestorIterator extends InternalAxisIteratorBase {
     // The initial size of the ancestor array
@@ -1191,8 +1152,7 @@ public class SAX2DTM2 extends SAX2DTM {
     int m_realStartNode;
 
     /**
-     * Get start to END should 'close' the iterator, i.e. subsequent call to
-     * next() should return END.
+     * Get start to END should 'close' the iterator, i.e. subsequent call to next() should return END.
      * 
      * @return The root node of the iteration.
      */
@@ -1228,16 +1188,15 @@ public class SAX2DTM2 extends SAX2DTM {
         // return clone.reset();
         return clone;
       } catch (final CloneNotSupportedException e) {
-        throw new DTMException(XMLMessages.createXMLMessage(XMLErrorResources.ER_ITERATOR_CLONE_NOT_SUPPORTED, null)); // "Iterator clone not supported.");
+        // "Iterator clone not supported.");
+        throw new DTMException(Messages.get().iteratorCloneNotSupported());
       }
     }
 
     /**
-     * Set start to END should 'close' the iterator, i.e. subsequent call to
-     * next() should return END.
+     * Set start to END should 'close' the iterator, i.e. subsequent call to next() should return END.
      * 
-     * @param node
-     *          Sets the root of the iteration.
+     * @param node Sets the root of the iteration.
      * 
      * @return A DTMAxisIterator set to the start of the iteration.
      */
@@ -1294,8 +1253,7 @@ public class SAX2DTM2 extends SAX2DTM {
     /**
      * Resets the iterator to the last start node.
      * 
-     * @return A DTMAxisIterator, which may or may not be the same as this
-     *         iterator.
+     * @return A DTMAxisIterator, which may or may not be the same as this iterator.
      */
     @Override
     public DTMAxisIterator reset() {
@@ -1348,19 +1306,16 @@ public class SAX2DTM2 extends SAX2DTM {
      * Constructor TypedAncestorIterator
      * 
      * 
-     * @param type
-     *          The extended type ID being requested.
+     * @param type The extended type ID being requested.
      */
     public TypedAncestorIterator(int type) {
       _nodeType = type;
     }
 
     /**
-     * Set start to END should 'close' the iterator, i.e. subsequent call to
-     * next() should return END.
+     * Set start to END should 'close' the iterator, i.e. subsequent call to next() should return END.
      * 
-     * @param node
-     *          Sets the root of the iteration.
+     * @param node Sets the root of the iteration.
      * 
      * @return A DTMAxisIterator set to the start of the iteration.
      */
@@ -1409,8 +1364,8 @@ public class SAX2DTM2 extends SAX2DTM {
           while (nodeID != END) {
             final int eType = _exptype2(nodeID);
 
-            if (eType < DTM.NTYPES && eType == nodeType || eType >= DTM.NTYPES
-                    && m_extendedTypes[eType].getNodeType() == nodeType) {
+            if (eType < DTM.NTYPES && eType == nodeType
+                || eType >= DTM.NTYPES && m_extendedTypes[eType].getNodeType() == nodeType) {
               if (m_size >= m_ancestors.length) {
                 final int[] newAncestors = new int[m_size * 2];
                 System.arraycopy(m_ancestors, 0, newAncestors, 0, m_ancestors.length);
@@ -1443,8 +1398,7 @@ public class SAX2DTM2 extends SAX2DTM {
     }
 
     /**
-     * Returns the position of the last node within the iteration, as defined by
-     * XPath.
+     * Returns the position of the last node within the iteration, as defined by XPath.
      */
     @Override
     public int getLast() {
@@ -1458,11 +1412,9 @@ public class SAX2DTM2 extends SAX2DTM {
   public class DescendantIterator extends InternalAxisIteratorBase {
 
     /**
-     * Set start to END should 'close' the iterator, i.e. subsequent call to
-     * next() should return END.
+     * Set start to END should 'close' the iterator, i.e. subsequent call to next() should return END.
      * 
-     * @param node
-     *          Sets the root of the iteration.
+     * @param node Sets the root of the iteration.
      * 
      * @return A DTMAxisIterator set to the start of the iteration.
      */
@@ -1489,17 +1441,13 @@ public class SAX2DTM2 extends SAX2DTM {
     }
 
     /**
-     * Tell if this node identity is a descendant. Assumes that the node info
-     * for the element has already been obtained.
+     * Tell if this node identity is a descendant. Assumes that the node info for the element has already been obtained.
      * 
-     * This one-sided test works only if the parent has been previously tested
-     * and is known to be a descendent. It fails if the parent is the
-     * _startNode's next sibling, or indeed any node that follows _startNode in
-     * document order. That may suffice for this iterator, but it's not really
-     * an isDescendent() test. %REVIEW% rename?
+     * This one-sided test works only if the parent has been previously tested and is known to be a descendent. It fails
+     * if the parent is the _startNode's next sibling, or indeed any node that follows _startNode in document order.
+     * That may suffice for this iterator, but it's not really an isDescendent() test. %REVIEW% rename?
      * 
-     * @param identity
-     *          The index number of the node in question.
+     * @param identity The index number of the node in question.
      * @return true if the index is a descendant of _startNode.
      */
     protected final boolean isDescendant(int identity) {
@@ -1536,7 +1484,7 @@ public class SAX2DTM2 extends SAX2DTM {
             return END;
           }
         } while (eType == TEXT_NODE || (type = m_extendedTypes[eType].getNodeType()) == ATTRIBUTE_NODE
-                || type == NAMESPACE_NODE);
+            || type == NAMESPACE_NODE);
       } else {
         do {
           node++;
@@ -1585,8 +1533,7 @@ public class SAX2DTM2 extends SAX2DTM {
      * Constructor TypedDescendantIterator
      * 
      * 
-     * @param nodeType
-     *          Extended type ID being requested.
+     * @param nodeType Extended type ID being requested.
      */
     public TypedDescendantIterator(int nodeType) {
       _nodeType = nodeType;
@@ -1661,8 +1608,7 @@ public class SAX2DTM2 extends SAX2DTM {
      * Constructor TypedSingletonIterator
      * 
      * 
-     * @param nodeType
-     *          The extended type ID being requested.
+     * @param nodeType The extended type ID being requested.
      */
     public TypedSingletonIterator(int nodeType) {
       _nodeType = nodeType;
@@ -1738,11 +1684,9 @@ public class SAX2DTM2 extends SAX2DTM {
   protected int m_blocksize;
 
   /**
-   * %OPT% If the offset and length of a Text node are within certain limits, we
-   * store a bitwise encoded value into an int, using 10 bits (max. 1024) for
-   * length and 21 bits for offset. We can save two SuballocatedIntVector calls
-   * for each getStringValueX() and dispatchCharacterEvents() call by doing
-   * this.
+   * %OPT% If the offset and length of a Text node are within certain limits, we store a bitwise encoded value into an
+   * int, using 10 bits (max. 1024) for length and 21 bits for offset. We can save two SuballocatedIntVector calls for
+   * each getStringValueX() and dispatchCharacterEvents() call by doing this.
    */
   // The number of bits for the length of a Text node.
   protected final static int TEXT_LENGTH_BITS = 10;
@@ -1769,7 +1713,7 @@ public class SAX2DTM2 extends SAX2DTM {
    * Construct a SAX2DTM2 object using the default block size.
    */
   public SAX2DTM2(DTMManager mgr, Source source, int dtmIdentity, DTMWSFilter whiteSpaceFilter,
-          XMLStringFactory xstringfactory, boolean doIndexing) {
+      XMLStringFactory xstringfactory, boolean doIndexing) {
 
     this(mgr, source, dtmIdentity, whiteSpaceFilter, xstringfactory, doIndexing, DEFAULT_BLOCKSIZE, true, true, false);
   }
@@ -1778,8 +1722,8 @@ public class SAX2DTM2 extends SAX2DTM {
    * Construct a SAX2DTM2 object using the given block size.
    */
   public SAX2DTM2(DTMManager mgr, Source source, int dtmIdentity, DTMWSFilter whiteSpaceFilter,
-          XMLStringFactory xstringfactory, boolean doIndexing, int blocksize, boolean usePrevsib, boolean buildIdIndex,
-          boolean newNameTable) {
+      XMLStringFactory xstringfactory, boolean doIndexing, int blocksize, boolean usePrevsib, boolean buildIdIndex,
+      boolean newNameTable) {
 
     super(mgr, source, dtmIdentity, whiteSpaceFilter, xstringfactory, doIndexing, blocksize, usePrevsib, newNameTable);
 
@@ -1813,8 +1757,8 @@ public class SAX2DTM2 extends SAX2DTM {
    * Override DTMDefaultBase._exptype() by dropping the incremental code.
    * 
    * <p>
-   * This one is less efficient than _exptype2. It is only used during DTM
-   * building. _exptype2 is used after the document is fully built.
+   * This one is less efficient than _exptype2. It is only used during DTM building. _exptype2 is used after the
+   * document is fully built.
    */
   @Override
   public final int _exptype(int identity) {
@@ -1824,19 +1768,15 @@ public class SAX2DTM2 extends SAX2DTM {
   /************************************************************************
    * DTM base accessor interfaces
    * 
-   * %OPT% The code in the following interfaces (e.g. _exptype2, etc.) are very
-   * important to the DTM performance. To have the best performace, these
-   * several interfaces have direct access to the internal arrays of the
-   * SuballocatedIntVectors. The final modifier also has a noticeable impact on
-   * performance.
+   * %OPT% The code in the following interfaces (e.g. _exptype2, etc.) are very important to the DTM performance. To
+   * have the best performace, these several interfaces have direct access to the internal arrays of the
+   * SuballocatedIntVectors. The final modifier also has a noticeable impact on performance.
    ***********************************************************************/
 
   /**
    * The optimized version of DTMDefaultBase._exptype().
    * 
-   * @param identity
-   *          A node identity, which <em>must not</em> be equal to
-   *          <code>DTM.NULL</code>
+   * @param identity A node identity, which <em>must not</em> be equal to <code>DTM.NULL</code>
    */
   public final int _exptype2(int identity) {
     // return m_exptype.elementAt(identity);
@@ -1850,9 +1790,7 @@ public class SAX2DTM2 extends SAX2DTM {
   /**
    * The optimized version of DTMDefaultBase._nextsib().
    * 
-   * @param identity
-   *          A node identity, which <em>must not</em> be equal to
-   *          <code>DTM.NULL</code>
+   * @param identity A node identity, which <em>must not</em> be equal to <code>DTM.NULL</code>
    */
   public final int _nextsib2(int identity) {
     // return m_nextsib.elementAt(identity);
@@ -1866,9 +1804,7 @@ public class SAX2DTM2 extends SAX2DTM {
   /**
    * The optimized version of DTMDefaultBase._firstch().
    * 
-   * @param identity
-   *          A node identity, which <em>must not</em> be equal to
-   *          <code>DTM.NULL</code>
+   * @param identity A node identity, which <em>must not</em> be equal to <code>DTM.NULL</code>
    */
   public final int _firstch2(int identity) {
     // return m_firstch.elementAt(identity);
@@ -1882,9 +1818,7 @@ public class SAX2DTM2 extends SAX2DTM {
   /**
    * The optimized version of DTMDefaultBase._parent().
    * 
-   * @param identity
-   *          A node identity, which <em>must not</em> be equal to
-   *          <code>DTM.NULL</code>
+   * @param identity A node identity, which <em>must not</em> be equal to <code>DTM.NULL</code>
    */
   public final int _parent2(int identity) {
     // return m_parent.elementAt(identity);
@@ -1898,9 +1832,7 @@ public class SAX2DTM2 extends SAX2DTM {
   /**
    * The optimized version of DTMDefaultBase._type().
    * 
-   * @param identity
-   *          A node identity, which <em>must not</em> be equal to
-   *          <code>DTM.NULL</code>
+   * @param identity A node identity, which <em>must not</em> be equal to <code>DTM.NULL</code>
    */
   public final int _type2(int identity) {
     // int eType = _exptype2(identity);
@@ -1921,8 +1853,7 @@ public class SAX2DTM2 extends SAX2DTM {
    * The optimized version of DTMDefaultBase.getExpandedTypeID(int).
    * 
    * <p>
-   * This one is only used by DOMAdapter.getExpandedTypeID(int), which is mostly
-   * called from the compiled translets.
+   * This one is only used by DOMAdapter.getExpandedTypeID(int), which is mostly called from the compiled translets.
    */
   public final int getExpandedTypeID2(int nodeHandle) {
     final int nodeID = makeNodeIdentity(nodeHandle);
@@ -1955,8 +1886,7 @@ public class SAX2DTM2 extends SAX2DTM {
   /**
    * Get a prefix either from the uri mapping, or just make one up!
    * 
-   * @param uri
-   *          The namespace URI, which may be null.
+   * @param uri The namespace URI, which may be null.
    * 
    * @return The prefix if there is one, or null.
    */
@@ -1977,24 +1907,17 @@ public class SAX2DTM2 extends SAX2DTM {
    * Receive notification of the start of an element.
    * 
    * <p>
-   * By default, do nothing. Application writers may override this method in a
-   * subclass to take specific actions at the start of each element (such as
-   * allocating a new tree node or writing output to a file).
+   * By default, do nothing. Application writers may override this method in a subclass to take specific actions at the
+   * start of each element (such as allocating a new tree node or writing output to a file).
    * </p>
    * 
-   * @param uri
-   *          The Namespace URI, or the empty string if the element has no
-   *          Namespace URI or if Namespace processing is not being performed.
-   * @param localName
-   *          The local name (without prefix), or the empty string if Namespace
-   *          processing is not being performed.
-   * @param qName
-   *          The qualified name (with prefix), or the empty string if qualified
-   *          names are not available.
-   * @param attributes
-   *          The specified or defaulted attributes.
-   * @throws SAXException
-   *           Any SAX exception, possibly wrapping another exception.
+   * @param uri The Namespace URI, or the empty string if the element has no Namespace URI or if Namespace processing is
+   *        not being performed.
+   * @param localName The local name (without prefix), or the empty string if Namespace processing is not being
+   *        performed.
+   * @param qName The qualified name (with prefix), or the empty string if qualified names are not available.
+   * @param attributes The specified or defaulted attributes.
+   * @throws SAXException Any SAX exception, possibly wrapping another exception.
    * @see org.xml.sax.ContentHandler#startElement
    */
   @Override
@@ -2113,22 +2036,16 @@ public class SAX2DTM2 extends SAX2DTM {
    * Receive notification of the end of an element.
    * 
    * <p>
-   * By default, do nothing. Application writers may override this method in a
-   * subclass to take specific actions at the end of each element (such as
-   * finalising a tree node or writing output to a file).
+   * By default, do nothing. Application writers may override this method in a subclass to take specific actions at the
+   * end of each element (such as finalising a tree node or writing output to a file).
    * </p>
    * 
-   * @param uri
-   *          The Namespace URI, or the empty string if the element has no
-   *          Namespace URI or if Namespace processing is not being performed.
-   * @param localName
-   *          The local name (without prefix), or the empty string if Namespace
-   *          processing is not being performed.
-   * @param qName
-   *          The qualified XML 1.0 name (with prefix), or the empty string if
-   *          qualified names are not available.
-   * @throws SAXException
-   *           Any SAX exception, possibly wrapping another exception.
+   * @param uri The Namespace URI, or the empty string if the element has no Namespace URI or if Namespace processing is
+   *        not being performed.
+   * @param localName The local name (without prefix), or the empty string if Namespace processing is not being
+   *        performed.
+   * @param qName The qualified XML 1.0 name (with prefix), or the empty string if qualified names are not available.
+   * @throws SAXException Any SAX exception, possibly wrapping another exception.
    * @see org.xml.sax.ContentHandler#endElement
    */
   @Override
@@ -2155,18 +2072,14 @@ public class SAX2DTM2 extends SAX2DTM {
    * Report an XML comment anywhere in the document.
    * 
    * <p>
-   * This callback will be used for comments inside or outside the document
-   * element, including comments in the external DTD subset (if read).
+   * This callback will be used for comments inside or outside the document element, including comments in the external
+   * DTD subset (if read).
    * </p>
    * 
-   * @param ch
-   *          An array holding the characters in the comment.
-   * @param start
-   *          The starting position in the array.
-   * @param length
-   *          The number of characters to use from the array.
-   * @throws SAXException
-   *           The application may raise an exception.
+   * @param ch An array holding the characters in the comment.
+   * @param start The starting position in the array.
+   * @param length The number of characters to use from the array.
+   * @throws SAXException The application may raise an exception.
    */
   @Override
   public void comment(char ch[], int start, int length) throws SAXException {
@@ -2187,8 +2100,7 @@ public class SAX2DTM2 extends SAX2DTM {
   /**
    * Receive notification of the beginning of the document.
    * 
-   * @throws SAXException
-   *           Any SAX exception, possibly wrapping another exception.
+   * @throws SAXException Any SAX exception, possibly wrapping another exception.
    * @see org.xml.sax.ContentHandler#startDocument
    */
   @Override
@@ -2205,8 +2117,7 @@ public class SAX2DTM2 extends SAX2DTM {
   /**
    * Receive notification of the end of the document.
    * 
-   * @throws SAXException
-   *           Any SAX exception, possibly wrapping another exception.
+   * @throws SAXException Any SAX exception, possibly wrapping another exception.
    * @see org.xml.sax.ContentHandler#endDocument
    */
   @Override
@@ -2231,24 +2142,18 @@ public class SAX2DTM2 extends SAX2DTM {
   /**
    * Construct the node map from the node.
    * 
-   * @param type
-   *          raw type ID, one of DTM.XXX_NODE.
-   * @param expandedTypeID
-   *          The expended type ID.
-   * @param parentIndex
-   *          The current parent index.
-   * @param previousSibling
-   *          The previous sibling index.
-   * @param dataOrPrefix
-   *          index into m_data table, or string handle.
-   * @param canHaveFirstChild
-   *          true if the node can have a first child, false if it is atomic.
+   * @param type raw type ID, one of DTM.XXX_NODE.
+   * @param expandedTypeID The expended type ID.
+   * @param parentIndex The current parent index.
+   * @param previousSibling The previous sibling index.
+   * @param dataOrPrefix index into m_data table, or string handle.
+   * @param canHaveFirstChild true if the node can have a first child, false if it is atomic.
    * 
    * @return The index identity of the node that was added.
    */
   @Override
   protected final int addNode(int type, int expandedTypeID, int parentIndex, int previousSibling, int dataOrPrefix,
-          boolean canHaveFirstChild) {
+      boolean canHaveFirstChild) {
     // Common to all nodes:
     final int nodeIndex = m_size++;
 
@@ -2296,8 +2201,7 @@ public class SAX2DTM2 extends SAX2DTM {
   }
 
   /**
-   * Check whether accumulated text should be stripped; if not, append the
-   * appropriate flavor of text/cdata node.
+   * Check whether accumulated text should be stripped; if not, append the appropriate flavor of text/cdata node.
    */
   @Override
   protected final void charactersFlush() {
@@ -2321,8 +2225,8 @@ public class SAX2DTM2 extends SAX2DTM {
           // (offset < 2^21 and length < 2^10), then save both the offset
           // and length in a bitwise encoded value.
           if (length <= TEXT_LENGTH_MAX && m_textPendingStart <= TEXT_OFFSET_MAX) {
-            m_previous = addNode(m_coalescedTextType, DTM.TEXT_NODE, m_parents.peek(), m_previous, length
-                    + (m_textPendingStart << TEXT_LENGTH_BITS), false);
+            m_previous = addNode(m_coalescedTextType, DTM.TEXT_NODE, m_parents.peek(), m_previous,
+                length + (m_textPendingStart << TEXT_LENGTH_BITS), false);
 
           } else {
             // Store offset and length in the m_data array if one exceeds
@@ -2345,18 +2249,14 @@ public class SAX2DTM2 extends SAX2DTM {
   /**
    * Override the processingInstruction() interface in SAX2DTM2.
    * <p>
-   * %OPT% This one is different from SAX2DTM.processingInstruction() in that we
-   * do not use extended types for PI nodes. The name of the PI is saved in the
-   * DTMStringPool.
+   * %OPT% This one is different from SAX2DTM.processingInstruction() in that we do not use extended types for PI nodes.
+   * The name of the PI is saved in the DTMStringPool.
    * 
    * Receive notification of a processing instruction.
    * 
-   * @param target
-   *          The processing instruction target.
-   * @param data
-   *          The processing instruction data, or null if none is supplied.
-   * @throws SAXException
-   *           Any SAX exception, possibly wrapping another exception.
+   * @param target The processing instruction target.
+   * @param data The processing instruction data, or null if none is supplied.
+   * @throws SAXException Any SAX exception, possibly wrapping another exception.
    * @see org.xml.sax.ContentHandler#processingInstruction
    */
   @Override
@@ -2365,8 +2265,8 @@ public class SAX2DTM2 extends SAX2DTM {
     charactersFlush();
 
     final int dataIndex = m_data.size();
-    m_previous = addNode(DTM.PROCESSING_INSTRUCTION_NODE, DTM.PROCESSING_INSTRUCTION_NODE, m_parents.peek(),
-            m_previous, -dataIndex, false);
+    m_previous = addNode(DTM.PROCESSING_INSTRUCTION_NODE, DTM.PROCESSING_INSTRUCTION_NODE, m_parents.peek(), m_previous,
+        -dataIndex, false);
 
     m_data.addElement(m_valuesOrPrefixes.stringToIndex(target));
     m_values.add(data);
@@ -2379,8 +2279,7 @@ public class SAX2DTM2 extends SAX2DTM {
    * <p>
    * Given a node handle, get the index of the node's first attribute.
    * 
-   * @param nodeHandle
-   *          int Handle of the node.
+   * @param nodeHandle int Handle of the node.
    * @return Handle of first attribute, or DTM.NULL to indicate none exists.
    */
   @Override
@@ -2415,8 +2314,7 @@ public class SAX2DTM2 extends SAX2DTM {
    * <p>
    * Given a node identity, get the index of the node's first attribute.
    * 
-   * @param identity
-   *          int identity of the node.
+   * @param identity int identity of the node.
    * @return Identity of first attribute, or DTM.NULL to indicate none exists.
    */
   @Override
@@ -2449,12 +2347,9 @@ public class SAX2DTM2 extends SAX2DTM {
    * <p>
    * Given a node identity for an attribute, advance to the next attribute.
    * 
-   * @param identity
-   *          int identity of the attribute node. This <strong>must</strong> be
-   *          an attribute node.
+   * @param identity int identity of the attribute node. This <strong>must</strong> be an attribute node.
    * 
-   * @return int DTM node-identity of the resolved attr, or DTM.NULL to indicate
-   *         none exists.
+   * @return int DTM node-identity of the resolved attr, or DTM.NULL to indicate none exists.
    * 
    */
   @Override
@@ -2477,15 +2372,11 @@ public class SAX2DTM2 extends SAX2DTM {
   /**
    * The optimized version of DTMDefaultBase.getTypedAttribute(int, int).
    * <p>
-   * Given a node handle and an expanded type ID, get the index of the node's
-   * attribute of that type, if any.
+   * Given a node handle and an expanded type ID, get the index of the node's attribute of that type, if any.
    * 
-   * @param nodeHandle
-   *          int Handle of the node.
-   * @param attType
-   *          int expanded type ID of the required attribute.
-   * @return Handle of attribute of the required type, or DTM.NULL to indicate
-   *         none exists.
+   * @param nodeHandle int Handle of the node.
+   * @param attType int expanded type ID of the required attribute.
+   * @return Handle of attribute of the required type, or DTM.NULL to indicate none exists.
    */
   @Override
   protected final int getTypedAttribute(int nodeHandle, int attType) {
@@ -2525,11 +2416,10 @@ public class SAX2DTM2 extends SAX2DTM {
    * <p>
    * Processing for PIs is different.
    * 
-   * Given a node handle, return its XPath- style localname. (As defined in
-   * Namespaces, this is the portion of the name after any colon character).
+   * Given a node handle, return its XPath- style localname. (As defined in Namespaces, this is the portion of the name
+   * after any colon character).
    * 
-   * @param nodeHandle
-   *          the id of the node.
+   * @param nodeHandle the id of the node.
    * @return String Local name of this node.
    */
   @Override
@@ -2547,11 +2437,10 @@ public class SAX2DTM2 extends SAX2DTM {
   /**
    * The optimized version of SAX2DTM.getNodeNameX().
    * <p>
-   * Given a node handle, return the XPath node name. This should be the name as
-   * described by the XPath data model, NOT the DOM- style name.
+   * Given a node handle, return the XPath node name. This should be the name as described by the XPath data model, NOT
+   * the DOM- style name.
    * 
-   * @param nodeHandle
-   *          the id of the node.
+   * @param nodeHandle the id of the node.
    * @return String Name of this node, which may be an empty string.
    */
   @Override
@@ -2588,14 +2477,11 @@ public class SAX2DTM2 extends SAX2DTM {
   /**
    * The optimized version of SAX2DTM.getNodeName().
    * <p>
-   * Given a node handle, return its DOM-style node name. This will include
-   * names such as #text or #document.
+   * Given a node handle, return its DOM-style node name. This will include names such as #text or #document.
    * 
-   * @param nodeHandle
-   *          the id of the node.
-   * @return String Name of this node, which may be an empty string. %REVIEW%
-   *         Document when empty string is possible... %REVIEW-COMMENT% It
-   *         should never be empty, should it?
+   * @param nodeHandle the id of the node.
+   * @return String Name of this node, which may be an empty string. %REVIEW% Document when empty string is possible...
+   *         %REVIEW-COMMENT% It should never be empty, should it?
    */
   @Override
   public String getNodeName(int nodeHandle) {
@@ -2641,16 +2527,13 @@ public class SAX2DTM2 extends SAX2DTM {
    * <p>
    * This method is only used by Xalan-J Interpretive. It is not used by XSLTC.
    * <p>
-   * If the caller supplies an XMLStringFactory, the getStringValue() interface
-   * in SAX2DTM will be called. Otherwise just calls getStringValueX() and wraps
-   * the returned String in an XMLString.
+   * If the caller supplies an XMLStringFactory, the getStringValue() interface in SAX2DTM will be called. Otherwise
+   * just calls getStringValueX() and wraps the returned String in an XMLString.
    * 
-   * Get the string-value of a node as a String object (see
-   * http://www.w3.org/TR/xpath#data-model for the definition of a node's
-   * string-value).
+   * Get the string-value of a node as a String object (see http://www.w3.org/TR/xpath#data-model for the definition of
+   * a node's string-value).
    * 
-   * @param nodeHandle
-   *          The node ID.
+   * @param nodeHandle The node ID.
    * 
    * @return A string object that represents the string-value of the given node.
    */
@@ -2712,7 +2595,8 @@ public class SAX2DTM2 extends SAX2DTM {
         if (m_xstrf != null)
           return m_xstrf.newstr(m_chars, m_data.elementAt(-dataIndex), m_data.elementAt(-dataIndex + 1));
         else
-          return new XMLStringDefault(m_chars.getString(m_data.elementAt(-dataIndex), m_data.elementAt(-dataIndex + 1)));
+          return new XMLStringDefault(
+              m_chars.getString(m_data.elementAt(-dataIndex), m_data.elementAt(-dataIndex + 1)));
       }
     } else {
       int dataIndex = m_dataOrQName.elementAt(identity);
@@ -2732,15 +2616,13 @@ public class SAX2DTM2 extends SAX2DTM {
   /**
    * The optimized version of SAX2DTM.getStringValue(int).
    * <p>
-   * %OPT% This is one of the most often used interfaces. Performance is
-   * critical here. This one is different from SAX2DTM.getStringValue(int) in
-   * that it returns a String instead of a XMLString.
+   * %OPT% This is one of the most often used interfaces. Performance is critical here. This one is different from
+   * SAX2DTM.getStringValue(int) in that it returns a String instead of a XMLString.
    * 
-   * Get the string- value of a node as a String object (see http: //www. w3.
-   * org/TR/xpath#data- model for the definition of a node's string- value).
+   * Get the string- value of a node as a String object (see http: //www. w3. org/TR/xpath#data- model for the
+   * definition of a node's string- value).
    * 
-   * @param nodeHandle
-   *          The node ID.
+   * @param nodeHandle The node ID.
    * 
    * @return A string object that represents the string-value of the given node.
    */
@@ -2826,24 +2708,16 @@ public class SAX2DTM2 extends SAX2DTM {
   }
 
   /**
-   * The optimized version of SAX2DTM.dispatchCharactersEvents(int,
-   * ContentHandler, boolean).
+   * The optimized version of SAX2DTM.dispatchCharactersEvents(int, ContentHandler, boolean).
    * <p>
-   * Directly call the characters method on the passed ContentHandler for the
-   * string-value of the given node (see http://www.w3.org/TR/xpath#data-model
-   * for the definition of a node's string-value). Multiple calls to the
-   * ContentHandler's characters methods may well occur for a single call to
-   * this method.
+   * Directly call the characters method on the passed ContentHandler for the string-value of the given node (see
+   * http://www.w3.org/TR/xpath#data-model for the definition of a node's string-value). Multiple calls to the
+   * ContentHandler's characters methods may well occur for a single call to this method.
    * 
-   * @param nodeHandle
-   *          The node ID.
-   * @param ch
-   *          A non-null reference to a ContentHandler.
-   * @param normalize
-   *          true if the content should be normalized according to the rules
-   *          for the XPath <a
-   *          href="http://www.w3.org/TR/xpath#function-normalize-space"
-   *          >normalize-space</a> function.
+   * @param nodeHandle The node ID.
+   * @param ch A non-null reference to a ContentHandler.
+   * @param normalize true if the content should be normalized according to the rules for the XPath
+   *        <a href="http://www.w3.org/TR/xpath#function-normalize-space" >normalize-space</a> function.
    * 
    * @throws SAXException
    */
@@ -2931,14 +2805,11 @@ public class SAX2DTM2 extends SAX2DTM {
   }
 
   /**
-   * Given a node handle, return its node value. This is mostly as defined by
-   * the DOM, but may ignore some conveniences.
+   * Given a node handle, return its node value. This is mostly as defined by the DOM, but may ignore some conveniences.
    * <p>
    * 
-   * @param nodeHandle
-   *          The node id.
-   * @return String Value of this node, or null if not meaningful for this node
-   *         type.
+   * @param nodeHandle The node id.
+   * @return String Value of this node, or null if not meaningful for this node type.
    */
   @Override
   public String getNodeValue(int nodeHandle) {
@@ -2983,12 +2854,9 @@ public class SAX2DTM2 extends SAX2DTM {
   /**
    * Copy an Element node to a SerializationHandler.
    * 
-   * @param nodeID
-   *          The node identity
-   * @param exptype
-   *          The expanded type of the Element node
-   * @param handler
-   *          The SerializationHandler
+   * @param nodeID The node identity
+   * @param exptype The expanded type of the Element node
+   * @param handler The SerializationHandler
    * @return The qualified name of the Element node.
    */
   protected final String copyElement(int nodeID, int exptype, SerializationHandler handler) throws SAXException {
@@ -3031,13 +2899,10 @@ public class SAX2DTM2 extends SAX2DTM {
   /**
    * Copy namespace nodes.
    * 
-   * @param nodeID
-   *          The Element node identity
-   * @param handler
-   *          The SerializationHandler
-   * @param inScope
-   *          true if all namespaces in scope should be copied, false if only
-   *          the namespace declarations should be copied.
+   * @param nodeID The Element node identity
+   * @param handler The SerializationHandler
+   * @param inScope true if all namespaces in scope should be copied, false if only the namespace declarations should be
+   *        copied.
    */
   protected final void copyNS(final int nodeID, SerializationHandler handler, boolean inScope) throws SAXException {
     // %OPT% Optimization for documents which does not have any explicit
@@ -3047,7 +2912,7 @@ public class SAX2DTM2 extends SAX2DTM {
     // need to do namespace copying. We can safely return without
     // doing anything.
     if (m_namespaceDeclSetElements != null && m_namespaceDeclSetElements.size() == 1 && m_namespaceDeclSets != null
-            && m_namespaceDeclSets.get(0).size() == 1)
+        && m_namespaceDeclSets.get(0).size() == 1)
       return;
 
     SuballocatedIntVector nsContext = null;
@@ -3098,8 +2963,7 @@ public class SAX2DTM2 extends SAX2DTM {
   /**
    * Return the next namespace node following the given base node.
    * 
-   * @param baseID The node identity of the base node, which can be an element,
-   *         attribute or namespace node.
+   * @param baseID The node identity of the base node, which can be an element, attribute or namespace node.
    * @return The namespace node immediately following the base node.
    */
   protected final int getNextNamespaceNode2(int baseID) {
@@ -3117,14 +2981,13 @@ public class SAX2DTM2 extends SAX2DTM {
   /**
    * Copy attribute nodes from an element .
    * 
-   * @param nodeID
-   *          The Element node identity
-   * @param handler
-   *          The SerializationHandler
+   * @param nodeID The Element node identity
+   * @param handler The SerializationHandler
    */
   protected final void copyAttributes(final int nodeID, SerializationHandler handler) throws SAXException {
 
-    for (int current = getFirstAttributeIdentity(nodeID); current != DTM.NULL; current = getNextAttributeIdentity(current)) {
+    for (int current = getFirstAttributeIdentity(nodeID); current != DTM.NULL; current = getNextAttributeIdentity(
+        current)) {
       final int eType = _exptype2(current);
       copyAttribute(current, eType, handler);
     }
@@ -3133,19 +2996,14 @@ public class SAX2DTM2 extends SAX2DTM {
   /**
    * Copy an Attribute node to a SerializationHandler
    * 
-   * @param nodeID
-   *          The node identity
-   * @param exptype
-   *          The expanded type of the Element node
-   * @param handler
-   *          The SerializationHandler
+   * @param nodeID The node identity
+   * @param exptype The expanded type of the Element node
+   * @param handler The SerializationHandler
    */
   protected final void copyAttribute(int nodeID, int exptype, SerializationHandler handler) throws SAXException {
     /*
-     * final String uri = getNamespaceName(node); if (uri.length() != 0) { final
-     * String prefix = getPrefix(node);
-     * handler.namespaceAfterStartElement(prefix, uri); }
-     * handler.addAttribute(getNodeName(node), getNodeValue(node));
+     * final String uri = getNamespaceName(node); if (uri.length() != 0) { final String prefix = getPrefix(node);
+     * handler.namespaceAfterStartElement(prefix, uri); } handler.addAttribute(getNodeName(node), getNodeValue(node));
      */
     final ExtendedType extType = m_extendedTypes[exptype];
     final String uri = extType.getNamespace();

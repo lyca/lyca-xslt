@@ -17,6 +17,7 @@
  */
 package de.lyca.xml.res;
 
+import java.text.MessageFormat;
 import java.util.ListResourceBundle;
 import java.util.Locale;
 import java.util.MissingResourceException;
@@ -45,8 +46,7 @@ public class XMLMessages {
   /**
    * Set the Locale object to use.
    * 
-   * @param locale
-   *          non-null reference to Locale object.
+   * @param locale non-null reference to Locale object.
    */
   public void setLocale(Locale locale) {
     fLocale = locale;
@@ -62,14 +62,10 @@ public class XMLMessages {
   }
 
   /**
-   * Creates a message from the specified key and replacement arguments,
-   * localized to the given locale.
+   * Creates a message from the specified key and replacement arguments, localized to the given locale.
    * 
-   * @param msgKey
-   *          The key for the message text.
-   * @param args
-   *          The arguments to be used as replacement text in the message
-   *          created.
+   * @param msgKey The key for the message text.
+   * @param args The arguments to be used as replacement text in the message created.
    * 
    * @return The formatted message string.
    */
@@ -85,22 +81,15 @@ public class XMLMessages {
   }
 
   /**
-   * Creates a message from the specified key and replacement arguments,
-   * localized to the given locale.
+   * Creates a message from the specified key and replacement arguments, localized to the given locale.
    * 
-   * @param fResourceBundle
-   *          The resource bundle to use.
-   * @param msgKey
-   *          The message key to use.
-   * @param args
-   *          The arguments to be used as replacement text in the message
-   *          created.
+   * @param fResourceBundle The resource bundle to use.
+   * @param msgKey The message key to use.
+   * @param args The arguments to be used as replacement text in the message created.
    * 
    * @return The formatted message string.
    */
-  public static final String createMsg(ListResourceBundle fResourceBundle, String msgKey, Object args[]) // throws
-                                                                                                         // Exception
-  {
+  public static final String createMsg(ListResourceBundle fResourceBundle, String msgKey, Object args[]) {
 
     String fmsg = null;
     boolean throwex = false;
@@ -129,7 +118,7 @@ public class XMLMessages {
           }
         }
 
-        fmsg = java.text.MessageFormat.format(msg, args);
+        fmsg = MessageFormat.format(msg, args);
       } catch (final Exception e) {
         fmsg = fResourceBundle.getString(FORMAT_FAILED);
         fmsg += " " + msg;
@@ -145,11 +134,10 @@ public class XMLMessages {
   }
 
   /**
-   * Return a named ResourceBundle for a particular locale. This method mimics
-   * the behavior of ResourceBundle.getBundle().
+   * Return a named ResourceBundle for a particular locale. This method mimics the behavior of
+   * ResourceBundle.getBundle().
    * 
-   * @param className
-   *          The class name of the resource bundle.
+   * @param className The class name of the resource bundle.
    * @return the ResourceBundle
    * @throws MissingResourceException TODO
    */
@@ -172,26 +160,5 @@ public class XMLMessages {
         throw new MissingResourceException("Could not load any resource bundles." + className, className, "");
       }
     }
-  }
-
-  /**
-   * Return the resource file suffic for the indicated locale For most locales,
-   * this will be based the language code. However for Chinese, we do
-   * distinguish between Taiwan and PRC
-   * 
-   * @param locale
-   *          the locale
-   * @return an String suffix which can be appended to a resource name
-   */
-  protected static String getResourceSuffix(Locale locale) {
-
-    String suffix = "_" + locale.getLanguage();
-    final String country = locale.getCountry();
-
-    if (country.equals("TW")) {
-      suffix += "_" + country;
-    }
-
-    return suffix;
   }
 }

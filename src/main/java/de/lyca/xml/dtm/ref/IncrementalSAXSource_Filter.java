@@ -32,26 +32,22 @@ import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.ext.LexicalHandler;
 
-import de.lyca.xml.res.XMLErrorResources;
-import de.lyca.xml.res.XMLMessages;
+import de.lyca.xml.res.Messages;
 import de.lyca.xml.utils.ThreadControllerWrapper;
 
 /**
  * <p>
- * IncrementalSAXSource_Filter implements IncrementalSAXSource, using a standard
- * SAX2 event source as its input and parcelling out those events gradually in
- * reponse to deliverMoreNodes() requests. Output from the filter will be passed
- * along to a SAX handler registered as our listener, but those callbacks will
- * pass through a counting stage which periodically yields control back to the
- * controller coroutine.
+ * IncrementalSAXSource_Filter implements IncrementalSAXSource, using a standard SAX2 event source as its input and
+ * parcelling out those events gradually in reponse to deliverMoreNodes() requests. Output from the filter will be
+ * passed along to a SAX handler registered as our listener, but those callbacks will pass through a counting stage
+ * which periodically yields control back to the controller coroutine.
  * </p>
  * 
  * <p>
- * %REVIEW%: This filter is not currenly intended to be reusable for parsing
- * additional streams/documents. We may want to consider making it resettable at
- * some point in the future. But it's a small object, so that'd be mostly a
- * convenience issue; the cost of allocating each time is trivial compared to
- * the cost of processing any nontrival stream.
+ * %REVIEW%: This filter is not currenly intended to be reusable for parsing additional streams/documents. We may want
+ * to consider making it resettable at some point in the future. But it's a small object, so that'd be mostly a
+ * convenience issue; the cost of allocating each time is trivial compared to the cost of processing any nontrival
+ * stream.
  * </p>
  * 
  * <p>
@@ -59,12 +55,10 @@ import de.lyca.xml.utils.ThreadControllerWrapper;
  * </p>
  * 
  * <p>
- * This is a simplification of the old CoroutineSAXParser, focusing specifically
- * on filtering. The resulting controller protocol is _far_ simpler and less
- * error-prone; the only controller operation is deliverMoreNodes(), and the
- * only requirement is that deliverMoreNodes(false) be called if you want to
- * discard the rest of the stream and the previous deliverMoreNodes() didn't
- * return false.
+ * This is a simplification of the old CoroutineSAXParser, focusing specifically on filtering. The resulting controller
+ * protocol is _far_ simpler and less error-prone; the only controller operation is deliverMoreNodes(), and the only
+ * requirement is that deliverMoreNodes(false) be called if you want to discard the rest of the stream and the previous
+ * deliverMoreNodes() didn't return false.
  */
 public class IncrementalSAXSource_Filter
     implements IncrementalSAXSource, ContentHandler, DTDHandler, LexicalHandler, ErrorHandler, Runnable {
@@ -104,13 +98,10 @@ public class IncrementalSAXSource_Filter
   }
 
   /**
-   * Create a IncrementalSAXSource_Filter which is not yet bound to a specific
-   * SAX event source.
+   * Create a IncrementalSAXSource_Filter which is not yet bound to a specific SAX event source.
    * 
-   * @param co
-   *          TODO
-   * @param controllerCoroutineID
-   *          TODO
+   * @param co TODO
+   * @param controllerCoroutineID TODO
    */
   public IncrementalSAXSource_Filter(CoroutineManager co, int controllerCoroutineID) {
     this.init(co, controllerCoroutineID, -1);
@@ -136,7 +127,7 @@ public class IncrementalSAXSource_Filter
     fSourceCoroutineID = co.co_joinCoroutineSet(sourceCoroutineID);
     if (fControllerCoroutineID == -1 || fSourceCoroutineID == -1)
       // "co_joinCoroutineSet() failed");
-      throw new RuntimeException(XMLMessages.createXMLMessage(XMLErrorResources.ER_COJOINROUTINESET_FAILED, null));
+      throw new RuntimeException(Messages.get().cojoinroutinesetFailed());
 
     fNoMoreEvents = false;
     eventcounter = frequency;
@@ -145,11 +136,9 @@ public class IncrementalSAXSource_Filter
   /**
    * Bind our input streams to an XMLReader.
    * 
-   * Just a convenience routine; obviously you can explicitly register this as a
-   * listener with the same effect.
+   * Just a convenience routine; obviously you can explicitly register this as a listener with the same effect.
    * 
-   * @param eventsource
-   *          TODO
+   * @param eventsource TODO
    */
   public void setXMLReader(XMLReader eventsource) {
     fXMLReader = eventsource;
@@ -483,10 +472,9 @@ public class IncrementalSAXSource_Filter
   }
 
   /**
-   * @return the CoroutineManager this CoroutineFilter object is bound to. If
-   *         you're using the do...() methods, applications should only need to
-   *         talk to the CoroutineManager once, to obtain the application's
-   *         Coroutine ID.
+   * @return the CoroutineManager this CoroutineFilter object is bound to. If you're using the do...() methods,
+   *         applications should only need to talk to the CoroutineManager once, to obtain the application's Coroutine
+   *         ID.
    */
   public CoroutineManager getCoroutineManager() {
     return fCoroutineManager;
@@ -494,19 +482,14 @@ public class IncrementalSAXSource_Filter
 
   /**
    * <p>
-   * In the SAX delegation code, I've inlined the count-down in the hope of
-   * encouraging compilers to deliver better performance. However, if we
-   * subclass (eg to directly connect the output to a DTM builder), that would
-   * require calling super in order to run that logic... which seems inelegant.
-   * Hence this routine for the convenience of subclasses: every [frequency]
-   * invocations, issue a co_yield.
+   * In the SAX delegation code, I've inlined the count-down in the hope of encouraging compilers to deliver better
+   * performance. However, if we subclass (eg to directly connect the output to a DTM builder), that would require
+   * calling super in order to run that logic... which seems inelegant. Hence this routine for the convenience of
+   * subclasses: every [frequency] invocations, issue a co_yield.
    * </p>
    * 
-   * @param moreExpected
-   *          Should always be true unless this is being called at the end of
-   *          endDocument() handling.
-   * @throws SAXException
-   *           TODO
+   * @param moreExpected Should always be true unless this is being called at the end of endDocument() handling.
+   * @throws SAXException TODO
    */
   protected void count_and_yield(boolean moreExpected) throws SAXException {
     if (!moreExpected) {
@@ -520,13 +503,11 @@ public class IncrementalSAXSource_Filter
   }
 
   /**
-   * co_entry_pause is called in startDocument() before anything else happens.
-   * It causes the filter to wait for a "go ahead" request from the controller
-   * before delivering any events. Note that the very first thing the controller
+   * co_entry_pause is called in startDocument() before anything else happens. It causes the filter to wait for a "go
+   * ahead" request from the controller before delivering any events. Note that the very first thing the controller
    * tells us may be "I don't need events after all"!
    * 
-   * @throws SAXException
-   *           TODO
+   * @throws SAXException TODO
    */
   private void co_entry_pause() throws SAXException {
     if (fCoroutineManager == null) {
@@ -552,23 +533,18 @@ public class IncrementalSAXSource_Filter
   /**
    * Co_Yield handles coroutine interactions while a parse is in progress.
    * 
-   * When moreRemains==true, we are pausing after delivering events, to ask if
-   * more are needed. We will resume the controller thread with
-   * co_resume(Boolean.TRUE, ...) When control is passed back it may indicate
-   * Boolean.TRUE indication to continue delivering events Boolean.FALSE
-   * indication to discontinue events and shut down.
+   * When moreRemains==true, we are pausing after delivering events, to ask if more are needed. We will resume the
+   * controller thread with co_resume(Boolean.TRUE, ...) When control is passed back it may indicate Boolean.TRUE
+   * indication to continue delivering events Boolean.FALSE indication to discontinue events and shut down.
    * 
-   * When moreRemains==false, we shut down immediately without asking the
-   * controller's permission. Normally this means end of document has been
-   * reached.
+   * When moreRemains==false, we shut down immediately without asking the controller's permission. Normally this means
+   * end of document has been reached.
    * 
-   * Shutting down a IncrementalSAXSource_Filter requires terminating the
-   * incoming SAX event stream. If we are in control of that stream (if it came
-   * from an XMLReader passed to our startReader() method), we can do so very
-   * quickly by throwing a reserved exception to it. If the stream is coming
-   * from another source, we can't do that because its caller may not be
-   * prepared for this "normal abnormal exit", and instead we put ourselves in a
-   * "spin" mode where events are discarded.
+   * Shutting down a IncrementalSAXSource_Filter requires terminating the incoming SAX event stream. If we are in
+   * control of that stream (if it came from an XMLReader passed to our startReader() method), we can do so very quickly
+   * by throwing a reserved exception to it. If the stream is coming from another source, we can't do that because its
+   * caller may not be prepared for this "normal abnormal exit", and instead we put ourselves in a "spin" mode where
+   * events are discarded.
    */
   private void co_yield(boolean moreRemains) throws SAXException {
     // Horrendous kluge to run filter to completion. See below.
@@ -608,24 +584,20 @@ public class IncrementalSAXSource_Filter
   //
 
   /**
-   * Launch a thread that will run an XMLReader's parse() operation within a
-   * thread, feeding events to this IncrementalSAXSource_Filter. Mostly a
-   * convenience routine, but has the advantage that -- since we invoked parse()
-   * -- we can halt parsing quickly via a StopException rather than waiting for
-   * the SAX stream to end by itself.
+   * Launch a thread that will run an XMLReader's parse() operation within a thread, feeding events to this
+   * IncrementalSAXSource_Filter. Mostly a convenience routine, but has the advantage that -- since we invoked parse()
+   * -- we can halt parsing quickly via a StopException rather than waiting for the SAX stream to end by itself.
    * 
-   * @throws SAXException
-   *           is parse thread is already in progress or parsing can not be
-   *           started.
+   * @throws SAXException is parse thread is already in progress or parsing can not be started.
    */
   @Override
   public void startParse(InputSource source) throws SAXException {
     if (fNoMoreEvents)
       // "IncrmentalSAXSource_Filter not currently restartable.");
-      throw new SAXException(XMLMessages.createXMLMessage(XMLErrorResources.ER_INCRSAXSRCFILTER_NOT_RESTARTABLE, null));
+      throw new SAXException(Messages.get().incrsaxsrcfilterNotRestartable());
     if (fXMLReader == null)
       // "XMLReader not before startParse request");
-      throw new SAXException(XMLMessages.createXMLMessage(XMLErrorResources.ER_XMLRDR_NOT_BEFORE_STARTPARSE, null));
+      throw new SAXException(Messages.get().xmlrdrNotBeforeStartparse());
 
     fXMLReaderInputSource = source;
 
@@ -696,31 +668,25 @@ public class IncrementalSAXSource_Filter
   }
 
   /**
-   * Used to quickly terminate parse when running under a startParse() thread.
-   * Only its type is important.
+   * Used to quickly terminate parse when running under a startParse() thread. Only its type is important.
    */
   static class StopException extends RuntimeException {
     static final long serialVersionUID = -1129245796185754956L;
   }
 
   /**
-   * deliverMoreNodes() is a simple API which tells the coroutine parser that we
-   * need more nodes. This is intended to be called from one of our partner
-   * routines, and serves to encapsulate the details of how incremental parsing
-   * has been achieved.
+   * deliverMoreNodes() is a simple API which tells the coroutine parser that we need more nodes. This is intended to be
+   * called from one of our partner routines, and serves to encapsulate the details of how incremental parsing has been
+   * achieved.
    * 
-   * @param parsemore
-   *          If true, tells the incremental filter to generate another chunk of
-   *          output. If false, tells the filter that we're satisfied and it can
-   *          terminate parsing of this document.
+   * @param parsemore If true, tells the incremental filter to generate another chunk of output. If false, tells the
+   *        filter that we're satisfied and it can terminate parsing of this document.
    * 
-   * @return Boolean.TRUE if there may be more events available by invoking
-   *         deliverMoreNodes() again. Boolean.FALSE if parsing has run to
-   *         completion (or been terminated by deliverMoreNodes(false). Or an
-   *         exception object if something malfunctioned. %REVIEW% We _could_
-   *         actually throw the exception, but that would require runinng
-   *         deliverMoreNodes() in a try/catch... and for many applications,
-   *         exception will be simply be treated as "not TRUE" in any case.
+   * @return Boolean.TRUE if there may be more events available by invoking deliverMoreNodes() again. Boolean.FALSE if
+   *         parsing has run to completion (or been terminated by deliverMoreNodes(false). Or an exception object if
+   *         something malfunctioned. %REVIEW% We _could_ actually throw the exception, but that would require runinng
+   *         deliverMoreNodes() in a try/catch... and for many applications, exception will be simply be treated as "not
+   *         TRUE" in any case.
    */
   @Override
   public Object deliverMoreNodes(boolean parsemore) {
@@ -748,48 +714,37 @@ public class IncrementalSAXSource_Filter
 
   // ================================================================
   /**
-   * Simple unit test. Attempt coroutine parsing of document indicated by first
-   * argument (as a URI), report progress.
+   * Simple unit test. Attempt coroutine parsing of document indicated by first argument (as a URI), report progress.
    */
   /*
    * public static void main(String args[]) { System.out.println("Starting...");
    * 
-   * org.xml.sax.XMLReader theSAXParser= new
-   * org.apache.xerces.parsers.SAXParser();
+   * org.xml.sax.XMLReader theSAXParser= new org.apache.xerces.parsers.SAXParser();
    * 
    * 
-   * for(int arg=0;arg<args.length;++arg) { // The filter is not currently
-   * designed to be restartable // after a parse has ended. Generate a new one
-   * each time. IncrementalSAXSource_Filter filter= new
-   * IncrementalSAXSource_Filter(); // Use a serializer as our sample output
-   * de.lyca.xml.serialize.XMLSerializer trace; trace=new
-   * de.lyca.xml.serialize.XMLSerializer(System.out,null);
-   * filter.setContentHandler(trace); filter.setLexicalHandler(trace);
+   * for(int arg=0;arg<args.length;++arg) { // The filter is not currently designed to be restartable // after a parse
+   * has ended. Generate a new one each time. IncrementalSAXSource_Filter filter= new IncrementalSAXSource_Filter(); //
+   * Use a serializer as our sample output de.lyca.xml.serialize.XMLSerializer trace; trace=new
+   * de.lyca.xml.serialize.XMLSerializer(System.out,null); filter.setContentHandler(trace);
+   * filter.setLexicalHandler(trace);
    * 
-   * try { InputSource source = new InputSource(args[arg]); Object result=null;
-   * boolean more=true;
+   * try { InputSource source = new InputSource(args[arg]); Object result=null; boolean more=true;
    * 
    * // init not issued; we _should_ automagically Do The Right Thing
    * 
-   * // Bind parser, kick off parsing in a thread
-   * filter.setXMLReader(theSAXParser); filter.startParse(source);
+   * // Bind parser, kick off parsing in a thread filter.setXMLReader(theSAXParser); filter.startParse(source);
    * 
-   * for(result = filter.deliverMoreNodes(more); (result instanceof Boolean &&
-   * ((Boolean)result)==Boolean.TRUE); result = filter.deliverMoreNodes(more)) {
-   * System.out.println("\nSome parsing successful, trying more.\n");
+   * for(result = filter.deliverMoreNodes(more); (result instanceof Boolean && ((Boolean)result)==Boolean.TRUE); result
+   * = filter.deliverMoreNodes(more)) { System.out.println("\nSome parsing successful, trying more.\n");
    * 
-   * // Special test: Terminate parsing early. if(arg+1<args.length &&
-   * "!".equals(args[arg+1])) { ++arg; more=false; }
+   * // Special test: Terminate parsing early. if(arg+1<args.length && "!".equals(args[arg+1])) { ++arg; more=false; }
    * 
    * }
    * 
    * if (result instanceof Boolean && ((Boolean)result)==Boolean.FALSE) {
-   * System.out.println("\nFilter ended (EOF or on request).\n"); } else if
-   * (result == null) {
-   * System.out.println("\nUNEXPECTED: Filter says shut down prematurely.\n"); }
-   * else if (result instanceof Exception) {
-   * System.out.println("\nFilter threw exception:");
-   * ((Exception)result).printStackTrace(); }
+   * System.out.println("\nFilter ended (EOF or on request).\n"); } else if (result == null) {
+   * System.out.println("\nUNEXPECTED: Filter says shut down prematurely.\n"); } else if (result instanceof Exception) {
+   * System.out.println("\nFilter threw exception:"); ((Exception)result).printStackTrace(); }
    * 
    * } catch(SAXException e) { e.printStackTrace(); } } // end for }
    */

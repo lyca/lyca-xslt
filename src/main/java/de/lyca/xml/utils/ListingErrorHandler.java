@@ -32,15 +32,14 @@ import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-import de.lyca.xml.res.XMLErrorResources;
-import de.lyca.xml.res.XMLMessages;
+import de.lyca.xml.res.Messages;
 
 /**
  * Sample implementation of similar SAX ErrorHandler and JAXP ErrorListener.
  * 
  * <p>
- * This implementation is suitable for various use cases, and provides some
- * basic configuration API's as well to control when we re-throw errors, etc.
+ * This implementation is suitable for various use cases, and provides some basic configuration API's as well to control
+ * when we re-throw errors, etc.
  * </p>
  * 
  * @author shane_curcuru@us.ibm.com
@@ -54,9 +53,8 @@ public class ListingErrorHandler implements ErrorHandler, ErrorListener {
    */
   public ListingErrorHandler(PrintWriter pw) {
     if (null == pw)
-      throw new NullPointerException(XMLMessages.createXMLMessage(
-              XMLErrorResources.ER_ERRORHANDLER_CREATED_WITH_NULL_PRINTWRITER, null));
-    // "ListingErrorHandler created with null PrintWriter!");
+      // "ListingErrorHandler created with null PrintWriter!");
+      throw new NullPointerException(Messages.get().errorhandlerCreatedWithNullPrintwriter());
 
     m_pw = pw;
   }
@@ -73,26 +71,21 @@ public class ListingErrorHandler implements ErrorHandler, ErrorListener {
    * Receive notification of a warning.
    * 
    * <p>
-   * SAX parsers will use this method to report conditions that are not errors
-   * or fatal errors as defined by the XML 1.0 recommendation. The default
-   * behaviour is to take no action.
+   * SAX parsers will use this method to report conditions that are not errors or fatal errors as defined by the XML 1.0
+   * recommendation. The default behaviour is to take no action.
    * </p>
    * 
    * <p>
-   * The SAX parser must continue to provide normal parsing events after
-   * invoking this method: it should still be possible for the application to
-   * process the document through to the end.
+   * The SAX parser must continue to provide normal parsing events after invoking this method: it should still be
+   * possible for the application to process the document through to the end.
    * </p>
    * 
    * <p>
    * Filters may use this method to report other, non-XML warnings as well.
    * </p>
    * 
-   * @param exception
-   *          The warning information encapsulated in a SAX parse exception.
-   * @throws SAXException
-   *              Any SAX exception, possibly wrapping another exception; only
-   *              if setThrowOnWarning is true.
+   * @param exception The warning information encapsulated in a SAX parse exception.
+   * @throws SAXException Any SAX exception, possibly wrapping another exception; only if setThrowOnWarning is true.
    * @see org.xml.sax.SAXParseException
    */
   @Override
@@ -111,29 +104,23 @@ public class ListingErrorHandler implements ErrorHandler, ErrorListener {
    * Receive notification of a recoverable error.
    * 
    * <p>
-   * This corresponds to the definition of "error" in section 1.2 of the W3C XML
-   * 1.0 Recommendation. For example, a validating parser would use this
-   * callback to report the violation of a validity constraint. The default
-   * behaviour is to take no action.
+   * This corresponds to the definition of "error" in section 1.2 of the W3C XML 1.0 Recommendation. For example, a
+   * validating parser would use this callback to report the violation of a validity constraint. The default behaviour
+   * is to take no action.
    * </p>
    * 
    * <p>
-   * The SAX parser must continue to provide normal parsing events after
-   * invoking this method: it should still be possible for the application to
-   * process the document through to the end. If the application cannot do so,
-   * then the parser should report a fatal error even if the XML 1.0
-   * recommendation does not require it to do so.
+   * The SAX parser must continue to provide normal parsing events after invoking this method: it should still be
+   * possible for the application to process the document through to the end. If the application cannot do so, then the
+   * parser should report a fatal error even if the XML 1.0 recommendation does not require it to do so.
    * </p>
    * 
    * <p>
    * Filters may use this method to report other, non-XML errors as well.
    * </p>
    * 
-   * @param exception
-   *          The error information encapsulated in a SAX parse exception.
-   * @throws SAXException
-   *              Any SAX exception, possibly wrapping another exception; only
-   *              if setThrowOnErroris true.
+   * @param exception The error information encapsulated in a SAX parse exception.
+   * @throws SAXException Any SAX exception, possibly wrapping another exception; only if setThrowOnErroris true.
    * @see org.xml.sax.SAXParseException
    */
   @Override
@@ -150,23 +137,18 @@ public class ListingErrorHandler implements ErrorHandler, ErrorListener {
    * Receive notification of a non-recoverable error.
    * 
    * <p>
-   * This corresponds to the definition of "fatal error" in section 1.2 of the
-   * W3C XML 1.0 Recommendation. For example, a parser would use this callback
-   * to report the violation of a well-formedness constraint.
+   * This corresponds to the definition of "fatal error" in section 1.2 of the W3C XML 1.0 Recommendation. For example,
+   * a parser would use this callback to report the violation of a well-formedness constraint.
    * </p>
    * 
    * <p>
-   * The application must assume that the document is unusable after the parser
-   * has invoked this method, and should continue (if at all) only for the sake
-   * of collecting addition error messages: in fact, SAX parsers are free to
-   * stop reporting any other events once this method has been invoked.
+   * The application must assume that the document is unusable after the parser has invoked this method, and should
+   * continue (if at all) only for the sake of collecting addition error messages: in fact, SAX parsers are free to stop
+   * reporting any other events once this method has been invoked.
    * </p>
    * 
-   * @param exception
-   *          The error information encapsulated in a SAX parse exception.
-   * @throws SAXException
-   *              Any SAX exception, possibly wrapping another exception; only
-   *              if setThrowOnFatalError is true.
+   * @param exception The error information encapsulated in a SAX parse exception.
+   * @throws SAXException Any SAX exception, possibly wrapping another exception; only if setThrowOnFatalError is true.
    * @see org.xml.sax.SAXParseException
    */
   @Override
@@ -185,22 +167,18 @@ public class ListingErrorHandler implements ErrorHandler, ErrorListener {
    * Receive notification of a warning.
    * 
    * <p>
-   * {@link javax.xml.transform.Transformer} can use this method to report
-   * conditions that are not errors or fatal errors. The default behaviour is to
-   * take no action.
+   * {@link javax.xml.transform.Transformer} can use this method to report conditions that are not errors or fatal
+   * errors. The default behaviour is to take no action.
    * </p>
    * 
    * <p>
-   * After invoking this method, the Transformer must continue with the
-   * transformation. It should still be possible for the application to process
-   * the document through to the end.
+   * After invoking this method, the Transformer must continue with the transformation. It should still be possible for
+   * the application to process the document through to the end.
    * </p>
    * 
-   * @param exception
-   *          The warning information encapsulated in a transformer exception.
+   * @param exception The warning information encapsulated in a transformer exception.
    * 
-   * @throws TransformerException
-   *           only if setThrowOnWarning is true.
+   * @throws TransformerException only if setThrowOnWarning is true.
    * 
    * @see TransformerException
    */
@@ -218,17 +196,13 @@ public class ListingErrorHandler implements ErrorHandler, ErrorListener {
    * Receive notification of a recoverable error.
    * 
    * <p>
-   * The transformer must continue to try and provide normal transformation
-   * after invoking this method. It should still be possible for the application
-   * to process the document through to the end if no other errors are
-   * encountered.
+   * The transformer must continue to try and provide normal transformation after invoking this method. It should still
+   * be possible for the application to process the document through to the end if no other errors are encountered.
    * </p>
    * 
-   * @param exception
-   *          The error information encapsulated in a transformer exception.
+   * @param exception The error information encapsulated in a transformer exception.
    * 
-   * @throws TransformerException
-   *           only if setThrowOnError is true.
+   * @throws TransformerException only if setThrowOnError is true.
    * 
    * @see TransformerException
    */
@@ -246,17 +220,14 @@ public class ListingErrorHandler implements ErrorHandler, ErrorListener {
    * Receive notification of a non-recoverable error.
    * 
    * <p>
-   * The transformer must continue to try and provide normal transformation
-   * after invoking this method. It should still be possible for the application
-   * to process the document through to the end if no other errors are
-   * encountered, but there is no guarantee that the output will be useable.
+   * The transformer must continue to try and provide normal transformation after invoking this method. It should still
+   * be possible for the application to process the document through to the end if no other errors are encountered, but
+   * there is no guarantee that the output will be useable.
    * </p>
    * 
-   * @param exception
-   *          The error information encapsulated in a transformer exception.
+   * @param exception The error information encapsulated in a transformer exception.
    * 
-   * @throws TransformerException
-   *           only if setThrowOnError is true.
+   * @throws TransformerException only if setThrowOnError is true.
    * 
    * @see TransformerException
    */
@@ -277,10 +248,8 @@ public class ListingErrorHandler implements ErrorHandler, ErrorListener {
    * 
    * Cribbed from DefaultErrorHandler.printLocation()
    * 
-   * @param pw
-   *          PrintWriter to send output to
-   * @param exception
-   *          TransformerException or SAXParseException to log information about
+   * @param pw PrintWriter to send output to
+   * @param exception TransformerException or SAXParseException to log information about
    */
   public static void logExceptionLocation(PrintWriter pw, Throwable exception) {
     if (null == pw) {
@@ -323,8 +292,8 @@ public class ListingErrorHandler implements ErrorHandler, ErrorListener {
     // path\filename:123: message-here
     // systemId:L=1;C=2: message-here
     if (null != locator) {
-      final String id = locator.getPublicId() != locator.getPublicId() ? locator.getPublicId() : null != locator
-              .getSystemId() ? locator.getSystemId() : "SystemId-Unknown";
+      final String id = locator.getPublicId() != locator.getPublicId() ? locator.getPublicId()
+          : null != locator.getSystemId() ? locator.getSystemId() : "SystemId-Unknown";
 
       pw.print(id + ":Line=" + locator.getLineNumber() + ";Column=" + locator.getColumnNumber() + ": ");
       pw.println("exception:" + exception.getMessage());
@@ -338,13 +307,10 @@ public class ListingErrorHandler implements ErrorHandler, ErrorListener {
   }
 
   /**
-   * Print out the specific source line that caused the exception, if possible
-   * to load it.
+   * Print out the specific source line that caused the exception, if possible to load it.
    * 
-   * @param pw
-   *          PrintWriter to send output to
-   * @param locator
-   *          Xalan wrapper for either a JAXP or a SAX source location object
+   * @param pw PrintWriter to send output to
+   * @param locator Xalan wrapper for either a JAXP or a SAX source location object
    */
   public static void logSourceLine(PrintWriter pw, SourceLocator locator) {
     if (null == locator)
@@ -383,8 +349,7 @@ public class ListingErrorHandler implements ErrorHandler, ErrorListener {
   }
 
   /**
-   * Return the specific source line that caused the exception, if possible to
-   * load it; allow exceptions to be thrown.
+   * Return the specific source line that caused the exception, if possible to load it; allow exceptions to be thrown.
    * 
    * @author shane_curcuru@us.ibm.com
    */
@@ -442,13 +407,11 @@ public class ListingErrorHandler implements ErrorHandler, ErrorListener {
    * User-settable behavior: when to re-throw exceptions.
    * 
    * <p>
-   * This allows per-instance configuration of ListingErrorHandlers. You can ask
-   * us to either throw an exception when we're called for various warning /
-   * error / fatalErrors, or simply log them and continue.
+   * This allows per-instance configuration of ListingErrorHandlers. You can ask us to either throw an exception when
+   * we're called for various warning / error / fatalErrors, or simply log them and continue.
    * </p>
    * 
-   * @param b
-   *          if we should throw an exception on warnings
+   * @param b if we should throw an exception on warnings
    */
   public void setThrowOnWarning(boolean b) {
     throwOnWarning = b;
@@ -470,18 +433,15 @@ public class ListingErrorHandler implements ErrorHandler, ErrorListener {
    * User-settable behavior: when to re-throw exceptions.
    * 
    * <p>
-   * This allows per-instance configuration of ListingErrorHandlers. You can ask
-   * us to either throw an exception when we're called for various warning /
-   * error / fatalErrors, or simply log them and continue.
+   * This allows per-instance configuration of ListingErrorHandlers. You can ask us to either throw an exception when
+   * we're called for various warning / error / fatalErrors, or simply log them and continue.
    * </p>
    * 
    * <p>
-   * Note that the behavior of many parsers/transformers after an error is not
-   * necessarily defined!
+   * Note that the behavior of many parsers/transformers after an error is not necessarily defined!
    * </p>
    * 
-   * @param b
-   *          if we should throw an exception on errors
+   * @param b if we should throw an exception on errors
    */
   public void setThrowOnError(boolean b) {
     throwOnError = b;
@@ -503,18 +463,16 @@ public class ListingErrorHandler implements ErrorHandler, ErrorListener {
    * User-settable behavior: when to re-throw exceptions.
    * 
    * <p>
-   * This allows per-instance configuration of ListingErrorHandlers. You can ask
-   * us to either throw an exception when we're called for various warning /
-   * error / fatalErrors, or simply log them and continue.
+   * This allows per-instance configuration of ListingErrorHandlers. You can ask us to either throw an exception when
+   * we're called for various warning / error / fatalErrors, or simply log them and continue.
    * </p>
    * 
    * <p>
-   * Note that the behavior of many parsers/transformers after a fatalError is
-   * not necessarily defined, most products will probably barf if you continue.
+   * Note that the behavior of many parsers/transformers after a fatalError is not necessarily defined, most products
+   * will probably barf if you continue.
    * </p>
    * 
-   * @param b
-   *          if we should throw an exception on fatalErrors
+   * @param b if we should throw an exception on fatalErrors
    */
   public void setThrowOnFatalError(boolean b) {
     throwOnFatalError = b;

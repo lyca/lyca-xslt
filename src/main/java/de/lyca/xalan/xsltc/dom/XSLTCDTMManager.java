@@ -22,6 +22,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamSource;
 
+import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXNotSupportedException;
@@ -34,9 +35,9 @@ import de.lyca.xml.dtm.DTMException;
 import de.lyca.xml.dtm.DTMWSFilter;
 import de.lyca.xml.dtm.ref.DTMDefaultBase;
 import de.lyca.xml.dtm.ref.DTMManagerDefault;
-import de.lyca.xml.res.XMLErrorResources;
-import de.lyca.xml.res.XMLMessages;
+import de.lyca.xml.res.Messages;
 import de.lyca.xml.utils.SystemIDResolver;
+import de.lyca.xml.utils.WrappedRuntimeException;
 
 /**
  * The default implementation for the DTMManager.
@@ -63,25 +64,20 @@ public class XSLTCDTMManager extends DTMManagerDefault {
   }
 
   /**
-   * Obtain a new instance of a <code>DTMManager</code>. This static method
-   * creates a new factory instance. The current implementation just returns a
-   * new XSLTCDTMManager instance.
+   * Obtain a new instance of a <code>DTMManager</code>. This static method creates a new factory instance. The current
+   * implementation just returns a new XSLTCDTMManager instance.
    */
   public static XSLTCDTMManager newInstance() {
     return new XSLTCDTMManager();
   }
 
   /**
-   * Look up the class that provides the XSLTC DTM Manager service. The
-   * following lookup procedure is used to find the service provider.
+   * Look up the class that provides the XSLTC DTM Manager service. The following lookup procedure is used to find the
+   * service provider.
    * <ol>
-   * <li>The value of the <code>de.lyca.xalan.xsltc.dom.XSLTCDTMManager</code>
-   * property, is checked.</li>
-   * <li>The <code>xalan.propeties</code> file is checked for a property of the
-   * same name.</li>
-   * <li>The
-   * <code>META-INF/services/de.lyca.xalan.xsltc.dom.XSLTCDTMManager</code> file
-   * is checked.
+   * <li>The value of the <code>de.lyca.xalan.xsltc.dom.XSLTCDTMManager</code> property, is checked.</li>
+   * <li>The <code>xalan.propeties</code> file is checked for a property of the same name.</li>
+   * <li>The <code>META-INF/services/de.lyca.xalan.xsltc.dom.XSLTCDTMManager</code> file is checked.
    * </ol>
    * The default is <code>de.lyca.xalan.xsltc.dom.XSLTCDTMManager</code>.
    */
@@ -94,161 +90,110 @@ public class XSLTCDTMManager extends DTMManagerDefault {
   }
 
   /**
-   * Get an instance of a DTM, loaded with the content from the specified
-   * source. If the unique flag is true, a new instance will always be returned.
-   * Otherwise it is up to the DTMManager to return a new instance or an
-   * instance that it already created and may be being used by someone else. (I
-   * think more parameters will need to be added for error handling, and entity
-   * resolution).
+   * Get an instance of a DTM, loaded with the content from the specified source. If the unique flag is true, a new
+   * instance will always be returned. Otherwise it is up to the DTMManager to return a new instance or an instance that
+   * it already created and may be being used by someone else. (I think more parameters will need to be added for error
+   * handling, and entity resolution).
    * 
-   * @param source
-   *          the specification of the source object.
-   * @param unique
-   *          true if the returned DTM must be unique, probably because it is
-   *          going to be mutated.
-   * @param whiteSpaceFilter
-   *          Enables filtering of whitespace nodes, and may be null.
-   * @param incremental
-   *          true if the DTM should be built incrementally, if possible.
-   * @param doIndexing
-   *          true if the caller considers it worth it to use indexing schemes.
+   * @param source the specification of the source object.
+   * @param unique true if the returned DTM must be unique, probably because it is going to be mutated.
+   * @param whiteSpaceFilter Enables filtering of whitespace nodes, and may be null.
+   * @param incremental true if the DTM should be built incrementally, if possible.
+   * @param doIndexing true if the caller considers it worth it to use indexing schemes.
    * 
    * @return a non-null DTM reference.
    */
   @Override
-  public DTM getDTM(Source source, boolean unique, DTMWSFilter whiteSpaceFilter, boolean incremental, boolean doIndexing) {
+  public DTM getDTM(Source source, boolean unique, DTMWSFilter whiteSpaceFilter, boolean incremental,
+      boolean doIndexing) {
     return getDTM(source, unique, whiteSpaceFilter, incremental, doIndexing, false, 0, true, false);
   }
 
   /**
-   * Get an instance of a DTM, loaded with the content from the specified
-   * source. If the unique flag is true, a new instance will always be returned.
-   * Otherwise it is up to the DTMManager to return a new instance or an
-   * instance that it already created and may be being used by someone else. (I
-   * think more parameters will need to be added for error handling, and entity
-   * resolution).
+   * Get an instance of a DTM, loaded with the content from the specified source. If the unique flag is true, a new
+   * instance will always be returned. Otherwise it is up to the DTMManager to return a new instance or an instance that
+   * it already created and may be being used by someone else. (I think more parameters will need to be added for error
+   * handling, and entity resolution).
    * 
-   * @param source
-   *          the specification of the source object.
-   * @param unique
-   *          true if the returned DTM must be unique, probably because it is
-   *          going to be mutated.
-   * @param whiteSpaceFilter
-   *          Enables filtering of whitespace nodes, and may be null.
-   * @param incremental
-   *          true if the DTM should be built incrementally, if possible.
-   * @param doIndexing
-   *          true if the caller considers it worth it to use indexing schemes.
-   * @param buildIdIndex
-   *          true if the id index table should be built.
+   * @param source the specification of the source object.
+   * @param unique true if the returned DTM must be unique, probably because it is going to be mutated.
+   * @param whiteSpaceFilter Enables filtering of whitespace nodes, and may be null.
+   * @param incremental true if the DTM should be built incrementally, if possible.
+   * @param doIndexing true if the caller considers it worth it to use indexing schemes.
+   * @param buildIdIndex true if the id index table should be built.
    * 
    * @return a non-null DTM reference.
    */
   public DTM getDTM(Source source, boolean unique, DTMWSFilter whiteSpaceFilter, boolean incremental,
-          boolean doIndexing, boolean buildIdIndex) {
+      boolean doIndexing, boolean buildIdIndex) {
     return getDTM(source, unique, whiteSpaceFilter, incremental, doIndexing, false, 0, buildIdIndex, false);
   }
 
   /**
-   * Get an instance of a DTM, loaded with the content from the specified
-   * source. If the unique flag is true, a new instance will always be returned.
-   * Otherwise it is up to the DTMManager to return a new instance or an
-   * instance that it already created and may be being used by someone else. (I
-   * think more parameters will need to be added for error handling, and entity
-   * resolution).
+   * Get an instance of a DTM, loaded with the content from the specified source. If the unique flag is true, a new
+   * instance will always be returned. Otherwise it is up to the DTMManager to return a new instance or an instance that
+   * it already created and may be being used by someone else. (I think more parameters will need to be added for error
+   * handling, and entity resolution).
    * 
-   * @param source
-   *          the specification of the source object.
-   * @param unique
-   *          true if the returned DTM must be unique, probably because it is
-   *          going to be mutated.
-   * @param whiteSpaceFilter
-   *          Enables filtering of whitespace nodes, and may be null.
-   * @param incremental
-   *          true if the DTM should be built incrementally, if possible.
-   * @param doIndexing
-   *          true if the caller considers it worth it to use indexing schemes.
-   * @param buildIdIndex
-   *          true if the id index table should be built.
-   * @param newNameTable
-   *          true if we want to use a separate ExpandedNameTable for this DTM.
+   * @param source the specification of the source object.
+   * @param unique true if the returned DTM must be unique, probably because it is going to be mutated.
+   * @param whiteSpaceFilter Enables filtering of whitespace nodes, and may be null.
+   * @param incremental true if the DTM should be built incrementally, if possible.
+   * @param doIndexing true if the caller considers it worth it to use indexing schemes.
+   * @param buildIdIndex true if the id index table should be built.
+   * @param newNameTable true if we want to use a separate ExpandedNameTable for this DTM.
    * 
    * @return a non-null DTM reference.
    */
   public DTM getDTM(Source source, boolean unique, DTMWSFilter whiteSpaceFilter, boolean incremental,
-          boolean doIndexing, boolean buildIdIndex, boolean newNameTable) {
+      boolean doIndexing, boolean buildIdIndex, boolean newNameTable) {
     return getDTM(source, unique, whiteSpaceFilter, incremental, doIndexing, false, 0, buildIdIndex, newNameTable);
   }
 
   /**
-   * Get an instance of a DTM, loaded with the content from the specified
-   * source. If the unique flag is true, a new instance will always be returned.
-   * Otherwise it is up to the DTMManager to return a new instance or an
-   * instance that it already created and may be being used by someone else. (I
-   * think more parameters will need to be added for error handling, and entity
-   * resolution).
+   * Get an instance of a DTM, loaded with the content from the specified source. If the unique flag is true, a new
+   * instance will always be returned. Otherwise it is up to the DTMManager to return a new instance or an instance that
+   * it already created and may be being used by someone else. (I think more parameters will need to be added for error
+   * handling, and entity resolution).
    * 
-   * @param source
-   *          the specification of the source object.
-   * @param unique
-   *          true if the returned DTM must be unique, probably because it is
-   *          going to be mutated.
-   * @param whiteSpaceFilter
-   *          Enables filtering of whitespace nodes, and may be null.
-   * @param incremental
-   *          true if the DTM should be built incrementally, if possible.
-   * @param doIndexing
-   *          true if the caller considers it worth it to use indexing schemes.
-   * @param hasUserReader
-   *          true if <code>source</code> is a <code>SAXSource</code> object
-   *          that has an <code>XMLReader</code>, that was specified by the
-   *          user.
-   * @param size
-   *          Specifies initial size of tables that represent the DTM
-   * @param buildIdIndex
-   *          true if the id index table should be built.
+   * @param source the specification of the source object.
+   * @param unique true if the returned DTM must be unique, probably because it is going to be mutated.
+   * @param whiteSpaceFilter Enables filtering of whitespace nodes, and may be null.
+   * @param incremental true if the DTM should be built incrementally, if possible.
+   * @param doIndexing true if the caller considers it worth it to use indexing schemes.
+   * @param hasUserReader true if <code>source</code> is a <code>SAXSource</code> object that has an
+   *        <code>XMLReader</code>, that was specified by the user.
+   * @param size Specifies initial size of tables that represent the DTM
+   * @param buildIdIndex true if the id index table should be built.
    * 
    * @return a non-null DTM reference.
    */
   public DTM getDTM(Source source, boolean unique, DTMWSFilter whiteSpaceFilter, boolean incremental,
-          boolean doIndexing, boolean hasUserReader, int size, boolean buildIdIndex) {
+      boolean doIndexing, boolean hasUserReader, int size, boolean buildIdIndex) {
     return getDTM(source, unique, whiteSpaceFilter, incremental, doIndexing, hasUserReader, size, buildIdIndex, false);
   }
 
   /**
-   * Get an instance of a DTM, loaded with the content from the specified
-   * source. If the unique flag is true, a new instance will always be returned.
-   * Otherwise it is up to the DTMManager to return a new instance or an
-   * instance that it already created and may be being used by someone else. (I
-   * think more parameters will need to be added for error handling, and entity
-   * resolution).
+   * Get an instance of a DTM, loaded with the content from the specified source. If the unique flag is true, a new
+   * instance will always be returned. Otherwise it is up to the DTMManager to return a new instance or an instance that
+   * it already created and may be being used by someone else. (I think more parameters will need to be added for error
+   * handling, and entity resolution).
    * 
-   * @param source
-   *          the specification of the source object.
-   * @param unique
-   *          true if the returned DTM must be unique, probably because it is
-   *          going to be mutated.
-   * @param whiteSpaceFilter
-   *          Enables filtering of whitespace nodes, and may be null.
-   * @param incremental
-   *          true if the DTM should be built incrementally, if possible.
-   * @param doIndexing
-   *          true if the caller considers it worth it to use indexing schemes.
-   * @param hasUserReader
-   *          true if <code>source</code> is a <code>SAXSource</code> object
-   *          that has an <code>XMLReader</code>, that was specified by the
-   *          user.
-   * @param size
-   *          Specifies initial size of tables that represent the DTM
-   * @param buildIdIndex
-   *          true if the id index table should be built.
-   * @param newNameTable
-   *          true if we want to use a separate ExpandedNameTable for this DTM.
+   * @param source the specification of the source object.
+   * @param unique true if the returned DTM must be unique, probably because it is going to be mutated.
+   * @param whiteSpaceFilter Enables filtering of whitespace nodes, and may be null.
+   * @param incremental true if the DTM should be built incrementally, if possible.
+   * @param doIndexing true if the caller considers it worth it to use indexing schemes.
+   * @param hasUserReader true if <code>source</code> is a <code>SAXSource</code> object that has an
+   *        <code>XMLReader</code>, that was specified by the user.
+   * @param size Specifies initial size of tables that represent the DTM
+   * @param buildIdIndex true if the id index table should be built.
+   * @param newNameTable true if we want to use a separate ExpandedNameTable for this DTM.
    * 
    * @return a non-null DTM reference.
    */
   public DTM getDTM(Source source, boolean unique, DTMWSFilter whiteSpaceFilter, boolean incremental,
-          boolean doIndexing, boolean hasUserReader, int size, boolean buildIdIndex, boolean newNameTable) {
+      boolean doIndexing, boolean hasUserReader, int size, boolean buildIdIndex, boolean newNameTable) {
     if (DEBUG && null != source) {
       System.out.println("Starting " + (unique ? "UNIQUE" : "shared") + " source: " + source.getSystemId());
     }
@@ -256,19 +201,19 @@ public class XSLTCDTMManager extends DTMManagerDefault {
     final int dtmPos = getFirstFreeDTMID();
     final int documentID = dtmPos << IDENT_DTM_NODE_BITS;
 
-    if (null != source && source instanceof DOMSource) {
+    if (source instanceof DOMSource) {
       final DOMSource domsrc = (DOMSource) source;
-      final org.w3c.dom.Node node = domsrc.getNode();
+      final Node node = domsrc.getNode();
       final DOM2SAX dom2sax = new DOM2SAX(node);
 
       SAXImpl dtm;
 
       if (size <= 0) {
         dtm = new SAXImpl(this, source, documentID, whiteSpaceFilter, null, doIndexing,
-                DTMDefaultBase.DEFAULT_BLOCKSIZE, buildIdIndex, newNameTable);
+            DTMDefaultBase.DEFAULT_BLOCKSIZE, buildIdIndex, newNameTable);
       } else {
         dtm = new SAXImpl(this, source, documentID, whiteSpaceFilter, null, doIndexing, size, buildIdIndex,
-                newNameTable);
+            newNameTable);
       }
 
       dtm.setDocumentURI(source.getSystemId());
@@ -282,7 +227,7 @@ public class XSLTCDTMManager extends DTMManagerDefault {
       } catch (final RuntimeException re) {
         throw re;
       } catch (final Exception e) {
-        throw new de.lyca.xml.utils.WrappedRuntimeException(e);
+        throw new WrappedRuntimeException(e);
       }
 
       return dtm;
@@ -320,10 +265,10 @@ public class XSLTCDTMManager extends DTMManagerDefault {
         SAXImpl dtm;
         if (size <= 0) {
           dtm = new SAXImpl(this, source, documentID, whiteSpaceFilter, null, doIndexing,
-                  DTMDefaultBase.DEFAULT_BLOCKSIZE, buildIdIndex, newNameTable);
+              DTMDefaultBase.DEFAULT_BLOCKSIZE, buildIdIndex, newNameTable);
         } else {
           dtm = new SAXImpl(this, source, documentID, whiteSpaceFilter, null, doIndexing, size, buildIdIndex,
-                  newNameTable);
+              newNameTable);
         }
 
         // Go ahead and add the DTM to the lookup table. This needs to be
@@ -356,7 +301,7 @@ public class XSLTCDTMManager extends DTMManagerDefault {
         } catch (final RuntimeException re) {
           throw re;
         } catch (final Exception e) {
-          throw new de.lyca.xml.utils.WrappedRuntimeException(e);
+          throw new WrappedRuntimeException(e);
         } finally {
           if (!hasUserReader) {
             releaseXMLReader(reader);
@@ -370,10 +315,8 @@ public class XSLTCDTMManager extends DTMManagerDefault {
 
         return dtm;
       } else
-        // It should have been handled by a derived class or the caller
-        // made a mistake.
-        throw new DTMException(
-                XMLMessages.createXMLMessage(XMLErrorResources.ER_NOT_SUPPORTED, new Object[] { source }));
+        // It should have been handled by a derived class or the caller made a mistake.
+        throw new DTMException(Messages.get().notSupported(source));
     }
   }
 }

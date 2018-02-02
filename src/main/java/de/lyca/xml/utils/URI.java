@@ -20,8 +20,7 @@ package de.lyca.xml.utils;
 import java.io.IOException;
 import java.io.Serializable;
 
-import de.lyca.xml.res.XMLErrorResources;
-import de.lyca.xml.res.XMLMessages;
+import de.lyca.xml.res.Messages;
 
 /**
  * A class to represent a Uniform Resource Identifier (URI). This class is designed to handle the parsing of URIs and
@@ -239,43 +238,22 @@ public class URI implements Serializable {
       String p_fragment) throws MalformedURIException {
 
     if (p_scheme == null || p_scheme.trim().length() == 0)
-      throw new MalformedURIException(XMLMessages.createXMLMessage(XMLErrorResources.ER_SCHEME_REQUIRED, null)); // "Scheme
-                                                                                                                 // is
-                                                                                                                 // required!");
+      throw new MalformedURIException(Messages.get().schemeRequired());
 
     if (p_host == null) {
       if (p_userinfo != null)
-        throw new MalformedURIException(
-            XMLMessages.createXMLMessage(XMLErrorResources.ER_NO_USERINFO_IF_NO_HOST, null)); // "Userinfo may not be
-                                                                                              // specified if host is
-                                                                                              // not specified!");
+        throw new MalformedURIException(Messages.get().noUserinfoIfNoHost());
 
       if (p_port != -1)
-        throw new MalformedURIException(XMLMessages.createXMLMessage(XMLErrorResources.ER_NO_PORT_IF_NO_HOST, null)); // "Port
-                                                                                                                      // may
-                                                                                                                      // not
-                                                                                                                      // be
-                                                                                                                      // specified
-                                                                                                                      // if
-                                                                                                                      // host
-                                                                                                                      // is
-                                                                                                                      // not
-                                                                                                                      // specified!");
+        throw new MalformedURIException(Messages.get().noPortIfNoHost());
     }
 
     if (p_path != null) {
       if (p_path.indexOf('?') != -1 && p_queryString != null)
-        throw new MalformedURIException(
-            XMLMessages.createXMLMessage(XMLErrorResources.ER_NO_QUERY_STRING_IN_PATH, null)); // "Query string cannot
-                                                                                               // be specified in path
-                                                                                               // and query string!");
+        throw new MalformedURIException(Messages.get().noQueryStringInPath());
 
       if (p_path.indexOf('#') != -1 && p_fragment != null)
-        throw new MalformedURIException(
-            XMLMessages.createXMLMessage(XMLErrorResources.ER_NO_FRAGMENT_STRING_IN_PATH, null)); // "Fragment cannot be
-                                                                                                  // specified in both
-                                                                                                  // the path and
-                                                                                                  // fragment!");
+        throw new MalformedURIException(Messages.get().noFragmentStringInPath());
     }
 
     setScheme(p_scheme);
@@ -317,10 +295,7 @@ public class URI implements Serializable {
   private void initialize(URI p_base, String p_uriSpec) throws MalformedURIException {
 
     if (p_base == null && (p_uriSpec == null || p_uriSpec.trim().length() == 0))
-      throw new MalformedURIException(
-          XMLMessages.createXMLMessage(XMLErrorResources.ER_CANNOT_INIT_URI_EMPTY_PARMS, null)); // "Cannot initialize
-                                                                                                 // URI with empty
-                                                                                                 // parameters.");
+      throw new MalformedURIException(Messages.get().cannotInitUriEmptyParms());
 
     // just make a copy of the base if spec is empty
     if (p_uriSpec == null || p_uriSpec.trim().length() == 0) {
@@ -337,12 +312,7 @@ public class URI implements Serializable {
     final int colonIndex = uriSpec.indexOf(':');
     if (colonIndex < 0) {
       if (p_base == null)
-        throw new MalformedURIException(
-            XMLMessages.createXMLMessage(XMLErrorResources.ER_NO_SCHEME_IN_URI, new Object[] { uriSpec })); // "No
-                                                                                                            // scheme
-                                                                                                            // found in
-                                                                                                            // URI:
-                                                                                                            // "+uriSpec);
+        throw new MalformedURIException(Messages.get().noSchemeInUri(uriSpec));
     } else {
       initializeScheme(uriSpec);
       uriSpec = uriSpec.substring(colonIndex + 1);
@@ -540,11 +510,7 @@ public class URI implements Serializable {
     scheme = p_uriSpec.substring(0, index);
 
     if (scheme.length() == 0)
-      throw new MalformedURIException(XMLMessages.createXMLMessage(XMLErrorResources.ER_NO_SCHEME_INURI, null)); // "No
-                                                                                                                 // scheme
-                                                                                                                 // found
-                                                                                                                 // in
-                                                                                                                 // URI.");
+      throw new MalformedURIException(Messages.get().noSchemeInuri());
     else {
       setScheme(scheme);
     }
@@ -664,17 +630,10 @@ public class URI implements Serializable {
       // check for valid escape sequence
       if (testChar == '%') {
         if (index + 2 >= end || !isHex(p_uriSpec.charAt(index + 1)) || !isHex(p_uriSpec.charAt(index + 2)))
-          throw new MalformedURIException(
-              XMLMessages.createXMLMessage(XMLErrorResources.ER_PATH_CONTAINS_INVALID_ESCAPE_SEQUENCE, null)); // "Path
-                                                                                                               // contains
-                                                                                                               // invalid
-                                                                                                               // escape
-                                                                                                               // sequence!");
+          throw new MalformedURIException(Messages.get().pathContainsInvalidEscapeSequence());
       } else if (!isReservedCharacter(testChar) && !isUnreservedCharacter(testChar)) {
         if ('\\' != testChar)
-          throw new MalformedURIException(XMLMessages.createXMLMessage(XMLErrorResources.ER_PATH_INVALID_CHAR,
-              new Object[] { String.valueOf(testChar) })); // "Path contains invalid character: "
-        // + testChar);
+          throw new MalformedURIException(Messages.get().pathInvalidChar(String.valueOf(testChar)));
       }
 
       index++;
@@ -876,19 +835,10 @@ public class URI implements Serializable {
   public void setScheme(String p_scheme) throws MalformedURIException {
 
     if (p_scheme == null)
-      throw new MalformedURIException(XMLMessages.createXMLMessage(XMLErrorResources.ER_SCHEME_FROM_NULL_STRING, null)); // "Cannot
-                                                                                                                         // set
-                                                                                                                         // scheme
-                                                                                                                         // from
-                                                                                                                         // null
-                                                                                                                         // string!");
+      throw new MalformedURIException(Messages.get().schemeFromNullString());
 
     if (!isConformantSchemeName(p_scheme))
-      throw new MalformedURIException(XMLMessages.createXMLMessage(XMLErrorResources.ER_SCHEME_NOT_CONFORMANT, null)); // "The
-                                                                                                                       // scheme
-                                                                                                                       // is
-                                                                                                                       // not
-                                                                                                                       // conformant.");
+      throw new MalformedURIException(Messages.get().schemeNotConformant());
 
     m_scheme = p_scheme.toLowerCase();
   }
@@ -945,9 +895,7 @@ public class URI implements Serializable {
       m_userinfo = null;
       m_port = -1;
     } else if (!isWellFormedAddress(p_host))
-      throw new MalformedURIException(
-          XMLMessages.createXMLMessage(XMLErrorResources.ER_HOST_ADDRESS_NOT_WELLFORMED, null)); // "Host is not a well
-                                                                                                 // formed address!");
+      throw new MalformedURIException(Messages.get().hostAddressNotWellformed());
 
     m_host = p_host;
   }
@@ -964,18 +912,9 @@ public class URI implements Serializable {
 
     if (p_port >= 0 && p_port <= 65535) {
       if (m_host == null)
-        throw new MalformedURIException(XMLMessages.createXMLMessage(XMLErrorResources.ER_PORT_WHEN_HOST_NULL, null)); // "Port
-                                                                                                                       // cannot
-                                                                                                                       // be
-                                                                                                                       // set
-                                                                                                                       // when
-                                                                                                                       // host
-                                                                                                                       // is
-                                                                                                                       // null!");
+        throw new MalformedURIException(Messages.get().portWhenHostNull());
     } else if (p_port != -1)
-      throw new MalformedURIException(XMLMessages.createXMLMessage(XMLErrorResources.ER_INVALID_PORT, null)); // "Invalid
-                                                                                                              // port
-                                                                                                              // number!");
+      throw new MalformedURIException(Messages.get().invalidPort());
 
     m_port = p_port;
   }
@@ -1017,11 +956,7 @@ public class URI implements Serializable {
       return;
 
     if (!isURIString(p_addToPath))
-      throw new MalformedURIException(
-          XMLMessages.createXMLMessage(XMLErrorResources.ER_PATH_INVALID_CHAR, new Object[] { p_addToPath })); // "Path
-                                                                                                               // contains
-                                                                                                               // invalid
-                                                                                                               // character!");
+      throw new MalformedURIException(Messages.get().pathInvalidChar(p_addToPath));
 
     if (m_path == null || m_path.trim().length() == 0) {
       if (p_addToPath.startsWith("/")) {
@@ -1078,33 +1013,14 @@ public class URI implements Serializable {
    *         if the path is null
    */
   public void setFragment(String p_fragment) throws MalformedURIException {
-
     if (p_fragment == null) {
       m_fragment = null;
     } else if (!isGenericURI())
-      throw new MalformedURIException(XMLMessages.createXMLMessage(XMLErrorResources.ER_FRAG_FOR_GENERIC_URI, null)); // "Fragment
-                                                                                                                      // can
-                                                                                                                      // only
-                                                                                                                      // be
-                                                                                                                      // set
-                                                                                                                      // for
-                                                                                                                      // a
-                                                                                                                      // generic
-                                                                                                                      // URI!");
+      throw new MalformedURIException(Messages.get().fragForGenericUri());
     else if (getPath() == null)
-      throw new MalformedURIException(XMLMessages.createXMLMessage(XMLErrorResources.ER_FRAG_WHEN_PATH_NULL, null)); // "Fragment
-                                                                                                                     // cannot
-                                                                                                                     // be
-                                                                                                                     // set
-                                                                                                                     // when
-                                                                                                                     // path
-                                                                                                                     // is
-                                                                                                                     // null!");
+      throw new MalformedURIException(Messages.get().fragWhenPathNull());
     else if (!isURIString(p_fragment))
-      throw new MalformedURIException(XMLMessages.createXMLMessage(XMLErrorResources.ER_FRAG_INVALID_CHAR, null)); // "Fragment
-                                                                                                                   // contains
-                                                                                                                   // invalid
-                                                                                                                   // character!");
+      throw new MalformedURIException(Messages.get().fragInvalidChar());
     else {
       m_fragment = p_fragment;
     }

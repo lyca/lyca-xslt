@@ -26,8 +26,7 @@ import de.lyca.xml.dtm.DTMAxisTraverser;
 import de.lyca.xml.dtm.DTMException;
 import de.lyca.xml.dtm.DTMManager;
 import de.lyca.xml.dtm.DTMWSFilter;
-import de.lyca.xml.res.XMLErrorResources;
-import de.lyca.xml.res.XMLMessages;
+import de.lyca.xml.res.Messages;
 import de.lyca.xml.utils.XMLStringFactory;
 
 /**
@@ -38,60 +37,42 @@ public abstract class DTMDefaultBaseIterators extends DTMDefaultBaseTraversers {
   /**
    * Construct a DTMDefaultBaseTraversers object from a DOM node.
    * 
-   * @param mgr
-   *          The DTMManager who owns this DTM.
-   * @param source
-   *          The object that is used to specify the construction source.
-   * @param dtmIdentity
-   *          The DTM identity ID for this DTM.
-   * @param whiteSpaceFilter
-   *          The white space filter for this DTM, which may be null.
-   * @param xstringfactory
-   *          The factory to use for creating XMLStrings.
-   * @param doIndexing
-   *          true if the caller considers it worth it to use indexing schemes.
+   * @param mgr The DTMManager who owns this DTM.
+   * @param source The object that is used to specify the construction source.
+   * @param dtmIdentity The DTM identity ID for this DTM.
+   * @param whiteSpaceFilter The white space filter for this DTM, which may be null.
+   * @param xstringfactory The factory to use for creating XMLStrings.
+   * @param doIndexing true if the caller considers it worth it to use indexing schemes.
    */
   public DTMDefaultBaseIterators(DTMManager mgr, Source source, int dtmIdentity, DTMWSFilter whiteSpaceFilter,
-          XMLStringFactory xstringfactory, boolean doIndexing) {
+      XMLStringFactory xstringfactory, boolean doIndexing) {
     super(mgr, source, dtmIdentity, whiteSpaceFilter, xstringfactory, doIndexing);
   }
 
   /**
    * Construct a DTMDefaultBaseTraversers object from a DOM node.
    * 
-   * @param mgr
-   *          The DTMManager who owns this DTM.
-   * @param source
-   *          The object that is used to specify the construction source.
-   * @param dtmIdentity
-   *          The DTM identity ID for this DTM.
-   * @param whiteSpaceFilter
-   *          The white space filter for this DTM, which may be null.
-   * @param xstringfactory
-   *          The factory to use for creating XMLStrings.
-   * @param doIndexing
-   *          true if the caller considers it worth it to use indexing schemes.
-   * @param blocksize
-   *          The block size of the DTM.
-   * @param usePrevsib
-   *          true if we want to build the previous sibling node array.
-   * @param newNameTable
-   *          true if we want to use a new ExpandedNameTable for this DTM.
+   * @param mgr The DTMManager who owns this DTM.
+   * @param source The object that is used to specify the construction source.
+   * @param dtmIdentity The DTM identity ID for this DTM.
+   * @param whiteSpaceFilter The white space filter for this DTM, which may be null.
+   * @param xstringfactory The factory to use for creating XMLStrings.
+   * @param doIndexing true if the caller considers it worth it to use indexing schemes.
+   * @param blocksize The block size of the DTM.
+   * @param usePrevsib true if we want to build the previous sibling node array.
+   * @param newNameTable true if we want to use a new ExpandedNameTable for this DTM.
    */
   public DTMDefaultBaseIterators(DTMManager mgr, Source source, int dtmIdentity, DTMWSFilter whiteSpaceFilter,
-          XMLStringFactory xstringfactory, boolean doIndexing, int blocksize, boolean usePrevsib, boolean newNameTable) {
+      XMLStringFactory xstringfactory, boolean doIndexing, int blocksize, boolean usePrevsib, boolean newNameTable) {
     super(mgr, source, dtmIdentity, whiteSpaceFilter, xstringfactory, doIndexing, blocksize, usePrevsib, newNameTable);
   }
 
   /**
-   * Get an iterator that can navigate over an XPath Axis, predicated by the
-   * extended type ID. Returns an iterator that must be initialized with a start
-   * node (using iterator.setStartNode()).
+   * Get an iterator that can navigate over an XPath Axis, predicated by the extended type ID. Returns an iterator that
+   * must be initialized with a start node (using iterator.setStartNode()).
    * 
-   * @param axis
-   *          One of Axes.ANCESTORORSELF, etc.
-   * @param type
-   *          An extended type ID.
+   * @param axis One of Axes.ANCESTORORSELF, etc.
+   * @param type An extended type ID.
    * 
    * @return A DTMAxisIterator, or null if the given axis isn't supported.
    */
@@ -101,9 +82,8 @@ public abstract class DTMDefaultBaseIterators extends DTMDefaultBaseTraversers {
     DTMAxisIterator iterator = null;
 
     /*
-     * This causes an error when using patterns for elements that do not exist
-     * in the DOM (translet types which do not correspond to a DOM type are
-     * mapped to the DOM.ELEMENT type).
+     * This causes an error when using patterns for elements that do not exist in the DOM (translet types which do not
+     * correspond to a DOM type are mapped to the DOM.ELEMENT type).
      */
 
     // if (type == NO_TYPE) {
@@ -155,8 +135,7 @@ public abstract class DTMDefaultBaseIterators extends DTMDefaultBaseTraversers {
           iterator = new TypedRootIterator(type);
           break;
         default:
-          throw new DTMException(XMLMessages.createXMLMessage(XMLErrorResources.ER_TYPED_ITERATOR_AXIS_NOT_IMPLEMENTED,
-                  new Object[] { axis.getName() }));
+          throw new DTMException(Messages.get().typedIteratorAxisNotImplemented(axis.getName()));
           // "Error: typed iterator for axis "
           // + Axis.names[axis] + "not implemented");
       }
@@ -166,12 +145,10 @@ public abstract class DTMDefaultBaseIterators extends DTMDefaultBaseTraversers {
   }
 
   /**
-   * This is a shortcut to the iterators that implement the XPath axes. Returns
-   * a bare-bones iterator that must be initialized with a start node (using
-   * iterator.setStartNode()).
+   * This is a shortcut to the iterators that implement the XPath axes. Returns a bare-bones iterator that must be
+   * initialized with a start node (using iterator.setStartNode()).
    * 
-   * @param axis
-   *          One of Axes.ANCESTORORSELF, etc.
+   * @param axis One of Axes.ANCESTORORSELF, etc.
    * 
    * @return A DTMAxisIterator, or null if the given axis isn't supported.
    */
@@ -220,8 +197,7 @@ public abstract class DTMDefaultBaseIterators extends DTMDefaultBaseTraversers {
         iterator = new RootIterator();
         break;
       default:
-        throw new DTMException(XMLMessages.createXMLMessage(XMLErrorResources.ER_ITERATOR_AXIS_NOT_IMPLEMENTED,
-                new Object[] { axis.getName() }));
+        throw new DTMException(Messages.get().typedIteratorAxisNotImplemented(axis.getName()));
         // "Error: iterator for axis '" + Axis.names[axis]
         // + "' not implemented");
     }
@@ -230,9 +206,8 @@ public abstract class DTMDefaultBaseIterators extends DTMDefaultBaseTraversers {
   }
 
   /**
-   * Abstract superclass defining behaviors shared by all DTMDefault's internal
-   * implementations of DTMAxisIterator. Subclass this (and override, if
-   * necessary) to implement the specifics of an individual axis iterator.
+   * Abstract superclass defining behaviors shared by all DTMDefault's internal implementations of DTMAxisIterator.
+   * Subclass this (and override, if necessary) to implement the specifics of an individual axis iterator.
    * 
    * Currently there isn't a lot here
    */
@@ -247,9 +222,8 @@ public abstract class DTMDefaultBaseIterators extends DTMDefaultBaseTraversers {
     // support multiple inheritance. <sigh/>
 
     /**
-     * Current iteration location. Usually this is the last location returned
-     * (starting point for the next() search); for single-node iterators it may
-     * instead be initialized to point to that single node.
+     * Current iteration location. Usually this is the last location returned (starting point for the next() search);
+     * for single-node iterators it may instead be initialized to point to that single node.
      */
     protected int _currentNode;
 
@@ -281,15 +255,12 @@ public abstract class DTMDefaultBaseIterators extends DTMDefaultBaseTraversers {
   public final class ChildrenIterator extends InternalAxisIteratorBase {
 
     /**
-     * Setting start to END should 'close' the iterator, i.e. subsequent call to
-     * next() should return END.
+     * Setting start to END should 'close' the iterator, i.e. subsequent call to next() should return END.
      * 
-     * If the iterator is not restartable, this has no effect. %REVIEW% Should
-     * it return/throw something in that case, or set current node to END, to
-     * indicate request-not-honored?
+     * If the iterator is not restartable, this has no effect. %REVIEW% Should it return/throw something in that case,
+     * or set current node to END, to indicate request-not-honored?
      * 
-     * @param node
-     *          Sets the root of the iteration.
+     * @param node Sets the root of the iteration.
      * 
      * @return A DTMAxisIterator set to the start of the iteration.
      */
@@ -312,8 +283,7 @@ public abstract class DTMDefaultBaseIterators extends DTMDefaultBaseTraversers {
     /**
      * Get the next node in the iteration.
      * 
-     * @return The next node handle in the iteration, or END if no more are
-     *         available.
+     * @return The next node handle in the iteration, or END if no more are available.
      */
     @Override
     public int next() {
@@ -328,8 +298,8 @@ public abstract class DTMDefaultBaseIterators extends DTMDefaultBaseTraversers {
   } // end of ChildrenIterator
 
   /**
-   * Iterator that returns the parent of a given node. Note that this delivers
-   * only a single node; if you want all the ancestors, see AncestorIterator.
+   * Iterator that returns the parent of a given node. Note that this delivers only a single node; if you want all the
+   * ancestors, see AncestorIterator.
    */
   public final class ParentIterator extends InternalAxisIteratorBase {
 
@@ -337,11 +307,9 @@ public abstract class DTMDefaultBaseIterators extends DTMDefaultBaseTraversers {
     private int _nodeType = -1;
 
     /**
-     * Set start to END should 'close' the iterator, i.e. subsequent call to
-     * next() should return END.
+     * Set start to END should 'close' the iterator, i.e. subsequent call to next() should return END.
      * 
-     * @param node
-     *          Sets the root of the iteration.
+     * @param node Sets the root of the iteration.
      * 
      * @return A DTMAxisIterator set to the start of the iteration.
      */
@@ -362,13 +330,11 @@ public abstract class DTMDefaultBaseIterators extends DTMDefaultBaseTraversers {
     }
 
     /**
-     * Set the node type of the parent that we're looking for. Note that this
-     * does _not_ mean "find the nearest ancestor of this type", but "yield the
-     * parent if it is of this type".
+     * Set the node type of the parent that we're looking for. Note that this does _not_ mean "find the nearest ancestor
+     * of this type", but "yield the parent if it is of this type".
      * 
      * 
-     * @param type
-     *          extended type ID.
+     * @param type extended type ID.
      * 
      * @return ParentIterator configured with the type filter set.
      */
@@ -380,8 +346,8 @@ public abstract class DTMDefaultBaseIterators extends DTMDefaultBaseTraversers {
     }
 
     /**
-     * Get the next node in the iteration. In this case, we return only the
-     * immediate parent, _if_ it matches the requested nodeType.
+     * Get the next node in the iteration. In this case, we return only the immediate parent, _if_ it matches the
+     * requested nodeType.
      * 
      * @return The next node handle in the iteration, or END.
      */
@@ -406,10 +372,9 @@ public abstract class DTMDefaultBaseIterators extends DTMDefaultBaseTraversers {
   } // end of ParentIterator
 
   /**
-   * Iterator that returns children of a given type for a given node. The
-   * functionality chould be achieved by putting a filter on top of a basic
-   * child iterator, but a specialised iterator is used for efficiency (both
-   * speed and size of translet).
+   * Iterator that returns children of a given type for a given node. The functionality chould be achieved by putting a
+   * filter on top of a basic child iterator, but a specialised iterator is used for efficiency (both speed and size of
+   * translet).
    */
   public final class TypedChildrenIterator extends InternalAxisIteratorBase {
 
@@ -420,19 +385,16 @@ public abstract class DTMDefaultBaseIterators extends DTMDefaultBaseTraversers {
      * Constructor TypedChildrenIterator
      * 
      * 
-     * @param nodeType
-     *          The extended type ID being requested.
+     * @param nodeType The extended type ID being requested.
      */
     public TypedChildrenIterator(int nodeType) {
       _nodeType = nodeType;
     }
 
     /**
-     * Set start to END should 'close' the iterator, i.e. subsequent call to
-     * next() should return END.
+     * Set start to END should 'close' the iterator, i.e. subsequent call to next() should return END.
      * 
-     * @param node
-     *          Sets the root of the iteration.
+     * @param node Sets the root of the iteration.
      * 
      * @return A DTMAxisIterator set to the start of the iteration.
      */
@@ -494,10 +456,9 @@ public abstract class DTMDefaultBaseIterators extends DTMDefaultBaseTraversers {
   } // end of TypedChildrenIterator
 
   /**
-   * Iterator that returns children within a given namespace for a given node.
-   * The functionality chould be achieved by putting a filter on top of a basic
-   * child iterator, but a specialised iterator is used for efficiency (both
-   * speed and size of translet).
+   * Iterator that returns children within a given namespace for a given node. The functionality chould be achieved by
+   * putting a filter on top of a basic child iterator, but a specialised iterator is used for efficiency (both speed
+   * and size of translet).
    */
   public final class NamespaceChildrenIterator extends InternalAxisIteratorBase {
 
@@ -508,19 +469,16 @@ public abstract class DTMDefaultBaseIterators extends DTMDefaultBaseTraversers {
      * Constructor NamespaceChildrenIterator
      * 
      * 
-     * @param type
-     *          The extended type ID being requested.
+     * @param type The extended type ID being requested.
      */
     public NamespaceChildrenIterator(final int type) {
       _nsType = type;
     }
 
     /**
-     * Set start to END should 'close' the iterator, i.e. subsequent call to
-     * next() should return END.
+     * Set start to END should 'close' the iterator, i.e. subsequent call to next() should return END.
      * 
-     * @param node
-     *          Sets the root of the iteration.
+     * @param node Sets the root of the iteration.
      * 
      * @return A DTMAxisIterator set to the start of the iteration.
      */
@@ -548,7 +506,8 @@ public abstract class DTMDefaultBaseIterators extends DTMDefaultBaseTraversers {
     @Override
     public int next() {
       if (_currentNode != DTM.NULL) {
-        for (int node = NOTPROCESSED == _currentNode ? _firstch(makeNodeIdentity(_startNode)) : _nextsib(_currentNode); node != END; node = _nextsib(node)) {
+        for (int node = NOTPROCESSED == _currentNode ? _firstch(makeNodeIdentity(_startNode))
+            : _nextsib(_currentNode); node != END; node = _nextsib(node)) {
           if (m_expandedNameTable.getNamespaceID(_exptype(node)) == _nsType) {
             _currentNode = node;
 
@@ -562,8 +521,7 @@ public abstract class DTMDefaultBaseIterators extends DTMDefaultBaseTraversers {
   } // end of NamespaceChildrenIterator
 
   /**
-   * Iterator that returns the namespace nodes as defined by the XPath data
-   * model for a given node.
+   * Iterator that returns the namespace nodes as defined by the XPath data model for a given node.
    */
   public class NamespaceIterator extends InternalAxisIteratorBase {
 
@@ -576,11 +534,9 @@ public abstract class DTMDefaultBaseIterators extends DTMDefaultBaseTraversers {
     }
 
     /**
-     * Set start to END should 'close' the iterator, i.e. subsequent call to
-     * next() should return END.
+     * Set start to END should 'close' the iterator, i.e. subsequent call to next() should return END.
      * 
-     * @param node
-     *          Sets the root of the iteration.
+     * @param node Sets the root of the iteration.
      * 
      * @return A DTMAxisIterator set to the start of the iteration.
      */
@@ -619,8 +575,8 @@ public abstract class DTMDefaultBaseIterators extends DTMDefaultBaseTraversers {
   } // end of NamespaceIterator
 
   /**
-   * Iterator that returns the namespace nodes as defined by the XPath data
-   * model for a given node, filtered by extended type ID.
+   * Iterator that returns the namespace nodes as defined by the XPath data model for a given node, filtered by extended
+   * type ID.
    */
   public class TypedNamespaceIterator extends NamespaceIterator {
 
@@ -631,8 +587,7 @@ public abstract class DTMDefaultBaseIterators extends DTMDefaultBaseTraversers {
      * Constructor TypedNamespaceIterator
      * 
      * 
-     * @param nodeType
-     *          The extended type ID being requested.
+     * @param nodeType The extended type ID being requested.
      */
     public TypedNamespaceIterator(int nodeType) {
       super();
@@ -650,7 +605,7 @@ public abstract class DTMDefaultBaseIterators extends DTMDefaultBaseTraversers {
 
       for (node = _currentNode; node != END; node = getNextNamespaceNode(_startNode, node, true)) {
         if (getExpandedTypeID(node) == _nodeType || getNodeType(node) == _nodeType
-                || getNamespaceType(node) == _nodeType) {
+            || getNamespaceType(node) == _nodeType) {
           _currentNode = node;
 
           return returnNode(node);
@@ -662,8 +617,7 @@ public abstract class DTMDefaultBaseIterators extends DTMDefaultBaseTraversers {
   } // end of TypedNamespaceIterator
 
   /**
-   * Iterator that returns the the root node as defined by the XPath data model
-   * for a given node.
+   * Iterator that returns the the root node as defined by the XPath data model for a given node.
    */
   public class RootIterator extends InternalAxisIteratorBase {
 
@@ -676,11 +630,9 @@ public abstract class DTMDefaultBaseIterators extends DTMDefaultBaseTraversers {
     }
 
     /**
-     * Set start to END should 'close' the iterator, i.e. subsequent call to
-     * next() should return END.
+     * Set start to END should 'close' the iterator, i.e. subsequent call to next() should return END.
      * 
-     * @param node
-     *          Sets the root of the iteration.
+     * @param node Sets the root of the iteration.
      * 
      * @return A DTMAxisIterator set to the start of the iteration.
      */
@@ -714,8 +666,8 @@ public abstract class DTMDefaultBaseIterators extends DTMDefaultBaseTraversers {
   } // end of RootIterator
 
   /**
-   * Iterator that returns the namespace nodes as defined by the XPath data
-   * model for a given node, filtered by extended type ID.
+   * Iterator that returns the namespace nodes as defined by the XPath data model for a given node, filtered by extended
+   * type ID.
    */
   public class TypedRootIterator extends RootIterator {
 
@@ -725,8 +677,7 @@ public abstract class DTMDefaultBaseIterators extends DTMDefaultBaseTraversers {
     /**
      * Constructor TypedRootIterator
      * 
-     * @param nodeType
-     *          The extended type ID being requested.
+     * @param nodeType The extended type ID being requested.
      */
     public TypedRootIterator(int nodeType) {
       super();
@@ -778,8 +729,7 @@ public abstract class DTMDefaultBaseIterators extends DTMDefaultBaseTraversers {
      * Constructor NamespaceAttributeIterator
      * 
      * 
-     * @param nsType
-     *          The extended type ID being requested.
+     * @param nsType The extended type ID being requested.
      */
     public NamespaceAttributeIterator(int nsType) {
 
@@ -789,11 +739,9 @@ public abstract class DTMDefaultBaseIterators extends DTMDefaultBaseTraversers {
     }
 
     /**
-     * Set start to END should 'close' the iterator, i.e. subsequent call to
-     * next() should return END.
+     * Set start to END should 'close' the iterator, i.e. subsequent call to next() should return END.
      * 
-     * @param node
-     *          Sets the root of the iteration.
+     * @param node Sets the root of the iteration.
      * 
      * @return A DTMAxisIterator set to the start of the iteration.
      */
@@ -837,11 +785,9 @@ public abstract class DTMDefaultBaseIterators extends DTMDefaultBaseTraversers {
   public class FollowingSiblingIterator extends InternalAxisIteratorBase {
 
     /**
-     * Set start to END should 'close' the iterator, i.e. subsequent call to
-     * next() should return END.
+     * Set start to END should 'close' the iterator, i.e. subsequent call to next() should return END.
      * 
-     * @param node
-     *          Sets the root of the iteration.
+     * @param node Sets the root of the iteration.
      * 
      * @return A DTMAxisIterator set to the start of the iteration.
      */
@@ -885,8 +831,7 @@ public abstract class DTMDefaultBaseIterators extends DTMDefaultBaseTraversers {
      * Constructor TypedFollowingSiblingIterator
      * 
      * 
-     * @param type
-     *          The extended type ID being requested.
+     * @param type The extended type ID being requested.
      */
     public TypedFollowingSiblingIterator(int type) {
       _nodeType = type;
@@ -937,11 +882,9 @@ public abstract class DTMDefaultBaseIterators extends DTMDefaultBaseTraversers {
     // assumes caller will pass element nodes
 
     /**
-     * Set start to END should 'close' the iterator, i.e. subsequent call to
-     * next() should return END.
+     * Set start to END should 'close' the iterator, i.e. subsequent call to next() should return END.
      * 
-     * @param node
-     *          Sets the root of the iteration.
+     * @param node Sets the root of the iteration.
      * 
      * @return A DTMAxisIterator set to the start of the iteration.
      */
@@ -992,8 +935,7 @@ public abstract class DTMDefaultBaseIterators extends DTMDefaultBaseTraversers {
      * Constructor TypedAttributeIterator
      * 
      * 
-     * @param nodeType
-     *          The extended type ID that is requested.
+     * @param nodeType The extended type ID that is requested.
      */
     public TypedAttributeIterator(int nodeType) {
       _nodeType = nodeType;
@@ -1002,11 +944,9 @@ public abstract class DTMDefaultBaseIterators extends DTMDefaultBaseTraversers {
     // assumes caller will pass element nodes
 
     /**
-     * Set start to END should 'close' the iterator, i.e. subsequent call to
-     * next() should return END.
+     * Set start to END should 'close' the iterator, i.e. subsequent call to next() should return END.
      * 
-     * @param node
-     *          Sets the root of the iteration.
+     * @param node Sets the root of the iteration.
      * 
      * @return A DTMAxisIterator set to the start of the iteration.
      */
@@ -1062,11 +1002,9 @@ public abstract class DTMDefaultBaseIterators extends DTMDefaultBaseTraversers {
     }
 
     /**
-     * Set start to END should 'close' the iterator, i.e. subsequent call to
-     * next() should return END.
+     * Set start to END should 'close' the iterator, i.e. subsequent call to next() should return END.
      * 
-     * @param node
-     *          Sets the root of the iteration.
+     * @param node Sets the root of the iteration.
      * 
      * @return A DTMAxisIterator set to the start of the iteration.
      */
@@ -1135,8 +1073,7 @@ public abstract class DTMDefaultBaseIterators extends DTMDefaultBaseTraversers {
      * Constructor TypedPrecedingSiblingIterator
      * 
      * 
-     * @param type
-     *          The extended type ID being requested.
+     * @param type The extended type ID being requested.
      */
     public TypedPrecedingSiblingIterator(int type) {
       _nodeType = type;
@@ -1186,9 +1123,8 @@ public abstract class DTMDefaultBaseIterators extends DTMDefaultBaseTraversers {
   } // end of TypedPrecedingSiblingIterator
 
   /**
-   * Iterator that returns preceding nodes of a given node. This includes the
-   * node set {root+1, start-1}, but excludes all ancestors, attributes, and
-   * namespace nodes.
+   * Iterator that returns preceding nodes of a given node. This includes the node set {root+1, start-1}, but excludes
+   * all ancestors, attributes, and namespace nodes.
    */
   public class PrecedingIterator extends InternalAxisIteratorBase {
 
@@ -1196,8 +1132,7 @@ public abstract class DTMDefaultBaseIterators extends DTMDefaultBaseTraversers {
     private final int _maxAncestors = 8;
 
     /**
-     * The stack of start node + ancestors up to the root of the tree, which we
-     * must avoid.
+     * The stack of start node + ancestors up to the root of the tree, which we must avoid.
      */
     protected int[] _stack = new int[_maxAncestors];
 
@@ -1237,16 +1172,15 @@ public abstract class DTMDefaultBaseIterators extends DTMDefaultBaseTraversers {
         // return clone.reset();
         return clone;
       } catch (final CloneNotSupportedException e) {
-        throw new DTMException(XMLMessages.createXMLMessage(XMLErrorResources.ER_ITERATOR_CLONE_NOT_SUPPORTED, null)); // "Iterator clone not supported.");
+        // "Iterator clone not supported.");
+        throw new DTMException(Messages.get().iteratorCloneNotSupported());
       }
     }
 
     /**
-     * Set start to END should 'close' the iterator, i.e. subsequent call to
-     * next() should return END.
+     * Set start to END should 'close' the iterator, i.e. subsequent call to next() should return END.
      * 
-     * @param node
-     *          Sets the root of the iteration.
+     * @param node Sets the root of the iteration.
      * 
      * @return A DTMAxisIterator set to the start of the iteration.
      */
@@ -1318,8 +1252,7 @@ public abstract class DTMDefaultBaseIterators extends DTMDefaultBaseTraversers {
     /**
      * Resets the iterator to the last start node.
      * 
-     * @return A DTMAxisIterator, which may or may not be the same as this
-     *         iterator.
+     * @return A DTMAxisIterator, which may or may not be the same as this iterator.
      */
     @Override
     public DTMAxisIterator reset() {
@@ -1344,8 +1277,8 @@ public abstract class DTMDefaultBaseIterators extends DTMDefaultBaseTraversers {
   } // end of PrecedingIterator
 
   /**
-   * Iterator that returns preceding nodes of agiven type for a given node. This
-   * includes the node set {root+1, start-1}, but excludes all ancestors.
+   * Iterator that returns preceding nodes of agiven type for a given node. This includes the node set {root+1,
+   * start-1}, but excludes all ancestors.
    */
   public final class TypedPrecedingIterator extends PrecedingIterator {
 
@@ -1356,8 +1289,7 @@ public abstract class DTMDefaultBaseIterators extends DTMDefaultBaseTraversers {
      * Constructor TypedPrecedingIterator
      * 
      * 
-     * @param type
-     *          The extended type ID being requested.
+     * @param type The extended type ID being requested.
      */
     public TypedPrecedingIterator(int type) {
       _nodeType = type;
@@ -1435,11 +1367,9 @@ public abstract class DTMDefaultBaseIterators extends DTMDefaultBaseTraversers {
     }
 
     /**
-     * Set start to END should 'close' the iterator, i.e. subsequent call to
-     * next() should return END.
+     * Set start to END should 'close' the iterator, i.e. subsequent call to next() should return END.
      * 
-     * @param node
-     *          Sets the root of the iteration.
+     * @param node Sets the root of the iteration.
      * 
      * @return A DTMAxisIterator set to the start of the iteration.
      */
@@ -1494,8 +1424,7 @@ public abstract class DTMDefaultBaseIterators extends DTMDefaultBaseTraversers {
      * Constructor TypedFollowingIterator
      * 
      * 
-     * @param type
-     *          The extended type ID being requested.
+     * @param type The extended type ID being requested.
      */
     public TypedFollowingIterator(int type) {
       _nodeType = type;
@@ -1523,8 +1452,8 @@ public abstract class DTMDefaultBaseIterators extends DTMDefaultBaseTraversers {
   } // end of TypedFollowingIterator
 
   /**
-   * Iterator that returns the ancestors of a given node in document order.
-   * (NOTE! This was changed from the XSLTC code!)
+   * Iterator that returns the ancestors of a given node in document order. (NOTE! This was changed from the XSLTC
+   * code!)
    */
   public class AncestorIterator extends InternalAxisIteratorBase {
     de.lyca.xml.utils.NodeVector m_ancestors = new de.lyca.xml.utils.NodeVector();
@@ -1537,8 +1466,7 @@ public abstract class DTMDefaultBaseIterators extends DTMDefaultBaseTraversers {
     int m_realStartNode;
 
     /**
-     * Get start to END should 'close' the iterator, i.e. subsequent call to
-     * next() should return END.
+     * Get start to END should 'close' the iterator, i.e. subsequent call to next() should return END.
      * 
      * @return The root node of the iteration.
      */
@@ -1574,16 +1502,15 @@ public abstract class DTMDefaultBaseIterators extends DTMDefaultBaseTraversers {
         // return clone.reset();
         return clone;
       } catch (final CloneNotSupportedException e) {
-        throw new DTMException(XMLMessages.createXMLMessage(XMLErrorResources.ER_ITERATOR_CLONE_NOT_SUPPORTED, null)); // "Iterator clone not supported.");
+        // "Iterator clone not supported.");
+        throw new DTMException(Messages.get().iteratorCloneNotSupported());
       }
     }
 
     /**
-     * Set start to END should 'close' the iterator, i.e. subsequent call to
-     * next() should return END.
+     * Set start to END should 'close' the iterator, i.e. subsequent call to next() should return END.
      * 
-     * @param node
-     *          Sets the root of the iteration.
+     * @param node Sets the root of the iteration.
      * 
      * @return A DTMAxisIterator set to the start of the iteration.
      */
@@ -1623,8 +1550,7 @@ public abstract class DTMDefaultBaseIterators extends DTMDefaultBaseTraversers {
     /**
      * Resets the iterator to the last start node.
      * 
-     * @return A DTMAxisIterator, which may or may not be the same as this
-     *         iterator.
+     * @return A DTMAxisIterator, which may or may not be the same as this iterator.
      */
     @Override
     public DTMAxisIterator reset() {
@@ -1677,19 +1603,16 @@ public abstract class DTMDefaultBaseIterators extends DTMDefaultBaseTraversers {
      * Constructor TypedAncestorIterator
      * 
      * 
-     * @param type
-     *          The extended type ID being requested.
+     * @param type The extended type ID being requested.
      */
     public TypedAncestorIterator(int type) {
       _nodeType = type;
     }
 
     /**
-     * Set start to END should 'close' the iterator, i.e. subsequent call to
-     * next() should return END.
+     * Set start to END should 'close' the iterator, i.e. subsequent call to next() should return END.
      * 
-     * @param node
-     *          Sets the root of the iteration.
+     * @param node Sets the root of the iteration.
      * 
      * @return A DTMAxisIterator set to the start of the iteration.
      */
@@ -1724,8 +1647,8 @@ public abstract class DTMDefaultBaseIterators extends DTMDefaultBaseTraversers {
           while (nodeID != END) {
             final int eType = _exptype(nodeID);
 
-            if (eType >= DTM.NTYPES && m_expandedNameTable.getType(eType) == nodeType || eType < DTM.NTYPES
-                    && eType == nodeType) {
+            if (eType >= DTM.NTYPES && m_expandedNameTable.getType(eType) == nodeType
+                || eType < DTM.NTYPES && eType == nodeType) {
               m_ancestors.addElement(makeNodeHandle(nodeID));
             }
             nodeID = _parent(nodeID);
@@ -1748,11 +1671,9 @@ public abstract class DTMDefaultBaseIterators extends DTMDefaultBaseTraversers {
   public class DescendantIterator extends InternalAxisIteratorBase {
 
     /**
-     * Set start to END should 'close' the iterator, i.e. subsequent call to
-     * next() should return END.
+     * Set start to END should 'close' the iterator, i.e. subsequent call to next() should return END.
      * 
-     * @param node
-     *          Sets the root of the iteration.
+     * @param node Sets the root of the iteration.
      * 
      * @return A DTMAxisIterator set to the start of the iteration.
      */
@@ -1779,17 +1700,13 @@ public abstract class DTMDefaultBaseIterators extends DTMDefaultBaseTraversers {
     }
 
     /**
-     * Tell if this node identity is a descendant. Assumes that the node info
-     * for the element has already been obtained.
+     * Tell if this node identity is a descendant. Assumes that the node info for the element has already been obtained.
      * 
-     * This one-sided test works only if the parent has been previously tested
-     * and is known to be a descendent. It fails if the parent is the
-     * _startNode's next sibling, or indeed any node that follows _startNode in
-     * document order. That may suffice for this iterator, but it's not really
-     * an isDescendent() test. %REVIEW% rename?
+     * This one-sided test works only if the parent has been previously tested and is known to be a descendent. It fails
+     * if the parent is the _startNode's next sibling, or indeed any node that follows _startNode in document order.
+     * That may suffice for this iterator, but it's not really an isDescendent() test. %REVIEW% rename?
      * 
-     * @param identity
-     *          The index number of the node in question.
+     * @param identity The index number of the node in question.
      * @return true if the index is a descendant of _startNode.
      */
     protected boolean isDescendant(int identity) {
@@ -1858,8 +1775,7 @@ public abstract class DTMDefaultBaseIterators extends DTMDefaultBaseTraversers {
      * Constructor TypedDescendantIterator
      * 
      * 
-     * @param nodeType
-     *          Extended type ID being requested.
+     * @param nodeType Extended type ID being requested.
      */
     public TypedDescendantIterator(int nodeType) {
       _nodeType = nodeType;
@@ -1896,8 +1812,7 @@ public abstract class DTMDefaultBaseIterators extends DTMDefaultBaseTraversers {
   } // end of TypedDescendantIterator
 
   /**
-   * Iterator that returns the descendants of a given node. I'm not exactly
-   * clear about this one... -sb
+   * Iterator that returns the descendants of a given node. I'm not exactly clear about this one... -sb
    */
   public class NthDescendantIterator extends DescendantIterator {
 
@@ -1908,8 +1823,7 @@ public abstract class DTMDefaultBaseIterators extends DTMDefaultBaseTraversers {
      * Constructor NthDescendantIterator
      * 
      * 
-     * @param pos
-     *          The nth position being requested.
+     * @param pos The nth position being requested.
      */
     public NthDescendantIterator(int pos) {
       _pos = pos;
@@ -1955,8 +1869,7 @@ public abstract class DTMDefaultBaseIterators extends DTMDefaultBaseTraversers {
   public class SingletonIterator extends InternalAxisIteratorBase {
 
     /**
-     * (not sure yet what this is. -sb) (sc & sb remove final to compile in JDK
-     * 1.1.8)
+     * (not sure yet what this is. -sb) (sc & sb remove final to compile in JDK 1.1.8)
      */
     private final boolean _isConstant;
 
@@ -1972,8 +1885,7 @@ public abstract class DTMDefaultBaseIterators extends DTMDefaultBaseTraversers {
      * Constructor SingletonIterator
      * 
      * 
-     * @param node
-     *          The node handle to return.
+     * @param node The node handle to return.
      */
     public SingletonIterator(int node) {
       this(node, false);
@@ -1983,10 +1895,8 @@ public abstract class DTMDefaultBaseIterators extends DTMDefaultBaseTraversers {
      * Constructor SingletonIterator
      * 
      * 
-     * @param node
-     *          the node handle to return.
-     * @param constant
-     *          (Not sure what this is yet. -sb)
+     * @param node the node handle to return.
+     * @param constant (Not sure what this is yet. -sb)
      */
     public SingletonIterator(int node, boolean constant) {
       _currentNode = _startNode = node;
@@ -1994,11 +1904,9 @@ public abstract class DTMDefaultBaseIterators extends DTMDefaultBaseTraversers {
     }
 
     /**
-     * Set start to END should 'close' the iterator, i.e. subsequent call to
-     * next() should return END.
+     * Set start to END should 'close' the iterator, i.e. subsequent call to next() should return END.
      * 
-     * @param node
-     *          Sets the root of the iteration.
+     * @param node Sets the root of the iteration.
      * 
      * @return A DTMAxisIterator set to the start of the iteration.
      */
@@ -2024,8 +1932,7 @@ public abstract class DTMDefaultBaseIterators extends DTMDefaultBaseTraversers {
     /**
      * Resets the iterator to the last start node.
      * 
-     * @return A DTMAxisIterator, which may or may not be the same as this
-     *         iterator.
+     * @return A DTMAxisIterator, which may or may not be the same as this iterator.
      */
     @Override
     public DTMAxisIterator reset() {
@@ -2075,8 +1982,7 @@ public abstract class DTMDefaultBaseIterators extends DTMDefaultBaseTraversers {
      * Constructor TypedSingletonIterator
      * 
      * 
-     * @param nodeType
-     *          The extended type ID being requested.
+     * @param nodeType The extended type ID being requested.
      */
     public TypedSingletonIterator(int nodeType) {
       _nodeType = nodeType;

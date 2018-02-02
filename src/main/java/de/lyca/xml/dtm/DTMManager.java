@@ -22,8 +22,7 @@ import javax.xml.transform.Source;
 import org.w3c.dom.Node;
 
 import de.lyca.xalan.ObjectFactory;
-import de.lyca.xml.res.XMLErrorResources;
-import de.lyca.xml.res.XMLMessages;
+import de.lyca.xml.res.Messages;
 import de.lyca.xml.utils.PrefixResolver;
 import de.lyca.xml.utils.XMLStringFactory;
 
@@ -117,14 +116,13 @@ public abstract class DTMManager {
     try {
       factoryImpl = (DTMManager) ObjectFactory.createObject(defaultPropName, defaultClassName);
     } catch (final ObjectFactory.ConfigurationError e) {
-      throw new DTMConfigurationException(XMLMessages.createXMLMessage(XMLErrorResources.ER_NO_DEFAULT_IMPL, null),
-          e.getException());
       // "No default implementation found");
+      throw new DTMConfigurationException(Messages.get().noDefaultImpl(), e.getException());
     }
 
     if (factoryImpl == null)
-      throw new DTMConfigurationException(XMLMessages.createXMLMessage(XMLErrorResources.ER_NO_DEFAULT_IMPL, null));
-    // "No default implementation found");
+      // "No default implementation found");
+      throw new DTMConfigurationException(Messages.get().noDefaultImpl());
 
     factoryImpl.setXMLStringFactory(xsf);
 

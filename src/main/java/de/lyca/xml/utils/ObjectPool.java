@@ -20,8 +20,7 @@ package de.lyca.xml.utils;
 import java.util.ArrayList;
 
 import de.lyca.xalan.ObjectFactory;
-import de.lyca.xml.res.XMLErrorResources;
-import de.lyca.xml.res.XMLMessages;
+import de.lyca.xml.res.Messages;
 
 /**
  * Pool of object of a given type to pick from to help memory usage
@@ -130,7 +129,8 @@ public class ObjectPool implements java.io.Serializable {
       }
 
       // Throw unchecked exception for error in pool configuration.
-      throw new RuntimeException(XMLMessages.createXMLMessage(XMLErrorResources.ER_EXCEPTION_CREATING_POOL, null)); // "exception creating new instance for pool");
+      // "exception creating new instance for pool");
+      throw new RuntimeException(Messages.get().exceptionCreatingPool());
     } else {
 
       // Remove object from end of free pool.

@@ -29,38 +29,30 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
 import de.lyca.xml.dtm.ref.DTMNodeProxy;
-import de.lyca.xml.res.XMLErrorResources;
-import de.lyca.xml.res.XMLMessages;
+import de.lyca.xml.res.Messages;
 
 /**
- * @deprecated Since the introduction of the DTM, this class will be removed.
- *             This class provides a front-end to DOM implementations, providing
- *             a number of utility functions that either aren't yet standardized
- *             by the DOM spec or that are defined in optional DOM modules and
- *             hence may not be present in all DOMs.
+ * @deprecated Since the introduction of the DTM, this class will be removed. This class provides a front-end to DOM
+ *             implementations, providing a number of utility functions that either aren't yet standardized by the DOM
+ *             spec or that are defined in optional DOM modules and hence may not be present in all DOMs.
  */
 @Deprecated
 public class DOMHelper {
 
   /**
-   * Figure out whether node2 should be considered as being later in the
-   * document than node1, in Document Order as defined by the XPath model. This
-   * may not agree with the ordering defined by other XML applications.
+   * Figure out whether node2 should be considered as being later in the document than node1, in Document Order as
+   * defined by the XPath model. This may not agree with the ordering defined by other XML applications.
    * <p>
-   * There are some cases where ordering isn't defined, and neither are the
-   * results of this function -- though we'll generally return true.
+   * There are some cases where ordering isn't defined, and neither are the results of this function -- though we'll
+   * generally return true.
    * 
    * TODO: Make sure this does the right thing with attribute nodes!!!
    * 
-   * @param node1
-   *          DOM Node to perform position comparison on.
-   * @param node2
-   *          DOM Node to perform position comparison on .
+   * @param node1 DOM Node to perform position comparison on.
+   * @param node2 DOM Node to perform position comparison on .
    * 
-   * @return false if node2 comes before node1, otherwise return true. You can
-   *         think of this as
-   *         <code>(node1.documentOrderPosition &lt;= node2.documentOrderPosition)</code>
-   *         .
+   * @return false if node2 comes before node1, otherwise return true. You can think of this as
+   *         <code>(node1.documentOrderPosition &lt;= node2.documentOrderPosition)</code> .
    */
   public static boolean isNodeAfter(Node node1, Node node2) {
     if (node1 == node2 || isNodeTheSame(node1, node2))
@@ -171,11 +163,9 @@ public class DOMHelper {
     // "same node" case. Fix if/when needed.
 
     /*
-     * -- please do not remove... very useful for diagnostics --
-     * System.out.println
-     * ("node1 = "+node1.getNodeName()+"("+node1.getNodeType()+")"+
-     * ", node2 = "+node2.getNodeName() +"("+node2.getNodeType()+")"+
-     * ", isNodeAfter = "+isNodeAfter);
+     * -- please do not remove... very useful for diagnostics -- System.out.println
+     * ("node1 = "+node1.getNodeName()+"("+node1.getNodeType()+")"+ ", node2 = "+node2.getNodeName()
+     * +"("+node2.getNodeType()+")"+ ", isNodeAfter = "+isNodeAfter);
      */
     return isNodeAfter;
   } // end isNodeAfter(Node node1, Node node2)
@@ -183,10 +173,8 @@ public class DOMHelper {
   /**
    * Use DTMNodeProxy to determine whether two nodes are the same.
    * 
-   * @param node1
-   *          The first DOM node to compare.
-   * @param node2
-   *          The second DOM node to compare.
+   * @param node1 The first DOM node to compare.
+   * @param node2 The second DOM node to compare.
    * @return true if the two nodes are the same.
    */
   public static boolean isNodeTheSame(Node node1, Node node2) {
@@ -199,17 +187,13 @@ public class DOMHelper {
   /**
    * Figure out if child2 is after child1 in document order.
    * <p>
-   * Warning: Some aspects of "document order" are not well defined. For
-   * example, the order of attributes is considered meaningless in XML, and the
-   * order reported by our model will be consistant for a given invocation but
-   * may not match that of either the source file or the serialized output.
+   * Warning: Some aspects of "document order" are not well defined. For example, the order of attributes is considered
+   * meaningless in XML, and the order reported by our model will be consistant for a given invocation but may not match
+   * that of either the source file or the serialized output.
    * 
-   * @param parent
-   *          Must be the parent of both child1 and child2.
-   * @param child1
-   *          Must be the child of parent and not equal to child2.
-   * @param child2
-   *          Must be the child of parent and not equal to child1.
+   * @param parent Must be the parent of both child1 and child2.
+   * @param child1 Must be the child of parent and not equal to child2.
+   * @param child2 Must be the child of parent and not equal to child1.
    * @return true if child 2 is after child1 in document order.
    */
   private static boolean isNodeAfterSibling(Node parent, Node child1, Node child2) {
@@ -306,58 +290,54 @@ public class DOMHelper {
   Hashtable m_NSInfos = new Hashtable();
 
   /**
-   * Object to put into the m_NSInfos table that tells that a node has not been
-   * processed, but has xmlns namespace decls.
+   * Object to put into the m_NSInfos table that tells that a node has not been processed, but has xmlns namespace
+   * decls.
    */
   protected static final NSInfo m_NSInfoUnProcWithXMLNS = new NSInfo(false, true);
 
   /**
-   * Object to put into the m_NSInfos table that tells that a node has not been
-   * processed, but has no xmlns namespace decls.
+   * Object to put into the m_NSInfos table that tells that a node has not been processed, but has no xmlns namespace
+   * decls.
    */
   protected static final NSInfo m_NSInfoUnProcWithoutXMLNS = new NSInfo(false, false);
 
   /**
-   * Object to put into the m_NSInfos table that tells that a node has not been
-   * processed, and has no xmlns namespace decls, and has no ancestor decls.
+   * Object to put into the m_NSInfos table that tells that a node has not been processed, and has no xmlns namespace
+   * decls, and has no ancestor decls.
    */
   protected static final NSInfo m_NSInfoUnProcNoAncestorXMLNS = new NSInfo(false, false, NSInfo.ANCESTORNOXMLNS);
 
   /**
-   * Object to put into the m_NSInfos table that tells that a node has been
-   * processed, and has xmlns namespace decls.
+   * Object to put into the m_NSInfos table that tells that a node has been processed, and has xmlns namespace decls.
    */
   protected static final NSInfo m_NSInfoNullWithXMLNS = new NSInfo(true, true);
 
   /**
-   * Object to put into the m_NSInfos table that tells that a node has been
-   * processed, and has no xmlns namespace decls.
+   * Object to put into the m_NSInfos table that tells that a node has been processed, and has no xmlns namespace decls.
    */
   protected static final NSInfo m_NSInfoNullWithoutXMLNS = new NSInfo(true, false);
 
   /**
-   * Object to put into the m_NSInfos table that tells that a node has been
-   * processed, and has no xmlns namespace decls. and has no ancestor decls.
+   * Object to put into the m_NSInfos table that tells that a node has been processed, and has no xmlns namespace decls.
+   * and has no ancestor decls.
    */
   protected static final NSInfo m_NSInfoNullNoAncestorXMLNS = new NSInfo(true, false, NSInfo.ANCESTORNOXMLNS);
 
   /**
-   * List of node (odd indexes) and NSInfos (even indexes) that tell if the
-   * given node is a candidate for ancestor namespace processing.
+   * List of node (odd indexes) and NSInfos (even indexes) that tell if the given node is a candidate for ancestor
+   * namespace processing.
    */
   protected List m_candidateNoAncestorXMLNS = new ArrayList();
 
   /**
-   * Returns the namespace of the given node. Differs from simply getting the
-   * node's prefix and using getNamespaceForPrefix in that it attempts to cache
-   * some of the data in NSINFO objects, to avoid repeated lookup. TODO: Should
-   * we consider moving that logic into getNamespaceForPrefix?
+   * Returns the namespace of the given node. Differs from simply getting the node's prefix and using
+   * getNamespaceForPrefix in that it attempts to cache some of the data in NSINFO objects, to avoid repeated lookup.
+   * TODO: Should we consider moving that logic into getNamespaceForPrefix?
    * 
-   * @param n
-   *          Node to be examined.
+   * @param n Node to be examined.
    * 
-   * @return String containing the Namespace Name (uri) for this node. Note that
-   *         this is undefined for any nodes other than Elements and Attributes.
+   * @return String containing the Namespace Name (uri) for this node. Note that this is undefined for any nodes other
+   *         than Elements and Attributes.
    */
   public String getNamespaceOfNode(Node n) {
 
@@ -508,12 +488,10 @@ public class DOMHelper {
   }
 
   /**
-   * Returns the local name of the given node. If the node's name begins with a
-   * namespace prefix, this is the part after the colon; otherwise it's the full
-   * node name.
+   * Returns the local name of the given node. If the node's name begins with a namespace prefix, this is the part after
+   * the colon; otherwise it's the full node name.
    * 
-   * @param n
-   *          the node to be examined.
+   * @param n the node to be examined.
    * 
    * @return String containing the Local Name
    */
@@ -525,39 +503,27 @@ public class DOMHelper {
     return index < 0 ? qname : qname.substring(index + 1);
   }
 
-  
-
-  
-
   // ==========================================================
   // SECTION: DOM Helper Functions
   // ==========================================================
 
   /**
-   * Obtain the XPath-model parent of a DOM node -- ownerElement for Attrs,
-   * parent for other nodes.
+   * Obtain the XPath-model parent of a DOM node -- ownerElement for Attrs, parent for other nodes.
    * <p>
-   * Background: The DOM believes that you must be your Parent's Child, and thus
-   * Attrs don't have parents. XPath said that Attrs do have their owning
-   * Element as their parent. This function bridges the difference, either by
-   * using the DOM Level 2 ownerElement function or by using a
-   * "silly and expensive function" in Level 1 DOMs.
+   * Background: The DOM believes that you must be your Parent's Child, and thus Attrs don't have parents. XPath said
+   * that Attrs do have their owning Element as their parent. This function bridges the difference, either by using the
+   * DOM Level 2 ownerElement function or by using a "silly and expensive function" in Level 1 DOMs.
    * <p>
-   * (There's some discussion of future DOMs generalizing ownerElement into
-   * ownerNode and making it work on all types of nodes. This still wouldn't
-   * help the users of Level 1 or Level 2 DOMs)
+   * (There's some discussion of future DOMs generalizing ownerElement into ownerNode and making it work on all types of
+   * nodes. This still wouldn't help the users of Level 1 or Level 2 DOMs)
    * <p>
    * 
-   * @param node
-   *          Node whose XPath parent we want to obtain
+   * @param node Node whose XPath parent we want to obtain
    * 
-   * @return the parent of the node, or the ownerElement if it's an Attr node,
-   *         or null if the node is an orphan.
+   * @return the parent of the node, or the ownerElement if it's an Attr node, or null if the node is an orphan.
    * 
-   * @throws RuntimeException
-   *           if the Document has no root element. This can't arise if the
-   *           Document was created via the DOM Level 2 factory methods, but is
-   *           possible if other mechanisms were used to obtain it
+   * @throws RuntimeException if the Document has no root element. This can't arise if the Document was created via the
+   *         DOM Level 2 factory methods, but is possible if other mechanisms were used to obtain it
    */
   public static Node getParentOfNode(Node node) throws RuntimeException {
     Node parent;
@@ -566,8 +532,7 @@ public class DOMHelper {
     if (Node.ATTRIBUTE_NODE == nodeType) {
       final Document doc = node.getOwnerDocument();
       /*
-       * TBD: if(null == doc) { throw new
-       * RuntimeException(XSLMessages.createXPATHMessage
+       * TBD: if(null == doc) { throw new RuntimeException(XSLMessages.createXPATHMessage
        * (XPATHErrorResources.ER_CHILD_HAS_NO_OWNER_DOCUMENT,
        * null));//"Attribute child does not have an owner document!"); }
        */
@@ -592,8 +557,8 @@ public class DOMHelper {
       final Element rootElem = doc.getDocumentElement();
 
       if (null == rootElem)
-        throw new RuntimeException(XMLMessages.createXMLMessage(
-                XMLErrorResources.ER_CHILD_HAS_NO_OWNER_DOCUMENT_ELEMENT, null)); // "Attribute child does not have an owner document element!");
+        // "Attribute child does not have an owner document element!");
+        throw new RuntimeException(Messages.get().childHasNoOwnerDocumentElement());
 
       parent = locateAttrParent(rootElem, node);
 
@@ -610,25 +575,19 @@ public class DOMHelper {
   }
 
   /**
-   * Support for getParentOfNode; walks a DOM tree until it finds the Element
-   * which owns the Attr. This is hugely expensive, and if at all possible you
-   * should use the DOM Level 2 Attr.ownerElement() method instead.
+   * Support for getParentOfNode; walks a DOM tree until it finds the Element which owns the Attr. This is hugely
+   * expensive, and if at all possible you should use the DOM Level 2 Attr.ownerElement() method instead.
    * <p>
-   * The DOM Level 1 developers expected that folks would keep track of the last
-   * Element they'd seen and could recover the info from that source. Obviously
-   * that doesn't work very well if the only information you've been presented
-   * with is the Attr. The DOM Level 2 getOwnerElement() method fixes that, but
-   * only for Level 2 and later DOMs.
+   * The DOM Level 1 developers expected that folks would keep track of the last Element they'd seen and could recover
+   * the info from that source. Obviously that doesn't work very well if the only information you've been presented with
+   * is the Attr. The DOM Level 2 getOwnerElement() method fixes that, but only for Level 2 and later DOMs.
    * 
-   * @param elem
-   *          Element whose subtree is to be searched for this Attr
-   * @param attr
-   *          Attr whose owner is to be located.
+   * @param elem Element whose subtree is to be searched for this Attr
+   * @param attr Attr whose owner is to be located.
    * 
-   * @return the first Element whose attribute list includes the provided attr.
-   *         In modern DOMs, this will also be the only such Element. (Early
-   *         DOMs had some hope that Attrs might be sharable, but this idea has
-   *         been abandoned.)
+   * @return the first Element whose attribute list includes the provided attr. In modern DOMs, this will also be the
+   *         only such Element. (Early DOMs had some hope that Attrs might be sharable, but this idea has been
+   *         abandoned.)
    */
   private static Node locateAttrParent(Element elem, Node attr) {
 

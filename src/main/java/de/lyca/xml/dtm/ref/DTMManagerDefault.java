@@ -24,6 +24,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamSource;
 
+import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
@@ -40,30 +41,29 @@ import de.lyca.xml.dtm.DTMIterator;
 import de.lyca.xml.dtm.DTMManager;
 import de.lyca.xml.dtm.DTMWSFilter;
 import de.lyca.xml.dtm.ref.dom2dtm.DOM2DTM;
+import de.lyca.xml.dtm.ref.dom2dtm.DOM2DTMdefaultNamespaceDeclarationNode;
 import de.lyca.xml.dtm.ref.sax2dtm.SAX2DTM;
 import de.lyca.xml.dtm.ref.sax2dtm.SAX2RTFDTM;
-import de.lyca.xml.res.XMLErrorResources;
-import de.lyca.xml.res.XMLMessages;
+import de.lyca.xml.res.Messages;
 import de.lyca.xml.utils.PrefixResolver;
+import de.lyca.xml.utils.SuballocatedIntVector;
 import de.lyca.xml.utils.SystemIDResolver;
+import de.lyca.xml.utils.WrappedRuntimeException;
 import de.lyca.xml.utils.XMLReaderManager;
 import de.lyca.xml.utils.XMLStringFactory;
 
 /**
  * The default implementation for the DTMManager.
  * 
- * %REVIEW% There is currently a reentrancy issue, since the finalizer for
- * XRTreeFrag (which runs in the GC thread) wants to call DTMManager.release(),
- * and may do so at the same time that the main transformation thread is
- * accessing the manager. Our current solution is to make most of the manager's
- * methods <code>synchronized</code>. Early tests suggest that doing so is not
- * causing a significant performance hit in Xalan. However, it should be noted
- * that there is a possible alternative solution: rewrite release() so it merely
- * posts a request for release onto a threadsafe queue, and explicitly process
- * that queue on an infrequent basis during main-thread activity (eg, when
- * getDTM() is invoked). The downside of that solution would be a greater delay
- * before the DTM's storage is actually released for reuse.
- * */
+ * %REVIEW% There is currently a reentrancy issue, since the finalizer for XRTreeFrag (which runs in the GC thread)
+ * wants to call DTMManager.release(), and may do so at the same time that the main transformation thread is accessing
+ * the manager. Our current solution is to make most of the manager's methods <code>synchronized</code>. Early tests
+ * suggest that doing so is not causing a significant performance hit in Xalan. However, it should be noted that there
+ * is a possible alternative solution: rewrite release() so it merely posts a request for release onto a threadsafe
+ * queue, and explicitly process that queue on an infrequent basis during main-thread activity (eg, when getDTM() is
+ * invoked). The downside of that solution would be a greater delay before the DTM's storage is actually released for
+ * reuse.
+ */
 public class DTMManagerDefault extends DTMManager {
   // static final boolean JKESS_XNI_EXPERIMENT=true;
 
@@ -74,37 +74,33 @@ public class DTMManagerDefault extends DTMManager {
   private static final boolean DEBUG = false;
 
   /**
-   * Map from DTM identifier numbers to DTM objects that this manager manages.
-   * One DTM may have several prefix numbers, if extended node indexing is in
-   * use; in that case, m_dtm_offsets[] will used to control which prefix maps
-   * to which section of the DTM.
+   * Map from DTM identifier numbers to DTM objects that this manager manages. One DTM may have several prefix numbers,
+   * if extended node indexing is in use; in that case, m_dtm_offsets[] will used to control which prefix maps to which
+   * section of the DTM.
    * 
    * This array grows as necessary; see addDTM().
    * 
-   * This array grows as necessary; see addDTM(). Growth is uncommon... but
-   * access needs to be blindingly fast since it's used in node addressing.
+   * This array grows as necessary; see addDTM(). Growth is uncommon... but access needs to be blindingly fast since
+   * it's used in node addressing.
    */
   protected DTM m_dtms[] = new DTM[256];
 
   /**
-   * Map from DTM identifier numbers to offsets. For small DTMs with a single
-   * identifier, this will always be 0. In overflow addressing, where additional
-   * identifiers are allocated to access nodes beyond the range of a single Node
-   * Handle, this table is used to map the handle's node field into the actual
-   * node identifier.
+   * Map from DTM identifier numbers to offsets. For small DTMs with a single identifier, this will always be 0. In
+   * overflow addressing, where additional identifiers are allocated to access nodes beyond the range of a single Node
+   * Handle, this table is used to map the handle's node field into the actual node identifier.
    * 
    * This array grows as necessary; see addDTM().
    * 
-   * This array grows as necessary; see addDTM(). Growth is uncommon... but
-   * access needs to be blindingly fast since it's used in node addressing. (And
-   * at the moment, that includes accessing it from DTMDefaultBase, which is why
-   * this is not Protected or Private.)
+   * This array grows as necessary; see addDTM(). Growth is uncommon... but access needs to be blindingly fast since
+   * it's used in node addressing. (And at the moment, that includes accessing it from DTMDefaultBase, which is why this
+   * is not Protected or Private.)
    */
   int m_dtm_offsets[] = new int[256];
 
   /**
-   * The cache for XMLReader objects to be used if the user did not supply an
-   * XMLReader for a SAXSource or supplied a StreamSource.
+   * The cache for XMLReader objects to be used if the user did not supply an XMLReader for a SAXSource or supplied a
+   * StreamSource.
    */
   protected XMLReaderManager m_readerManager = null;
 
@@ -114,14 +110,11 @@ public class DTMManagerDefault extends DTMManager {
   protected DefaultHandler m_defaultHandler = new DefaultHandler();
 
   /**
-   * Add a DTM to the DTM table. This convenience call adds it as the
-   * "base DTM ID", with offset 0. The other version of addDTM should be used if
-   * you want to add "extended" DTM IDs with nonzero offsets.
+   * Add a DTM to the DTM table. This convenience call adds it as the "base DTM ID", with offset 0. The other version of
+   * addDTM should be used if you want to add "extended" DTM IDs with nonzero offsets.
    * 
-   * @param dtm
-   *          Should be a valid reference to a DTM.
-   * @param id
-   *          Integer DTM ID to be bound to this DTM
+   * @param dtm Should be a valid reference to a DTM.
+   * @param id Integer DTM ID to be bound to this DTM
    */
   synchronized public void addDTM(DTM dtm, int id) {
     addDTM(dtm, id, 0);
@@ -130,21 +123,17 @@ public class DTMManagerDefault extends DTMManager {
   /**
    * Add a DTM to the DTM table.
    * 
-   * @param dtm
-   *          Should be a valid reference to a DTM.
-   * @param id
-   *          Integer DTM ID to be bound to this DTM.
-   * @param offset
-   *          Integer addressing offset. The internal DTM Node ID is obtained by
-   *          adding this offset to the node-number field of the public DTM
-   *          Handle. For the first DTM ID accessing each DTM, this is 0; for
-   *          overflow addressing it will be a multiple of
-   *          {@literal 1<<IDENT_DTM_NODE_BITS}.
+   * @param dtm Should be a valid reference to a DTM.
+   * @param id Integer DTM ID to be bound to this DTM.
+   * @param offset Integer addressing offset. The internal DTM Node ID is obtained by adding this offset to the
+   *        node-number field of the public DTM Handle. For the first DTM ID accessing each DTM, this is 0; for overflow
+   *        addressing it will be a multiple of {@literal 1<<IDENT_DTM_NODE_BITS}.
    */
   synchronized public void addDTM(DTM dtm, int id, int offset) {
     if (id >= IDENT_MAX_DTMS)
       // TODO: %REVIEW% Not really the right error message.
-      throw new DTMException(XMLMessages.createXMLMessage(XMLErrorResources.ER_NO_DTMIDS_AVAIL, null)); // "No more DTM IDs are available!");
+      // "No more DTM IDs are available!");
+      throw new DTMException(Messages.get().noDtmidsAvail());
 
     // We used to just allocate the array size to IDENT_MAX_DTMS.
     // But we expect to increase that to 16 bits, and I'm not willing
@@ -177,6 +166,7 @@ public class DTMManagerDefault extends DTMManager {
 
   /**
    * Get the first free DTM ID available. %OPT% Linear search is inefficient!
+   * 
    * @return TODO
    */
   synchronized public int getFirstFreeDTMID() {
@@ -201,35 +191,27 @@ public class DTMManagerDefault extends DTMManager {
   }
 
   /**
-   * Get an instance of a DTM, loaded with the content from the specified
-   * source. If the unique flag is true, a new instance will always be returned.
-   * Otherwise it is up to the DTMManager to return a new instance or an
-   * instance that it already created and may be being used by someone else.
+   * Get an instance of a DTM, loaded with the content from the specified source. If the unique flag is true, a new
+   * instance will always be returned. Otherwise it is up to the DTMManager to return a new instance or an instance that
+   * it already created and may be being used by someone else.
    * 
-   * A bit of magic in this implementation: If the source is null, unique is
-   * true, and incremental and doIndexing are both false, we return an instance
-   * of SAX2RTFDTM, which see.
+   * A bit of magic in this implementation: If the source is null, unique is true, and incremental and doIndexing are
+   * both false, we return an instance of SAX2RTFDTM, which see.
    * 
-   * (I think more parameters will need to be added for error handling, and
-   * entity resolution, and more explicit control of the RTF situation).
+   * (I think more parameters will need to be added for error handling, and entity resolution, and more explicit control
+   * of the RTF situation).
    * 
-   * @param source
-   *          the specification of the source object.
-   * @param unique
-   *          true if the returned DTM must be unique, probably because it is
-   *          going to be mutated.
-   * @param whiteSpaceFilter
-   *          Enables filtering of whitespace nodes, and may be null.
-   * @param incremental
-   *          true if the DTM should be built incrementally, if possible.
-   * @param doIndexing
-   *          true if the caller considers it worth it to use indexing schemes.
+   * @param source the specification of the source object.
+   * @param unique true if the returned DTM must be unique, probably because it is going to be mutated.
+   * @param whiteSpaceFilter Enables filtering of whitespace nodes, and may be null.
+   * @param incremental true if the DTM should be built incrementally, if possible.
+   * @param doIndexing true if the caller considers it worth it to use indexing schemes.
    * 
    * @return a non-null DTM reference.
    */
   @Override
   synchronized public DTM getDTM(Source source, boolean unique, DTMWSFilter whiteSpaceFilter, boolean incremental,
-          boolean doIndexing) {
+      boolean doIndexing) {
 
     if (DEBUG && null != source) {
       System.out.println("Starting " + (unique ? "UNIQUE" : "shared") + " source: " + source.getSystemId());
@@ -241,7 +223,7 @@ public class DTMManagerDefault extends DTMManager {
 
     if (null != source && source instanceof DOMSource) {
       final DOM2DTM dtm = new DOM2DTM(this, (DOMSource) source, documentID, whiteSpaceFilter, xstringFactory,
-              doIndexing);
+          doIndexing);
 
       addDTM(dtm, dtmPos, 0);
 
@@ -293,9 +275,8 @@ public class DTMManagerDefault extends DTMManager {
             dtm = new SAX2RTFDTM(this, source, documentID, whiteSpaceFilter, xstringFactory, doIndexing);
           }
           /**************************************************************
-           * // EXPERIMENTAL 3/22/02 else if(JKESS_XNI_EXPERIMENT &&
-           * m_incremental) { dtm = new XNI2DTM(this, source, documentID,
-           * whiteSpaceFilter, xstringFactory, doIndexing); }
+           * // EXPERIMENTAL 3/22/02 else if(JKESS_XNI_EXPERIMENT && m_incremental) { dtm = new XNI2DTM(this, source,
+           * documentID, whiteSpaceFilter, xstringFactory, doIndexing); }
            **************************************************************/
           // Create the basic SAX2DTM.
           else {
@@ -308,7 +289,7 @@ public class DTMManagerDefault extends DTMManager {
           addDTM(dtm, dtmPos, 0);
 
           final boolean haveXercesParser = null != reader
-                  && reader.getClass().getName().equals("org.apache.xerces.parsers.SAXParser");
+              && reader.getClass().getName().equals("org.apache.xerces.parsers.SAXParser");
 
           if (haveXercesParser) {
             incremental = true; // No matter what. %REVIEW%
@@ -324,7 +305,7 @@ public class DTMManagerDefault extends DTMManager {
               // IncrementalSAXSource_Xerces to avoid threading.
               try {
                 coParser = (IncrementalSAXSource) Class.forName("de.lyca.xml.dtm.ref.IncrementalSAXSource_Xerces")
-                        .newInstance();
+                    .newInstance();
               } catch (final Exception ex) {
                 ex.printStackTrace();
                 coParser = null;
@@ -343,16 +324,11 @@ public class DTMManagerDefault extends DTMManager {
             }
 
             /**************************************************************
-             * // EXPERIMENTAL 3/22/02 if (JKESS_XNI_EXPERIMENT && m_incremental
-             * && dtm instanceof XNI2DTM && coParser instanceof
-             * IncrementalSAXSource_Xerces) {
-             * org.apache.xerces.xni.parser.XMLPullParserConfiguration xpc=
-             * ((IncrementalSAXSource_Xerces)coParser)
-             * .getXNIParserConfiguration(); if (xpc!=null) { // Bypass SAX;
-             * listen to the XNI stream
-             * ((XNI2DTM)dtm).setIncrementalXNISource(xpc); } else { // Listen
-             * to the SAX stream (will fail, diagnostically...)
-             * dtm.setIncrementalSAXSource(coParser); } } else
+             * // EXPERIMENTAL 3/22/02 if (JKESS_XNI_EXPERIMENT && m_incremental && dtm instanceof XNI2DTM && coParser
+             * instanceof IncrementalSAXSource_Xerces) { org.apache.xerces.xni.parser.XMLPullParserConfiguration xpc=
+             * ((IncrementalSAXSource_Xerces)coParser) .getXNIParserConfiguration(); if (xpc!=null) { // Bypass SAX;
+             * listen to the XNI stream ((XNI2DTM)dtm).setIncrementalXNISource(xpc); } else { // Listen to the SAX
+             * stream (will fail, diagnostically...) dtm.setIncrementalSAXSource(coParser); } } else
              ***************************************************************/
 
             // Have the DTM set itself up as IncrementalSAXSource's listener.
@@ -381,7 +357,7 @@ public class DTMManagerDefault extends DTMManager {
 
               dtm.clearCoRoutine();
 
-              throw new de.lyca.xml.utils.WrappedRuntimeException(e);
+              throw new WrappedRuntimeException(e);
             }
           } else {
             if (null == reader)
@@ -410,7 +386,7 @@ public class DTMManagerDefault extends DTMManager {
             } catch (final Exception e) {
               dtm.clearCoRoutine();
 
-              throw new de.lyca.xml.utils.WrappedRuntimeException(e);
+              throw new WrappedRuntimeException(e);
             }
           }
 
@@ -440,30 +416,27 @@ public class DTMManagerDefault extends DTMManager {
       } else
         // It should have been handled by a derived class or the caller
         // made a mistake.
-        throw new DTMException(
-                XMLMessages.createXMLMessage(XMLErrorResources.ER_NOT_SUPPORTED, new Object[] { source })); // "Not supported: "
-                                                                                                            // +
-                                                                                                            // source);
+        // "Not supported: " + source;
+        throw new DTMException(Messages.get().notSupported(source));
     }
   }
 
   /**
-   * Given a W3C DOM node, try and return a DTM handle. Note: calling this may
-   * be non-optimal, and there is no guarantee that the node will be found in
-   * any particular DTM.
+   * Given a W3C DOM node, try and return a DTM handle. Note: calling this may be non-optimal, and there is no guarantee
+   * that the node will be found in any particular DTM.
    * 
-   * @param node
-   *          Non-null reference to a DOM node.
+   * @param node Non-null reference to a DOM node.
    * 
    * @return a valid DTM handle.
    */
   @Override
-  synchronized public int getDTMHandleFromNode(org.w3c.dom.Node node) {
+  synchronized public int getDTMHandleFromNode(Node node) {
     if (null == node)
-      throw new IllegalArgumentException(XMLMessages.createXMLMessage(XMLErrorResources.ER_NODE_NON_NULL, null)); // "node must be non-null for getDTMHandleFromNode!");
+      // "node must be non-null for getDTMHandleFromNode!");
+      throw new IllegalArgumentException(Messages.get().nodeNonNull());
 
-    if (node instanceof de.lyca.xml.dtm.ref.DTMNodeProxy)
-      return ((de.lyca.xml.dtm.ref.DTMNodeProxy) node).getDTMNodeNumber();
+    if (node instanceof DTMNodeProxy)
+      return ((DTMNodeProxy) node).getDTMNodeNumber();
 
     else {
       // Find the DOM2DTMs wrapped around this Document (if any)
@@ -517,42 +490,41 @@ public class DTMManagerDefault extends DTMManager {
       // use getParent to find the root, instead of getOwnerDocument. Otherwise
       // DOM2DTM#getHandleOfNode will be very unhappy.
       Node root = node;
-      Node p = root.getNodeType() == Node.ATTRIBUTE_NODE ? ((org.w3c.dom.Attr) root).getOwnerElement() : root
-              .getParentNode();
+      Node p = root.getNodeType() == Node.ATTRIBUTE_NODE ? ((Attr) root).getOwnerElement()
+          : root.getParentNode();
       for (; p != null; p = p.getParentNode()) {
         root = p;
       }
 
-      final DOM2DTM dtm = (DOM2DTM) getDTM(new javax.xml.transform.dom.DOMSource(root), false, null, true, true);
+      final DOM2DTM dtm = (DOM2DTM) getDTM(new DOMSource(root), false, null, true, true);
 
       int handle;
 
-      if (node instanceof de.lyca.xml.dtm.ref.dom2dtm.DOM2DTMdefaultNamespaceDeclarationNode) {
+      if (node instanceof DOM2DTMdefaultNamespaceDeclarationNode) {
         // Can't return the same node since it's unique to a specific DTM,
         // but can return the equivalent node -- find the corresponding
         // Document Element, then ask it for the xml: namespace decl.
-        handle = dtm.getHandleOfNode(((org.w3c.dom.Attr) node).getOwnerElement());
+        handle = dtm.getHandleOfNode(((Attr) node).getOwnerElement());
         handle = dtm.getAttributeNode(handle, node.getNamespaceURI(), node.getLocalName());
       } else {
         handle = dtm.getHandleOfNode(node);
       }
 
       if (DTM.NULL == handle)
-        throw new RuntimeException(XMLMessages.createXMLMessage(XMLErrorResources.ER_COULD_NOT_RESOLVE_NODE, null)); // "Could not resolve the node to a handle!");
+        // "Could not resolve the node to a handle!");
+        throw new RuntimeException(Messages.get().couldNotResolveNode());
 
       return handle;
     }
   }
 
   /**
-   * This method returns the SAX2 parser to use with the InputSource obtained
-   * from this URI. It may return null if any SAX2-conformant XML parser can be
-   * used, or if getInputSource() will also return null. The parser must be free
-   * for use (i.e., not currently in use for another parse(). After use of the
-   * parser is completed, the releaseXMLReader(XMLReader) must be called.
+   * This method returns the SAX2 parser to use with the InputSource obtained from this URI. It may return null if any
+   * SAX2-conformant XML parser can be used, or if getInputSource() will also return null. The parser must be free for
+   * use (i.e., not currently in use for another parse(). After use of the parser is completed, the
+   * releaseXMLReader(XMLReader) must be called.
    * 
-   * @param inputSource
-   *          The value returned from the URIResolver.
+   * @param inputSource The value returned from the URIResolver.
    * @return a SAX2 XMLReader to use to resolve the inputSource argument.
    * 
    * @return non-null XMLReader reference ready to parse.
@@ -581,13 +553,11 @@ public class DTMManagerDefault extends DTMManager {
   /**
    * Indicates that the XMLReader object is no longer in use for the transform.
    * 
-   * Note that the getXMLReader method may return an XMLReader that was
-   * specified on the SAXSource object by the application code. Such a reader
-   * should still be passed to releaseXMLReader, but the reader manager will
-   * only re-use XMLReaders that it created.
+   * Note that the getXMLReader method may return an XMLReader that was specified on the SAXSource object by the
+   * application code. Such a reader should still be passed to releaseXMLReader, but the reader manager will only re-use
+   * XMLReaders that it created.
    * 
-   * @param reader
-   *          The XMLReader to be released.
+   * @param reader The XMLReader to be released.
    */
   synchronized public void releaseXMLReader(XMLReader reader) {
     if (m_readerManager != null) {
@@ -598,8 +568,7 @@ public class DTMManagerDefault extends DTMManager {
   /**
    * Return the DTM object containing a representation of this node.
    * 
-   * @param nodeHandle
-   *          DTM Handle indicating which node to retrieve
+   * @param nodeHandle DTM Handle indicating which node to retrieve
    * 
    * @return a reference to the DTM object containing this node.
    */
@@ -608,7 +577,7 @@ public class DTMManagerDefault extends DTMManager {
     try {
       // Performance critical function.
       return m_dtms[nodeHandle >>> IDENT_DTM_NODE_BITS];
-    } catch (final java.lang.ArrayIndexOutOfBoundsException e) {
+    } catch (final ArrayIndexOutOfBoundsException e) {
       if (nodeHandle == DTM.NULL)
         return null; // Accept as a special case.
       else
@@ -617,15 +586,13 @@ public class DTMManagerDefault extends DTMManager {
   }
 
   /**
-   * Given a DTM, find the ID number in the DTM tables which addresses the start
-   * of the document. If overflow addressing is in use, other DTM IDs may also
-   * be assigned to this DTM.
+   * Given a DTM, find the ID number in the DTM tables which addresses the start of the document. If overflow addressing
+   * is in use, other DTM IDs may also be assigned to this DTM.
    * 
-   * @param dtm
-   *          The DTM which (hopefully) contains this node.
+   * @param dtm The DTM which (hopefully) contains this node.
    * 
-   * @return The DTM ID (as the high bits of a NodeHandle, not as our internal
-   *         index), or -1 if the DTM doesn't belong to this manager.
+   * @return The DTM ID (as the high bits of a NodeHandle, not as our internal index), or -1 if the DTM doesn't belong
+   *         to this manager.
    */
   @Override
   synchronized public int getDTMIdentity(DTM dtm) {
@@ -652,21 +619,16 @@ public class DTMManagerDefault extends DTMManager {
   }
 
   /**
-   * Release the DTMManager's reference(s) to a DTM, making it unmanaged. This
-   * is typically done as part of returning the DTM to the heap after we're done
-   * with it.
+   * Release the DTMManager's reference(s) to a DTM, making it unmanaged. This is typically done as part of returning
+   * the DTM to the heap after we're done with it.
    * 
-   * @param dtm
-   *          the DTM to be released.
+   * @param dtm the DTM to be released.
    * 
-   * @param shouldHardDelete
-   *          If false, this call is a suggestion rather than an order, and we
-   *          may not actually release the DTM. This is intended to support
-   *          intelligent caching of documents... which is not implemented in
-   *          this version of the DTM manager.
+   * @param shouldHardDelete If false, this call is a suggestion rather than an order, and we may not actually release
+   *        the DTM. This is intended to support intelligent caching of documents... which is not implemented in this
+   *        version of the DTM manager.
    * 
-   * @return true if the DTM was released, false if shouldHardDelete was set and
-   *         we decided not to.
+   * @return true if the DTM was released, false if shouldHardDelete was set and we decided not to.
    */
   @Override
   synchronized public boolean release(DTM dtm, boolean shouldHardDelete) {
@@ -674,7 +636,7 @@ public class DTMManagerDefault extends DTMManager {
       System.out.println("Releasing " + (shouldHardDelete ? "HARD" : "soft") + " dtm=" +
       // Following shouldn't need a nodeHandle, but does...
       // and doesn't seem to report the intended value
-              dtm.getDocumentBaseURI());
+          dtm.getDocumentBaseURI());
     }
 
     if (dtm instanceof SAX2DTM) {
@@ -690,7 +652,7 @@ public class DTMManagerDefault extends DTMManager {
     //
     // %REVIEW% Should the lookup move up into the basic DTM API?
     if (dtm instanceof DTMDefaultBase) {
-      final de.lyca.xml.utils.SuballocatedIntVector ids = ((DTMDefaultBase) dtm).getDTMIDs();
+      final SuballocatedIntVector ids = ((DTMDefaultBase) dtm).getDTMIDs();
       for (int i = ids.size() - 1; i >= 0; --i) {
         m_dtms[ids.elementAt(i) >>> DTMManager.IDENT_DTM_NODE_BITS] = null;
       }
@@ -733,13 +695,13 @@ public class DTMManagerDefault extends DTMManager {
    * NEEDSDOC Method createDTMIterator
    * 
    * 
-   * NEEDSDOC @param whatToShow NEEDSDOC @param filter NEEDSDOC @param
-   * entityReferenceExpansion
+   * NEEDSDOC @param whatToShow NEEDSDOC @param filter NEEDSDOC @param entityReferenceExpansion
    * 
    * NEEDSDOC (createDTMIterator) @return
    */
   @Override
-  synchronized public DTMIterator createDTMIterator(int whatToShow, DTMFilter filter, boolean entityReferenceExpansion) {
+  synchronized public DTMIterator createDTMIterator(int whatToShow, DTMFilter filter,
+      boolean entityReferenceExpansion) {
 
     /** @todo: implement this de.lyca.xml.dtm.DTMManager abstract method */
     return null;

@@ -46,8 +46,7 @@ import de.lyca.xml.dtm.ref.DTMDefaultBaseIterators;
 import de.lyca.xml.dtm.ref.DTMManagerDefault;
 import de.lyca.xml.dtm.ref.ExpandedNameTable;
 import de.lyca.xml.dtm.ref.IncrementalSAXSource;
-import de.lyca.xml.res.XMLErrorResources;
-import de.lyca.xml.res.XMLMessages;
+import de.lyca.xml.res.Messages;
 import de.lyca.xml.utils.FastStringBuffer;
 import de.lyca.xml.utils.QName;
 import de.lyca.xml.utils.StringBufferPool;
@@ -211,7 +210,8 @@ public class DOM2DTM extends DTMDefaultBaseIterators {
         // %REVIEW% Wrong error message, but I've been told we're trying
         // not to add messages right not for I18N reasons.
         // %REVIEW% Should this be a Fatal Error?
-        error(XMLMessages.createXMLMessage(XMLErrorResources.ER_NO_DTMIDS_AVAIL, null));// "No more DTM IDs are available";
+        // "No more DTM IDs are available";
+        error(Messages.get().noDtmidsAvail());
       }
     }
 

@@ -32,14 +32,13 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.ext.LexicalHandler;
 
 import de.lyca.xalan.ObjectFactory;
-import de.lyca.xml.res.XMLErrorResources;
-import de.lyca.xml.res.XMLMessages;
+import de.lyca.xml.res.Messages;
+import de.lyca.xml.utils.WrappedRuntimeException;
 
 /**
  * <p>
- * IncrementalSAXSource_Xerces takes advantage of the fact that Xerces1
- * incremental mode is already a coroutine of sorts, and just wraps our
- * IncrementalSAXSource API around it.
+ * IncrementalSAXSource_Xerces takes advantage of the fact that Xerces1 incremental mode is already a coroutine of
+ * sorts, and just wraps our IncrementalSAXSource API around it.
  * </p>
  * 
  * <p>
@@ -80,14 +79,11 @@ public class IncrementalSAXSource_Xerces implements IncrementalSAXSource {
   //
 
   /**
-   * Create a IncrementalSAXSource_Xerces, and create a SAXParser to go with it.
-   * Xerces2 incremental parsing is only supported if this constructor is used,
-   * due to limitations in the Xerces2 API (as of Beta 3). If you don't like
-   * that restriction, tell the Xerces folks that there should be a simpler way
-   * to request incremental SAX parsing.
+   * Create a IncrementalSAXSource_Xerces, and create a SAXParser to go with it. Xerces2 incremental parsing is only
+   * supported if this constructor is used, due to limitations in the Xerces2 API (as of Beta 3). If you don't like that
+   * restriction, tell the Xerces folks that there should be a simpler way to request incremental SAX parsing.
    * 
-   * @throws NoSuchMethodException
-   *           TODO
+   * @throws NoSuchMethodException TODO
    */
   public IncrementalSAXSource_Xerces() throws NoSuchMethodException {
     try {
@@ -153,18 +149,13 @@ public class IncrementalSAXSource_Xerces implements IncrementalSAXSource {
   }
 
   /**
-   * Create a IncrementalSAXSource_Xerces wrapped around an existing SAXParser.
-   * Currently this works only for recent releases of Xerces-1. Xerces-2
-   * incremental is currently possible only if we are allowed to create the
-   * parser instance, due to limitations in the API exposed by Xerces-2 Beta 3;
-   * see the no-args constructor for that code.
+   * Create a IncrementalSAXSource_Xerces wrapped around an existing SAXParser. Currently this works only for recent
+   * releases of Xerces-1. Xerces-2 incremental is currently possible only if we are allowed to create the parser
+   * instance, due to limitations in the API exposed by Xerces-2 Beta 3; see the no-args constructor for that code.
    * 
-   * @param parser
-   *          TODO
-   * @throws NoSuchMethodException
-   *           if the SAXParser class doesn't support the Xerces incremental
-   *           parse operations. In that case, caller should fall back upon the
-   *           IncrementalSAXSource_Filter approach.
+   * @param parser TODO
+   * @throws NoSuchMethodException if the SAXParser class doesn't support the Xerces incremental parse operations. In
+   *         that case, caller should fall back upon the IncrementalSAXSource_Filter approach.
    */
   public IncrementalSAXSource_Xerces(SAXParser parser) throws NoSuchMethodException {
     // Reflection is used to allow us to compile against
@@ -246,29 +237,18 @@ public class IncrementalSAXSource_Xerces implements IncrementalSAXSource {
 
   // ================================================================
   /**
-   * startParse() is a simple API which tells the IncrementalSAXSource to begin
-   * reading a document.
+   * startParse() is a simple API which tells the IncrementalSAXSource to begin reading a document.
    * 
-   * @throws SAXException
-   *           is parse thread is already in progress or parsing can not be
-   *           started.
+   * @throws SAXException is parse thread is already in progress or parsing can not be started.
    */
   @Override
   public void startParse(InputSource source) throws SAXException {
     if (fIncrementalParser == null)
-      throw new SAXException(XMLMessages.createXMLMessage(XMLErrorResources.ER_STARTPARSE_NEEDS_SAXPARSER, null)); // "startParse
-                                                                                                                   // needs
-                                                                                                                   // a
-                                                                                                                   // non-null
-                                                                                                                   // SAXParser.");
+      // "startParse needs a non-null SAXParser.");
+      throw new SAXException(Messages.get().startparseNeedsSaxparser());
     if (fParseInProgress)
-      throw new SAXException(XMLMessages.createXMLMessage(XMLErrorResources.ER_STARTPARSE_WHILE_PARSING, null)); // "startParse
-                                                                                                                 // may
-                                                                                                                 // not
-                                                                                                                 // be
-                                                                                                                 // called
-                                                                                                                 // while
-                                                                                                                 // parsing.");
+      // "startParse may not be called while parsing.");
+      throw new SAXException(Messages.get().startparseWhileParsing());
 
     boolean ok = false;
 
@@ -279,26 +259,19 @@ public class IncrementalSAXSource_Xerces implements IncrementalSAXSource {
     }
 
     if (!ok)
-      throw new SAXException(XMLMessages.createXMLMessage(XMLErrorResources.ER_COULD_NOT_INIT_PARSER, null)); // "could
-                                                                                                              // not
-                                                                                                              // initialize
-                                                                                                              // parser
-                                                                                                              // with");
+      // "could not initialize parser with");
+      throw new SAXException(Messages.get().couldNotInitParser());
   }
 
   /**
-   * deliverMoreNodes() is a simple API which tells the coroutine parser that we
-   * need more nodes. This is intended to be called from one of our partner
-   * routines, and serves to encapsulate the details of how incremental parsing
-   * has been achieved.
+   * deliverMoreNodes() is a simple API which tells the coroutine parser that we need more nodes. This is intended to be
+   * called from one of our partner routines, and serves to encapsulate the details of how incremental parsing has been
+   * achieved.
    * 
-   * @param parsemore
-   *          If true, tells the incremental parser to generate another chunk of
-   *          output. If false, tells the parser that we're satisfied and it can
-   *          terminate parsing of this document.
-   * @return Boolean.TRUE if the CoroutineParser believes more data may be
-   *         available for further parsing. Boolean.FALSE if parsing ran to
-   *         completion. Exception if the parser objected for some reason.
+   * @param parsemore If true, tells the incremental parser to generate another chunk of output. If false, tells the
+   *        parser that we're satisfied and it can terminate parsing of this document.
+   * @return Boolean.TRUE if the CoroutineParser believes more data may be available for further parsing. Boolean.FALSE
+   *         if parsing ran to completion. Exception if the parser objected for some reason.
    */
   @Override
   public Object deliverMoreNodes(boolean parsemore) {
@@ -373,11 +346,9 @@ public class IncrementalSAXSource_Xerces implements IncrementalSAXSource {
 
   // ================================================================
   /**
-   * Simple unit test. Attempt coroutine parsing of document indicated by first
-   * argument (as a URI), report progress.
+   * Simple unit test. Attempt coroutine parsing of document indicated by first argument (as a URI), report progress.
    * 
-   * @param args
-   *          TODO
+   * @param args TODO
    */
   public static void main(String args[]) {
     System.out.println("Starting...");
@@ -420,7 +391,7 @@ public class IncrementalSAXSource_Xerces implements IncrementalSAXSource {
         } else if (result == null) {
           System.out.println("\nUNEXPECTED: Parser says shut down prematurely.\n");
         } else if (result instanceof Exception)
-          throw new de.lyca.xml.utils.WrappedRuntimeException((Exception) result);
+          throw new WrappedRuntimeException((Exception) result);
         // System.out.println("\nParser threw exception:");
         // ((Exception)result).printStackTrace();
 
@@ -433,4 +404,4 @@ public class IncrementalSAXSource_Xerces implements IncrementalSAXSource {
 
   }
 
-} // class IncrementalSAXSource_Xerces
+}

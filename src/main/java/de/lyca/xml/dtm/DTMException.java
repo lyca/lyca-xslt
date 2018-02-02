@@ -22,8 +22,7 @@ import java.io.PrintWriter;
 
 import javax.xml.transform.SourceLocator;
 
-import de.lyca.xml.res.XMLErrorResources;
-import de.lyca.xml.res.XMLMessages;
+import de.lyca.xml.res.Messages;
 
 /**
  * This class specifies an exceptional condition that occured in the DTM module.
@@ -116,11 +115,10 @@ public class DTMException extends RuntimeException {
   public synchronized Throwable initCause(Throwable cause) {
 
     if (containedException == null && cause != null)
-      throw new IllegalStateException(XMLMessages.createXMLMessage(XMLErrorResources.ER_CANNOT_OVERWRITE_CAUSE, null)); // "Can't overwrite cause");
+      throw new IllegalStateException(Messages.get().cannotOverwriteCause()); // "Can't overwrite cause");
 
     if (cause == this)
-      throw new IllegalArgumentException(XMLMessages.createXMLMessage(
-              XMLErrorResources.ER_SELF_CAUSATION_NOT_PERMITTED, null)); // "Self-causation not permitted");
+      throw new IllegalArgumentException(Messages.get().selfCausationNotPermitted()); // "Self-causation not permitted");
 
     containedException = cause;
 

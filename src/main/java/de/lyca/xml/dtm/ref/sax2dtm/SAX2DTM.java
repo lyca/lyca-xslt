@@ -48,8 +48,7 @@ import de.lyca.xml.dtm.ref.DTMTreeWalker;
 import de.lyca.xml.dtm.ref.IncrementalSAXSource;
 import de.lyca.xml.dtm.ref.IncrementalSAXSource_Filter;
 import de.lyca.xml.dtm.ref.NodeLocator;
-import de.lyca.xml.res.XMLErrorResources;
-import de.lyca.xml.res.XMLMessages;
+import de.lyca.xml.res.Messages;
 import de.lyca.xml.utils.FastStringBuffer;
 import de.lyca.xml.utils.IntStack;
 import de.lyca.xml.utils.IntVector;
@@ -61,38 +60,34 @@ import de.lyca.xml.utils.XMLString;
 import de.lyca.xml.utils.XMLStringFactory;
 
 /**
- * This class implements a DTM that tends to be optimized more for speed than
- * for compactness, that is constructed via SAX2 ContentHandler events.
+ * This class implements a DTM that tends to be optimized more for speed than for compactness, that is constructed via
+ * SAX2 ContentHandler events.
  */
-public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, DTDHandler, ContentHandler,
-        ErrorHandler, DeclHandler, LexicalHandler {
+public class SAX2DTM extends DTMDefaultBaseIterators
+    implements EntityResolver, DTDHandler, ContentHandler, ErrorHandler, DeclHandler, LexicalHandler {
   /** Set true to monitor SAX events and similar diagnostic info. */
   private static final boolean DEBUG = false;
 
   /**
-   * If we're building the model incrementally on demand, we need to be able to
-   * tell the source when to send us more data.
+   * If we're building the model incrementally on demand, we need to be able to tell the source when to send us more
+   * data.
    * 
-   * Note that if this has not been set, and you attempt to read ahead of the
-   * current build point, we'll probably throw a null-pointer exception. We
-   * could try to wait-and-retry instead, as a very poor fallback, but that has
-   * all the known problems with multithreading on multiprocessors and we Don't
-   * Want to Go There.
+   * Note that if this has not been set, and you attempt to read ahead of the current build point, we'll probably throw
+   * a null-pointer exception. We could try to wait-and-retry instead, as a very poor fallback, but that has all the
+   * known problems with multithreading on multiprocessors and we Don't Want to Go There.
    * 
    * @see setIncrementalSAXSource
    */
   private IncrementalSAXSource m_incrementalSAXSource = null;
 
   /**
-   * All the character content, including attribute values, are stored in this
-   * buffer.
+   * All the character content, including attribute values, are stored in this buffer.
    * 
-   * %REVIEW% Should this have an option of being shared across DTMs?
-   * Sequentially only; not threadsafe... Currently, I think not.
+   * %REVIEW% Should this have an option of being shared across DTMs? Sequentially only; not threadsafe... Currently, I
+   * think not.
    * 
-   * %REVIEW% Initial size was pushed way down to reduce weight of RTFs. pending
-   * reduction in number of RTF DTMs. Now that we're sharing a DTM between RTFs,
-   * and tail-pruning... consider going back to the larger/faster.
+   * %REVIEW% Initial size was pushed way down to reduce weight of RTFs. pending reduction in number of RTF DTMs. Now
+   * that we're sharing a DTM between RTFs, and tail-pruning... consider going back to the larger/faster.
    * 
    * Made protected rather than private so SAX2RTFDTM can access it.
    */
@@ -105,26 +100,25 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
   protected SuballocatedIntVector m_data;
 
   /**
-   * The parent stack, needed only for construction. Made protected rather than
-   * private so SAX2RTFDTM can access it.
+   * The parent stack, needed only for construction. Made protected rather than private so SAX2RTFDTM can access it.
    */
   transient protected IntStack m_parents;
 
   /**
-   * The current previous node, needed only for construction time. Made
-   * protected rather than private so SAX2RTFDTM can access it.
+   * The current previous node, needed only for construction time. Made protected rather than private so SAX2RTFDTM can
+   * access it.
    */
   transient protected int m_previous = 0;
 
   /**
-   * Namespace support, only relevent at construction time. Made protected
-   * rather than private so SAX2RTFDTM can access it.
+   * Namespace support, only relevent at construction time. Made protected rather than private so SAX2RTFDTM can access
+   * it.
    */
   transient protected List<String> m_prefixMappings = new ArrayList<>();
 
   /**
-   * Namespace support, only relevent at construction time. Made protected
-   * rather than private so SAX2RTFDTM can access it.
+   * Namespace support, only relevent at construction time. Made protected rather than private so SAX2RTFDTM can access
+   * it.
    */
   transient protected IntStack m_contextIndexes;
 
@@ -152,8 +146,7 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
   protected DTMStringPool m_valuesOrPrefixes;
 
   /**
-   * End document has been reached. Made protected rather than private so
-   * SAX2RTFDTM can access it.
+   * End document has been reached. Made protected rather than private so SAX2RTFDTM can access it.
    */
   protected boolean m_endDocumentOccured = false;
 
@@ -169,16 +162,15 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
    * fixed dom-style names.
    */
   private static final String[] m_fixednames = { null, null, // nothing, Element
-          null, "#text", // Attr, Text
-          "#cdata_section", null, // CDATA, EntityReference
-          null, null, // Entity, PI
-          "#comment", "#document", // Comment, Document
-          null, "#document-fragment", // Doctype, DocumentFragment
-          null }; // Notation
+      null, "#text", // Attr, Text
+      "#cdata_section", null, // CDATA, EntityReference
+      null, null, // Entity, PI
+      "#comment", "#document", // Comment, Document
+      null, "#document-fragment", // Doctype, DocumentFragment
+      null }; // Notation
 
   /**
-   * List of entities. Each record is composed of four Strings: publicId,
-   * systemID, notationName, and name.
+   * List of entities. Each record is composed of four Strings: publicId, systemID, notationName, and name.
    */
   private List<String> m_entities = null;
 
@@ -198,14 +190,13 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
   private static final int ENTITY_FIELDS_PER = 4;
 
   /**
-   * The starting offset within m_chars for the text or CDATA_SECTION node
-   * currently being acumulated, or -1 if there is no text node in progress
+   * The starting offset within m_chars for the text or CDATA_SECTION node currently being acumulated, or -1 if there is
+   * no text node in progress
    */
   protected int m_textPendingStart = -1;
 
   /**
-   * Describes whether information about document source location should be
-   * maintained or not.
+   * Describes whether information about document source location should be maintained or not.
    * 
    * Made protected for access by SAX2RTFDTM.
    */
@@ -227,50 +218,34 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
   /**
    * Construct a SAX2DTM object using the default block size.
    * 
-   * @param mgr
-   *          The DTMManager who owns this DTM.
-   * @param source
-   *          the JAXP 1.1 Source object for this DTM.
-   * @param dtmIdentity
-   *          The DTM identity ID for this DTM.
-   * @param whiteSpaceFilter
-   *          The white space filter for this DTM, which may be null.
-   * @param xstringfactory
-   *          XMLString factory for creating character content.
-   * @param doIndexing
-   *          true if the caller considers it worth it to use indexing schemes.
+   * @param mgr The DTMManager who owns this DTM.
+   * @param source the JAXP 1.1 Source object for this DTM.
+   * @param dtmIdentity The DTM identity ID for this DTM.
+   * @param whiteSpaceFilter The white space filter for this DTM, which may be null.
+   * @param xstringfactory XMLString factory for creating character content.
+   * @param doIndexing true if the caller considers it worth it to use indexing schemes.
    */
   public SAX2DTM(DTMManager mgr, Source source, int dtmIdentity, DTMWSFilter whiteSpaceFilter,
-          XMLStringFactory xstringfactory, boolean doIndexing) {
+      XMLStringFactory xstringfactory, boolean doIndexing) {
 
     this(mgr, source, dtmIdentity, whiteSpaceFilter, xstringfactory, doIndexing, DEFAULT_BLOCKSIZE, true, false);
   }
 
   /**
-   * Construct a SAX2DTM object ready to be constructed from SAX2 ContentHandler
-   * events.
+   * Construct a SAX2DTM object ready to be constructed from SAX2 ContentHandler events.
    * 
-   * @param mgr
-   *          The DTMManager who owns this DTM.
-   * @param source
-   *          the JAXP 1.1 Source object for this DTM.
-   * @param dtmIdentity
-   *          The DTM identity ID for this DTM.
-   * @param whiteSpaceFilter
-   *          The white space filter for this DTM, which may be null.
-   * @param xstringfactory
-   *          XMLString factory for creating character content.
-   * @param doIndexing
-   *          true if the caller considers it worth it to use indexing schemes.
-   * @param blocksize
-   *          The block size of the DTM.
-   * @param usePrevsib
-   *          true if we want to build the previous sibling node array.
-   * @param newNameTable
-   *          true if we want to use a new ExpandedNameTable for this DTM.
+   * @param mgr The DTMManager who owns this DTM.
+   * @param source the JAXP 1.1 Source object for this DTM.
+   * @param dtmIdentity The DTM identity ID for this DTM.
+   * @param whiteSpaceFilter The white space filter for this DTM, which may be null.
+   * @param xstringfactory XMLString factory for creating character content.
+   * @param doIndexing true if the caller considers it worth it to use indexing schemes.
+   * @param blocksize The block size of the DTM.
+   * @param usePrevsib true if we want to build the previous sibling node array.
+   * @param newNameTable true if we want to use a new ExpandedNameTable for this DTM.
    */
   public SAX2DTM(DTMManager mgr, Source source, int dtmIdentity, DTMWSFilter whiteSpaceFilter,
-          XMLStringFactory xstringfactory, boolean doIndexing, int blocksize, boolean usePrevsib, boolean newNameTable) {
+      XMLStringFactory xstringfactory, boolean doIndexing, int blocksize, boolean usePrevsib, boolean newNameTable) {
 
     super(mgr, source, dtmIdentity, whiteSpaceFilter, xstringfactory, doIndexing, blocksize, usePrevsib, newNameTable);
 
@@ -310,8 +285,7 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
   }
 
   /**
-   * Set whether information about document source location should be maintained
-   * or not.
+   * Set whether information about document source location should be maintained or not.
    */
   public void setUseSourceLocation(boolean useSourceLocation) {
     m_useSourceLocationProperty = useSourceLocation;
@@ -320,8 +294,7 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
   /**
    * Get the data or qualified name for the given node identity.
    * 
-   * @param identity
-   *          The node identity.
+   * @param identity The node identity.
    * 
    * @return The data or qualified name, or DTM.NULL.
    */
@@ -351,11 +324,10 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
   }
 
   /**
-   * Ask the CoRoutine parser to doTerminate and clear the reference. If the
-   * CoRoutine parser has already been cleared, this will have no effect.
+   * Ask the CoRoutine parser to doTerminate and clear the reference. If the CoRoutine parser has already been cleared,
+   * this will have no effect.
    * 
-   * @param callDoTerminate
-   *          true of doTerminate should be called on the coRoutine parser.
+   * @param callDoTerminate true of doTerminate should be called on the coRoutine parser.
    */
   public void clearCoRoutine(boolean callDoTerminate) {
 
@@ -369,16 +341,13 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
   }
 
   /**
-   * Bind a IncrementalSAXSource to this DTM. If we discover we need nodes that
-   * have not yet been built, we will ask this object to send us more events,
-   * and it will manage interactions with its data sources.
+   * Bind a IncrementalSAXSource to this DTM. If we discover we need nodes that have not yet been built, we will ask
+   * this object to send us more events, and it will manage interactions with its data sources.
    * 
-   * Note that we do not actually build the IncrementalSAXSource, since we don't
-   * know what source it's reading from, what thread that source will run in, or
-   * when it will run.
+   * Note that we do not actually build the IncrementalSAXSource, since we don't know what source it's reading from,
+   * what thread that source will run in, or when it will run.
    * 
-   * @param incrementalSAXSource
-   *          The parser that we want to recieve events from on demand.
+   * @param incrementalSAXSource The parser that we want to recieve events from on demand.
    */
   public void setIncrementalSAXSource(IncrementalSAXSource incrementalSAXSource) {
 
@@ -403,14 +372,13 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
   }
 
   /**
-   * getContentHandler returns "our SAX builder" -- the thing that someone else
-   * should send SAX events to in order to extend this DTM model.
+   * getContentHandler returns "our SAX builder" -- the thing that someone else should send SAX events to in order to
+   * extend this DTM model.
    * 
    * %REVIEW% Should this return null if constrution already done/begun?
    * 
-   * @return null if this model doesn't respond to SAX events, "this" if the DTM
-   *         object has a built-in SAX ContentHandler, the IncrementalSAXSource
-   *         if we're bound to one and should receive the SAX stream via it for
+   * @return null if this model doesn't respond to SAX events, "this" if the DTM object has a built-in SAX
+   *         ContentHandler, the IncrementalSAXSource if we're bound to one and should receive the SAX stream via it for
    *         incremental build purposes...
    */
   @Override
@@ -427,10 +395,9 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
    * 
    * %REVIEW% Should this return null if constrution already done/begun?
    * 
-   * @return null if this model doesn't respond to lexical SAX events, "this" if
-   *         the DTM object has a built-in SAX ContentHandler, the
-   *         IncrementalSAXSource if we're bound to one and should receive the
-   *         SAX stream via it for incremental build purposes...
+   * @return null if this model doesn't respond to lexical SAX events, "this" if the DTM object has a built-in SAX
+   *         ContentHandler, the IncrementalSAXSource if we're bound to one and should receive the SAX stream via it for
+   *         incremental build purposes...
    */
   @Override
   public LexicalHandler getLexicalHandler() {
@@ -482,10 +449,8 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
   }
 
   /**
-   * @return true iff we're building this model incrementally (eg we're
-   *         partnered with a IncrementalSAXSource) and thus require that the
-   *         transformation and the parse run simultaneously. Guidance to the
-   *         DTMManager.
+   * @return true iff we're building this model incrementally (eg we're partnered with a IncrementalSAXSource) and thus
+   *         require that the transformation and the parse run simultaneously. Guidance to the DTMManager.
    */
   @Override
   public boolean needsTwoThreads() {
@@ -493,21 +458,14 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
   }
 
   /**
-   * Directly call the characters method on the passed ContentHandler for the
-   * string-value of the given node (see http://www.w3.org/TR/xpath#data-model
-   * for the definition of a node's string-value). Multiple calls to the
-   * ContentHandler's characters methods may well occur for a single call to
-   * this method.
+   * Directly call the characters method on the passed ContentHandler for the string-value of the given node (see
+   * http://www.w3.org/TR/xpath#data-model for the definition of a node's string-value). Multiple calls to the
+   * ContentHandler's characters methods may well occur for a single call to this method.
    * 
-   * @param nodeHandle
-   *          The node ID.
-   * @param ch
-   *          A non-null reference to a ContentHandler.
-   * @param normalize
-   *          true if the content should be normalized according to the rules
-   *          for the XPath <a
-   *          href="http://www.w3.org/TR/xpath#function-normalize-space"
-   *          >normalize-space</a> function.
+   * @param nodeHandle The node ID.
+   * @param ch A non-null reference to a ContentHandler.
+   * @param normalize true if the content should be normalized according to the rules for the XPath
+   *        <a href="http://www.w3.org/TR/xpath#function-normalize-space" >normalize-space</a> function.
    * 
    * @throws SAXException
    */
@@ -584,14 +542,11 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
   }
 
   /**
-   * Given a node handle, return its DOM-style node name. This will include
-   * names such as #text or #document.
+   * Given a node handle, return its DOM-style node name. This will include names such as #text or #document.
    * 
-   * @param nodeHandle
-   *          the id of the node.
-   * @return String Name of this node, which may be an empty string. %REVIEW%
-   *         Document when empty string is possible... %REVIEW-COMMENT% It
-   *         should never be empty, should it?
+   * @param nodeHandle the id of the node.
+   * @return String Name of this node, which may be an empty string. %REVIEW% Document when empty string is possible...
+   *         %REVIEW-COMMENT% It should never be empty, should it?
    */
   @Override
   public String getNodeName(int nodeHandle) {
@@ -627,11 +582,10 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
   }
 
   /**
-   * Given a node handle, return the XPath node name. This should be the name as
-   * described by the XPath data model, NOT the DOM-style name.
+   * Given a node handle, return the XPath node name. This should be the name as described by the XPath data model, NOT
+   * the DOM-style name.
    * 
-   * @param nodeHandle
-   *          the id of the node.
+   * @param nodeHandle the id of the node.
    * @return String Name of this node, which may be an empty string.
    */
   @Override
@@ -660,13 +614,11 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
   }
 
   /**
-   * 5. [specified] A flag indicating whether this attribute was actually
-   * specified in the start-tag of its element, or was defaulted from the DTD.
+   * 5. [specified] A flag indicating whether this attribute was actually specified in the start-tag of its element, or
+   * was defaulted from the DTD.
    * 
-   * @param attributeHandle
-   *          Must be a valid handle to an attribute node.
-   * @return <code>true</code> if the attribute was specified;
-   *         <code>false</code> if it was defaulted.
+   * @param attributeHandle Must be a valid handle to an attribute node.
+   * @return <code>true</code> if the attribute was specified; <code>false</code> if it was defaulted.
    */
   @Override
   public boolean isAttributeSpecified(int attributeHandle) {
@@ -678,8 +630,8 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
   /**
    * A document type declaration information item has the following properties:
    * 
-   * 1. [system identifier] The system identifier of the external subset, if it
-   * exists. Otherwise this property has no value.
+   * 1. [system identifier] The system identifier of the external subset, if it exists. Otherwise this property has no
+   * value.
    * 
    * @return the system identifier String object, or null if there is none.
    */
@@ -687,17 +639,16 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
   public String getDocumentTypeDeclarationSystemIdentifier() {
 
     /** @todo: implement this de.lyca.xml.dtm.DTMDefaultBase abstract method */
-    error(XMLMessages.createXMLMessage(XMLErrorResources.ER_METHOD_NOT_SUPPORTED, null));// "Not yet supported!");
+    // "Not yet supported!");
+    error(Messages.get().methodNotSupported());
 
     return null;
   }
 
   /**
-   * Get the next node identity value in the list, and call the iterator if it
-   * hasn't been added yet.
+   * Get the next node identity value in the list, and call the iterator if it hasn't been added yet.
    * 
-   * @param identity
-   *          The node identity (index).
+   * @param identity The node identity (index).
    * @return identity+1, or DTM.NULL.
    */
   @Override
@@ -718,10 +669,8 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
   /**
    * Directly create SAX parser events from a subtree.
    * 
-   * @param nodeHandle
-   *          The node ID.
-   * @param ch
-   *          A non-null reference to a ContentHandler.
+   * @param nodeHandle The node ID.
+   * @param ch A non-null reference to a ContentHandler.
    * 
    * @throws SAXException TODO
    */
@@ -758,8 +707,7 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
   /**
    * This method should try and build one or more nodes in the table.
    * 
-   * @return The true if a next node is found or false if there are no more
-   *         nodes.
+   * @return The true if a next node is found or false if there are no more nodes.
    */
   @Override
   protected boolean nextNode() {
@@ -809,8 +757,7 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
   /**
    * Bottleneck determination of text type.
    * 
-   * @param type
-   *          oneof DTM.XXX_NODE.
+   * @param type oneof DTM.XXX_NODE.
    * 
    * @return true if this is a text or cdata section.
    */
@@ -837,23 +784,17 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
   /**
    * Construct the node map from the node.
    * 
-   * @param type
-   *          raw type ID, one of DTM.XXX_NODE.
-   * @param expandedTypeID
-   *          The expended type ID.
-   * @param parentIndex
-   *          The current parent index.
-   * @param previousSibling
-   *          The previous sibling index.
-   * @param dataOrPrefix
-   *          index into m_data table, or string handle.
-   * @param canHaveFirstChild
-   *          true if the node can have a first child, false if it is atomic.
+   * @param type raw type ID, one of DTM.XXX_NODE.
+   * @param expandedTypeID The expended type ID.
+   * @param parentIndex The current parent index.
+   * @param previousSibling The previous sibling index.
+   * @param dataOrPrefix index into m_data table, or string handle.
+   * @param canHaveFirstChild true if the node can have a first child, false if it is atomic.
    * 
    * @return The index identity of the node that was added.
    */
   protected int addNode(int type, int expandedTypeID, int parentIndex, int previousSibling, int dataOrPrefix,
-          boolean canHaveFirstChild) {
+      boolean canHaveFirstChild) {
     // Common to all nodes:
     final int nodeIndex = m_size++;
 
@@ -903,8 +844,7 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
   /**
    * Get a new DTM ID beginning at the specified node index.
    * 
-   * @param nodeIndex
-   *          The node identity at which the new DTM ID will begin addressing.
+   * @param nodeIndex The node identity at which the new DTM ID will begin addressing.
    */
   protected void addNewDTMID(int nodeIndex) {
     try {
@@ -920,18 +860,16 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
       // %REVIEW% Wrong error message, but I've been told we're trying
       // not to add messages right not for I18N reasons.
       // %REVIEW% Should this be a Fatal Error?
-      error(XMLMessages.createXMLMessage(XMLErrorResources.ER_NO_DTMIDS_AVAIL, null));// "No more DTM IDs are available";
+      // "No more DTM IDs are available";
+      error(Messages.get().noDtmidsAvail());
     }
   }
 
   /**
-   * Migrate a DTM built with an old DTMManager to a new DTMManager. After the
-   * migration, the new DTMManager will treat the DTM as one that is built by
-   * itself. This is used to support DTM sharing between multiple
-   * transformations.
+   * Migrate a DTM built with an old DTMManager to a new DTMManager. After the migration, the new DTMManager will treat
+   * the DTM as one that is built by itself. This is used to support DTM sharing between multiple transformations.
    * 
-   * @param manager
-   *          the DTMManager
+   * @param manager the DTMManager
    */
   @Override
   public void migrateTo(DTMManager manager) {
@@ -951,8 +889,8 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
   }
 
   /**
-   * Store the source location of the current node. This method must be called
-   * as every node is added to the DTM or for no node.
+   * Store the source location of the current node. This method must be called as every node is added to the DTM or for
+   * no node.
    */
   protected void setSourceLocation() {
     m_sourceSystemId.addElement(m_locator.getSystemId());
@@ -970,14 +908,11 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
   }
 
   /**
-   * Given a node handle, return its node value. This is mostly as defined by
-   * the DOM, but may ignore some conveniences.
+   * Given a node handle, return its node value. This is mostly as defined by the DOM, but may ignore some conveniences.
    * <p>
    * 
-   * @param nodeHandle
-   *          The node id.
-   * @return String Value of this node, or null if not meaningful for this node
-   *         type.
+   * @param nodeHandle The node id.
+   * @return String Value of this node, or null if not meaningful for this node type.
    */
   @Override
   public String getNodeValue(int nodeHandle) {
@@ -1007,11 +942,10 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
   }
 
   /**
-   * Given a node handle, return its XPath-style localname. (As defined in
-   * Namespaces, this is the portion of the name after any colon character).
+   * Given a node handle, return its XPath-style localname. (As defined in Namespaces, this is the portion of the name
+   * after any colon character).
    * 
-   * @param nodeHandle
-   *          the id of the node.
+   * @param nodeHandle the id of the node.
    * @return String Local name of this node.
    */
   @Override
@@ -1020,35 +954,26 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
   }
 
   /**
-   * The getUnparsedEntityURI function returns the URI of the unparsed entity
-   * with the specified name in the same document as the context node (see [3.3
-   * Unparsed Entities]). It returns the empty string if there is no such
-   * entity.
+   * The getUnparsedEntityURI function returns the URI of the unparsed entity with the specified name in the same
+   * document as the context node (see [3.3 Unparsed Entities]). It returns the empty string if there is no such entity.
    * <p>
-   * XML processors may choose to use the System Identifier (if one is provided)
-   * to resolve the entity, rather than the URI in the Public Identifier. The
-   * details are dependent on the processor, and we would have to support some
-   * form of plug-in resolver to handle this properly. Currently, we simply
-   * return the System Identifier if present, and hope that it a usable URI or
-   * that our caller can map it to one. TODO: Resolve Public Identifiers... or
-   * consider changing function name.
+   * XML processors may choose to use the System Identifier (if one is provided) to resolve the entity, rather than the
+   * URI in the Public Identifier. The details are dependent on the processor, and we would have to support some form of
+   * plug-in resolver to handle this properly. Currently, we simply return the System Identifier if present, and hope
+   * that it a usable URI or that our caller can map it to one. TODO: Resolve Public Identifiers... or consider changing
+   * function name.
    * <p>
-   * If we find a relative URI reference, XML expects it to be resolved in terms
-   * of the base URI of the document. The DOM doesn't do that for us, and it
-   * isn't entirely clear whether that should be done here; currently that's
-   * pushed up to a higher level of our application. (Note that DOM Level 1
-   * didn't store the document's base URI.) TODO: Consider resolving Relative
-   * URIs.
+   * If we find a relative URI reference, XML expects it to be resolved in terms of the base URI of the document. The
+   * DOM doesn't do that for us, and it isn't entirely clear whether that should be done here; currently that's pushed
+   * up to a higher level of our application. (Note that DOM Level 1 didn't store the document's base URI.) TODO:
+   * Consider resolving Relative URIs.
    * <p>
-   * (The DOM's statement that "An XML processor may choose to completely expand
-   * entities before the structure model is passed to the DOM" refers only to
-   * parsed entities, not unparsed, and hence doesn't affect this function.)
+   * (The DOM's statement that "An XML processor may choose to completely expand entities before the structure model is
+   * passed to the DOM" refers only to parsed entities, not unparsed, and hence doesn't affect this function.)
    * 
-   * @param name
-   *          A string containing the Entity Name of the unparsed entity.
+   * @param name A string containing the Entity Name of the unparsed entity.
    * 
-   * @return String containing the URI of the Unparsed Entity, or an empty
-   *         string if no such entity exists.
+   * @return String containing the URI of the Unparsed Entity, or an empty string if no such entity exists.
    */
   @Override
   public String getUnparsedEntityURI(String name) {
@@ -1092,9 +1017,8 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
   }
 
   /**
-   * Given a namespace handle, return the prefix that the namespace decl is
-   * mapping. Given a node handle, return the prefix used to map to the
-   * namespace.
+   * Given a namespace handle, return the prefix that the namespace decl is mapping. Given a node handle, return the
+   * prefix used to map to the namespace.
    * 
    * <p>
    * %REVIEW% Are you sure you want "" for no prefix?
@@ -1103,10 +1027,8 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
    * %REVIEW-COMMENT% I think so... not totally sure. -sb
    * </p>
    * 
-   * @param nodeHandle
-   *          the id of the node.
-   * @return String prefix of this node's name, or "" if no explicit namespace
-   *         prefix was given.
+   * @param nodeHandle the id of the node.
+   * @return String prefix of this node's name, or "" if no explicit namespace prefix was given.
    */
   @Override
   public String getPrefix(int nodeHandle) {
@@ -1142,15 +1064,11 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
   /**
    * Retrieves an attribute node by by qualified name and namespace URI.
    * 
-   * @param nodeHandle
-   *          int Handle of the node upon which to look up this attribute..
-   * @param namespaceURI
-   *          The namespace URI of the attribute to retrieve, or null.
-   * @param name
-   *          The local name of the attribute to retrieve.
-   * @return The attribute node handle with the specified name (
-   *         <code>nodeName</code>) or <code>DTM.NULL</code> if there is no such
-   *         attribute.
+   * @param nodeHandle int Handle of the node upon which to look up this attribute..
+   * @param namespaceURI The namespace URI of the attribute to retrieve, or null.
+   * @param name The local name of the attribute to retrieve.
+   * @return The attribute node handle with the specified name ( <code>nodeName</code>) or <code>DTM.NULL</code> if
+   *         there is no such attribute.
    */
   @Override
   public int getAttributeNode(int nodeHandle, String namespaceURI, String name) {
@@ -1168,9 +1086,8 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
   }
 
   /**
-   * Return the public identifier of the external subset, normalized as
-   * described in 4.2.2 External Entities [XML]. If there is no external subset
-   * or if it has no public identifier, this property has no value.
+   * Return the public identifier of the external subset, normalized as described in 4.2.2 External Entities [XML]. If
+   * there is no external subset or if it has no public identifier, this property has no value.
    * 
    * @return the public identifier String object, or null if there is none.
    */
@@ -1178,24 +1095,22 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
   public String getDocumentTypeDeclarationPublicIdentifier() {
 
     /** @todo: implement this de.lyca.xml.dtm.DTMDefaultBase abstract method */
-    error(XMLMessages.createXMLMessage(XMLErrorResources.ER_METHOD_NOT_SUPPORTED, null));// "Not yet supported!");
+    // "Not yet supported!");
+    error(Messages.get().methodNotSupported());
 
     return null;
   }
 
   /**
-   * Given a node handle, return its DOM-style namespace URI (As defined in
-   * Namespaces, this is the declared URI which this node's prefix -- or default
-   * in lieu thereof -- was mapped to.)
+   * Given a node handle, return its DOM-style namespace URI (As defined in Namespaces, this is the declared URI which
+   * this node's prefix -- or default in lieu thereof -- was mapped to.)
    * 
    * <p>
    * %REVIEW% Null or ""? -sb
    * </p>
    * 
-   * @param nodeHandle
-   *          the id of the node.
-   * @return String URI value of this node's namespace, or null if no namespace
-   *         was resolved.
+   * @param nodeHandle the id of the node.
+   * @return String URI value of this node's namespace, or null if no namespace was resolved.
    */
   @Override
   public String getNamespaceURI(int nodeHandle) {
@@ -1204,12 +1119,10 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
   }
 
   /**
-   * Get the string-value of a node as a String object (see
-   * http://www.w3.org/TR/xpath#data-model for the definition of a node's
-   * string-value).
+   * Get the string-value of a node as a String object (see http://www.w3.org/TR/xpath#data-model for the definition of
+   * a node's string-value).
    * 
-   * @param nodeHandle
-   *          The node ID.
+   * @param nodeHandle The node ID.
    * 
    * @return A string object that represents the string-value of the given node.
    */
@@ -1274,8 +1187,7 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
   /**
    * Determine if the string-value of a node is whitespace
    * 
-   * @param nodeHandle
-   *          The node Handle.
+   * @param nodeHandle The node Handle.
    * 
    * @return Return true if the given node is whitespace.
    */
@@ -1299,22 +1211,18 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
   }
 
   /**
-   * Returns the <code>Element</code> whose <code>ID</code> is given by
-   * <code>elementId</code>. If no such element exists, returns
-   * <code>DTM.NULL</code>. Behavior is not defined if more than one element has
-   * this <code>ID</code>. Attributes (including those with the name "ID") are
-   * not of type ID unless so defined by DTD/Schema information available to the
-   * DTM implementation. Implementations that do not know whether attributes are
-   * of type ID or not are expected to return <code>DTM.NULL</code>.
+   * Returns the <code>Element</code> whose <code>ID</code> is given by <code>elementId</code>. If no such element
+   * exists, returns <code>DTM.NULL</code>. Behavior is not defined if more than one element has this <code>ID</code>.
+   * Attributes (including those with the name "ID") are not of type ID unless so defined by DTD/Schema information
+   * available to the DTM implementation. Implementations that do not know whether attributes are of type ID or not are
+   * expected to return <code>DTM.NULL</code>.
    * 
    * <p>
-   * %REVIEW% Presumably IDs are still scoped to a single document, and this
-   * operation searches only within a single document, right? Wouldn't want
-   * collisions between DTMs in the same process.
+   * %REVIEW% Presumably IDs are still scoped to a single document, and this operation searches only within a single
+   * document, right? Wouldn't want collisions between DTMs in the same process.
    * </p>
    * 
-   * @param elementId
-   *          The unique <code>id</code> value for an element.
+   * @param elementId The unique <code>id</code> value for an element.
    * @return The handle of the matching element.
    */
   @Override
@@ -1340,13 +1248,10 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
   }
 
   /**
-   * Get a prefix either from the qname or from the uri mapping, or just make
-   * one up!
+   * Get a prefix either from the qname or from the uri mapping, or just make one up!
    * 
-   * @param qname
-   *          The qualified name, which may be null.
-   * @param uri
-   *          The namespace URI, which may be null.
+   * @param qname The qualified name, which may be null.
+   * @param uri The namespace URI, which may be null.
    * 
    * @return The prefix if there is one, or null.
    */
@@ -1402,8 +1307,7 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
   /**
    * Get a prefix either from the uri mapping, or just make one up!
    * 
-   * @param uri
-   *          The namespace URI, which may be null.
+   * @param uri The namespace URI, which may be null.
    * 
    * @return The prefix if there is one, or null.
    */
@@ -1414,8 +1318,7 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
   }
 
   /**
-   * Get a prefix either from the qname or from the uri mapping, or just make
-   * one up!
+   * Get a prefix either from the qname or from the uri mapping, or just make one up!
    * 
    * @return The prefix if there is one, or null.
    */
@@ -1442,18 +1345,15 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
   /**
    * Set an ID string to node association in the ID table.
    * 
-   * @param id
-   *          The ID string.
-   * @param elem
-   *          The associated element handle.
+   * @param id The ID string.
+   * @param elem The associated element handle.
    */
   public void setIDAttribute(String id, int elem) {
     m_idAttributes.put(id, new Integer(elem));
   }
 
   /**
-   * Check whether accumulated text should be stripped; if not, append the
-   * appropriate flavor of text/cdata node.
+   * Check whether accumulated text should be stripped; if not, append the appropriate flavor of text/cdata node.
    */
   protected void charactersFlush() {
 
@@ -1496,19 +1396,15 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
    * Resolve an external entity.
    * 
    * <p>
-   * Always return null, so that the parser will use the system identifier
-   * provided in the XML document. This method implements the SAX default
-   * behaviour: application writers can override it in a subclass to do special
-   * translations such as catalog lookups or URI redirection.
+   * Always return null, so that the parser will use the system identifier provided in the XML document. This method
+   * implements the SAX default behaviour: application writers can override it in a subclass to do special translations
+   * such as catalog lookups or URI redirection.
    * </p>
    * 
-   * @param publicId
-   *          The public identifer, or null if none is available.
-   * @param systemId
-   *          The system identifier provided in the XML document.
+   * @param publicId The public identifer, or null if none is available.
+   * @param systemId The system identifier provided in the XML document.
    * @return The new input source, or null to require the default behaviour.
-   * @throws SAXException
-   *           Any SAX exception, possibly wrapping another exception.
+   * @throws SAXException Any SAX exception, possibly wrapping another exception.
    * @see org.xml.sax.EntityResolver#resolveEntity
    * 
    * @throws SAXException
@@ -1526,19 +1422,14 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
    * Receive notification of a notation declaration.
    * 
    * <p>
-   * By default, do nothing. Application writers may override this method in a
-   * subclass if they wish to keep track of the notations declared in a
-   * document.
+   * By default, do nothing. Application writers may override this method in a subclass if they wish to keep track of
+   * the notations declared in a document.
    * </p>
    * 
-   * @param name
-   *          The notation name.
-   * @param publicId
-   *          The notation public identifier, or null if not available.
-   * @param systemId
-   *          The notation system identifier.
-   * @throws SAXException
-   *           Any SAX exception, possibly wrapping another exception.
+   * @param name The notation name.
+   * @param publicId The notation public identifier, or null if not available.
+   * @param systemId The notation system identifier.
+   * @throws SAXException Any SAX exception, possibly wrapping another exception.
    * @see org.xml.sax.DTDHandler#notationDecl
    * 
    * @throws SAXException
@@ -1553,27 +1444,22 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
    * Receive notification of an unparsed entity declaration.
    * 
    * <p>
-   * By default, do nothing. Application writers may override this method in a
-   * subclass to keep track of the unparsed entities declared in a document.
+   * By default, do nothing. Application writers may override this method in a subclass to keep track of the unparsed
+   * entities declared in a document.
    * </p>
    * 
-   * @param name
-   *          The entity name.
-   * @param publicId
-   *          The entity public identifier, or null if not available.
-   * @param systemId
-   *          The entity system identifier.
-   * @param notationName
-   *          The name of the associated notation.
-   * @throws SAXException
-   *           Any SAX exception, possibly wrapping another exception.
+   * @param name The entity name.
+   * @param publicId The entity public identifier, or null if not available.
+   * @param systemId The entity system identifier.
+   * @param notationName The name of the associated notation.
+   * @throws SAXException Any SAX exception, possibly wrapping another exception.
    * @see org.xml.sax.DTDHandler#unparsedEntityDecl
    * 
    * @throws SAXException
    */
   @Override
   public void unparsedEntityDecl(String name, String publicId, String systemId, String notationName)
-          throws SAXException {
+      throws SAXException {
 
     if (null == m_entities) {
       m_entities = new ArrayList<>();
@@ -1606,13 +1492,11 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
    * Receive a Locator object for document events.
    * 
    * <p>
-   * By default, do nothing. Application writers may override this method in a
-   * subclass if they wish to store the locator for use with other document
-   * events.
+   * By default, do nothing. Application writers may override this method in a subclass if they wish to store the
+   * locator for use with other document events.
    * </p>
    * 
-   * @param locator
-   *          A locator for all SAX document events.
+   * @param locator A locator for all SAX document events.
    * @see org.xml.sax.ContentHandler#setDocumentLocator
    * @see org.xml.sax.Locator
    */
@@ -1625,8 +1509,7 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
   /**
    * Receive notification of the beginning of the document.
    * 
-   * @throws SAXException
-   *           Any SAX exception, possibly wrapping another exception.
+   * @throws SAXException Any SAX exception, possibly wrapping another exception.
    * @see org.xml.sax.ContentHandler#startDocument
    */
   @Override
@@ -1636,7 +1519,7 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
     }
 
     final int doc = addNode(DTM.DOCUMENT_NODE, m_expandedNameTable.getExpandedTypeID(DTM.DOCUMENT_NODE), DTM.NULL,
-            DTM.NULL, 0, true);
+        DTM.NULL, 0, true);
 
     m_parents.push(doc);
     m_previous = DTM.NULL;
@@ -1647,8 +1530,7 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
   /**
    * Receive notification of the end of the document.
    * 
-   * @throws SAXException
-   *           Any SAX exception, possibly wrapping another exception.
+   * @throws SAXException Any SAX exception, possibly wrapping another exception.
    * @see org.xml.sax.ContentHandler#endDocument
    */
   @Override
@@ -1683,17 +1565,13 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
    * Receive notification of the start of a Namespace mapping.
    * 
    * <p>
-   * By default, do nothing. Application writers may override this method in a
-   * subclass to take specific actions at the start of each Namespace prefix
-   * scope (such as storing the prefix mapping).
+   * By default, do nothing. Application writers may override this method in a subclass to take specific actions at the
+   * start of each Namespace prefix scope (such as storing the prefix mapping).
    * </p>
    * 
-   * @param prefix
-   *          The Namespace prefix being declared.
-   * @param uri
-   *          The Namespace URI mapped to the prefix.
-   * @throws SAXException
-   *           Any SAX exception, possibly wrapping another exception.
+   * @param prefix The Namespace prefix being declared.
+   * @param uri The Namespace URI mapped to the prefix.
+   * @throws SAXException Any SAX exception, possibly wrapping another exception.
    * @see org.xml.sax.ContentHandler#startPrefixMapping
    */
   @Override
@@ -1714,14 +1592,12 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
    * Receive notification of the end of a Namespace mapping.
    * 
    * <p>
-   * By default, do nothing. Application writers may override this method in a
-   * subclass to take specific actions at the end of each prefix mapping.
+   * By default, do nothing. Application writers may override this method in a subclass to take specific actions at the
+   * end of each prefix mapping.
    * </p>
    * 
-   * @param prefix
-   *          The Namespace prefix being declared.
-   * @throws SAXException
-   *           Any SAX exception, possibly wrapping another exception.
+   * @param prefix The Namespace prefix being declared.
+   * @throws SAXException Any SAX exception, possibly wrapping another exception.
    * @see org.xml.sax.ContentHandler#endPrefixMapping
    */
   @Override
@@ -1751,11 +1627,9 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
   /**
    * Check if a declaration has already been made for a given prefix.
    * 
-   * @param prefix
-   *          non-null prefix string.
+   * @param prefix non-null prefix string.
    * 
-   * @return true if the declaration has already been declared in the current
-   *         context.
+   * @return true if the declaration has already been declared in the current context.
    */
   protected boolean declAlreadyDeclared(String prefix) {
 
@@ -1783,31 +1657,24 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
    * Receive notification of the start of an element.
    * 
    * <p>
-   * By default, do nothing. Application writers may override this method in a
-   * subclass to take specific actions at the start of each element (such as
-   * allocating a new tree node or writing output to a file).
+   * By default, do nothing. Application writers may override this method in a subclass to take specific actions at the
+   * start of each element (such as allocating a new tree node or writing output to a file).
    * </p>
    * 
-   * @param uri
-   *          The Namespace URI, or the empty string if the element has no
-   *          Namespace URI or if Namespace processing is not being performed.
-   * @param localName
-   *          The local name (without prefix), or the empty string if Namespace
-   *          processing is not being performed.
-   * @param qName
-   *          The qualified name (with prefix), or the empty string if qualified
-   *          names are not available.
-   * @param attributes
-   *          The specified or defaulted attributes.
-   * @throws SAXException
-   *           Any SAX exception, possibly wrapping another exception.
+   * @param uri The Namespace URI, or the empty string if the element has no Namespace URI or if Namespace processing is
+   *        not being performed.
+   * @param localName The local name (without prefix), or the empty string if Namespace processing is not being
+   *        performed.
+   * @param qName The qualified name (with prefix), or the empty string if qualified names are not available.
+   * @param attributes The specified or defaulted attributes.
+   * @throws SAXException Any SAX exception, possibly wrapping another exception.
    * @see org.xml.sax.ContentHandler#startElement
    */
   @Override
   public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
     if (DEBUG) {
-      System.out.println("startElement: uri: " + uri + ", localname: " + localName + ", qname: " + qName + ", atts: "
-              + attributes);
+      System.out.println(
+          "startElement: uri: " + uri + ", localname: " + localName + ", qname: " + qName + ", atts: " + attributes);
 
       final boolean DEBUG_ATTRS = true;
       if (DEBUG_ATTRS & attributes != null) {
@@ -1817,8 +1684,8 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
         } else {
           for (int i = 0; i < n; i++) {
             System.out.println("\t attr: uri: " + attributes.getURI(i) + ", localname: " + attributes.getLocalName(i)
-                    + ", qname: " + attributes.getQName(i) + ", type: " + attributes.getType(i) + ", value: "
-                    + attributes.getValue(i));
+                + ", qname: " + attributes.getQName(i) + ", type: " + attributes.getType(i) + ", value: "
+                + attributes.getValue(i));
           }
         }
       }
@@ -1940,22 +1807,16 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
    * Receive notification of the end of an element.
    * 
    * <p>
-   * By default, do nothing. Application writers may override this method in a
-   * subclass to take specific actions at the end of each element (such as
-   * finalising a tree node or writing output to a file).
+   * By default, do nothing. Application writers may override this method in a subclass to take specific actions at the
+   * end of each element (such as finalising a tree node or writing output to a file).
    * </p>
    * 
-   * @param uri
-   *          The Namespace URI, or the empty string if the element has no
-   *          Namespace URI or if Namespace processing is not being performed.
-   * @param localName
-   *          The local name (without prefix), or the empty string if Namespace
-   *          processing is not being performed.
-   * @param qName
-   *          The qualified XML 1.0 name (with prefix), or the empty string if
-   *          qualified names are not available.
-   * @throws SAXException
-   *           Any SAX exception, possibly wrapping another exception.
+   * @param uri The Namespace URI, or the empty string if the element has no Namespace URI or if Namespace processing is
+   *        not being performed.
+   * @param localName The local name (without prefix), or the empty string if Namespace processing is not being
+   *        performed.
+   * @param qName The qualified XML 1.0 name (with prefix), or the empty string if qualified names are not available.
+   * @throws SAXException Any SAX exception, possibly wrapping another exception.
    * @see org.xml.sax.ContentHandler#endElement
    */
   @Override
@@ -1995,19 +1856,14 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
    * Receive notification of character data inside an element.
    * 
    * <p>
-   * By default, do nothing. Application writers may override this method to
-   * take specific actions for each chunk of character data (such as adding the
-   * data to a node or buffer, or printing it to a file).
+   * By default, do nothing. Application writers may override this method to take specific actions for each chunk of
+   * character data (such as adding the data to a node or buffer, or printing it to a file).
    * </p>
    * 
-   * @param ch
-   *          The characters.
-   * @param start
-   *          The start position in the character array.
-   * @param length
-   *          The number of characters to use from the character array.
-   * @throws SAXException
-   *           Any SAX exception, possibly wrapping another exception.
+   * @param ch The characters.
+   * @param start The start position in the character array.
+   * @param length The number of characters to use from the character array.
+   * @throws SAXException Any SAX exception, possibly wrapping another exception.
    * @see org.xml.sax.ContentHandler#characters
    */
   @Override
@@ -2032,19 +1888,14 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
    * Receive notification of ignorable whitespace in element content.
    * 
    * <p>
-   * By default, do nothing. Application writers may override this method to
-   * take specific actions for each chunk of ignorable whitespace (such as
-   * adding data to a node or buffer, or printing it to a file).
+   * By default, do nothing. Application writers may override this method to take specific actions for each chunk of
+   * ignorable whitespace (such as adding data to a node or buffer, or printing it to a file).
    * </p>
    * 
-   * @param ch
-   *          The whitespace characters.
-   * @param start
-   *          The start position in the character array.
-   * @param length
-   *          The number of characters to use from the character array.
-   * @throws SAXException
-   *           Any SAX exception, possibly wrapping another exception.
+   * @param ch The whitespace characters.
+   * @param start The start position in the character array.
+   * @param length The number of characters to use from the character array.
+   * @throws SAXException Any SAX exception, possibly wrapping another exception.
    * @see org.xml.sax.ContentHandler#ignorableWhitespace
    */
   @Override
@@ -2059,17 +1910,13 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
    * Receive notification of a processing instruction.
    * 
    * <p>
-   * By default, do nothing. Application writers may override this method in a
-   * subclass to take specific actions for each processing instruction, such as
-   * setting status variables or invoking other methods.
+   * By default, do nothing. Application writers may override this method in a subclass to take specific actions for
+   * each processing instruction, such as setting status variables or invoking other methods.
    * </p>
    * 
-   * @param target
-   *          The processing instruction target.
-   * @param data
-   *          The processing instruction data, or null if none is supplied.
-   * @throws SAXException
-   *           Any SAX exception, possibly wrapping another exception.
+   * @param target The processing instruction target.
+   * @param data The processing instruction data, or null if none is supplied.
+   * @throws SAXException Any SAX exception, possibly wrapping another exception.
    * @see org.xml.sax.ContentHandler#processingInstruction
    */
   @Override
@@ -2090,15 +1937,12 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
    * Receive notification of a skipped entity.
    * 
    * <p>
-   * By default, do nothing. Application writers may override this method in a
-   * subclass to take specific actions for each processing instruction, such as
-   * setting status variables or invoking other methods.
+   * By default, do nothing. Application writers may override this method in a subclass to take specific actions for
+   * each processing instruction, such as setting status variables or invoking other methods.
    * </p>
    * 
-   * @param name
-   *          The name of the skipped entity.
-   * @throws SAXException
-   *           Any SAX exception, possibly wrapping another exception.
+   * @param name The name of the skipped entity.
+   * @throws SAXException Any SAX exception, possibly wrapping another exception.
    * @see org.xml.sax.ContentHandler#processingInstruction
    */
   @Override
@@ -2116,15 +1960,12 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
    * Receive notification of a parser warning.
    * 
    * <p>
-   * The default implementation does nothing. Application writers may override
-   * this method in a subclass to take specific actions for each warning, such
-   * as inserting the message in a log file or printing it to the console.
+   * The default implementation does nothing. Application writers may override this method in a subclass to take
+   * specific actions for each warning, such as inserting the message in a log file or printing it to the console.
    * </p>
    * 
-   * @param e
-   *          The warning information encoded as an exception.
-   * @throws SAXException
-   *           Any SAX exception, possibly wrapping another exception.
+   * @param e The warning information encoded as an exception.
+   * @throws SAXException Any SAX exception, possibly wrapping another exception.
    * @see org.xml.sax.ErrorHandler#warning
    * @see org.xml.sax.SAXParseException
    */
@@ -2139,15 +1980,12 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
    * Receive notification of a recoverable parser error.
    * 
    * <p>
-   * The default implementation does nothing. Application writers may override
-   * this method in a subclass to take specific actions for each error, such as
-   * inserting the message in a log file or printing it to the console.
+   * The default implementation does nothing. Application writers may override this method in a subclass to take
+   * specific actions for each error, such as inserting the message in a log file or printing it to the console.
    * </p>
    * 
-   * @param e
-   *          The warning information encoded as an exception.
-   * @throws SAXException
-   *           Any SAX exception, possibly wrapping another exception.
+   * @param e The warning information encoded as an exception.
+   * @throws SAXException Any SAX exception, possibly wrapping another exception.
    * @see org.xml.sax.ErrorHandler#warning
    * @see org.xml.sax.SAXParseException
    */
@@ -2160,18 +1998,14 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
    * Report a fatal XML parsing error.
    * 
    * <p>
-   * The default implementation throws a SAXParseException. Application writers
-   * may override this method in a subclass if they need to take specific
-   * actions for each fatal error (such as collecting all of the errors into a
-   * single report): in any case, the application must stop all regular
-   * processing when this method is invoked, since the document is no longer
-   * reliable, and the parser may no longer report parsing events.
+   * The default implementation throws a SAXParseException. Application writers may override this method in a subclass
+   * if they need to take specific actions for each fatal error (such as collecting all of the errors into a single
+   * report): in any case, the application must stop all regular processing when this method is invoked, since the
+   * document is no longer reliable, and the parser may no longer report parsing events.
    * </p>
    * 
-   * @param e
-   *          The error information encoded as an exception.
-   * @throws SAXException
-   *           Any SAX exception, possibly wrapping another exception.
+   * @param e The error information encoded as an exception.
+   * @throws SAXException Any SAX exception, possibly wrapping another exception.
    * @see org.xml.sax.ErrorHandler#fatalError
    * @see org.xml.sax.SAXParseException
    */
@@ -2188,18 +2022,14 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
    * Report an element type declaration.
    * 
    * <p>
-   * The content model will consist of the string "EMPTY", the string "ANY", or
-   * a parenthesised group, optionally followed by an occurrence indicator. The
-   * model will be normalized so that all whitespace is removed,and will include
-   * the enclosing parentheses.
+   * The content model will consist of the string "EMPTY", the string "ANY", or a parenthesised group, optionally
+   * followed by an occurrence indicator. The model will be normalized so that all whitespace is removed,and will
+   * include the enclosing parentheses.
    * </p>
    * 
-   * @param name
-   *          The element type name.
-   * @param model
-   *          The content model as a normalized string.
-   * @throws SAXException
-   *           The application may raise an exception.
+   * @param name The element type name.
+   * @param model The content model as a normalized string.
+   * @throws SAXException The application may raise an exception.
    */
   @Override
   public void elementDecl(String name, String model) throws SAXException {
@@ -2211,31 +2041,22 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
    * Report an attribute type declaration.
    * 
    * <p>
-   * Only the effective (first) declaration for an attribute will be reported.
-   * The type will be one of the strings "CDATA", "ID", "IDREF", "IDREFS",
-   * "NMTOKEN", "NMTOKENS", "ENTITY", "ENTITIES", or "NOTATION", or a
-   * parenthesized token group with the separator "|" and all whitespace
-   * removed.
+   * Only the effective (first) declaration for an attribute will be reported. The type will be one of the strings
+   * "CDATA", "ID", "IDREF", "IDREFS", "NMTOKEN", "NMTOKENS", "ENTITY", "ENTITIES", or "NOTATION", or a parenthesized
+   * token group with the separator "|" and all whitespace removed.
    * </p>
    * 
-   * @param eName
-   *          The name of the associated element.
-   * @param aName
-   *          The name of the attribute.
-   * @param type
-   *          A string representing the attribute type.
-   * @param valueDefault
-   *          A string representing the attribute default ("#IMPLIED",
-   *          "#REQUIRED", or "#FIXED") or null if none of these applies.
-   * @param value
-   *          A string representing the attribute's default value, or null if
-   *          there is none.
-   * @throws SAXException
-   *           The application may raise an exception.
+   * @param eName The name of the associated element.
+   * @param aName The name of the attribute.
+   * @param type A string representing the attribute type.
+   * @param valueDefault A string representing the attribute default ("#IMPLIED", "#REQUIRED", or "#FIXED") or null if
+   *        none of these applies.
+   * @param value A string representing the attribute's default value, or null if there is none.
+   * @throws SAXException The application may raise an exception.
    */
   @Override
   public void attributeDecl(String eName, String aName, String type, String valueDefault, String value)
-          throws SAXException {
+      throws SAXException {
 
     // no op
   }
@@ -2247,13 +2068,9 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
    * Only the effective (first) declaration for each entity will be reported.
    * </p>
    * 
-   * @param name
-   *          The name of the entity. If it is a parameter entity, the name will
-   *          begin with '%'.
-   * @param value
-   *          The replacement text of the entity.
-   * @throws SAXException
-   *           The application may raise an exception.
+   * @param name The name of the entity. If it is a parameter entity, the name will begin with '%'.
+   * @param value The replacement text of the entity.
+   * @throws SAXException The application may raise an exception.
    * @see #externalEntityDecl
    * @see org.xml.sax.DTDHandler#unparsedEntityDecl
    */
@@ -2270,16 +2087,10 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
    * Only the effective (first) declaration for each entity will be reported.
    * </p>
    * 
-   * @param name
-   *          The name of the entity. If it is a parameter entity, the name will
-   *          begin with '%'.
-   * @param publicId
-   *          The declared public identifier of the entity, or null if none was
-   *          declared.
-   * @param systemId
-   *          The declared system identifier of the entity.
-   * @throws SAXException
-   *           The application may raise an exception.
+   * @param name The name of the entity. If it is a parameter entity, the name will begin with '%'.
+   * @param publicId The declared public identifier of the entity, or null if none was declared.
+   * @param systemId The declared system identifier of the entity.
+   * @throws SAXException The application may raise an exception.
    * @see #internalEntityDecl
    * @see org.xml.sax.DTDHandler#unparsedEntityDecl
    */
@@ -2297,25 +2108,19 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
    * Report the start of DTD declarations, if any.
    * 
    * <p>
-   * Any declarations are assumed to be in the internal subset unless otherwise
-   * indicated by a {@link #startEntity startEntity} event.
+   * Any declarations are assumed to be in the internal subset unless otherwise indicated by a {@link #startEntity
+   * startEntity} event.
    * </p>
    * 
    * <p>
-   * Note that the start/endDTD events will appear within the start/endDocument
-   * events from ContentHandler and before the first startElement event.
+   * Note that the start/endDTD events will appear within the start/endDocument events from ContentHandler and before
+   * the first startElement event.
    * </p>
    * 
-   * @param name
-   *          The document type name.
-   * @param publicId
-   *          The declared public identifier for the external DTD subset, or
-   *          null if none was declared.
-   * @param systemId
-   *          The declared system identifier for the external DTD subset, or
-   *          null if none was declared.
-   * @throws SAXException
-   *           The application may raise an exception.
+   * @param name The document type name.
+   * @param publicId The declared public identifier for the external DTD subset, or null if none was declared.
+   * @param systemId The declared system identifier for the external DTD subset, or null if none was declared.
+   * @throws SAXException The application may raise an exception.
    * @see #endDTD
    * @see #startEntity
    */
@@ -2328,8 +2133,7 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
   /**
    * Report the end of DTD declarations.
    * 
-   * @throws SAXException
-   *           The application may raise an exception.
+   * @throws SAXException The application may raise an exception.
    * @see #startDTD
    */
   @Override
@@ -2342,27 +2146,22 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
    * Report the beginning of an entity in content.
    * 
    * <p>
-   * <strong>NOTE:</strong> entity references in attribute values -- and the
-   * start and end of the document entity -- are never reported.
+   * <strong>NOTE:</strong> entity references in attribute values -- and the start and end of the document entity -- are
+   * never reported.
    * </p>
    * 
    * <p>
-   * The start and end of the external DTD subset are reported using the
-   * pseudo-name "[dtd]". All other events must be properly nested within
-   * start/end entity events.
+   * The start and end of the external DTD subset are reported using the pseudo-name "[dtd]". All other events must be
+   * properly nested within start/end entity events.
    * </p>
    * 
    * <p>
-   * Note that skipped entities will be reported through the
-   * {@link org.xml.sax.ContentHandler#skippedEntity skippedEntity} event, which
-   * is part of the ContentHandler interface.
+   * Note that skipped entities will be reported through the {@link org.xml.sax.ContentHandler#skippedEntity
+   * skippedEntity} event, which is part of the ContentHandler interface.
    * </p>
    * 
-   * @param name
-   *          The name of the entity. If it is a parameter entity, the name will
-   *          begin with '%'.
-   * @throws SAXException
-   *           The application may raise an exception.
+   * @param name The name of the entity. If it is a parameter entity, the name will begin with '%'.
+   * @throws SAXException The application may raise an exception.
    * @see #endEntity
    * @see org.xml.sax.ext.DeclHandler#internalEntityDecl
    * @see org.xml.sax.ext.DeclHandler#externalEntityDecl
@@ -2376,10 +2175,8 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
   /**
    * Report the end of an entity.
    * 
-   * @param name
-   *          The name of the entity that is ending.
-   * @throws SAXException
-   *           The application may raise an exception.
+   * @param name The name of the entity that is ending.
+   * @throws SAXException The application may raise an exception.
    * @see #startEntity
    */
   @Override
@@ -2392,12 +2189,11 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
    * Report the start of a CDATA section.
    * 
    * <p>
-   * The contents of the CDATA section will be reported through the regular
-   * {@link org.xml.sax.ContentHandler#characters characters} event.
+   * The contents of the CDATA section will be reported through the regular {@link org.xml.sax.ContentHandler#characters
+   * characters} event.
    * </p>
    * 
-   * @throws SAXException
-   *           The application may raise an exception.
+   * @throws SAXException The application may raise an exception.
    * @see #endCDATA
    */
   @Override
@@ -2408,8 +2204,7 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
   /**
    * Report the end of a CDATA section.
    * 
-   * @throws SAXException
-   *           The application may raise an exception.
+   * @throws SAXException The application may raise an exception.
    * @see #startCDATA
    */
   @Override
@@ -2421,18 +2216,14 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
    * Report an XML comment anywhere in the document.
    * 
    * <p>
-   * This callback will be used for comments inside or outside the document
-   * element, including comments in the external DTD subset (if read).
+   * This callback will be used for comments inside or outside the document element, including comments in the external
+   * DTD subset (if read).
    * </p>
    * 
-   * @param ch
-   *          An array holding the characters in the comment.
-   * @param start
-   *          The starting position in the array.
-   * @param length
-   *          The number of characters to use from the array.
-   * @throws SAXException
-   *           The application may raise an exception.
+   * @param ch An array holding the characters in the comment.
+   * @param start The starting position in the array.
+   * @param length The number of characters to use from the array.
+   * @throws SAXException The application may raise an exception.
    */
   @Override
   public void comment(char ch[], int start, int length) throws SAXException {
@@ -2454,26 +2245,23 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
   /**
    * Set a run time property for this DTM instance.
    * 
-   * %REVIEW% Now that we no longer use this method to support
-   * getSourceLocatorFor, can we remove it?
+   * %REVIEW% Now that we no longer use this method to support getSourceLocatorFor, can we remove it?
    * 
-   * @param property
-   *          a <code>String</code> value
-   * @param value
-   *          an <code>Object</code> value
+   * @param property a <code>String</code> value
+   * @param value an <code>Object</code> value
    */
   @Override
   public void setProperty(String property, Object value) {
   }
 
   /**
-   * Retrieve the SourceLocator associated with a specific node. This is only
-   * meaningful if the XalanProperties.SOURCE_LOCATION flag was set True using
-   * setProperty; if it was never set, or was set false, we will return null.
+   * Retrieve the SourceLocator associated with a specific node. This is only meaningful if the
+   * XalanProperties.SOURCE_LOCATION flag was set True using setProperty; if it was never set, or was set false, we will
+   * return null.
    * 
-   * (We _could_ return a locator with the document's base URI and bogus
-   * line/column information. Trying that; see the else clause.)
-   * */
+   * (We _could_ return a locator with the document's base URI and bogus line/column information. Trying that; see the
+   * else clause.)
+   */
   @Override
   public SourceLocator getSourceLocatorFor(int node) {
     if (m_useSourceLocationProperty) {
@@ -2481,7 +2269,7 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
       node = makeNodeIdentity(node);
 
       return new NodeLocator(null, m_sourceSystemId.elementAt(node), m_sourceLine.elementAt(node),
-              m_sourceColumn.elementAt(node));
+          m_sourceColumn.elementAt(node));
     } else if (m_locator != null)
       return new NodeLocator(null, m_locator.getSystemId(), -1, -1);
     else if (m_systemId != null)
