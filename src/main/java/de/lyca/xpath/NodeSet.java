@@ -25,8 +25,7 @@ import org.w3c.dom.traversal.NodeIterator;
 
 import de.lyca.xml.utils.DOM2Helper;
 import de.lyca.xpath.axes.ContextNodeList;
-import de.lyca.xpath.res.XPATHErrorResources;
-import de.lyca.xpath.res.XPATHMessages;
+import de.lyca.xpath.res.Messages;
 
 /**
  * <p>
@@ -129,7 +128,6 @@ public class NodeSet implements NodeList, NodeIterator, Cloneable, ContextNodeLi
    * Get a cloned Iterator, and reset its state to the beginning of the iteration.
    * 
    * @return a new NodeSet of the same type, having the same state... except that the reset() operation has been called.
-   * 
    * @throws CloneNotSupportedException if this subclass of NodeSet does not support the clone() operation.
    */
   @Override
@@ -230,15 +228,7 @@ public class NodeSet implements NodeList, NodeIterator, Cloneable, ContextNodeLi
   public Node previousNode() throws DOMException {
 
     if (!m_cacheNodes)
-      throw new RuntimeException(XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_NODESET_CANNOT_ITERATE, null)); // "This
-                                                                                                                         // NodeSet
-                                                                                                                         // can
-                                                                                                                         // not
-                                                                                                                         // iterate
-                                                                                                                         // to
-                                                                                                                         // a
-                                                                                                                         // previous
-                                                                                                                         // node!");
+      throw new RuntimeException(Messages.get().nodesetCannotIterate());
 
     if (m_next - 1 > 0) {
       m_next--;
@@ -283,15 +273,7 @@ public class NodeSet implements NodeList, NodeIterator, Cloneable, ContextNodeLi
   public void runTo(int index) {
 
     if (!m_cacheNodes)
-      throw new RuntimeException(XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_NODESET_CANNOT_INDEX, null)); // "This
-                                                                                                                       // NodeSet
-                                                                                                                       // can
-                                                                                                                       // not
-                                                                                                                       // do
-                                                                                                                       // indexing
-                                                                                                                       // or
-                                                                                                                       // counting
-                                                                                                                       // functions!");
+      throw new RuntimeException(Messages.get().nodesetCannotIndex());
 
     if (index >= 0 && m_next < m_firstFree) {
       m_next = index;
@@ -302,9 +284,7 @@ public class NodeSet implements NodeList, NodeIterator, Cloneable, ContextNodeLi
 
   /**
    * Returns the <code>index</code>th item in the collection. If <code>index</code> is greater than or equal to the
-   * number of nodes in the list, this returns <code>null</code>.
-   * 
-   * TODO: What happens if index is out of range?
+   * number of nodes in the list, this returns <code>null</code>. TODO: What happens if index is out of range?
    * 
    * @param index Index into the collection.
    * @return The node at the <code>index</code>th position in the <code>NodeList</code>, or <code>null</code> if that is
@@ -341,11 +321,7 @@ public class NodeSet implements NodeList, NodeIterator, Cloneable, ContextNodeLi
   public void addNode(Node n) {
 
     if (!m_mutable)
-      throw new RuntimeException(XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_NODESET_NOT_MUTABLE, null)); // "This
-                                                                                                                      // NodeSet
-                                                                                                                      // is
-                                                                                                                      // not
-                                                                                                                      // mutable!");
+      throw new RuntimeException(Messages.get().nodesetNotMutable());
 
     this.addElement(n);
   }
@@ -360,11 +336,7 @@ public class NodeSet implements NodeList, NodeIterator, Cloneable, ContextNodeLi
   public void insertNode(Node n, int pos) {
 
     if (!m_mutable)
-      throw new RuntimeException(XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_NODESET_NOT_MUTABLE, null)); // "This
-                                                                                                                      // NodeSet
-                                                                                                                      // is
-                                                                                                                      // not
-                                                                                                                      // mutable!");
+      throw new RuntimeException(Messages.get().nodesetNotMutable());
 
     insertElementAt(n, pos);
   }
@@ -378,11 +350,7 @@ public class NodeSet implements NodeList, NodeIterator, Cloneable, ContextNodeLi
   public void removeNode(Node n) {
 
     if (!m_mutable)
-      throw new RuntimeException(XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_NODESET_NOT_MUTABLE, null)); // "This
-                                                                                                                      // NodeSet
-                                                                                                                      // is
-                                                                                                                      // not
-                                                                                                                      // mutable!");
+      throw new RuntimeException(Messages.get().nodesetNotMutable());
 
     this.removeElement(n);
   }
@@ -396,11 +364,7 @@ public class NodeSet implements NodeList, NodeIterator, Cloneable, ContextNodeLi
   public void addNodes(NodeList nodelist) {
 
     if (!m_mutable)
-      throw new RuntimeException(XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_NODESET_NOT_MUTABLE, null)); // "This
-                                                                                                                      // NodeSet
-                                                                                                                      // is
-                                                                                                                      // not
-                                                                                                                      // mutable!");
+      throw new RuntimeException(Messages.get().nodesetNotMutable());
 
     if (null != nodelist) // defensive to fix a bug that Sanjiva reported.
     {
@@ -423,7 +387,6 @@ public class NodeSet implements NodeList, NodeIterator, Cloneable, ContextNodeLi
    * Copy NodeList members into this nodelist, adding in document order. Only genuine node references will be copied;
    * nulls appearing in the source NodeSet will not be added to this one.
    * </p>
-   * 
    * <p>
    * In case you're wondering why this function is needed: NodeSet implements both NodeIterator and NodeList. If this
    * method isn't provided, Java can't decide which of those to use when addNodes() is invoked. Providing the
@@ -436,11 +399,7 @@ public class NodeSet implements NodeList, NodeIterator, Cloneable, ContextNodeLi
   public void addNodes(NodeSet ns) {
 
     if (!m_mutable)
-      throw new RuntimeException(XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_NODESET_NOT_MUTABLE, null)); // "This
-                                                                                                                      // NodeSet
-                                                                                                                      // is
-                                                                                                                      // not
-                                                                                                                      // mutable!");
+      throw new RuntimeException(Messages.get().nodesetNotMutable());
 
     addNodes((NodeIterator) ns);
   }
@@ -454,11 +413,7 @@ public class NodeSet implements NodeList, NodeIterator, Cloneable, ContextNodeLi
   public void addNodes(NodeIterator iterator) {
 
     if (!m_mutable)
-      throw new RuntimeException(XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_NODESET_NOT_MUTABLE, null)); // "This
-                                                                                                                      // NodeSet
-                                                                                                                      // is
-                                                                                                                      // not
-                                                                                                                      // mutable!");
+      throw new RuntimeException(Messages.get().nodesetNotMutable());
 
     if (null != iterator) // defensive to fix a bug that Sanjiva reported.
     {
@@ -482,11 +437,7 @@ public class NodeSet implements NodeList, NodeIterator, Cloneable, ContextNodeLi
   public void addNodesInDocOrder(NodeList nodelist, XPathContext support) {
 
     if (!m_mutable)
-      throw new RuntimeException(XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_NODESET_NOT_MUTABLE, null)); // "This
-                                                                                                                      // NodeSet
-                                                                                                                      // is
-                                                                                                                      // not
-                                                                                                                      // mutable!");
+      throw new RuntimeException(Messages.get().nodesetNotMutable());
 
     final int nChildren = nodelist.getLength();
 
@@ -509,11 +460,7 @@ public class NodeSet implements NodeList, NodeIterator, Cloneable, ContextNodeLi
   public void addNodesInDocOrder(NodeIterator iterator, XPathContext support) {
 
     if (!m_mutable)
-      throw new RuntimeException(XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_NODESET_NOT_MUTABLE, null)); // "This
-                                                                                                                      // NodeSet
-                                                                                                                      // is
-                                                                                                                      // not
-                                                                                                                      // mutable!");
+      throw new RuntimeException(Messages.get().nodesetNotMutable());
 
     Node node;
 
@@ -534,13 +481,7 @@ public class NodeSet implements NodeList, NodeIterator, Cloneable, ContextNodeLi
   public int addNodeInDocOrder(Node node, boolean test, XPathContext support) {
 
     if (!m_mutable)
-      throw new RuntimeException(XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_NODESET_NOT_MUTABLE, null)); // XSLMessages.createXPATHMessage(XPATHErrorResources.ER_NODESET_NOT_MUTABLE,
-                                                                                                                      // null));
-                                                                                                                      // //"This
-                                                                                                                      // NodeSet
-                                                                                                                      // is
-                                                                                                                      // not
-                                                                                                                      // mutable!");
+      throw new RuntimeException(Messages.get().nodesetNotMutable());
 
     int insertIndex = -1;
 
@@ -591,28 +532,23 @@ public class NodeSet implements NodeList, NodeIterator, Cloneable, ContextNodeLi
 
     // checkDups();
     return insertIndex;
-  } // end addNodeInDocOrder(Vector v, Object obj)
+  }
 
   /**
    * Add the node into a vector of nodes where it should occur in document order.
    * 
    * @param node The node to be added.
    * @param support The XPath runtime context.
-   * 
    * @return The index where it was inserted.
    * @throws RuntimeException thrown if this NodeSet is not of a mutable type.
    */
   public int addNodeInDocOrder(Node node, XPathContext support) {
 
     if (!m_mutable)
-      throw new RuntimeException(XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_NODESET_NOT_MUTABLE, null)); // "This
-                                                                                                                      // NodeSet
-                                                                                                                      // is
-                                                                                                                      // not
-                                                                                                                      // mutable!");
+      throw new RuntimeException(Messages.get().nodesetNotMutable());
 
     return addNodeInDocOrder(node, true, support);
-  } // end addNodeInDocOrder(Vector v, Object obj)
+  }
 
   /**
    * If this node is being used as an iterator, the next index that nextNode() will return.
@@ -640,15 +576,7 @@ public class NodeSet implements NodeList, NodeIterator, Cloneable, ContextNodeLi
   public void setCurrentPos(int i) {
 
     if (!m_cacheNodes)
-      throw new RuntimeException(XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_NODESET_CANNOT_INDEX, null)); // "This
-                                                                                                                       // NodeSet
-                                                                                                                       // can
-                                                                                                                       // not
-                                                                                                                       // do
-                                                                                                                       // indexing
-                                                                                                                       // or
-                                                                                                                       // counting
-                                                                                                                       // functions!");
+      throw new RuntimeException(Messages.get().nodesetCannotIndex());
 
     m_next = i;
   }
@@ -663,15 +591,7 @@ public class NodeSet implements NodeList, NodeIterator, Cloneable, ContextNodeLi
   public Node getCurrentNode() {
 
     if (!m_cacheNodes)
-      throw new RuntimeException(XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_NODESET_CANNOT_INDEX, null)); // "This
-                                                                                                                       // NodeSet
-                                                                                                                       // can
-                                                                                                                       // not
-                                                                                                                       // do
-                                                                                                                       // indexing
-                                                                                                                       // or
-                                                                                                                       // counting
-                                                                                                                       // functions!");
+      throw new RuntimeException(Messages.get().nodesetCannotIndex());
 
     final int saved = m_next;
     final Node n = m_next < m_firstFree ? elementAt(m_next) : null;
@@ -692,7 +612,6 @@ public class NodeSet implements NodeList, NodeIterator, Cloneable, ContextNodeLi
   /**
    * Get whether or not this is a cached node set.
    * 
-   * 
    * @return True if this list is cached.
    */
   public boolean getShouldCacheNodes() {
@@ -711,14 +630,7 @@ public class NodeSet implements NodeList, NodeIterator, Cloneable, ContextNodeLi
   public void setShouldCacheNodes(boolean b) {
 
     if (!isFresh())
-      throw new RuntimeException(
-          XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_CANNOT_CALL_SETSHOULDCACHENODE, null)); // "Can not
-                                                                                                          // call
-                                                                                                          // setShouldCacheNodes
-                                                                                                          // after
-                                                                                                          // nextNode
-                                                                                                          // has been
-                                                                                                          // called!");
+      throw new RuntimeException(Messages.get().cannotCallSetshouldcachenode());
 
     m_cacheNodes = b;
     m_mutable = true;
@@ -768,7 +680,6 @@ public class NodeSet implements NodeList, NodeIterator, Cloneable, ContextNodeLi
    * Get a cloned LocPathIterator.
    * 
    * @return A clone of this
-   * 
    * @throws CloneNotSupportedException
    */
   @Override
@@ -802,11 +713,7 @@ public class NodeSet implements NodeList, NodeIterator, Cloneable, ContextNodeLi
    */
   public void addElement(Node value) {
     if (!m_mutable)
-      throw new RuntimeException(XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_NODESET_NOT_MUTABLE, null)); // "This
-                                                                                                                      // NodeSet
-                                                                                                                      // is
-                                                                                                                      // not
-                                                                                                                      // mutable!");
+      throw new RuntimeException(Messages.get().nodesetNotMutable());
 
     if (m_firstFree + 1 >= m_mapSize) {
       if (null == m_map) {
@@ -999,11 +906,7 @@ public class NodeSet implements NodeList, NodeIterator, Cloneable, ContextNodeLi
    */
   public void insertElementAt(Node value, int at) {
     if (!m_mutable)
-      throw new RuntimeException(XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_NODESET_NOT_MUTABLE, null)); // "This
-                                                                                                                      // NodeSet
-                                                                                                                      // is
-                                                                                                                      // not
-                                                                                                                      // mutable!");
+      throw new RuntimeException(Messages.get().nodesetNotMutable());
 
     if (null == m_map) {
       m_map = new Node[m_blocksize];
@@ -1077,16 +980,11 @@ public class NodeSet implements NodeList, NodeIterator, Cloneable, ContextNodeLi
    * one smaller than the value it had previously.
    * 
    * @param s Node to remove from the list
-   * 
    * @return True if the node was successfully removed
    */
   public boolean removeElement(Node s) {
     if (!m_mutable)
-      throw new RuntimeException(XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_NODESET_NOT_MUTABLE, null)); // "This
-                                                                                                                      // NodeSet
-                                                                                                                      // is
-                                                                                                                      // not
-                                                                                                                      // mutable!");
+      throw new RuntimeException(Messages.get().nodesetNotMutable());
 
     if (null == m_map)
       return false;
@@ -1135,20 +1033,15 @@ public class NodeSet implements NodeList, NodeIterator, Cloneable, ContextNodeLi
 
   /**
    * Sets the component at the specified index of this vector to be the specified object. The previous component at that
-   * position is discarded.
-   * 
-   * The index must be a value greater than or equal to 0 and less than the current size of the vector.
+   * position is discarded. The index must be a value greater than or equal to 0 and less than the current size of the
+   * vector.
    * 
    * @param node Node to set
    * @param index Index of where to set the node
    */
   public void setElementAt(Node node, int index) {
     if (!m_mutable)
-      throw new RuntimeException(XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_NODESET_NOT_MUTABLE, null)); // "This
-                                                                                                                      // NodeSet
-                                                                                                                      // is
-                                                                                                                      // not
-                                                                                                                      // mutable!");
+      throw new RuntimeException(Messages.get().nodesetNotMutable());
 
     if (null == m_map) {
       m_map = new Node[m_blocksize];
@@ -1162,7 +1055,6 @@ public class NodeSet implements NodeList, NodeIterator, Cloneable, ContextNodeLi
    * Get the nth element.
    * 
    * @param i Index of node to get
-   * 
    * @return Node at specified index
    */
   public Node elementAt(int i) {
@@ -1177,7 +1069,6 @@ public class NodeSet implements NodeList, NodeIterator, Cloneable, ContextNodeLi
    * Tell if the table contains the given node.
    * 
    * @param s Node to look for
-   * 
    * @return True if the given node was found.
    */
   public boolean contains(Node s) {

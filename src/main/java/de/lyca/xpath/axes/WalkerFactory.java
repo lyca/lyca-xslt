@@ -32,32 +32,25 @@ import de.lyca.xpath.patterns.ContextMatchStepPattern;
 import de.lyca.xpath.patterns.FunctionPattern;
 import de.lyca.xpath.patterns.NodeTest;
 import de.lyca.xpath.patterns.StepPattern;
-import de.lyca.xpath.res.XPATHErrorResources;
-import de.lyca.xpath.res.XPATHMessages;
+import de.lyca.xpath.res.Messages;
 
 /**
- * This class is both a factory for XPath location path expressions, which are
- * built from the opcode map output, and an analysis engine for the location
- * path expressions in order to provide optimization hints.
+ * This class is both a factory for XPath location path expressions, which are built from the opcode map output, and an
+ * analysis engine for the location path expressions in order to provide optimization hints.
  */
 public class WalkerFactory {
 
   /**
-   * This method is for building an array of possible levels where the target
-   * element(s) could be found for a match.
+   * This method is for building an array of possible levels where the target element(s) could be found for a match.
    * 
-   * @param lpi
-   *          The owning location path iterator.
-   * @param compiler
-   *          non-null reference to compiler object that has processed the XPath
-   *          operations into an opcode map.
-   * @param stepOpCodePos
-   *          The opcode position for the step.
+   * @param lpi The owning location path iterator.
+   * @param compiler non-null reference to compiler object that has processed the XPath operations into an opcode map.
+   * @param stepOpCodePos The opcode position for the step.
    * 
    * @return non-null AxesWalker derivative.
    * 
    * @throws TransformerException TODO
-     */
+   */
   static AxesWalker loadOneWalker(WalkingIterator lpi, Compiler compiler, int stepOpCodePos)
       throws TransformerException {
 
@@ -77,23 +70,17 @@ public class WalkerFactory {
   }
 
   /**
-   * This method is for building an array of possible levels where the target
-   * element(s) could be found for a match.
+   * This method is for building an array of possible levels where the target element(s) could be found for a match.
    * 
-   * @param lpi
-   *          The owning location path iterator object.
-   * @param compiler
-   *          non-null reference to compiler object that has processed the XPath
-   *          operations into an opcode map.
-   * @param stepOpCodePos
-   *          The opcode position for the step.
-   * @param stepIndex
-   *          The top-level step index withing the iterator.
+   * @param lpi The owning location path iterator object.
+   * @param compiler non-null reference to compiler object that has processed the XPath operations into an opcode map.
+   * @param stepOpCodePos The opcode position for the step.
+   * @param stepIndex The top-level step index withing the iterator.
    * 
    * @return non-null AxesWalker derivative.
    * 
    * @throws TransformerException TODO
-     */
+   */
   static AxesWalker loadWalkers(WalkingIterator lpi, Compiler compiler, int stepOpCodePos, int stepIndex)
       throws TransformerException {
 
@@ -134,18 +121,15 @@ public class WalkerFactory {
 
   public static void diagnoseIterator(String name, int analysis, Compiler compiler) {
     System.out.println(compiler.toString() + ", " + name + ", " + Integer.toBinaryString(analysis) + ", "
-            + getAnalysisString(analysis));
+        + getAnalysisString(analysis));
   }
 
   /**
-   * Create a new LocPathIterator iterator. The exact type of iterator returned
-   * is based on an analysis of the XPath operations.
+   * Create a new LocPathIterator iterator. The exact type of iterator returned is based on an analysis of the XPath
+   * operations.
    * 
-   * @param compiler
-   *          non-null reference to compiler object that has processed the XPath
-   *          operations into an opcode map.
-   * @param opPos
-   *          The position of the operation code for this itterator.
+   * @param compiler non-null reference to compiler object that has processed the XPath operations into an opcode map.
+   * @param opPos The position of the operation code for this itterator.
    * @param isTopLevel TODO
    * 
    * @return non-null reference to a LocPathIterator or derivative.
@@ -269,22 +253,16 @@ public class WalkerFactory {
   }
 
   /**
-   * Special purpose function to see if we can optimize the pattern for a
-   * DescendantIterator.
+   * Special purpose function to see if we can optimize the pattern for a DescendantIterator.
    * 
-   * @param compiler
-   *          non-null reference to compiler object that has processed the XPath
-   *          operations into an opcode map.
-   * @param stepOpCodePos
-   *          The opcode position for the step.
+   * @param compiler non-null reference to compiler object that has processed the XPath operations into an opcode map.
+   * @param stepOpCodePos The opcode position for the step.
    * 
-   * @return 32 bits as an integer that give information about the location path
-   *         as a whole.
+   * @return 32 bits as an integer that give information about the location path as a whole.
    * 
    * @throws TransformerException TODO
    */
-  public static Axis getAxisFromStep(Compiler compiler, int stepOpCodePos)
-          throws TransformerException {
+  public static Axis getAxisFromStep(Compiler compiler, int stepOpCodePos) throws TransformerException {
 
     final int stepType = compiler.getOp(stepOpCodePos);
 
@@ -324,16 +302,13 @@ public class WalkerFactory {
         return Axis.FILTEREDLIST;
     }
 
-    throw new RuntimeException(XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_NULL_ERROR_HANDLER,
-            new Object[] { Integer.toString(stepType) })); // "Programmer's assertion: unknown opcode: "
-    // + stepType);
+    throw new RuntimeException(Messages.get().progAssertUnknownOpcode(stepType));
   }
 
   /**
    * Get a corresponding BIT_XXX from an axis.
    * 
-   * @param axis
-   *          One of Axis.ANCESTOR, etc.
+   * @param axis One of Axis.ANCESTOR, etc.
    * @return One of BIT_ANCESTOR, etc.
    */
   static public int getAnalysisBitFromAxes(Axis axis) {
@@ -368,7 +343,7 @@ public class WalkerFactory {
         return BIT_SELF;
       case ALLFROMNODE:
         return BIT_DESCENDANT_OR_SELF;
-        // case PRECEDINGANDANCESTOR :
+      // case PRECEDINGANDANCESTOR :
       case DESCENDANTSFROMROOT:
       case ALL:
       case DESCENDANTSORSELFFROMROOT:
@@ -448,14 +423,14 @@ public class WalkerFactory {
 
   /**
    * Tell if the predicates need to have proximity knowledge.
+   * 
    * @param compiler TODO
    * @param opPos TODO
    * @param stepType TODO
    * @return TODO
    * @throws TransformerException TODO
    */
-  public static boolean mightBeProximate(Compiler compiler, int opPos, int stepType)
-          throws TransformerException {
+  public static boolean mightBeProximate(Compiler compiler, int opPos, int stepType) throws TransformerException {
 
     final boolean mightBeProximate = false;
     int argLen;
@@ -520,19 +495,13 @@ public class WalkerFactory {
   }
 
   /**
-   * Special purpose function to see if we can optimize the pattern for a
-   * DescendantIterator.
+   * Special purpose function to see if we can optimize the pattern for a DescendantIterator.
    * 
-   * @param compiler
-   *          non-null reference to compiler object that has processed the XPath
-   *          operations into an opcode map.
-   * @param stepOpCodePos
-   *          The opcode position for the step.
-   * @param stepIndex
-   *          The top-level step index withing the iterator.
+   * @param compiler non-null reference to compiler object that has processed the XPath operations into an opcode map.
+   * @param stepOpCodePos The opcode position for the step.
+   * @param stepIndex The top-level step index withing the iterator.
    * 
-   * @return 32 bits as an integer that give information about the location path
-   *         as a whole.
+   * @return 32 bits as an integer that give information about the location path as a whole.
    * 
    * @throws TransformerException TODO
    */
@@ -600,9 +569,7 @@ public class WalkerFactory {
           foundSelf = true;
           break;
         default:
-          throw new RuntimeException(XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_NULL_ERROR_HANDLER,
-                  new Object[] { Integer.toString(stepType) })); // "Programmer's assertion: unknown opcode: "
-          // + stepType);
+          throw new RuntimeException(Messages.get().progAssertUnknownOpcode(stepType));
       }
 
       nodeTestType = compiler.getStepTestType(stepOpCodePos);
@@ -625,25 +592,18 @@ public class WalkerFactory {
   }
 
   /**
-   * Analyze the location path and return 32 bits that give information about
-   * the location path as a whole. See the BIT_XXX constants for meaning about
-   * each of the bits.
+   * Analyze the location path and return 32 bits that give information about the location path as a whole. See the
+   * BIT_XXX constants for meaning about each of the bits.
    * 
-   * @param compiler
-   *          non-null reference to compiler object that has processed the XPath
-   *          operations into an opcode map.
-   * @param stepOpCodePos
-   *          The opcode position for the step.
-   * @param stepIndex
-   *          The top-level step index withing the iterator.
+   * @param compiler non-null reference to compiler object that has processed the XPath operations into an opcode map.
+   * @param stepOpCodePos The opcode position for the step.
+   * @param stepIndex The top-level step index withing the iterator.
    * 
-   * @return 32 bits as an integer that give information about the location path
-   *         as a whole.
+   * @return 32 bits as an integer that give information about the location path as a whole.
    * 
    * @throws TransformerException TODO
    */
-  private static int analyze(Compiler compiler, int stepOpCodePos, int stepIndex)
-          throws TransformerException {
+  private static int analyze(Compiler compiler, int stepOpCodePos, int stepIndex) throws TransformerException {
 
     int stepType;
     int stepCount = 0;
@@ -730,9 +690,7 @@ public class WalkerFactory {
           analysisResult |= BIT_MATCH_PATTERN | BIT_PARENT;
           break;
         default:
-          throw new RuntimeException(XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_NULL_ERROR_HANDLER,
-                  new Object[] { Integer.toString(stepType) })); // "Programmer's assertion: unknown opcode: "
-          // + stepType);
+          throw new RuntimeException(Messages.get().progAssertUnknownOpcode(stepType));
       }
 
       if (OpCodes.NODETYPE_NODE == compiler.getOp(stepOpCodePos + 3)) // child::node()
@@ -753,52 +711,42 @@ public class WalkerFactory {
   }
 
   /**
-   * Tell if the given axis goes downward. Bogus name, if you can think of a
-   * better one, please do tell. This really has to do with inverting attribute
-   * axis.
+   * Tell if the given axis goes downward. Bogus name, if you can think of a better one, please do tell. This really has
+   * to do with inverting attribute axis.
    * 
-   * @param axis
-   *          One of Axis.XXX.
-   * @return true if the axis is not a child axis and does not go up from the
-   *         axis root.
+   * @param axis One of Axis.XXX.
+   * @return true if the axis is not a child axis and does not go up from the axis root.
    */
   public static boolean isDownwardAxisOfMany(Axis axis) {
     return Axis.DESCENDANTORSELF == axis || Axis.DESCENDANT == axis || Axis.FOLLOWING == axis
     // || (Axis.FOLLOWINGSIBLING == axis)
-            || Axis.PRECEDING == axis;
+        || Axis.PRECEDING == axis;
   }
 
   /**
-   * Read a <a href="http://www.w3.org/TR/xpath#location-paths">LocationPath</a>
-   * as a generalized match pattern. What this means is that the LocationPath is
-   * read backwards, as a test on a given node, to see if it matches the
-   * criteria of the selection, and ends up at the context node. Essentially,
-   * this is a backwards query from a given node, to find the context node.
+   * Read a <a href="http://www.w3.org/TR/xpath#location-paths">LocationPath</a> as a generalized match pattern. What
+   * this means is that the LocationPath is read backwards, as a test on a given node, to see if it matches the criteria
+   * of the selection, and ends up at the context node. Essentially, this is a backwards query from a given node, to
+   * find the context node.
    * <p>
    * So, the selection "foo/daz[2]" is, in non-abreviated expanded syntax,
-   * "self::node()/following-sibling::foo/child::daz[position()=2]". Taking this
-   * as a match pattern for a probable node, it works out to
-   * "self::daz/parent::foo[child::daz[position()=2 and isPrevStepNode()]
-   * precedingSibling::node()[isContextNodeOfLocationPath()]", adding magic
-   * isPrevStepNode and isContextNodeOfLocationPath operations. Predicates in
-   * the location path have to be executed by the following step, because they
-   * have to know the context of their execution.
+   * "self::node()/following-sibling::foo/child::daz[position()=2]". Taking this as a match pattern for a probable node,
+   * it works out to "self::daz/parent::foo[child::daz[position()=2 and isPrevStepNode()]
+   * precedingSibling::node()[isContextNodeOfLocationPath()]", adding magic isPrevStepNode and
+   * isContextNodeOfLocationPath operations. Predicates in the location path have to be executed by the following step,
+   * because they have to know the context of their execution.
    * 
-   * @param mpi
-   *          The MatchPatternIterator to which the steps will be attached.
-   * @param compiler
-   *          The compiler that holds the syntax tree/op map to construct from.
-   * @param stepOpCodePos
-   *          The current op code position within the opmap.
-   * @param stepIndex
-   *          The top-level step index withing the iterator.
+   * @param mpi The MatchPatternIterator to which the steps will be attached.
+   * @param compiler The compiler that holds the syntax tree/op map to construct from.
+   * @param stepOpCodePos The current op code position within the opmap.
+   * @param stepIndex The top-level step index withing the iterator.
    * 
    * @return A StepPattern object, which may contain relative StepPatterns.
    * 
    * @throws TransformerException TODO
    */
   static StepPattern loadSteps(MatchPatternIterator mpi, Compiler compiler, int stepOpCodePos, int stepIndex)
-          throws TransformerException {
+      throws TransformerException {
     if (DEBUG_PATTERN_CREATION) {
       System.out.println("================");
       System.out.println("loadSteps for: " + compiler.getPatternString());
@@ -863,8 +811,8 @@ public class WalkerFactory {
         final Axis newAxis = whatToShow == DTMFilter.SHOW_ATTRIBUTE ? Axis.ATTRIBUTE : Axis.NAMESPACE;
         if (isDownwardAxisOfMany(axis)) {
           final StepPattern attrPat = new StepPattern(whatToShow, pat.getNamespace(), pat.getLocalName(),
-          // newAxis, pat.getPredicateAxis);
-                  newAxis, Axis.ANCESTOR); // don't care about the predicate axis
+              // newAxis, pat.getPredicateAxis);
+              newAxis, Axis.ANCESTOR); // don't care about the predicate axis
           final XNumber score = pat.getStaticScore();
           pat.setNamespace(null);
           pat.setLocalName(NodeTest.WILD);
@@ -920,21 +868,13 @@ public class WalkerFactory {
    * Create a StepPattern that is contained within a LocationPath.
    * 
    * 
-   * @param compiler
-   *          The compiler that holds the syntax tree/op map to construct from.
-   * @param stepOpCodePos
-   *          The current op code position within the opmap.
-   * @param mpi
-   *          The MatchPatternIterator to which the steps will be attached.
-   * @param analysis
-   *          32 bits of analysis, from which the type of AxesWalker may be
-   *          influenced.
-   * @param tail
-   *          The step that is the first step analyzed, but the last step in the
-   *          relative match linked list, i.e. the tail. May be null.
-   * @param head
-   *          The step that is the current head of the relative match step
-   *          linked list. May be null.
+   * @param compiler The compiler that holds the syntax tree/op map to construct from.
+   * @param stepOpCodePos The current op code position within the opmap.
+   * @param mpi The MatchPatternIterator to which the steps will be attached.
+   * @param analysis 32 bits of analysis, from which the type of AxesWalker may be influenced.
+   * @param tail The step that is the first step analyzed, but the last step in the relative match linked list, i.e. the
+   *        tail. May be null.
+   * @param head The step that is the current head of the relative match step linked list. May be null.
    * 
    * @return the head of the list.
    * 
@@ -1040,13 +980,12 @@ public class WalkerFactory {
         predicateAxis = Axis.DESCENDANT;
         break;
       default:
-        throw new RuntimeException(XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_NULL_ERROR_HANDLER,
-                new Object[] { Integer.toString(stepType) })); // "Programmer's assertion: unknown opcode: "
-        // + stepType);
+        throw new RuntimeException(Messages.get().progAssertUnknownOpcode(stepType));
     }
     if (null == ai) {
       whatToShow = compiler.getWhatToShow(opPos); // %REVIEW%
-      ai = new StepPattern(whatToShow, compiler.getStepNS(opPos), compiler.getStepLocalName(opPos), axis, predicateAxis);
+      ai = new StepPattern(whatToShow, compiler.getStepNS(opPos), compiler.getStepLocalName(opPos), axis,
+          predicateAxis);
     }
 
     if (false || DEBUG_PATTERN_CREATION) {
@@ -1066,23 +1005,18 @@ public class WalkerFactory {
   }
 
   /**
-   * Analyze a step and give information about it's predicates. Right now this
-   * just returns true or false if the step has a predicate.
+   * Analyze a step and give information about it's predicates. Right now this just returns true or false if the step
+   * has a predicate.
    * 
-   * @param compiler
-   *          non-null reference to compiler object that has processed the XPath
-   *          operations into an opcode map.
-   * @param opPos
-   *          The opcode position for the step.
-   * @param stepType
-   *          The type of step, one of OP_GROUP, etc.
+   * @param compiler non-null reference to compiler object that has processed the XPath operations into an opcode map.
+   * @param opPos The opcode position for the step.
+   * @param stepType The type of step, one of OP_GROUP, etc.
    * 
    * @return true if step has a predicate.
    * 
    * @throws TransformerException TODO
    */
-  static boolean analyzePredicate(Compiler compiler, int opPos, int stepType)
-          throws TransformerException {
+  static boolean analyzePredicate(Compiler compiler, int opPos, int stepType) throws TransformerException {
 
     int argLen;
 
@@ -1106,20 +1040,13 @@ public class WalkerFactory {
   /**
    * Create the proper Walker from the axes type.
    * 
-   * @param compiler
-   *          non-null reference to compiler object that has processed the XPath
-   *          operations into an opcode map.
-   * @param opPos
-   *          The opcode position for the step.
-   * @param lpi
-   *          The owning location path iterator.
-   * @param analysis
-   *          32 bits of analysis, from which the type of AxesWalker may be
-   *          influenced.
+   * @param compiler non-null reference to compiler object that has processed the XPath operations into an opcode map.
+   * @param opPos The opcode position for the step.
+   * @param lpi The owning location path iterator.
+   * @param analysis 32 bits of analysis, from which the type of AxesWalker may be influenced.
    * 
    * @return non-null reference to AxesWalker derivative.
-   * @throws RuntimeException
-   *           if the input is bad.
+   * @throws RuntimeException if the input is bad.
    */
   private static AxesWalker createDefaultWalker(Compiler compiler, int opPos, WalkingIterator lpi, int analysis) {
 
@@ -1127,12 +1054,9 @@ public class WalkerFactory {
     final int stepType = compiler.getOp(opPos);
 
     /*
-     * System.out.println("0: "+compiler.getOp(opPos));
-     * System.out.println("1: "+compiler.getOp(opPos+1));
-     * System.out.println("2: "+compiler.getOp(opPos+2));
-     * System.out.println("3: "+compiler.getOp(opPos+3));
-     * System.out.println("4: "+compiler.getOp(opPos+4));
-     * System.out.println("5: "+compiler.getOp(opPos+5));
+     * System.out.println("0: "+compiler.getOp(opPos)); System.out.println("1: "+compiler.getOp(opPos+1));
+     * System.out.println("2: "+compiler.getOp(opPos+2)); System.out.println("3: "+compiler.getOp(opPos+3));
+     * System.out.println("4: "+compiler.getOp(opPos+4)); System.out.println("5: "+compiler.getOp(opPos+5));
      */
     boolean simpleInit = false;
     final int totalNumberWalkers = analysis & BITS_COUNT;
@@ -1204,9 +1128,7 @@ public class WalkerFactory {
         ai = new AxesWalker(lpi, Axis.SELF);
         break;
       default:
-        throw new RuntimeException(XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_NULL_ERROR_HANDLER,
-                new Object[] { Integer.toString(stepType) })); // "Programmer's assertion: unknown opcode: "
-        // + stepType);
+        throw new RuntimeException(Messages.get().progAssertUnknownOpcode(stepType));
     }
 
     if (simpleInit) {
@@ -1216,11 +1138,11 @@ public class WalkerFactory {
 
       /*
        * System.out.print("construct: "); NodeTest.debugWhatToShow(whatToShow);
-       * System.out.println("or stuff: "+(whatToShow & (DTMFilter.SHOW_ATTRIBUTE
-       * | DTMFilter.SHOW_ELEMENT | DTMFilter.SHOW_PROCESSING_INSTRUCTION)));
+       * System.out.println("or stuff: "+(whatToShow & (DTMFilter.SHOW_ATTRIBUTE | DTMFilter.SHOW_ELEMENT |
+       * DTMFilter.SHOW_PROCESSING_INSTRUCTION)));
        */
-      if (0 == (whatToShow & (DTMFilter.SHOW_ATTRIBUTE | DTMFilter.SHOW_NAMESPACE | DTMFilter.SHOW_ELEMENT | DTMFilter.SHOW_PROCESSING_INSTRUCTION))
-              || whatToShow == DTMFilter.SHOW_ALL) {
+      if (0 == (whatToShow & (DTMFilter.SHOW_ATTRIBUTE | DTMFilter.SHOW_NAMESPACE | DTMFilter.SHOW_ELEMENT
+          | DTMFilter.SHOW_PROCESSING_INSTRUCTION)) || whatToShow == DTMFilter.SHOW_ALL) {
         ai.initNodeTest(whatToShow);
       } else {
         ai.initNodeTest(whatToShow, compiler.getStepNS(opPos), compiler.getStepLocalName(opPos));
@@ -1342,17 +1264,17 @@ public class WalkerFactory {
 
   public static boolean walksSubtreeOnlyFromRootOrContext(int analysis) {
     return walksSubtree(analysis) && !walksExtraNodes(analysis) && !walksUp(analysis) && !walksSideways(analysis)
-            && !isSet(analysis, BIT_FILTER);
+        && !isSet(analysis, BIT_FILTER);
   }
 
   public static boolean walksInDocOrder(int analysis) {
-    return (walksSubtreeOnlyMaybeAbsolute(analysis) || walksExtraNodesOnly(analysis) || walksFollowingOnlyMaybeAbsolute(analysis))
-            && !isSet(analysis, BIT_FILTER);
+    return (walksSubtreeOnlyMaybeAbsolute(analysis) || walksExtraNodesOnly(analysis)
+        || walksFollowingOnlyMaybeAbsolute(analysis)) && !isSet(analysis, BIT_FILTER);
   }
 
   public static boolean walksFollowingOnlyMaybeAbsolute(int analysis) {
     return isSet(analysis, BIT_SELF | BIT_FOLLOWING_SIBLING | BIT_FOLLOWING) && !walksSubtree(analysis)
-            && !walksUp(analysis) && !walksSideways(analysis);
+        && !walksUp(analysis) && !walksSideways(analysis);
   }
 
   public static boolean walksUp(int analysis) {
@@ -1369,7 +1291,7 @@ public class WalkerFactory {
 
   public static boolean walksExtraNodesOnly(int analysis) {
     return walksExtraNodes(analysis) && !isSet(analysis, BIT_SELF) && !walksSubtree(analysis) && !walksUp(analysis)
-            && !walksSideways(analysis) && !isAbsolute(analysis);
+        && !walksSideways(analysis) && !isAbsolute(analysis);
   }
 
   public static boolean isAbsolute(int analysis) {
@@ -1378,23 +1300,23 @@ public class WalkerFactory {
 
   public static boolean walksChildrenOnly(int analysis) {
     return walksChildren(analysis) && !isSet(analysis, BIT_SELF) && !walksExtraNodes(analysis)
-            && !walksDescendants(analysis) && !walksUp(analysis) && !walksSideways(analysis)
-            && (!isAbsolute(analysis) || isSet(analysis, BIT_ROOT));
+        && !walksDescendants(analysis) && !walksUp(analysis) && !walksSideways(analysis)
+        && (!isAbsolute(analysis) || isSet(analysis, BIT_ROOT));
   }
 
   public static boolean walksChildrenAndExtraAndSelfOnly(int analysis) {
     return walksChildren(analysis) && !walksDescendants(analysis) && !walksUp(analysis) && !walksSideways(analysis)
-            && (!isAbsolute(analysis) || isSet(analysis, BIT_ROOT));
+        && (!isAbsolute(analysis) || isSet(analysis, BIT_ROOT));
   }
 
   public static boolean walksDescendantsAndExtraAndSelfOnly(int analysis) {
     return !walksChildren(analysis) && walksDescendants(analysis) && !walksUp(analysis) && !walksSideways(analysis)
-            && (!isAbsolute(analysis) || isSet(analysis, BIT_ROOT));
+        && (!isAbsolute(analysis) || isSet(analysis, BIT_ROOT));
   }
 
   public static boolean walksSelfOnly(int analysis) {
     return isSet(analysis, BIT_SELF) && !walksSubtree(analysis) && !walksUp(analysis) && !walksSideways(analysis)
-            && !isAbsolute(analysis);
+        && !isAbsolute(analysis);
   }
 
   public static boolean walksUpOnly(int analysis) {
@@ -1407,7 +1329,7 @@ public class WalkerFactory {
 
   public static boolean walksDownExtraOnly(int analysis) {
     return walksSubtree(analysis) && walksExtraNodes(analysis) && !walksUp(analysis) && !walksSideways(analysis)
-            && !isAbsolute(analysis);
+        && !isAbsolute(analysis);
   }
 
   public static boolean canSkipSubtrees(int analysis) {
@@ -1435,11 +1357,9 @@ public class WalkerFactory {
   }
 
   /**
-   * Tell if the pattern can be 'walked' with the iteration steps in natural
-   * document order, without duplicates.
+   * Tell if the pattern can be 'walked' with the iteration steps in natural document order, without duplicates.
    * 
-   * @param analysis
-   *          The general analysis of the pattern.
+   * @param analysis The general analysis of the pattern.
    * 
    * @return true if the walk can be done in natural order.
    */
@@ -1454,25 +1374,19 @@ public class WalkerFactory {
   }
 
   /**
-   * Tell if the pattern can be 'walked' with the iteration steps in natural
-   * document order, without duplicates.
+   * Tell if the pattern can be 'walked' with the iteration steps in natural document order, without duplicates.
    * 
-   * @param compiler
-   *          non-null reference to compiler object that has processed the XPath
-   *          operations into an opcode map.
-   * @param stepOpCodePos
-   *          The opcode position for the step.
-   * @param stepIndex
-   *          The top-level step index withing the iterator.
-   * @param analysis
-   *          The general analysis of the pattern.
+   * @param compiler non-null reference to compiler object that has processed the XPath operations into an opcode map.
+   * @param stepOpCodePos The opcode position for the step.
+   * @param stepIndex The top-level step index withing the iterator.
+   * @param analysis The general analysis of the pattern.
    * 
    * @return true if the walk can be done in natural order.
    * 
    * @throws TransformerException TODO
    */
   private static boolean isNaturalDocOrder(Compiler compiler, int stepOpCodePos, int stepIndex, int analysis)
-          throws TransformerException {
+      throws TransformerException {
     if (canCrissCross(analysis))
       return false;
 
@@ -1488,7 +1402,7 @@ public class WalkerFactory {
     // have to check for duplicates during runtime if we're using a
     // WalkingIterator.
     if (isSet(analysis, BIT_FOLLOWING | BIT_FOLLOWING_SIBLING)
-            && isSet(analysis, BIT_PRECEDING | BIT_PRECEDING_SIBLING))
+        && isSet(analysis, BIT_PRECEDING | BIT_PRECEDING_SIBLING))
       return false;
 
     // OK, now we have to check for select="@*/axis::*" patterns, which
@@ -1549,9 +1463,7 @@ public class WalkerFactory {
             return false;
           break;
         default:
-          throw new RuntimeException(XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_NULL_ERROR_HANDLER,
-                  new Object[] { Integer.toString(stepType) })); // "Programmer's assertion: unknown opcode: "
-          // + stepType);
+          throw new RuntimeException(Messages.get().progAssertUnknownOpcode(stepType));
       }
 
       final int nextStepOpCodePos = compiler.getNextStepPos(stepOpCodePos);
@@ -1575,8 +1487,8 @@ public class WalkerFactory {
   }
 
   /**
-   * First 8 bits are the number of top-level location steps. Hopefully there
-   * will never be more that 255 location steps!!!
+   * First 8 bits are the number of top-level location steps. Hopefully there will never be more that 255 location
+   * steps!!!
    */
   public static final int BITS_COUNT = 0x000000FF;
 
@@ -1626,8 +1538,7 @@ public class WalkerFactory {
   public static final int BIT_SELF = 0x00001000 << 13;
 
   /**
-   * Bit is on if any of the walkers contain a filter (i.e. id(), extension
-   * function, etc.) step.
+   * Bit is on if any of the walkers contain a filter (i.e. id(), extension function, etc.) step.
    */
   public static final int BIT_FILTER = 0x00001000 << 14;
 
@@ -1635,19 +1546,17 @@ public class WalkerFactory {
   public static final int BIT_ROOT = 0x00001000 << 15;
 
   /**
-   * If any of these bits are on, the expression may likely traverse outside the
-   * given subtree.
+   * If any of these bits are on, the expression may likely traverse outside the given subtree.
    */
   public static final int BITMASK_TRAVERSES_OUTSIDE_SUBTREE = BIT_NAMESPACE // ??
-          | BIT_PRECEDING_SIBLING | BIT_PRECEDING | BIT_FOLLOWING_SIBLING | BIT_FOLLOWING | BIT_PARENT // except
-                                                                                                       // parent
-                                                                                                       // of
-                                                                                                       // attrs.
-          | BIT_ANCESTOR_OR_SELF | BIT_ANCESTOR | BIT_FILTER | BIT_ROOT;
+      | BIT_PRECEDING_SIBLING | BIT_PRECEDING | BIT_FOLLOWING_SIBLING | BIT_FOLLOWING | BIT_PARENT // except
+                                                                                                   // parent
+                                                                                                   // of
+                                                                                                   // attrs.
+      | BIT_ANCESTOR_OR_SELF | BIT_ANCESTOR | BIT_FILTER | BIT_ROOT;
 
   /**
-   * Bit is on if any of the walkers can go backwards in document order from the
-   * context node.
+   * Bit is on if any of the walkers can go backwards in document order from the context node.
    */
   public static final int BIT_BACKWARDS_SELF = 0x00001000 << 16;
 
@@ -1655,8 +1564,7 @@ public class WalkerFactory {
   public static final int BIT_ANY_DESCENDANT_FROM_ROOT = 0x00001000 << 17;
 
   /**
-   * Bit is on if any of the walkers contain an node() test. This is really only
-   * useful if the count is 1.
+   * Bit is on if any of the walkers contain an node() test. This is really only useful if the count is 1.
    */
   public static final int BIT_NODETEST_ANY = 0x00001000 << 18;
 

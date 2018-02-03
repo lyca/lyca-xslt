@@ -28,7 +28,7 @@ import de.lyca.xpath.NodeSetDTM;
 import de.lyca.xpath.XPathContext;
 import de.lyca.xpath.objects.XNodeSet;
 import de.lyca.xpath.objects.XObject;
-import de.lyca.xpath.res.XPATHErrorResources;
+import de.lyca.xpath.res.Messages;
 
 /**
  * Execute the Id() function.
@@ -111,7 +111,7 @@ public class FuncId extends FunctionOneArg {
     final int docContext = dtm.getDocument();
 
     if (DTM.NULL == docContext) {
-      error(xctxt, XPATHErrorResources.ER_CONTEXT_HAS_NO_OWNERDOC, null);
+      error(xctxt, Messages.get().contextHasNoOwnerdoc());
     }
 
     final XObject arg = m_arg0.execute(xctxt);

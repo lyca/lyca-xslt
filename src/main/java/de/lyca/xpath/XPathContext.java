@@ -51,8 +51,7 @@ import de.lyca.xpath.objects.DTMXRTreeFrag;
 import de.lyca.xpath.objects.XMLStringFactoryImpl;
 import de.lyca.xpath.objects.XObject;
 import de.lyca.xpath.objects.XString;
-import de.lyca.xpath.res.XPATHErrorResources;
-import de.lyca.xpath.res.XPATHMessages;
+import de.lyca.xpath.res.Messages;
 
 /**
  * Default class for the runtime execution context for XPath.
@@ -66,11 +65,9 @@ public class XPathContext extends DTMManager // implements ExpressionContext
   IntStack m_last_pushed_rtfdtm = new IntStack();
   /**
    * Stack of cached "reusable" DTMs for Result Tree Fragments. This is a kluge to handle the problem of starting an RTF
-   * before the old one is complete.
-   * 
-   * %REVIEW% I'm using a Vector rather than Stack so we can reuse the DTMs if the problem occurs multiple times. I'm
-   * not sure that's really a net win versus discarding the DTM and starting a new one... but the retained RTF DTM will
-   * have been tail-pruned so should be small.
+   * before the old one is complete. %REVIEW% I'm using a Vector rather than Stack so we can reuse the DTMs if the
+   * problem occurs multiple times. I'm not sure that's really a net win versus discarding the DTM and starting a new
+   * one... but the retained RTF DTM will have been tail-pruned so should be small.
    */
   private List<SAX2RTFDTM> m_rtfdtm_stack = null;
   /** Index of currently active RTF DTM in m_rtfdtm_stack */
@@ -134,7 +131,6 @@ public class XPathContext extends DTMManager // implements ExpressionContext
    * @param wsfilter Enables filtering of whitespace nodes, and may be null.
    * @param incremental true if the construction should try and be incremental.
    * @param doIndexing true if the caller considers it worth it to use indexing schemes.
-   * 
    * @return a non-null DTM reference.
    */
   @Override
@@ -147,7 +143,6 @@ public class XPathContext extends DTMManager // implements ExpressionContext
    * Get an instance of a DTM that "owns" a node handle.
    * 
    * @param nodeHandle the nodeHandle.
-   * 
    * @return a non-null DTM reference.
    */
   @Override
@@ -159,7 +154,6 @@ public class XPathContext extends DTMManager // implements ExpressionContext
    * Given a W3C DOM node, try and return a DTM handle. Note: calling this may be non-optimal.
    * 
    * @param node Non-null reference to a DOM node.
-   * 
    * @return a valid DTM handle.
    */
   @Override
@@ -217,7 +211,6 @@ public class XPathContext extends DTMManager // implements ExpressionContext
    * 
    * @param xpathCompiler ??? Somehow we need to pass in a subpart of the expression. I hate to do this with strings,
    *        since the larger expression has already been parsed.
-   * 
    * @param pos The position in the expression.
    * @return The newly created <code>DTMIterator</code>.
    */
@@ -235,9 +228,7 @@ public class XPathContext extends DTMManager // implements ExpressionContext
    * @param xpathString Must be a valid string expressing a
    *        <a href= "http://www.w3.org/TR/xpath#NT-LocationPath">LocationPath</a> or a
    *        <a href="http://www.w3.org/TR/xpath#NT-UnionExpr">UnionExpr</a>.
-   * 
    * @param presolver An object that can resolve prefixes to namespace URLs.
-   * 
    * @return The newly created <code>DTMIterator</code>.
    */
   @Override
@@ -256,7 +247,6 @@ public class XPathContext extends DTMManager // implements ExpressionContext
    * @param filter The <code>NodeFilter</code> to be used with this <code>TreeWalker</code>, or <code>null</code> to
    *        indicate no filter.
    * @param entityReferenceExpansion The value of this flag determines whether entity reference nodes are expanded.
-   * 
    * @return The newly created <code>NodeIterator</code>.
    */
   @Override
@@ -268,7 +258,6 @@ public class XPathContext extends DTMManager // implements ExpressionContext
    * Create a new <code>DTMIterator</code> that holds exactly one node.
    * 
    * @param node The node handle that the DTMIterator will iterate to.
-   * 
    * @return The newly created <code>DTMIterator</code>.
    */
   @Override
@@ -391,7 +380,6 @@ public class XPathContext extends DTMManager // implements ExpressionContext
 
   /**
    * Push a slot on the locations stack so that setSAXLocator can be repeatedly called.
-   * 
    */
   public void pushSAXLocatorNull() {
     m_saxLocations.push(null);
@@ -530,8 +518,7 @@ public class XPathContext extends DTMManager // implements ExpressionContext
    */
   public void setErrorListener(ErrorListener listener) throws IllegalArgumentException {
     if (listener == null)
-      throw new IllegalArgumentException(
-          XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_NULL_ERROR_HANDLER, null)); // "Null error handler");
+      throw new IllegalArgumentException(Messages.get().nullErrorHandler());
     m_errorListener = listener;
   }
 
@@ -898,7 +885,6 @@ public class XPathContext extends DTMManager // implements ExpressionContext
 
   /**
    * Pop the last pushed axes iterator.
-   * 
    */
   public final void popSubContextList() {
     m_axesIteratorStack.pop();
@@ -1064,12 +1050,11 @@ public class XPathContext extends DTMManager // implements ExpressionContext
   /**
    * Get a DTM to be used as a container for a global Result Tree Fragment. This will always be an instance of (derived
    * from? equivalent to?) SAX2DTM, since each RTF is constructed by temporarily redirecting our SAX output to it. It
-   * may be a single DTM containing for multiple fragments, if the implementation supports that.
-   * 
-   * Note: The distinction between this method and getRTFDTM() is that the latter allocates space from the dynamic
-   * variable stack (m_rtfdtm_stack), which may be pruned away again as the templates which defined those variables are
-   * exited. Global variables may be bound late (see XUnresolvedVariable), and never want to be discarded, hence we need
-   * to allocate them separately and don't actually need a stack to track them.
+   * may be a single DTM containing for multiple fragments, if the implementation supports that. Note: The distinction
+   * between this method and getRTFDTM() is that the latter allocates space from the dynamic variable stack
+   * (m_rtfdtm_stack), which may be pruned away again as the templates which defined those variables are exited. Global
+   * variables may be bound late (see XUnresolvedVariable), and never want to be discarded, hence we need to allocate
+   * them separately and don't actually need a stack to track them.
    * 
    * @return a non-null DTM reference.
    */
@@ -1156,15 +1141,12 @@ public class XPathContext extends DTMManager // implements ExpressionContext
   }
 
   /**
-   * Pop the RTFDTM's context mark. This discards any RTFs added after the last mark was set.
-   * 
-   * If there is no RTF DTM, there's nothing to pop so this becomes a no-op. If pushes were issued before this was
-   * called, we count on the fact that popRewindMark is defined such that overpopping just resets to empty.
-   * 
-   * Complicating factor: We need to handle the case of popping back to a previous RTF DTM, if one of the weird
-   * produce-an-RTF-to-build-an-RTF cases arose. Basically: If pop says this DTM is now empty, then return to the
-   * previous if one exists, in whatever state we left it in. UGLY, but hopefully the situation which forces us to
-   * consider this will arise exceedingly rarely.
+   * Pop the RTFDTM's context mark. This discards any RTFs added after the last mark was set. If there is no RTF DTM,
+   * there's nothing to pop so this becomes a no-op. If pushes were issued before this was called, we count on the fact
+   * that popRewindMark is defined such that overpopping just resets to empty. Complicating factor: We need to handle
+   * the case of popping back to a previous RTF DTM, if one of the weird produce-an-RTF-to-build-an-RTF cases arose.
+   * Basically: If pop says this DTM is now empty, then return to the previous if one exists, in whatever state we left
+   * it in. UGLY, but hopefully the situation which forces us to consider this will arise exceedingly rarely.
    */
   public void popRTFContext() {
     final int previous = m_last_pushed_rtfdtm.pop();

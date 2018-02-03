@@ -24,12 +24,10 @@ import de.lyca.xml.utils.QName;
 import de.lyca.xpath.VariableStack;
 import de.lyca.xpath.XPathContext;
 import de.lyca.xpath.objects.XObject;
-import de.lyca.xpath.res.XPATHErrorResources;
-import de.lyca.xpath.res.XPATHMessages;
+import de.lyca.xpath.res.Messages;
 
 /**
- * Overrides {@link VariableStack} and delegates the call to
- * {@link javax.xml.xpath.XPathVariableResolver}.
+ * Overrides {@link VariableStack} and delegates the call to {@link javax.xml.xpath.XPathVariableResolver}.
  * 
  * @author Ramesh Mandava ( ramesh.mandava@sun.com )
  */
@@ -43,20 +41,18 @@ public class JAXPVariableStack extends VariableStack {
   }
 
   @Override
-  public XObject getVariableOrParam(XPathContext xctxt, QName qname) throws TransformerException,
-          IllegalArgumentException {
+  public XObject getVariableOrParam(XPathContext xctxt, QName qname)
+      throws TransformerException, IllegalArgumentException {
     if (qname == null) {
       // JAXP 1.3 spec says that if variable name is null then
       // we need to through IllegalArgumentException
-      final String fmsg = XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_ARG_CANNOT_BE_NULL,
-              new Object[] { "Variable qname" });
+      final String fmsg = Messages.get().argCannotBeNull("Variable qname");
       throw new IllegalArgumentException(fmsg);
     }
     final javax.xml.namespace.QName name = new javax.xml.namespace.QName(qname.getNamespace(), qname.getLocalPart());
     final Object varValue = resolver.resolveVariable(name);
     if (varValue == null) {
-      final String fmsg = XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_RESOLVE_VARIABLE_RETURNS_NULL,
-              new Object[] { name.toString() });
+      final String fmsg = Messages.get().resolveVariableReturnsNull(name);
       throw new TransformerException(fmsg);
     }
     return XObject.create(varValue, xctxt);

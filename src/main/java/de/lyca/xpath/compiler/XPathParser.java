@@ -26,12 +26,11 @@ import de.lyca.xpath.XPathProcessorException;
 import de.lyca.xpath.domapi.XPathStylesheetDOM3Exception;
 import de.lyca.xpath.objects.XNumber;
 import de.lyca.xpath.objects.XString;
-import de.lyca.xpath.res.XPATHErrorResources;
-import de.lyca.xpath.res.XPATHMessages;
+import de.lyca.xpath.res.Messages;
 
 /**
- * Tokenizes and parses XPath expressions. This should really be named
- * XPathParserImpl, and may be renamed in the future.
+ * Tokenizes and parses XPath expressions. This should really be named XPathParserImpl, and may be renamed in the
+ * future.
  */
 public class XPathParser {
   // %REVIEW% Is there a better way of doing this?
@@ -50,8 +49,8 @@ public class XPathParser {
   transient String m_token;
 
   /**
-   * The first char in m_token, the theory being that this is an optimization
-   * because we won't have to do charAt(0) as often.
+   * The first char in m_token, the theory being that this is an optimization because we won't have to do charAt(0) as
+   * often.
    */
   transient char m_tokenChar = 0;
 
@@ -69,6 +68,7 @@ public class XPathParser {
 
   /**
    * The parser constructor.
+   * 
    * @param errorListener TODO
    * @param sourceLocator TODO
    */
@@ -83,21 +83,16 @@ public class XPathParser {
   PrefixResolver m_namespaceContext;
 
   /**
-   * Given an string, init an XPath object for selections, in order that a parse
-   * doesn't have to be done each time the expression is evaluated.
+   * Given an string, init an XPath object for selections, in order that a parse doesn't have to be done each time the
+   * expression is evaluated.
    * 
-   * @param compiler
-   *          The compiler object.
-   * @param expression
-   *          A string conforming to the XPath grammar.
-   * @param namespaceContext
-   *          An object that is able to resolve prefixes in the XPath to
-   *          namespaces.
-   * 
+   * @param compiler The compiler object.
+   * @param expression A string conforming to the XPath grammar.
+   * @param namespaceContext An object that is able to resolve prefixes in the XPath to namespaces.
    * @throws TransformerException TODO
    */
   public void initXPath(Compiler compiler, String expression, PrefixResolver namespaceContext)
-          throws TransformerException {
+      throws TransformerException {
 
     m_ops = compiler;
     m_namespaceContext = namespaceContext;
@@ -137,7 +132,7 @@ public class XPathParser {
           }
         }
 
-        error(XPATHErrorResources.ER_EXTRA_ILLEGAL_TOKENS, new Object[] { extraTokens }); // "Extra illegal tokens: "+extraTokens);
+        error(Messages.get().extraIllegalTokens(extraTokens));
       }
 
     } catch (final de.lyca.xpath.XPathProcessorException e) {
@@ -155,21 +150,16 @@ public class XPathParser {
   }
 
   /**
-   * Given an string, init an XPath object for pattern matches, in order that a
-   * parse doesn't have to be done each time the expression is evaluated.
+   * Given an string, init an XPath object for pattern matches, in order that a parse doesn't have to be done each time
+   * the expression is evaluated.
    * 
-   * @param compiler
-   *          The XPath object to be initialized.
-   * @param expression
-   *          A String representing the XPath.
-   * @param namespaceContext
-   *          An object that is able to resolve prefixes in the XPath to
-   *          namespaces.
-   * 
+   * @param compiler The XPath object to be initialized.
+   * @param expression A String representing the XPath.
+   * @param namespaceContext An object that is able to resolve prefixes in the XPath to namespaces.
    * @throws TransformerException TODO
    */
   public void initMatchPattern(Compiler compiler, String expression, PrefixResolver namespaceContext)
-          throws TransformerException {
+      throws TransformerException {
 
     m_ops = compiler;
     m_namespaceContext = namespaceContext;
@@ -198,7 +188,7 @@ public class XPathParser {
         }
       }
 
-      error(XPATHErrorResources.ER_EXTRA_ILLEGAL_TOKENS, new Object[] { extraTokens }); // "Extra illegal tokens: "+extraTokens);
+      error(Messages.get().extraIllegalTokens(extraTokens));
     }
 
     // Terminate for safety.
@@ -214,18 +204,16 @@ public class XPathParser {
   private ErrorListener m_errorListener;
 
   /** The source location of the XPath. */
-  javax.xml.transform.SourceLocator m_sourceLocator;
+  SourceLocator m_sourceLocator;
 
   /** The table contains build-in functions and customized functions */
   private FunctionTable m_functionTable;
 
   /**
-   * Allow an application to register an error event handler, where syntax
-   * errors will be sent. If the error listener is not set, syntax errors will
-   * be sent to System.err.
+   * Allow an application to register an error event handler, where syntax errors will be sent. If the error listener is
+   * not set, syntax errors will be sent to System.err.
    * 
-   * @param handler
-   *          Reference to error listener where syntax errors will be sent.
+   * @param handler Reference to error listener where syntax errors will be sent.
    */
   public void setErrorHandler(ErrorListener handler) {
     m_errorListener = handler;
@@ -243,11 +231,9 @@ public class XPathParser {
   /**
    * Check whether m_token matches the target string.
    * 
-   * @param s
-   *          A string reference or null.
-   * 
-   * @return If m_token is null, returns false (or true if s is also null), or
-   *         return true if the current token matches the string, else false.
+   * @param s A string reference or null.
+   * @return If m_token is null, returns false (or true if s is also null), or return true if the current token matches
+   *         the string, else false.
    */
   final boolean tokenIs(String s) {
     return m_token != null ? m_token.equals(s) : s == null;
@@ -256,11 +242,8 @@ public class XPathParser {
   /**
    * Check whether m_tokenChar==c.
    * 
-   * @param c
-   *          A character to be tested.
-   * 
-   * @return If m_token is null, returns false, or return true if c matches the
-   *         current token.
+   * @param c A character to be tested.
+   * @return If m_token is null, returns false, or return true if c matches the current token.
    */
   final boolean tokenIs(char c) {
     return m_token != null ? m_tokenChar == c : false;
@@ -269,11 +252,8 @@ public class XPathParser {
   /**
    * Look ahead of the current token in order to make a branching decision.
    * 
-   * @param c
-   *          the character to be tested for.
-   * @param n
-   *          number of tokens to look ahead. Must be greater than 1.
-   * 
+   * @param c the character to be tested for.
+   * @param n number of tokens to look ahead. Must be greater than 1.
    * @return true if the next token matches the character argument.
    */
   final boolean lookahead(char c, int n) {
@@ -295,13 +275,9 @@ public class XPathParser {
   /**
    * Look ahead of the current token in order to make a branching decision.
    * 
-   * @param s
-   *          the string to compare it to.
-   * @param n
-   *          number of tokens to lookahead. Must be greater than 1.
-   * 
-   * @return true if the token behind the current token matches the string
-   *         argument.
+   * @param s the string to compare it to.
+   * @param n number of tokens to lookahead. Must be greater than 1.
+   * @return true if the token behind the current token matches the string argument.
    */
   private final boolean lookahead(String s, int n) {
 
@@ -335,9 +311,7 @@ public class XPathParser {
   /**
    * Consume an expected token, throwing an exception if it isn't there.
    * 
-   * @param expected
-   *          the character to be expected.
-   * 
+   * @param expected the character to be expected.
    * @throws TransformerException TODO
    */
   private final void consumeExpected(char expected) throws TransformerException {
@@ -345,7 +319,7 @@ public class XPathParser {
     if (tokenIs(expected)) {
       nextToken();
     } else {
-      error(XPATHErrorResources.ER_EXPECTED_BUT_FOUND, new Object[] { String.valueOf(expected), m_token }); // "Expected "+expected+", but found: "+m_token);
+      error(Messages.get().expectedButFound(String.valueOf(expected), m_token));
 
       // Patch for Christina's gripe. She wants her errorHandler to return from
       // this error and continue trying to parse, rather than throwing an
@@ -358,20 +332,11 @@ public class XPathParser {
   /**
    * Warn the user of a problem.
    * 
-   * @param msg
-   *          An error msgkey that corresponds to one of the constants found in
-   *          {@link de.lyca.xpath.res.XPATHErrorResources}, which is a key for
-   *          a format string.
-   * @param args
-   *          An array of arguments represented in the format string, which may
-   *          be null.
-   * 
-   * @throws TransformerException
-   *           if the current ErrorListoner determines to throw an exception.
+   * @param fmsg An error message
+   * @throws TransformerException if the current ErrorListoner determines to throw an exception.
    */
-  void warn(String msg, Object[] args) throws TransformerException {
+  void warn(String fmsg) throws TransformerException {
 
-    final String fmsg = XPATHMessages.createXPATHWarning(msg, args);
     final ErrorListener ehandler = this.getErrorListener();
 
     if (null != ehandler) {
@@ -386,20 +351,11 @@ public class XPathParser {
   /**
    * Notify the user of an error, and probably throw an exception.
    * 
-   * @param msg
-   *          An error msgkey that corresponds to one of the constants found in
-   *          {@link de.lyca.xpath.res.XPATHErrorResources}, which is a key for
-   *          a format string.
-   * @param args
-   *          An array of arguments represented in the format string, which may
-   *          be null.
-   * 
-   * @throws TransformerException
-   *           if the current ErrorListoner determines to throw an exception.
+   * @param fmsg An error message
+   * @throws TransformerException if the current ErrorListoner determines to throw an exception.
    */
-  void error(String msg, Object[] args) throws TransformerException {
+  void error(String fmsg) throws TransformerException {
 
-    final String fmsg = XPATHMessages.createXPATHMessage(msg, args);
     final ErrorListener ehandler = this.getErrorListener();
 
     final TransformerException te = new TransformerException(fmsg, m_sourceLocator);
@@ -414,33 +370,21 @@ public class XPathParser {
   /**
    * This method is added to support DOM 3 XPath API.
    * <p>
-   * This method is exactly like error(String, Object[]); except that the
-   * underlying TransformerException is XpathStylesheetDOM3Exception (which
-   * extends TransformerException).
+   * This method is exactly like error(String, Object[]); except that the underlying TransformerException is
+   * XpathStylesheetDOM3Exception (which extends TransformerException).
    * <p>
-   * So older XPath code in Xalan is not affected by this. To older XPath code
-   * the behavior of whether error() or errorForDOM3() is called because it is
-   * always catching TransformerException objects and is oblivious to the new
+   * So older XPath code in Xalan is not affected by this. To older XPath code the behavior of whether error() or
+   * errorForDOM3() is called because it is always catching TransformerException objects and is oblivious to the new
    * subclass of XPathStylesheetDOM3Exception. Older XPath code runs as before.
    * <p>
-   * However, newer DOM3 XPath code upon catching a TransformerException can can
-   * check if the exception is an instance of XPathStylesheetDOM3Exception and
-   * take appropriate action.
+   * However, newer DOM3 XPath code upon catching a TransformerException can can check if the exception is an instance
+   * of XPathStylesheetDOM3Exception and take appropriate action.
    * 
-   * @param msg
-   *          An error msgkey that corresponds to one of the constants found in
-   *          {@link de.lyca.xpath.res.XPATHErrorResources}, which is a key for
-   *          a format string.
-   * @param args
-   *          An array of arguments represented in the format string, which may
-   *          be null.
-   * 
-   * @throws TransformerException
-   *           if the current ErrorListoner determines to throw an exception.
+   * @param fmsg An error message
+   * @throws TransformerException if the current ErrorListoner determines to throw an exception.
    */
-  void errorForDOM3(String msg, Object[] args) throws TransformerException {
+  void errorForDOM3(String fmsg) throws TransformerException {
 
-    final String fmsg = XPATHMessages.createXPATHMessage(msg, args);
     final ErrorListener ehandler = this.getErrorListener();
 
     final TransformerException te = new XPathStylesheetDOM3Exception(fmsg, m_sourceLocator);
@@ -455,8 +399,7 @@ public class XPathParser {
   /**
    * Dump the remaining token queue. Thanks to Craig for this.
    * 
-   * @return A dump of the remaining token queue, which may be appended to an
-   *         error message.
+   * @return A dump of the remaining token queue, which may be appended to an error message.
    */
   protected String dumpRemainingTokenQueue() {
 
@@ -483,12 +426,9 @@ public class XPathParser {
   /**
    * Given a string, return the corresponding function token.
    * 
-   * @param key
-   *          A local name of a function.
-   * 
-   * @return The function ID, which may correspond to one of the FUNC_XXX values
-   *         found in {@link de.lyca.xpath.compiler.FunctionTable}, but may be a
-   *         value installed by an external module.
+   * @param key A local name of a function.
+   * @return The function ID, which may correspond to one of the FUNC_XXX values found in
+   *         {@link de.lyca.xpath.compiler.FunctionTable}, but may be a value installed by an external module.
    */
   final int getFunctionToken(String key) {
 
@@ -514,15 +454,12 @@ public class XPathParser {
   }
 
   /**
-   * Insert room for operation. This will NOT set the length value of the
-   * operation, but will update the length value for the total expression.
+   * Insert room for operation. This will NOT set the length value of the operation, but will update the length value
+   * for the total expression.
    * 
-   * @param pos
-   *          The position where the op is to be inserted.
-   * @param length
-   *          The length of the operation space in the op map.
-   * @param op
-   *          The op code to the inserted.
+   * @param pos The position where the op is to be inserted.
+   * @param length The length of the operation space in the op map.
+   * @param op The op code to the inserted.
    */
   void insertOp(int pos, int length, int op) {
 
@@ -537,13 +474,11 @@ public class XPathParser {
   }
 
   /**
-   * Insert room for operation. This WILL set the length value of the operation,
-   * and will update the length value for the total expression.
+   * Insert room for operation. This WILL set the length value of the operation, and will update the length value for
+   * the total expression.
    * 
-   * @param length
-   *          The length of the operation.
-   * @param op
-   *          The op code to the inserted.
+   * @param length The length of the operation.
+   * @param op The op code to the inserted.
    */
   void appendOp(int length, int op) {
 
@@ -557,10 +492,7 @@ public class XPathParser {
   // ============= EXPRESSIONS FUNCTIONS =================
 
   /**
-   * 
-   * 
    * Expr ::= OrExpr
-   * 
    * 
    * @throws TransformerException TODO
    */
@@ -569,10 +501,7 @@ public class XPathParser {
   }
 
   /**
-   * 
-   * 
    * OrExpr ::= AndExpr | OrExpr 'or' AndExpr
-   * 
    * 
    * @throws TransformerException TODO
    */
@@ -592,10 +521,7 @@ public class XPathParser {
   }
 
   /**
-   * 
-   * 
    * AndExpr ::= EqualityExpr | AndExpr 'and' EqualityExpr
-   * 
    * 
    * @throws TransformerException TODO
    */
@@ -615,18 +541,11 @@ public class XPathParser {
   }
 
   /**
+   * Returns an Object which is either a String, a Number, a Boolean, or a vector of nodes. EqualityExpr ::=
+   * RelationalExpr | EqualityExpr '=' RelationalExpr
    * 
-   * Returns an Object which is either a String, a Number, a Boolean, or a
-   *         vector of nodes.
-   * 
-   *          EqualityExpr ::= RelationalExpr | EqualityExpr '=' RelationalExpr
-   * 
-   * 
-   * @param addPos
-   *          Position where expression is to be added, or -1 for append.
-   * 
+   * @param addPos Position where expression is to be added, or -1 for append.
    * @return the position at the end of the equality expression.
-   * 
    * @throws TransformerException TODO
    */
   protected int EqualityExpr(int addPos) throws TransformerException {
@@ -665,15 +584,11 @@ public class XPathParser {
     return addPos;
   }
 
-/**
-   * .
-   * Returns an Object which is either a String, a Number, a Boolean, or a vector
-   * of nodes.
+  /**
+   * . Returns an Object which is either a String, a Number, a Boolean, or a vector of nodes.
    *
-   * {@literal RelationalExpr  ::=  AdditiveExpr}
-   * {@literal | RelationalExpr '<' AdditiveExpr}
-   * {@literal | RelationalExpr '>' AdditiveExpr}
-   * {@literal | RelationalExpr '<=' AdditiveExpr}
+   * {@literal RelationalExpr  ::=  AdditiveExpr} {@literal | RelationalExpr '<' AdditiveExpr}
+   * {@literal | RelationalExpr '>' AdditiveExpr} {@literal | RelationalExpr '<=' AdditiveExpr}
    * {@literal | RelationalExpr '>=' AdditiveExpr}
    *
    *
@@ -731,19 +646,12 @@ public class XPathParser {
   }
 
   /**
-   * This has to handle construction of the operations so that they are
-   * evaluated in pre-fix order. So, for 9+7-6, instead of |+|9|-|7|6|, this
-   * needs to be evaluated as |-|+|9|7|6|.
+   * This has to handle construction of the operations so that they are evaluated in pre-fix order. So, for 9+7-6,
+   * instead of |+|9|-|7|6|, this needs to be evaluated as |-|+|9|7|6|. AdditiveExpr ::= MultiplicativeExpr |
+   * AdditiveExpr '+' MultiplicativeExpr | AdditiveExpr '-' MultiplicativeExpr
    * 
-   * AdditiveExpr ::= MultiplicativeExpr | AdditiveExpr '+' MultiplicativeExpr |
-   * AdditiveExpr '-' MultiplicativeExpr
-   * 
-   * 
-   * @param addPos
-   *          Position where expression is to be added, or -1 for append.
-   * 
+   * @param addPos Position where expression is to be added, or -1 for append.
    * @return the position at the end of the equality expression.
-   * 
    * @throws TransformerException TODO
    */
   protected int AdditiveExpr(int addPos) throws TransformerException {
@@ -782,19 +690,13 @@ public class XPathParser {
   }
 
   /**
-   * This has to handle construction of the operations so that they are
-   * evaluated in pre-fix order. So, for 9+7-6, instead of |+|9|-|7|6|, this
-   * needs to be evaluated as |-|+|9|7|6|.
-   * 
-   * MultiplicativeExpr ::= UnaryExpr | MultiplicativeExpr MultiplyOperator
-   * UnaryExpr | MultiplicativeExpr 'div' UnaryExpr | MultiplicativeExpr 'mod'
+   * This has to handle construction of the operations so that they are evaluated in pre-fix order. So, for 9+7-6,
+   * instead of |+|9|-|7|6|, this needs to be evaluated as |-|+|9|7|6|. MultiplicativeExpr ::= UnaryExpr |
+   * MultiplicativeExpr MultiplyOperator UnaryExpr | MultiplicativeExpr 'div' UnaryExpr | MultiplicativeExpr 'mod'
    * UnaryExpr | MultiplicativeExpr 'quo' UnaryExpr
    * 
-   * @param addPos
-   *          Position where expression is to be added, or -1 for append.
-   * 
+   * @param addPos Position where expression is to be added, or -1 for append.
    * @return the position at the end of the equality expression.
-   * 
    * @throws TransformerException TODO
    */
   protected int MultiplicativeExpr(int addPos) throws TransformerException {
@@ -851,9 +753,7 @@ public class XPathParser {
   }
 
   /**
-   * 
    * UnaryExpr ::= UnionExpr | '-' UnaryExpr
-   * 
    * 
    * @throws TransformerException TODO
    */
@@ -877,9 +777,7 @@ public class XPathParser {
   }
 
   /**
-   * 
    * StringExpr ::= Expr
-   * 
    * 
    * @throws TransformerException TODO
    */
@@ -894,10 +792,7 @@ public class XPathParser {
   }
 
   /**
-   * 
-   * 
    * StringExpr ::= Expr
-   * 
    * 
    * @throws TransformerException TODO
    */
@@ -911,17 +806,14 @@ public class XPathParser {
     final int opLen = m_ops.getOp(OpMap.MAPINDEX_LENGTH) - opPos;
 
     if (opLen == 2) {
-      error(XPATHErrorResources.ER_BOOLEAN_ARG_NO_LONGER_OPTIONAL, null); // "boolean(...) argument is no longer optional with 19990709 XPath draft.");
+      error(Messages.get().booleanArgNoLongerOptional());
     }
 
     m_ops.setOp(opPos + OpMap.MAPINDEX_LENGTH, opLen);
   }
 
   /**
-   * 
-   * 
    * NumberExpr ::= Expr
-   * 
    * 
    * @throws TransformerException TODO
    */
@@ -936,14 +828,9 @@ public class XPathParser {
   }
 
   /**
-   * The context of the right hand side expressions is the context of the left
-   * hand side expression. The results of the right hand side expressions are
-   * node sets. The result of the left hand side UnionExpr is the union of the
-   * results of the right hand side expressions.
-   * 
-   * 
-   * UnionExpr ::= PathExpr | UnionExpr '|' PathExpr
-   * 
+   * The context of the right hand side expressions is the context of the left hand side expression. The results of the
+   * right hand side expressions are node sets. The result of the left hand side UnionExpr is the union of the results
+   * of the right hand side expressions. UnionExpr ::= PathExpr | UnionExpr '|' PathExpr
    * 
    * @throws TransformerException TODO
    */
@@ -975,13 +862,10 @@ public class XPathParser {
   }
 
   /**
-   * PathExpr ::= LocationPath | FilterExpr | FilterExpr '/'
-   * RelativeLocationPath | FilterExpr '//' RelativeLocationPath
+   * PathExpr ::= LocationPath | FilterExpr | FilterExpr '/' RelativeLocationPath | FilterExpr '//' RelativeLocationPath
    * 
-   * @throws TransformerException
-   *           thrown if the active ProblemListener and XPathContext decide the
-   *           error condition is severe enough to halt processing.
-   * 
+   * @throws TransformerException thrown if the active ProblemListener and XPathContext decide the error condition is
+   *         severe enough to halt processing.
    */
   protected void PathExpr() throws TransformerException {
 
@@ -1006,7 +890,7 @@ public class XPathParser {
 
         if (!RelativeLocationPath()) {
           // "Relative location path expected following '/' or '//'"
-          error(XPATHErrorResources.ER_EXPECTED_REL_LOC_PATH, null);
+          error(Messages.get().expectedRelLocPath());
         }
 
       }
@@ -1023,20 +907,13 @@ public class XPathParser {
   }
 
   /**
-   * 
-   * 
    * FilterExpr ::= PrimaryExpr | FilterExpr Predicate
    * 
-   * @throws TransformerException
-   *           thrown if the active ProblemListener and XPathContext decide the
-   *           error condition is severe enough to halt processing.
-   * 
-   * @return FILTER_MATCH_PREDICATES, if this method successfully matched a
-   *         FilterExpr with one or more Predicates; FILTER_MATCH_PRIMARY, if
-   *         this method successfully matched a FilterExpr that was just a
-   *         PrimaryExpr; or FILTER_MATCH_FAILED, if this method did not match a
-   *         FilterExpr
-   * 
+   * @throws TransformerException thrown if the active ProblemListener and XPathContext decide the error condition is
+   *         severe enough to halt processing.
+   * @return FILTER_MATCH_PREDICATES, if this method successfully matched a FilterExpr with one or more Predicates;
+   *         FILTER_MATCH_PRIMARY, if this method successfully matched a FilterExpr that was just a PrimaryExpr; or
+   *         FILTER_MATCH_FAILED, if this method did not match a FilterExpr
    */
   protected int FilterExpr() throws TransformerException {
 
@@ -1065,20 +942,16 @@ public class XPathParser {
     return filterMatch;
 
     /*
-     * if(tokenIs('[')) { Predicate(); m_ops.m_opMap[opPos +
-     * OpMap.MAPINDEX_LENGTH] = m_ops.m_opMap[OpMap.MAPINDEX_LENGTH] - opPos; }
+     * if(tokenIs('[')) { Predicate(); m_ops.m_opMap[opPos + OpMap.MAPINDEX_LENGTH] =
+     * m_ops.m_opMap[OpMap.MAPINDEX_LENGTH] - opPos; }
      */
   }
 
   /**
-   * 
-   * PrimaryExpr ::= VariableReference | '(' Expr ')' | Literal | Number |
-   * FunctionCall
+   * PrimaryExpr ::= VariableReference | '(' Expr ')' | Literal | Number | FunctionCall
    * 
    * @return true if this method successfully matched a PrimaryExpr
-   * 
    * @throws TransformerException TODO
-   * 
    */
   protected boolean PrimaryExpr() throws TransformerException {
 
@@ -1109,9 +982,8 @@ public class XPathParser {
       m_ops.setOp(opPos + OpMap.MAPINDEX_LENGTH, m_ops.getOp(OpMap.MAPINDEX_LENGTH) - opPos);
 
       matchFound = true;
-    } else if (null != m_token
-            && ('.' == m_tokenChar && m_token.length() > 1 && Character.isDigit(m_token.charAt(1)) || Character
-                    .isDigit(m_tokenChar))) {
+    } else if (null != m_token && ('.' == m_tokenChar && m_token.length() > 1 && Character.isDigit(m_token.charAt(1))
+        || Character.isDigit(m_tokenChar))) {
       appendOp(2, OpCodes.OP_NUMBERLIT);
       Number();
 
@@ -1128,9 +1000,7 @@ public class XPathParser {
   }
 
   /**
-   * 
    * Argument ::= Expr
-   * 
    * 
    * @throws TransformerException TODO
    */
@@ -1145,11 +1015,9 @@ public class XPathParser {
   }
 
   /**
-   * 
    * FunctionCall ::= FunctionName '(' ( Argument ( ',' Argument)*)? ')'
    * 
    * @return true if, and only if, a FunctionCall was matched
-   * 
    * @throws TransformerException TODO
    */
   protected boolean FunctionCall() throws TransformerException {
@@ -1171,7 +1039,7 @@ public class XPathParser {
       final int funcTok = getFunctionToken(m_token);
 
       if (-1 == funcTok) {
-        error(XPATHErrorResources.ER_COULDNOT_FIND_FUNCTION, new Object[] { m_token }); // "Could not find function: "+m_token+"()");
+        error(Messages.get().couldnotFindFunction(m_token));
       }
 
       switch (funcTok) {
@@ -1194,7 +1062,7 @@ public class XPathParser {
 
     while (!tokenIs(')') && m_token != null) {
       if (tokenIs(',')) {
-        error(XPATHErrorResources.ER_FOUND_COMMA_BUT_NO_PRECEDING_ARG, null); // "Found ',' but no preceding argument!");
+        error(Messages.get().foundCommaButNoPrecedingArg());
       }
 
       Argument();
@@ -1203,7 +1071,7 @@ public class XPathParser {
         consumeExpected(',');
 
         if (tokenIs(')')) {
-          error(XPATHErrorResources.ER_FOUND_COMMA_BUT_NO_FOLLOWING_ARG, null); // "Found ',' but no following argument!");
+          error(Messages.get().foundCommaButNoFollowingArg());
         }
       }
     }
@@ -1221,9 +1089,7 @@ public class XPathParser {
   // ============= GRAMMAR FUNCTIONS =================
 
   /**
-   * 
    * LocationPath ::= RelativeLocationPath | AbsoluteLocationPath
-   * 
    * 
    * @throws TransformerException TODO
    */
@@ -1245,14 +1111,14 @@ public class XPathParser {
 
       nextToken();
     } else if (m_token == null) {
-      error(XPATHErrorResources.ER_EXPECTED_LOC_PATH_AT_END_EXPR, null);
+      error(Messages.get().expectedLocPathAtEndExpr());
     }
 
     if (m_token != null) {
       if (!RelativeLocationPath() && !seenSlash) {
         // Neither a '/' nor a RelativeLocationPath - i.e., matched nothing
         // "Location path expected, but found "+m_token+" was encountered."
-        error(XPATHErrorResources.ER_EXPECTED_LOC_PATH, new Object[] { m_token });
+        error(Messages.get().expectedLocPath(m_token));
       }
     }
 
@@ -1263,12 +1129,9 @@ public class XPathParser {
   }
 
   /**
-   * 
-   * RelativeLocationPath ::= Step | RelativeLocationPath '/' Step |
-   * AbbreviatedRelativeLocationPath
+   * RelativeLocationPath ::= Step | RelativeLocationPath '/' Step | AbbreviatedRelativeLocationPath
    * 
    * @return true if, and only if, a RelativeLocationPath was matched
-   * 
    * @throws TransformerException TODO
    */
   protected boolean RelativeLocationPath() throws TransformerException {
@@ -1281,7 +1144,7 @@ public class XPathParser {
       if (!Step()) {
         // RelativeLocationPath can't end with a trailing '/'
         // "Location step expected following '/' or '//'"
-        error(XPATHErrorResources.ER_EXPECTED_LOC_STEP, null);
+        error(Messages.get().expectedLocStep());
       }
     }
 
@@ -1289,11 +1152,9 @@ public class XPathParser {
   }
 
   /**
-   * 
    * Step ::= Basis Predicate | AbbreviatedStep
    * 
    * @return false if step was empty (or only a '/'); true, otherwise
-   * 
    * @throws TransformerException TODO
    */
   protected boolean Step() throws TransformerException {
@@ -1332,7 +1193,7 @@ public class XPathParser {
       nextToken();
 
       if (tokenIs('[')) {
-        error(XPATHErrorResources.ER_PREDICATE_ILLEGAL_SYNTAX, null); // "'..[predicate]' or '.[predicate]' is illegal syntax.  Use 'self::node()[predicate]' instead.");
+        error(Messages.get().predicateIllegalSyntax());
       }
 
       appendOp(4, OpCodes.FROM_SELF);
@@ -1365,7 +1226,7 @@ public class XPathParser {
       // No Step matched - that's an error if previous thing was a '//'
       if (doubleSlash) {
         // "Location step expected following '/' or '//'"
-        error(XPATHErrorResources.ER_EXPECTED_LOC_STEP, null);
+        error(Messages.get().expectedLocStep());
       }
 
       return false;
@@ -1375,7 +1236,6 @@ public class XPathParser {
   }
 
   /**
-   * 
    * Basis ::= AxisName '::' NodeTest | AbbreviatedBasis
    * 
    * @throws TransformerException TODO
@@ -1412,12 +1272,9 @@ public class XPathParser {
   }
 
   /**
-   * 
    * Basis ::= AxisName '::' NodeTest | AbbreviatedBasis
    * 
-   * @return FROM_XXX axes type, found in
-   *         {@link de.lyca.xpath.compiler.Keywords}.
-   * 
+   * @return FROM_XXX axes type, found in {@link de.lyca.xpath.compiler.Keywords}.
    * @throws TransformerException TODO
    */
   protected int AxisName() throws TransformerException {
@@ -1425,7 +1282,7 @@ public class XPathParser {
     final Object val = Keywords.getAxisName(m_token);
 
     if (null == val) {
-      error(XPATHErrorResources.ER_ILLEGAL_AXIS_NAME, new Object[] { m_token }); // "illegal axis name: "+m_token);
+      error(Messages.get().illegalAxisName(m_token));
     }
 
     final int axesType = ((Integer) val).intValue();
@@ -1436,14 +1293,9 @@ public class XPathParser {
   }
 
   /**
+   * NodeTest ::= WildcardName | NodeType '(' ')' | 'processing-instruction' '(' Literal ')'
    * 
-   * NodeTest ::= WildcardName | NodeType '(' ')' | 'processing-instruction' '('
-   * Literal ')'
-   * 
-   * @param axesType
-   *          FROM_XXX axes type, found in
-   *          {@link de.lyca.xpath.compiler.Keywords}.
-   * 
+   * @param axesType FROM_XXX axes type, found in {@link de.lyca.xpath.compiler.Keywords}.
    * @throws TransformerException TODO
    */
   protected void NodeTest(int axesType) throws TransformerException {
@@ -1452,7 +1304,7 @@ public class XPathParser {
       final Object nodeTestOp = Keywords.getNodeType(m_token);
 
       if (null == nodeTestOp) {
-        error(XPATHErrorResources.ER_UNKNOWN_NODETYPE, new Object[] { m_token }); // "Unknown nodetype: "+m_token);
+        error(Messages.get().unknownNodetype(m_token));
       } else {
         nextToken();
 
@@ -1487,7 +1339,7 @@ public class XPathParser {
           // to distinguish from other possible tokens
           if (!Character.isLetter(m_tokenChar) && !tokenIs('_')) {
             // "Node test that matches either NCName:* or QName was expected."
-            error(XPATHErrorResources.ER_EXPECTED_NODE_TEST, null);
+            error(Messages.get().expectedNodeTest());
           }
         }
 
@@ -1508,7 +1360,7 @@ public class XPathParser {
         // to distinguish from other possible tokens
         if (!Character.isLetter(m_tokenChar) && !tokenIs('_')) {
           // "Node test that matches either NCName:* or QName was expected."
-          error(XPATHErrorResources.ER_EXPECTED_NODE_TEST, null);
+          error(Messages.get().expectedNodeTest());
         }
       }
 
@@ -1519,9 +1371,7 @@ public class XPathParser {
   }
 
   /**
-   * 
    * Predicate ::= '[' PredicateExpr ']'
-   * 
    * 
    * @throws TransformerException TODO
    */
@@ -1535,9 +1385,7 @@ public class XPathParser {
   }
 
   /**
-   * 
    * PredicateExpr ::= Expr
-   * 
    * 
    * @throws TransformerException TODO
    */
@@ -1580,8 +1428,7 @@ public class XPathParser {
   }
 
   /**
-   * NCName ::= (Letter | '_') (NCNameChar) NCNameChar ::= Letter | Digit | '.'
-   * | '-' | '_' | CombiningChar | Extender
+   * NCName ::= (Letter | '_') (NCNameChar) NCNameChar ::= Letter | Digit | '.' | '-' | '_' | CombiningChar | Extender
    */
   protected void NCName() {
 
@@ -1592,11 +1439,8 @@ public class XPathParser {
   }
 
   /**
-   * The value of the Literal is the sequence of characters inside the " or '
-   * characters.
-   * 
+   * The value of the Literal is the sequence of characters inside the " or ' characters.
    * {@literal Literal ::= '"' [^"]* '"' | "'" [^']* "'"}
-   * 
    * 
    * @throws TransformerException TODO
    */
@@ -1624,14 +1468,12 @@ public class XPathParser {
 
       nextToken();
     } else {
-      error(XPATHErrorResources.ER_PATTERN_LITERAL_NEEDS_BE_QUOTED, new Object[] { m_token }); // "Pattern literal ("+m_token+") needs to be quoted!");
+      error(Messages.get().patternLiteralNeedsBeQuoted(m_token));
     }
   }
 
   /**
-   * 
    * Number ::= [0-9]+('.'[0-9]+)? | '.'[0-9]+
-   * 
    * 
    * @throws TransformerException TODO
    */
@@ -1651,7 +1493,7 @@ public class XPathParser {
       } catch (final NumberFormatException nfe) {
         num = 0.0; // to shut up compiler.
 
-        error(XPATHErrorResources.ER_COULDNOT_BE_FORMATTED_TO_NUMBER, new Object[] { m_token }); // m_token+" could not be formatted to a number!");
+        error(Messages.get().couldnotBeFormattedToNumber(m_token));
       }
 
       m_ops.m_tokenQueue.setElementAt(new XNumber(num), m_queueMark - 1);
@@ -1665,9 +1507,7 @@ public class XPathParser {
   // ============= PATTERN FUNCTIONS =================
 
   /**
-   * 
    * Pattern ::= LocationPathPattern | Pattern '|' LocationPathPattern
-   * 
    * 
    * @throws TransformerException TODO
    */
@@ -1685,11 +1525,8 @@ public class XPathParser {
   }
 
   /**
-   * 
-   * 
-   * LocationPathPattern ::= '/' RelativePathPattern? | IdKeyPattern (('/' |
-   * '//') RelativePathPattern)? | '//'? RelativePathPattern
-   * 
+   * LocationPathPattern ::= '/' RelativePathPattern? | IdKeyPattern (('/' | '//') RelativePathPattern)? | '//'?
+   * RelativePathPattern
    * 
    * @throws TransformerException TODO
    */
@@ -1756,7 +1593,7 @@ public class XPathParser {
         RelativePathPattern();
       } else if (relativePathStatus == RELATIVE_PATH_REQUIRED) {
         // "A relative path pattern was expected."
-        error(XPATHErrorResources.ER_EXPECTED_REL_PATH_PATTERN, null);
+        error(Messages.get().expectedRelPathPattern());
       }
     }
 
@@ -1767,10 +1604,7 @@ public class XPathParser {
   }
 
   /**
-   * 
-   * IdKeyPattern ::= 'id' '(' Literal ')' | 'key' '(' Literal ',' Literal ')'
-   * (Also handle doc())
-   * 
+   * IdKeyPattern ::= 'id' '(' Literal ')' | 'key' '(' Literal ',' Literal ')' (Also handle doc())
    * 
    * @throws TransformerException TODO
    */
@@ -1779,9 +1613,7 @@ public class XPathParser {
   }
 
   /**
-   * 
-   * RelativePathPattern ::= StepPattern | RelativePathPattern '/' StepPattern |
-   * RelativePathPattern '//' StepPattern
+   * RelativePathPattern ::= StepPattern | RelativePathPattern '/' StepPattern | RelativePathPattern '//' StepPattern
    * 
    * @throws TransformerException TODO
    */
@@ -1802,15 +1634,10 @@ public class XPathParser {
   }
 
   /**
-   * 
    * StepPattern ::= AbbreviatedNodeTestStep
    * 
-   * @param isLeadingSlashPermitted
-   *          a boolean indicating whether a slash can appear at the start of
-   *          this step
-   * 
+   * @param isLeadingSlashPermitted a boolean indicating whether a slash can appear at the start of this step
    * @return boolean indicating whether a slash following the step was consumed
-   * 
    * @throws TransformerException TODO
    */
   protected boolean StepPattern(boolean isLeadingSlashPermitted) throws TransformerException {
@@ -1818,19 +1645,13 @@ public class XPathParser {
   }
 
   /**
-   * 
    * AbbreviatedNodeTestStep ::= '@'? NodeTest Predicate
    * 
-   * @param isLeadingSlashPermitted
-   *          a boolean indicating whether a slash can appear at the start of
-   *          this step
-   * 
+   * @param isLeadingSlashPermitted a boolean indicating whether a slash can appear at the start of this step
    * @return boolean indicating whether a slash following the step was consumed
-   * 
    * @throws TransformerException TODO
    */
-  protected boolean AbbreviatedNodeTestStep(boolean isLeadingSlashPermitted)
-          throws TransformerException {
+  protected boolean AbbreviatedNodeTestStep(boolean isLeadingSlashPermitted) throws TransformerException {
 
     final int opPos = m_ops.getOp(OpMap.MAPINDEX_LENGTH);
     int axesType;
@@ -1856,7 +1677,7 @@ public class XPathParser {
       } else {
         axesType = -1;
 
-        this.error(XPATHErrorResources.ER_AXES_NOT_ALLOWED, new Object[] { m_token });
+        this.error(Messages.get().axesNotAllowed(m_token));
       }
 
       nextToken();
@@ -1864,7 +1685,7 @@ public class XPathParser {
     } else if (tokenIs('/')) {
       if (!isLeadingSlashPermitted) {
         // "A step was expected in the pattern, but '/' was encountered."
-        error(XPATHErrorResources.ER_EXPECTED_STEP_PATTERN, null);
+        error(Messages.get().expectedStepPattern());
       }
       axesType = OpCodes.MATCH_ANY_ANCESTOR;
 

@@ -28,7 +28,7 @@ import de.lyca.xalan.SecuritySupport;
 import de.lyca.xpath.XPathContext;
 import de.lyca.xpath.objects.XObject;
 import de.lyca.xpath.objects.XString;
-import de.lyca.xpath.res.XPATHErrorResources;
+import de.lyca.xpath.res.Messages;
 
 /**
  * Execute the SystemProperty() function.
@@ -36,8 +36,7 @@ import de.lyca.xpath.res.XPATHErrorResources;
 public class FuncSystemProperty extends FunctionOneArg {
   static final long serialVersionUID = 3694874980992204867L;
   /**
-   * The path/filename of the property file: XSLTInfo.properties Maintenance
-   * note: see also
+   * The path/filename of the property file: XSLTInfo.properties Maintenance note: see also
    * de.lyca.xalan.processor.TransformerFactoryImpl.XSLT_PROPERTIES
    */
   static final String XSLT_PROPERTIES = "de/lyca/xalan/res/XSLTInfo.properties";
@@ -45,8 +44,7 @@ public class FuncSystemProperty extends FunctionOneArg {
   /**
    * Execute the function. The function must return a valid object.
    * 
-   * @param xctxt
-   *          The current execution context.
+   * @param xctxt The current execution context.
    * @return A valid XObject.
    * 
    * @throws TransformerException TODO
@@ -73,46 +71,46 @@ public class FuncSystemProperty extends FunctionOneArg {
       propName = indexOfNSSep < 0 ? fullName : fullName.substring(indexOfNSSep + 1);
 
       if (namespace.startsWith("http://www.w3.org/XSL/Transform")
-              || namespace.equals("http://www.w3.org/1999/XSL/Transform")) {
+          || namespace.equals("http://www.w3.org/1999/XSL/Transform")) {
         result = xsltInfo.getProperty(propName);
 
         if (null == result) {
-          warn(xctxt, XPATHErrorResources.WG_PROPERTY_NOT_SUPPORTED, new Object[] { fullName }); // "XSL Property not supported: "+fullName);
+          warn(xctxt, Messages.get().propertyNotSupported(fullName));
 
           return XString.EMPTY;
         }
       } else {
-        warn(xctxt, XPATHErrorResources.WG_DONT_DO_ANYTHING_WITH_NS, new Object[] { namespace, fullName }); // "Don't currently do anything with namespace "+namespace+" in property: "+fullName);
+        warn(xctxt, Messages.get().dontDoAnythingWithNs(namespace, fullName));
 
         try {
-          //if secure procession is enabled only handle required properties do not not map any valid system property
+          // if secure procession is enabled only handle required properties do not not map any valid system property
           if (!xctxt.isSecureProcessing()) {
             result = System.getProperty(propName);
           } else {
-            warn(xctxt, XPATHErrorResources.WG_SECURITY_EXCEPTION, new Object[]{ fullName });  //"SecurityException when trying to access XSL system property: "+fullName);
+            warn(xctxt, Messages.get().securityException(fullName));
           }
           if (null == result) {
             return XString.EMPTY;
           }
         } catch (final SecurityException se) {
-          warn(xctxt, XPATHErrorResources.WG_SECURITY_EXCEPTION, new Object[] { fullName }); // "SecurityException when trying to access XSL system property: "+fullName);
+          warn(xctxt, Messages.get().securityException(fullName));
 
           return XString.EMPTY;
         }
       }
     } else {
       try {
-        //if secure procession is enabled only handle required properties do not not map any valid system property
+        // if secure procession is enabled only handle required properties do not not map any valid system property
         if (!xctxt.isSecureProcessing()) {
           result = System.getProperty(fullName);
         } else {
-          warn(xctxt, XPATHErrorResources.WG_SECURITY_EXCEPTION, new Object[]{ fullName });  //"SecurityException when trying to access XSL system property: "+fullName);
+          warn(xctxt, Messages.get().securityException(fullName));
         }
         if (null == result) {
           return XString.EMPTY;
         }
       } catch (final SecurityException se) {
-        warn(xctxt, XPATHErrorResources.WG_SECURITY_EXCEPTION, new Object[] { fullName }); // "SecurityException when trying to access XSL system property: "+fullName);
+        warn(xctxt, Messages.get().securityException(fullName));
 
         return XString.EMPTY;
       }
@@ -132,11 +130,8 @@ public class FuncSystemProperty extends FunctionOneArg {
   /**
    * Retrieve a propery bundle from a specified file
    * 
-   * @param file
-   *          The string name of the property file. The name should already be
-   *          fully qualified as path/filename
-   * @param target
-   *          The target property bag the file will be placed into.
+   * @param file The string name of the property file. The name should already be fully qualified as path/filename
+   * @param target The target property bag the file will be placed into.
    */
   public void loadPropertyFile(String file, Properties target) {
     try {

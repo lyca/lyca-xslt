@@ -23,8 +23,7 @@ import javax.xml.xpath.XPathFactoryConfigurationException;
 import javax.xml.xpath.XPathFunctionResolver;
 import javax.xml.xpath.XPathVariableResolver;
 
-import de.lyca.xpath.res.XPATHErrorResources;
-import de.lyca.xpath.res.XPATHMessages;
+import de.lyca.xpath.res.Messages;
 
 /**
  * The XPathFactory builds XPaths.
@@ -67,31 +66,22 @@ public class XPathFactoryImpl extends XPathFactory {
    * Is specified object model supported by this <code>XPathFactory</code>?
    * </p>
    * 
-   * @param objectModel
-   *          Specifies the object model which the returned
-   *          <code>XPathFactory</code> will understand.
-   * 
-   * @return <code>true</code> if <code>XPathFactory</code> supports
-   *         <code>objectModel</code>, else <code>false</code>.
-   * 
-   * @throws NullPointerException
-   *           If <code>objectModel</code> is <code>null</code>.
-   * @throws IllegalArgumentException
-   *           If <code>objectModel.length() == 0</code>.
+   * @param objectModel Specifies the object model which the returned <code>XPathFactory</code> will understand.
+   * @return <code>true</code> if <code>XPathFactory</code> supports <code>objectModel</code>, else <code>false</code>.
+   * @throws NullPointerException If <code>objectModel</code> is <code>null</code>.
+   * @throws IllegalArgumentException If <code>objectModel.length() == 0</code>.
    */
   @Override
   public boolean isObjectModelSupported(String objectModel) {
 
     if (objectModel == null) {
-      final String fmsg = XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_OBJECT_MODEL_NULL,
-              new Object[] { this.getClass().getName() });
+      final String fmsg = Messages.get().objectModelNull(this.getClass().getName());
 
       throw new NullPointerException(fmsg);
     }
 
     if (objectModel.length() == 0) {
-      final String fmsg = XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_OBJECT_MODEL_EMPTY,
-              new Object[] { this.getClass().getName() });
+      final String fmsg = Messages.get().objectModelEmpty(this.getClass().getName());
       throw new IllegalArgumentException(fmsg);
     }
 
@@ -105,8 +95,8 @@ public class XPathFactoryImpl extends XPathFactory {
 
   /**
    * <p>
-   * Returns a new <code>XPath</code> object using the underlying object model
-   * determined when the factory was instantiated.
+   * Returns a new <code>XPath</code> object using the underlying object model determined when the factory was
+   * instantiated.
    * </p>
    * 
    * @return New <code>XPath</code>
@@ -118,42 +108,30 @@ public class XPathFactoryImpl extends XPathFactory {
 
   /**
    * <p>
-   * Set a feature for this <code>XPathFactory</code> and <code>XPath</code>s
-   * created by this factory.
+   * Set a feature for this <code>XPathFactory</code> and <code>XPath</code>s created by this factory.
    * </p>
-   * 
    * <p>
-   * Feature names are fully qualified {@link java.net.URI}s. Implementations
-   * may define their own features. An
-   * {@link XPathFactoryConfigurationException} is thrown if this
-   * <code>XPathFactory</code> or the <code>XPath</code>s it creates cannot
-   * support the feature. It is possible for an <code>XPathFactory</code> to
-   * expose a feature value but be unable to change its state.
+   * Feature names are fully qualified {@link java.net.URI}s. Implementations may define their own features. An
+   * {@link XPathFactoryConfigurationException} is thrown if this <code>XPathFactory</code> or the <code>XPath</code>s
+   * it creates cannot support the feature. It is possible for an <code>XPathFactory</code> to expose a feature value
+   * but be unable to change its state.
    * </p>
-   * 
    * <p>
-   * See {@link javax.xml.xpath.XPathFactory} for full documentation of specific
-   * features.
+   * See {@link javax.xml.xpath.XPathFactory} for full documentation of specific features.
    * </p>
    * 
-   * @param name
-   *          Feature name.
-   * @param value
-   *          Is feature state <code>true</code> or <code>false</code>.
-   * 
-   * @throws XPathFactoryConfigurationException
-   *           if this <code>XPathFactory</code> or the <code>XPath</code>s it
-   *           creates cannot support this feature.
-   * @throws NullPointerException
-   *           if <code>name</code> is <code>null</code>.
+   * @param name Feature name.
+   * @param value Is feature state <code>true</code> or <code>false</code>.
+   * @throws XPathFactoryConfigurationException if this <code>XPathFactory</code> or the <code>XPath</code>s it creates
+   *         cannot support this feature.
+   * @throws NullPointerException if <code>name</code> is <code>null</code>.
    */
   @Override
   public void setFeature(String name, boolean value) throws XPathFactoryConfigurationException {
 
     // feature name cannot be null
     if (name == null) {
-      final String fmsg = XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_FEATURE_NAME_NULL, new Object[] {
-              CLASS_NAME, value ? Boolean.TRUE : Boolean.FALSE });
+      final String fmsg = Messages.get().featureNameNull(CLASS_NAME, value);
       throw new NullPointerException(fmsg);
     }
 
@@ -167,8 +145,7 @@ public class XPathFactoryImpl extends XPathFactory {
     }
 
     // unknown feature
-    final String fmsg = XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_FEATURE_UNKNOWN, new Object[] { name,
-            CLASS_NAME, value ? Boolean.TRUE : Boolean.FALSE });
+    final String fmsg = Messages.get().featureUnknown(name, CLASS_NAME, value);
     throw new XPathFactoryConfigurationException(fmsg);
   }
 
@@ -176,34 +153,25 @@ public class XPathFactoryImpl extends XPathFactory {
    * <p>
    * Get the state of the named feature.
    * </p>
-   * 
    * <p>
-   * Feature names are fully qualified {@link java.net.URI}s. Implementations
-   * may define their own features. An
-   * {@link XPathFactoryConfigurationException} is thrown if this
-   * <code>XPathFactory</code> or the <code>XPath</code>s it creates cannot
-   * support the feature. It is possible for an <code>XPathFactory</code> to
-   * expose a feature value but be unable to change its state.
+   * Feature names are fully qualified {@link java.net.URI}s. Implementations may define their own features. An
+   * {@link XPathFactoryConfigurationException} is thrown if this <code>XPathFactory</code> or the <code>XPath</code>s
+   * it creates cannot support the feature. It is possible for an <code>XPathFactory</code> to expose a feature value
+   * but be unable to change its state.
    * </p>
    * 
-   * @param name
-   *          Feature name.
-   * 
+   * @param name Feature name.
    * @return State of the named feature.
-   * 
-   * @throws XPathFactoryConfigurationException
-   *           if this <code>XPathFactory</code> or the <code>XPath</code>s it
-   *           creates cannot support this feature.
-   * @throws NullPointerException
-   *           if <code>name</code> is <code>null</code>.
+   * @throws XPathFactoryConfigurationException if this <code>XPathFactory</code> or the <code>XPath</code>s it creates
+   *         cannot support this feature.
+   * @throws NullPointerException if <code>name</code> is <code>null</code>.
    */
   @Override
   public boolean getFeature(String name) throws XPathFactoryConfigurationException {
 
     // feature name cannot be null
     if (name == null) {
-      final String fmsg = XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_GETTING_NULL_FEATURE,
-              new Object[] { CLASS_NAME });
+      final String fmsg = Messages.get().gettingNullFeature(CLASS_NAME);
       throw new NullPointerException(fmsg);
     }
 
@@ -212,8 +180,7 @@ public class XPathFactoryImpl extends XPathFactory {
       return featureSecureProcessing;
 
     // unknown feature
-    final String fmsg = XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_GETTING_UNKNOWN_FEATURE, new Object[] {
-            name, CLASS_NAME });
+    final String fmsg = Messages.get().gettingUnknownFeature(name, CLASS_NAME);
 
     throw new XPathFactoryConfigurationException(fmsg);
   }
@@ -222,30 +189,22 @@ public class XPathFactoryImpl extends XPathFactory {
    * <p>
    * Establish a default function resolver.
    * </p>
-   * 
    * <p>
-   * Any <code>XPath</code> objects constructed from this factory will use the
-   * specified resolver by default.
+   * Any <code>XPath</code> objects constructed from this factory will use the specified resolver by default.
+   * </p>
+   * <p>
+   * A <code>NullPointerException</code> is thrown if <code>resolver</code> is <code>null</code>.
    * </p>
    * 
-   * <p>
-   * A <code>NullPointerException</code> is thrown if <code>resolver</code> is
-   * <code>null</code>.
-   * </p>
-   * 
-   * @param resolver
-   *          XPath function resolver.
-   * 
-   * @throws NullPointerException
-   *           If <code>resolver</code> is <code>null</code>.
+   * @param resolver XPath function resolver.
+   * @throws NullPointerException If <code>resolver</code> is <code>null</code>.
    */
   @Override
   public void setXPathFunctionResolver(XPathFunctionResolver resolver) {
 
     // resolver cannot be null
     if (resolver == null) {
-      final String fmsg = XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_NULL_XPATH_FUNCTION_RESOLVER,
-              new Object[] { CLASS_NAME });
+      final String fmsg = Messages.get().nullXpathFunctionResolver(CLASS_NAME);
       throw new NullPointerException(fmsg);
     }
 
@@ -256,30 +215,22 @@ public class XPathFactoryImpl extends XPathFactory {
    * <p>
    * Establish a default variable resolver.
    * </p>
-   * 
    * <p>
-   * Any <code>XPath</code> objects constructed from this factory will use the
-   * specified resolver by default.
+   * Any <code>XPath</code> objects constructed from this factory will use the specified resolver by default.
+   * </p>
+   * <p>
+   * A <code>NullPointerException</code> is thrown if <code>resolver</code> is <code>null</code>.
    * </p>
    * 
-   * <p>
-   * A <code>NullPointerException</code> is thrown if <code>resolver</code> is
-   * <code>null</code>.
-   * </p>
-   * 
-   * @param resolver
-   *          Variable resolver.
-   * 
-   * @throws NullPointerException
-   *           If <code>resolver</code> is <code>null</code>.
+   * @param resolver Variable resolver.
+   * @throws NullPointerException If <code>resolver</code> is <code>null</code>.
    */
   @Override
   public void setXPathVariableResolver(XPathVariableResolver resolver) {
 
     // resolver cannot be null
     if (resolver == null) {
-      final String fmsg = XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_NULL_XPATH_VARIABLE_RESOLVER,
-              new Object[] { CLASS_NAME });
+      final String fmsg = Messages.get().nullXpathVariableResolver(CLASS_NAME);
       throw new NullPointerException(fmsg);
     }
 

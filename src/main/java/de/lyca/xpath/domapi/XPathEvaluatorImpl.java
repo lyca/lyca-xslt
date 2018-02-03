@@ -29,8 +29,7 @@ import org.w3c.dom.xpath.XPathNSResolver;
 
 import de.lyca.xml.utils.PrefixResolver;
 import de.lyca.xpath.XPath;
-import de.lyca.xpath.res.XPATHErrorResources;
-import de.lyca.xpath.res.XPATHMessages;
+import de.lyca.xpath.res.Messages;
 
 /**
  * The class provides an implementation of XPathEvaluator according to the DOM L3 XPath Specification, Working Group
@@ -74,7 +73,7 @@ public final class XPathEvaluatorImpl implements XPathEvaluator {
      */
     @Override
     public String getNamespaceForPrefix(String prefix, Node context) {
-      final String fmsg = XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_NULL_RESOLVER, null);
+      final String fmsg = Messages.get().nullResolver();
       // Unable to resolve prefix with null prefix resolver.
       throw new DOMException(DOMException.NAMESPACE_ERR, fmsg);
     }

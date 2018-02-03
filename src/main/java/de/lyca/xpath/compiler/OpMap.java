@@ -21,8 +21,7 @@ import javax.xml.transform.TransformerException;
 
 import de.lyca.xml.utils.ObjectVector;
 import de.lyca.xpath.patterns.NodeTest;
-import de.lyca.xpath.res.XPATHErrorResources;
-import de.lyca.xpath.res.XPATHMessages;
+import de.lyca.xpath.res.Messages;
 
 /**
  * This class represents the data structure basics of the XPath object.
@@ -64,9 +63,8 @@ public class OpMap {
   static final int BLOCKTOKENQUEUESIZE = 500;
 
   /**
-   * TokenStack is the queue of used tokens. The current token is the token at
-   * the end of the m_tokenQueue. The idea is that the queue can be marked and a
-   * sequence of tokens can be reused.
+   * TokenStack is the queue of used tokens. The current token is the token at the end of the m_tokenQueue. The idea is
+   * that the queue can be marked and a sequence of tokens can be reused.
    */
   ObjectVector m_tokenQueue = new ObjectVector(MAXTOKENQUEUESIZE, BLOCKTOKENQUEUESIZE);
 
@@ -82,9 +80,7 @@ public class OpMap {
   /**
    * Get the XPath as a list of tokens.
    * 
-   * @param pos
-   *          index into token queue.
-   * 
+   * @param pos index into token queue.
    * @return The token, normally a string.
    */
   public Object getToken(int pos) {
@@ -107,19 +103,16 @@ public class OpMap {
   }
 
   /**
-   * An operations map is used instead of a proper parse tree. It contains
-   * operations codes and indexes into the m_tokenQueue. I use an array instead
-   * of a full parse tree in order to cut down on the number of objects created.
+   * An operations map is used instead of a proper parse tree. It contains operations codes and indexes into the
+   * m_tokenQueue. I use an array instead of a full parse tree in order to cut down on the number of objects created.
    */
   OpMapVector m_opMap = null;
 
   /**
-   * Get the opcode list that describes the XPath operations. It contains
-   * operations codes and indexes into the m_tokenQueue. I use an array instead
-   * of a full parse tree in order to cut down on the number of objects created.
+   * Get the opcode list that describes the XPath operations. It contains operations codes and indexes into the
+   * m_tokenQueue. I use an array instead of a full parse tree in order to cut down on the number of objects created.
    * 
-   * @return An IntVector that is the opcode list that describes the XPath
-   *         operations.
+   * @return An IntVector that is the opcode list that describes the XPath operations.
    */
   public OpMapVector getOpMap() {
     return m_opMap;
@@ -128,8 +121,8 @@ public class OpMap {
   // Position indexes
 
   /**
-   * The length is always the opcode position + 1. Length is always expressed as
-   * the opcode+length bytes, so it is always 2 or greater.
+   * The length is always the opcode position + 1. Length is always expressed as the opcode+length bytes, so it is
+   * always 2 or greater.
    */
   public static final int MAPINDEX_LENGTH = 1;
 
@@ -156,8 +149,7 @@ public class OpMap {
   /**
    * Given an operation position, return the current op.
    * 
-   * @param opPos
-   *          index into op map.
+   * @param opPos index into op map.
    * @return the op that corresponds to the opPos argument.
    */
   public int getOp(int opPos) {
@@ -167,22 +159,17 @@ public class OpMap {
   /**
    * Set the op at index to the given int.
    * 
-   * @param opPos
-   *          index into op map.
-   * @param value
-   *          Value to set
+   * @param opPos index into op map.
+   * @param value Value to set
    */
   public void setOp(int opPos, int value) {
     m_opMap.setElementAt(value, opPos);
   }
 
   /**
-   * Given an operation position, return the end position, i.e. the beginning of
-   * the next operation.
+   * Given an operation position, return the end position, i.e. the beginning of the next operation.
    * 
-   * @param opPos
-   *          An op position of an operation for which there is a size entry
-   *          following.
+   * @param opPos An op position of an operation for which there is a size entry following.
    * @return position of next operation in m_opMap.
    */
   public int getNextOpPos(int opPos) {
@@ -190,11 +177,9 @@ public class OpMap {
   }
 
   /**
-   * Given a location step position, return the end position, i.e. the beginning
-   * of the next step.
+   * Given a location step position, return the end position, i.e. the beginning of the next step.
    * 
-   * @param opPos
-   *          the position of a location step.
+   * @param opPos the position of a location step.
    * @return the position of the next location step.
    */
   public int getNextStepPos(int opPos) {
@@ -217,20 +202,14 @@ public class OpMap {
 
       return newOpPos;
     } else
-      throw new RuntimeException(XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_UNKNOWN_STEP,
-              new Object[] { String.valueOf(stepType) }));
-    // "Programmer's assertion in getNextStepPos: unknown stepType: " +
-    // stepType);
+      throw new RuntimeException(Messages.get().unknownStep(stepType));
   }
 
   /**
-   * Given an operation position, return the end position, i.e. the beginning of
-   * the next operation.
+   * Given an operation position, return the end position, i.e. the beginning of the next operation.
    * 
-   * @param opMap
-   *          The operations map.
-   * @param opPos
-   *          index to operation, for which there is a size entry following.
+   * @param opMap The operations map.
+   * @param opPos index to operation, for which there is a size entry following.
    * @return position of next operation in m_opMap.
    */
   public static int getNextOpPos(int[] opMap, int opPos) {
@@ -238,14 +217,11 @@ public class OpMap {
   }
 
   /**
-   * Given an FROM_stepType position, return the position of the first
-   * predicate, if there is one, or else this will point to the end of the
-   * FROM_stepType. Example: int posOfPredicate = xpath.getNextOpPos(stepPos);
-   * boolean hasPredicates = OpCodes.OP_PREDICATE ==
-   * xpath.getOp(posOfPredicate);
+   * Given an FROM_stepType position, return the position of the first predicate, if there is one, or else this will
+   * point to the end of the FROM_stepType. Example: int posOfPredicate = xpath.getNextOpPos(stepPos); boolean
+   * hasPredicates = OpCodes.OP_PREDICATE == xpath.getOp(posOfPredicate);
    * 
-   * @param opPos
-   *          position of FROM_stepType op.
+   * @param opPos position of FROM_stepType op.
    * @return position of predicate in FROM_stepType structure.
    * @throws TransformerException transformerException
    */
@@ -260,7 +236,7 @@ public class OpMap {
     else if (-2 == stepType)
       return -2;
     else {
-      error(de.lyca.xpath.res.XPATHErrorResources.ER_UNKNOWN_OPCODE, new Object[] { String.valueOf(stepType) }); // "ERROR! Unknown op code: "+m_opMap[opPos]);
+      error(Messages.get().unknownOpcode(stepType));
       return -1;
     }
   }
@@ -268,30 +244,17 @@ public class OpMap {
   /**
    * Tell the user of an error, and probably throw an exception.
    * 
-   * @param msg
-   *          An error msgkey that corresponds to one of the constants found in
-   *          {@link de.lyca.xpath.res.XPATHErrorResources}, which is a key for
-   *          a format string.
-   * @param args
-   *          An array of arguments represented in the format string, which may
-   *          be null.
-   * 
-   * @throws TransformerException
-   *           if the current ErrorListoner determines to throw an exception.
+   * @param fmsg An error message
+   * @throws TransformerException if the current ErrorListoner determines to throw an exception.
    */
-  public void error(String msg, Object[] args) throws TransformerException {
-
-    final java.lang.String fmsg = XPATHMessages.createXPATHMessage(msg, args);
-
+  public void error(String fmsg) throws TransformerException {
     throw new TransformerException(fmsg);
   }
 
   /**
    * Go to the first child of a given operation.
    * 
-   * @param opPos
-   *          position of operation.
-   * 
+   * @param opPos position of operation.
    * @return The position of the first child of the operation.
    */
   public static int getFirstChildPos(int opPos) {
@@ -301,9 +264,7 @@ public class OpMap {
   /**
    * Get the length of an operation.
    * 
-   * @param opPos
-   *          The position of the operation in the op map.
-   * 
+   * @param opPos The position of the operation in the op map.
    * @return The size of the operation.
    */
   public int getArgLength(int opPos) {
@@ -313,9 +274,7 @@ public class OpMap {
   /**
    * Given a location step, get the length of that step.
    * 
-   * @param opPos
-   *          Position of location step in op map.
-   * 
+   * @param opPos Position of location step in op map.
    * @return The length of the step.
    */
   public int getArgLengthOfStep(int opPos) {
@@ -325,9 +284,7 @@ public class OpMap {
   /**
    * Get the first child position of a given location step.
    * 
-   * @param opPos
-   *          Position of location step in the location map.
-   * 
+   * @param opPos Position of location step in the location map.
    * @return The first child position of the step.
    */
   public static int getFirstChildPosOfStep(int opPos) {
@@ -337,9 +294,7 @@ public class OpMap {
   /**
    * Get the test type of the step, i.e. NODETYPE_XXX value.
    * 
-   * @param opPosOfStep
-   *          The position of the FROM_XXX step.
-   * 
+   * @param opPosOfStep The position of the FROM_XXX step.
    * @return NODETYPE_XXX value.
    */
   public int getStepTestType(int opPosOfStep) {
@@ -350,9 +305,7 @@ public class OpMap {
   /**
    * Get the namespace of the step.
    * 
-   * @param opPosOfStep
-   *          The position of the FROM_XXX step.
-   * 
+   * @param opPosOfStep The position of the FROM_XXX step.
    * @return The step's namespace, NodeTest.WILD, or null for null namespace.
    */
   public String getStepNS(int opPosOfStep) {
@@ -376,9 +329,7 @@ public class OpMap {
   /**
    * Get the local name of the step.
    * 
-   * @param opPosOfStep
-   *          The position of the FROM_XXX step.
-   * 
+   * @param opPosOfStep The position of the FROM_XXX step.
    * @return OpCodes.EMPTY, OpCodes.ELEMWILDCARD, or the local name.
    */
   public String getStepLocalName(int opPosOfStep) {

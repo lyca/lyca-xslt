@@ -22,7 +22,7 @@ import javax.xml.transform.TransformerException;
 import de.lyca.xpath.XPathContext;
 import de.lyca.xpath.objects.XObject;
 import de.lyca.xpath.objects.XString;
-import de.lyca.xpath.res.XPATHMessages;
+import de.lyca.xpath.res.Messages;
 
 /**
  * Execute the Concat() function.
@@ -85,6 +85,6 @@ public class FuncConcat extends FunctionMultiArgs {
    */
   @Override
   protected void reportWrongNumberArgs() throws WrongNumberArgsException {
-    throw new WrongNumberArgsException(XPATHMessages.createXPATHMessage("gtone", null));
+    throw new WrongNumberArgsException(Messages.get().gtone());
   }
 }

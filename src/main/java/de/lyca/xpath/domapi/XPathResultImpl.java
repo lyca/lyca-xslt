@@ -31,26 +31,22 @@ import org.w3c.dom.xpath.XPathResult;
 
 import de.lyca.xpath.XPath;
 import de.lyca.xpath.objects.XObject;
-import de.lyca.xpath.res.XPATHErrorResources;
-import de.lyca.xpath.res.XPATHMessages;
+import de.lyca.xpath.res.Messages;
 
 /**
  * 
- * The class provides an implementation XPathResult according to the DOM L3
- * XPath Specification, Working Group Note 26 February 2004.
+ * The class provides an implementation XPathResult according to the DOM L3 XPath Specification, Working Group Note 26
+ * February 2004.
  * 
  * <p>
- * See also the <a
- * href='http://www.w3.org/TR/2004/NOTE-DOM-Level-3-XPath-20040226'>Document
- * Object Model (DOM) Level 3 XPath Specification</a>.
+ * See also the <a href='http://www.w3.org/TR/2004/NOTE-DOM-Level-3-XPath-20040226'>Document Object Model (DOM) Level 3
+ * XPath Specification</a>.
  * </p>
  * 
  * <p>
- * The <code>XPathResult</code> interface represents the result of the
- * evaluation of an XPath expression within the context of a particular node.
- * Since evaluation of an XPath expression can result in various result types,
- * this object makes it possible to discover and manipulate the type and value
- * of the result.
+ * The <code>XPathResult</code> interface represents the result of the evaluation of an XPath expression within the
+ * context of a particular node. Since evaluation of an XPath expression can result in various result types, this object
+ * makes it possible to discover and manipulate the type and value of the result.
  * </p>
  * 
  * <p>
@@ -72,16 +68,15 @@ class XPathResultImpl implements XPathResult, EventListener {
   final private XPath m_xpath;
 
   /**
-   * This the type specified by the user during construction. Typically the
-   * constructor will be called by de.lyca.xpath.XPath.evaluate().
+   * This the type specified by the user during construction. Typically the constructor will be called by
+   * de.lyca.xpath.XPath.evaluate().
    */
   final private short m_resultType;
 
   private boolean m_isInvalidIteratorState = false;
 
   /**
-   * Only used to attach a mutation event handler when specified type is an
-   * iterator type.
+   * Only used to attach a mutation event handler when specified type is an iterator type.
    */
   final private Node m_contextNode;
 
@@ -96,27 +91,19 @@ class XPathResultImpl implements XPathResult, EventListener {
   private NodeList m_list = null;
 
   /**
-   * Constructor for XPathResultImpl.
-   * 
-   * For internal use only.
+   * Constructor for XPathResultImpl. For internal use only.
    */
   XPathResultImpl(short type, XObject result, Node contextNode, XPath xpath) {
     // Check that the type is valid
     if (!isValidType(type)) {
-      final String fmsg = XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_INVALID_XPATH_TYPE,
-              new Object[] { new Integer(type) });
-      throw new XPathException(XPathException.TYPE_ERR, fmsg); // Invalid XPath
-                                                               // type argument:
-                                                               // {0}
+      final String fmsg = Messages.get().invalidXpathType(type);
+      throw new XPathException(XPathException.TYPE_ERR, fmsg);
     }
 
     // Result object should never be null!
     if (null == result) {
-      final String fmsg = XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_EMPTY_XPATH_RESULT, null);
-      throw new XPathException(XPathException.INVALID_EXPRESSION_ERR, fmsg); // Empty
-                                                                             // XPath
-                                                                             // result
-                                                                             // object
+      final String fmsg = Messages.get().emptyXpathResult();
+      throw new XPathException(XPathException.INVALID_EXPRESSION_ERR, fmsg);
     }
 
     m_resultObj = result;
@@ -134,24 +121,23 @@ class XPathResultImpl implements XPathResult, EventListener {
     // iterator
     // types register this result as an event listener
     if (m_resultType == XPathResult.ORDERED_NODE_ITERATOR_TYPE
-            || m_resultType == XPathResult.UNORDERED_NODE_ITERATOR_TYPE) {
+        || m_resultType == XPathResult.UNORDERED_NODE_ITERATOR_TYPE) {
       addEventListener();
 
-    }// else can we handle iterator types if contextNode doesn't support
-     // EventTarget??
+    } // else can we handle iterator types if contextNode doesn't support
+      // EventTarget??
 
     // If this is an iterator type get the iterator
     if (m_resultType == ORDERED_NODE_ITERATOR_TYPE || m_resultType == UNORDERED_NODE_ITERATOR_TYPE
-            || m_resultType == ANY_UNORDERED_NODE_TYPE || m_resultType == FIRST_ORDERED_NODE_TYPE) {
+        || m_resultType == ANY_UNORDERED_NODE_TYPE || m_resultType == FIRST_ORDERED_NODE_TYPE) {
 
       try {
         m_iterator = m_resultObj.nodeset();
       } catch (final TransformerException te) {
         // probably not a node type
-        final String fmsg = XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_INCOMPATIBLE_TYPES,
-                new Object[] { m_xpath.getPatternString(), getTypeString(getTypeFromXObject(m_resultObj)),
-                        getTypeString(m_resultType) });
-        throw new XPathException(XPathException.TYPE_ERR, fmsg); // "The XPathResult of XPath expression {0} has an XPathResultType of {1} which cannot be coerced into the specified XPathResultType of {2}."},
+        final String fmsg = Messages.get().incompatibleTypes(m_xpath.getPatternString(),
+            getTypeString(getTypeFromXObject(m_resultObj)), getTypeString(m_resultType));
+        throw new XPathException(XPathException.TYPE_ERR, fmsg);
       }
 
       // If user requested ordered nodeset and result is unordered
@@ -167,10 +153,9 @@ class XPathResultImpl implements XPathResult, EventListener {
         m_list = m_resultObj.nodelist();
       } catch (final TransformerException te) {
         // probably not a node type
-        final String fmsg = XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_INCOMPATIBLE_TYPES,
-                new Object[] { m_xpath.getPatternString(), getTypeString(getTypeFromXObject(m_resultObj)),
-                        getTypeString(m_resultType) });
-        throw new XPathException(XPathException.TYPE_ERR, fmsg); // "The XPathResult of XPath expression {0} has an XPathResultType of {1} which cannot be coerced into the specified XPathResultType of {2}."},
+        final String fmsg = Messages.get().incompatibleTypes(m_xpath.getPatternString(),
+            getTypeString(getTypeFromXObject(m_resultObj)), getTypeString(m_resultType));
+        throw new XPathException(XPathException.TYPE_ERR, fmsg);
       }
     }
   }
@@ -186,19 +171,15 @@ class XPathResultImpl implements XPathResult, EventListener {
   /**
    * The value of this number result.
    * 
-   * @throws XPathException
-   *              TYPE_ERR: raised if <code>resultType</code> is not
-   *              <code>NUMBER_TYPE</code>.
+   * @throws XPathException TYPE_ERR: raised if <code>resultType</code> is not <code>NUMBER_TYPE</code>.
    * @see org.w3c.dom.xpath.XPathResult#getNumberValue()
    */
   @Override
   public double getNumberValue() throws XPathException {
     if (getResultType() != NUMBER_TYPE) {
-      final String fmsg = XPATHMessages.createXPATHMessage(
-              XPATHErrorResources.ER_CANT_CONVERT_XPATHRESULTTYPE_TO_NUMBER, new Object[] { m_xpath.getPatternString(),
-                      getTypeString(m_resultType) });
+      final String fmsg = Messages.get().cantConvertXpathresulttypeToNumber(m_xpath.getPatternString(),
+          getTypeString(m_resultType));
       throw new XPathException(XPathException.TYPE_ERR, fmsg);
-      // "The XPathResult of XPath expression {0} has an XPathResultType of {1} which cannot be converted to a number"
     } else {
       try {
         return m_resultObj.num();
@@ -212,19 +193,14 @@ class XPathResultImpl implements XPathResult, EventListener {
   /**
    * The value of this string result.
    * 
-   * @throws XPathException
-   *              TYPE_ERR: raised if <code>resultType</code> is not
-   *              <code>STRING_TYPE</code>.
-   * 
+   * @throws XPathException TYPE_ERR: raised if <code>resultType</code> is not <code>STRING_TYPE</code>.
    * @see org.w3c.dom.xpath.XPathResult#getStringValue()
    */
   @Override
   public String getStringValue() throws XPathException {
     if (getResultType() != STRING_TYPE) {
-      final String fmsg = XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_CANT_CONVERT_TO_STRING, new Object[] {
-              m_xpath.getPatternString(), m_resultObj.getTypeString() });
+      final String fmsg = Messages.get().cantConvertToString(m_xpath.getPatternString(), m_resultObj.getTypeString());
       throw new XPathException(XPathException.TYPE_ERR, fmsg);
-      // "The XPathResult of XPath expression {0} has an XPathResultType of {1} which cannot be converted to a string."
     } else {
       try {
         return m_resultObj.str();
@@ -241,8 +217,7 @@ class XPathResultImpl implements XPathResult, EventListener {
   @Override
   public boolean getBooleanValue() throws XPathException {
     if (getResultType() != BOOLEAN_TYPE) {
-      final String fmsg = XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_CANT_CONVERT_TO_BOOLEAN,
-              new Object[] { m_xpath.getPatternString(), getTypeString(m_resultType) });
+      final String fmsg = Messages.get().cantConvertToBoolean(m_xpath.getPatternString(), getTypeString(m_resultType));
       throw new XPathException(XPathException.TYPE_ERR, fmsg);
       // "The XPathResult of XPath expression {0} has an XPathResultType of {1} which cannot be converted to a boolean."
     } else {
@@ -258,19 +233,16 @@ class XPathResultImpl implements XPathResult, EventListener {
   /**
    * The value of this single node result, which may be <code>null</code>.
    * 
-   * @throws XPathException
-   *              TYPE_ERR: raised if <code>resultType</code> is not
-   *              <code>ANY_UNORDERED_NODE_TYPE</code> or
-   *              <code>FIRST_ORDERED_NODE_TYPE</code>.
-   * 
+   * @throws XPathException TYPE_ERR: raised if <code>resultType</code> is not <code>ANY_UNORDERED_NODE_TYPE</code> or
+   *         <code>FIRST_ORDERED_NODE_TYPE</code>.
    * @see org.w3c.dom.xpath.XPathResult#getSingleNodeValue()
    */
   @Override
   public Node getSingleNodeValue() throws XPathException {
 
     if (m_resultType != ANY_UNORDERED_NODE_TYPE && m_resultType != FIRST_ORDERED_NODE_TYPE) {
-      final String fmsg = XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_CANT_CONVERT_TO_SINGLENODE,
-              new Object[] { m_xpath.getPatternString(), getTypeString(m_resultType) });
+      final String fmsg = Messages.get().cantConvertToSinglenode(m_xpath.getPatternString(),
+          getTypeString(m_resultType));
       throw new XPathException(XPathException.TYPE_ERR, fmsg);
       // "The XPathResult of XPath expression {0} has an XPathResultType of {1}
       // which cannot be converted to a single node.
@@ -306,22 +278,18 @@ class XPathResultImpl implements XPathResult, EventListener {
   }
 
   /**
-   * The number of nodes in the result snapshot. Valid values for snapshotItem
-   * indices are <code>0</code> to <code>snapshotLength-1</code> inclusive.
+   * The number of nodes in the result snapshot. Valid values for snapshotItem indices are <code>0</code> to
+   * <code>snapshotLength-1</code> inclusive.
    * 
-   * @throws XPathException
-   *              TYPE_ERR: raised if <code>resultType</code> is not
-   *              <code>UNORDERED_NODE_SNAPSHOT_TYPE</code> or
-   *              <code>ORDERED_NODE_SNAPSHOT_TYPE</code>.
-   * 
+   * @throws XPathException TYPE_ERR: raised if <code>resultType</code> is not <code>UNORDERED_NODE_SNAPSHOT_TYPE</code>
+   *         or <code>ORDERED_NODE_SNAPSHOT_TYPE</code>.
    * @see org.w3c.dom.xpath.XPathResult#getSnapshotLength()
    */
   @Override
   public int getSnapshotLength() throws XPathException {
 
     if (m_resultType != UNORDERED_NODE_SNAPSHOT_TYPE && m_resultType != ORDERED_NODE_SNAPSHOT_TYPE) {
-      final String fmsg = XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_CANT_GET_SNAPSHOT_LENGTH,
-              new Object[] { m_xpath.getPatternString(), getTypeString(m_resultType) });
+      final String fmsg = Messages.get().cantGetSnapshotLength(m_xpath.getPatternString(), getTypeString(m_resultType));
       throw new XPathException(XPathException.TYPE_ERR, fmsg);
       // "The method getSnapshotLength cannot be called on the XPathResult of
       // XPath expression {0} because its XPathResultType is {1}.
@@ -331,24 +299,18 @@ class XPathResultImpl implements XPathResult, EventListener {
   }
 
   /**
-   * Iterates and returns the next node from the node set or <code>null</code>if
-   * there are no more nodes.
+   * Iterates and returns the next node from the node set or <code>null</code>if there are no more nodes.
    * 
    * @return Returns the next node.
-   * @throws XPathException
-   *              TYPE_ERR: raised if <code>resultType</code> is not
-   *              <code>UNORDERED_NODE_ITERATOR_TYPE</code> or
-   *              <code>ORDERED_NODE_ITERATOR_TYPE</code>.
-   * @throws DOMException
-   *              INVALID_STATE_ERR: The document has been mutated since the
-   *              result was returned.
+   * @throws XPathException TYPE_ERR: raised if <code>resultType</code> is not <code>UNORDERED_NODE_ITERATOR_TYPE</code>
+   *         or <code>ORDERED_NODE_ITERATOR_TYPE</code>.
+   * @throws DOMException INVALID_STATE_ERR: The document has been mutated since the result was returned.
    * @see org.w3c.dom.xpath.XPathResult#iterateNext()
    */
   @Override
   public Node iterateNext() throws XPathException, DOMException {
     if (m_resultType != UNORDERED_NODE_ITERATOR_TYPE && m_resultType != ORDERED_NODE_ITERATOR_TYPE) {
-      final String fmsg = XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_NON_ITERATOR_TYPE, new Object[] {
-              m_xpath.getPatternString(), getTypeString(m_resultType) });
+      final String fmsg = Messages.get().nonIteratorType(m_xpath.getPatternString(), getTypeString(m_resultType));
       throw new XPathException(XPathException.TYPE_ERR, fmsg);
       // "The method iterateNext cannot be called on the XPathResult of XPath
       // expression {0} because its XPathResultType is {1}.
@@ -357,16 +319,8 @@ class XPathResultImpl implements XPathResult, EventListener {
     }
 
     if (getInvalidIteratorState()) {
-      final String fmsg = XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_DOC_MUTATED, null);
-      throw new DOMException(DOMException.INVALID_STATE_ERR, fmsg); // Document
-                                                                    // mutated
-                                                                    // since
-                                                                    // result
-                                                                    // was
-                                                                    // returned.
-                                                                    // Iterator
-                                                                    // is
-                                                                    // invalid.
+      final String fmsg = Messages.get().docMutated();
+      throw new DOMException(DOMException.INVALID_STATE_ERR, fmsg);
     }
 
     final Node node = m_iterator.nextNode();
@@ -381,30 +335,22 @@ class XPathResultImpl implements XPathResult, EventListener {
   }
 
   /**
-   * Returns the <code>index</code>th item in the snapshot collection. If
-   * <code>index</code> is greater than or equal to the number of nodes in the
-   * list, this method returns <code>null</code>. Unlike the iterator result,
-   * the snapshot does not become invalid, but may not correspond to the current
-   * document if it is mutated.
+   * Returns the <code>index</code>th item in the snapshot collection. If <code>index</code> is greater than or equal to
+   * the number of nodes in the list, this method returns <code>null</code>. Unlike the iterator result, the snapshot
+   * does not become invalid, but may not correspond to the current document if it is mutated.
    * 
-   * @param index
-   *          Index into the snapshot collection.
-   * @return The node at the <code>index</code>th position in the
-   *         <code>NodeList</code>, or <code>null</code> if that is not a valid
-   *         index.
-   * @throws XPathException
-   *              TYPE_ERR: raised if <code>resultType</code> is not
-   *              <code>UNORDERED_NODE_SNAPSHOT_TYPE</code> or
-   *              <code>ORDERED_NODE_SNAPSHOT_TYPE</code>.
-   * 
+   * @param index Index into the snapshot collection.
+   * @return The node at the <code>index</code>th position in the <code>NodeList</code>, or <code>null</code> if that is
+   *         not a valid index.
+   * @throws XPathException TYPE_ERR: raised if <code>resultType</code> is not <code>UNORDERED_NODE_SNAPSHOT_TYPE</code>
+   *         or <code>ORDERED_NODE_SNAPSHOT_TYPE</code>.
    * @see org.w3c.dom.xpath.XPathResult#snapshotItem(int)
    */
   @Override
   public Node snapshotItem(int index) throws XPathException {
 
     if (m_resultType != UNORDERED_NODE_SNAPSHOT_TYPE && m_resultType != ORDERED_NODE_SNAPSHOT_TYPE) {
-      final String fmsg = XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_NON_SNAPSHOT_TYPE, new Object[] {
-              m_xpath.getPatternString(), getTypeString(m_resultType) });
+      final String fmsg = Messages.get().nonSnapshotType(m_xpath.getPatternString(), getTypeString(m_resultType));
       throw new XPathException(XPathException.TYPE_ERR, fmsg);
       // "The method snapshotItem cannot be called on the XPathResult of XPath
       // expression {0} because its XPathResultType is {1}.
@@ -424,9 +370,7 @@ class XPathResultImpl implements XPathResult, EventListener {
   /**
    * Check if the specified type is one of the supported types.
    * 
-   * @param type
-   *          The specified type
-   * 
+   * @param type The specified type
    * @return true If the specified type is supported; otherwise, returns false.
    */
   static boolean isValidType(short type) {
@@ -463,8 +407,7 @@ class XPathResultImpl implements XPathResult, EventListener {
   }
 
   /**
-   * Given a request type, return the equivalent string. For diagnostic
-   * purposes.
+   * Given a request type, return the equivalent string. For diagnostic purposes.
    * 
    * @return type string
    */
@@ -510,18 +453,18 @@ class XPathResultImpl implements XPathResult, EventListener {
         return NUMBER_TYPE;
       case XObject.CLASS_STRING:
         return STRING_TYPE;
-        // XPath 2.0 types
-        // case XObject.CLASS_DATE:
-        // case XObject.CLASS_DATETIME:
-        // case XObject.CLASS_DTDURATION:
-        // case XObject.CLASS_GDAY:
-        // case XObject.CLASS_GMONTH:
-        // case XObject.CLASS_GMONTHDAY:
-        // case XObject.CLASS_GYEAR:
-        // case XObject.CLASS_GYEARMONTH:
-        // case XObject.CLASS_TIME:
-        // case XObject.CLASS_YMDURATION: return STRING_TYPE; // treat all date
-        // types as strings?
+      // XPath 2.0 types
+      // case XObject.CLASS_DATE:
+      // case XObject.CLASS_DATETIME:
+      // case XObject.CLASS_DTDURATION:
+      // case XObject.CLASS_GDAY:
+      // case XObject.CLASS_GMONTH:
+      // case XObject.CLASS_GMONTHDAY:
+      // case XObject.CLASS_GYEAR:
+      // case XObject.CLASS_GYEARMONTH:
+      // case XObject.CLASS_TIME:
+      // case XObject.CLASS_YMDURATION: return STRING_TYPE; // treat all date
+      // types as strings?
 
       case XObject.CLASS_RTREEFRAG:
         return UNORDERED_NODE_ITERATOR_TYPE;
@@ -537,14 +480,12 @@ class XPathResultImpl implements XPathResult, EventListener {
    * Given a node, determine if it is a namespace node.
    * 
    * @param node
-   * 
-   * @return boolean Returns true if this is a namespace node; otherwise,
-   *         returns false.
+   * @return boolean Returns true if this is a namespace node; otherwise, returns false.
    */
   private boolean isNamespaceNode(Node node) {
 
     if (null != node && node.getNodeType() == Node.ATTRIBUTE_NODE
-            && (node.getNodeName().startsWith("xmlns:") || node.getNodeName().equals("xmlns")))
+        && (node.getNodeName().startsWith("xmlns:") || node.getNodeName().equals("xmlns")))
       return true;
     else
       return false;
@@ -552,7 +493,6 @@ class XPathResultImpl implements XPathResult, EventListener {
 
   /**
    * Add m_contextNode to Event Listner to listen for Mutations Events
-   * 
    */
   private void addEventListener() {
     if (m_contextNode instanceof EventTarget) {
@@ -563,7 +503,6 @@ class XPathResultImpl implements XPathResult, EventListener {
 
   /**
    * Remove m_contextNode to Event Listner to listen for Mutations Events
-   * 
    */
   private void removeEventListener() {
     if (m_contextNode instanceof EventTarget) {

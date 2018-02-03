@@ -23,8 +23,7 @@ import de.lyca.xml.utils.XMLString;
 import de.lyca.xpath.XPathContext;
 import de.lyca.xpath.objects.XObject;
 import de.lyca.xpath.objects.XString;
-import de.lyca.xpath.res.XPATHErrorResources;
-import de.lyca.xpath.res.XPATHMessages;
+import de.lyca.xpath.res.Messages;
 
 /**
  * Execute the Substring() function.
@@ -35,10 +34,8 @@ public class FuncSubstring extends Function3Args {
   /**
    * Execute the function. The function must return a valid object.
    * 
-   * @param xctxt
-   *          The current execution context.
+   * @param xctxt The current execution context.
    * @return A valid XObject.
-   * 
    * @throws TransformerException TODO
    */
   @Override
@@ -95,10 +92,7 @@ public class FuncSubstring extends Function3Args {
   /**
    * Check that the number of arguments passed to this function is correct.
    * 
-   * 
-   * @param argNum
-   *          The number of arguments that is being passed to the function.
-   * 
+   * @param argNum The number of arguments that is being passed to the function.
    * @throws WrongNumberArgsException
    */
   @Override
@@ -109,13 +103,12 @@ public class FuncSubstring extends Function3Args {
   }
 
   /**
-   * Constructs and throws a WrongNumberArgException with the appropriate
-   * message for this function object.
+   * Constructs and throws a WrongNumberArgException with the appropriate message for this function object.
    * 
    * @throws WrongNumberArgsException
    */
   @Override
   protected void reportWrongNumberArgs() throws WrongNumberArgsException {
-    throw new WrongNumberArgsException(XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_TWO_OR_THREE, null)); // "2 or 3");
+    throw new WrongNumberArgsException(Messages.get().twoOrThree());
   }
 }

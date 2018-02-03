@@ -31,8 +31,7 @@ import de.lyca.xpath.ExtensionsProvider;
 import de.lyca.xpath.functions.FuncExtFunction;
 import de.lyca.xpath.objects.XNodeSet;
 import de.lyca.xpath.objects.XObject;
-import de.lyca.xpath.res.XPATHErrorResources;
-import de.lyca.xpath.res.XPATHMessages;
+import de.lyca.xpath.res.Messages;
 
 /**
  * 
@@ -61,8 +60,7 @@ public class JAXPExtensionsProvider implements ExtensionsProvider {
   public boolean functionAvailable(String ns, String funcName) throws TransformerException {
     try {
       if (funcName == null) {
-        final String fmsg = XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_ARG_CANNOT_BE_NULL,
-                new Object[] { "Function Name" });
+        final String fmsg = Messages.get().argCannotBeNull("Function Name");
         throw new NullPointerException(fmsg);
       }
       // Find the XPathFunction corresponding to namespace and funcName
@@ -93,8 +91,7 @@ public class JAXPExtensionsProvider implements ExtensionsProvider {
     try {
 
       if (funcName == null) {
-        final String fmsg = XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_ARG_CANNOT_BE_NULL,
-                new Object[] { "Function Name" });
+        final String fmsg = Messages.get().argCannotBeNull("Function Name");
         throw new NullPointerException(fmsg);
       }
       // Find the XPathFunction corresponding to namespace and funcName
@@ -104,8 +101,7 @@ public class JAXPExtensionsProvider implements ExtensionsProvider {
       // feature is set then invocation of extension functions need to
       // throw XPathFunctionException
       if (extensionInvocationDisabled) {
-        final String fmsg = XPATHMessages.createXPATHMessage(
-                XPATHErrorResources.ER_EXTENSION_FUNCTION_CANNOT_BE_INVOKED, new Object[] { myQName.toString() });
+        final String fmsg = Messages.get().extensionFunctionCannotBeInvoked(myQName);
         throw new XPathFunctionException(fmsg);
       }
 
@@ -157,8 +153,7 @@ public class JAXPExtensionsProvider implements ExtensionsProvider {
       // feature is set then invocation of extension functions need to
       // throw XPathFunctionException
       if (extensionInvocationDisabled) {
-        final String fmsg = XPATHMessages.createXPATHMessage(
-                XPATHErrorResources.ER_EXTENSION_FUNCTION_CANNOT_BE_INVOKED, new Object[] { myQName.toString() });
+        final String fmsg = Messages.get().extensionFunctionCannotBeInvoked(myQName);
         throw new XPathFunctionException(fmsg);
       }
 

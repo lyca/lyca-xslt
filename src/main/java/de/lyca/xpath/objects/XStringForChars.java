@@ -22,8 +22,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.ext.LexicalHandler;
 
 import de.lyca.xml.utils.FastStringBuffer;
-import de.lyca.xpath.res.XPATHErrorResources;
-import de.lyca.xpath.res.XPATHMessages;
+import de.lyca.xpath.res.Messages;
 
 /**
  * This class will wrap a FastStringBuffer and allow for
@@ -41,32 +40,26 @@ public class XStringForChars extends XString {
   /**
    * Construct a XNodeSet object.
    * 
-   * @param val
-   *          FastStringBuffer object this will wrap, must be non-null.
-   * @param start
-   *          The start position in the array.
-   * @param length
-   *          The number of characters to read from the array.
+   * @param val FastStringBuffer object this will wrap, must be non-null.
+   * @param start The start position in the array.
+   * @param length The number of characters to read from the array.
    */
   public XStringForChars(char[] val, int start, int length) {
     super(val);
     m_start = start;
     m_length = length;
     if (null == val)
-      throw new IllegalArgumentException(XPATHMessages.createXPATHMessage(
-              XPATHErrorResources.ER_FASTSTRINGBUFFER_CANNOT_BE_NULL, null)); // "The FastStringBuffer argument can not be null!!");
+      throw new IllegalArgumentException(Messages.get().faststringbufferCannotBeNull());
   }
 
   /**
    * Construct a XNodeSet object.
    * 
-   * @param val
-   *          String object this will wrap.
+   * @param val String object this will wrap.
    */
   private XStringForChars(String val) {
     super(val);
-    throw new IllegalArgumentException(XPATHMessages.createXPATHMessage(
-            XPATHErrorResources.ER_XSTRINGFORCHARS_CANNOT_TAKE_STRING, null)); // "XStringForChars can not take a string for an argument!");
+    throw new IllegalArgumentException(Messages.get().xstringforcharsCannotTakeString());
   }
 
   /**
@@ -75,14 +68,11 @@ public class XStringForChars extends XString {
    * @return The string this wraps or the empty string if null
    */
   public FastStringBuffer fsb() {
-    throw new RuntimeException(XPATHMessages.createXPATHMessage(
-            XPATHErrorResources.ER_FSB_NOT_SUPPORTED_XSTRINGFORCHARS, null)); // "fsb() not supported for XStringForChars!");
+    throw new RuntimeException(Messages.get().fsbNotSupportedXstringforchars());
   }
 
   /**
-   * TODO
-   * Cast result object to a string.
-   * The string this wraps or the empty string if null
+   * TODO Cast result object to a string. The string this wraps or the empty string if null
    */
   @Override
   public void appendToFsb(de.lyca.xml.utils.FastStringBuffer fsb) {
@@ -114,8 +104,8 @@ public class XStringForChars extends XString {
   }
 
   /**
-   * Since this object is incomplete without the length and the offset, we have
-   * to convert to a string when this function is called.
+   * Since this object is incomplete without the length and the offset, we have to convert to a string when this
+   * function is called.
    * 
    * @return The java String representation of this object.
    */
@@ -125,13 +115,10 @@ public class XStringForChars extends XString {
   }
 
   /**
-   * Directly call the characters method on the passed ContentHandler for the
-   * string-value. Multiple calls to the ContentHandler's characters methods may
-   * well occur for a single call to this method.
+   * Directly call the characters method on the passed ContentHandler for the string-value. Multiple calls to the
+   * ContentHandler's characters methods may well occur for a single call to this method.
    * 
-   * @param ch
-   *          A non-null reference to a ContentHandler.
-   * 
+   * @param ch A non-null reference to a ContentHandler.
    * @throws SAXException TODO
    */
   @Override
@@ -140,12 +127,9 @@ public class XStringForChars extends XString {
   }
 
   /**
-   * Directly call the comment method on the passed LexicalHandler for the
-   * string-value.
+   * Directly call the comment method on the passed LexicalHandler for the string-value.
    * 
-   * @param lh
-   *          A non-null reference to a LexicalHandler.
-   * 
+   * @param lh A non-null reference to a LexicalHandler.
    * @throws SAXException TODO
    */
   @Override
@@ -156,8 +140,7 @@ public class XStringForChars extends XString {
   /**
    * Returns the length of this string.
    * 
-   * @return the length of the sequence of characters represented by this
-   *         object.
+   * @return the length of the sequence of characters represented by this object.
    */
   @Override
   public int length() {
@@ -165,18 +148,14 @@ public class XStringForChars extends XString {
   }
 
   /**
-   * Returns the character at the specified index. An index ranges from
-   * <code>0</code> to <code>length() - 1</code>. The first character of the
-   * sequence is at index <code>0</code>, the next at index <code>1</code>, and
-   * so on, as for array indexing.
+   * Returns the character at the specified index. An index ranges from <code>0</code> to <code>length() - 1</code>. The
+   * first character of the sequence is at index <code>0</code>, the next at index <code>1</code>, and so on, as for
+   * array indexing.
    * 
-   * @param index
-   *          the index of the character.
-   * @return the character at the specified index of this string. The first
-   *         character is at index <code>0</code>.
-   * @throws IndexOutOfBoundsException
-   *              if the <code>index</code> argument is negative or not less
-   *              than the length of this string.
+   * @param index the index of the character.
+   * @return the character at the specified index of this string. The first character is at index <code>0</code>.
+   * @throws IndexOutOfBoundsException if the <code>index</code> argument is negative or not less than the length of
+   *         this string.
    */
   @Override
   public char charAt(int index) {
@@ -186,27 +165,19 @@ public class XStringForChars extends XString {
   /**
    * Copies characters from this string into the destination character array.
    * 
-   * @param srcBegin
-   *          index of the first character in the string to copy.
-   * @param srcEnd
-   *          index after the last character in the string to copy.
-   * @param dst
-   *          the destination array.
-   * @param dstBegin
-   *          the start offset in the destination array.
-   * @throws IndexOutOfBoundsException
-   *              If any of the following is true:
-   *              <ul>
-   *              <li><code>srcBegin</code> is negative.
-   *              <li><code>srcBegin</code> is greater than <code>srcEnd</code>
-   *              <li><code>srcEnd</code> is greater than the length of this
-   *              string
-   *              <li><code>dstBegin</code> is negative
-   *              <li><code>dstBegin+(srcEnd-srcBegin)</code> is larger than
-   *              <code>dst.length</code>
-   *              </ul>
-   * @throws NullPointerException
-   *              if <code>dst</code> is <code>null</code>
+   * @param srcBegin index of the first character in the string to copy.
+   * @param srcEnd index after the last character in the string to copy.
+   * @param dst the destination array.
+   * @param dstBegin the start offset in the destination array.
+   * @throws IndexOutOfBoundsException If any of the following is true:
+   *         <ul>
+   *         <li><code>srcBegin</code> is negative.
+   *         <li><code>srcBegin</code> is greater than <code>srcEnd</code>
+   *         <li><code>srcEnd</code> is greater than the length of this string
+   *         <li><code>dstBegin</code> is negative
+   *         <li><code>dstBegin+(srcEnd-srcBegin)</code> is larger than <code>dst.length</code>
+   *         </ul>
+   * @throws NullPointerException if <code>dst</code> is <code>null</code>
    */
   @Override
   public void getChars(int srcBegin, int srcEnd, char dst[], int dstBegin) {

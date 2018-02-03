@@ -30,12 +30,10 @@ import de.lyca.xpath.ExpressionOwner;
 import de.lyca.xpath.XPathContext;
 import de.lyca.xpath.XPathVisitor;
 import de.lyca.xpath.compiler.Compiler;
-import de.lyca.xpath.res.XPATHErrorResources;
-import de.lyca.xpath.res.XPATHMessages;
+import de.lyca.xpath.res.Messages;
 
 /**
- * Serves as common interface for axes Walkers, and stores common state
- * variables.
+ * Serves as common interface for axes Walkers, and stores common state variables.
  */
 public class AxesWalker extends PredicatedNodeTest implements Cloneable, PathComponent, ExpressionOwner {
   static final long serialVersionUID = -2966031951306601247L;
@@ -43,10 +41,8 @@ public class AxesWalker extends PredicatedNodeTest implements Cloneable, PathCom
   /**
    * Construct an AxesWalker using a LocPathIterator.
    * 
-   * @param locPathIterator
-   *          non-null reference to the parent iterator.
-   * @param axis
-   *          TODO
+   * @param locPathIterator non-null reference to the parent iterator.
+   * @param axis TODO
    */
   public AxesWalker(LocPathIterator locPathIterator, Axis axis) {
     super(locPathIterator);
@@ -60,16 +56,10 @@ public class AxesWalker extends PredicatedNodeTest implements Cloneable, PathCom
   /**
    * Initialize an AxesWalker during the parse of the XPath expression.
    * 
-   * @param compiler
-   *          The Compiler object that has information about this walker in the
-   *          op map.
-   * @param opPos
-   *          The op code position of this location step.
-   * @param stepType
-   *          The type of location step.
-   * 
-   * @throws TransformerException
-   *           TODO
+   * @param compiler The Compiler object that has information about this walker in the op map.
+   * @param opPos The op code position of this location step.
+   * @param stepType The type of location step.
+   * @throws TransformerException TODO
    */
   public void init(Compiler compiler, int opPos, int stepType) throws TransformerException {
 
@@ -82,9 +72,7 @@ public class AxesWalker extends PredicatedNodeTest implements Cloneable, PathCom
    * Get a cloned AxesWalker.
    * 
    * @return A new AxesWalker that can be used without mutating this one.
-   * 
-   * @throws CloneNotSupportedException
-   *           TODO
+   * @throws CloneNotSupportedException TODO
    */
   @Override
   public Object clone() throws CloneNotSupportedException {
@@ -100,19 +88,12 @@ public class AxesWalker extends PredicatedNodeTest implements Cloneable, PathCom
   }
 
   /**
-   * Do a deep clone of this walker, including next and previous walkers. If the
-   * this AxesWalker is on the clone list, don't clone but return the already
-   * cloned version.
+   * Do a deep clone of this walker, including next and previous walkers. If the this AxesWalker is on the clone list,
+   * don't clone but return the already cloned version.
    * 
-   * @param cloneOwner
-   *          non-null reference to the cloned location path iterator to which
-   *          this clone will be added.
-   * @param cloneList
-   *          non-null list of sources in odd elements, and the corresponding
-   *          clones in even vectors.
-   * 
-   * @return non-null clone, which may be a new clone, or may be a clone
-   *         contained on the cloneList.
+   * @param cloneOwner non-null reference to the cloned location path iterator to which this clone will be added.
+   * @param cloneList non-null list of sources in odd elements, and the corresponding clones in even vectors.
+   * @return non-null clone, which may be a new clone, or may be a clone contained on the cloneList.
    */
   AxesWalker cloneDeep(WalkingIterator cloneOwner, List<AxesWalker> cloneList) throws CloneNotSupportedException {
     AxesWalker clone = findClone(this, cloneList);
@@ -150,12 +131,8 @@ public class AxesWalker extends PredicatedNodeTest implements Cloneable, PathCom
   /**
    * Find a clone that corresponds to the key argument.
    * 
-   * @param key
-   *          The original AxesWalker for which there may be a clone.
-   * @param cloneList
-   *          list of sources in odd elements, and the corresponding clones in
-   *          even vectors, may be null.
-   * 
+   * @param key The original AxesWalker for which there may be a clone.
+   * @param cloneList list of sources in odd elements, and the corresponding clones in even vectors, may be null.
    * @return A clone that corresponds to the key, or null if key not found.
    */
   static AxesWalker findClone(AxesWalker key, List<AxesWalker> cloneList) {
@@ -171,8 +148,8 @@ public class AxesWalker extends PredicatedNodeTest implements Cloneable, PathCom
   }
 
   /**
-   * Detaches the walker from the set which it iterated over, releasing any
-   * computational resources and placing the iterator in the INVALID state.
+   * Detaches the walker from the set which it iterated over, releasing any computational resources and placing the
+   * iterator in the INVALID state.
    */
   public void detach() {
     m_currentNode = DTM.NULL;
@@ -185,8 +162,8 @@ public class AxesWalker extends PredicatedNodeTest implements Cloneable, PathCom
   // =============== TreeWalker Implementation ===============
 
   /**
-   * The root node of the TreeWalker, as specified in setRoot(int root). Note
-   * that this may actually be below the current node.
+   * The root node of the TreeWalker, as specified in setRoot(int root). Note that this may actually be below the
+   * current node.
    * 
    * @return The context node of the step.
    */
@@ -207,11 +184,9 @@ public class AxesWalker extends PredicatedNodeTest implements Cloneable, PathCom
   }
 
   /**
-   * Set the root node of the TreeWalker. (Not part of the DOM2 TreeWalker
-   * interface).
+   * Set the root node of the TreeWalker. (Not part of the DOM2 TreeWalker interface).
    * 
-   * @param root
-   *          The context node of this step.
+   * @param root The context node of this step.
    */
   public void setRoot(int root) {
     // %OPT% Get this directly from the lpi.
@@ -224,26 +199,20 @@ public class AxesWalker extends PredicatedNodeTest implements Cloneable, PathCom
     m_currentNode = root;
 
     if (DTM.NULL == root)
-      throw new RuntimeException(
-          // "\n !!!! Error! Setting the root of a walker to null!!!");
-          XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_SETTING_WALKER_ROOT_TO_NULL, null));
+      throw new RuntimeException(Messages.get().settingWalkerRootToNull());
 
     resetProximityPositions();
   }
 
   /**
    * The node at which the TreeWalker is currently positioned. <br>
-   * The value must not be null. Alterations to the DOM tree may cause the
-   * current node to no longer be accepted by the TreeWalker's associated
-   * filter. currentNode may also be explicitly set to any node, whether or not
-   * it is within the subtree specified by the root node or would be accepted by
-   * the filter and whatToShow flags. Further traversal occurs relative to
-   * currentNode even if it is not part of the current view by applying the
-   * filters in the requested direction (not changing currentNode where no
-   * traversal is possible).
+   * The value must not be null. Alterations to the DOM tree may cause the current node to no longer be accepted by the
+   * TreeWalker's associated filter. currentNode may also be explicitly set to any node, whether or not it is within the
+   * subtree specified by the root node or would be accepted by the filter and whatToShow flags. Further traversal
+   * occurs relative to currentNode even if it is not part of the current view by applying the filters in the requested
+   * direction (not changing currentNode where no traversal is possible).
    * 
-   * @return The node at which the TreeWalker is currently positioned, only null
-   *         if setRoot has not yet been called.
+   * @return The node at which the TreeWalker is currently positioned, only null if setRoot has not yet been called.
    */
   public final int getCurrentNode() {
     return m_currentNode;
@@ -252,9 +221,7 @@ public class AxesWalker extends PredicatedNodeTest implements Cloneable, PathCom
   /**
    * Set the next walker in the location step chain.
    * 
-   * 
-   * @param walker
-   *          Reference to AxesWalker derivative, or may be null.
+   * @param walker Reference to AxesWalker derivative, or may be null.
    */
   public void setNextWalker(AxesWalker walker) {
     m_nextWalker = walker;
@@ -262,7 +229,6 @@ public class AxesWalker extends PredicatedNodeTest implements Cloneable, PathCom
 
   /**
    * Get the next walker in the location step chain.
-   * 
    * 
    * @return Reference to AxesWalker derivative, or null.
    */
@@ -273,10 +239,7 @@ public class AxesWalker extends PredicatedNodeTest implements Cloneable, PathCom
   /**
    * Set or clear the previous walker reference in the location step chain.
    * 
-   * 
-   * @param walker
-   *          Reference to previous walker reference in the location step chain,
-   *          or null.
+   * @param walker Reference to previous walker reference in the location step chain, or null.
    */
   public void setPrevWalker(AxesWalker walker) {
     m_prevWalker = walker;
@@ -285,9 +248,7 @@ public class AxesWalker extends PredicatedNodeTest implements Cloneable, PathCom
   /**
    * Get the previous walker reference in the location step chain.
    * 
-   * 
-   * @return Reference to previous walker reference in the location step chain,
-   *         or null.
+   * @return Reference to previous walker reference in the location step chain, or null.
    */
   public AxesWalker getPrevWalker() {
     return m_prevWalker;
@@ -321,14 +282,11 @@ public class AxesWalker extends PredicatedNodeTest implements Cloneable, PathCom
   }
 
   /**
-   * Moves the <code>TreeWalker</code> to the next visible node in document
-   * order relative to the current node, and returns the new node. If the
-   * current node has no next node, or if the search for nextNode attempts to
-   * step upward from the TreeWalker's root node, returns <code>null</code> ,
-   * and retains the current node.
+   * Moves the <code>TreeWalker</code> to the next visible node in document order relative to the current node, and
+   * returns the new node. If the current node has no next node, or if the search for nextNode attempts to step upward
+   * from the TreeWalker's root node, returns <code>null</code> , and retains the current node.
    * 
-   * @return The new node, or <code>null</code> if the current node has no next
-   *         node in the TreeWalker's logical view.
+   * @return The new node, or <code>null</code> if the current node has no next node in the TreeWalker's logical view.
    */
   public int nextNode() {
     int nextNode = DTM.NULL;
@@ -376,10 +334,7 @@ public class AxesWalker extends PredicatedNodeTest implements Cloneable, PathCom
   /**
    * Get the index of the last node that can be itterated to.
    * 
-   * 
-   * @param xctxt
-   *          XPath runtime context.
-   * 
+   * @param xctxt XPath runtime context.
    * @return the index of the last node that can be itterated to.
    */
   @Override
@@ -421,17 +376,15 @@ public class AxesWalker extends PredicatedNodeTest implements Cloneable, PathCom
   // ============= State Data =============
 
   /**
-   * The DTM for the root. This can not be used, or must be changed, for the
-   * filter walker, or any walker that can have nodes from multiple documents.
-   * Never, ever, access this value without going through getDTM(int node).
+   * The DTM for the root. This can not be used, or must be changed, for the filter walker, or any walker that can have
+   * nodes from multiple documents. Never, ever, access this value without going through getDTM(int node).
    */
   private DTM m_dtm;
 
   /**
    * Set the DTM for this walker.
    * 
-   * @param dtm
-   *          Non-null reference to a DTM.
+   * @param dtm Non-null reference to a DTM.
    */
   public void setDefaultDTM(DTM dtm) {
     m_dtm = dtm;
@@ -440,8 +393,7 @@ public class AxesWalker extends PredicatedNodeTest implements Cloneable, PathCom
   /**
    * Get the DTM for this walker.
    * 
-   * @param node
-   *          TODO
+   * @param node TODO
    * @return Non-null reference to a DTM.
    */
   public DTM getDTM(int node) {
@@ -450,8 +402,8 @@ public class AxesWalker extends PredicatedNodeTest implements Cloneable, PathCom
   }
 
   /**
-   * Returns true if all the nodes in the iteration well be returned in document
-   * order. Warning: This can only be called after setRoot has been called!
+   * Returns true if all the nodes in the iteration well be returned in document order. Warning: This can only be called
+   * after setRoot has been called!
    * 
    * @return true as a default.
    */
@@ -462,22 +414,18 @@ public class AxesWalker extends PredicatedNodeTest implements Cloneable, PathCom
   /**
    * Returns the axis being iterated, if it is known.
    * 
-   * @return Axis.CHILD, etc., or -1 if the axis is not known or is of multiple
-   *         types.
+   * @return Axis.CHILD, etc., or -1 if the axis is not known or is of multiple types.
    */
   public Axis getAxis() {
     return m_axis;
   }
 
   /**
-   * This will traverse the heararchy, calling the visitor for each member. If
-   * the called visitor method returns false, the subtree should not be called.
+   * This will traverse the heararchy, calling the visitor for each member. If the called visitor method returns false,
+   * the subtree should not be called.
    * 
-   * @param owner
-   *          The owner of the visitor, where that path may be rewritten if
-   *          needed.
-   * @param visitor
-   *          The visitor whose appropriate method will be called.
+   * @param owner The owner of the visitor, where that path may be rewritten if needed.
+   * @param visitor The visitor whose appropriate method will be called.
    */
   @Override
   public void callVisitors(ExpressionOwner owner, XPathVisitor visitor) {

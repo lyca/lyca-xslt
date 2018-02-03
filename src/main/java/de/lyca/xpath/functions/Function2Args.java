@@ -23,7 +23,7 @@ import de.lyca.xml.utils.QName;
 import de.lyca.xpath.Expression;
 import de.lyca.xpath.ExpressionOwner;
 import de.lyca.xpath.XPathVisitor;
-import de.lyca.xpath.res.XPATHMessages;
+import de.lyca.xpath.res.Messages;
 
 /**
  * Base class for functions that accept two arguments.
@@ -41,24 +41,19 @@ public class Function2Args extends FunctionOneArg {
   /**
    * Return the second argument passed to the function (at index 1).
    * 
-   * @return An expression that represents the second argument passed to the
-   *         function.
+   * @return An expression that represents the second argument passed to the function.
    */
   public Expression getArg1() {
     return m_arg1;
   }
 
   /**
-   * This function is used to fixup variables from QNames to stack frame indexes
-   * at stylesheet build time.
+   * This function is used to fixup variables from QNames to stack frame indexes at stylesheet build time.
    * 
-   * @param vars
-   *          List of QNames that correspond to variables. This list should be
-   *          searched backwards for the first qualified name that corresponds
-   *          to the variable reference qname. The position of the QName in the
-   *          list from the start of the list will be its position in the stack
-   *          frame (but variables above the globalsTop value will need to be
-   *          offset to the current stack frame).
+   * @param vars List of QNames that correspond to variables. This list should be searched backwards for the first
+   *        qualified name that corresponds to the variable reference qname. The position of the QName in the list from
+   *        the start of the list will be its position in the stack frame (but variables above the globalsTop value will
+   *        need to be offset to the current stack frame).
    */
   @Override
   public void fixupVariables(List<QName> vars, int globalsSize) {
@@ -69,16 +64,11 @@ public class Function2Args extends FunctionOneArg {
   }
 
   /**
-   * Set an argument expression for a function. This method is called by the
-   * XPath compiler.
+   * Set an argument expression for a function. This method is called by the XPath compiler.
    * 
-   * @param arg
-   *          non-null expression that represents the argument.
-   * @param argNum
-   *          The argument number index.
-   * 
-   * @throws WrongNumberArgsException
-   *           If the argNum parameter is greater than 1.
+   * @param arg non-null expression that represents the argument.
+   * @param argNum The argument number index.
+   * @throws WrongNumberArgsException If the argNum parameter is greater than 1.
    */
   @Override
   public void setArg(Expression arg, int argNum) throws WrongNumberArgsException {
@@ -97,10 +87,7 @@ public class Function2Args extends FunctionOneArg {
   /**
    * Check that the number of arguments passed to this function is correct.
    * 
-   * 
-   * @param argNum
-   *          The number of arguments that is being passed to the function.
-   * 
+   * @param argNum The number of arguments that is being passed to the function.
    * @throws WrongNumberArgsException
    */
   @Override
@@ -111,19 +98,17 @@ public class Function2Args extends FunctionOneArg {
   }
 
   /**
-   * Constructs and throws a WrongNumberArgException with the appropriate
-   * message for this function object.
+   * Constructs and throws a WrongNumberArgException with the appropriate message for this function object.
    * 
    * @throws WrongNumberArgsException
    */
   @Override
   protected void reportWrongNumberArgs() throws WrongNumberArgsException {
-    throw new WrongNumberArgsException(XPATHMessages.createXPATHMessage("two", null));
+    throw new WrongNumberArgsException(Messages.get().two());
   }
 
   /**
-   * Tell if this expression or it's subexpressions can traverse outside the
-   * current subtree.
+   * Tell if this expression or it's subexpressions can traverse outside the current subtree.
    * 
    * @return true if traversal outside the context node's subtree can occur.
    */
@@ -152,8 +137,7 @@ public class Function2Args extends FunctionOneArg {
   }
 
   /**
-   * @see de.lyca.xpath.XPathVisitable#callVisitors(ExpressionOwner,
-   *      XPathVisitor)
+   * @see de.lyca.xpath.XPathVisitable#callVisitors(ExpressionOwner, XPathVisitor)
    */
   @Override
   public void callArgVisitors(XPathVisitor visitor) {

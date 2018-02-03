@@ -40,14 +40,12 @@ import de.lyca.xpath.XPathContext;
 import de.lyca.xpath.XPathException;
 import de.lyca.xpath.XPathVisitable;
 import de.lyca.xpath.XPathVisitor;
-import de.lyca.xpath.res.XPATHErrorResources;
-import de.lyca.xpath.res.XPATHMessages;
+import de.lyca.xpath.res.Messages;
 
 /**
- * This class represents an XPath object, and is capable of converting the
- * object to various types, such as a string. This class acts as the base class
- * to other XPath type objects, such as XString, and provides polymorphic
- * casting capabilities.
+ * This class represents an XPath object, and is capable of converting the object to various types, such as a string.
+ * This class acts as the base class to other XPath type objects, such as XString, and provides polymorphic casting
+ * capabilities.
  */
 public class XObject extends Expression implements Serializable, Cloneable {
   static final long serialVersionUID = -821887098985662951L;
@@ -68,9 +66,7 @@ public class XObject extends Expression implements Serializable, Cloneable {
   /**
    * Create an XObject.
    * 
-   * @param obj
-   *          Can be any object, should be a specific type for derived classes,
-   *          or null.
+   * @param obj Can be any object, should be a specific type for derived classes, or null.
    */
   public XObject(Object obj) {
     setObject(obj);
@@ -83,11 +79,8 @@ public class XObject extends Expression implements Serializable, Cloneable {
   /**
    * For support of literal objects in xpaths.
    * 
-   * @param xctxt
-   *          The XPath execution context.
-   * 
+   * @param xctxt The XPath execution context.
    * @return This object.
-   * 
    * @throws TransformerException TODO
    */
   @Override
@@ -96,30 +89,25 @@ public class XObject extends Expression implements Serializable, Cloneable {
   }
 
   /**
-   * Specify if it's OK for detach to release the iterator for reuse. This
-   * function should be called with a value of false for objects that are stored
-   * in variables. Calling this with a value of false on a XNodeSet will cause
-   * the nodeset to be cached.
+   * Specify if it's OK for detach to release the iterator for reuse. This function should be called with a value of
+   * false for objects that are stored in variables. Calling this with a value of false on a XNodeSet will cause the
+   * nodeset to be cached.
    * 
-   * @param allowRelease
-   *          true if it is OK for detach to release this iterator for pooling.
+   * @param allowRelease true if it is OK for detach to release this iterator for pooling.
    */
   public void allowDetachToRelease(boolean allowRelease) {
   }
 
   /**
-   * Detaches the <code>DTMIterator</code> from the set which it iterated over,
-   * releasing any computational resources and placing the iterator in the
-   * INVALID state. After <code>detach</code> has been invoked, calls to
-   * <code>nextNode</code> or <code>previousNode</code> will raise a runtime
-   * exception.
+   * Detaches the <code>DTMIterator</code> from the set which it iterated over, releasing any computational resources
+   * and placing the iterator in the INVALID state. After <code>detach</code> has been invoked, calls to
+   * <code>nextNode</code> or <code>previousNode</code> will raise a runtime exception.
    */
   public void detach() {
   }
 
   /**
-   * Forces the object to release it's resources. This is more harsh than
-   * detach().
+   * Forces the object to release it's resources. This is more harsh than detach().
    */
   public void destruct() {
 
@@ -138,13 +126,10 @@ public class XObject extends Expression implements Serializable, Cloneable {
   }
 
   /**
-   * Directly call the characters method on the passed ContentHandler for the
-   * string-value. Multiple calls to the ContentHandler's characters methods may
-   * well occur for a single call to this method.
+   * Directly call the characters method on the passed ContentHandler for the string-value. Multiple calls to the
+   * ContentHandler's characters methods may well occur for a single call to this method.
    * 
-   * @param ch
-   *          A non-null reference to a ContentHandler.
-   * 
+   * @param ch A non-null reference to a ContentHandler.
    * @throws SAXException TODO
    */
   public void dispatchCharactersEvents(ContentHandler ch) throws SAXException {
@@ -152,13 +137,10 @@ public class XObject extends Expression implements Serializable, Cloneable {
   }
 
   /**
-   * Create the right XObject based on the type of the object passed. This
-   * function can not make an XObject that exposes DOM Nodes, NodeLists, and
-   * NodeIterators to the XSLT stylesheet as node-sets.
+   * Create the right XObject based on the type of the object passed. This function can not make an XObject that exposes
+   * DOM Nodes, NodeLists, and NodeIterators to the XSLT stylesheet as node-sets.
    * 
-   * @param val
-   *          The java object which this object will wrap.
-   * 
+   * @param val The java object which this object will wrap.
    * @return the right XObject based on the type of the object passed.
    */
   static public XObject create(Object val) {
@@ -166,15 +148,11 @@ public class XObject extends Expression implements Serializable, Cloneable {
   }
 
   /**
-   * Create the right XObject based on the type of the object passed. This
-   * function <em>can</em> make an XObject that exposes DOM Nodes,
-   * NodeLists, and NodeIterators to the XSLT stylesheet as node-sets.
+   * Create the right XObject based on the type of the object passed. This function <em>can</em> make an XObject that
+   * exposes DOM Nodes, NodeLists, and NodeIterators to the XSLT stylesheet as node-sets.
    * 
-   * @param val
-   *          The java object which this object will wrap.
-   * @param xctxt
-   *          The XPath context.
-   * 
+   * @param val The java object which this object will wrap.
+   * @param xctxt The XPath context.
    * @return the right XObject based on the type of the object passed.
    */
   static public XObject create(Object val, XPathContext xctxt) {
@@ -215,8 +193,7 @@ public class XObject extends Expression implements Serializable, Cloneable {
   }
 
   /**
-   * Given a request type, return the equivalent string. For diagnostic
-   * purposes.
+   * Given a request type, return the equivalent string. For diagnostic purposes.
    * 
    * @return type string "#UNKNOWN" + object class name
    */
@@ -228,22 +205,17 @@ public class XObject extends Expression implements Serializable, Cloneable {
    * Cast result object to a number. Always issues an error.
    * 
    * @return 0.0
-   * 
    * @throws TransformerException TODO
    */
   public double num() throws TransformerException {
-
-    error(XPATHErrorResources.ER_CANT_CONVERT_TO_NUMBER, new Object[] { getTypeString() }); // "Can not convert "+getTypeString()+" to a number");
-
+    error(Messages.get().cantConvertToNumber(getTypeString()));
     return 0.0;
   }
 
   /**
-   * Cast result object to a number, but allow side effects, such as the
-   * incrementing of an iterator.
+   * Cast result object to a number, but allow side effects, such as the incrementing of an iterator.
    * 
-   * @return numeric value of the string conversion from the next node in the
-   *         NodeSetDTM, or NAN if no node was found
+   * @return numeric value of the string conversion from the next node in the NodeSetDTM, or NAN if no node was found
    * @throws TransformerException TODO
    */
   public double numWithSideEffects() throws TransformerException {
@@ -254,19 +226,15 @@ public class XObject extends Expression implements Serializable, Cloneable {
    * Cast result object to a boolean. Always issues an error.
    * 
    * @return false
-   * 
    * @throws TransformerException TODO
    */
   public boolean bool() throws TransformerException {
-
-    error(XPATHErrorResources.ER_CANT_CONVERT_TO_NUMBER, new Object[] { getTypeString() }); // "Can not convert "+getTypeString()+" to a number");
-
+    error(Messages.get().cantConvertToNumber(getTypeString()));
     return false;
   }
 
   /**
-   * Cast result object to a boolean, but allow side effects, such as the
-   * incrementing of an iterator.
+   * Cast result object to a boolean, but allow side effects, such as the incrementing of an iterator.
    * 
    * @return True if there is a next node in the nodeset
    * @throws TransformerException TODO
@@ -296,7 +264,6 @@ public class XObject extends Expression implements Serializable, Cloneable {
   /**
    * Return the string representation of the object
    * 
-   * 
    * @return the string representation of the object
    */
   @Override
@@ -307,9 +274,7 @@ public class XObject extends Expression implements Serializable, Cloneable {
   /**
    * Cast result object to a result tree fragment.
    * 
-   * @param support
-   *          XPath context to use for the conversion
-   * 
+   * @param support XPath context to use for the conversion
    * @return the objec as a result tree fragment.
    */
   public int rtf(XPathContext support) {
@@ -331,9 +296,7 @@ public class XObject extends Expression implements Serializable, Cloneable {
   /**
    * Cast result object to a result tree fragment.
    * 
-   * @param support
-   *          XPath context to use for the conversion
-   * 
+   * @param support XPath context to use for the conversion
    * @return the objec as a result tree fragment.
    */
   public DocumentFragment rtree(XPathContext support) {
@@ -374,8 +337,7 @@ public class XObject extends Expression implements Serializable, Cloneable {
   }
 
   /**
-   * Return a java object that's closest to the representation that should be
-   * handed to an extension.
+   * Return a java object that's closest to the representation that should be handed to an extension.
    * 
    * @return The object that this class wraps
    */
@@ -387,13 +349,10 @@ public class XObject extends Expression implements Serializable, Cloneable {
    * Cast result object to a nodelist. Always issues an error.
    * 
    * @return null
-   * 
    * @throws TransformerException TODO
    */
   public DTMIterator iter() throws TransformerException {
-
-    error(XPATHErrorResources.ER_CANT_CONVERT_TO_NODELIST, new Object[] { getTypeString() }); // "Can not convert "+getTypeString()+" to a NodeList!");
-
+    error(Messages.get().cantConvertToNodelist(getTypeString()));
     return null;
   }
 
@@ -410,13 +369,10 @@ public class XObject extends Expression implements Serializable, Cloneable {
    * Cast result object to a nodelist. Always issues an error.
    * 
    * @return null
-   * 
    * @throws TransformerException TODO
    */
   public NodeIterator nodeset() throws TransformerException {
-
-    error(XPATHErrorResources.ER_CANT_CONVERT_TO_NODELIST, new Object[] { getTypeString() }); // "Can not convert "+getTypeString()+" to a NodeList!");
-
+    error(Messages.get().cantConvertToNodelist(getTypeString()));
     return null;
   }
 
@@ -424,13 +380,10 @@ public class XObject extends Expression implements Serializable, Cloneable {
    * Cast result object to a nodelist. Always issues an error.
    * 
    * @return null
-   * 
    * @throws TransformerException TODO
    */
   public NodeList nodelist() throws TransformerException {
-
-    error(XPATHErrorResources.ER_CANT_CONVERT_TO_NODELIST, new Object[] { getTypeString() }); // "Can not convert "+getTypeString()+" to a NodeList!");
-
+    error(Messages.get().cantConvertToNodelist(getTypeString()));
     return null;
   }
 
@@ -438,26 +391,19 @@ public class XObject extends Expression implements Serializable, Cloneable {
    * Cast result object to a nodelist. Always issues an error.
    * 
    * @return The object as a NodeSetDTM.
-   * 
    * @throws TransformerException TODO
    */
   public NodeSetDTM mutableNodeset() throws TransformerException {
-
-    error(XPATHErrorResources.ER_CANT_CONVERT_TO_MUTABLENODELIST, new Object[] { getTypeString() }); // "Can not convert "+getTypeString()+" to a NodeSetDTM!");
-
+    error(Messages.get().cantConvertToMutablenodelist(getTypeString()));
     return (NodeSetDTM) m_obj;
   }
 
   /**
    * Cast object to type t.
    * 
-   * @param t
-   *          Type of object to cast this to
-   * @param support
-   *          XPath context to use for the conversion
-   * 
+   * @param t Type of object to cast this to
+   * @param support XPath context to use for the conversion
    * @return This object as the given type t
-   * 
    * @throws TransformerException TODO
    */
   public Object castToType(int t, XPathContext support) throws TransformerException {
@@ -486,8 +432,7 @@ public class XObject extends Expression implements Serializable, Cloneable {
       // result = rtree(support);
       // break;
       default:
-        error(XPATHErrorResources.ER_CANT_CONVERT_TO_TYPE, new Object[] { getTypeString(), Integer.toString(t) }); // "Can not convert "+getTypeString()+" to a type#"+t);
-
+        error(Messages.get().cantConvertToType(getTypeString(), Integer.toString(t)));
         result = null;
     }
 
@@ -497,11 +442,8 @@ public class XObject extends Expression implements Serializable, Cloneable {
   /**
    * Tell if one object is less than the other.
    * 
-   * @param obj2
-   *          Object to compare this to
-   * 
+   * @param obj2 Object to compare this to
    * @return True if this object is less than the given object
-   * 
    * @throws TransformerException TODO
    */
   public boolean lessThan(XObject obj2) throws TransformerException {
@@ -520,11 +462,8 @@ public class XObject extends Expression implements Serializable, Cloneable {
   /**
    * Tell if one object is less than or equal to the other.
    * 
-   * @param obj2
-   *          Object to compare this to
-   * 
+   * @param obj2 Object to compare this to
    * @return True if this object is less than or equal to the given object
-   * 
    * @throws TransformerException TODO
    */
   public boolean lessThanOrEqual(XObject obj2) throws TransformerException {
@@ -543,11 +482,8 @@ public class XObject extends Expression implements Serializable, Cloneable {
   /**
    * Tell if one object is greater than the other.
    * 
-   * @param obj2
-   *          Object to compare this to
-   * 
+   * @param obj2 Object to compare this to
    * @return True if this object is greater than the given object
-   * 
    * @throws TransformerException TODO
    */
   public boolean greaterThan(XObject obj2) throws TransformerException {
@@ -566,11 +502,8 @@ public class XObject extends Expression implements Serializable, Cloneable {
   /**
    * Tell if one object is greater than or equal to the other.
    * 
-   * @param obj2
-   *          Object to compare this to
-   * 
+   * @param obj2 Object to compare this to
    * @return True if this object is greater than or equal to the given object
-   * 
    * @throws TransformerException TODO
    */
   public boolean greaterThanOrEqual(XObject obj2) throws TransformerException {
@@ -589,9 +522,7 @@ public class XObject extends Expression implements Serializable, Cloneable {
   /**
    * Tell if two objects are functionally equal.
    * 
-   * @param obj2
-   *          Object to compare this to
-   * 
+   * @param obj2 Object to compare this to
    * @return True if this object is equal to the given object
    */
   public boolean equals(XObject obj2) {
@@ -611,11 +542,8 @@ public class XObject extends Expression implements Serializable, Cloneable {
   /**
    * Tell if two objects are functionally not equal.
    * 
-   * @param obj2
-   *          Object to compare this to
-   * 
+   * @param obj2 Object to compare this to
    * @return True if this object is not equal to the given object
-   * 
    * @throws TransformerException TODO
    */
   public boolean notEquals(XObject obj2) throws TransformerException {
@@ -632,28 +560,10 @@ public class XObject extends Expression implements Serializable, Cloneable {
   /**
    * Tell the user of an error, and probably throw an exception.
    * 
-   * @param msg
-   *          Error message to issue
-   * 
+   * @param fmsg Error message to issue
    * @throws TransformerException TODO
    */
-  protected void error(String msg) throws TransformerException {
-    error(msg, null);
-  }
-
-  /**
-   * Tell the user of an error, and probably throw an exception.
-   * 
-   * @param msg
-   *          Error message to issue
-   * @param args
-   *          Arguments to use in the message
-   * 
-   * @throws TransformerException TODO
-   */
-  protected void error(String msg, Object[] args) throws TransformerException {
-
-    final String fmsg = XPATHMessages.createXPATHMessage(msg, args);
+  protected void error(String fmsg) throws TransformerException {
 
     // boolean shouldThrow = support.problem(m_support.XPATHPROCESSOR,
     // m_support.ERROR,

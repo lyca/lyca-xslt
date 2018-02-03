@@ -26,8 +26,7 @@ import de.lyca.xml.utils.QName;
 import de.lyca.xml.utils.XMLString;
 import de.lyca.xpath.Expression;
 import de.lyca.xpath.XPathContext;
-import de.lyca.xpath.res.XPATHErrorResources;
-import de.lyca.xpath.res.XPATHMessages;
+import de.lyca.xpath.res.Messages;
 
 /**
  * This class makes an select statement act like an result tree fragment.
@@ -40,16 +39,12 @@ public class XRTreeFragSelectWrapper extends XRTreeFrag implements Cloneable {
   }
 
   /**
-   * This function is used to fixup variables from QNames to stack frame indexes
-   * at stylesheet build time.
+   * This function is used to fixup variables from QNames to stack frame indexes at stylesheet build time.
    * 
-   * @param vars
-   *          List of QNames that correspond to variables. This list should be
-   *          searched backwards for the first qualified name that corresponds
-   *          to the variable reference qname. The position of the QName in the
-   *          list from the start of the list will be its position in the stack
-   *          frame (but variables above the globalsTop value will need to be
-   *          offset to the current stack frame).
+   * @param vars List of QNames that correspond to variables. This list should be searched backwards for the first
+   *        qualified name that corresponds to the variable reference qname. The position of the QName in the list from
+   *        the start of the list will be its position in the stack frame (but variables above the globalsTop value will
+   *        need to be offset to the current stack frame).
    */
   @Override
   public void fixupVariables(List<QName> vars, int globalsSize) {
@@ -59,11 +54,8 @@ public class XRTreeFragSelectWrapper extends XRTreeFrag implements Cloneable {
   /**
    * For support of literal objects in xpaths.
    * 
-   * @param xctxt
-   *          The XPath execution context.
-   * 
+   * @param xctxt The XPath execution context.
    * @return the result of executing the select expression
-   * 
    * @throws TransformerException TODO
    */
   @Override
@@ -78,18 +70,14 @@ public class XRTreeFragSelectWrapper extends XRTreeFrag implements Cloneable {
   }
 
   /**
-   * Detaches the <code>DTMIterator</code> from the set which it iterated over,
-   * releasing any computational resources and placing the iterator in the
-   * INVALID state. After <code>detach</code> has been invoked, calls to
-   * <code>nextNode</code> or <code>previousNode</code> will raise a runtime
-   * exception.
-   * 
-   * In general, detach should only be called once on the object.
+   * Detaches the <code>DTMIterator</code> from the set which it iterated over, releasing any computational resources
+   * and placing the iterator in the INVALID state. After <code>detach</code> has been invoked, calls to
+   * <code>nextNode</code> or <code>previousNode</code> will raise a runtime exception. In general, detach should only
+   * be called once on the object.
    */
   @Override
   public void detach() {
-    throw new RuntimeException(XPATHMessages.createXPATHMessage(
-            XPATHErrorResources.ER_DETACH_NOT_SUPPORTED_XRTREEFRAGSELECTWRAPPER, null)); // "detach() not supported by XRTreeFragSelectWrapper!");
+    throw new RuntimeException(Messages.get().detachNotSupportedXrtreefragselectwrapper());
   }
 
   /**
@@ -99,9 +87,7 @@ public class XRTreeFragSelectWrapper extends XRTreeFrag implements Cloneable {
    */
   @Override
   public double num() throws TransformerException {
-
-    throw new RuntimeException(XPATHMessages.createXPATHMessage(
-            XPATHErrorResources.ER_NUM_NOT_SUPPORTED_XRTREEFRAGSELECTWRAPPER, null)); // "num() not supported by XRTreeFragSelectWrapper!");
+    throw new RuntimeException(Messages.get().numNotSupportedXrtreefragselectwrapper());
   }
 
   /**
@@ -111,8 +97,7 @@ public class XRTreeFragSelectWrapper extends XRTreeFrag implements Cloneable {
    */
   @Override
   public XMLString xstr() {
-    throw new RuntimeException(XPATHMessages.createXPATHMessage(
-            XPATHErrorResources.ER_XSTR_NOT_SUPPORTED_XRTREEFRAGSELECTWRAPPER, null)); // "xstr() not supported by XRTreeFragSelectWrapper!");
+    throw new RuntimeException(Messages.get().xstrNotSupportedXrtreefragselectwrapper());
   }
 
   /**
@@ -122,8 +107,7 @@ public class XRTreeFragSelectWrapper extends XRTreeFrag implements Cloneable {
    */
   @Override
   public String str() {
-    throw new RuntimeException(XPATHMessages.createXPATHMessage(
-            XPATHErrorResources.ER_STR_NOT_SUPPORTED_XRTREEFRAGSELECTWRAPPER, null)); // "str() not supported by XRTreeFragSelectWrapper!");
+    throw new RuntimeException(Messages.get().strNotSupportedXrtreefragselectwrapper());
   }
 
   /**
@@ -143,8 +127,7 @@ public class XRTreeFragSelectWrapper extends XRTreeFrag implements Cloneable {
    */
   @Override
   public int rtf() {
-    throw new RuntimeException(XPATHMessages.createXPATHMessage(
-            XPATHErrorResources.ER_RTF_NOT_SUPPORTED_XRTREEFRAGSELECTWRAPPER, null)); // "rtf() not supported by XRTreeFragSelectWrapper!");
+    throw new RuntimeException(Messages.get().rtfNotSupportedXrtreefragselectwrapper());
   }
 
   /**
@@ -154,8 +137,7 @@ public class XRTreeFragSelectWrapper extends XRTreeFrag implements Cloneable {
    */
   @Override
   public DTMIterator asNodeIterator() {
-    throw new RuntimeException(XPATHMessages.createXPATHMessage(
-            XPATHErrorResources.ER_RTF_NOT_SUPPORTED_XRTREEFRAGSELECTWRAPPER, null)); // "asNodeIterator() not supported by XRTreeFragSelectWrapper!");
+    throw new RuntimeException(Messages.get().rtfNotSupportedXrtreefragselectwrapper());
   }
 
 }

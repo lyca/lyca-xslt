@@ -17,6 +17,7 @@
  */
 package de.lyca.xpath.res;
 
+import java.text.MessageFormat;
 import java.util.ListResourceBundle;
 
 import de.lyca.xml.res.XMLMessages;
@@ -32,20 +33,14 @@ public class XPATHMessages extends XMLMessages {
   private static final String XPATH_ERROR_RESOURCES = "de.lyca.xpath.res.XPATHErrorResources";
 
   /**
-   * Creates a message from the specified key and replacement arguments,
-   * localized to the given locale.
+   * Creates a message from the specified key and replacement arguments, localized to the given locale.
    * 
-   * @param msgKey
-   *          The key for the message text.
-   * @param args
-   *          The arguments to be used as replacement text in the message
-   *          created.
+   * @param msgKey The key for the message text.
+   * @param args The arguments to be used as replacement text in the message created.
    * 
    * @return The formatted message string.
    */
-  public static final String createXPATHMessage(String msgKey, Object args[]) // throws
-                                                                              // Exception
-  {
+  public static final String createXPATHMessage(String msgKey, Object args[]) {
     if (XPATHBundle == null) {
       XPATHBundle = loadResourceBundle(XPATH_ERROR_RESOURCES);
     }
@@ -57,20 +52,14 @@ public class XPATHMessages extends XMLMessages {
   }
 
   /**
-   * Creates a message from the specified key and replacement arguments,
-   * localized to the given locale.
+   * Creates a message from the specified key and replacement arguments, localized to the given locale.
    * 
-   * @param msgKey
-   *          The key for the message text.
-   * @param args
-   *          The arguments to be used as replacement text in the message
-   *          created.
+   * @param msgKey The key for the message text.
+   * @param args The arguments to be used as replacement text in the message created.
    * 
    * @return The formatted warning string.
    */
-  public static final String createXPATHWarning(String msgKey, Object args[]) // throws
-                                                                              // Exception
-  {
+  public static final String createXPATHWarning(String msgKey, Object args[]) {
     if (XPATHBundle == null) {
       XPATHBundle = loadResourceBundle(XPATH_ERROR_RESOURCES);
     }
@@ -82,22 +71,15 @@ public class XPATHMessages extends XMLMessages {
   }
 
   /**
-   * Creates a message from the specified key and replacement arguments,
-   * localized to the given locale.
+   * Creates a message from the specified key and replacement arguments, localized to the given locale.
    * 
-   * @param fResourceBundle
-   *          The resource bundle to use.
-   * @param msgKey
-   *          The message key to use.
-   * @param args
-   *          The arguments to be used as replacement text in the message
-   *          created.
+   * @param fResourceBundle The resource bundle to use.
+   * @param msgKey The message key to use.
+   * @param args The arguments to be used as replacement text in the message created.
    * 
    * @return The formatted message string.
    */
-  public static final String createXPATHMsg(ListResourceBundle fResourceBundle, String msgKey, Object args[]) // throws
-                                                                                                              // Exception
-  {
+  public static final String createXPATHMsg(ListResourceBundle fResourceBundle, String msgKey, Object args[]) {
 
     String fmsg = null;
     boolean throwex = false;
@@ -108,7 +90,7 @@ public class XPATHMessages extends XMLMessages {
     }
 
     if (msg == null) {
-      msg = fResourceBundle.getString(XPATHErrorResources.BAD_CODE);
+      msg = fResourceBundle.getString("BAD_CODE");
       throwex = true;
     }
 
@@ -126,9 +108,9 @@ public class XPATHMessages extends XMLMessages {
           }
         }
 
-        fmsg = java.text.MessageFormat.format(msg, args);
+        fmsg = MessageFormat.format(msg, args);
       } catch (final Exception e) {
-        fmsg = fResourceBundle.getString(XPATHErrorResources.FORMAT_FAILED);
+        fmsg = fResourceBundle.getString("FORMAT_FAILED");
         fmsg += " " + msg;
       }
     } else {

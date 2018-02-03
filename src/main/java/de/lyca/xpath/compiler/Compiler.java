@@ -58,30 +58,21 @@ import de.lyca.xpath.patterns.FunctionPattern;
 import de.lyca.xpath.patterns.NodeTest;
 import de.lyca.xpath.patterns.StepPattern;
 import de.lyca.xpath.patterns.UnionPattern;
-import de.lyca.xpath.res.XPATHErrorResources;
-import de.lyca.xpath.res.XPATHMessages;
+import de.lyca.xpath.res.Messages;
 
 /**
- * An instance of this class compiles an XPath string expression into a
- * Expression object. This class compiles the string into a sequence of
- * operation codes (op map) and then builds from that into an Expression tree.
+ * An instance of this class compiles an XPath string expression into a Expression object. This class compiles the
+ * string into a sequence of operation codes (op map) and then builds from that into an Expression tree.
  */
 public class Compiler extends OpMap {
 
   /**
-   * Construct a Compiler object with a specific ErrorListener and SourceLocator
-   * where the expression is located.
+   * Construct a Compiler object with a specific ErrorListener and SourceLocator where the expression is located.
    * 
-   * @param errorHandler
-   *          Error listener where messages will be sent, or null if messages
-   *          should be sent to System err.
-   * @param locator
-   *          The location object where the expression lives, which may be null,
-   *          but which, if not null, must be valid over the long haul, in other
-   *          words, it will not be cloned.
-   * @param fTable
-   *          The FunctionTable object where the xpath build-in functions are
-   *          stored.
+   * @param errorHandler Error listener where messages will be sent, or null if messages should be sent to System err.
+   * @param locator The location object where the expression lives, which may be null, but which, if not null, must be
+   *        valid over the long haul, in other words, it will not be cloned.
+   * @param fTable The FunctionTable object where the xpath build-in functions are stored.
    */
   public Compiler(ErrorListener errorHandler, SourceLocator locator, FunctionTable fTable) {
     m_errorHandler = errorHandler;
@@ -90,8 +81,7 @@ public class Compiler extends OpMap {
   }
 
   /**
-   * Construct a Compiler instance that has a null error listener and a null
-   * source locator.
+   * Construct a Compiler instance that has a null error listener and a null source locator.
    */
   public Compiler() {
     m_errorHandler = null;
@@ -101,13 +91,10 @@ public class Compiler extends OpMap {
   /**
    * Execute the XPath object from a given opcode position.
    * 
-   * @param opPos
-   *          The current position in the xpath.m_opMap array.
+   * @param opPos The current position in the xpath.m_opMap array.
    * @return The result of the XPath.
-   * 
-   * @throws TransformerException
-   *           if there is a syntax or other error.
-     */
+   * @throws TransformerException if there is a syntax or other error.
+   */
   public Expression compile(int opPos) throws TransformerException {
 
     final int op = getOp(opPos);
@@ -208,10 +195,10 @@ public class Compiler extends OpMap {
         expr = locationPathPattern(opPos);
         break;
       case OpCodes.OP_QUO:
-        error(XPATHErrorResources.ER_UNKNOWN_OPCODE, new Object[] { "quo" }); // "ERROR! Unknown op code: "+m_opMap[opPos]);
+        error(Messages.get().unknownOpcode("quo"));
         break;
       default:
-        error(XPATHErrorResources.ER_UNKNOWN_OPCODE, new Object[] { Integer.toString(getOp(opPos)) }); // "ERROR! Unknown op code: "+m_opMap[opPos]);
+        error(Messages.get().unknownOpcode(getOp(opPos)));
     }
     // if(null != expr)
     // expr.setSourceLocator(m_locator);
@@ -222,15 +209,10 @@ public class Compiler extends OpMap {
   /**
    * Bottle-neck compilation of an operation with left and right operands.
    * 
-   * @param operation
-   *          non-null reference to parent operation.
-   * @param opPos
-   *          The op map position of the parent operation.
-   * 
+   * @param operation non-null reference to parent operation.
+   * @param opPos The op map position of the parent operation.
    * @return reference to {@link de.lyca.xpath.operations.Operation} instance.
-   * 
-   * @throws TransformerException
-   *           if there is a syntax or other error.
+   * @throws TransformerException if there is a syntax or other error.
    */
   private Expression compileOperation(Operation operation, int opPos) throws TransformerException {
 
@@ -245,15 +227,10 @@ public class Compiler extends OpMap {
   /**
    * Bottle-neck compilation of a unary operation.
    * 
-   * @param unary
-   *          The parent unary operation.
-   * @param opPos
-   *          The position in the op map of the parent operation.
-   * 
+   * @param unary The parent unary operation.
+   * @param opPos The position in the op map of the parent operation.
    * @return The unary argument.
-   * 
-   * @throws TransformerException
-   *           if syntax or other error occurs.
+   * @throws TransformerException if syntax or other error occurs.
    */
   private Expression compileUnary(UnaryOperation unary, int opPos) throws TransformerException {
 
@@ -267,13 +244,9 @@ public class Compiler extends OpMap {
   /**
    * Compile an 'or' operation.
    * 
-   * @param opPos
-   *          The current position in the m_opMap array.
-   * 
+   * @param opPos The current position in the m_opMap array.
    * @return reference to {@link de.lyca.xpath.operations.Or} instance.
-   * 
-   * @throws TransformerException
-   *           if a error occurs creating the Expression.
+   * @throws TransformerException if a error occurs creating the Expression.
    */
   protected Expression or(int opPos) throws TransformerException {
     return compileOperation(new Or(), opPos);
@@ -282,13 +255,9 @@ public class Compiler extends OpMap {
   /**
    * Compile an 'and' operation.
    * 
-   * @param opPos
-   *          The current position in the m_opMap array.
-   * 
+   * @param opPos The current position in the m_opMap array.
    * @return reference to {@link de.lyca.xpath.operations.And} instance.
-   * 
-   * @throws TransformerException
-   *           if a error occurs creating the Expression.
+   * @throws TransformerException if a error occurs creating the Expression.
    */
   protected Expression and(int opPos) throws TransformerException {
     return compileOperation(new And(), opPos);
@@ -297,13 +266,9 @@ public class Compiler extends OpMap {
   /**
    * Compile a '!=' operation.
    * 
-   * @param opPos
-   *          The current position in the m_opMap array.
-   * 
+   * @param opPos The current position in the m_opMap array.
    * @return reference to {@link de.lyca.xpath.operations.NotEquals} instance.
-   * 
-   * @throws TransformerException
-   *           if a error occurs creating the Expression.
+   * @throws TransformerException if a error occurs creating the Expression.
    */
   protected Expression notequals(int opPos) throws TransformerException {
     return compileOperation(new NotEquals(), opPos);
@@ -312,13 +277,9 @@ public class Compiler extends OpMap {
   /**
    * Compile a '=' operation.
    * 
-   * @param opPos
-   *          The current position in the m_opMap array.
-   * 
+   * @param opPos The current position in the m_opMap array.
    * @return reference to {@link de.lyca.xpath.operations.Equals} instance.
-   * 
-   * @throws TransformerException
-   *           if a error occurs creating the Expression.
+   * @throws TransformerException if a error occurs creating the Expression.
    */
   protected Expression equals(int opPos) throws TransformerException {
     return compileOperation(new Equals(), opPos);
@@ -327,19 +288,15 @@ public class Compiler extends OpMap {
   /**
    * {@literal Compile a '<=' operation.}
    * 
-   * @param opPos
-   *          The current position in the m_opMap array.
-   * 
+   * @param opPos The current position in the m_opMap array.
    * @return reference to {@link de.lyca.xpath.operations.Lte} instance.
-   * 
-   * @throws TransformerException
-   *           if a error occurs creating the Expression.
+   * @throws TransformerException if a error occurs creating the Expression.
    */
   protected Expression lte(int opPos) throws TransformerException {
     return compileOperation(new Lte(), opPos);
   }
 
-/**
+  /**
    * {@literal Compile a '<' operation.}
    * 
    * @param opPos The current position in the m_opMap array.
@@ -355,13 +312,9 @@ public class Compiler extends OpMap {
   /**
    * {@literal Compile a '>=' operation.}
    * 
-   * @param opPos
-   *          The current position in the m_opMap array.
-   * 
+   * @param opPos The current position in the m_opMap array.
    * @return reference to {@link de.lyca.xpath.operations.Gte} instance.
-   * 
-   * @throws TransformerException
-   *           if a error occurs creating the Expression.
+   * @throws TransformerException if a error occurs creating the Expression.
    */
   protected Expression gte(int opPos) throws TransformerException {
     return compileOperation(new Gte(), opPos);
@@ -370,13 +323,9 @@ public class Compiler extends OpMap {
   /**
    * {@literal Compile a '>' operation.}
    * 
-   * @param opPos
-   *          The current position in the m_opMap array.
-   * 
+   * @param opPos The current position in the m_opMap array.
    * @return reference to {@link de.lyca.xpath.operations.Gt} instance.
-   * 
-   * @throws TransformerException
-   *           if a error occurs creating the Expression.
+   * @throws TransformerException if a error occurs creating the Expression.
    */
   protected Expression gt(int opPos) throws TransformerException {
     return compileOperation(new Gt(), opPos);
@@ -385,13 +334,9 @@ public class Compiler extends OpMap {
   /**
    * Compile a '+' operation.
    * 
-   * @param opPos
-   *          The current position in the m_opMap array.
-   * 
+   * @param opPos The current position in the m_opMap array.
    * @return reference to {@link de.lyca.xpath.operations.Plus} instance.
-   * 
-   * @throws TransformerException
-   *           if a error occurs creating the Expression.
+   * @throws TransformerException if a error occurs creating the Expression.
    */
   protected Expression plus(int opPos) throws TransformerException {
     return compileOperation(new Plus(), opPos);
@@ -400,13 +345,9 @@ public class Compiler extends OpMap {
   /**
    * Compile a '-' operation.
    * 
-   * @param opPos
-   *          The current position in the m_opMap array.
-   * 
+   * @param opPos The current position in the m_opMap array.
    * @return reference to {@link de.lyca.xpath.operations.Minus} instance.
-   * 
-   * @throws TransformerException
-   *           if a error occurs creating the Expression.
+   * @throws TransformerException if a error occurs creating the Expression.
    */
   protected Expression minus(int opPos) throws TransformerException {
     return compileOperation(new Minus(), opPos);
@@ -415,13 +356,9 @@ public class Compiler extends OpMap {
   /**
    * Compile a '*' operation.
    * 
-   * @param opPos
-   *          The current position in the m_opMap array.
-   * 
+   * @param opPos The current position in the m_opMap array.
    * @return reference to {@link de.lyca.xpath.operations.Mult} instance.
-   * 
-   * @throws TransformerException
-   *           if a error occurs creating the Expression.
+   * @throws TransformerException if a error occurs creating the Expression.
    */
   protected Expression mult(int opPos) throws TransformerException {
     return compileOperation(new Mult(), opPos);
@@ -430,13 +367,9 @@ public class Compiler extends OpMap {
   /**
    * Compile a 'div' operation.
    * 
-   * @param opPos
-   *          The current position in the m_opMap array.
-   * 
+   * @param opPos The current position in the m_opMap array.
    * @return reference to {@link de.lyca.xpath.operations.Div} instance.
-   * 
-   * @throws TransformerException
-   *           if a error occurs creating the Expression.
+   * @throws TransformerException if a error occurs creating the Expression.
    */
   protected Expression div(int opPos) throws TransformerException {
     return compileOperation(new Div(), opPos);
@@ -445,13 +378,9 @@ public class Compiler extends OpMap {
   /**
    * Compile a 'mod' operation.
    * 
-   * @param opPos
-   *          The current position in the m_opMap array.
-   * 
+   * @param opPos The current position in the m_opMap array.
    * @return reference to {@link de.lyca.xpath.operations.Mod} instance.
-   * 
-   * @throws TransformerException
-   *           if a error occurs creating the Expression.
+   * @throws TransformerException if a error occurs creating the Expression.
    */
   protected Expression mod(int opPos) throws TransformerException {
     return compileOperation(new Mod(), opPos);
@@ -474,13 +403,9 @@ public class Compiler extends OpMap {
   /**
    * Compile a unary '-' operation.
    * 
-   * @param opPos
-   *          The current position in the m_opMap array.
-   * 
+   * @param opPos The current position in the m_opMap array.
    * @return reference to {@link de.lyca.xpath.operations.Neg} instance.
-   * 
-   * @throws TransformerException
-   *           if a error occurs creating the Expression.
+   * @throws TransformerException if a error occurs creating the Expression.
    */
   protected Expression neg(int opPos) throws TransformerException {
     return compileUnary(new Neg(), opPos);
@@ -489,13 +414,9 @@ public class Compiler extends OpMap {
   /**
    * Compile a 'string(...)' operation.
    * 
-   * @param opPos
-   *          The current position in the m_opMap array.
-   * 
+   * @param opPos The current position in the m_opMap array.
    * @return reference to {@link de.lyca.xpath.operations.String} instance.
-   * 
-   * @throws TransformerException
-   *           if a error occurs creating the Expression.
+   * @throws TransformerException if a error occurs creating the Expression.
    */
   protected Expression string(int opPos) throws TransformerException {
     return compileUnary(new de.lyca.xpath.operations.String(), opPos);
@@ -504,13 +425,9 @@ public class Compiler extends OpMap {
   /**
    * Compile a 'boolean(...)' operation.
    * 
-   * @param opPos
-   *          The current position in the m_opMap array.
-   * 
+   * @param opPos The current position in the m_opMap array.
    * @return reference to {@link de.lyca.xpath.operations.Bool} instance.
-   * 
-   * @throws TransformerException
-   *           if a error occurs creating the Expression.
+   * @throws TransformerException if a error occurs creating the Expression.
    */
   protected Expression bool(int opPos) throws TransformerException {
     return compileUnary(new de.lyca.xpath.operations.Bool(), opPos);
@@ -519,13 +436,9 @@ public class Compiler extends OpMap {
   /**
    * Compile a 'number(...)' operation.
    * 
-   * @param opPos
-   *          The current position in the m_opMap array.
-   * 
+   * @param opPos The current position in the m_opMap array.
    * @return reference to {@link de.lyca.xpath.operations.Number} instance.
-   * 
-   * @throws TransformerException
-   *           if a error occurs creating the Expression.
+   * @throws TransformerException if a error occurs creating the Expression.
    */
   protected Expression number(int opPos) throws TransformerException {
     return compileUnary(new de.lyca.xpath.operations.Number(), opPos);
@@ -534,9 +447,7 @@ public class Compiler extends OpMap {
   /**
    * Compile a literal string value.
    * 
-   * @param opPos
-   *          The current position in the m_opMap array.
-   * 
+   * @param opPos The current position in the m_opMap array.
    * @return reference to {@link de.lyca.xpath.objects.XString} instance.
    */
   protected Expression literal(int opPos) {
@@ -549,9 +460,7 @@ public class Compiler extends OpMap {
   /**
    * Compile a literal number value.
    * 
-   * @param opPos
-   *          The current position in the m_opMap array.
-   * 
+   * @param opPos The current position in the m_opMap array.
    * @return reference to {@link de.lyca.xpath.objects.XNumber} instance.
    */
   protected Expression numberlit(int opPos) {
@@ -564,13 +473,9 @@ public class Compiler extends OpMap {
   /**
    * Compile a variable reference.
    * 
-   * @param opPos
-   *          The current position in the m_opMap array.
-   * 
+   * @param opPos The current position in the m_opMap array.
    * @return reference to {@link de.lyca.xpath.operations.Variable} instance.
-   * 
-   * @throws TransformerException
-   *           if a error occurs creating the Expression.
+   * @throws TransformerException if a error occurs creating the Expression.
    */
   protected Expression variable(int opPos) throws TransformerException {
 
@@ -579,8 +484,8 @@ public class Compiler extends OpMap {
     opPos = getFirstChildPos(opPos);
 
     final int nsPos = getOp(opPos);
-    final java.lang.String namespace = OpCodes.EMPTY == nsPos ? null : (java.lang.String) getTokenQueue().elementAt(
-            nsPos);
+    final java.lang.String namespace = OpCodes.EMPTY == nsPos ? null
+        : (java.lang.String) getTokenQueue().elementAt(nsPos);
     final java.lang.String localname = (java.lang.String) getTokenQueue().elementAt(getOp(opPos + 1));
     final QName qname = new QName(namespace, localname);
 
@@ -592,13 +497,9 @@ public class Compiler extends OpMap {
   /**
    * Compile an expression group.
    * 
-   * @param opPos
-   *          The current position in the m_opMap array.
-   * 
+   * @param opPos The current position in the m_opMap array.
    * @return reference to the contained expression.
-   * 
-   * @throws TransformerException
-   *           if a error occurs creating the Expression.
+   * @throws TransformerException if a error occurs creating the Expression.
    */
   protected Expression group(int opPos) throws TransformerException {
 
@@ -609,13 +510,9 @@ public class Compiler extends OpMap {
   /**
    * Compile a function argument.
    * 
-   * @param opPos
-   *          The current position in the m_opMap array.
-   * 
+   * @param opPos The current position in the m_opMap array.
    * @return reference to the argument expression.
-   * 
-   * @throws TransformerException
-   *           if a error occurs creating the Expression.
+   * @throws TransformerException if a error occurs creating the Expression.
    */
   protected Expression arg(int opPos) throws TransformerException {
 
@@ -624,16 +521,12 @@ public class Compiler extends OpMap {
   }
 
   /**
-   * Compile a location path union. The UnionPathIterator itself may create
-   * {@link de.lyca.xpath.axes.LocPathIterator} children.
+   * Compile a location path union. The UnionPathIterator itself may create {@link de.lyca.xpath.axes.LocPathIterator}
+   * children.
    * 
-   * @param opPos
-   *          The current position in the m_opMap array.
-   * 
+   * @param opPos The current position in the m_opMap array.
    * @return reference to {@link de.lyca.xpath.axes.LocPathIterator} instance.
-   * 
-   * @throws TransformerException
-   *           if a error occurs creating the Expression.
+   * @throws TransformerException if a error occurs creating the Expression.
    */
   protected Expression union(int opPos) throws TransformerException {
     locPathDepth++;
@@ -663,16 +556,11 @@ public class Compiler extends OpMap {
   }
 
   /**
-   * Compile a location path. The LocPathIterator itself may create
-   * {@link de.lyca.xpath.axes.AxesWalker} children.
+   * Compile a location path. The LocPathIterator itself may create {@link de.lyca.xpath.axes.AxesWalker} children.
    * 
-   * @param opPos
-   *          The current position in the m_opMap array.
-   * 
+   * @param opPos The current position in the m_opMap array.
    * @return reference to {@link de.lyca.xpath.axes.LocPathIterator} instance.
-   * 
-   * @throws TransformerException
-   *           if a error occurs creating the Expression.
+   * @throws TransformerException if a error occurs creating the Expression.
    */
   public Expression locationPath(int opPos) throws TransformerException {
     locPathDepth++;
@@ -687,13 +575,9 @@ public class Compiler extends OpMap {
   /**
    * Compile a location step predicate expression.
    * 
-   * @param opPos
-   *          The current position in the m_opMap array.
-   * 
+   * @param opPos The current position in the m_opMap array.
    * @return the contained predicate expression.
-   * 
-   * @throws TransformerException
-   *           if a error occurs creating the Expression.
+   * @throws TransformerException if a error occurs creating the Expression.
    */
   public Expression predicate(int opPos) throws TransformerException {
     return compile(opPos + 2);
@@ -702,13 +586,9 @@ public class Compiler extends OpMap {
   /**
    * Compile an entire match pattern expression.
    * 
-   * @param opPos
-   *          The current position in the m_opMap array.
-   * 
+   * @param opPos The current position in the m_opMap array.
    * @return reference to {@link de.lyca.xpath.patterns.UnionPattern} instance.
-   * 
-   * @throws TransformerException
-   *           if a error occurs creating the Expression.
+   * @throws TransformerException if a error occurs creating the Expression.
    */
   protected Expression matchPattern(int opPos) throws TransformerException {
     locPathDepth++;
@@ -744,13 +624,9 @@ public class Compiler extends OpMap {
   /**
    * Compile a location match pattern unit expression.
    * 
-   * @param opPos
-   *          The current position in the m_opMap array.
-   * 
+   * @param opPos The current position in the m_opMap array.
    * @return reference to {@link de.lyca.xpath.patterns.StepPattern} instance.
-   * 
-   * @throws TransformerException
-   *           if a error occurs creating the Expression.
+   * @throws TransformerException if a error occurs creating the Expression.
    */
   public Expression locationPathPattern(int opPos) throws TransformerException {
 
@@ -760,14 +636,10 @@ public class Compiler extends OpMap {
   }
 
   /**
-   * Get a {@link org.w3c.dom.traversal.NodeFilter} bit set that tells what to
-   * show for a given node test.
+   * Get a {@link org.w3c.dom.traversal.NodeFilter} bit set that tells what to show for a given node test.
    * 
-   * @param opPos
-   *          the op map position for the location step.
-   * 
-   * @return {@link org.w3c.dom.traversal.NodeFilter} bit set that tells what to
-   *         show for a given node test.
+   * @param opPos the op map position for the location step.
+   * @return {@link org.w3c.dom.traversal.NodeFilter} bit set that tells what to show for a given node test.
    */
   public int getWhatToShow(int opPos) {
 
@@ -813,12 +685,12 @@ public class Compiler extends OpMap {
           case OpCodes.MATCH_ATTRIBUTE:
             return DTMFilter.SHOW_ATTRIBUTE;
 
-            // break;
+          // break;
           case OpCodes.MATCH_ANY_ANCESTOR:
           case OpCodes.MATCH_IMMEDIATE_ANCESTOR:
             return DTMFilter.SHOW_ELEMENT;
 
-            // break;
+          // break;
           default:
             return DTMFilter.SHOW_ELEMENT;
         }
@@ -831,20 +703,13 @@ public class Compiler extends OpMap {
   private static final boolean DEBUG = false;
 
   /**
-   * Compile a step pattern unit expression, used for both location paths and
-   * match patterns.
+   * Compile a step pattern unit expression, used for both location paths and match patterns.
    * 
-   * @param opPos
-   *          The current position in the m_opMap array.
-   * @param stepCount
-   *          The number of steps to expect.
-   * @param ancestorPattern
-   *          The owning StepPattern, which may be null.
-   * 
+   * @param opPos The current position in the m_opMap array.
+   * @param stepCount The number of steps to expect.
+   * @param ancestorPattern The owning StepPattern, which may be null.
    * @return reference to {@link de.lyca.xpath.patterns.StepPattern} instance.
-   * 
-   * @throws TransformerException
-   *           if a error occurs creating the Expression.
+   * @throws TransformerException if a error occurs creating the Expression.
    */
   protected StepPattern stepPattern(int opPos, int stepCount, StepPattern ancestorPattern) throws TransformerException {
 
@@ -889,7 +754,7 @@ public class Compiler extends OpMap {
         argLen = getArgLengthOfStep(opPos);
         opPos = getFirstChildPosOfStep(opPos);
         pattern = new StepPattern(DTMFilter.SHOW_ATTRIBUTE, getStepNS(startOpPos), getStepLocalName(startOpPos),
-                Axis.PARENT, Axis.ATTRIBUTE);
+            Axis.PARENT, Axis.ATTRIBUTE);
         break;
       case OpCodes.MATCH_ANY_ANCESTOR:
         if (DEBUG) {
@@ -903,7 +768,7 @@ public class Compiler extends OpMap {
           addMagicSelf = false;
         }
         pattern = new StepPattern(getWhatToShow(startOpPos), getStepNS(startOpPos), getStepLocalName(startOpPos),
-                Axis.ANCESTOR, Axis.CHILD);
+            Axis.ANCESTOR, Axis.CHILD);
         break;
       case OpCodes.MATCH_IMMEDIATE_ANCESTOR:
         if (DEBUG) {
@@ -912,10 +777,10 @@ public class Compiler extends OpMap {
         argLen = getArgLengthOfStep(opPos);
         opPos = getFirstChildPosOfStep(opPos);
         pattern = new StepPattern(getWhatToShow(startOpPos), getStepNS(startOpPos), getStepLocalName(startOpPos),
-                Axis.PARENT, Axis.CHILD);
+            Axis.PARENT, Axis.CHILD);
         break;
       default:
-        error(XPATHErrorResources.ER_UNKNOWN_MATCH_OPERATION, null); // "unknown match operation!");
+        error(Messages.get().unknownMatchOperation());
 
         return null;
     }
@@ -932,11 +797,9 @@ public class Compiler extends OpMap {
       // which is really how we're treating match patterns, it works out to
       // self::foo/parent::node[child::foo[3]]", or close enough.
       /*
-       * if(addMagicSelf && pattern.getPredicateCount() > 0) { StepPattern
-       * selfPattern = new StepPattern(DTMFilter.SHOW_ALL, Axis.PARENT,
-       * Axis.CHILD); // We need to keep the new nodetest from affecting the
-       * score... XNumber score = pattern.getStaticScore();
-       * pattern.setRelativePathPattern(selfPattern);
+       * if(addMagicSelf && pattern.getPredicateCount() > 0) { StepPattern selfPattern = new
+       * StepPattern(DTMFilter.SHOW_ALL, Axis.PARENT, Axis.CHILD); // We need to keep the new nodetest from affecting
+       * the score... XNumber score = pattern.getStaticScore(); pattern.setRelativePathPattern(selfPattern);
        * pattern.setStaticScore(score); selfPattern.setStaticScore(score); }
        */
     } else {
@@ -952,13 +815,9 @@ public class Compiler extends OpMap {
   /**
    * Compile a zero or more predicates for a given match pattern.
    * 
-   * @param opPos
-   *          The position of the first predicate the m_opMap array.
-   * 
+   * @param opPos The position of the first predicate the m_opMap array.
    * @return reference to array of {@link de.lyca.xpath.Expression} instances.
-   * 
-   * @throws TransformerException
-   *           if a error occurs creating the Expression.
+   * @throws TransformerException if a error occurs creating the Expression.
    */
   public Expression[] getCompiledPredicates(int opPos) throws TransformerException {
 
@@ -978,13 +837,9 @@ public class Compiler extends OpMap {
   /**
    * Count the number of predicates in the step.
    * 
-   * @param opPos
-   *          The position of the first predicate the m_opMap array.
-   * 
+   * @param opPos The position of the first predicate the m_opMap array.
    * @return The number of predicates for this step.
-   * 
-   * @throws TransformerException
-   *           if a error occurs creating the Expression.
+   * @throws TransformerException if a error occurs creating the Expression.
    */
   public int countPredicates(int opPos) throws TransformerException {
 
@@ -1002,12 +857,8 @@ public class Compiler extends OpMap {
   /**
    * Compiles predicates in the step.
    * 
-   * @param opPos
-   *          The position of the first predicate the m_opMap array.
-   * @param predicates
-   *          An empty pre-determined array of {@link de.lyca.xpath.Expression}
-   *          s, that will be filled in.
-   * 
+   * @param opPos The position of the first predicate the m_opMap array.
+   * @param predicates An empty pre-determined array of {@link de.lyca.xpath.Expression} s, that will be filled in.
    * @throws TransformerException
    */
   private void compilePredicates(int opPos, Expression[] predicates) throws TransformerException {
@@ -1021,13 +872,9 @@ public class Compiler extends OpMap {
   /**
    * Compile a built-in XPath function.
    * 
-   * @param opPos
-   *          The current position in the m_opMap array.
-   * 
+   * @param opPos The current position in the m_opMap array.
    * @return reference to {@link de.lyca.xpath.functions.Function} instance.
-   * 
-   * @throws TransformerException
-   *           if a error occurs creating the Expression.
+   * @throws TransformerException if a error occurs creating the Expression.
    */
   Expression compileFunction(int opPos) throws TransformerException {
 
@@ -1043,8 +890,8 @@ public class Compiler extends OpMap {
       final Function func = m_functionTable.getFunction(funcID);
 
       /**
-       * It is a trick for function-available. Since the function table is an
-       * instance field, insert this table at compilation time for later usage
+       * It is a trick for function-available. Since the function table is an instance field, insert this table at
+       * compilation time for later usage
        */
 
       if (func instanceof FuncExtFunctionAvailable) {
@@ -1067,15 +914,13 @@ public class Compiler extends OpMap {
       } catch (final WrongNumberArgsException wnae) {
         final java.lang.String name = m_functionTable.getFunctionName(funcID);
 
-        m_errorHandler.fatalError(new TransformerException(XPATHMessages.createXPATHMessage(
-                XPATHErrorResources.ER_ONLY_ALLOWS, new Object[] { name, wnae.getMessage() }), m_locator));
-        // "name + " only allows " + wnae.getMessage() + " arguments",
-        // m_locator));
+        m_errorHandler
+            .fatalError(new TransformerException(Messages.get().onlyAllows(name, wnae.getMessage()), m_locator));
       }
 
       return func;
     } else {
-      error(XPATHErrorResources.ER_FUNCTION_TOKEN_NOT_FOUND, null); // "function token not found.");
+      error(Messages.get().functionTokenNotFound());
 
       return null;
     }
@@ -1094,14 +939,9 @@ public class Compiler extends OpMap {
   /**
    * Compile an extension function.
    * 
-   * @param opPos
-   *          The current position in the m_opMap array.
-   * 
-   * @return reference to {@link de.lyca.xpath.functions.FuncExtFunction}
-   *         instance.
-   * 
-   * @throws TransformerException
-   *           if a error occurs creating the Expression.
+   * @param opPos The current position in the m_opMap array.
+   * @return reference to {@link de.lyca.xpath.functions.FuncExtFunction} instance.
+   * @throws TransformerException if a error occurs creating the Expression.
    */
   private Expression compileExtension(int opPos) throws TransformerException {
 
@@ -1145,46 +985,29 @@ public class Compiler extends OpMap {
   /**
    * Warn the user of an problem.
    * 
-   * @param msg
-   *          An error msgkey that corresponds to one of the constants found in
-   *          {@link de.lyca.xpath.res.XPATHErrorResources}, which is a key for
-   *          a format string.
-   * @param args
-   *          An array of arguments represented in the format string, which may
-   *          be null.
-   * 
-   * @throws TransformerException
-   *           if the current ErrorListoner determines to throw an exception.
+   * @param fmsg An error message
+   * @throws TransformerException if the current ErrorListoner determines to throw an exception.
    */
-  public void warn(String msg, Object[] args) throws TransformerException {
-
-    final java.lang.String fmsg = XPATHMessages.createXPATHWarning(msg, args);
-
+  public void warn(String fmsg) throws TransformerException {
     if (null != m_errorHandler) {
       m_errorHandler.warning(new TransformerException(fmsg, m_locator));
     } else {
       System.out.println(fmsg + "; file " + m_locator.getSystemId() + "; line " + m_locator.getLineNumber()
-              + "; column " + m_locator.getColumnNumber());
+          + "; column " + m_locator.getColumnNumber());
     }
   }
 
   /**
    * Tell the user of an assertion error, and probably throw an exception.
    * 
-   * @param b
-   *          If false, a runtime exception will be thrown.
-   * @param msg
-   *          The assertion message, which should be informative.
-   * 
-   * @throws RuntimeException
-   *           if the b argument is false.
+   * @param b If false, a runtime exception will be thrown.
+   * @param msg The assertion message, which should be informative.
+   * @throws RuntimeException if the b argument is false.
    */
-  public void assertion(boolean b, java.lang.String msg) {
+  public void assertion(boolean b, String msg) {
 
     if (!b) {
-      final java.lang.String fMsg = XPATHMessages.createXPATHMessage(
-              XPATHErrorResources.ER_INCORRECT_PROGRAMMER_ASSERTION, new Object[] { msg });
-
+      final String fMsg = Messages.get().incorrectProgrammerAssertion(msg);
       throw new RuntimeException(fMsg);
     }
   }
@@ -1192,21 +1015,10 @@ public class Compiler extends OpMap {
   /**
    * Tell the user of an error, and probably throw an exception.
    * 
-   * @param msg
-   *          An error msgkey that corresponds to one of the constants found in
-   *          {@link de.lyca.xpath.res.XPATHErrorResources}, which is a key for
-   *          a format string.
-   * @param args
-   *          An array of arguments represented in the format string, which may
-   *          be null.
-   * 
-   * @throws TransformerException
-   *           if the current ErrorListoner determines to throw an exception.
+   * @param fmsg An error message
+   * @throws TransformerException if the current ErrorListoner determines to throw an exception.
    */
-  @Override
-  public void error(String msg, Object[] args) throws TransformerException {
-
-    final java.lang.String fmsg = XPATHMessages.createXPATHMessage(msg, args);
+  public void error(String fmsg) throws TransformerException {
 
     if (null != m_errorHandler) {
       m_errorHandler.fatalError(new TransformerException(fmsg, m_locator));
@@ -1235,16 +1047,15 @@ public class Compiler extends OpMap {
   /**
    * Set the current namespace context for the xpath.
    * 
-   * @param pr
-   *          The resolver for prefixes in the XPath expression.
+   * @param pr The resolver for prefixes in the XPath expression.
    */
   public void setNamespaceContext(PrefixResolver pr) {
     m_currentPrefixResolver = pr;
   }
 
   /**
-   * The error listener where errors will be sent. If this is null, errors and
-   * warnings will be sent to System.err. May be null.
+   * The error listener where errors will be sent. If this is null, errors and warnings will be sent to System.err. May
+   * be null.
    */
   ErrorListener m_errorHandler;
 

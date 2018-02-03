@@ -22,6 +22,7 @@ import java.util.List;
 import javax.xml.transform.TransformerException;
 
 import de.lyca.xml.utils.QName;
+import de.lyca.xml.utils.WrappedRuntimeException;
 import de.lyca.xpath.Expression;
 import de.lyca.xpath.ExpressionOwner;
 import de.lyca.xpath.XPathContext;
@@ -30,8 +31,7 @@ import de.lyca.xpath.axes.PathComponent;
 import de.lyca.xpath.axes.WalkerFactory;
 import de.lyca.xpath.objects.XNodeSet;
 import de.lyca.xpath.objects.XObject;
-import de.lyca.xpath.res.XPATHErrorResources;
-import de.lyca.xpath.res.XPATHMessages;
+import de.lyca.xpath.res.Messages;
 
 /**
  * The variable reference expression executer.
@@ -124,12 +124,11 @@ public class Variable extends Expression implements PathComponent {
       }
     }
 
-    final java.lang.String msg = XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_COULD_NOT_FIND_VAR,
-        new Object[] { m_qname.toString() });
+    final java.lang.String msg = Messages.get().couldNotFindVar(m_qname.toString());
 
     final TransformerException te = new TransformerException(msg, this);
 
-    throw new de.lyca.xml.utils.WrappedRuntimeException(te);
+    throw new WrappedRuntimeException(te);
 
   }
 
@@ -194,11 +193,8 @@ public class Variable extends Expression implements PathComponent {
 
     if (null == result) {
       // This should now never happen...
-      warn(xctxt, XPATHErrorResources.WG_ILLEGAL_VARIABLE_REFERENCE, new Object[] { m_qname.getLocalPart() }); // "VariableReference
-                                                                                                               // given
-                                                                                                               // for
-                                                                                                               // variable
-                                                                                                               // out "+
+      warn(xctxt, Messages.get().illegalVariableReference(m_qname.getLocalPart()));
+      // "VariableReference given for variable out "+
       // (new RuntimeException()).printStackTrace();
       // error(xctxt, XPATHErrorResources.ER_COULDNOT_GET_VAR_NAMED,
       // new Object[]{ m_qname.getLocalPart() });

@@ -23,7 +23,7 @@ import de.lyca.xml.utils.QName;
 import de.lyca.xpath.Expression;
 import de.lyca.xpath.ExpressionOwner;
 import de.lyca.xpath.XPathVisitor;
-import de.lyca.xpath.res.XPATHMessages;
+import de.lyca.xpath.res.Messages;
 
 /**
  * Base class for functions that accept one argument.
@@ -41,24 +41,18 @@ public class FunctionOneArg extends Function implements ExpressionOwner {
   /**
    * Return the first argument passed to the function (at index 0).
    * 
-   * @return An expression that represents the first argument passed to the
-   *         function.
+   * @return An expression that represents the first argument passed to the function.
    */
   public Expression getArg0() {
     return m_arg0;
   }
 
   /**
-   * Set an argument expression for a function. This method is called by the
-   * XPath compiler.
+   * Set an argument expression for a function. This method is called by the XPath compiler.
    * 
-   * @param arg
-   *          non-null expression that represents the argument.
-   * @param argNum
-   *          The argument number index.
-   * 
-   * @throws WrongNumberArgsException
-   *           If the argNum parameter is greater than 0.
+   * @param arg non-null expression that represents the argument.
+   * @param argNum The argument number index.
+   * @throws WrongNumberArgsException If the argNum parameter is greater than 0.
    */
   @Override
   public void setArg(Expression arg, int argNum) throws WrongNumberArgsException {
@@ -74,10 +68,7 @@ public class FunctionOneArg extends Function implements ExpressionOwner {
   /**
    * Check that the number of arguments passed to this function is correct.
    * 
-   * 
-   * @param argNum
-   *          The number of arguments that is being passed to the function.
-   * 
+   * @param argNum The number of arguments that is being passed to the function.
    * @throws WrongNumberArgsException
    */
   @Override
@@ -88,19 +79,17 @@ public class FunctionOneArg extends Function implements ExpressionOwner {
   }
 
   /**
-   * Constructs and throws a WrongNumberArgException with the appropriate
-   * message for this function object.
+   * Constructs and throws a WrongNumberArgException with the appropriate message for this function object.
    * 
    * @throws WrongNumberArgsException
    */
   @Override
   protected void reportWrongNumberArgs() throws WrongNumberArgsException {
-    throw new WrongNumberArgsException(XPATHMessages.createXPATHMessage("one", null));
+    throw new WrongNumberArgsException(Messages.get().one());
   }
 
   /**
-   * Tell if this expression or it's subexpressions can traverse outside the
-   * current subtree.
+   * Tell if this expression or it's subexpressions can traverse outside the current subtree.
    * 
    * @return true if traversal outside the context node's subtree can occur.
    */
@@ -110,16 +99,12 @@ public class FunctionOneArg extends Function implements ExpressionOwner {
   }
 
   /**
-   * This function is used to fixup variables from QNames to stack frame indexes
-   * at stylesheet build time.
+   * This function is used to fixup variables from QNames to stack frame indexes at stylesheet build time.
    * 
-   * @param vars
-   *          List of QNames that correspond to variables. This list should be
-   *          searched backwards for the first qualified name that corresponds
-   *          to the variable reference qname. The position of the QName in the
-   *          list from the start of the list will be its position in the stack
-   *          frame (but variables above the globalsTop value will need to be
-   *          offset to the current stack frame).
+   * @param vars List of QNames that correspond to variables. This list should be searched backwards for the first
+   *        qualified name that corresponds to the variable reference qname. The position of the QName in the list from
+   *        the start of the list will be its position in the stack frame (but variables above the globalsTop value will
+   *        need to be offset to the current stack frame).
    */
   @Override
   public void fixupVariables(List<QName> vars, int globalsSize) {
@@ -129,8 +114,7 @@ public class FunctionOneArg extends Function implements ExpressionOwner {
   }
 
   /**
-   * @see de.lyca.xpath.XPathVisitable#callVisitors(ExpressionOwner,
-   *      XPathVisitor)
+   * @see de.lyca.xpath.XPathVisitable#callVisitors(ExpressionOwner, XPathVisitor)
    */
   @Override
   public void callArgVisitors(XPathVisitor visitor) {

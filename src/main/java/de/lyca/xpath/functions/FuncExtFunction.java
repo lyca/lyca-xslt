@@ -31,20 +31,17 @@ import de.lyca.xpath.XPathContext;
 import de.lyca.xpath.XPathVisitor;
 import de.lyca.xpath.objects.XNull;
 import de.lyca.xpath.objects.XObject;
-import de.lyca.xpath.res.XPATHErrorResources;
-import de.lyca.xpath.res.XPATHMessages;
+import de.lyca.xpath.res.Messages;
 
 /**
- * An object of this class represents an extension call expression. When the
- * expression executes, it calls ExtensionsTable#extFunction, and then converts
- * the result to the appropriate XObject.
+ * An object of this class represents an extension call expression. When the expression executes, it calls
+ * ExtensionsTable#extFunction, and then converts the result to the appropriate XObject.
  */
 public class FuncExtFunction extends Function {
   static final long serialVersionUID = 5196115554693708718L;
 
   /**
-   * The namespace for the extension function, which should not normally be null
-   * or empty.
+   * The namespace for the extension function, which should not normally be null or empty.
    * 
    * @serial
    */
@@ -58,8 +55,7 @@ public class FuncExtFunction extends Function {
   String m_extensionName;
 
   /**
-   * Unique method key, which is passed to ExtensionsTable#extFunction in order
-   * to allow caching of the method.
+   * Unique method key, which is passed to ExtensionsTable#extFunction in order to allow caching of the method.
    * 
    * @serial
    */
@@ -73,16 +69,12 @@ public class FuncExtFunction extends Function {
   List<Expression> m_argVec = new ArrayList<>();
 
   /**
-   * This function is used to fixup variables from QNames to stack frame indexes
-   * at stylesheet build time.
+   * This function is used to fixup variables from QNames to stack frame indexes at stylesheet build time.
    * 
-   * @param vars
-   *          List of QNames that correspond to variables. This list should be
-   *          searched backwards for the first qualified name that corresponds
-   *          to the variable reference qname. The position of the QName in the
-   *          list from the start of the list will be its position in the stack
-   *          frame (but variables above the globalsTop value will need to be
-   *          offset to the current stack frame). NEEDSDOC @param globalsSize
+   * @param vars List of QNames that correspond to variables. This list should be searched backwards for the first
+   *        qualified name that corresponds to the variable reference qname. The position of the QName in the list from
+   *        the start of the list will be its position in the stack frame (but variables above the globalsTop value will
+   *        need to be offset to the current stack frame). NEEDSDOC @param globalsSize
    */
   @Override
   public void fixupVariables(List<QName> vars, int globalsSize) {
@@ -128,8 +120,7 @@ public class FuncExtFunction extends Function {
   /**
    * Return the nth argument passed to the extension function.
    * 
-   * @param n
-   *          The argument number index.
+   * @param n The argument number index.
    * @return The Expression object at the given index.
    */
   public Expression getArg(int n) {
@@ -140,8 +131,7 @@ public class FuncExtFunction extends Function {
   }
 
   /**
-   * Return the number of arguments that were passed into this extension
-   * function.
+   * Return the number of arguments that were passed into this extension function.
    * 
    * @return The number of arguments.
    */
@@ -150,17 +140,12 @@ public class FuncExtFunction extends Function {
   }
 
   /**
-   * Create a new FuncExtFunction based on the qualified name of the extension,
-   * and a unique method key.
+   * Create a new FuncExtFunction based on the qualified name of the extension, and a unique method key.
    * 
-   * @param namespace
-   *          The namespace for the extension function, which should not
-   *          normally be null or empty.
-   * @param extensionName
-   *          The local name of the extension.
-   * @param methodKey
-   *          Unique method key, which is passed to ExtensionsTable#extFunction
-   *          in order to allow caching of the method.
+   * @param namespace The namespace for the extension function, which should not normally be null or empty.
+   * @param extensionName The local name of the extension.
+   * @param methodKey Unique method key, which is passed to ExtensionsTable#extFunction in order to allow caching of the
+   *        method.
    */
   public FuncExtFunction(java.lang.String namespace, java.lang.String extensionName, Object methodKey) {
     // try{throw new Exception("FuncExtFunction() " + namespace + " " +
@@ -173,8 +158,7 @@ public class FuncExtFunction extends Function {
   /**
    * Execute the function. The function must return a valid object.
    * 
-   * @param xctxt
-   *          The current execution context.
+   * @param xctxt The current execution context.
    * @return A valid XObject.
    * 
    * @throws TransformerException TODO
@@ -182,8 +166,7 @@ public class FuncExtFunction extends Function {
   @Override
   public XObject execute(XPathContext xctxt) throws TransformerException {
     if (xctxt.isSecureProcessing())
-      throw new TransformerException(XPATHMessages.createXPATHMessage(
-              XPATHErrorResources.ER_EXTENSION_FUNCTION_CANNOT_BE_INVOKED, new Object[] { toString() }));
+      throw new TransformerException(Messages.get().extensionFunctionCannotBeInvoked(toString()));
 
     XObject result;
     final int nArgs = m_argVec.size();
@@ -213,17 +196,12 @@ public class FuncExtFunction extends Function {
   }
 
   /**
-   * Set an argument expression for a function. This method is called by the
-   * XPath compiler.
+   * Set an argument expression for a function. This method is called by the XPath compiler.
    * 
-   * @param arg
-   *          non-null expression that represents the argument.
-   * @param argNum
-   *          The argument number index.
+   * @param arg non-null expression that represents the argument.
+   * @param argNum The argument number index.
    * 
-   * @throws WrongNumberArgsException
-   *           If the argNum parameter is beyond what is specified for this
-   *           function.
+   * @throws WrongNumberArgsException If the argNum parameter is beyond what is specified for this function.
    */
   @Override
   public void setArg(Expression arg, int argNum) throws WrongNumberArgsException {
@@ -235,8 +213,7 @@ public class FuncExtFunction extends Function {
    * Check that the number of arguments passed to this function is correct.
    * 
    * 
-   * @param argNum
-   *          The number of arguments that is being passed to the function.
+   * @param argNum The number of arguments that is being passed to the function.
    * 
    * @throws WrongNumberArgsException
    */
@@ -283,11 +260,9 @@ public class FuncExtFunction extends Function {
   }
 
   /**
-   * Set the parent node. For an extension function, we also need to set the
-   * parent node for all argument expressions.
+   * Set the parent node. For an extension function, we also need to set the parent node for all argument expressions.
    * 
-   * @param n
-   *          The parent node
+   * @param n The parent node
    */
   @Override
   public void exprSetParent(ExpressionNode n) {
@@ -304,18 +279,15 @@ public class FuncExtFunction extends Function {
   }
 
   /**
-   * Constructs and throws a WrongNumberArgException with the appropriate
-   * message for this function object. This class supports an arbitrary number
-   * of arguments, so this method must never be called.
+   * Constructs and throws a WrongNumberArgException with the appropriate message for this function object. This class
+   * supports an arbitrary number of arguments, so this method must never be called.
    * 
    * @throws WrongNumberArgsException
    */
   @Override
   protected void reportWrongNumberArgs() throws WrongNumberArgsException {
-    final String fMsg = XPATHMessages
-            .createXPATHMessage(
-                    XPATHErrorResources.ER_INCORRECT_PROGRAMMER_ASSERTION,
-                    new Object[] { "Programmer's assertion:  the method FunctionMultiArgs.reportWrongNumberArgs() should never be called." });
+    final String fMsg = Messages.get().incorrectProgrammerAssertion(
+        "Programmer's assertion:  the method FunctionMultiArgs.reportWrongNumberArgs() should never be called.");
 
     throw new RuntimeException(fMsg);
   }

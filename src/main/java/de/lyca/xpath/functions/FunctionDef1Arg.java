@@ -23,28 +23,21 @@ import de.lyca.xml.dtm.DTM;
 import de.lyca.xml.utils.XMLString;
 import de.lyca.xpath.XPathContext;
 import de.lyca.xpath.objects.XString;
-import de.lyca.xpath.res.XPATHErrorResources;
-import de.lyca.xpath.res.XPATHMessages;
+import de.lyca.xpath.res.Messages;
 
 /**
- * Base class for functions that accept one argument that can be defaulted if
- * not specified.
+ * Base class for functions that accept one argument that can be defaulted if not specified.
  */
 public class FunctionDef1Arg extends FunctionOneArg {
   static final long serialVersionUID = 2325189412814149264L;
 
   /**
-   * Execute the first argument expression that is expected to return a nodeset.
-   * If the argument is null, then return the current context node.
+   * Execute the first argument expression that is expected to return a nodeset. If the argument is null, then return
+   * the current context node.
    * 
-   * @param xctxt
-   *          Runtime XPath context.
-   * 
-   * @return The first node of the executed nodeset, or the current context node
-   *         if the first argument is null.
-   * 
-   * @throws TransformerException
-   *           if an error occurs while executing the argument expression.
+   * @param xctxt Runtime XPath context.
+   * @return The first node of the executed nodeset, or the current context node if the first argument is null.
+   * @throws TransformerException if an error occurs while executing the argument expression.
    */
   protected int getArg0AsNode(XPathContext xctxt) throws TransformerException {
 
@@ -61,18 +54,13 @@ public class FunctionDef1Arg extends FunctionOneArg {
   }
 
   /**
-   * Execute the first argument expression that is expected to return a string.
-   * If the argument is null, then get the string value from the current context
-   * node.
+   * Execute the first argument expression that is expected to return a string. If the argument is null, then get the
+   * string value from the current context node.
    * 
-   * @param xctxt
-   *          Runtime XPath context.
-   * 
-   * @return The string value of the first argument, or the string value of the
-   *         current context node if the first argument is null.
-   * 
-   * @throws TransformerException
-   *           if an error occurs while executing the argument expression.
+   * @param xctxt Runtime XPath context.
+   * @return The string value of the first argument, or the string value of the current context node if the first
+   *         argument is null.
+   * @throws TransformerException if an error occurs while executing the argument expression.
    */
   protected XMLString getArg0AsString(XPathContext xctxt) throws TransformerException {
     if (null == m_arg0) {
@@ -89,18 +77,13 @@ public class FunctionDef1Arg extends FunctionOneArg {
   }
 
   /**
-   * Execute the first argument expression that is expected to return a number.
-   * If the argument is null, then get the number value from the current context
-   * node.
+   * Execute the first argument expression that is expected to return a number. If the argument is null, then get the
+   * number value from the current context node.
    * 
-   * @param xctxt
-   *          Runtime XPath context.
-   * 
-   * @return The number value of the first argument, or the number value of the
-   *         current context node if the first argument is null.
-   * 
-   * @throws TransformerException
-   *           if an error occurs while executing the argument expression.
+   * @param xctxt Runtime XPath context.
+   * @return The number value of the first argument, or the number value of the current context node if the first
+   *         argument is null.
+   * @throws TransformerException if an error occurs while executing the argument expression.
    */
   protected double getArg0AsNumber(XPathContext xctxt) throws TransformerException {
 
@@ -121,11 +104,8 @@ public class FunctionDef1Arg extends FunctionOneArg {
   /**
    * Check that the number of arguments passed to this function is correct.
    * 
-   * @param argNum
-   *          The number of arguments that is being passed to the function.
-   * 
-   * @throws WrongNumberArgsException
-   *           if the number of arguments is not 0 or 1.
+   * @param argNum The number of arguments that is being passed to the function.
+   * @throws WrongNumberArgsException if the number of arguments is not 0 or 1.
    */
   @Override
   public void checkNumberArgs(int argNum) throws WrongNumberArgsException {
@@ -135,19 +115,17 @@ public class FunctionDef1Arg extends FunctionOneArg {
   }
 
   /**
-   * Constructs and throws a WrongNumberArgException with the appropriate
-   * message for this function object.
+   * Constructs and throws a WrongNumberArgException with the appropriate message for this function object.
    * 
    * @throws WrongNumberArgsException
    */
   @Override
   protected void reportWrongNumberArgs() throws WrongNumberArgsException {
-    throw new WrongNumberArgsException(XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_ZERO_OR_ONE, null)); // "0 or 1");
+    throw new WrongNumberArgsException(Messages.get().zeroOrOne());
   }
 
   /**
-   * Tell if this expression or it's subexpressions can traverse outside the
-   * current subtree.
+   * Tell if this expression or it's subexpressions can traverse outside the current subtree.
    * 
    * @return true if traversal outside the context node's subtree can occur.
    */

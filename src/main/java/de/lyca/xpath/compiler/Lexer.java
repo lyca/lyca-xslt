@@ -22,11 +22,10 @@ import java.util.List;
 import javax.xml.transform.TransformerException;
 
 import de.lyca.xml.utils.PrefixResolver;
-import de.lyca.xpath.res.XPATHErrorResources;
+import de.lyca.xpath.res.Messages;
 
 /**
- * This class is in charge of lexical processing of the XPath expression into
- * tokens.
+ * This class is in charge of lexical processing of the XPath expression into tokens.
  */
 class Lexer {
 
@@ -46,36 +45,28 @@ class Lexer {
   XPathParser m_processor;
 
   /**
-   * This value is added to each element name in the TARGETEXTRA that is a
-   * 'target' (right-most top-level element name).
+   * This value is added to each element name in the TARGETEXTRA that is a 'target' (right-most top-level element name).
    */
   static final int TARGETEXTRA = 10000;
 
   /**
-   * Ignore this, it is going away. This holds a map to the m_tokenQueue that
-   * tells where the top-level elements are. It is used for pattern matching so
-   * the m_tokenQueue can be walked backwards. Each element that is a 'target',
+   * Ignore this, it is going away. This holds a map to the m_tokenQueue that tells where the top-level elements are. It
+   * is used for pattern matching so the m_tokenQueue can be walked backwards. Each element that is a 'target',
    * (right-most top level element name) has TARGETEXTRA added to it.
-   * 
    */
   private int m_patternMap[] = new int[100];
 
   /**
-   * Ignore this, it is going away. The number of elements that m_patternMap
-   * maps;
+   * Ignore this, it is going away. The number of elements that m_patternMap maps;
    */
   private int m_patternMapSize;
 
   /**
    * Create a Lexer object.
    * 
-   * @param compiler
-   *          The owning compiler for this lexer.
-   * @param resolver
-   *          The prefix resolver for mapping qualified name prefixes to
-   *          namespace URIs.
-   * @param xpathProcessor
-   *          The parser that is processing strings to opcodes.
+   * @param compiler The owning compiler for this lexer.
+   * @param resolver The prefix resolver for mapping qualified name prefixes to namespace URIs.
+   * @param xpathProcessor The parser that is processing strings to opcodes.
    */
   Lexer(Compiler compiler, PrefixResolver resolver, XPathParser xpathProcessor) {
 
@@ -85,12 +76,9 @@ class Lexer {
   }
 
   /**
-   * Walk through the expression and build a token queue, and a map of the
-   * top-level elements.
+   * Walk through the expression and build a token queue, and a map of the top-level elements.
    * 
-   * @param pat
-   *          XSLT Expression.
-   * 
+   * @param pat XSLT Expression.
    * @throws TransformerException TODO
    */
   void tokenize(String pat) throws TransformerException {
@@ -98,14 +86,10 @@ class Lexer {
   }
 
   /**
-   * Walk through the expression and build a token queue, and a map of the
-   * top-level elements.
+   * Walk through the expression and build a token queue, and a map of the top-level elements.
    * 
-   * @param pat
-   *          XSLT Expression.
-   * @param targetStrings
-   *          List to hold Strings, may be null.
-   * 
+   * @param pat XSLT Expression.
+   * @param targetStrings List to hold Strings, may be null.
    * @throws TransformerException TODO
    */
   void tokenize(String pat, List<String> targetStrings) throws TransformerException {
@@ -160,7 +144,7 @@ class Lexer {
 
             startSubstring = -1;
           } else {
-            m_processor.error(XPATHErrorResources.ER_EXPECTED_DOUBLE_QUOTE, null); // "misquoted literal... expected double quote!");
+            m_processor.error(Messages.get().expectedDoubleQuote());
           }
         }
           break;
@@ -188,7 +172,7 @@ class Lexer {
 
             startSubstring = -1;
           } else {
-            m_processor.error(XPATHErrorResources.ER_EXPECTED_SINGLE_QUOTE, null); // "misquoted literal... expected single quote!");
+            m_processor.error(Messages.get().expectedSingleQuote());
           }
           break;
         case 0x0A:
@@ -321,7 +305,7 @@ class Lexer {
     }
 
     if (0 == m_compiler.getTokenQueueSize()) {
-      m_processor.error(XPATHErrorResources.ER_EMPTY_EXPRESSION, null); // "Empty expression!");
+      m_processor.error(Messages.get().emptyExpression());
     } else if (null != targetStrings) {
       recordTokenString(targetStrings);
     }
@@ -330,17 +314,12 @@ class Lexer {
   }
 
   /**
-   * Record the current position on the token queue as long as this is a
-   * top-level element. Must be called before the next token is added to the
-   * m_tokenQueue.
+   * Record the current position on the token queue as long as this is a top-level element. Must be called before the
+   * next token is added to the m_tokenQueue.
    * 
-   * @param nesting
-   *          The nesting count for the pattern element.
-   * @param isStart
-   *          true if this is the start of a pattern.
-   * @param isAttrName
-   *          true if we have determined that this is an attribute name.
-   * 
+   * @param nesting The nesting count for the pattern element.
+   * @param isStart true if this is the start of a pattern.
+   * @param isAttrName true if we have determined that this is an attribute name.
    * @return true if this is the start of a pattern.
    */
   private boolean mapPatternElemPos(int nesting, boolean isStart, boolean isAttrName) {
@@ -368,9 +347,7 @@ class Lexer {
   /**
    * Given a map pos, return the corresponding token queue pos.
    * 
-   * @param i
-   *          The index in the m_patternMap.
-   * 
+   * @param i The index in the m_patternMap.
    * @return the token queue position.
    */
   private int getTokenQueuePosFromMap(int i) {
@@ -383,8 +360,7 @@ class Lexer {
   /**
    * Reset token queue mark and m_token to a given position.
    * 
-   * @param mark
-   *          The new position.
+   * @param mark The new position.
    */
   private final void resetTokenMark(int mark) {
 
@@ -404,9 +380,7 @@ class Lexer {
   /**
    * Given a string, return the corresponding keyword token.
    * 
-   * @param key
-   *          The keyword.
-   * 
+   * @param key The keyword.
    * @return An opcode value.
    */
   final int getKeywordToken(String key) {
@@ -429,8 +403,7 @@ class Lexer {
   /**
    * Record the current token in the passed list.
    * 
-   * @param targetStrings
-   *          List of string.
+   * @param targetStrings List of string.
    */
   private void recordTokenString(List<String> targetStrings) {
 
@@ -481,29 +454,20 @@ class Lexer {
   /**
    * Add a token to the token queue.
    * 
-   * 
-   * @param s
-   *          The token.
+   * @param s The token.
    */
   private final void addToTokenQueue(String s) {
     m_compiler.getTokenQueue().addElement(s);
   }
 
   /**
-   * When a seperator token is found, see if there's a element name or the like
-   * to map.
+   * When a seperator token is found, see if there's a element name or the like to map.
    * 
-   * @param pat
-   *          The XPath name string.
-   * @param startSubstring
-   *          The start of the name string.
-   * @param posOfNSSep
-   *          The position of the namespace seperator (':').
-   * @param posOfScan
-   *          The end of the name index.
-   * 
+   * @param pat The XPath name string.
+   * @param startSubstring The start of the name string.
+   * @param posOfNSSep The position of the namespace seperator (':').
+   * @param posOfScan The end of the name index.
    * @throws TransformerException TODO
-   * 
    * @return -1 always.
    */
   private int mapNSTokens(String pat, int startSubstring, int posOfNSSep, int posOfScan) throws TransformerException {
@@ -557,23 +521,7 @@ class Lexer {
     } else {
       // To older XPath code it doesn't matter if
       // error() is called or errorForDOM3().
-      m_processor.errorForDOM3(XPATHErrorResources.ER_PREFIX_MUST_RESOLVE, new String[] { prefix }); // "Prefix must resolve to a namespace: {0}";
-
-      /**
-       * old code commented out 17-Sep-2004 //
-       * error("Could not locate namespace for prefix: "+prefix); //
-       * m_processor.error(XPATHErrorResources.ER_PREFIX_MUST_RESOLVE, // new
-       * String[] {prefix}); //"Prefix must resolve to a namespace: {0}";
-       */
-
-      /***
-       * Old code commented out 10-Jan-2001 addToTokenQueue(prefix);
-       * addToTokenQueue(":");
-       * 
-       * String s = pat.substring(posOfNSSep + 1, posOfScan);
-       * 
-       * if (s.length() > 0) addToTokenQueue(s);
-       ***/
+      m_processor.errorForDOM3(Messages.get().prefixMustResolve(prefix));
     }
 
     return -1;

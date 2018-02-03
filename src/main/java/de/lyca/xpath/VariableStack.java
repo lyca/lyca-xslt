@@ -21,16 +21,13 @@ import javax.xml.transform.TransformerException;
 
 import de.lyca.xml.utils.QName;
 import de.lyca.xpath.objects.XObject;
-import de.lyca.xpath.res.XPATHErrorResources;
-import de.lyca.xpath.res.XPATHMessages;
+import de.lyca.xpath.res.Messages;
 
 /**
- * Defines a class to keep track of a stack for template arguments and
- * variables.
+ * Defines a class to keep track of a stack for template arguments and variables.
  * 
  * <p>
- * This has been changed from the previous incarnations of this class to be
- * fairly low level.
+ * This has been changed from the previous incarnations of this class to be fairly low level.
  * </p>
  */
 public class VariableStack implements Cloneable {
@@ -49,9 +46,7 @@ public class VariableStack implements Cloneable {
   /**
    * Constructor for a variable stack.
    * 
-   * @param initStackSize
-   *          The initial stack size. Must be at least one. The stack can grow
-   *          if needed.
+   * @param initStackSize The initial stack size. Must be at least one. The stack can grow if needed.
    */
   public VariableStack(int initStackSize) {
     // Allow for twice as many variables as stack link entries
@@ -62,7 +57,6 @@ public class VariableStack implements Cloneable {
    * Returns a clone of this variable stack.
    * 
    * @return a clone of this variable stack.
-   * 
    * @throws CloneNotSupportedException
    */
   @Override
@@ -92,8 +86,7 @@ public class VariableStack implements Cloneable {
   int _frameTop;
 
   /**
-   * The bottom index of the current frame (relative to
-   * <code>_stackFrames</code>).
+   * The bottom index of the current frame (relative to <code>_stackFrames</code>).
    * 
    * @serial
    */
@@ -101,8 +94,8 @@ public class VariableStack implements Cloneable {
 
   /**
    * The stack of frame positions. I call 'em links because of distant <a href=
-   * "http://math.millikin.edu/mprogers/Courses/currentCourses/CS481-ComputerArchitecture/cs481.Motorola68000.html"
-   * > Motorola 68000 assembler</a> memories. :-)
+   * "http://math.millikin.edu/mprogers/Courses/currentCourses/CS481-ComputerArchitecture/cs481.Motorola68000.html" >
+   * Motorola 68000 assembler</a> memories. :-)
    * 
    * @serial
    */
@@ -116,9 +109,7 @@ public class VariableStack implements Cloneable {
   /**
    * Get the element at the given index, regardless of stackframe.
    * 
-   * @param i
-   *          index from zero.
-   * 
+   * @param i index from zero.
    * @return The item at the given index.
    */
   public XObject elementAt(final int i) {
@@ -149,10 +140,8 @@ public class VariableStack implements Cloneable {
   /**
    * Reset the stack to a start position.
    * 
-   * @param linksSize
-   *          Initial stack size to use
-   * @param varArraySize
-   *          Initial variable array size to use
+   * @param linksSize Initial stack size to use
+   * @param varArraySize Initial variable array size to use
    */
   protected void reset(int linksSize, int varArraySize) {
     _frameTop = 0;
@@ -175,16 +164,15 @@ public class VariableStack implements Cloneable {
   /**
    * Set the current stack frame.
    * 
-   * @param sf
-   *          The new stack frame position.
+   * @param sf The new stack frame position.
    */
   public void setStackFrame(int sf) {
     _currentFrameBottom = sf;
   }
 
   /**
-   * Get the position from where the search should start, which is either the
-   * searchStart property, or the top of the stack if that value is -1.
+   * Get the position from where the search should start, which is either the searchStart property, or the top of the
+   * stack if that value is -1.
    * 
    * @return The current stack frame position.
    */
@@ -193,22 +181,16 @@ public class VariableStack implements Cloneable {
   }
 
   /**
-   * Allocates memory (called a stackframe) on the stack; used to store local
-   * variables and parameter arguments.
-   * 
+   * Allocates memory (called a stackframe) on the stack; used to store local variables and parameter arguments.
    * <p>
    * I use the link/unlink concept because of distant <a href=
-   * "http://math.millikin.edu/mprogers/Courses/currentCourses/CS481-ComputerArchitecture/cs481.Motorola68000.html"
-   * > Motorola 68000 assembler</a> memories.
+   * "http://math.millikin.edu/mprogers/Courses/currentCourses/CS481-ComputerArchitecture/cs481.Motorola68000.html" >
+   * Motorola 68000 assembler</a> memories.
    * </p>
    * 
-   * @param size
-   *          The size of the stack frame allocation. This ammount should
-   *          normally be the maximum number of variables that you can have
-   *          allocated at one time in the new stack frame.
-   * 
-   * @return The bottom of the stack frame, from where local variable addressing
-   *         should start from.
+   * @param size The size of the stack frame allocation. This ammount should normally be the maximum number of variables
+   *        that you can have allocated at one time in the new stack frame.
+   * @return The bottom of the stack frame, from where local variable addressing should start from.
    */
   public int link(final int size) {
 
@@ -237,8 +219,7 @@ public class VariableStack implements Cloneable {
   }
 
   /**
-   * Free up the stack frame that was last allocated with {@link #link(int size)}
-   * .
+   * Free up the stack frame that was last allocated with {@link #link(int size)} .
    */
   public void unlink() {
     _frameTop = _links[--_linksTop];
@@ -246,11 +227,9 @@ public class VariableStack implements Cloneable {
   }
 
   /**
-   * Free up the stack frame that was last allocated with {@link #link(int size)}
-   * .
+   * Free up the stack frame that was last allocated with {@link #link(int size)} .
    * 
-   * @param currentFrame
-   *          The current frame to set to after the unlink.
+   * @param currentFrame The current frame to set to after the unlink.
    */
   public void unlink(int currentFrame) {
     _frameTop = _links[--_linksTop];
@@ -260,12 +239,8 @@ public class VariableStack implements Cloneable {
   /**
    * Set a local variable or parameter in the current stack frame.
    * 
-   * 
-   * @param index
-   *          Local variable index relative to the current stack frame bottom.
-   * 
-   * @param val
-   *          The value of the variable that is being set.
+   * @param index Local variable index relative to the current stack frame bottom.
+   * @param val The value of the variable that is being set.
    */
   public void setLocalVariable(int index, XObject val) {
     _stackFrames[index + _currentFrameBottom] = val;
@@ -274,13 +249,8 @@ public class VariableStack implements Cloneable {
   /**
    * Set a local variable or parameter in the specified stack frame.
    * 
-   * 
-   * @param index
-   *          Local variable index relative to the current stack frame bottom.
-   *          NEEDSDOC @param stackFrame
-   * 
-   * @param val
-   *          The value of the variable that is being set.
+   * @param index Local variable index relative to the current stack frame bottom. NEEDSDOC @param stackFrame
+   * @param val The value of the variable that is being set.
    */
   public void setLocalVariable(int index, XObject val, int stackFrame) {
     _stackFrames[index + stackFrame] = val;
@@ -289,16 +259,9 @@ public class VariableStack implements Cloneable {
   /**
    * Get a local variable or parameter in the current stack frame.
    * 
-   * 
-   * @param xctxt
-   *          The XPath context, which must be passed in order to lazy evaluate
-   *          variables.
-   * 
-   * @param index
-   *          Local variable index relative to the current stack frame bottom.
-   * 
+   * @param xctxt The XPath context, which must be passed in order to lazy evaluate variables.
+   * @param index Local variable index relative to the current stack frame bottom.
    * @return The value of the variable.
-   * 
    * @throws TransformerException
    */
   public XObject getLocalVariable(XPathContext xctxt, int index) throws TransformerException {
@@ -308,9 +271,7 @@ public class VariableStack implements Cloneable {
     final XObject val = _stackFrames[index];
 
     if (null == val)
-      throw new TransformerException(XPATHMessages.createXPATHMessage(
-              XPATHErrorResources.ER_VARIABLE_ACCESSED_BEFORE_BIND, null), xctxt.getSAXLocator());
-    // "Variable accessed before it is bound!", xctxt.getSAXLocator());
+      throw new TransformerException(Messages.get().variableAccessedBeforeBind(), xctxt.getSAXLocator());
 
     // Lazy execution of variables.
     if (val.getType() == XObject.CLASS_UNRESOLVEDVARIABLE)
@@ -322,13 +283,8 @@ public class VariableStack implements Cloneable {
   /**
    * Get a local variable or parameter in the current stack frame.
    * 
-   * 
-   * @param index
-   *          Local variable index relative to the given frame bottom. NEEDSDOC @param
-   *          frame
-   * 
+   * @param index Local variable index relative to the given frame bottom. NEEDSDOC @param frame
    * @return The value of the variable.
-   * 
    * @throws TransformerException
    */
   public XObject getLocalVariable(int index, int frame) throws TransformerException {
@@ -343,16 +299,9 @@ public class VariableStack implements Cloneable {
   /**
    * Get a local variable or parameter in the current stack frame.
    * 
-   * 
-   * @param xctxt
-   *          The XPath context, which must be passed in order to lazy evaluate
-   *          variables.
-   * 
-   * @param index
-   *          Local variable index relative to the current stack frame bottom.
-   * 
+   * @param xctxt The XPath context, which must be passed in order to lazy evaluate variables.
+   * @param index Local variable index relative to the current stack frame bottom.
    * @return The value of the variable.
-   * 
    * @throws TransformerException
    */
   public XObject getLocalVariable(XPathContext xctxt, int index, boolean destructiveOK) throws TransformerException {
@@ -362,9 +311,7 @@ public class VariableStack implements Cloneable {
     final XObject val = _stackFrames[index];
 
     if (null == val)
-      throw new TransformerException(XPATHMessages.createXPATHMessage(
-              XPATHErrorResources.ER_VARIABLE_ACCESSED_BEFORE_BIND, null), xctxt.getSAXLocator());
-    // "Variable accessed before it is bound!", xctxt.getSAXLocator());
+      throw new TransformerException(Messages.get().variableAccessedBeforeBind(), xctxt.getSAXLocator());
 
     // Lazy execution of variables.
     if (val.getType() == XObject.CLASS_UNRESOLVEDVARIABLE)
@@ -376,11 +323,8 @@ public class VariableStack implements Cloneable {
   /**
    * Tell if a local variable has been set or not.
    * 
-   * @param index
-   *          Local variable index relative to the current stack frame bottom.
-   * 
+   * @param index Local variable index relative to the current stack frame bottom.
    * @return true if the value at the index is not null.
-   * 
    * @throws TransformerException
    */
   public boolean isLocalSet(int index) throws TransformerException {
@@ -391,15 +335,12 @@ public class VariableStack implements Cloneable {
   private static XObject[] m_nulls = new XObject[CLEARLIMITATION];
 
   /**
-   * Use this to clear the variables in a section of the stack. This is used to
-   * clear the parameter section of the stack, so that default param values can
-   * tell if they've already been set. It is important to note that this
+   * Use this to clear the variables in a section of the stack. This is used to clear the parameter section of the
+   * stack, so that default param values can tell if they've already been set. It is important to note that this
    * function has a 1K limitation.
    * 
-   * @param start
-   *          The start position, relative to the current local stack frame.
-   * @param len
-   *          The number of slots to be cleared.
+   * @param start The start position, relative to the current local stack frame.
+   * @param len The number of slots to be cleared.
    */
   public void clearLocalSlots(int start, int len) {
 
@@ -411,12 +352,8 @@ public class VariableStack implements Cloneable {
   /**
    * Set a global variable or parameter in the global stack frame.
    * 
-   * 
-   * @param index
-   *          Local variable index relative to the global stack frame bottom.
-   * 
-   * @param val
-   *          The value of the variable that is being set.
+   * @param index Local variable index relative to the global stack frame bottom.
+   * @param val The value of the variable that is being set.
    */
   public void setGlobalVariable(final int index, final XObject val) {
     _stackFrames[index] = val;
@@ -425,16 +362,9 @@ public class VariableStack implements Cloneable {
   /**
    * Get a global variable or parameter from the global stack frame.
    * 
-   * 
-   * @param xctxt
-   *          The XPath context, which must be passed in order to lazy evaluate
-   *          variables.
-   * 
-   * @param index
-   *          Global variable index relative to the global stack frame bottom.
-   * 
+   * @param xctxt The XPath context, which must be passed in order to lazy evaluate variables.
+   * @param index Global variable index relative to the global stack frame bottom.
    * @return The value of the variable.
-   * 
    * @throws TransformerException
    */
   public XObject getGlobalVariable(XPathContext xctxt, final int index) throws TransformerException {
@@ -451,20 +381,13 @@ public class VariableStack implements Cloneable {
   /**
    * Get a global variable or parameter from the global stack frame.
    * 
-   * 
-   * @param xctxt
-   *          The XPath context, which must be passed in order to lazy evaluate
-   *          variables.
-   * 
-   * @param index
-   *          Global variable index relative to the global stack frame bottom.
-   * 
+   * @param xctxt The XPath context, which must be passed in order to lazy evaluate variables.
+   * @param index Global variable index relative to the global stack frame bottom.
    * @return The value of the variable.
-   * 
    * @throws TransformerException
    */
   public XObject getGlobalVariable(XPathContext xctxt, final int index, boolean destructiveOK)
-          throws TransformerException {
+      throws TransformerException {
 
     final XObject val = _stackFrames[index];
 
@@ -478,23 +401,13 @@ public class VariableStack implements Cloneable {
   /**
    * Get a variable based on it's qualified name. This is for external use only.
    * 
-   * @param xctxt
-   *          The XPath context, which must be passed in order to lazy evaluate
-   *          variables.
-   * 
-   * @param qname
-   *          The qualified name of the variable.
-   * 
+   * @param xctxt The XPath context, which must be passed in order to lazy evaluate variables.
+   * @param qname The qualified name of the variable.
    * @return The evaluated value of the variable.
-   * 
    * @throws TransformerException
    */
-  public XObject getVariableOrParam(XPathContext xctxt, QName qname)
-          throws TransformerException {
-    throw new TransformerException(XPATHMessages.createXPATHMessage(
-            XPATHErrorResources.ER_VAR_NOT_RESOLVABLE, new Object[] { qname.toString() })); // "Variable not resolvable: "
-                                                                                            // +
-                                                                                            // qname);
+  public XObject getVariableOrParam(XPathContext xctxt, QName qname) throws TransformerException {
+    throw new TransformerException(Messages.get().varNotResolvable(qname.toString()));
   }
-} // end VariableStack
 
+}

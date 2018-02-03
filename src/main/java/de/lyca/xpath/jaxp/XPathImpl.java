@@ -44,13 +44,11 @@ import de.lyca.xml.dtm.DTM;
 import de.lyca.xpath.XPath;
 import de.lyca.xpath.XPathContext;
 import de.lyca.xpath.objects.XObject;
-import de.lyca.xpath.res.XPATHErrorResources;
-import de.lyca.xpath.res.XPATHMessages;
+import de.lyca.xpath.res.Messages;
 
 /**
- * The XPathImpl class provides implementation for the methods defined in
- * javax.xml.xpath.XPath interface. This provide simple access to the results of
- * an XPath expression.
+ * The XPathImpl class provides implementation for the methods defined in javax.xml.xpath.XPath interface. This provide
+ * simple access to the results of an XPath expression.
  * 
  * 
  * @version $Revision$
@@ -86,14 +84,12 @@ public class XPathImpl implements javax.xml.xpath.XPath {
    * Establishes a variable resolver.
    * </p>
    * 
-   * @param resolver
-   *          Variable Resolver
+   * @param resolver Variable Resolver
    */
   @Override
   public void setXPathVariableResolver(XPathVariableResolver resolver) {
     if (resolver == null) {
-      final String fmsg = XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_ARG_CANNOT_BE_NULL,
-              new Object[] { "XPathVariableResolver" });
+      final String fmsg = Messages.get().argCannotBeNull("XPathVariableResolver");
       throw new NullPointerException(fmsg);
     }
     variableResolver = resolver;
@@ -116,14 +112,12 @@ public class XPathImpl implements javax.xml.xpath.XPath {
    * Establishes a function resolver.
    * </p>
    * 
-   * @param resolver
-   *          XPath function resolver
+   * @param resolver XPath function resolver
    */
   @Override
   public void setXPathFunctionResolver(XPathFunctionResolver resolver) {
     if (resolver == null) {
-      final String fmsg = XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_ARG_CANNOT_BE_NULL,
-              new Object[] { "XPathFunctionResolver" });
+      final String fmsg = Messages.get().argCannotBeNull("XPathFunctionResolver");
       throw new NullPointerException(fmsg);
     }
     functionResolver = resolver;
@@ -146,14 +140,12 @@ public class XPathImpl implements javax.xml.xpath.XPath {
    * Establishes a namespace context.
    * </p>
    * 
-   * @param nsContext
-   *          Namespace context to use
+   * @param nsContext Namespace context to use
    */
   @Override
   public void setNamespaceContext(NamespaceContext nsContext) {
     if (nsContext == null) {
-      final String fmsg = XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_ARG_CANNOT_BE_NULL,
-              new Object[] { "NamespaceContext" });
+      final String fmsg = Messages.get().argCannotBeNull("NamespaceContext");
       throw new NullPointerException(fmsg);
     }
     namespaceContext = nsContext;
@@ -198,7 +190,7 @@ public class XPathImpl implements javax.xml.xpath.XPath {
 
   private XObject eval(String expression, Object contextItem) throws TransformerException {
     final de.lyca.xpath.XPath xpath = new de.lyca.xpath.XPath(expression, null, prefixResolver,
-            de.lyca.xpath.XPath.SELECT);
+        de.lyca.xpath.XPath.SELECT);
     de.lyca.xpath.XPathContext xpathSupport = null;
 
     // Create an XPathContext that doesn't support pushing and popping of
@@ -227,68 +219,46 @@ public class XPathImpl implements javax.xml.xpath.XPath {
 
   /**
    * <p>
-   * Evaluate an <code>XPath</code> expression in the specified context and
-   * return the result as the specified type.
+   * Evaluate an <code>XPath</code> expression in the specified context and return the result as the specified type.
    * </p>
-   * 
    * <p>
-   * See "Evaluation of XPath Expressions" section of JAXP 1.3 spec for context
-   * item evaluation, variable, function and <code>QName</code> resolution and
-   * return type conversion.
+   * See "Evaluation of XPath Expressions" section of JAXP 1.3 spec for context item evaluation, variable, function and
+   * <code>QName</code> resolution and return type conversion.
    * </p>
-   * 
    * <p>
-   * If <code>returnType</code> is not one of the types defined in
-   * {@link XPathConstants} ( {@link XPathConstants#NUMBER NUMBER},
-   * {@link XPathConstants#STRING STRING}, {@link XPathConstants#BOOLEAN
-   * BOOLEAN}, {@link XPathConstants#NODE NODE} or
-   * {@link XPathConstants#NODESET NODESET}) then an
-   * <code>IllegalArgumentException</code> is thrown.
+   * If <code>returnType</code> is not one of the types defined in {@link XPathConstants} ( {@link XPathConstants#NUMBER
+   * NUMBER}, {@link XPathConstants#STRING STRING}, {@link XPathConstants#BOOLEAN BOOLEAN}, {@link XPathConstants#NODE
+   * NODE} or {@link XPathConstants#NODESET NODESET}) then an <code>IllegalArgumentException</code> is thrown.
    * </p>
-   * 
    * <p>
-   * If a <code>null</code> value is provided for <code>item</code>, an empty
-   * document will be used for the context. If <code>expression</code> or
-   * <code>returnType</code> is <code>null</code>, then a
-   * <code>NullPointerException</code> is thrown.
+   * If a <code>null</code> value is provided for <code>item</code>, an empty document will be used for the context. If
+   * <code>expression</code> or <code>returnType</code> is <code>null</code>, then a <code>NullPointerException</code>
+   * is thrown.
    * </p>
    * 
-   * @param expression
-   *          The XPath expression.
-   * @param item
-   *          The starting context (node or node list, for example).
-   * @param returnType
-   *          The desired return type.
-   * 
-   * @return Result of evaluating an XPath expression as an <code>Object</code>
-   *         of <code>returnType</code>.
-   * 
-   * @throws XPathExpressionException
-   *           If <code>expression</code> cannot be evaluated.
-   * @throws IllegalArgumentException
-   *           If <code>returnType</code> is not one of the types defined in
-   *           {@link XPathConstants}.
-   * @throws NullPointerException
-   *           If <code>expression</code> or <code>returnType</code> is
-   *           <code>null</code>.
+   * @param expression The XPath expression.
+   * @param item The starting context (node or node list, for example).
+   * @param returnType The desired return type.
+   * @return Result of evaluating an XPath expression as an <code>Object</code> of <code>returnType</code>.
+   * @throws XPathExpressionException If <code>expression</code> cannot be evaluated.
+   * @throws IllegalArgumentException If <code>returnType</code> is not one of the types defined in
+   *         {@link XPathConstants}.
+   * @throws NullPointerException If <code>expression</code> or <code>returnType</code> is <code>null</code>.
    */
   @Override
   public Object evaluate(String expression, Object item, QName returnType) throws XPathExpressionException {
     if (expression == null) {
-      final String fmsg = XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_ARG_CANNOT_BE_NULL,
-              new Object[] { "XPath expression" });
+      final String fmsg = Messages.get().argCannotBeNull("XPath expression");
       throw new NullPointerException(fmsg);
     }
     if (returnType == null) {
-      final String fmsg = XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_ARG_CANNOT_BE_NULL,
-              new Object[] { "returnType" });
+      final String fmsg = Messages.get().argCannotBeNull("returnType");
       throw new NullPointerException(fmsg);
     }
     // Checking if requested returnType is supported. returnType need to
     // be defined in XPathConstants
     if (!isSupported(returnType)) {
-      final String fmsg = XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_UNSUPPORTED_RETURN_TYPE,
-              new Object[] { returnType.toString() });
+      final String fmsg = Messages.get().unsupportedReturnType(returnType);
       throw new IllegalArgumentException(fmsg);
     }
 
@@ -315,14 +285,13 @@ public class XPathImpl implements javax.xml.xpath.XPath {
 
   private boolean isSupported(QName returnType) {
     if (returnType.equals(XPathConstants.STRING) || returnType.equals(XPathConstants.NUMBER)
-            || returnType.equals(XPathConstants.BOOLEAN) || returnType.equals(XPathConstants.NODE)
-            || returnType.equals(XPathConstants.NODESET))
+        || returnType.equals(XPathConstants.BOOLEAN) || returnType.equals(XPathConstants.NODE)
+        || returnType.equals(XPathConstants.NODESET))
       return true;
     return false;
   }
 
-  private Object getResultAsType(XObject resultObject, QName returnType)
-          throws TransformerException {
+  private Object getResultAsType(XObject resultObject, QName returnType) throws TransformerException {
     // XPathConstants.STRING
     if (returnType.equals(XPathConstants.STRING))
       return resultObject.str();
@@ -341,47 +310,33 @@ public class XPathImpl implements javax.xml.xpath.XPath {
       // Return the first node, or null
       return ni.nextNode();
     }
-    final String fmsg = XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_UNSUPPORTED_RETURN_TYPE,
-            new Object[] { returnType.toString() });
+    final String fmsg = Messages.get().unsupportedReturnType(returnType);
     throw new IllegalArgumentException(fmsg);
   }
 
   /**
    * <p>
-   * Evaluate an XPath expression in the specified context and return the result
-   * as a <code>String</code>.
+   * Evaluate an XPath expression in the specified context and return the result as a <code>String</code>.
    * </p>
-   * 
    * <p>
-   * This method calls
-   * {@link #evaluate(String expression, Object item, QName returnType)} with a
+   * This method calls {@link #evaluate(String expression, Object item, QName returnType)} with a
    * <code>returnType</code> of {@link XPathConstants#STRING}.
    * </p>
-   * 
    * <p>
-   * See "Evaluation of XPath Expressions" of JAXP 1.3 spec for context item
-   * evaluation, variable, function and QName resolution and return type
-   * conversion.
+   * See "Evaluation of XPath Expressions" of JAXP 1.3 spec for context item evaluation, variable, function and QName
+   * resolution and return type conversion.
+   * </p>
+   * <p>
+   * If a <code>null</code> value is provided for <code>item</code>, an empty document will be used for the context. If
+   * <code>expression</code> is <code>null</code>, then a <code>NullPointerException</code> is thrown.
    * </p>
    * 
-   * <p>
-   * If a <code>null</code> value is provided for <code>item</code>, an empty
-   * document will be used for the context. If <code>expression</code> is
-   * <code>null</code>, then a <code>NullPointerException</code> is thrown.
-   * </p>
-   * 
-   * @param expression
-   *          The XPath expression.
-   * @param item
-   *          The starting context (node or node list, for example).
-   * 
-   * @return The <code>String</code> that is the result of evaluating the
-   *         expression and converting the result to a <code>String</code>.
-   * 
-   * @throws XPathExpressionException
-   *           If <code>expression</code> cannot be evaluated.
-   * @throws NullPointerException
-   *           If <code>expression</code> is <code>null</code>.
+   * @param expression The XPath expression.
+   * @param item The starting context (node or node list, for example).
+   * @return The <code>String</code> that is the result of evaluating the expression and converting the result to a
+   *         <code>String</code>.
+   * @throws XPathExpressionException If <code>expression</code> cannot be evaluated.
+   * @throws NullPointerException If <code>expression</code> is <code>null</code>.
    */
   @Override
   public String evaluate(String expression, Object item) throws XPathExpressionException {
@@ -392,42 +347,31 @@ public class XPathImpl implements javax.xml.xpath.XPath {
    * <p>
    * Compile an XPath expression for later evaluation.
    * </p>
-   * 
    * <p>
-   * If <code>expression</code> contains any {@link XPathFunction}s, they must
-   * be available via the {@link XPathFunctionResolver}. An
-   * {@link XPathExpressionException} will be thrown if the
-   * <code>XPathFunction</code> cannot be resovled with the
-   * <code>XPathFunctionResolver</code>.
+   * If <code>expression</code> contains any {@link XPathFunction}s, they must be available via the
+   * {@link XPathFunctionResolver}. An {@link XPathExpressionException} will be thrown if the <code>XPathFunction</code>
+   * cannot be resovled with the <code>XPathFunctionResolver</code>.
+   * </p>
+   * <p>
+   * If <code>expression</code> is <code>null</code>, a <code>NullPointerException</code> is thrown.
    * </p>
    * 
-   * <p>
-   * If <code>expression</code> is <code>null</code>, a
-   * <code>NullPointerException</code> is thrown.
-   * </p>
-   * 
-   * @param expression
-   *          The XPath expression.
-   * 
+   * @param expression The XPath expression.
    * @return Compiled XPath expression.
-   * 
-   * @throws XPathExpressionException
-   *           If <code>expression</code> cannot be compiled.
-   * @throws NullPointerException
-   *           If <code>expression</code> is <code>null</code>.
+   * @throws XPathExpressionException If <code>expression</code> cannot be compiled.
+   * @throws NullPointerException If <code>expression</code> is <code>null</code>.
    */
   @Override
   public XPathExpression compile(String expression) throws XPathExpressionException {
     if (expression == null) {
-      final String fmsg = XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_ARG_CANNOT_BE_NULL,
-              new Object[] { "XPath expression" });
+      final String fmsg = Messages.get().argCannotBeNull("XPath expression");
       throw new NullPointerException(fmsg);
     }
     try {
       final de.lyca.xpath.XPath xpath = new XPath(expression, null, prefixResolver, de.lyca.xpath.XPath.SELECT);
       // Can have errorListener
       final XPathExpressionImpl ximpl = new XPathExpressionImpl(xpath, prefixResolver, functionResolver,
-              variableResolver, featureSecureProcessing);
+          variableResolver, featureSecureProcessing);
       return ximpl;
     } catch (final TransformerException te) {
       throw new XPathExpressionException(te);
@@ -436,76 +380,56 @@ public class XPathImpl implements javax.xml.xpath.XPath {
 
   /**
    * <p>
-   * Evaluate an XPath expression in the context of the specified
-   * <code>InputSource</code> and return the result as the specified type.
+   * Evaluate an XPath expression in the context of the specified <code>InputSource</code> and return the result as the
+   * specified type.
    * </p>
-   * 
    * <p>
    * This method builds a data model for the {@link InputSource} and calls
-   * {@link #evaluate(String expression, Object item, QName returnType)} on the
-   * resulting document object.
+   * {@link #evaluate(String expression, Object item, QName returnType)} on the resulting document object.
    * </p>
-   * 
    * <p>
-   * See "Evaluation of XPath Expressions" section of JAXP 1.3 spec for context
-   * item evaluation, variable, function and QName resolution and return type
-   * conversion.
+   * See "Evaluation of XPath Expressions" section of JAXP 1.3 spec for context item evaluation, variable, function and
+   * QName resolution and return type conversion.
    * </p>
-   * 
    * <p>
-   * If <code>returnType</code> is not one of the types defined in
-   * {@link XPathConstants}, then an <code>IllegalArgumentException</code> is
-   * thrown.
+   * If <code>returnType</code> is not one of the types defined in {@link XPathConstants}, then an
+   * <code>IllegalArgumentException</code> is thrown.
    * </p>
-   * 
    * <p>
-   * If <code>expression</code>, <code>source</code> or <code>returnType</code>
-   * is <code>null</code>, then a <code>NullPointerException</code> is thrown.
+   * If <code>expression</code>, <code>source</code> or <code>returnType</code> is <code>null</code>, then a
+   * <code>NullPointerException</code> is thrown.
    * </p>
    * 
-   * @param expression
-   *          The XPath expression.
-   * @param source
-   *          The input source of the document to evaluate over.
-   * @param returnType
-   *          The desired return type.
-   * 
-   * @return The <code>Object</code> that encapsulates the result of evaluating
-   *         the expression.
-   * 
-   * @throws XPathExpressionException
-   *           If expression cannot be evaluated.
-   * @throws IllegalArgumentException
-   *           If <code>returnType</code> is not one of the types defined in
-   *           {@link XPathConstants}.
-   * @throws NullPointerException
-   *           If <code>expression</code>, <code>source</code> or
-   *           <code>returnType</code> is <code>null</code>.
+   * @param expression The XPath expression.
+   * @param source The input source of the document to evaluate over.
+   * @param returnType The desired return type.
+   * @return The <code>Object</code> that encapsulates the result of evaluating the expression.
+   * @throws XPathExpressionException If expression cannot be evaluated.
+   * @throws IllegalArgumentException If <code>returnType</code> is not one of the types defined in
+   *         {@link XPathConstants}.
+   * @throws NullPointerException If <code>expression</code>, <code>source</code> or <code>returnType</code> is
+   *         <code>null</code>.
    */
   @Override
   public Object evaluate(String expression, InputSource source, QName returnType) throws XPathExpressionException {
     // Checking validity of different parameters
     if (source == null) {
-      final String fmsg = XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_ARG_CANNOT_BE_NULL,
-              new Object[] { "source" });
+      final String fmsg = Messages.get().argCannotBeNull("source");
       throw new NullPointerException(fmsg);
     }
     if (expression == null) {
-      final String fmsg = XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_ARG_CANNOT_BE_NULL,
-              new Object[] { "XPath expression" });
+      final String fmsg = Messages.get().argCannotBeNull("XPath expression");
       throw new NullPointerException(fmsg);
     }
     if (returnType == null) {
-      final String fmsg = XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_ARG_CANNOT_BE_NULL,
-              new Object[] { "returnType" });
+      final String fmsg = Messages.get().argCannotBeNull("returnType");
       throw new NullPointerException(fmsg);
     }
 
     // Checking if requested returnType is supported.
     // returnType need to be defined in XPathConstants
     if (!isSupported(returnType)) {
-      final String fmsg = XPATHMessages.createXPATHMessage(XPATHErrorResources.ER_UNSUPPORTED_RETURN_TYPE,
-              new Object[] { returnType.toString() });
+      final String fmsg = Messages.get().unsupportedReturnType(returnType);
       throw new IllegalArgumentException(fmsg);
     }
 
@@ -531,40 +455,28 @@ public class XPathImpl implements javax.xml.xpath.XPath {
 
   /**
    * <p>
-   * Evaluate an XPath expression in the context of the specified
-   * <code>InputSource</code> and return the result as a <code>String</code>.
+   * Evaluate an XPath expression in the context of the specified <code>InputSource</code> and return the result as a
+   * <code>String</code>.
    * </p>
-   * 
    * <p>
-   * This method calls
-   * {@link #evaluate(String expression, InputSource source, QName returnType)}
-   * with a <code>returnType</code> of {@link XPathConstants#STRING}.
+   * This method calls {@link #evaluate(String expression, InputSource source, QName returnType)} with a
+   * <code>returnType</code> of {@link XPathConstants#STRING}.
    * </p>
-   * 
    * <p>
-   * See "Evaluation of XPath Expressions" section of JAXP 1.3 spec for context
-   * item evaluation, variable, function and QName resolution and return type
-   * conversion.
+   * See "Evaluation of XPath Expressions" section of JAXP 1.3 spec for context item evaluation, variable, function and
+   * QName resolution and return type conversion.
    * </p>
-   * 
    * <p>
-   * If <code>expression</code> or <code>source</code> is <code>null</code>,
-   * then a <code>NullPointerException</code> is thrown.
+   * If <code>expression</code> or <code>source</code> is <code>null</code>, then a <code>NullPointerException</code> is
+   * thrown.
    * </p>
    * 
-   * @param expression
-   *          The XPath expression.
-   * @param source
-   *          The <code>InputSource</code> of the document to evaluate over.
-   * 
-   * @return The <code>String</code> that is the result of evaluating the
-   *         expression and converting the result to a <code>String</code>.
-   * 
-   * @throws XPathExpressionException
-   *           If expression cannot be evaluated.
-   * @throws NullPointerException
-   *           If <code>expression</code> or <code>source</code> is
-   *           <code>null</code>.
+   * @param expression The XPath expression.
+   * @param source The <code>InputSource</code> of the document to evaluate over.
+   * @return The <code>String</code> that is the result of evaluating the expression and converting the result to a
+   *         <code>String</code>.
+   * @throws XPathExpressionException If expression cannot be evaluated.
+   * @throws NullPointerException If <code>expression</code> or <code>source</code> is <code>null</code>.
    */
   @Override
   public String evaluate(String expression, InputSource source) throws XPathExpressionException {
@@ -575,21 +487,16 @@ public class XPathImpl implements javax.xml.xpath.XPath {
    * <p>
    * Reset this <code>XPath</code> to its original configuration.
    * </p>
-   * 
    * <p>
-   * <code>XPath</code> is reset to the same state as when it was created with
-   * {@link XPathFactory#newXPath()}. <code>reset()</code> is designed to allow
-   * the reuse of existing <code>XPath</code>s thus saving resources associated
-   * with the creation of new <code>XPath</code>s.
+   * <code>XPath</code> is reset to the same state as when it was created with {@link XPathFactory#newXPath()}.
+   * <code>reset()</code> is designed to allow the reuse of existing <code>XPath</code>s thus saving resources
+   * associated with the creation of new <code>XPath</code>s.
    * </p>
-   * 
    * <p>
-   * The reset <code>XPath</code> is not guaranteed to have the same
-   * {@link XPathFunctionResolver}, {@link XPathVariableResolver} or
-   * {@link NamespaceContext} <code>Object</code>s, e.g.
-   * {@link Object#equals(Object obj)}. It is guaranteed to have a functionally
-   * equal <code>XPathFunctionResolver</code>,
-   * <code>XPathVariableResolver</code> and <code>NamespaceContext</code>.
+   * The reset <code>XPath</code> is not guaranteed to have the same {@link XPathFunctionResolver},
+   * {@link XPathVariableResolver} or {@link NamespaceContext} <code>Object</code>s, e.g.
+   * {@link Object#equals(Object obj)}. It is guaranteed to have a functionally equal
+   * <code>XPathFunctionResolver</code>, <code>XPathVariableResolver</code> and <code>NamespaceContext</code>.
    * </p>
    */
   @Override
