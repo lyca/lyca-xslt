@@ -65,7 +65,7 @@ final class ProcessingInstruction extends Instruction {
 
     for (SyntaxTreeNode child : getContents()) {
       if (child instanceof XslElement) {
-        // TODO better error reporting
+        // TODO better error reporting ER_NOT_ALLOWED_IN_POSITION
         final ErrorMsg err = new ErrorMsg(this,
             Messages.get().internalErr("xsl:processing-instruction cannot contain xsl:element"));
         parser.reportError(Constants.ERROR, err);

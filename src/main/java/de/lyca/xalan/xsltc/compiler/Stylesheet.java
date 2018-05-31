@@ -616,7 +616,7 @@ public final class Stylesheet extends SyntaxTreeNode {
     stable.pushExcludedNamespacesContext();
     stable.excludeURI(Constants.XSLT_URI);
     if (!stable.excludeNamespaces(excludePrefixes).isEmpty()) {
-      // TODO better error reporting
+      // TODO better error reporting ER_INVALID_PREFIX_IN_EXCLUDERESULTPREFIX
       final ErrorMsg error = new ErrorMsg(this, Messages.get().internalErr("Unknown exclude-result-prefix"));
       parser.reportError(Constants.ERROR, error);
     }
@@ -634,7 +634,7 @@ public final class Stylesheet extends SyntaxTreeNode {
       if (!(child instanceof Import || child instanceof Text && ((Text) child).isIgnore())) {
         inImports = false;
       } else if (!inImports && child instanceof Import) {
-        // TODO better error reporting
+        // TODO better error reporting ER_IMPORTS_AS_FIRST_ELEM
         final ErrorMsg err = new ErrorMsg(this, Messages.get().internalErr("Imports must be first in stylesheet"));
         parser.reportError(Constants.ERROR, err);
       }
@@ -673,7 +673,7 @@ public final class Stylesheet extends SyntaxTreeNode {
       if (!(child instanceof TopLevelElement || child instanceof UnsupportedElement
           || child.getQName().getNamespace() != null && !child.getQName().getNamespace().isEmpty()
               && !child.getQName().getNamespace().equals(Constants.XSLT_URI))) {
-        // TODO better error reporting
+        // TODO better error reporting ILLEGAL_CHILD
         final ErrorMsg error = new ErrorMsg(this,
             Messages.get().internalErr(child.getQName().getLocalPart() + " is not a Top-Level Element"));
         parser.reportError(Constants.ERROR, error);

@@ -43,7 +43,7 @@ final class ConcatCall extends FunctionCall {
   @Override
   public Type typeCheck(SymbolTable stable) throws TypeCheckError {
     if (argumentCount() < 2) {
-      // TODO better error reporting
+      // TODO better error reporting ILLEGAL_ARG
       final ErrorMsg err = new ErrorMsg(this, Messages.get().illegalArgErr());
       throw new TypeCheckError(err);
     }

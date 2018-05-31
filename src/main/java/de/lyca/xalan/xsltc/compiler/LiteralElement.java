@@ -179,7 +179,7 @@ final class LiteralElement extends Instruction {
   @Override
   public Type typeCheck(SymbolTable stable) throws TypeCheckError {
     if (getParent() instanceof XslAttribute) {
-      // TODO better error reporting
+      // TODO better error reporting ILLEGAL_CHILD
       final ErrorMsg err = new ErrorMsg(this,
           Messages.get().internalErr("A literal element cannot be child of xsl:attribute"));
       throw new TypeCheckError(err);
@@ -253,7 +253,7 @@ final class LiteralElement extends Instruction {
       // Handle xsl:exclude-result-prefixes
       else if (qname.equals(parser.getExcludeResultPrefixes())) {
         if (!stable.excludeNamespaces(val).isEmpty()) {
-          // TODO better error handling
+          // TODO better error handling ER_INVALID_PREFIX_IN_EXCLUDERESULTPREFIX
           final ErrorMsg error = new ErrorMsg(this, Messages.get().internalErr("Unknown exclude-result-prefix"));
           parser.reportError(Constants.ERROR, error);
         }

@@ -155,7 +155,7 @@ final class Number extends Instruction implements Closure {
         } else if (value.equals("any")) {
           _level = LEVEL_ANY;
         } else {
-          // TODO better Error reporting
+          // TODO better Error reporting ER_BAD_VAL_ON_LEVEL_ATTRIB
           reportError(this, parser, Messages.get().illegalArgErr());
         }
       } else if (name.equals("format")) {
@@ -169,14 +169,14 @@ final class Number extends Instruction implements Closure {
         _formatNeeded = true;
         if (_letterValue instanceof SimpleAttributeValue
             && !("alphabetic".equals(value) || "traditional".equals(value))) {
-          // TODO better Error reporting
+          // TODO better Error reporting WG_ILLEGAL_ATTRIBUTE_VALUE
           reportError(this, parser, Messages.get().illegalArgErr());
         }
       } else if (name.equals("grouping-separator")) {
         _groupingSeparator = AttributeValue.create(this, value, parser);
         _formatNeeded = true;
         if (_groupingSeparator instanceof SimpleAttributeValue && value.length() > 1) {
-          // TODO better Error reporting
+          // TODO better Error reporting INVALID_TCHAR
           reportError(this, parser, Messages.get().illegalCharErr(value));
         }
 

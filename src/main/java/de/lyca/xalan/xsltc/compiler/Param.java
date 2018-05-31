@@ -120,14 +120,14 @@ final class Param extends VariableBase {
         SyntaxTreeNode child = contents.get(i);
         if (child instanceof Text && ((Text) child).isIgnore())
           continue;
-        // TODO better error reporting
+        // TODO better error reporting ER_CANT_HAVE_CONTENT_AND_SELECT
         final ErrorMsg err = new ErrorMsg(this,
             Messages.get().internalErr("xsl:param element must not have both content and a select attribute"));
         throw new TypeCheckError(err);
       }
     }
     if (!(getParent() instanceof Stylesheet || getParent() instanceof Template)) {
-      // TODO better error reporting
+      // TODO better error reporting ILLEGAL_PARENT
       final ErrorMsg err = new ErrorMsg(this, Messages.get().internalErr("Parent is not Stylesheet or Template"));
       throw new TypeCheckError(err);
     }

@@ -124,13 +124,13 @@ final class WithParam extends Instruction {
   @Override
   public Type typeCheck(SymbolTable stable) throws TypeCheckError {
     if (!(getParent() instanceof ApplyTemplates || getParent() instanceof CallTemplate)) {
-      // TODO better error reporting
+      // TODO better error reporting ILLEGAL_PARENT
       final ErrorMsg err = new ErrorMsg(this,
           Messages.get().internalErr("xsl:with-param must be child of xsl:apply-templates or xsl:call-template"));
       throw new TypeCheckError(err);
     }
     if (_select != null && hasContents()) {
-      // TODO better error reporting
+      // TODO better error reporting ER_CANT_HAVE_CONTENT_AND_SELECT
       final ErrorMsg err = new ErrorMsg(this,
           Messages.get().internalErr("xsl:with-param element must not have both content and a select attribute"));
       throw new TypeCheckError(err);

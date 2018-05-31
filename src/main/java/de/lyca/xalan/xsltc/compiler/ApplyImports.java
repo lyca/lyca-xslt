@@ -21,6 +21,7 @@ import static de.lyca.xalan.xsltc.compiler.Constants.ITERATOR_PNAME;
 import static de.lyca.xalan.xsltc.compiler.Constants.POP_PARAM_FRAME;
 import static de.lyca.xalan.xsltc.compiler.Constants.PUSH_PARAM_FRAME;
 
+import de.lyca.xalan.res.XSLTErrorResources;
 import de.lyca.xalan.xsltc.compiler.util.CompilerContext;
 import de.lyca.xalan.xsltc.compiler.util.ErrorMsg;
 import de.lyca.xalan.xsltc.compiler.util.Messages;
@@ -75,7 +76,7 @@ final class ApplyImports extends Instruction {
     SyntaxTreeNode parent = getParent();
     while (parent != null) {
       if (parent instanceof ForEach) {
-        // TODO better error reporting
+        // TODO better error reporting: XSLTErrorResources.ER_NO_APPLY_IMPORT_IN_FOR_EACH
         final ErrorMsg err = new ErrorMsg(this,
             Messages.get().internalErr("xsl:apply-imports not allowed in a xsl:for-each"));
         throw new TypeCheckError(err);

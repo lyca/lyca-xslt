@@ -94,7 +94,7 @@ final class Text extends Instruction {
     parseChildren(parser);
 
     if (hasContents()) {
-      // TODO better error reporting
+      // TODO better error reporting ONLY_PCDATA
       final ErrorMsg err = new ErrorMsg(this, Messages.get().internalErr("xsl:text should contain only #PCDATA"));
       parser.reportError(Constants.ERROR, err);
     }

@@ -59,8 +59,8 @@ final class ApplyTemplates extends Instruction {
     if (select.length() > 0) {
       _select = parser.parseExpression(this, "select", null);
     } else if (hasAttribute("select")) {
-      // TODO better error reporting
-      final ErrorMsg err = new ErrorMsg(this,Messages.get().internalErr("Select is empty"));
+      // TODO better error reporting XSLTErrorResources.ER_NO_SELECT_EXPRESSION
+      final ErrorMsg err = new ErrorMsg(this, Messages.get().internalErr("Select is empty"));
       parser.reportError(Constants.ERROR, err);
     }
 
@@ -78,8 +78,8 @@ final class ApplyTemplates extends Instruction {
     for (SyntaxTreeNode child : getContents()) {
       if (!(child instanceof Sort || child instanceof WithParam
           || child instanceof Text && ((Text) child).isIgnore())) {
-        // TODO better error reporting
-        final ErrorMsg err = new ErrorMsg(this,Messages.get().illegalChildErr());
+        // TODO better error reporting ILLEGAL_CHILD
+        final ErrorMsg err = new ErrorMsg(this, Messages.get().illegalChildErr());
         parser.reportError(Constants.ERROR, err);
       }
     }
@@ -105,8 +105,7 @@ final class ApplyTemplates extends Instruction {
   }
 
   /**
-   * Translate call-template. A parameter frame is pushed only if some template
-   * in the stylesheet uses parameters.
+   * Translate call-template. A parameter frame is pushed only if some template in the stylesheet uses parameters.
    */
   @Override
   public void translate(CompilerContext ctx) {
@@ -133,7 +132,7 @@ final class ApplyTemplates extends Instruction {
     if (_type != null && _type instanceof ResultTreeType) {
       // <xsl:sort> cannot be applied to a result tree - issue warning
       if (sortObjects.size() > 0) {
-        final ErrorMsg err = new ErrorMsg(this,Messages.get().resultTreeSortErr());
+        final ErrorMsg err = new ErrorMsg(this, Messages.get().resultTreeSortErr());
         getParser().reportError(Constants.WARNING, err);
       }
       // Put the result tree (a DOM adapter) on the stack

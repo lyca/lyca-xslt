@@ -460,7 +460,7 @@ final class Whitespace extends TopLevelElement {
   @Override
   public Type typeCheck(SymbolTable stable) throws TypeCheckError {
     if (!(getParent() instanceof Stylesheet)) {
-      // TODO better error reporting
+      // TODO better error reporting ILLEGAL_PARENT
       final ErrorMsg err = new ErrorMsg(this, Messages.get().internalErr("Parent is not Stylesheet"));
       throw new TypeCheckError(err);
     }

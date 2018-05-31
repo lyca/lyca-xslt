@@ -110,7 +110,7 @@ final class DecimalFormatting extends TopLevelElement {
     for (String attr : ATTR_TO_METHOD.keySet()) {
       String val = getAttribute(attr);
       if (val.length() > 1) {
-        // TODO better Error reporting
+        // TODO better Error reporting INVALID_TCHAR
         reportError(this, parser, Messages.get().illegalCharErr(val));
       }
     }

@@ -80,7 +80,7 @@ final class CallTemplate extends Instruction {
     for (int i = 0; i < count; i++) {
       final SyntaxTreeNode child = getContents().get(i);
       if (!(child instanceof WithParam || child instanceof Text && ((Text) child).isIgnore())) {
-        // TODO better error message
+        // TODO better error message ILLEGAL_CHILD
         final ErrorMsg error = new ErrorMsg(this, Messages.get().illegalChildErr());
         // child.getQName().getLocalPart() + " is not a xsl:with-param"
         parser.reportError(Constants.ERROR, error);

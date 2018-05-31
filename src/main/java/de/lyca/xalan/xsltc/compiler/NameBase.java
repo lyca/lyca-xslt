@@ -70,8 +70,8 @@ class NameBase extends FunctionCall {
       _paramType = _param.typeCheck(stable);
       break;
     default:
-      // TODO better error reporting
-      throw new TypeCheckError(new ErrorMsg(this, Messages.get().internalErr("Too many arguments.")));
+      // TODO better error reporting ILLEGAL_ARG
+      throw new TypeCheckError(new ErrorMsg(this, Messages.get().illegalArgErr()));
     }
 
     // The argument has to be a node, a node-set or a node reference

@@ -144,7 +144,7 @@ final class Sort extends Instruction implements Closure {
     }
 
     if (hasContents()) {
-      // TODO better error reporting
+      // TODO better error reporting ILLEGAL_CHILD
       reportError(this, parser, Messages.get().internalErr("Childs not allowed in xsl:sort"));
     }
     // Parse the select expression (node string value if no expression)
@@ -157,7 +157,7 @@ final class Sort extends Instruction implements Closure {
     }
     _order = AttributeValue.create(this, val, parser);
     if (_order instanceof SimpleAttributeValue && !("ascending".equals(val) || "descending".equals(val))) {
-      // TODO better error reporting
+      // TODO better error reporting ER_ATTRIB_VALUE_NOT_FOUND
       reportError(this, parser, Messages.get().internalErr("order '" + val + "' is unknown"));
     }
 
@@ -179,7 +179,7 @@ final class Sort extends Instruction implements Closure {
     _dataType = AttributeValue.create(this, val, parser);
     if (_dataType instanceof SimpleAttributeValue
         && !("text".equals(val) || "number".equals(val) || val.contains(":") && XML11Char.isXML11ValidQName(val))) {
-      // TODO better error reporting
+      // TODO better error reporting ER_ATTRIB_VALUE_NOT_FOUND
       reportError(this, parser, Messages.get().internalErr("datatype '" + val + "' not qname-but-not-ncname"));
     }
 
@@ -190,7 +190,7 @@ final class Sort extends Instruction implements Closure {
     _caseOrder = AttributeValue.create(this, val, parser);
     if (!val.isEmpty() && _caseOrder instanceof SimpleAttributeValue
         && !("upper-first".equals(val) || "lower-first".equals(val))) {
-      // TODO better error reporting
+      // TODO better error reporting ER_ATTRIB_VALUE_NOT_FOUND / ER_ILLEGAL_ATTRIBUTE_VALUE
       reportError(this, parser, Messages.get().internalErr("case-order '" + val + "' is unknown"));
     }
   }

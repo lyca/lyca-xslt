@@ -171,7 +171,7 @@ public final class Template extends TopLevelElement implements Comparable<Templa
   public void parseContents(Parser parser) {
 
     if (!(getParent() instanceof Stylesheet)) {
-      // TODO better error reporting
+      // TODO better error reporting ILLEGAL_PARENT
       final ErrorMsg err = new ErrorMsg(this, Messages.get().internalErr("Parent is not Stylesheet"));
       parser.reportError(Constants.ERROR, err);
     }
@@ -183,7 +183,7 @@ public final class Template extends TopLevelElement implements Comparable<Templa
 
     // TODO Perhaps revisit matcherr08
     if (name.isEmpty() && match.isEmpty()) {
-      // TODO better error reporting
+      // TODO better error reporting ER_NEED_NAME_OR_MATCH_ATTRIB
       final ErrorMsg err = new ErrorMsg(this, Messages.get().internalErr("Name and match are empty"));
       parser.reportError(Constants.ERROR, err);
     }
@@ -289,7 +289,7 @@ public final class Template extends TopLevelElement implements Comparable<Templa
       if (!(child instanceof Param || child instanceof Text && ((Text) child).isIgnore())) {
         inParams = false;
       } else if (!inParams && child instanceof Param) {
-        // TODO better error reporting
+        // TODO better error reporting ER_NOT_ALLOWED_IN_POSITION
         final ErrorMsg err = new ErrorMsg(this, Messages.get().internalErr("Params must be first in template"));
         throw new TypeCheckError(err);
       }

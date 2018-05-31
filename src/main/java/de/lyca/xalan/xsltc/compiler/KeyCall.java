@@ -187,7 +187,7 @@ final class KeyCall extends FunctionCall {
       name = lit("##id");
     } else if (_resolvedQName != null) {
       if (!getStylesheet().hasKey(_resolvedQName.toString())) {
-        // TODO better error reporting
+        // TODO better error reporting ER_NO_XSLKEY_DECLARATION
         reportError(this, getParser(), Messages.get().errorMsg("key not existent"));
       }
       name = lit(_resolvedQName.toString());

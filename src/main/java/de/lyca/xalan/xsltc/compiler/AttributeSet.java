@@ -151,7 +151,7 @@ final class AttributeSet extends TopLevelElement {
 
     if (_useSets != null) {
       if (containsSet(_name, stable)) {
-        // TODO better error handling
+        // TODO better error handling CIRCULAR_REFERENCE
         reportError(this, getParser(), Messages.get().internalErr("Circular references in attribute-sets"));
       }
       _useSets.typeCheck(stable);

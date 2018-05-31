@@ -45,7 +45,7 @@ final class Message extends Instruction {
   public void parseContents(Parser parser) {
     final String termstr = getAttribute("terminate");
     if (!("".equals(termstr) || "yes".equals(termstr) || "no".equals(termstr))) {
-      // TODO better error reporting
+      // TODO better error reporting ER_VALUE_SHOULD_EQUAL
       final ErrorMsg err = new ErrorMsg(this, Messages.get().internalErr("Value for terminate should equal yes or no"));
       parser.reportError(Constants.ERROR, err);
     }
