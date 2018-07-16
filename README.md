@@ -19,3 +19,19 @@ The major areas of changes that were made:
 * The prefix handling from namespaces in xsltc was improved
 * The actual source needs Java 8 as baseline, Java 1.2 is not sufficient anymore...
 * To be continued...
+
+**Gradle/Grails**
+
+```groovy
+compile 'de.lyca.xslt:lyca-xslt:0.9.5'
+```
+
+**Apache Maven**
+
+```xml
+<dependency>
+    <groupId>de.lyca.xslt</groupId>
+    <artifactId>lyca-xslt</artifactId>
+    <version>0.9.5</version>
+</dependency>
+```
