@@ -1,3 +1,7 @@
+plugins {
+    id "com.github.kt3k.coveralls" version "2.8.2"
+}
+
 apply plugin: 'java'
 apply plugin: 'jacoco'
 apply plugin: 'java-library-distribution'
@@ -12,10 +16,6 @@ version = '0.9.5'
 
 if (!project.hasProperty("sonatypeUser")) { ext.sonatypeUser = "anonymous" }
 if (!project.hasProperty("sonatypePassword")) { ext.sonatypePassword = "" }
-
-plugins {
-    id "com.github.kt3k.coveralls" version "2.8.2"
-}
 
 repositories {
     mavenCentral()
