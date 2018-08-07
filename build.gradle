@@ -2,8 +2,12 @@ apply plugin: 'java'
 apply plugin: 'jacoco'
 apply plugin: 'java-library-distribution'
 apply plugin: 'findbugs'
+apply plugin: 'maven-publish'
+apply plugin: 'signing'
 
 sourceCompatibility = 1.8
+
+group = 'de.lyca.xslt'
 version = '0.9.5'
 
 //jar {
@@ -21,7 +25,7 @@ configurations {
 }
 
 dependencies {
-    compile 'xerces:xercesImpl:2.11.0'
+    compile 'xerces:xercesImpl:2.12.0'
     compile 'edu.princeton.cup:java-cup:10k'
     compile 'com.sun.codemodel:codemodel:2.6'
     testCompile 'junit:junit:4.12'
@@ -65,6 +69,8 @@ task(createXPathLexer, dependsOn:createXPathParser, type: JavaExec) {
     }
 } 
 
+compileJava.dependsOn createXPathLexer
+
 task sourcesJar(type: Jar, dependsOn: classes) {
     classifier = 'sources'
     from sourceSets.main.allSource
@@ -81,7 +87,7 @@ artifacts {
 }
 
 jacoco {
-    toolVersion = "0.7.9"
+    toolVersion = "0.8.1"
 }
 
 jacocoTestReport {
@@ -111,4 +117,58 @@ tasks.withType(FindBugs) {
         xml.enabled = false
         html.enabled = true
     }
+}
+
+publishing {
+    repositories {
+        maven {
+            def releasesRepoUrl = 'https://oss.sonatype.org/service/local/staging/deploy/maven2'
+            def snapshotsRepoUrl = 'https://oss.sonatype.org/content/repositories/snapshots'
+            url version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+            credentials {
+                username "$sonatypeUser"
+                password "$sonatypePassword"
+            }
+        }
+    }
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            artifact sourcesJar {
+                classifier "sources"
+            }
+            artifact javadocJar {
+                classifier "javadoc"
+            }
+            pom {
+                name = 'lyca-xslt'
+                description = 'A major rewrite of Apache Xalan Java XSLT processor'
+                url = 'https://github.com/lyca/lyca-xslt'
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'lyca'
+                        name = 'Lars Michele'
+                        email = 'lars.michele@tu-dortmund.de'
+                        organization = 'n.A.'
+                        organizationUrl = 'https://github.com/lyca'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:git://github.com/lyca/lyca-xslt.git'
+                    developerConnection = 'scm:git:ssh://github.com/lyca/lyca-xslt.git'
+                    url = 'https://github.com/lyca/lyca-xslt'
+                }
+            }
+        }
+    }
+}
+
+signing {
+    sign publishing.publications.mavenJava
 }
