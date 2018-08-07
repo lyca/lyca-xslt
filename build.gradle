@@ -10,6 +10,9 @@ sourceCompatibility = 1.8
 group = 'de.lyca.xslt'
 version = '0.9.5'
 
+if (!project.hasProperty("sonatypeUser")) { ext.sonatypeUser = "anonymous" }
+if (!project.hasProperty("sonatypePassword")) { ext.sonatypePassword = "" }
+
 //jar {
 //    manifest {
 //        attributes 'Implementation-Title': 'Gradle Quickstart', 'Implementation-Version': version
