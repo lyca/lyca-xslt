@@ -29,10 +29,8 @@ import org.w3c.dom.Node;
 /**
  * Simple static utility to convert Map to a Node.
  * 
- * @see de.lyca.xalan.xslt.EnvironmentCheck
  * @see de.lyca.xalan.lib.Extensions
  * @author shane_curcuru@us.ibm.com
- * @version $Id$
  */
 public abstract class Map2Node {
 
