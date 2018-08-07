@@ -3,6 +3,7 @@ lyca-xslt
 
 [![Build Status](https://travis-ci.org/lyca/lyca-xslt.svg?branch=codemodel)](https://travis-ci.org/lyca/lyca-xslt)
 [![Coverage Status](https://coveralls.io/repos/github/lyca/lyca-xslt/badge.svg?branch=codemodel)](https://coveralls.io/github/lyca/lyca-xslt?branch=codemodel)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 This repository contains a major rewrite of Apache Xalan Java.
 
