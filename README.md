@@ -1,6 +1,8 @@
 lyca-xslt
 =========
 
+[![Build Status](https://travis-ci.org/lyca/lyca-xslt.svg?branch=codemodel)](https://travis-ci.org/lyca/lyca-xslt)
+
 This repository contains a major rewrite of Apache Xalan Java.
 
 It originated from some performance problems and ended up in self education.
