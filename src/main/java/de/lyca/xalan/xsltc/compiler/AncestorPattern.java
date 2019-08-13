@@ -134,7 +134,8 @@ final class AncestorPattern extends RelativePathPattern {
           JBlock _then2 = _if._then();
           _then2.add(template);
           _then2._break();
-          _if._else().add(fail);
+          if (fail != null)
+            _if._else().add(fail);
         }
       }
     }
